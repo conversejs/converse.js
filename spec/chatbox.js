@@ -8,6 +8,7 @@
         "test_utils"
         ], factory);
 } (this, function ($, _, utils, mock, test_utils) {
+    "use strict";
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
     var moment = converse_api.env.moment;
@@ -458,6 +459,102 @@
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                         }.bind(converse));
                     }.bind(converse));
+
+                    describe("and for which then an error message is received from the server", function () {
+                        it("will have the error message displayed after itself", function () {
+                            // TODO: what could still be done for error
+                            // messages... if the <error> element has type
+                            // "cancel", then we know the messages wasn't sent,
+                            // and can give the user a nicer indication of
+                            // that.
+
+                            /* <message from="scotty@enterprise.com/converse.js-84843526"
+                             *          to="kirk@enterprise.com.com"
+                             *          type="chat"
+                             *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
+                             *          xmlns="jabber:client">
+                             *      <body>yo</body>
+                             *      <active xmlns="http://jabber.org/protocol/chatstates"/>
+                             *  </message>
+                             */
+                            var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            var fullname = converse.xmppstatus.get('fullname');
+                            fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
+                            converse_api.chats.open(sender_jid);
+                            var msg_text = 'This message will not be sent, due to an error';
+                            var view = converse.chatboxviews.get(sender_jid);
+                            var message = view.model.messages.create({
+                                'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                                'fullname': fullname,
+                                'sender': 'me',
+                                'time': moment().format(),
+                                'message': msg_text
+                            });
+                            view.sendMessage(message);
+                            var $chat_content = view.$el.find('.chat-content');
+                            var msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                            expect(msg_txt).toEqual(msg_text);
+
+                            // We send another message, for which an error will
+                            // not be received, to test that errors appear
+                            // after the relevant message.
+                            msg_text = 'This message will be sent, and not receive an error';
+                            message = view.model.messages.create({
+                                'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
+                                'fullname': fullname,
+                                'sender': 'me',
+                                'time': moment().format(),
+                                'message': msg_text
+                            });
+                            view.sendMessage(message);
+                            msg_txt = $chat_content.find('.chat-message:last').find('.chat-msg-content').text();
+                            expect(msg_txt).toEqual(msg_text);
+
+                            /* <message xmlns="jabber:client"
+                             *          to="scotty@enterprise.com/converse.js-84843526"
+                             *          type="error"
+                             *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
+                             *          from="kirk@enterprise.com.com">
+                             *     <error type="cancel">
+                             *         <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                             *         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
+                             *     </error>
+                             * </message>
+                             */
+                            var error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
+                            var stanza = $msg({
+                                    'to': converse.connection.jid,
+                                    'type':'error',
+                                    'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                                    'from': sender_jid
+                                })
+                                .c('error', {'type': 'cancel'})
+                                .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                                .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                    .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                            converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
+
+                            /* Incoming error messages that are not tied to a
+                             * certain show message (via the msgid attribute),
+                             * are not shown at all. The reason for this is
+                             * that we may get error messages for chat state
+                             * notifications as well.
+                             */
+                            stanza = $msg({
+                                    'to': converse.connection.jid,
+                                    'type':'error',
+                                    'id':'some-other-unused-id',
+                                    'from': sender_jid
+                                })
+                                .c('error', {'type': 'cancel'})
+                                .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                                .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                    .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                            converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            expect($chat_content.find('.chat-error').length).toEqual(1);
+                        });
+                    });
 
                     it("will cause the chat area to be scrolled down only if it was at the bottom already", function () {
                         var message = 'This message is received while the chat area is scrolled up';

@@ -369,7 +369,7 @@
                 handleErrorMessage: function (message) {
                     var $message = $('[data-msgid='+message.get('msgid')+']');
                     if ($message.length) {
-                        $message.after($('<div class="chat-error"></div>').text(message.get('message')));
+                        $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
                         this.scrollDown();
                     }
                 },

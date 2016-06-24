@@ -1432,13 +1432,20 @@
                         return _.map(jids, _.partial(_transform, _, nick, fetcher));
                     },
                     'get': function (jids, nick, create) {
+                        if (typeof jids === "undefined") {
+                            var result = [];
+                            converse.chatboxes.each(function (chatbox) {
+                                if (chatbox.get('type') === 'chatroom') {
+                                    result.push(converse.wrappedChatBox(chatbox));
+                                }
+                            });
+                            return result;
+                        }
                         var fetcher = _.partial(converse.chatboxviews.getChatBox.bind(converse.chatboxviews), _, create);
                         if (!nick) {
                             nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
-                        if (typeof jids === "undefined") {
-                            throw new TypeError("rooms.get: You need to provide at least one JID");
-                        } else if (typeof jids === "string") {
+                        if (typeof jids === "string") {
                             return _transform(jids, nick, fetcher);
                         }
                         return _.map(jids, _.partial(_transform, _, nick, fetcher));

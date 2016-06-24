@@ -572,6 +572,8 @@ You may also provide the fullname. If not present, we use the jid as fullname:
 The "chats" grouping
 --------------------
 
+Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
+
 get
 ~~~
 
@@ -653,11 +655,9 @@ get
 Returns an object representing a multi user chat box (room).
 It takes 3 parameters:
 
-* the room JID
+* the room JID (if not specified, all rooms will be returned).
 * the user's nickname (if not specified, the node part of the user's JID will be used).
 * boolean, indicating whether the room should be created if not found (default: `false`)
-
-The last two parameters are optional.
 
 .. code-block:: javascript
 

@@ -128,8 +128,15 @@
             },
             'get': function (jids) {
                 if (typeof jids === "undefined") {
-                    converse.log("chats.get: You need to provide at least one JID", "error");
-                    return null;
+                    var result = [];
+                    converse.chatboxes.each(function (chatbox) {
+                        // FIXME: Leaky abstraction from MUC. We need to add a
+                        // base type for chat boxes, and check for that.
+                        if (chatbox.get('type') !== 'chatroom') {
+                            result.push(converse.wrappedChatBox(chatbox));
+                        }
+                    });
+                    return result;
                 } else if (typeof jids === "string") {
                     return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                 }

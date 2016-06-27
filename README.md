@@ -30,6 +30,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   In-band registration [XEP 77](http://xmpp.org/extensions/xep-0077.html)
 -   Contact rosters and groups
 -   Contact subscriptions
+-   Chat room bookmarks [XEP 48](http://xmpp.org/extensions/xep-0048.html)
 -   Roster item exchange [XEP 144](http://xmpp.org/extensions/tmp/xep-0144-1.1.html)
 -   Chat statuses (online, busy, away, offline)
 -   Custom status messages

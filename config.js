@@ -47,6 +47,7 @@ require.config({
         
         // Converse
         "converse-api":             "src/converse-api",
+        "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
@@ -129,6 +130,7 @@ require.config({
         "chatbox":                  "src/templates/chatbox",
         "chatroom":                 "src/templates/chatroom",
         "chatroom_form":            "src/templates/chatroom_form",
+        "chatroom_bookmark_form":   "src/templates/chatroom_bookmark_form",
         "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_nickname_form":   "src/templates/chatroom_nickname_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",

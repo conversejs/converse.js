@@ -171,6 +171,7 @@
         Strophe.addNamespace('XFORM', 'jabber:x:data');
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.

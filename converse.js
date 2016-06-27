@@ -21,6 +21,7 @@ if (typeof define !== 'undefined') {
 
         "converse-chatview",    // Renders standalone chat boxes for single user chat
         "converse-controlbox",  // The control box
+        "converse-bookmarks",   // XEP-0048 Bookmarks
         "converse-mam",         // XEP-0313 Message Archive Management
         "converse-muc",         // XEP-0045 Multi-user chat
         "converse-vcard",       // XEP-0054 VCard-temp

@@ -64,12 +64,17 @@
         float: right;
         font-size: $box-close-font-size;
         margin: 0;
+        margin-left: 0.1em;
         margin-right: 0.2em;
         padding: 0.5em 0.5em 0.3em 0.5em;
         text-decoration: none;
         &:active {
             position: relative;
             top: 1px;
+        }
+        &.button-on {
+            background-color: white;
+            color: $chat-head-color;
         }
     }
     .chatbox {

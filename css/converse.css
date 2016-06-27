@@ -1265,14 +1265,18 @@
   cursor: pointer;
   display: inline-block;
   float: right;
-  font-size: 9px;
+  font-size: 10px;
   margin: 0;
+  margin-left: 0.1em;
   margin-right: 0.2em;
   padding: 0.5em 0.5em 0.3em 0.5em;
   text-decoration: none; }
   #conversejs .chatbox-btn:active {
     position: relative;
     top: 1px; }
+  #conversejs .chatbox-btn.button-on {
+    background-color: white;
+    color: #F4A261; }
 #conversejs .chatbox {
   display: block;
   float: right;
@@ -1963,6 +1967,9 @@
   margin: 0.3em 0; }
 #conversejs .chat-head-chatroom {
   background-color: #E76F51; }
+  #conversejs .chat-head-chatroom .chatbox-btn.button-on {
+    background-color: white;
+    color: #E76F51; }
   #conversejs .chat-head-chatroom .chatroom-topic {
     color: white;
     font-size: 80%;
@@ -2070,6 +2077,9 @@
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message {
           font-size: 90%;
           color: #D24E2B; }
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
+          display: block; }
   #conversejs .chatroom .chat-textarea {
     border-bottom-right-radius: 0; }
   #conversejs .chatroom .room-invite {

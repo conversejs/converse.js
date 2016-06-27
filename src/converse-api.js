@@ -5,10 +5,6 @@
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
-
-/* This is a Converse.js plugin which add support for multi-user chat rooms, as
- * specified in XEP-0045 Multi-user chat.
- */
 (function (root, factory) {
     define("converse-api", [
             "jquery",

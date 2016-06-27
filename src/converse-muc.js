@@ -278,7 +278,11 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                            .html(converse.templates.chatroom(this.model.toJSON()));
+                            .html(converse.templates.chatroom(
+                                    _.extend(this.model.toJSON(), {
+                                        info_close: __('Close and leave this room'),
+                                        info_configure: __('Configure this room'),
+                                    })));
                     this.renderChatArea();
                     window.setTimeout(converse.refreshWebkit, 50);
                     return this;

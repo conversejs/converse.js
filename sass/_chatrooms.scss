@@ -8,6 +8,12 @@
 
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
+        .chatbox-btn {
+            &.button-on {
+                background-color: $chat-head-text-color;
+                color: $chatroom-head-color;
+            }
+        }
 
         .chatroom-topic {
             color: white;
@@ -133,6 +139,12 @@
                     .validation-message {
                         font-size: 90%;
                         color: $error-color;
+                    }
+                    .chatroom-form {
+                        label,
+                        input[type=text] {
+                            display: block;
+                        }
                     }
                 }
             }

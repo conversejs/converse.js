@@ -7,6 +7,7 @@
 - New event ['rosterGroupsFetched'](https://conversejs.org/docs/html/development.html#rosterGroupsFetched) [jcbrand]
 - HTML templates are now loaded in the respective modules/plugins. [jcbrand]
 - Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
+- Add support for XEP-0048, chat room bookmarks [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

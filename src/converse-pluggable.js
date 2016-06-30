@@ -27,6 +27,13 @@
              * original method.
              */
             if (typeof super_method === "function") {
+                if (typeof this._super === "undefined") {
+                    // We're not on the context of the plugged object.
+                    // This can happen when the overridden method is called via
+                    // an event handler. In this case, we simply tack on the
+                    // _super obj.
+                    this._super = {};
+                }
                 this._super[key] = super_method.bind(this);
             }
             return value.apply(this, _.rest(arguments, 3));

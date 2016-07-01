@@ -254,6 +254,12 @@
                         )(this.renderMessage(attrs));
                 },
 
+                getExtraMessageTemplateAttributes: function (attrs) {
+                    // Provides a hook for sending more attributes to the
+                    // message template.
+                    return {};
+                },
+
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -286,15 +292,17 @@
                         // are mentioned.
                         extra_classes += ' mentioned';
                     }
-                    return $(template({
-                            msgid: attrs.msgid,
-                            'sender': attrs.sender,
-                            'time': msg_time.format('hh:mm'),
-                            'isodate': msg_time.format(),
-                            'username': username,
-                            'message': '',
-                            'extra_classes': extra_classes
-                        })).children('.chat-msg-content').first().text(text)
+                    return $(template(
+                            _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                                'msgid': attrs.msgid,
+                                'sender': attrs.sender,
+                                'time': msg_time.format('hh:mm'),
+                                'isodate': msg_time.format(),
+                                'username': username,
+                                'message': '',
+                                'extra_classes': extra_classes
+                            })
+                        )).children('.chat-msg-content').first().text(text)
                             .addHyperlinks()
                             .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
                 },

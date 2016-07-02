@@ -57,7 +57,8 @@ $mobile-chat-width: 100% !default;
 $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
-$font-path: "../fonticons/fonts/" !default;
+/* $font-path: "../fonticons/fonts/" !default; */
+$font-path: "https://cdn.conversejs.org/fonticons/fonts/" !default;
 
 $chatroom-width: 300px !default;
 $chatroom-head-color: #E76F51 !default;

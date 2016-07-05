@@ -32,22 +32,12 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown: function () {
-                this._super._tearDown.apply(this, arguments);
-                if (this.minimized_chats) {
-                    this.minimized_chats.undelegateEvents().model.reset();
-                    this.minimized_chats.removeAll(); // Remove sub-views
-                    this.minimized_chats.tearDown().remove(); // Remove overview
-                    delete this.minimized_chats;
-                }
-                return this;
-            },
-
-            onConnected: function () {
+            _initialize: function () {
+                this._super._initialize.apply(this, arguments);
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
-                return this._super.onConnected.apply(this, arguments);
+                return this;
             },
 
             registerGlobalEventHandlers: function () {

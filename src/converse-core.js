@@ -187,7 +187,7 @@
              * returned via the API.
              */
             if (!chatbox) { return; }
-            var view = converse.chatboxviews.get(chatbox.get('jid'));
+            var view = converse.chatboxviews.get(chatbox.get('id'));
             return {
                 'close': view.close.bind(view),
                 'focus': view.focus.bind(view),

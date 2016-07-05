@@ -65,7 +65,7 @@
                 * returned via the API.
                 */
                 if (!chatbox) { return; }
-                var view = converse.chatboxviews.get(chatbox.get('jid'));
+                var view = converse.chatboxviews.get(chatbox.get('id'));
                 var box = this._super.wrappedChatBox.apply(this, arguments);
                 box.is_chatroom = view.is_chatroom;
                 return box;

@@ -202,6 +202,8 @@
                     this.occupantsview.chatroomview = this;
                     this.render().$el.hide();
                     this.occupantsview.model.fetch({add:true});
+                    _.each(['member', 'owner', 'admin'], this.fetchMembersList.bind(this));
+
                     this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     this.fetchMessages().insertIntoDOM();
                     // XXX: adding the event below to the events map above doesn't work.
@@ -252,6 +254,54 @@
                     converse.connection.deleteHandler(this.handler);
                     this.leave();
                     converse.ChatBoxView.prototype.close.apply(this, arguments);
+                },
+
+                updateMembersList: function () {
+                    /* Update the room's member-lists by sending a delta of
+                     * changed memberships (for all affiliations).
+                     */
+                    var iq = $iq({'to':this.model.get('jid'), 'type':'set', 'from':converse.connection.jid})
+                        .c("query", {'xmlns': Strophe.NS.MUC_ADMIN});
+                    this.occupantsview.model.each(function (occupant) {
+                        var affiliation = occupant.get('affiliation');
+                        iq.c('item', {
+                                'affiliation': affiliation !== 'none' ? affiliation : 'member',
+                                'jid': Strophe.getBareJidFromJid(occupant.get('jid'))
+                            });
+                    });
+                    return converse.connection.sendIQ(
+                        iq.tree(),
+                        this.onMembersListChanged.bind(this),
+                        this.onMembersListChangedError.bind(this)
+                    );
+                },
+
+                fetchMembersList: function (affiliation) {
+                    /* Fetch the member-list for a particular affiliation.
+                     *
+                     * Unfortunately it doesn't seem to work when trying to
+                     * fetch a list for all affiliations, so we need to fetch
+                     * them one by one.
+                     */
+                    var iq = $iq({
+                        'to': this.model.get('jid'),
+                        'type': "get",
+                        'from': converse.connection.jid
+                    }).c("query", {'xmlns': Strophe.NS.MUC_ADMIN})
+                        .c("item", {'affiliation': affiliation});
+                    return converse.connection.sendIQ(
+                        iq.tree(),
+                        this.occupantsview.updateOccupantsOnMembersList.bind(this.occupantsview),
+                        _.bind(this.onMembersListError, this, affiliation)
+                    );
+                },
+
+                onMembersListError: function (affiliation, iq) {
+                    if (iq.getElementsByTagName('forbidden').length) {
+                        converse.log("You are forbidden from retrieving the "+affiliation+"-list for "+this.model.get('jid'));
+                    } else {
+                        converse.log("Could not retrieve "+affiliation+"-list for "+this.model.get('jid'), "error");
+                    }
                 },
 
                 toggleOccupants: function (ev, preserve_state) {
@@ -617,7 +667,15 @@
                 },
 
                 onConfigSaved: function (stanza) {
-                    // TODO: provide feedback
+                    // this.updateMembersList();
+                },
+
+                onMembersListChanged: function (stanza) {
+                    converse.log("The membership-list for "+this.model.get('jid')+" has been succesfully updated");
+                },
+
+                onMembersListChangedError: function (stanza) {
+                    this.showStatusNotification(__("An error occurred while trying to update the members list."));
                 },
 
                 onErrorConfigSaved: function (stanza) {
@@ -926,25 +984,36 @@
                 }
             });
 
-            converse.ChatRoomOccupant = Backbone.Model;
+            converse.ChatRoomOccupant = Backbone.Model.extend({
+                initialize: function () {
+                    this.set({'id': converse.connection.getUniqueId()});
+                }
+            });
             converse.ChatRoomOccupantView = Backbone.View.extend({
                 tagName: 'li',
                 initialize: function () {
-                    this.model.on('add', this.render, this);
                     this.model.on('change', this.render, this);
                     this.model.on('destroy', this.destroy, this);
                 },
                 render: function () {
-                    var $new = converse.templates.occupant(
-                        _.extend(
-                            this.model.toJSON(), {
-                                'desc_moderator': __('This user is a moderator'),
-                                'desc_occupant': __('This user can send messages in this room'),
-                                'desc_visitor': __('This user can NOT send messages in this room')
-                        })
+                    var new_el = converse.templates.occupant(
+                        _.extend({
+                            'nick': this.model.get('jid') || '',
+                            'role': null,
+                            'desc_moderator': __('This user is a moderator'),
+                            'desc_occupant': __('This user can send messages in this room'),
+                            'desc_visitor': __('This user can NOT send messages in this room')
+                            }, this.model.toJSON())
                     );
-                    this.$el.replaceWith($new);
-                    this.setElement($new, true);
+                    var $parents = this.$el.parents();
+                    if ($parents.length) {
+                        this.$el.replaceWith(new_el);
+                        this.setElement($parents.first().children('#'+this.model.get('id')), true);
+                        this.delegateEvents();
+                    } else {
+                        this.$el.replaceWith(new_el);
+                        this.setElement(new_el, true);
+                    }
                     return this;
                 },
 
@@ -980,9 +1049,9 @@
                 },
 
                 onOccupantAdded: function (item) {
-                    var view = this.get(item.get('id'));
+                    var view = this.get(item.get('jid'));
                     if (!view) {
-                        view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
+                        view = this.add(item.get('jid'), new converse.ChatRoomOccupantView({model: item}));
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
@@ -994,7 +1063,6 @@
                 parsePresence: function (pres) {
                     var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
                     var data = {
-                        id: id,
                         nick: id,
                         type: pres.getAttribute("type"),
                         states: []
@@ -1030,23 +1098,68 @@
                 },
 
                 updateOccupantsOnPresence: function (pres) {
-                    var occupant;
+                    var occupant, attributes;
                     var data = this.parsePresence(pres);
+                    if (data.type === 'error') {
+                        return true;
+                    }
+                    // If we have a JID, we use that to look up the user,
+                    // otherwise we use the nick. We don't always have both,
+                    // but should have at least one or the other.
+                    var jid = Strophe.getBareJidFromJid(data.jid);
+                    if (jid !== null) {
+                        occupant = this.model.where({'jid': jid}).pop();
+                    } else {
+                        occupant = this.model.where({'nick': data.nick}).pop();
+                    }
+
                     switch (data.type) {
-                        case 'error':
-                            return true;
                         case 'unavailable':
-                            occupant = this.model.get(data.id);
-                            if (occupant) { occupant.destroy(); }
+                            if (occupant) {
+                                occupant[0].destroy();
+                            }
                             break;
                         default:
-                            occupant = this.model.get(data.id);
+                            attributes = _.extend(data, {
+                                'jid': jid ? jid : undefined,
+                                'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined,
+                                'online': true
+                            });
                             if (occupant) {
-                                occupant.save(data);
+                                occupant.save(attributes);
                             } else {
-                                this.model.create(data);
+                                this.model.create(attributes);
                             }
                     }
+                },
+
+                updateOccupantsOnMembersList: function (iq) {
+                    /* <iq from='coven@chat.shakespeare.lit'
+                            id='member3'
+                            to='crone1@shakespeare.lit/desktop'
+                            type='result'>
+                        <query xmlns='http://jabber.org/protocol/muc#admin'>
+                            <item affiliation='member'
+                                jid='hag66@shakespeare.lit'
+                                nick='thirdwitch'
+                                role='participant'/>
+                        </query>
+                        </iq>
+                    */
+                    _.each($(iq).find('query item'), function (item) {
+                        var jid = item.getAttribute('jid');
+                        var occupant = this.model.where({'jid': jid}).pop();
+                        var data = {
+                            'jid': item.getAttribute('jid'),
+                            'affiliation': item.getAttribute('affiliation')
+                        };
+                        if (occupant) {
+                            occupant.save(data);
+                        } else {
+                            this.model.create(data);
+                        }
+                    }.bind(this));
+                    return;
                 },
 
                 initInviteWidget: function () {

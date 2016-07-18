@@ -197,55 +197,11 @@
             };
         };
 
-        this.isLocaleAvailable = function (locale, available) {
-            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-             *
-             * Parameters:
-             *      (Function) available - returns a boolean indicating whether the locale is supported
-             */
-            if (available(locale)) {
-                return locale;
-            } else {
-                var sublocale = locale.split("-")[0];
-                if (sublocale !== locale && available(sublocale)) {
-                    return sublocale;
-                }
-            }
-        };
-
-        this.detectLocale = function (library_check) {
-            /* Determine which locale is supported by the user's system as well
-             * as by the relevant library (e.g. converse.js or moment.js).
-             *
-             * Parameters:
-             *      (Function) library_check - returns a boolean indicating whether the locale is supported
-             */
-            var locale, i;
-            if (window.navigator.userLanguage) {
-                locale = this.isLocaleAvailable(window.navigator.userLanguage, library_check);
-            }
-            if (window.navigator.languages && !locale) {
-                for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                    locale = this.isLocaleAvailable(window.navigator.languages[i], library_check);
-                }
-            }
-            if (window.navigator.browserLanguage && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-            }
-            if (window.navigator.language && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.language, library_check);
-            }
-            if (window.navigator.systemLanguage && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-            }
-            return locale || 'en';
-        };
-
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
-        moment.locale(this.detectLocale(this.isMomentLocale));
-        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)] || {};
+        moment.locale(utils.detectLocale(this.isMomentLocale));
+        this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
 
         // Translation machinery
         // ---------------------

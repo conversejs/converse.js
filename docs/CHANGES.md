@@ -8,6 +8,7 @@
   to make it the same as the method of `ChatRoomView`. [jcbrand]
 - Render error messages received from the server (for undelivered chat
   messages). [jcbrand]
+- Show requesting contacts when filtering by chat state. [jcbrand]
 
 ## 1.0.3 (2016-06-20)
 

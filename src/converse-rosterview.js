@@ -801,9 +801,20 @@
                     } else {
                         q = q.toLowerCase();
                         if (type === 'state') {
-                            matches = this.model.contacts.filter(
-                                utils.contains.not('chat_status', q)
-                            );
+                            if (this.model.get('name') === HEADER_REQUESTING_CONTACTS) {
+                                // When filtering by chat state, we still want to
+                                // show requesting contacts, even though they don't
+                                // have the state in question.
+                                matches = this.model.contacts.filter(
+                                    function (contact) {
+                                        return utils.contains.not('chat_status', q)(contact) && !contact.get('requesting');
+                                    }
+                                );
+                            } else {
+                                matches = this.model.contacts.filter(
+                                    utils.contains.not('chat_status', q)
+                                );
+                            }
                         } else  {
                             matches = this.model.contacts.filter(
                                 utils.contains.not('fullname', q)

@@ -135,6 +135,7 @@
 
         describe("The live filter", $.proxy(function () {
             beforeEach(function () {
+                _clearContacts();
                 test_utils.openControlBox();
                 test_utils.openContactsPanel();
             });
@@ -143,7 +144,6 @@
                 var $filter = converse.rosterview.$('.roster-filter');
                 var names = mock.cur_names;
                 runs(function () {
-                    _clearContacts();
                     converse.rosterview.update(); // XXX: Will normally called as event handler
                 });
                 waits(5); // Needed, due to debounce
@@ -176,7 +176,6 @@
                 var $filter;
                 var $roster;
                 runs(function () {
-                    _clearContacts();
                     converse.roster_groups = true;
                     utils.createGroupedContacts();
                     $filter = converse.rosterview.$('.roster-filter');
@@ -232,7 +231,6 @@
                 var $type;
                 runs(function () {
                     converse.roster_groups = true;
-                    _clearContacts();
                     utils.createGroupedContacts();
                     converse.rosterview.filter_view.delegateEvents();
                     $filter = converse.rosterview.$('.roster-filter');
@@ -276,7 +274,6 @@
 
             it("has a button with which its contents can be cleared", function () {
                 converse.roster_groups = true;
-                _clearContacts();
                 utils.createGroupedContacts();
                 var $filter = converse.rosterview.$('.roster-filter');
                 runs (function () {
@@ -294,10 +291,48 @@
                 });
                 converse.roster_groups = false;
             });
+
+            it("can be used to filter contacts by their chat state", function () {
+                var $filter;
+                var $roster;
+                converse.roster_groups = true;
+                utils.createGroupedContacts();
+                var jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+                converse.roster.get(jid).set('chat_status', 'online');
+
+                runs(function () {
+                    converse.rosterview.filter_view.delegateEvents();
+                    var $type = converse.rosterview.$('.filter-type');
+                    $type.val('state').trigger('change');
+                });
+                waits(300); // Needed, due to debounce in "update" method
+                runs(function () {
+                    $filter = converse.rosterview.$('.state-type');
+                    $roster = converse.rosterview.$roster;
+                    expect($roster.find('dd:visible').length).toBe(15);
+                    expect($roster.find('dt:visible').length).toBe(5);
+                    $filter.val("online");
+                    expect($roster.find('dd:visible').length).toBe(15); // because no change event yet
+                    expect($roster.find('dt:visible').length).toBe(5);  // ditto
+                    $filter.trigger('change');
+                });
+                waits(550); // Needed, due to debounce
+                runs (function () {
+                    expect($roster.find('dd:visible').length).toBe(1);
+                    expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Rinse Sommer');
+                    expect($roster.find('dt:visible').length).toBe(1);
+
+                    var $type = converse.rosterview.$('.filter-type');
+                    $type.val('contacts').trigger('change');
+                    converse.roster_groups = false;
+                });
+            });
+
         }, converse));
 
         describe("A Roster Group", $.proxy(function () {
             beforeEach(function () {
+                _clearContacts();
                 converse.roster_groups = true;
             });
             afterEach(function () {
@@ -306,7 +341,6 @@
 
             it("can be used to organize existing contacts", $.proxy(function () {
                 runs($.proxy(function () {
-                    _clearContacts();
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
                     converse.rosterview.render();
@@ -340,7 +374,6 @@
             it("can share contacts with other roster groups", $.proxy(function () {
                 var groups = ['colleagues', 'friends'];
                 runs($.proxy(function () {
-                    _clearContacts();
                     var i=0;
                     spyOn(converse, 'emit');
                     spyOn(this.rosterview, 'update').andCallThrough();
@@ -403,10 +436,13 @@
             }
 
             function _addContacts () {
-                _clearContacts();
                 // Must be initialized, so that render is called and documentFragment set up.
                 utils.createContacts('pending').openControlBox().openContactsPanel();
             }
+
+            beforeEach(function () {
+                _clearContacts();
+            });
 
             it("can be collapsed under their own header", $.proxy(function () {
                 runs(function () {
@@ -437,24 +473,24 @@
                 }, converse));
             }, converse));
 
-            it("are shown in the roster when show_only_online_users", $.proxy(function () {
+            it("are shown in the roster when show_only_online_users", function () {
                 converse.show_only_online_users = true;
                 runs(function () {
                     _addContacts();
                 });
                 waits(50);
-                spyOn(this.rosterview, 'update').andCallThrough();
-                runs($.proxy(function () {
-                    expect(this.rosterview.$el.is(':visible')).toEqual(true);
-                    expect(this.rosterview.update).toHaveBeenCalled();
-                }, converse));
+                spyOn(converse.rosterview, 'update').andCallThrough();
+                runs(function () {
+                    expect(converse.rosterview.$el.is(':visible')).toEqual(true);
+                    expect(converse.rosterview.update).toHaveBeenCalled();
+                });
                 waits(300); // Needed, due to debounce
-                runs ($.proxy(function () {
-                    expect(this.rosterview.$el.find('dd:visible').length).toBe(3);
-                    expect(this.rosterview.$el.find('dt:visible').length).toBe(1);
-                }, converse));
+                runs (function () {
+                    expect(converse.rosterview.$el.find('dd:visible').length).toBe(3);
+                    expect(converse.rosterview.$el.find('dt:visible').length).toBe(1);
+                });
                 converse.show_only_online_users = false;
-            }, converse));
+            });
 
             it("are shown in the roster when hide_offline_users", $.proxy(function () {
                 converse.hide_offline_users = true;
@@ -541,24 +577,23 @@
                 expect(this.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
             }, converse));
 
-            it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
-                _clearContacts();
+            it("can be added to the roster and they will be sorted alphabetically", function () {
                 var i, t;
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'update').andCallThrough();
+                spyOn(converse.rosterview, 'update').andCallThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
-                    this.roster.create({
+                    converse.roster.create({
                         jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: mock.pend_names[i]
                     });
-                    expect(this.rosterview.update).toHaveBeenCalled();
+                    expect(converse.rosterview.update).toHaveBeenCalled();
                 }
                 // Check that they are sorted alphabetically
-                t = this.rosterview.get('Pending contacts').$el.siblings('dd.pending-xmpp-contact').find('span').text();
+                t = converse.rosterview.get('Pending contacts').$el.siblings('dd.pending-xmpp-contact').find('span').text();
                 expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
-            }, converse));
+            });
 
         }, converse));
 
@@ -569,9 +604,13 @@
             }
 
             var _addContacts = function () {
-                _clearContacts();
                 utils.createContacts('current').openControlBox().openContactsPanel();
             };
+
+            beforeEach(function () {
+                _clearContacts();
+                utils.openControlBox().openContactsPanel();
+            });
 
             it("can be collapsed under their own header", $.proxy(function () {
                 runs(function () {
@@ -685,11 +724,11 @@
                 runs($.proxy(function () {
                     var jid, t;
                     spyOn(converse, 'emit');
-                    spyOn(this.rosterview, 'update').andCallThrough();
+                    spyOn(converse.rosterview, 'update').andCallThrough();
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         this.roster.get(jid).set('chat_status', 'online');
-                        expect(this.rosterview.update).toHaveBeenCalled();
+                        expect(converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
                         t = this.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact.online').find('a.open-chat').text();
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -877,37 +916,37 @@
                 });
             }, converse));
 
-            it("can be added to the roster and they will be sorted alphabetically", $.proxy(function () {
+            it("can be added to the roster and they will be sorted alphabetically", function () {
                 converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var i, children;
                 var names = [];
                 spyOn(converse, 'emit');
-                spyOn(this.rosterview, 'update').andCallThrough();
-                spyOn(this.controlboxtoggle, 'showControlBox').andCallThrough();
+                spyOn(converse.rosterview, 'update').andCallThrough();
+                spyOn(converse.controlboxtoggle, 'showControlBox').andCallThrough();
                 var addName = function (idx, item) {
                     if (!$(item).hasClass('request-actions')) {
                         names.push($(item).text().replace(/^\s+|\s+$/g, ''));
                     }
                 };
                 for (i=0; i<mock.req_names.length; i++) {
-                    this.roster.create({
+                    converse.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
                         ask: null,
                         requesting: true,
                         fullname: mock.req_names[i]
                     });
-                    expect(this.rosterview.update).toHaveBeenCalled();
+                    expect(converse.rosterview.update).toHaveBeenCalled();
                     // When a requesting contact is added, the controlbox must
                     // be opened.
-                    expect(this.controlboxtoggle.showControlBox).toHaveBeenCalled();
+                    expect(converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
                 }
                 // Check that they are sorted alphabetically
-                children = this.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
+                children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
                 names = [];
                 children.each(addName);
                 expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
-            }, converse));
+            });
 
             it("do not have a header if there aren't any", $.proxy(function () {
                 converse.rosterview.model.reset(); // We want to manually create users so that we can spy

@@ -256,26 +256,6 @@
                     converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
-                updateMembersList: function () {
-                    /* Update the room's member-lists by sending a delta of
-                     * changed memberships (for all affiliations).
-                     */
-                    var iq = $iq({'to':this.model.get('jid'), 'type':'set', 'from':converse.connection.jid})
-                        .c("query", {'xmlns': Strophe.NS.MUC_ADMIN});
-                    this.occupantsview.model.each(function (occupant) {
-                        var affiliation = occupant.get('affiliation');
-                        iq.c('item', {
-                                'affiliation': affiliation !== 'none' ? affiliation : 'member',
-                                'jid': Strophe.getBareJidFromJid(occupant.get('jid'))
-                            });
-                    });
-                    return converse.connection.sendIQ(
-                        iq.tree(),
-                        this.onMembersListChanged.bind(this),
-                        this.onMembersListChangedError.bind(this)
-                    );
-                },
-
                 fetchMembersList: function (affiliation) {
                     /* Fetch the member-list for a particular affiliation.
                      *
@@ -294,6 +274,33 @@
                         this.occupantsview.updateOccupantsOnMembersList.bind(this.occupantsview),
                         _.bind(this.onMembersListError, this, affiliation)
                     );
+                },
+
+                updateMembersList: function (members) {
+                    /* Update the room's member-lists by sending a delta of
+                     * changed memberships (for all affiliations).
+                     */
+                    var iq = $iq({'to':this.model.get('jid'), 'type':'set', 'from':converse.connection.jid})
+                        .c("query", {'xmlns': Strophe.NS.MUC_ADMIN});
+                    _.each(members, function (member) {
+                        iq.c('item', {
+                                'affiliation': member.affiliation !== 'none' ? member.affiliation : 'member',
+                                'jid': Strophe.getBareJidFromJid(member.jid)
+                            });
+                    });
+                    return converse.connection.sendIQ(
+                        iq.tree(),
+                        this.onMembersListChanged.bind(this),
+                        this.onMembersListChangedError.bind(this)
+                    );
+                },
+
+                onMembersListChanged: function (stanza) {
+                    converse.log("The membership-list for "+this.model.get('jid')+" has been succesfully updated");
+                },
+
+                onMembersListChangedError: function (stanza) {
+                    this.showStatusNotification(__("An error occurred while trying to update the members list."));
                 },
 
                 onMembersListError: function (affiliation, iq) {
@@ -335,6 +342,10 @@
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
+
+                    // We also add the invitee to the room's member-list.
+                    this.updateMembersList([{'jid': recipient, 'affiliation': 'member'}]);
+
                     var invitation = $msg({
                         from: converse.connection.jid,
                         to: recipient,
@@ -667,15 +678,14 @@
                 },
 
                 onConfigSaved: function (stanza) {
-                    // this.updateMembersList();
-                },
-
-                onMembersListChanged: function (stanza) {
-                    converse.log("The membership-list for "+this.model.get('jid')+" has been succesfully updated");
-                },
-
-                onMembersListChangedError: function (stanza) {
-                    this.showStatusNotification(__("An error occurred while trying to update the members list."));
+                    var members = [];
+                    this.occupantsview.model.each(function (occupant) {
+                        members.push({
+                            'affiliation': affiliation !== 'none' ? affiliation : 'member',
+                            'jid': Strophe.getBareJidFromJid(occupant.get('jid'))
+                        });
+                    });
+                    // this.updateMembersList(members);
                 },
 
                 onErrorConfigSaved: function (stanza) {

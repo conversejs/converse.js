@@ -2040,9 +2040,12 @@
             padding: 2px 5px;
             text-overflow: ellipsis;
             white-space: nowrap;
+            color: #A8ABA1;
             width: 100px; }
-            #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.moderator {
-              color: #D24E2B; }
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.online {
+              color: #1A9707; }
+              #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.online.moderator {
+                color: #D24E2B; }
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;
         border-bottom-left-radius: 4px;

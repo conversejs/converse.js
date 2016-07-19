@@ -678,14 +678,20 @@
                 },
 
                 onConfigSaved: function (stanza) {
+                    /*
+                     * When changing a room to members-only, do we want to then
+                     * add all current users to the membership list?
+                     *
                     var members = [];
                     this.occupantsview.model.each(function (occupant) {
+                        var affiliation = occupant.get('affiliation');
                         members.push({
                             'affiliation': affiliation !== 'none' ? affiliation : 'member',
                             'jid': Strophe.getBareJidFromJid(occupant.get('jid'))
                         });
                     });
-                    // this.updateMembersList(members);
+                    this.updateMembersList(members);
+                    */
                 },
 
                 onErrorConfigSaved: function (stanza) {
@@ -995,10 +1001,14 @@
             });
 
             converse.ChatRoomOccupant = Backbone.Model.extend({
-                initialize: function () {
-                    this.set({'id': converse.connection.getUniqueId()});
+                initialize: function (attributes) {
+                    this.set(_.extend({
+                        'id': converse.connection.getUniqueId(),
+                        'online': false
+                    }, attributes));
                 }
             });
+
             converse.ChatRoomOccupantView = Backbone.View.extend({
                 tagName: 'li',
                 initialize: function () {
@@ -1125,8 +1135,10 @@
 
                     switch (data.type) {
                         case 'unavailable':
-                            if (occupant) {
-                                occupant[0].destroy();
+                            if (_.contains(['owner', 'admin', 'member'], occupant.get('affiliation'))) {
+                                occupant.save({'online': false});
+                            } else {
+                                occupant.destroy();
                             }
                             break;
                         default:

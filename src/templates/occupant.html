@@ -1,4 +1,4 @@
-<li class="{{role}}" id="{{id}}"
+<li class="{{role}} {[ if (online) { ]} online {[ } ]}" id="{{id}}"
     {[ if (role === "moderator") { ]}
        title="{{desc_moderator}}"
     {[ } ]}
@@ -7,5 +7,4 @@
     {[ } ]}
     {[ if (role === "visitor") { ]}
        title="{{desc_visitor}}"
-    {[ } ]}
->{{nick}}</li>
+    {[ } ]}>{{nick}}</li>

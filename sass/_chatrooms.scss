@@ -101,9 +101,13 @@
                             padding: 2px 5px;
                             text-overflow: ellipsis;
                             white-space: nowrap;
+                            color: $light-text-color;
                             width: 100px;
-                            &.moderator {
-                                color: $moderator-color;
+                            &.online {
+                                color: $online-color;
+                                &.moderator {
+                                    color: $moderator-color;
+                                }
                             }
                         }
                     }

@@ -1069,9 +1069,9 @@
                 },
 
                 onOccupantAdded: function (item) {
-                    var view = this.get(item.get('jid'));
+                    var view = this.get(item.get('id'));
                     if (!view) {
-                        view = this.add(item.get('jid'), new converse.ChatRoomOccupantView({model: item}));
+                        view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
@@ -1117,22 +1117,30 @@
                     return data;
                 },
 
+                findOccupant: function (data) {
+                    /* Try to find an existing occupant based on the passed in
+                     * data object.
+                     *
+                     * If we have a JID, we use that as lookup variable,
+                     * otherwise we use the nick. We don't always have both,
+                     * but should have at least one or the other.
+                     */
+                    var jid = Strophe.getBareJidFromJid(data.jid);
+                    if (jid !== null) {
+                        return this.model.where({'jid': jid}).pop();
+                    } else {
+                        return this.model.where({'nick': data.nick}).pop();
+                    }
+                },
+
                 updateOccupantsOnPresence: function (pres) {
-                    var occupant, attributes;
+                    var attributes;
                     var data = this.parsePresence(pres);
+                    var jid = Strophe.getBareJidFromJid(data.jid);
                     if (data.type === 'error') {
                         return true;
                     }
-                    // If we have a JID, we use that to look up the user,
-                    // otherwise we use the nick. We don't always have both,
-                    // but should have at least one or the other.
-                    var jid = Strophe.getBareJidFromJid(data.jid);
-                    if (jid !== null) {
-                        occupant = this.model.where({'jid': jid}).pop();
-                    } else {
-                        occupant = this.model.where({'nick': data.nick}).pop();
-                    }
-
+                    var occupant = this.findOccupant(data);
                     switch (data.type) {
                         case 'unavailable':
                             if (_.contains(['owner', 'admin', 'member'], occupant.get('affiliation'))) {
@@ -1156,18 +1164,21 @@
                 },
 
                 updateOccupantsOnMembersList: function (iq) {
-                    /* <iq from='coven@chat.shakespeare.lit'
-                            id='member3'
-                            to='crone1@shakespeare.lit/desktop'
-                            type='result'>
-                        <query xmlns='http://jabber.org/protocol/muc#admin'>
-                            <item affiliation='member'
-                                jid='hag66@shakespeare.lit'
-                                nick='thirdwitch'
-                                role='participant'/>
-                        </query>
-                        </iq>
-                    */
+                    /* Create occupants based upon a received IQ stanza
+                     * containing a member-list.
+                     *
+                     * <iq from='coven@chat.shakespeare.lit'
+                     *      id='member3'
+                     *      to='crone1@shakespeare.lit/desktop'
+                     *      type='result'>
+                     *  <query xmlns='http://jabber.org/protocol/muc#admin'>
+                     *      <item affiliation='member'
+                     *          jid='hag66@shakespeare.lit'
+                     *          nick='thirdwitch'
+                     *          role='participant'/>
+                     *  </query>
+                     *  </iq>
+                     */
                     _.each($(iq).find('query item'), function (item) {
                         var jid = item.getAttribute('jid');
                         var occupant = this.model.where({'jid': jid}).pop();

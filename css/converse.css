@@ -759,7 +759,7 @@
     margin: 0.5em 0 0.2em; }
   #conversejs .pure-form fieldset {
     margin: 0;
-    padding: 0.35em 0 0.75em;
+    padding: 0.35em 0 0.35em;
     border: 0; }
   #conversejs .pure-form legend {
     display: block;
@@ -1951,6 +1951,9 @@
   #conversejs #converse-roster span.pending-contact-name {
     width: 80%; }
 
+#conversejs .add-chatroom input[type="submit"],
+#conversejs .add-chatroom input[type="button"] {
+  margin: 0.3em 0; }
 #conversejs .chat-head-chatroom {
   background-color: #E76F51; }
   #conversejs .chat-head-chatroom .chatroom-topic {

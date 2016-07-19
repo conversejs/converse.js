@@ -1,4 +1,11 @@
 #conversejs {
+    .add-chatroom {
+        input[type="submit"],
+        input[type="button"] {
+            margin: 0.3em 0;
+        }
+    }
+
     .chat-head-chatroom {
         background-color: $chatroom-head-color;
 

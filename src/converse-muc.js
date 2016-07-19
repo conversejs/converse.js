@@ -204,7 +204,13 @@
                     this.occupantsview.model.fetch({add:true});
                     _.each(['member', 'owner', 'admin'], this.fetchMembersList.bind(this));
 
-                    this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                    var nick = this.model.get('nick');
+                    if (!nick) {
+                        this.renderNicknameForm();
+                    } else {
+                        this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                    }
+
                     this.fetchMessages().insertIntoDOM();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
@@ -725,11 +731,39 @@
                     );
                 },
 
+                submitNickname: function (ev) {
+                    ev.preventDefault();
+                    var $nick = this.$el.find('input[name=nick]');
+                    var nick = $nick.val();
+                    if (!nick) {
+                        $nick.addClass('error');
+                        return;
+                    }
+                    else {
+                        $nick.removeClass('error');
+                    }
+                    this.model.save({'nick': nick});
+                    this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
+                    this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                },
+
+                renderNicknameForm: function () {
+                    this.$('.chatroom-body').children().addClass('hidden');
+                    this.$('span.centered.spinner').remove();
+                    this.$('.chatroom-body').append(
+                        converse.templates.chatroom_nickname_form({
+                            heading: __('Please choose your nickname'),
+                            label_nickname: __('Nickname'),
+                            label_join: __('Enter room')
+                        }));
+                    this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
+                },
+
                 submitPassword: function (ev) {
                     ev.preventDefault();
                     var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                     this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
-                    this.join(password);
+                    this.join(password, {'maxstanzas': converse.muc_history_max_stanzas});
                 },
 
                 renderPasswordForm: function () {
@@ -909,6 +943,23 @@
                     }
                 },
 
+                hideSpinner: function () {
+                    /* Check if the spinner is being shown and if so, hide it.
+                     * Also make sure then that the chat area and occupants
+                     * list are both visible.
+                     */
+                    var that = this;
+                    var $spinner = this.$el.find('.spinner');
+                    if ($spinner.length) {
+                        $spinner.hide(function () {
+                            $(this).remove();
+                            that.$el.find('.chat-area').removeClass('hidden');
+                            that.$el.find('.occupants').removeClass('hidden');
+                        });
+                    }
+                    return this;
+                },
+
                 onChatRoomPresence: function (pres) {
                     var $presence = $(pres), is_self;
                     var nick = this.model.get('nick');
@@ -921,7 +972,7 @@
                         if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                             this.model.set('connection_status', Strophe.Status.CONNECTED);
                         }
-                        this.showStatusMessages(pres, is_self);
+                        this.hideSpinner().showStatusMessages(pres, is_self);
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);
                 },
@@ -1408,12 +1459,7 @@
                     var name, $name,
                         server, $server,
                         jid,
-                        $nick = this.$el.find('input.new-chatroom-nick'),
-                        nick = $nick.val(),
                         chatroom;
-
-                    if (!nick) { $nick.addClass('error'); }
-                    else { $nick.removeClass('error'); }
 
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
@@ -1435,12 +1481,10 @@
                             return;
                         }
                     }
-                    if (!nick) { return; }
                     chatroom = converse.chatboxviews.showChat({
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                        'nick': nick,
                         'type': 'chatroom',
                         'box_id': b64_sha1(jid)
                     });
@@ -1498,7 +1542,7 @@
                                 [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
                                 chatroom.get('connection_status'))
                             ) {
-                        converse.chatboxviews.get(room_jid).join(null);
+                        converse.chatboxviews.get(room_jid).join(null, {'maxstanzas': converse.muc_history_max_stanzas});
                     }
                 }
             };

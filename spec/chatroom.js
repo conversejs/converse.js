@@ -216,7 +216,7 @@
                     }).nodeTree;
                     this.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($occupants.find('li').length).toBe(i);
+                    expect($occupants.find('li.online').length).toBe(i);
                 }
             }.bind(converse));
 
@@ -239,7 +239,7 @@
                 var occupant = view.$el.find('.occupant-list').find('li');
                 expect(occupant.length).toBe(1);
                 expect($(occupant).text()).toBe("moderatorman");
-                expect($(occupant).attr('class')).toBe('moderator');
+                expect($(occupant).attr('class').indexOf('moderator')).not.toBe(-1);
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }.bind(converse));
 
@@ -471,6 +471,8 @@
                 var $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("oldnick");
+                expect($occupants.children().first().hasClass('online')).toBe(true);
+
                 expect($chat_content.find('div.chat-info').length).toBe(1);
                 expect($chat_content.find('div.chat-info').html()).toBe(__(view.newNicknameMessages["210"], "oldnick"));
 
@@ -494,8 +496,13 @@
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
+
+                // The occupant is still listed (because they have affiliation
+                // of "member"), but they don't have the "online" class
+                // anymore.
                 $occupants = view.$('.occupant-list');
-                expect($occupants.children().length).toBe(0);
+                expect($occupants.children().length).toBe(1);
+                expect($occupants.children().first().hasClass('online')).toBe(false);
 
                 presence = $pres().attrs({
                         from:'lounge@localhost/newnick',

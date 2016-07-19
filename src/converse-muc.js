@@ -1143,10 +1143,12 @@
                     var occupant = this.findOccupant(data);
                     switch (data.type) {
                         case 'unavailable':
-                            if (_.contains(['owner', 'admin', 'member'], occupant.get('affiliation'))) {
-                                occupant.save({'online': false});
-                            } else {
-                                occupant.destroy();
+                            if (occupant) {
+                                if (_.contains(['owner', 'admin', 'member'], occupant.get('affiliation'))) {
+                                    occupant.save({'online': false});
+                                } else {
+                                    occupant.destroy();
+                                }
                             }
                             break;
                         default:

@@ -206,9 +206,9 @@
 
                     var nick = this.model.get('nick');
                     if (!nick) {
-                        this.renderNicknameForm();
+                        this.checkForReservedNick();
                     } else {
-                        this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                        this.join(nick);
                     }
 
                     this.fetchMessages().insertIntoDOM();
@@ -578,28 +578,25 @@
                 },
 
                 getRoomJIDAndNick: function (nick) {
-                    nick = nick || this.model.get('nick');
+                    if (nick) {
+                        this.model.set({'nick': nick});
+                    } else {
+                        nick = this.model.get('nick');
+                    }
                     var room = this.model.get('jid');
                     var node = Strophe.getNodeFromJid(room);
                     var domain = Strophe.getDomainFromJid(room);
                     return node + "@" + domain + (nick !== null ? "/" + nick : "");
                 },
 
-                join: function (password, history_attrs, extended_presence) {
+                join: function (nick, password) {
                     var stanza = $pres({
-                        from: converse.connection.jid,
-                        to: this.getRoomJIDAndNick()
-                    }).c("x", {
-                        xmlns: Strophe.NS.MUC
-                    });
-                    if (typeof history_attrs === "object" && Object.keys(history_attrs).length) {
-                        stanza = stanza.c("history", history_attrs).up();
-                    }
+                        'from': converse.connection.jid,
+                        'to': this.getRoomJIDAndNick(nick)
+                    }).c("x", {'xmlns': Strophe.NS.MUC})
+                      .c("history", {'maxstanzas': converse.muc_history_max_stanzas}).up();
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
-                    }
-                    if (typeof extended_presence !== "undefined" && extended_presence !== null) {
-                        stanza.up.cnode(extended_presence);
                     }
                     if (!this.handler) {
                         this.handler = converse.connection.addHandler(this.handleMUCStanza.bind(this));
@@ -742,9 +739,45 @@
                     else {
                         $nick.removeClass('error');
                     }
-                    this.model.save({'nick': nick});
                     this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
-                    this.join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                    this.join(nick);
+                },
+
+                checkForReservedNick: function () {
+                    /* User service-discovery to as the XMPP server whether
+                     * this user has a reserved nickname for this room.
+                     * If so, we'll use that, otherwise we render the nickname
+                     * form.
+                     */
+                    this.showSpinner();
+                    converse.connection.sendIQ(
+                        $iq({
+                            'to': this.model.get('jid'),
+                            'from': converse.connection.jid,
+                            'type': "get"
+                        }).c("query", {
+                            'xmlns': Strophe.NS.DISCO_INFO,
+                            'node': 'x-roomuser-item'
+                        }),
+                        this.onNickNameFound.bind(this),
+                        this.renderNicknameForm.bind(this)
+                    );
+                },
+
+                onNickNameFound: function (iq) {
+                    /* We've received an IQ response from the server which
+                     * might contain the user's reserved nickname.
+                     * If no nickname is found, we render a form for them to
+                     * specify one.
+                     */
+                    var nick = $(iq)
+                        .find('query[node="x-roomuser-item"] identity')
+                        .attr('name');
+                    if (!nick) {
+                        this.renderNicknameForm();
+                    } else {
+                        this.join(nick);
+                    }
                 },
 
                 renderNicknameForm: function () {
@@ -763,7 +796,7 @@
                     ev.preventDefault();
                     var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                     this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
-                    this.join(password, {'maxstanzas': converse.muc_history_max_stanzas});
+                    this.join(this.model.get('nick'), password);
                 },
 
                 renderPasswordForm: function () {
@@ -847,7 +880,7 @@
                 },
 
                 newNicknameMessages: {
-                    210: ___('Your nickname has been automatically changed to: <strong>%1$s</strong>'),
+                    210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
                     303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
                 },
 
@@ -941,6 +974,11 @@
                             this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
                         }
                     }
+                },
+
+                showSpinner: function () {
+                    this.$('.chatroom-body').children().addClass('hidden');
+                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
                 },
 
                 hideSpinner: function () {
@@ -1542,7 +1580,7 @@
                                 [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
                                 chatroom.get('connection_status'))
                             ) {
-                        converse.chatboxviews.get(room_jid).join(null, {'maxstanzas': converse.muc_history_max_stanzas});
+                        converse.chatboxviews.get(room_jid).join();
                     }
                 }
             };

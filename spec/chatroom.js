@@ -12,6 +12,7 @@
     );
 } (this, function ($, _, mock, test_utils, utils) {
     var $pres = converse_api.env.$pres;
+    var $iq = converse_api.env.$iq;
     var $msg = converse_api.env.$msg;
     var Strophe = converse_api.env.Strophe;
 
@@ -191,7 +192,7 @@
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
 
-                    this.connection._dataRecv(test_utils.createRequest(presence));
+                    converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
                     expect($occupants.find('li').length).toBe(1+i);
                     expect($($occupants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
@@ -214,7 +215,7 @@
                         jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                         role: 'none'
                     }).nodeTree;
-                    this.connection._dataRecv(test_utils.createRequest(presence));
+                    converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
                     expect($occupants.find('li.online').length).toBe(i);
                 }
@@ -242,6 +243,78 @@
                 expect($(occupant).attr('class').indexOf('moderator')).not.toBe(-1);
                 expect($(occupant).attr('title')).toBe('This user is a moderator');
             }.bind(converse));
+
+            it("will use the user's reserved nickname, if it exists", function () {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
+                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'join').andCallThrough();
+
+                /* <iq from='hag66@shakespeare.lit/pda'
+                 *     id='getnick1'
+                 *     to='coven@chat.shakespeare.lit'
+                 *     type='get'>
+                 * <query xmlns='http://jabber.org/protocol/disco#info'
+                 *         node='x-roomuser-item'/>
+                 * </iq>
+                 */
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                        "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
+                );
+
+                /* <iq from='coven@chat.shakespeare.lit'
+                 *     id='getnick1'
+                 *     to='hag66@shakespeare.lit/pda'
+                 *     type='result'>
+                 *     <query xmlns='http://jabber.org/protocol/disco#info'
+                 *             node='x-roomuser-item'>
+                 *         <identity
+                 *             category='conference'
+                 *             name='thirdwitch'
+                 *             type='text'/>
+                 *     </query>
+                 * </iq>
+                 */
+                var stanza = $iq({
+                    'type': 'result',
+                    'id': IQ_id,
+                    'from': view.model.get('jid'),
+                    'to': converse.connection.jid 
+                }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
+                  .c('identity', {'category': 'conference', 'name': 'thirdwitch', 'type': 'text'});
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(view.join).toHaveBeenCalled();
+
+                // The user has just entered the room (because join was called)
+                // and receives their own presence from the server.
+                // See example 24:
+                // http://xmpp.org/extensions/xep-0045.html#enter-pres
+                var presence = $pres({
+                        to:'dummy@localhost/resource',
+                        from:'lounge@localhost/thirdwitch',
+                        id:'DC352437-C019-40EC-B590-AF29E879AF97'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                  .c('item').attrs({
+                      affiliation: 'member',
+                      jid: 'dummy@localhost/resource',
+                      role: 'occupant'
+                  }).up()
+                  .c('status').attrs({code:'110'}).up()
+                  .c('status').attrs({code:'210'}).nodeTree;
+
+                converse.connection._dataRecv(test_utils.createRequest(presence));
+                var info_text = view.$el.find('.chat-content .chat-info').text();
+                expect(info_text).toBe('Your nickname has been automatically set to: thirdwitch');
+            });
 
             it("allows the user to invite their roster contacts to enter the chat room", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');

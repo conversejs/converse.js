@@ -171,7 +171,7 @@
             });
 
             it("shows users currently present in the room", function () {
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                 var name;
                 var view = this.chatboxviews.get('lounge@localhost'),
                     $occupants = view.$('.occupant-list');
@@ -194,9 +194,9 @@
 
                     converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($occupants.find('li').length).toBe(1+i);
-                    expect($($occupants.find('li')[i]).text()).toBe(mock.chatroom_names[i]);
-                    expect($($occupants.find('li')[i]).hasClass('moderator')).toBe(role === "moderator");
+                    expect($occupants.find('li').length).toBe(2+i);
+                    expect($($occupants.find('li')[i+1]).text()).toBe(mock.chatroom_names[i]);
+                    expect($($occupants.find('li')[i+1]).hasClass('moderator')).toBe(role === "moderator");
                 }
 
                 // Test users leaving the room
@@ -217,13 +217,13 @@
                     }).nodeTree;
                     converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($occupants.find('li.online').length).toBe(i);
+                    expect($occupants.find('li.online').length).toBe(i+1);
                 }
             }.bind(converse));
 
             it("indicates moderators by means of a special css class and tooltip", function () {
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var view = this.chatboxviews.get('lounge@localhost');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
 
                 var presence = $pres({
                         to:'dummy@localhost/pda',
@@ -236,13 +236,14 @@
                 }).up()
                 .c('status').attrs({code:'110'}).nodeTree;
 
-                this.connection._dataRecv(test_utils.createRequest(presence));
+                converse.connection._dataRecv(test_utils.createRequest(presence));
                 var occupant = view.$el.find('.occupant-list').find('li');
-                expect(occupant.length).toBe(1);
-                expect($(occupant).text()).toBe("moderatorman");
-                expect($(occupant).attr('class').indexOf('moderator')).not.toBe(-1);
-                expect($(occupant).attr('title')).toBe('This user is a moderator');
-            }.bind(converse));
+                expect(occupant.length).toBe(2);
+                expect($(occupant).first().text()).toBe("dummy");
+                expect($(occupant).last().text()).toBe("moderatorman");
+                expect($(occupant).last().attr('class').indexOf('moderator')).not.toBe(-1);
+                expect($(occupant).last().attr('title')).toBe('This user is a moderator');
+            });
 
             it("will use the user's reserved nickname, if it exists", function () {
                 var sent_IQ, IQ_id;
@@ -269,7 +270,6 @@
                         "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
                 );
-
                 /* <iq from='coven@chat.shakespeare.lit'
                  *     id='getnick1'
                  *     to='hag66@shakespeare.lit/pda'
@@ -397,7 +397,7 @@
             }.bind(converse));
 
             it("shows sent groupchat messages", function () {
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                 spyOn(converse, 'emit');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
@@ -405,7 +405,11 @@
                 view.$el.find('.chat-textarea').text(text);
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                 expect(converse.emit).toHaveBeenCalledWith('messageSend', text);
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('.chat-message').length).toBe(1);
 
+                // Let's check that if we receive the same message again, it's
+                // not shown.
                 var message = $msg({
                     from: 'lounge@localhost/dummy',
                     to: 'dummy@localhost.com',
@@ -413,7 +417,6 @@
                     id: view.model.messages.at(0).get('msgid')
                 }).c('body').t(text);
                 view.onChatRoomMessage(message.nodeTree);
-                var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-msg-content').last().text()).toBe(text);
                 // We don't emit an event if it's our own message
@@ -422,7 +425,7 @@
 
             it("will cause the chat area to be scrolled down only if it was at the bottom already", function () {
                 var message = 'This message is received while the chat area is scrolled up';
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'scrollDown').andCallThrough();
                 runs(function () {
@@ -465,6 +468,8 @@
             });
 
             it("shows received chatroom subject messages", function () {
+                test_utils.openAndEnterChatRoom('jdev', 'conference.jabber.org', 'jc');
+
                 var text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
                 var stanza = Strophe.xmlHtmlNode(
                     '<message xmlns="jabber:client" to="jc@opkode.com/converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">'+
@@ -472,7 +477,6 @@
                     '    <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>'+
                     '    <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>'+
                     '</message>').firstChild;
-                test_utils.openChatRoom('jdev', 'conference.jabber.org', 'jc');
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 var view = converse.chatboxviews.get('jdev@conference.jabber.org');
                 var $chat_content = view.$el.find('.chat-content');
@@ -517,7 +521,7 @@
                  *  </presence>
                  */
                 var __ = utils.__.bind(converse);
-                test_utils.openChatRoom('lounge', 'localhost', 'oldnick');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'oldnick');
                 var view = this.chatboxviews.get('lounge@localhost');
                 var $chat_content = view.$el.find('.chat-content');
                 spyOn(view, 'onChatRoomPresence').andCallThrough();
@@ -613,7 +617,7 @@
                  *  </x>
                  *  </presence>
                  */
-                test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                 var presence = $pres().attrs({
                         from:'lounge@localhost/dummy',
                         to:'dummy@localhost/pda',

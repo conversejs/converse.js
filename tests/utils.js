@@ -7,6 +7,8 @@
             return factory($, mock);
         });
 }(this, function ($, mock) {
+    var $pres = converse_api.env.$pres;
+    var $iq = converse_api.env.$iq;
     var Strophe = converse_api.env.Strophe;
     var utils = {};
 
@@ -111,6 +113,41 @@
         roomspanel.$el.find('input.new-chatroom-server').val(server);
         roomspanel.$el.find('form').submit();
         this.closeControlBox();
+    };
+
+    utils.openAndEnterChatRoom = function (room, server, nick) {
+        var IQ_id, sendIQ = converse.connection.sendIQ;
+        spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+            IQ_id = sendIQ.bind(this)(iq, callback, errback);
+        });
+
+        utils.openChatRoom(room, server);
+        var view = converse.chatboxviews.get(room+'@'+server);
+
+        // The XMPP server returns the reserved nick for this user.
+        var stanza = $iq({
+            'type': 'result',
+            'id': IQ_id,
+            'from': view.model.get('jid'),
+            'to': converse.connection.jid 
+        }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
+            .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
+        converse.connection._dataRecv(utils.createRequest(stanza));
+        // The user has just entered the room (because join was called)
+        // and receives their own presence from the server.
+        // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
+        var presence = $pres({
+                to: converse.connection.jid,
+                from: room+'@'+server+'/'+nick,
+                id: 'DC352437-C019-40EC-B590-AF29E879AF97'
+        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+            .c('item').attrs({
+                affiliation: 'member',
+                jid: converse.bare_jid,
+                role: 'occupant'
+            }).up()
+            .c('status').attrs({code:'110'});
+        converse.connection._dataRecv(utils.createRequest(presence));
     };
 
     utils.removeRosterContacts = function () {

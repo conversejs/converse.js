@@ -46,7 +46,7 @@
                     });
 
                     it("is shown when you are mentioned in a chat room", function () {
-                        test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                        test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                         var view = converse.chatboxviews.get('lounge@localhost');
                         if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                         var no_notification = false;
@@ -104,7 +104,7 @@
             describe("A notification sound", function () {
 
                 it("is played when the current user is mentioned in a chat room", function () {
-                    test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                     converse.play_sounds = true;
                     spyOn(converse, 'playSoundNotification');
                     var view = this.chatboxviews.get('lounge@localhost');

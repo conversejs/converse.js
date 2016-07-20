@@ -579,7 +579,7 @@
 
                 getRoomJIDAndNick: function (nick) {
                     if (nick) {
-                        this.model.set({'nick': nick});
+                        this.model.save({'nick': nick});
                     } else {
                         nick = this.model.get('nick');
                     }

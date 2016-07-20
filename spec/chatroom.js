@@ -899,7 +899,8 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
                 view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname is already taken");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe(
+                        "The nickname you chose is reserved or currently in use, please choose a different one.");
             }.bind(converse));
 
             it("will show an error message if the room doesn't yet exist", function () {

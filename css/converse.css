@@ -2061,6 +2061,9 @@
         height: calc(100% - 55px);
         overflow-y: auto;
         position: absolute; }
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message {
+          font-size: 90%;
+          color: #D24E2B; }
   #conversejs .chatroom .chat-textarea {
     border-bottom-right-radius: 0; }
   #conversejs .chatroom .room-invite {

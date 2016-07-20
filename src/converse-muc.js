@@ -780,14 +780,18 @@
                     }
                 },
 
-                renderNicknameForm: function () {
+                renderNicknameForm: function (message) {
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
+                    if (typeof message !== "string") {
+                        message = '';
+                    }
                     this.$('.chatroom-body').append(
                         converse.templates.chatroom_nickname_form({
                             heading: __('Please choose your nickname'),
                             label_nickname: __('Nickname'),
-                            label_join: __('Enter room')
+                            label_join: __('Enter room'),
+                            validation_message: message
                         }));
                     this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
                 },
@@ -966,8 +970,7 @@
                         } else if ($error.find('not-acceptable').length) {
                             this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
                         } else if ($error.find('conflict').length) {
-                            this.showDisconnectMessage(__("Your nickname is already taken"));
-                            // TODO: give user the option of choosing a different nickname
+                            this.renderNicknameForm(__("The nickname you chose is reserved or currently in use, please choose a different one."));
                         } else if ($error.find('item-not-found').length) {
                             this.showDisconnectMessage(__("This room does not (yet) exist"));
                         } else if ($error.find('service-unavailable').length) {

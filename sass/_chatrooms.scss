@@ -130,6 +130,11 @@
                     @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;
+
+                    .validation-message {
+                        font-size: 90%;
+                        color: $error-color;
+                    }
                 }
             }
         }

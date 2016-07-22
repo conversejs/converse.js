@@ -8,14 +8,14 @@
     <meta name="description" content="Converse.js: A free chat client for your website" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
-    <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <script src="components/requirejs/require.js"></script>
+    <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="../components/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../components/fontawesome/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../css/theme.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../css/converse.css" />
+    <script src="../components/requirejs/require.js"></script>
     <script src="config.js"></script>
-    <script src="converse.js"></script>
+    <script src="../converse.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -39,7 +39,7 @@
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
                         <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
-                        <p class="intro-text">Developer page.</p>
+                        <p class="intro-text">Anonymous login demo</p>
                         <p class="intro-text">
                             Converse.js will only work on this page if you have 
                             <a href="https://conversejs.org/docs/html/development.html">set up the development environment</a>.
@@ -54,27 +54,20 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
-            auto_away: 300,
-            i18n: locales['af'],
+            authentication: 'anonymous',
+            auto_login: true,
             auto_join_rooms: [
-                'discuss@conference.conversejs.org',
-                'prosody@conference.prosody.im',
-                'jdev@conference.jabber.org'
+                'anonymous@conference.nomnom.im',
             ],
             notify_all_room_messages: [
-                'discuss@conference.conversejs.org'
+                'anonymous@conference.nomnom.im',
             ],
-            auto_reconnect: true,
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            jid: 'nomnom.im',
             keepalive: true,
-            message_carbons: true,
-            message_archiving: 'always',
             play_sounds: true,
-            roster_groups: true,
             show_controlbox_by_default: true,
             strict_plugin_dependencies: false,
-            chatstate_notification_blacklist: ['mulles@movim.eu'],
-            xhr_user_search: false,
             debug: true
         });
     });

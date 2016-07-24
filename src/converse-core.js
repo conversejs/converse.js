@@ -262,9 +262,10 @@
         if (this.prebind === true) { this.authentication = converse.PREBIND; }
 
         if (this.authentication === converse.ANONYMOUS) {
-            if (!this.jid) {
-                throw("Config Error: you need to provide the server's domain via the " +
-                        "'jid' option when using anonymous authentication.");
+            if (this.auto_login && !this.jid) {
+                throw new Error("Config Error: you need to provide the server's " +
+                      "domain via the 'jid' option when using anonymous " +
+                      "authentication with auto_login.");
             }
         }
 
@@ -1724,6 +1725,12 @@
                 this.password = credentials.password;
             }
             if (this.authentication === converse.ANONYMOUS) {
+                if (!this.jid) {
+                    throw new Error("Config Error: when using anonymous login " +
+                        "you need to provide the server's domain via the 'jid' option. " +
+                        "Either when calling converse.initialize, or when calling " +
+                        "converse.user.login.");
+                }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === converse.LOGIN) {
                 if (!this.password) {
@@ -1772,7 +1779,7 @@
         };
 
         this.logIn = function (credentials) {
-            if (credentials) {
+            if (credentials || this.authentication === converse.ANONYMOUS) {
                 // When credentials are passed in, they override prebinding
                 // or credentials fetching via HTTP
                 this.autoLogin(credentials);

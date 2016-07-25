@@ -581,9 +581,11 @@ message_archiving
 
 * Default:  ``never``
 
-Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
+Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
+whereby messages are archived in the XMPP server for later retrieval. Note, your XMPP server must support
+XEP-0313 MAM for this to work.
 
-This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+This option sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
 
 ``roster`` means that only messages to and from JIDs in your roster will be
 archived. The other two values are self-explanatory.

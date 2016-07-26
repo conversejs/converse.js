@@ -44,8 +44,9 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Integration into other frameworks
 
+-   **[Ruby on Rails](http://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)
 -   **[Django](http://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
--   **[Plone](http://plone.org)**: [collective.xmpp.chat](http://github.com/collective/collective.xmpp.chat)
+-   **[Plone](http://plone.com)**: [collective.xmpp.chat](http://github.com/collective/collective.xmpp.chat)
 -   **[Roundcube](http://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/priyadi/roundcube-converse.js-xmpp-plugin)
 -   **[Wordpress](http://wordpress.org)**: [ConverseJS](http://wordpress.org/plugins/conversejs)
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)

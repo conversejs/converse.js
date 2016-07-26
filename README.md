@@ -11,6 +11,7 @@ to, either your own, or a public one.
 ## Demo
 
 A live demo is available at [https://conversejs.org](https://conversejs.org)
+A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
 
 ## Documentation
 

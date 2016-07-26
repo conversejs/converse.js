@@ -42,5 +42,5 @@
         endFile: ["wrapper-no-jquery.js", "wrapper-no-deps.js"]
     },
     insertRequire: ['converse'],
-    mainConfigFile: '../converse.js'
+    mainConfigFile: '../config.js'
 })

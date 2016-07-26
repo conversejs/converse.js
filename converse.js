@@ -3,6 +3,7 @@
  * This file is used to tell require.js which components (or plugins) to load
  * when it generates a build.
  */
+
 if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
     define("converse", [

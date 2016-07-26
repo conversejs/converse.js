@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 19:17+0000\n"
+"POT-Creation-Date: 2016-07-26 05:57+0000\n"
 "PO-Revision-Date: 2016-04-07 10:21+0000\n"
 "Last-Translator: Javier Lopez <m@javier.io>\n"
 "Language-Team: ES <LL@li.org>\n"
@@ -40,233 +40,238 @@ msgstr "Haga click para eliminar este contacto"
 msgid "Personal message"
 msgstr "Mensaje personal"
 
-#: src/converse-chatview.js:279
+#: src/converse-chatview.js:285
 msgid "me"
 msgstr "yo"
 
-#: src/converse-chatview.js:317
+#: src/converse-chatview.js:325
 msgid "is typing"
 msgstr ""
 
-#: src/converse-chatview.js:320
+#: src/converse-chatview.js:328
 msgid "has stopped typing"
 msgstr ""
 
-#: src/converse-chatview.js:324 src/converse-chatview.js:570
+#: src/converse-chatview.js:332 src/converse-chatview.js:588
 #: src/converse-notification.js:171
 #, fuzzy
 msgid "has gone away"
 msgstr "Este contacto está ausente"
 
-#: src/converse-chatview.js:438 src/converse-muc.js:412
+#: src/converse-chatview.js:456 src/converse-muc.js:412
 msgid "Show this menu"
 msgstr "Mostrar este menú"
 
-#: src/converse-chatview.js:439
+#: src/converse-chatview.js:457
 msgid "Write in the third person"
 msgstr "Escribir en tercera persona"
 
-#: src/converse-chatview.js:440 src/converse-muc.js:410
+#: src/converse-chatview.js:458 src/converse-muc.js:410
 msgid "Remove messages"
 msgstr "Eliminar mensajes"
 
-#: src/converse-chatview.js:527
+#: src/converse-chatview.js:545
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "¿Está seguro de querer limpiar los mensajes de esta conversación?"
 
-#: src/converse-chatview.js:568 src/converse-notification.js:169
+#: src/converse-chatview.js:586 src/converse-notification.js:169
 #, fuzzy
 msgid "has gone offline"
 msgstr "Este contacto está desconectado"
 
-#: src/converse-chatview.js:572 src/converse-notification.js:173
+#: src/converse-chatview.js:590 src/converse-notification.js:173
 #, fuzzy
 msgid "is busy"
 msgstr "ocupado"
 
-#: src/converse-chatview.js:615
+#: src/converse-chatview.js:633
 #, fuzzy
 msgid "Clear all messages"
 msgstr "Mensaje personal"
 
-#: src/converse-chatview.js:616
+#: src/converse-chatview.js:634
 msgid "Hide the list of occupants"
 msgstr ""
 
-#: src/converse-chatview.js:617
+#: src/converse-chatview.js:635
 msgid "Insert a smiley"
 msgstr ""
 
-#: src/converse-chatview.js:618
+#: src/converse-chatview.js:636
 msgid "Start a call"
 msgstr ""
 
-#: src/converse-controlbox.js:177 src/converse-core.js:627
-#: src/converse-core.js:673 src/converse-rosterview.js:58
+#: src/converse-controlbox.js:176 src/converse-core.js:586
+#: src/converse-core.js:655 src/converse-rosterview.js:62
 msgid "Contacts"
 msgstr "Contactos"
 
-#: src/converse-controlbox.js:265 src/converse-core.js:489
+#: src/converse-controlbox.js:261 src/converse-core.js:447
 msgid "Connecting"
 msgstr "Conectando"
 
-#: src/converse-controlbox.js:365
+#: src/converse-controlbox.js:361
 #, fuzzy
 msgid "XMPP Username:"
 msgstr "Nombre de usuario XMPP/Jabber"
 
-#: src/converse-controlbox.js:366
+#: src/converse-controlbox.js:362
 msgid "Password:"
 msgstr "Contraseña:"
 
-#: src/converse-controlbox.js:367
+#: src/converse-controlbox.js:363
 #, fuzzy
 msgid "Click here to log in anonymously"
 msgstr "Esta sala no es para usuarios anónimos"
 
-#: src/converse-controlbox.js:368
+#: src/converse-controlbox.js:364
 msgid "Log In"
 msgstr "Iniciar sesión"
 
-#: src/converse-controlbox.js:369
+#: src/converse-controlbox.js:365
 #, fuzzy
 msgid "Username"
 msgstr "Nombre de usuario XMPP/Jabber"
 
-#: src/converse-controlbox.js:369
+#: src/converse-controlbox.js:365
 msgid "user@server"
 msgstr ""
 
-#: src/converse-controlbox.js:370
+#: src/converse-controlbox.js:366
 #, fuzzy
 msgid "password"
 msgstr "Contraseña:"
 
-#: src/converse-controlbox.js:377
+#: src/converse-controlbox.js:373
 msgid "Sign in"
 msgstr "Registrar"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:465 src/converse-controlbox.js:540
+#: src/converse-controlbox.js:461 src/converse-controlbox.js:536
 msgid "I am %1$s"
 msgstr "Estoy %1$s"
 
-#: src/converse-controlbox.js:467 src/converse-controlbox.js:545
+#: src/converse-controlbox.js:463 src/converse-controlbox.js:541
 msgid "Click here to write a custom status message"
 msgstr "Haga click para escribir un mensaje de estatus personalizado"
 
-#: src/converse-controlbox.js:468 src/converse-controlbox.js:546
+#: src/converse-controlbox.js:464 src/converse-controlbox.js:542
 msgid "Click to change your chat status"
 msgstr "Haga click para cambiar su estatus de chat"
 
-#: src/converse-controlbox.js:493
+#: src/converse-controlbox.js:489
 msgid "Custom status"
 msgstr "Personalizar estatus"
 
-#: src/converse-controlbox.js:494 src/converse-muc.js:580
+#: src/converse-controlbox.js:490 src/converse-muc.js:580
 msgid "Save"
 msgstr "Guardar"
 
-#: src/converse-controlbox.js:522 src/converse-controlbox.js:532
+#: src/converse-controlbox.js:518 src/converse-controlbox.js:528
 msgid "online"
 msgstr "en línea"
 
-#: src/converse-controlbox.js:524
+#: src/converse-controlbox.js:520
 msgid "busy"
 msgstr "ocupado"
 
-#: src/converse-controlbox.js:526
+#: src/converse-controlbox.js:522
 msgid "away for long"
 msgstr "ausente por mucho tiempo"
 
-#: src/converse-controlbox.js:528
+#: src/converse-controlbox.js:524
 msgid "away"
 msgstr "ausente"
 
-#: src/converse-controlbox.js:530
+#: src/converse-controlbox.js:526
 #, fuzzy
 msgid "offline"
 msgstr "Desconectado"
 
-#: src/converse-controlbox.js:571 src/converse-rosterview.js:102
+#: src/converse-controlbox.js:567 src/converse-rosterview.js:128
 msgid "Online"
 msgstr "En línea"
 
-#: src/converse-controlbox.js:572 src/converse-rosterview.js:104
+#: src/converse-controlbox.js:568 src/converse-rosterview.js:130
 msgid "Busy"
 msgstr "Ocupado"
 
-#: src/converse-controlbox.js:573 src/converse-rosterview.js:105
+#: src/converse-controlbox.js:569 src/converse-rosterview.js:131
 msgid "Away"
 msgstr "Ausente"
 
-#: src/converse-controlbox.js:574 src/converse-rosterview.js:107
+#: src/converse-controlbox.js:570 src/converse-rosterview.js:133
 msgid "Offline"
 msgstr "Desconectado"
 
-#: src/converse-controlbox.js:575
+#: src/converse-controlbox.js:571
 #, fuzzy
 msgid "Log out"
 msgstr "Iniciar sesión"
 
-#: src/converse-controlbox.js:582
+#: src/converse-controlbox.js:578
 msgid "Contact name"
 msgstr "Nombre de contacto"
 
-#: src/converse-controlbox.js:583
+#: src/converse-controlbox.js:579
 msgid "Search"
 msgstr "Búsqueda"
 
-#: src/converse-controlbox.js:587
+#: src/converse-controlbox.js:583
 msgid "e.g. user@example.org"
 msgstr ""
 
-#: src/converse-controlbox.js:588
+#: src/converse-controlbox.js:584
 msgid "Add"
 msgstr "Agregar"
 
-#: src/converse-controlbox.js:593
+#: src/converse-controlbox.js:589
 msgid "Click to add new chat contacts"
 msgstr "Haga click para agregar nuevos contactos al chat"
 
-#: src/converse-controlbox.js:594
+#: src/converse-controlbox.js:590
 msgid "Add a contact"
 msgstr "Agregar un contacto"
 
-#: src/converse-controlbox.js:618
+#: src/converse-controlbox.js:614
 msgid "No users found"
 msgstr "Sin usuarios encontrados"
 
-#: src/converse-controlbox.js:624
+#: src/converse-controlbox.js:620
 msgid "Click to add as a chat contact"
 msgstr "Haga click para agregar como contacto de chat"
 
-#: src/converse-controlbox.js:683
+#: src/converse-controlbox.js:679
 msgid "Toggle chat"
 msgstr "Chat"
 
-#: src/converse-core.js:446
+#: src/converse-core.js:209
+#, fuzzy
+msgid "Click to hide these contacts"
+msgstr "Haga click para eliminar este contacto"
+
+#: src/converse-core.js:404
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: src/converse-core.js:487
+#: src/converse-core.js:445
 msgid "Error"
 msgstr "Error"
 
-#: src/converse-core.js:491
+#: src/converse-core.js:449
 msgid "Authenticating"
 msgstr "Autenticando"
 
-#: src/converse-core.js:493 src/converse-core.js:494
+#: src/converse-core.js:451 src/converse-core.js:452
 msgid "Authentication Failed"
 msgstr "La autenticación falló"
 
-#: src/converse-core.js:934
+#: src/converse-core.js:916
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1105
+#: src/converse-core.js:1087
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -280,15 +285,15 @@ msgstr "Haga click para eliminar este contacto"
 msgid "Minimize this box"
 msgstr "Minimizado"
 
-#: src/converse-minimize.js:325
+#: src/converse-minimize.js:315
 msgid "Click to restore this chat"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-minimize.js:482
+#: src/converse-minimize.js:472
 msgid "Minimized"
 msgstr "Minimizado"
 
-#: src/converse-minimize.js:498
+#: src/converse-minimize.js:488
 msgid "Minimize this chat box"
 msgstr ""
 
@@ -946,106 +951,101 @@ msgid ""
 "entered for correctness."
 msgstr ""
 
-#: src/converse-rosterview.js:50
+#: src/converse-rosterview.js:55
 msgid "This contact is busy"
 msgstr "Este contacto está ocupado"
 
-#: src/converse-rosterview.js:51
+#: src/converse-rosterview.js:56
 msgid "This contact is online"
 msgstr "Este contacto está en línea"
 
-#: src/converse-rosterview.js:52
+#: src/converse-rosterview.js:57
 msgid "This contact is offline"
 msgstr "Este contacto está desconectado"
 
-#: src/converse-rosterview.js:53
+#: src/converse-rosterview.js:58
 msgid "This contact is unavailable"
 msgstr "Este contacto no está disponible"
 
-#: src/converse-rosterview.js:54
+#: src/converse-rosterview.js:59
 msgid "This contact is away for an extended period"
 msgstr "Este contacto está ausente por un largo periodo de tiempo"
 
-#: src/converse-rosterview.js:55
+#: src/converse-rosterview.js:60
 msgid "This contact is away"
 msgstr "Este contacto está ausente"
 
-#: src/converse-rosterview.js:57
-#, fuzzy
-msgid "Click to hide these contacts"
-msgstr "Haga click para eliminar este contacto"
-
-#: src/converse-rosterview.js:59
+#: src/converse-rosterview.js:63
 msgid "Groups"
 msgstr ""
 
-#: src/converse-rosterview.js:60
+#: src/converse-rosterview.js:64
 msgid "My contacts"
 msgstr "Mis contactos"
 
-#: src/converse-rosterview.js:61
+#: src/converse-rosterview.js:65
 msgid "Pending contacts"
 msgstr "Contactos pendientes"
 
-#: src/converse-rosterview.js:62
+#: src/converse-rosterview.js:66
 msgid "Contact requests"
 msgstr "Solicitudes de contacto"
 
-#: src/converse-rosterview.js:63
+#: src/converse-rosterview.js:67
 msgid "Ungrouped"
 msgstr ""
 
-#: src/converse-rosterview.js:97
+#: src/converse-rosterview.js:123
 msgid "Filter"
 msgstr ""
 
-#: src/converse-rosterview.js:100
+#: src/converse-rosterview.js:126
 msgid "State"
 msgstr ""
 
-#: src/converse-rosterview.js:101
+#: src/converse-rosterview.js:127
 msgid "Any"
 msgstr ""
 
-#: src/converse-rosterview.js:103
+#: src/converse-rosterview.js:129
 msgid "Chatty"
 msgstr ""
 
-#: src/converse-rosterview.js:106
+#: src/converse-rosterview.js:132
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:579 src/converse-rosterview.js:600
+#: src/converse-rosterview.js:595 src/converse-rosterview.js:616
 msgid "Click to remove this contact"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:587
+#: src/converse-rosterview.js:603
 #, fuzzy
 msgid "Click to accept this contact request"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:588
+#: src/converse-rosterview.js:604
 #, fuzzy
 msgid "Click to decline this contact request"
 msgstr "Haga click para eliminar este contacto"
 
-#: src/converse-rosterview.js:599
+#: src/converse-rosterview.js:615
 msgid "Click to chat with this contact"
 msgstr "Haga click para conversar con este contacto"
 
-#: src/converse-rosterview.js:601
+#: src/converse-rosterview.js:617
 msgid "Name"
 msgstr ""
 
-#: src/converse-rosterview.js:656
+#: src/converse-rosterview.js:672
 msgid "Are you sure you want to remove this contact?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"
 
-#: src/converse-rosterview.js:667
+#: src/converse-rosterview.js:683
 msgid "Sorry, there was an error while trying to remove "
 msgstr ""
 
-#: src/converse-rosterview.js:686
+#: src/converse-rosterview.js:702
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"

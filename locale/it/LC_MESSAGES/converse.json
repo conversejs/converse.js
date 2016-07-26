@@ -195,6 +195,10 @@
             null,
             "Attiva/disattiva chat"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Clicca per nascondere questi contatti"
+         ],
          "Error": [
             null,
             "Errore"
@@ -778,10 +782,6 @@
          "This contact is away": [
             null,
             "Questo contatto è away"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Clicca per nascondere questi contatti"
          ],
          "Groups": [
             null,

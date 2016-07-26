@@ -199,6 +199,10 @@
             null,
             "Canvia de xat"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Feu clic per amagar aquests contactes"
+         ],
          "Error": [
             null,
             "Error"
@@ -786,10 +790,6 @@
          "This contact is away": [
             null,
             "Aquest contacte està absent"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Feu clic per amagar aquests contactes"
          ],
          "Groups": [
             null,

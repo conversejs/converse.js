@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.4 (Unreleased)
+## 1.0.4 (2016-07-26)
 
 - Restrict occupants sidebar to 30% chatroom width. [jcbrand]
 - Made requesting contacts more visible, by placing them at the top of the roster. [jcbrand]
@@ -8,7 +8,9 @@
   to make it the same as the method of `ChatRoomView`. [jcbrand]
 - Render error messages received from the server (for undelivered chat
   messages). [jcbrand]
-- Show requesting contacts when filtering by chat state. [jcbrand]
+- Don't hide requesting contacts when filtering by chat state. [jcbrand]
+- When logging in anonymously, the server JID can now be passed in via
+  `converse.initialize` or via `converse.user.login`. [jcbrand]
 
 ## 1.0.3 (2016-06-20)
 

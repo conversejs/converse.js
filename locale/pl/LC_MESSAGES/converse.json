@@ -191,6 +191,10 @@
             null,
             "Przełącz rozmowę"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Kliknij aby schować te kontakty"
+         ],
          "Attempting to reconnect": [
             null,
             ""
@@ -782,10 +786,6 @@
          "This contact is away": [
             null,
             "Kontakt jest nieobecny"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Kliknij aby schować te kontakty"
          ],
          "Groups": [
             null,

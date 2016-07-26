@@ -194,6 +194,10 @@
             null,
             "Включить чат"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Кликните, чтобы спрятать эти контакты"
+         ],
          "Error": [
             null,
             "Ошибка"
@@ -753,10 +757,6 @@
          "This contact is away": [
             null,
             "Отошёл"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Кликните, чтобы спрятать эти контакты"
          ],
          "Groups": [
             null,

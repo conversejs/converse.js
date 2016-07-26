@@ -183,6 +183,10 @@
             null,
             "Включити чат"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Клацніть, щоб приховати ці контакти"
+         ],
          "Attempting to reconnect": [
             null,
             ""
@@ -770,10 +774,6 @@
          "This contact is away": [
             null,
             "Цей контакт відсутній"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Клацніть, щоб приховати ці контакти"
          ],
          "Groups": [
             null,

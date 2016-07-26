@@ -202,6 +202,10 @@
             null,
             "Klets"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Klik om hierdie kontakte te verskuil"
+         ],
          "Attempting to reconnect": [
             null,
             ""
@@ -813,10 +817,6 @@
          "This contact is away": [
             null,
             "Hierdie persoon is afwesig"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Klik om hierdie kontakte te verskuil"
          ],
          "Groups": [
             null,

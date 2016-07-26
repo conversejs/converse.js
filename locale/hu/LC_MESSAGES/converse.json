@@ -198,6 +198,10 @@
             null,
             "Csevegőablak"
          ],
+         "Click to hide these contacts": [
+            null,
+            "A csevegő partnerek elrejtése"
+         ],
          "Error": [
             null,
             "Hiba"
@@ -789,10 +793,6 @@
          "This contact is away": [
             null,
             "Távol"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "A csevegő partnerek elrejtése"
          ],
          "Groups": [
             null,

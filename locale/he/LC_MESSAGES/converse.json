@@ -191,6 +191,10 @@
             null,
             "הפעל שיח"
          ],
+         "Click to hide these contacts": [
+            null,
+            "לחץ כדי להסתיר את אנשי קשר אלה"
+         ],
          "Error": [
             null,
             "שגיאה"
@@ -774,10 +778,6 @@
          "This contact is away": [
             null,
             "איש קשר זה הינו נעדר"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "לחץ כדי להסתיר את אנשי קשר אלה"
          ],
          "Groups": [
             null,

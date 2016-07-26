@@ -171,6 +171,10 @@
             null,
             "Endre chatten"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Klikk for å skjule disse kontaktene"
+         ],
          "Attempting to reconnect": [
             null,
             ""
@@ -750,10 +754,6 @@
          "This contact is away": [
             null,
             "Kontakten er borte"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Klikk for å skjule disse kontaktene"
          ],
          "Groups": [
             null,

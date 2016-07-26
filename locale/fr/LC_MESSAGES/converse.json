@@ -187,6 +187,10 @@
             null,
             "Ouvrir IM"
          ],
+         "Click to hide these contacts": [
+            null,
+            "Cliquez pour cacher ces contacts"
+         ],
          "Attempting to reconnect": [
             null,
             ""
@@ -774,10 +778,6 @@
          "This contact is away": [
             null,
             "Ce contact est absent"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Cliquez pour cacher ces contacts"
          ],
          "Groups": [
             null,

@@ -2358,6 +2358,50 @@ define("converse-templates", [
             return str;
         },
 
+        isLocaleAvailable: function (locale, available) {
+            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+             *
+             * Parameters:
+             *      (Function) available - returns a boolean indicating whether the locale is supported
+             */
+            if (available(locale)) {
+                return locale;
+            } else {
+                var sublocale = locale.split("-")[0];
+                if (sublocale !== locale && available(sublocale)) {
+                    return sublocale;
+                }
+            }
+        },
+
+        detectLocale: function (library_check) {
+            /* Determine which locale is supported by the user's system as well
+             * as by the relevant library (e.g. converse.js or moment.js).
+             *
+             * Parameters:
+             *      (Function) library_check - returns a boolean indicating whether the locale is supported
+             */
+            var locale, i;
+            if (window.navigator.userLanguage) {
+                locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+            }
+            if (window.navigator.languages && !locale) {
+                for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                    locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+                }
+            }
+            if (window.navigator.browserLanguage && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            }
+            if (window.navigator.language && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+            }
+            if (window.navigator.systemLanguage && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            }
+            return locale || 'en';
+        },
+
         isOTRMessage: function (message) {
             var $body = $(message).children('body'),
                 text = ($body.length > 0 ? $body.text() : undefined);
@@ -2586,6 +2630,13 @@ define("polyfill", function(){});
              * original method.
              */
             if (typeof super_method === "function") {
+                if (typeof this._super === "undefined") {
+                    // We're not on the context of the plugged object.
+                    // This can happen when the overridden method is called via
+                    // an event handler. In this case, we simply tack on the
+                    // _super obj.
+                    this._super = {};
+                }
                 this._super[key] = super_method.bind(this);
             }
             return value.apply(this, _.rest(arguments, 3));
@@ -2914,7 +2965,7 @@ define("polyfill", function(){});
              * returned via the API.
              */
             if (!chatbox) { return; }
-            var view = converse.chatboxviews.get(chatbox.get('jid'));
+            var view = converse.chatboxviews.get(chatbox.get('id'));
             return {
                 'close': view.close.bind(view),
                 'focus': view.focus.bind(view),
@@ -2924,59 +2975,16 @@ define("polyfill", function(){});
             };
         };
 
-        this.isLocaleAvailable = function (locale, available) {
-            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-             *
-             * Parameters:
-             *      (Function) available - returns a boolean indicating whether the locale is supported
-             */
-            if (available(locale)) {
-                return locale;
-            } else {
-                var sublocale = locale.split("-")[0];
-                if (sublocale !== locale && available(sublocale)) {
-                    return sublocale;
-                }
-            }
-        };
-
-        this.detectLocale = function (library_check) {
-            /* Determine which locale is supported by the user's system as well
-             * as by the relevant library (e.g. converse.js or moment.js).
-             *
-             * Parameters:
-             *      (Function) library_check - returns a boolean indicating whether the locale is supported
-             */
-            var locale, i;
-            if (window.navigator.userLanguage) {
-                locale = this.isLocaleAvailable(window.navigator.userLanguage, library_check);
-            }
-            if (window.navigator.languages && !locale) {
-                for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                    locale = this.isLocaleAvailable(window.navigator.languages[i], library_check);
-                }
-            }
-            if (window.navigator.browserLanguage && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-            }
-            if (window.navigator.language && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.language, library_check);
-            }
-            if (window.navigator.systemLanguage && !locale) {
-                locale = this.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-            }
-            return locale || 'en';
-        };
-
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
-        moment.locale(this.detectLocale(this.isMomentLocale));
-        this.i18n = settings.i18n ? settings.i18n : locales[this.detectLocale(this.isConverseLocale)] || {};
+        moment.locale(utils.detectLocale(this.isMomentLocale));
+        this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
 
         // Translation machinery
         // ---------------------
         var __ = utils.__.bind(this);
+        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
@@ -3032,9 +3040,10 @@ define("polyfill", function(){});
         if (this.prebind === true) { this.authentication = converse.PREBIND; }
 
         if (this.authentication === converse.ANONYMOUS) {
-            if (!this.jid) {
-                throw("Config Error: you need to provide the server's domain via the " +
-                        "'jid' option when using anonymous authentication.");
+            if (this.auto_login && !this.jid) {
+                throw new Error("Config Error: you need to provide the server's " +
+                      "domain via the 'jid' option when using anonymous " +
+                      "authentication with auto_login.");
             }
         }
 
@@ -3349,6 +3358,7 @@ define("polyfill", function(){});
         };
 
         this.afterReconnected = function () {
+            this.registerPresenceHandler();
             this.chatboxes.registerMessageHandler();
             this.xmppstatus.sendPresence();
             this.giveFeedback(__('Contacts'));
@@ -3390,13 +3400,36 @@ define("polyfill", function(){});
             this.connection.send(carbons_iq);
         };
 
-
-        this.onStatusInitialized = function () {
-            this.registerIntervalHandler();
+        this.initRoster = function () {
             this.roster = new this.RosterContacts();
             this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
                 b64_sha1('converse.contacts-'+this.bare_jid));
+            this.rostergroups = new converse.RosterGroups();
+            this.rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                b64_sha1('converse.roster.groups'+converse.bare_jid));
+        };
+
+        this.unregisterPresenceHandler = function () {
+            if (typeof this.presence_ref !== 'undefined') {
+                this.connection.deleteHandler(this.presence_ref);
+                delete this.presence_ref;
+            }
+        };
+
+        this.registerPresenceHandler = function () {
+            this.unregisterPresenceHandler();
+            this.presence_ref = converse.connection.addHandler(
+                function (presence) {
+                    converse.roster.presenceHandler(presence);
+                    return true;
+                }, null, 'presence', null);
+        };
+
+        this.onStatusInitialized = function () {
+            this.registerIntervalHandler();
+            this.initRoster();
             this.chatboxes.onConnected();
+            this.registerPresenceHandler();
             this.giveFeedback(__('Contacts'));
             if (typeof this.callback === 'function') {
                 // XXX: Deprecate in favor of init_deferred
@@ -3905,6 +3938,23 @@ define("polyfill", function(){});
         });
 
 
+        this.RosterGroup = Backbone.Model.extend({
+            initialize: function (attributes, options) {
+                this.set(_.extend({
+                    description: DESC_GROUP_TOGGLE,
+                    state: converse.OPENED
+                }, attributes));
+                // Collection of contacts belonging to this group.
+                this.contacts = new converse.RosterContacts();
+            }
+        });
+
+
+        this.RosterGroups = Backbone.Collection.extend({
+            model: converse.RosterGroup,
+        });
+
+
         this.Message = Backbone.Model.extend({
             defaults: function(){
                 return {
@@ -3940,16 +3990,22 @@ define("polyfill", function(){});
 
             getMessageAttributes: function ($message, $delay, original_stanza) {
                 $delay = $delay || $message.find('delay');
-                var body = $message.children('body').text(),
-                    delayed = $delay.length > 0,
+                var type = $message.attr('type'),
+                    body, stamp, time, sender, from;
+
+                if (type === 'error') {
+                    body = $message.find('error').children('text').text();
+                } else {
+                    body = $message.children('body').text();
+                }
+                var delayed = $delay.length > 0,
                     fullname = this.get('fullname'),
-                    is_groupchat = $message.attr('type') === 'groupchat',
+                    is_groupchat = type === 'groupchat',
                     chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
                         $message.find(converse.PAUSED).length && converse.PAUSED ||
                         $message.find(converse.INACTIVE).length && converse.INACTIVE ||
                         $message.find(converse.ACTIVE).length && converse.ACTIVE ||
-                        $message.find(converse.GONE).length && converse.GONE,
-                    stamp, time, sender, from;
+                        $message.find(converse.GONE).length && converse.GONE;
 
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
@@ -3971,13 +4027,14 @@ define("polyfill", function(){});
                     sender = 'them';
                 }
                 return {
-                    chat_state: chat_state,
-                    delayed: delayed,
-                    fullname: fullname,
-                    message: body || undefined,
-                    msgid: $message.attr('id'),
-                    sender: sender,
-                    time: time
+                    'type': type,
+                    'chat_state': chat_state,
+                    'delayed': delayed,
+                    'fullname': fullname,
+                    'message': body || undefined,
+                    'msgid': $message.attr('id'),
+                    'sender': sender,
+                    'time': time
                 };
             },
 
@@ -3991,11 +4048,8 @@ define("polyfill", function(){});
             comparator: 'time_opened',
 
             registerMessageHandler: function () {
-                converse.connection.addHandler(
-                    function (message) {
-                        this.onMessage(message);
-                        return true;
-                    }.bind(this), null, 'message', 'chat');
+                converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+                converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
             },
 
             chatBoxMayBeShown: function (chatbox) {
@@ -4024,6 +4078,24 @@ define("polyfill", function(){});
                     add: true,
                     success: this.onChatBoxesFetched.bind(this)
                 });
+            },
+
+            onErrorMessage: function (message) {
+                /* Handler method for all incoming error message stanzas
+                 */
+                // TODO: we can likely just reuse "onMessage" below
+                var $message = $(message),
+                    from_jid =  Strophe.getBareJidFromJid($message.attr('from'));
+                if (from_jid === converse.bare_jid) {
+                    return true;
+                }
+                // Get chat box, but only create a new one when the message has a body.
+                var chatbox = this.getChatBox(from_jid);
+                if (!chatbox) {
+                    return true;
+                }
+                chatbox.createMessage($message, null, message);
+                return true;
             },
 
             onMessage: function (message) {
@@ -4065,7 +4137,6 @@ define("polyfill", function(){});
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid === converse.bare_jid;
                 msgid = $message.attr('id');
-
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -4432,6 +4503,12 @@ define("polyfill", function(){});
                 this.password = credentials.password;
             }
             if (this.authentication === converse.ANONYMOUS) {
+                if (!this.jid) {
+                    throw new Error("Config Error: when using anonymous login " +
+                        "you need to provide the server's domain via the 'jid' option. " +
+                        "Either when calling converse.initialize, or when calling " +
+                        "converse.user.login.");
+                }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === converse.LOGIN) {
                 if (!this.password) {
@@ -4480,7 +4557,7 @@ define("polyfill", function(){});
         };
 
         this.logIn = function (credentials) {
-            if (credentials) {
+            if (credentials || this.authentication === converse.ANONYMOUS) {
                 // When credentials are passed in, they override prebinding
                 // or credentials fetching via HTTP
                 this.autoLogin(credentials);
@@ -4515,6 +4592,7 @@ define("polyfill", function(){});
             /* Remove those views which are only allowed with a valid
              * connection.
              */
+            this.unregisterPresenceHandler();
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }
@@ -4693,8 +4771,15 @@ define("polyfill", function(){});
             },
             'get': function (jids) {
                 if (typeof jids === "undefined") {
-                    converse.log("chats.get: You need to provide at least one JID", "error");
-                    return null;
+                    var result = [];
+                    converse.chatboxes.each(function (chatbox) {
+                        // FIXME: Leaky abstraction from MUC. We need to add a
+                        // base type for chat boxes, and check for that.
+                        if (chatbox.get('type') !== 'chatroom') {
+                            result.push(converse.wrappedChatBox(chatbox));
+                        }
+                    });
+                    return result;
                 } else if (typeof jids === "string") {
                     return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
                 }
@@ -5808,7 +5893,7 @@ return parser;
 })(this);
 
 
-define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "Connecting": [\n            null,\n            "S\'està establint la connexió"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Feu clic per afegir com a contacte del xat"\n         ],\n         "Toggle chat": [\n            null,\n            "Canvia de xat"\n         ],\n         "Error": [\n            null,\n            "Error"\n         ],\n         "Authenticating": [\n            null,\n            "S\'està efectuant l\'autenticació"\n         ],\n         "Authentication Failed": [\n            null,\n            "Error d\'autenticació"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "S\'ha produït un error en intentar afegir "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Error: the \\"": [\n            null,\n            "Error: el \\""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room topic": [\n            null,\n            "Defineix un tema per a la sala"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "S\'ha produït un error en intentar desar el formulari."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "S\'ha canviat la configuració de la sala no relacionada amb la privadesa"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Aquesta sala ara no és anònima"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "L\'àlies de <strong>%1$s</strong> ha canviat"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> a causa d\'un canvi d\'afiliació"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> perquè no és membre"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat a: <strong>%1$s</strong>"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "El motiu indicat és: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "No sou a la llista de membres d\'aquesta sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "No s\'ha especificat cap àlies"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "No teniu permís per crear sales noves"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "El vostre àlies no s\'ajusta a les polítiques d\'aquesta sala"\n         ],\n         "Your nickname is already taken": [\n            null,\n            "El vostre àlies ja està en ús"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Aquesta sala (encara) no existeix"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "This user is a moderator": [\n            null,\n            "Aquest usuari és un moderador"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Aquest usuari pot enviar missatges a aquesta sala"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Aquest usuari NO pot enviar missatges a aquesta sala"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Sales a %1$s"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "An error has occured": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "Return": [\n            null,\n            "Torna"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to remove this contact": [\n            null,\n            "Feu clic per eliminar aquest contacte"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Feu clic per acceptar aquesta sol·licitud de contacte"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Feu clic per rebutjar aquesta sol·licitud de contacte"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "S\'ha produït un error en intentar eliminar "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
+define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "Connecting": [\n            null,\n            "S\'està establint la connexió"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Feu clic per afegir com a contacte del xat"\n         ],\n         "Toggle chat": [\n            null,\n            "Canvia de xat"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Error": [\n            null,\n            "Error"\n         ],\n         "Authenticating": [\n            null,\n            "S\'està efectuant l\'autenticació"\n         ],\n         "Authentication Failed": [\n            null,\n            "Error d\'autenticació"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "S\'ha produït un error en intentar afegir "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Error: the \\"": [\n            null,\n            "Error: el \\""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room topic": [\n            null,\n            "Defineix un tema per a la sala"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "An error occurred while trying to save the form.": [\n            null,\n            "S\'ha produït un error en intentar desar el formulari."\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Non-privacy-related room configuration has changed": [\n            null,\n            "S\'ha canviat la configuració de la sala no relacionada amb la privadesa"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now non-anonymous": [\n            null,\n            "Aquesta sala ara no és anònima"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "L\'àlies de <strong>%1$s</strong> ha canviat"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> a causa d\'un canvi d\'afiliació"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> perquè no és membre"\n         ],\n         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat a: <strong>%1$s</strong>"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "El motiu indicat és: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "No sou a la llista de membres d\'aquesta sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "No s\'ha especificat cap àlies"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "No teniu permís per crear sales noves"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "El vostre àlies no s\'ajusta a les polítiques d\'aquesta sala"\n         ],\n         "Your nickname is already taken": [\n            null,\n            "El vostre àlies ja està en ús"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Aquesta sala (encara) no existeix"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "This user is a moderator": [\n            null,\n            "Aquest usuari és un moderador"\n         ],\n         "This user can send messages in this room": [\n            null,\n            "Aquest usuari pot enviar missatges a aquesta sala"\n         ],\n         "This user can NOT send messages in this room": [\n            null,\n            "Aquest usuari NO pot enviar missatges a aquesta sala"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Sales a %1$s"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "An error has occured": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "Return": [\n            null,\n            "Torna"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to remove this contact": [\n            null,\n            "Feu clic per eliminar aquest contacte"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Feu clic per acceptar aquesta sol·licitud de contacte"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Feu clic per rebutjar aquesta sol·licitud de contacte"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "S\'ha produït un error en intentar eliminar "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -5895,7 +5980,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoPage().hide();
+                    this.render().fetchMessages().insertIntoDOM().hide();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
@@ -5939,7 +6024,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     return this;
                 },
 
-                insertIntoPage: function () {
+                insertIntoDOM: function () {
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */
@@ -6066,6 +6151,12 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                         )(this.renderMessage(attrs));
                 },
 
+                getExtraMessageTemplateAttributes: function (attrs) {
+                    // Provides a hook for sending more attributes to the
+                    // message template.
+                    return {};
+                },
+
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -6098,15 +6189,17 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                         // are mentioned.
                         extra_classes += ' mentioned';
                     }
-                    return $(template({
-                            msgid: attrs.msgid,
-                            'sender': attrs.sender,
-                            'time': msg_time.format('hh:mm'),
-                            'isodate': msg_time.format(),
-                            'username': username,
-                            'message': '',
-                            'extra_classes': extra_classes
-                        })).children('.chat-msg-content').first().text(text)
+                    return $(template(
+                            _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                                'msgid': attrs.msgid,
+                                'sender': attrs.sender,
+                                'time': msg_time.format('hh:mm'),
+                                'isodate': msg_time.format(),
+                                'username': username,
+                                'message': '',
+                                'extra_classes': extra_classes
+                            })
+                        )).children('.chat-msg-content').first().text(text)
                             .addHyperlinks()
                             .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
                 },
@@ -6178,6 +6271,14 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                 },
 
+                handleErrorMessage: function (message) {
+                    var $message = $('[data-msgid='+message.get('msgid')+']');
+                    if ($message.length) {
+                        $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
+                        this.scrollDown();
+                    }
+                },
+
                 onMessageAdded: function (message) {
                     /* Handler that gets called when a new message object is created.
                      *
@@ -6188,7 +6289,9 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
                     }
-                    if (!message.get('message')) {
+                    if (message.get('type') === 'error') {
+                        this.handleErrorMessage(message);
+                    } else if (!message.get('message')) {
                         this.handleChatStateMessage(message);
                     } else {
                         this.handleTextMessage(message);
@@ -6574,7 +6677,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
         _ = converse_api.env._,
         __ = utils.__.bind(converse);
 
-
     converse_api.plugins.add('rosterview', {
 
         overrides: {
@@ -6583,11 +6685,17 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
             afterReconnected: function () {
                 this.rosterview.registerRosterXHandler();
-                this.rosterview.registerPresenceHandler();
                 this._super.afterReconnected.apply(this, arguments);
+            },
+
+            RosterGroups: {
+                comparator: function () {
+                    // RosterGroupsComparator only gets set later (once i18n is
+                    // set up), so we need to wrap it in this nameless function.
+                    return converse.RosterGroupsComparator.apply(this, arguments);
+                }
             }
         },
 
@@ -6610,7 +6718,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                 'xa': __('This contact is away for an extended period'),
                 'away': __('This contact is away')
             };
-            var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
             var LABEL_CONTACTS = __('Contacts');
             var LABEL_GROUPS = __('Groups');
             var HEADER_CURRENT_CONTACTS =  __('My contacts');
@@ -6618,10 +6725,32 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             var HEADER_REQUESTING_CONTACTS = __('Contact requests');
             var HEADER_UNGROUPED = __('Ungrouped');
             var HEADER_WEIGHTS = {};
-            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 0;
-            HEADER_WEIGHTS[HEADER_UNGROUPED]           = 1;
-            HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 2;
+            HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
+            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 1;
+            HEADER_WEIGHTS[HEADER_UNGROUPED]           = 2;
             HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
+
+            converse.RosterGroupsComparator = function (a, b) {
+                /* Groups are sorted alphabetically, ignoring case.
+                 * However, Ungrouped, Requesting Contacts and Pending Contacts
+                 * appear last and in that order.
+                 */
+                a = a.get('name');
+                b = b.get('name');
+                var special_groups = _.keys(HEADER_WEIGHTS);
+                var a_is_special = _.contains(special_groups, a);
+                var b_is_special = _.contains(special_groups, b);
+                if (!a_is_special && !b_is_special ) {
+                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                } else if (a_is_special && b_is_special) {
+                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                } else if (!a_is_special && b_is_special) {
+                    return (b === HEADER_REQUESTING_CONTACTS) ? 1 : -1;
+                } else if (a_is_special && !b_is_special) {
+                    return (a === HEADER_REQUESTING_CONTACTS) ? -1 : 1;
+                }
+            };
+
 
             converse.RosterFilter = Backbone.Model.extend({
                 initialize: function () {
@@ -6758,7 +6887,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                 initialize: function () {
                     this.roster_handler_ref = this.registerRosterHandler();
                     this.rosterx_handler_ref = this.registerRosterXHandler();
-                    this.presence_ref = this.registerPresenceHandler();
                     converse.roster.on("add", this.onContactAdd, this);
                     converse.roster.on('change', this.onContactChange, this);
                     converse.roster.on("destroy", this.update, this);
@@ -6806,8 +6934,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     delete this.roster_handler_ref;
                     converse.connection.deleteHandler(this.rosterx_handler_ref);
                     delete this.rosterx_handler_ref;
-                    converse.connection.deleteHandler(this.presence_ref);
-                    delete this.presence_ref;
                 },
 
                 update: _.debounce(function () {
@@ -6926,13 +7052,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     );
                 },
 
-                registerPresenceHandler: function () {
-                    converse.connection.addHandler(
-                        function (presence) {
-                            converse.roster.presenceHandler(presence);
-                            return true;
-                        }.bind(this), null, 'presence', null);
-                },
 
                 onGroupAdd: function (group) {
                     var view = new converse.RosterGroupView({model: group});
@@ -7248,18 +7367,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             });
 
 
-            converse.RosterGroup = Backbone.Model.extend({
-                initialize: function (attributes, options) {
-                    this.set(_.extend({
-                        description: DESC_GROUP_TOGGLE,
-                        state: converse.OPENED
-                    }, attributes));
-                    // Collection of contacts belonging to this group.
-                    this.contacts = new converse.RosterContacts();
-                }
-            });
-
-
             converse.RosterGroupView = Backbone.Overview.extend({
                 tagName: 'dt',
                 className: 'roster-group',
@@ -7359,9 +7466,20 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     } else {
                         q = q.toLowerCase();
                         if (type === 'state') {
-                            matches = this.model.contacts.filter(
-                                utils.contains.not('chat_status', q)
-                            );
+                            if (this.model.get('name') === HEADER_REQUESTING_CONTACTS) {
+                                // When filtering by chat state, we still want to
+                                // show requesting contacts, even though they don't
+                                // have the state in question.
+                                matches = this.model.contacts.filter(
+                                    function (contact) {
+                                        return utils.contains.not('chat_status', q)(contact) && !contact.get('requesting');
+                                    }
+                                );
+                            } else {
+                                matches = this.model.contacts.filter(
+                                    utils.contains.not('chat_status', q)
+                                );
+                            }
                         } else  {
                             matches = this.model.contacts.filter(
                                 utils.contains.not('fullname', q)
@@ -7435,30 +7553,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     }
                 }
             });
-
-
-            converse.RosterGroups = Backbone.Collection.extend({
-                model: converse.RosterGroup,
-                comparator: function (a, b) {
-                    /* Groups are sorted alphabetically, ignoring case.
-                     * However, Ungrouped, Requesting Contacts and Pending Contacts
-                     * appear last and in that order. */
-                    a = a.get('name');
-                    b = b.get('name');
-                    var special_groups = _.keys(HEADER_WEIGHTS);
-                    var a_is_special = _.contains(special_groups, a);
-                    var b_is_special = _.contains(special_groups, b);
-                    if (!a_is_special && !b_is_special ) {
-                        return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
-                    } else if (a_is_special && b_is_special) {
-                        return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
-                    } else if (!a_is_special && b_is_special) {
-                        return (b === HEADER_CURRENT_CONTACTS) ? 1 : -1;
-                    } else if (a_is_special && !b_is_special) {
-                        return (a === HEADER_CURRENT_CONTACTS) ? -1 : 1;
-                    }
-                }
-            });
         }
     });
 }));
@@ -7475,7 +7569,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
     define("converse-controlbox", [
             "converse-core",
             "converse-api",
-            // TODO: remove the next two dependencies
+            // TODO: The next two dependencies can be made optional
             "converse-rosterview",
             "converse-chatview"
     ], factory);
@@ -7483,7 +7577,6 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
-        b64_sha1 = converse_api.env.b64_sha1,
         utils = converse_api.env.utils;
     // Other necessary globals
     var $ = converse_api.env.jQuery,
@@ -7618,7 +7711,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
 
 
             ChatBoxView: {
-                insertIntoPage: function () {
+                insertIntoDOM: function () {
                     this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
                     return this;
                 }
@@ -7711,10 +7804,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     /* We initialize the roster, which will appear inside the
                      * Contacts Panel.
                      */
-                    var rostergroups = new converse.RosterGroups();
-                    rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.roster.groups'+converse.bare_jid));
-                    converse.rosterview = new converse.RosterView({model: rostergroups});
+                    converse.rosterview = new converse.RosterView({model: converse.rostergroups});
                     this.contactspanel.$el.append(converse.rosterview.$el);
                     converse.rosterview.render().fetch().update();
                     return this;
@@ -8272,7 +8362,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                 * returned via the API.
                 */
                 if (!chatbox) { return; }
-                var view = converse.chatboxviews.get(chatbox.get('jid'));
+                var view = converse.chatboxviews.get(chatbox.get('id'));
                 var box = this._super.wrappedChatBox.apply(this, arguments);
                 box.is_chatroom = view.is_chatroom;
                 return box;
@@ -9639,13 +9729,20 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                         return _.map(jids, _.partial(_transform, _, nick, fetcher));
                     },
                     'get': function (jids, nick, create) {
+                        if (typeof jids === "undefined") {
+                            var result = [];
+                            converse.chatboxes.each(function (chatbox) {
+                                if (chatbox.get('type') === 'chatroom') {
+                                    result.push(converse.wrappedChatBox(chatbox));
+                                }
+                            });
+                            return result;
+                        }
                         var fetcher = _.partial(converse.chatboxviews.getChatBox.bind(converse.chatboxviews), _, create);
                         if (!nick) {
                             nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
-                        if (typeof jids === "undefined") {
-                            throw new TypeError("rooms.get: You need to provide at least one JID");
-                        } else if (typeof jids === "string") {
+                        if (typeof jids === "string") {
                             return _transform(jids, nick, fetcher);
                         }
                         return _.map(jids, _.partial(_transform, _, nick, fetcher));
@@ -11322,7 +11419,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                 // ^ a list of JIDs to ignore concerning chat state notifications
                 play_sounds: false,
                 sounds_path: '/sounds/',
-                notification_icon: '/logo/conversejs.png'
+                notification_icon: '/logo/conversejs128.png'
             });
 
             converse.isOnlyChatStateNotification = function ($msg) {
@@ -11582,22 +11679,12 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown: function () {
-                this._super._tearDown.apply(this, arguments);
-                if (this.minimized_chats) {
-                    this.minimized_chats.undelegateEvents().model.reset();
-                    this.minimized_chats.removeAll(); // Remove sub-views
-                    this.minimized_chats.tearDown().remove(); // Remove overview
-                    delete this.minimized_chats;
-                }
-                return this;
-            },
-
-            onConnected: function () {
+            _initialize: function () {
+                this._super._initialize.apply(this, arguments);
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
-                return this._super.onConnected.apply(this, arguments);
+                return this;
             },
 
             registerGlobalEventHandlers: function () {
@@ -12452,7 +12539,7 @@ define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "local
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    this.render().fetchMessages().insertIntoPage().hide();
+                    this.render().fetchMessages().insertIntoDOM().hide();
                     converse.emit('chatBoxInitialized', this);
                 },
 

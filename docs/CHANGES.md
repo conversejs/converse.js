@@ -1,8 +1,10 @@
 # Changelog
 
 ## 1.0.5 (Unreleased)
-- In case of a nickname conflict when joining a room, allow the user to choose a new nickname. [jcbrand]
-- Check whether the user has a reserved nickname before entering a room, and if so, use it. [jcbrand]
+- In case of nickname conflict when joining a room, allow the user to choose a new one.
+  [jcbrand]
+- Check whether the user has a reserved nickname before entering a room, and if so,
+  use it. [jcbrand]
 
 ## 1.0.4 (2016-07-26)
 

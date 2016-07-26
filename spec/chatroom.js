@@ -217,7 +217,7 @@
                     }).nodeTree;
                     converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.onChatRoomPresence).toHaveBeenCalled();
-                    expect($occupants.find('li.online').length).toBe(i+1);
+                    expect($occupants.find('li').length).toBe(i+1);
                 }
             }.bind(converse));
 
@@ -522,7 +522,7 @@
                  */
                 var __ = utils.__.bind(converse);
                 test_utils.openAndEnterChatRoom('lounge', 'localhost', 'oldnick');
-                var view = this.chatboxviews.get('lounge@localhost');
+                var view = converse.chatboxviews.get('lounge@localhost');
                 var $chat_content = view.$el.find('.chat-content');
                 spyOn(view, 'onChatRoomPresence').andCallThrough();
 
@@ -543,12 +543,11 @@
                   .c('status').attrs({code:'110'}).up()
                   .c('status').attrs({code:'210'}).nodeTree;
 
-                this.connection._dataRecv(test_utils.createRequest(presence));
+                converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 var $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("oldnick");
-                expect($occupants.children().first().hasClass('online')).toBe(true);
 
                 expect($chat_content.find('div.chat-info').length).toBe(1);
                 expect($chat_content.find('div.chat-info').html()).toBe(__(view.newNicknameMessages["210"], "oldnick"));
@@ -569,17 +568,13 @@
                     .c('status').attrs({code:'303'}).up()
                     .c('status').attrs({code:'110'}).nodeTree;
 
-                this.connection._dataRecv(test_utils.createRequest(presence));
+                converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
 
-                // The occupant is still listed (because they have affiliation
-                // of "member"), but they don't have the "online" class
-                // anymore.
                 $occupants = view.$('.occupant-list');
-                expect($occupants.children().length).toBe(1);
-                expect($occupants.children().first().hasClass('online')).toBe(false);
+                expect($occupants.children().length).toBe(0);
 
                 presence = $pres().attrs({
                         from:'lounge@localhost/newnick',
@@ -594,14 +589,14 @@
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
 
-                this.connection._dataRecv(test_utils.createRequest(presence));
+                converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
                 $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("newnick");
-            }.bind(converse));
+            });
 
             it("informs users if they have been kicked out of the chat room", function () {
                 /*  <presence

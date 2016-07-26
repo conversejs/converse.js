@@ -1535,12 +1535,6 @@
                     },
                     'open': function (jids, nick) {
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
-                        if (!nick) {
-                            nick = Strophe.getNodeFromJid(converse.bare_jid);
-                        }
-                        if (typeof nick !== "string") {
-                            throw new TypeError('rooms.open: invalid nick, must be string');
-                        }
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {

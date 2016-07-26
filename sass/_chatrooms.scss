@@ -109,6 +109,9 @@
                             text-overflow: ellipsis;
                             white-space: nowrap;
                             width: 100px;
+                            &.occupant {
+                                cursor: pointer;
+                            }
                             &.moderator {
                                 color: $moderator-color;
                             }

@@ -2044,6 +2044,8 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             width: 100px; }
+            #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.occupant {
+              cursor: pointer; }
             #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupant-list li.moderator {
               color: #D24E2B; }
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {

@@ -186,6 +186,7 @@
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants a': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
+                    'click .occupant': 'onOccupantClicked',
                     'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
@@ -282,6 +283,13 @@
                         this.$('div.occupants').removeClass('hidden');
                         this.scrollDown();
                     }
+                },
+
+                onOccupantClicked: function (ev) {
+                    /* When an occupant is clicked, insert their nickname into
+                     * the chat textarea input.
+                     */
+                    this.insertIntoTextArea(ev.target.textContent);
                 },
 
                 directInvite: function (recipient, reason) {
@@ -1032,13 +1040,15 @@
                     this.model.on('change', this.render, this);
                     this.model.on('destroy', this.destroy, this);
                 },
+
                 render: function () {
                     var new_el = converse.templates.occupant(
                         _.extend(
                             this.model.toJSON(), {
-                                'desc_moderator': __('This user is a moderator'),
-                                'desc_occupant': __('This user can send messages in this room'),
-                                'desc_visitor': __('This user can NOT send messages in this room')
+                                'hint_occupant': __('Click to mention this user in your message.'),
+                                'desc_moderator': __('This user is a moderator.'),
+                                'desc_occupant': __('This user can send messages in this room.'),
+                                'desc_visitor': __('This user can NOT send messages in this room.')
                         })
                     );
                     var $parents = this.$el.parents();

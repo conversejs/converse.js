@@ -5,6 +5,8 @@
   [jcbrand]
 - Check whether the user has a reserved nickname before entering a room, and if so,
   use it. [jcbrand]
+- Mention someone in your chat room message by clicking on their name in the occupants
+  list. [jcbrand]
 
 ## 1.0.4 (2016-07-26)
 

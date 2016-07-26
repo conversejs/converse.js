@@ -551,17 +551,21 @@
                     return this;
                 },
 
+                insertIntoTextArea: function (value) {
+                    var $textbox = this.$el.find('textarea.chat-textarea');
+                    var existing = $textbox.val();
+                    if (existing && (existing[existing.length-1] !== ' ')) {
+                        existing = existing + ' ';
+                    }
+                    $textbox.focus().val(existing+value+' ');
+                },
+
                 insertEmoticon: function (ev) {
                     ev.stopPropagation();
                     this.$el.find('.toggle-smiley ul').slideToggle(200);
-                    var $textbox = this.$el.find('textarea.chat-textarea');
-                    var value = $textbox.val();
                     var $target = $(ev.target);
                     $target = $target.is('a') ? $target : $target.children('a');
-                    if (value && (value[value.length-1] !== ' ')) {
-                        value = value + ' ';
-                    }
-                    $textbox.focus().val(value+$target.data('emoticon')+' ');
+                    this.insertIntoTextArea($target.data('emoticon'));
                 },
 
                 toggleEmoticonMenu: function (ev) {

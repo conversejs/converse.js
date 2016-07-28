@@ -348,7 +348,7 @@
                  *     </fin>
                  * </message>
                  */
-                stanza = $msg().c('fin', {'xmlns': 'urn:xmpp:mam:0', 'complete': 'true'})
+                stanza = $msg().c('fin', {'xmlns': 'urn:xmpp:mam:0', 'queryid':queryid, 'complete': 'true'})
                             .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
                                 .c('first', {'index': '0'}).t('23452-4534-1').up()
                                 .c('last').t('390-2342-22').up()

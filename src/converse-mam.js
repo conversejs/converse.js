@@ -203,11 +203,12 @@
                         stanza.cnode(new Strophe.RSM(options).toXML());
                     }
                 }
-                converse.connection.addHandler(function (message) {
-                    var $msg = $(message), $fin, rsm;
-                    if (typeof callback === "function") {
-                        $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                        if ($fin.length) {
+
+                if (typeof callback === "function") {
+                    converse.connection.addHandler(function (message) {
+                        var $msg = $(message), rsm,
+                            $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
+                        if ($fin.length && $fin.attr('queryid') === queryid) {
                             rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
                             _.extend(rsm, _.pick(options, ['max']));
                             _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
@@ -217,10 +218,8 @@
                             messages.push(message);
                         }
                         return true;
-                    } else {
-                        return false; // There's no callback, so no use in continuing this handler.
-                    }
-                }, Strophe.NS.MAM);
+                    }, Strophe.NS.MAM);
+                }
                 converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
             };
 

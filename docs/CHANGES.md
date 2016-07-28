@@ -9,6 +9,7 @@
   list. [jcbrand]
 - #645 When accepting a contact request, the contact didn't appear in the
   pending contacts group. [jcbrand]
+- Bugfix: allow multiple MAM queries to be made simultaneously. [jcbrand]
 
 ## 1.0.4 (2016-07-26)
 

@@ -883,7 +883,15 @@
 
                 onContactRequestChange: function (contact) {
                     if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
-                        this.model.contacts.remove(contact.get('id'));
+                        /* We suppress events, otherwise the remove event will
+                         * also cause the contact's view to be removed from the
+                         * "Pending Contacts" group.
+                         */
+                        this.model.contacts.remove(contact.get('id'), {'silent': true});
+                        // Since we suppress events, we make sure the view and
+                        // contact are removed from this group.
+                        this.get(contact.get('id')).remove();
+                        this.onRemove(contact);
                     }
                 },
 

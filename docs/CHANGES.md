@@ -7,6 +7,8 @@
   use it. [jcbrand]
 - Mention someone in your chat room message by clicking on their name in the occupants
   list. [jcbrand]
+- #645 When accepting a contact request, the contact didn't appear in the
+  pending contacts group. [jcbrand]
 
 ## 1.0.4 (2016-07-26)
 

@@ -5,7 +5,9 @@
 3. Run `make release VERSION=1.0.5`
 4. Do a `git diff` to check if things look sane.
 4. Do a quick manual test with the `dist` files (via `index.html`)
-5. Run `git push && git push --tags`
-6. Update http://conversejs.org
-7. Create `1.0.5` directory for the CDN.
-8. Run `npm publish`
+5. `git commit -m "New release 1.0.5"`
+6. `git tag -s v1.0.5
+7. Run `git push && git push --tags`
+8. Update http://conversejs.org
+9. Create `1.0.5` directory for the CDN.
+10. Run `npm publish`

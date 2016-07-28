@@ -310,6 +310,10 @@
             null,
             "Hiba történt az adatok mentése közben."
          ],
+         "Nickname": [
+            null,
+            "Becenév"
+         ],
          "This chatroom requires a password": [
             null,
             "A csevegőszobába belépéshez jelszó szükséges"
@@ -402,10 +406,6 @@
             null,
             "A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
          ],
-         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
-            null,
-            "A beceneved módosításra került a következőre: <strong>%1$s</strong>"
-         ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
             "A beceneved a következőre módosult: <strong>%1$s</strong>"
@@ -430,9 +430,9 @@
             null,
             "A beceneved ütközik a csevegőszoba szabályzataival"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "A becenevedet már valaki használja"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -441,18 +441,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "A következő témát állította be %1$s: %2$s"
-         ],
-         "This user is a moderator": [
-            null,
-            "Ez a felhasználó egy moderátor"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Ez a felhasználó küldhet üzenetet ebbe a szobába"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Ez a felhasználó NEM küldhet üzenetet ebbe a szobába"
          ],
          "Invite": [
             null,
@@ -473,10 +461,6 @@
          "Room name": [
             null,
             "Szoba neve"
-         ],
-         "Nickname": [
-            null,
-            "Becenév"
          ],
          "Server": [
             null,

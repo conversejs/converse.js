@@ -303,6 +303,14 @@
             null,
             "Errore durante il salvataggio del modulo"
          ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Soprannome"
+         ],
          "This chatroom requires a password": [
             null,
             "Questa stanza richiede una password"
@@ -395,10 +403,6 @@
             null,
             "<strong>%1$s</strong> è stato rimosso in quanto non membro"
          ],
-         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
-            null,
-            "Il tuo nickname è stato cambiato automaticamente in: <strong>%1$s</strong>"
-         ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
             "Il tuo nickname è stato cambiato: <strong>%1$s</strong>"
@@ -423,9 +427,9 @@
             null,
             "Il tuo soprannome non è conforme alle regole di questa stanza"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "Il tuo soprannome è già utilizzato"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -434,18 +438,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Topic impostato da %1$s a: %2$s"
-         ],
-         "This user is a moderator": [
-            null,
-            "Questo utente è un moderatore"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Questo utente può inviare messaggi in questa stanza"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Questo utente NON può inviare messaggi in questa stanza"
          ],
          "Invite": [
             null,
@@ -466,10 +458,6 @@
          "Room name": [
             null,
             "Nome stanza"
-         ],
-         "Nickname": [
-            null,
-            "Soprannome"
          ],
          "Server": [
             null,

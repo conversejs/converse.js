@@ -255,6 +255,14 @@
             null,
             "Un error ocurrío mientras se guardaba el formulario."
          ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Apodo"
+         ],
          "This chatroom requires a password": [
             null,
             "Esta sala de chat requiere una contraseña."
@@ -363,9 +371,9 @@
             null,
             "Su apodo no se ajusta a la política de esta sala"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "Su apodo ya ha sido tomando por otro usuario"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -374,18 +382,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Tema fijado por %1$s a: %2$s"
-         ],
-         "This user is a moderator": [
-            null,
-            "Este usuario es un moderador"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Este usuario puede enviar mensajes en esta sala"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Este usuario NO puede enviar mensajes en esta"
          ],
          "Invite": [
             null,
@@ -406,10 +402,6 @@
          "Room name": [
             null,
             "Nombre de sala"
-         ],
-         "Nickname": [
-            null,
-            "Apodo"
          ],
          "Server": [
             null,

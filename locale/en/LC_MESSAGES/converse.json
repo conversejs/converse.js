@@ -323,6 +323,14 @@
             null,
             "An error occurred while trying to save the form."
          ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            ""
+         ],
          "This chatroom requires a password": [
             null,
             "This chatroom requires a password"
@@ -415,7 +423,7 @@
             null,
             "<strong>%1$s</strong> has been removed for not being a member"
          ],
-         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
+         "Your nickname has been automatically set to: <strong>%1$s</strong>": [
             null,
             ""
          ],
@@ -443,9 +451,9 @@
             null,
             "Your nickname doesn't conform to this room's policies"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "Your nickname is already taken"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -454,18 +462,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Topic set by %1$s to: %2$s"
-         ],
-         "This user is a moderator": [
-            null,
-            "This user is a moderator"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "This user can send messages in this room"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "This user can NOT send messages in this room"
          ],
          "Invite": [
             null,
@@ -484,10 +480,6 @@
             ""
          ],
          "Room name": [
-            null,
-            ""
-         ],
-         "Nickname": [
             null,
             ""
          ],

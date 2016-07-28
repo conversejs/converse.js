@@ -311,6 +311,10 @@
             null,
             "S'ha produït un error en intentar desar el formulari."
          ],
+         "Nickname": [
+            null,
+            "Àlies"
+         ],
          "This chatroom requires a password": [
             null,
             "Aquesta sala de xat requereix una contrasenya"
@@ -403,10 +407,6 @@
             null,
             "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
          ],
-         "Your nickname has been automatically changed to: <strong>%1$s</strong>": [
-            null,
-            "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"
-         ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
             "El vostre àlies ha canviat a: <strong>%1$s</strong>"
@@ -431,9 +431,9 @@
             null,
             "El vostre àlies no s'ajusta a les polítiques d'aquesta sala"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "El vostre àlies ja està en ús"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -442,18 +442,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Tema definit per %1$s en: %2$s"
-         ],
-         "This user is a moderator": [
-            null,
-            "Aquest usuari és un moderador"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Aquest usuari pot enviar missatges a aquesta sala"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Aquest usuari NO pot enviar missatges a aquesta sala"
          ],
          "Occupants": [
             null,
@@ -470,10 +458,6 @@
          "Room name": [
             null,
             "Nom de la sala"
-         ],
-         "Nickname": [
-            null,
-            "Àlies"
          ],
          "Server": [
             null,

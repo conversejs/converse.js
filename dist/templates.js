@@ -178,6 +178,24 @@ __p += '<div class="chatroom-form-container">\n    <form class="pure-form pure-f
 return __p
 };
 
+this["templates"]["chatroom_nickname_form"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <label>' +
+((__t = (heading)) == null ? '' : __t) +
+'</label>\n            <p class="validation-message">' +
+((__t = (validation_message)) == null ? '' : __t) +
+'</p>\n            <input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="' +
+((__t = (label_nickname)) == null ? '' : __t) +
+'"/>\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="pure-button button-primary" name="join" value="' +
+((__t = (label_join)) == null ? '' : __t) +
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
+
+}
+return __p
+};
+
 this["templates"]["chatroom_password_form"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -616,25 +634,33 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<li class="' +
 ((__t = (role)) == null ? '' : __t) +
+' occupant" id="' +
+((__t = (id)) == null ? '' : __t) +
 '"\n    ';
  if (role === "moderator") { ;
 __p += '\n       title="' +
 ((__t = (desc_moderator)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
  } ;
 __p += '\n    ';
  if (role === "occupant") { ;
 __p += '\n       title="' +
 ((__t = (desc_occupant)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
  } ;
 __p += '\n    ';
  if (role === "visitor") { ;
 __p += '\n       title="' +
 ((__t = (desc_visitor)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
  } ;
-__p += '\n>' +
+__p += '>' +
 ((__t = (nick)) == null ? '' : __t) +
 '</li>\n';
 
@@ -914,13 +940,7 @@ __p += '<form class="pure-form pure-form-stacked converse-form add-chatroom" act
 ((__t = (label_room_name)) == null ? '' : __t) +
 '</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="' +
 ((__t = (label_room_name)) == null ? '' : __t) +
-'"/>\n        <label>' +
-((__t = (label_nickname)) == null ? '' : __t) +
-'</label> <input type="text" name="nick" class="new-chatroom-nick" placeholder="' +
-((__t = (label_nickname)) == null ? '' : __t) +
-'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
-((__t = (label_join)) == null ? '' : __t) +
-'"/>\n    </fieldset>\n    <fieldset>\n        ';
+'"/>\n        ';
  if (server_input_type != 'hidden') { ;
 __p += '\n            <label' +
 ((__t = (server_label_global_attr)) == null ? '' : __t) +
@@ -932,6 +952,8 @@ __p += '\n        <input type="' +
 ((__t = (server_input_type)) == null ? '' : __t) +
 '" name="server" class="new-chatroom-server" placeholder="' +
 ((__t = (label_server)) == null ? '' : __t) +
+'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
+((__t = (label_join)) == null ? '' : __t) +
 '"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' +
 ((__t = (label_show_rooms)) == null ? '' : __t) +
 '"/>\n    </fieldset>\n</form>\n<dl id="available-chatrooms"></dl>\n';

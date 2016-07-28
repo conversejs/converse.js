@@ -243,6 +243,14 @@
             null,
             "Een error tijdens het opslaan van het formulier."
          ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Nickname"
+         ],
          "This chatroom requires a password": [
             null,
             "Chatroom heeft een wachtwoord"
@@ -351,9 +359,9 @@
             null,
             "Je nickname is niet conform policy"
          ],
-         "Your nickname is already taken": [
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            "Je nickname bestaat al"
+            ""
          ],
          "This room does not (yet) exist": [
             null,
@@ -362,18 +370,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             ""
-         ],
-         "This user is a moderator": [
-            null,
-            "Dit is een moderator"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Deze gebruiker kan berichten sturen in deze room"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Deze gebruiker kan NIET een bericht sturen in deze room"
          ],
          "Invite": [
             null,
@@ -390,10 +386,6 @@
          "Room name": [
             null,
             "Room naam"
-         ],
-         "Nickname": [
-            null,
-            "Nickname"
          ],
          "Server": [
             null,

@@ -45,7 +45,18 @@
     "po2json": "^0.3.0"
   },
   "dependencies": {
-    "requirejs": "~2.1.15",
-    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#master"
+    "requirejs": "~2.2.0",
+    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#master",
+    "jquery": "1.12.3",
+    "jed": "0.5.4",
+    "underscore": "~1.8.3",
+    "backbone": "1.1.2",
+    "backbone.browserStorage": "0.0.2",
+    "backbone.overview": "0.0.2",
+    "otr": "0.2.16",
+    "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
+    "almond": "~0.3.1",
+    "moment": "~2.12.0",
+    "jquery.browser": ">=0.1.0"
   }
 }

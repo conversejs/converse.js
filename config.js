@@ -23,6 +23,7 @@ require.config({
         "jquery.browser":           "components/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "components/jquery-easing-original/index",          // XXX: Only required for https://conversejs.org website
         "moment":                   "components/momentjs/moment",
+        "pluggable":                "node_modules/pluggable.js/pluggable",
         "strophe":                  "components/strophejs/src/wrapper",
         "strophe-base64":           "components/strophejs/src/base64",
         "strophe-bosh":             "components/strophejs/src/bosh",
@@ -56,7 +57,6 @@ require.config({
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
-        "converse-pluggable":       "src/converse-pluggable",
         "converse-register":        "src/converse-register",
         "converse-rosterview":      "src/converse-rosterview",
         "converse-templates":       "src/converse-templates",

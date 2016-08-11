@@ -45,6 +45,7 @@
     "po2json": "^0.3.0"
   },
   "dependencies": {
-    "requirejs": "~2.1.15"
+    "requirejs": "~2.1.15",
+    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#master"
   }
 }

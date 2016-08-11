@@ -23,7 +23,7 @@
         "moment_with_locales",
         "strophe",
         "converse-templates",
-        "converse-pluggable",
+        "pluggable",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
@@ -82,7 +82,7 @@
     };
 
     // Make converse pluggable
-    pluggable.enable(converse);
+    pluggable.enable(converse, 'converse');
 
     // Module-level constants
     converse.STATUS_WEIGHTS = {

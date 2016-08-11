@@ -639,6 +639,19 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
+muc_instant_rooms
+------------------
+
+* Default: ``true``
+
+Determines whether 'instant' (also called 'dynamic' in OpenFire) rooms are created.
+Otherwise rooms first have to be configured before they're available to other
+users (so-called "registered rooms" in `MUC-0045 <http://xmpp.org/extensions/xep-0045.html#createroom>`_).
+
+From a UX perspective, if this settings is `false`, then a configuration form will
+render, that has to be filled in first, before the room can be joined by other
+users.
+
 muc_nickname_from_jid
 ---------------------
 

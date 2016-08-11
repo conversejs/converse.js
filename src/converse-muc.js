@@ -156,16 +156,19 @@
              */
             var converse = this.converse;
             // Configuration values for this plugin
+            // ====================================
+            // Refer to docs/source/configuration.rst for explanations of these
+            // configuration settings.
             this.updateSettings({
-                allow_muc_invitations: true,
                 allow_muc: true,
-                muc_nickname_from_jid: false, // Use the node part of the user's JID as room nickname
-                auto_join_on_invite: false,  // Auto-join chatroom on invite
-                auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
-                                     // providing room jids and nicks or simply a list JIDs.
+                allow_muc_invitations: true,
+                auto_join_on_invite: false,
+                auto_join_rooms: [],
                 auto_list_rooms: false,
                 hide_muc_server: false,
-                muc_history_max_stanzas: undefined, // Takes an integer, limits the amount of messages to fetch from chat room's history
+                muc_history_max_stanzas: undefined,
+                muc_instant_rooms: true,
+                muc_nickname_from_jid: false,
                 show_toolbar: true,
             });
 
@@ -202,6 +205,7 @@
                     var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
                     this.occupantsview.chatroomview = this;
+
                     this.render().$el.hide();
                     this.occupantsview.model.fetch({add:true});
                     var nick = this.model.get('nick');
@@ -648,7 +652,9 @@
                 },
 
                 configureChatRoom: function (ev) {
-                    ev.preventDefault();
+                    if (typeof ev !== 'undefined' && ev.preventDefault) {
+                        ev.preventDefault();
+                    }
                     if (this.$el.find('div.chatroom-form-container').length) {
                         return;
                     }
@@ -875,8 +881,7 @@
                      * Allow user to configure chat room if they are the owner.
                      * See: http://xmpp.org/registrar/mucstatus.html
                      */
-                    var $el = $(el),
-                        i, disconnect_msgs = [], msgs = [], reasons = [];
+                    var $el = $(el), i, disconnect_msgs = [], msgs = [], reasons = [];
 
                     $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
                         var $item = $(x).find('item');
@@ -996,7 +1001,11 @@
                         if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                             this.model.set('connection_status', Strophe.Status.CONNECTED);
                         }
-                        this.hideSpinner().showStatusMessages(pres, is_self);
+                        if (converse.muc_instant_rooms) {
+                            this.hideSpinner().showStatusMessages(pres, is_self);
+                        } else {
+                            this.configureChatRoom();
+                        }
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);
                 },
@@ -1440,11 +1449,7 @@
 
                 createChatRoom: function (ev) {
                     ev.preventDefault();
-                    var name, $name,
-                        server, $server,
-                        jid,
-                        chatroom;
-
+                    var name, $name, server, $server, jid, chatroom;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
                         jid = $(ev.target).attr('data-room-jid');

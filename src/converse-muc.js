@@ -725,6 +725,15 @@
                     }
                 },
 
+                getDefaultNickName: function () {
+                    /* The default nickname (used when muc_nickname_from_jid is true)
+                     * is the node part of the user's JID.
+                     * We put this in a separate method so that it can be
+                     * overridden by plugins.
+                     */
+                    return Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid));
+                },
+
                 onNicknameClash: function (presence) {
                     /* When the nickname is already taken, we either render a
                      * form for the user to choose a new nickname, or we
@@ -736,7 +745,7 @@
                      */
                     if (converse.muc_nickname_from_jid) {
                         var nick = presence.getAttribute('from').split('/')[1];
-                        if (nick === Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid))) {
+                        if (nick === this.getDefaultNickName()) {
                             this.join(nick + '-2');
                         } else {
                             var del= nick.lastIndexOf("-");

@@ -630,7 +630,7 @@
                     .c('status').attrs({code:'307'}).nodeTree;
 
                 var view = this.chatboxviews.get('lounge@localhost');
-                view.onChatRoomPresence(presence, {nick: 'dummy', name: 'lounge@localhost'});
+                view.onChatRoomPresence(presence);
                 expect(view.$('.chat-area').is(':visible')).toBeFalsy();
                 expect(view.$('.occupants').is(':visible')).toBeFalsy();
                 var $chat_body = view.$('.chatroom-body');
@@ -796,7 +796,7 @@
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'renderPasswordForm').andCallThrough();
                 runs(function () {
-                    view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                    view.onChatRoomPresence(presence);
                 });
                 waits(250);
                 runs(function () {
@@ -816,11 +816,11 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'lounge@localhost', type:'auth'})
                     .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room');
-            }.bind(converse));
+            });
 
             it("will show an error message if the user has been banned", function () {
                 var presence = $pres().attrs({
@@ -831,26 +831,79 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'lounge@localhost', type:'auth'})
                     .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe('You have been banned from this room');
-            }.bind(converse));
+            });
 
-            it("will show an error message if no nickname was specified for the user", function () {
+            it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false", function () {
                 var presence = $pres().attrs({
                     from:'lounge@localhost/thirdwitch',
                         id:'n13mt3l',
                         to:'dummy@localhost/pda',
                         type:'error'})
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'lounge@localhost', type:'modify'})
-                    .c('jid-malformed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                    .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe('No nickname was specified');
-            }.bind(converse));
+                view.onChatRoomPresence(presence);
+                expect(view.$el.find('.chatroom-body form.chatroom-form label:first').text()).toBe('Please choose your nickname');
+            });
+
+            it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true", function () {
+                /*
+                    <presence
+                        from='coven@chat.shakespeare.lit/thirdwitch'
+                        id='n13mt3l'
+                        to='hag66@shakespeare.lit/pda'
+                        type='error'>
+                    <x xmlns='http://jabber.org/protocol/muc'/>
+                    <error by='coven@chat.shakespeare.lit' type='cancel'>
+                        <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                    </error>
+                    </presence>
+                */
+                converse.muc_nickname_from_jid = true;
+
+                var attrs = {
+                    from:'lounge@localhost/dummy',
+                    id:'n13mt3l',
+                    to:'dummy@localhost/pda',
+                    type:'error'
+                };
+                var presence = $pres().attrs(attrs)
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                        .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
+                spyOn(view, 'showErrorMessage').andCallThrough();
+                spyOn(view, 'join').andCallThrough();
+
+                // Simulate repeatedly that there's already someone in the room
+                // with that nickname
+                view.onChatRoomPresence(presence);
+                expect(view.join).toHaveBeenCalledWith('dummy-2');
+
+                attrs.from = 'lounge@localhost/dummy-2';
+                presence = $pres().attrs(attrs)
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                        .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                view.onChatRoomPresence(presence);
+
+                expect(view.join).toHaveBeenCalledWith('dummy-3');
+
+                attrs.from = 'lounge@localhost/dummy-3';
+                presence = $pres().attrs(attrs)
+                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                        .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                view.onChatRoomPresence(presence);
+                expect(view.join).toHaveBeenCalledWith('dummy-4');
+            });
 
             it("will show an error message if the user is not allowed to have created the room", function () {
                 var presence = $pres().attrs({
@@ -863,7 +916,7 @@
                     .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 var view = this.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms');
             }.bind(converse));
 
@@ -876,27 +929,11 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies");
-            }.bind(converse));
-
-            it("will show an error message if the user's nickname is already taken", function () {
-                var presence = $pres().attrs({
-                    from:'lounge@localhost/thirdwitch',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                    .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
-                spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe(
-                        "The nickname you chose is reserved or currently in use, please choose a different one.");
-            }.bind(converse));
+            });
 
             it("will show an error message if the room doesn't yet exist", function () {
                 var presence = $pres().attrs({
@@ -907,11 +944,11 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist");
-            }.bind(converse));
+            });
 
             it("will show an error message if the room has reached its maximum number of occupants", function () {
                 var presence = $pres().attrs({
@@ -922,11 +959,11 @@
                 .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
                 .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                     .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                var view = this.chatboxviews.get('problematic@muc.localhost');
+                var view = converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').andCallThrough();
-                view.onChatRoomPresence(presence, {'nick': 'dummy'});
+                view.onChatRoomPresence(presence);
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants");
-            }.bind(converse));
+            });
         }.bind(converse));
     }.bind(converse, mock, test_utils));
 }));

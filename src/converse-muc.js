@@ -159,6 +159,7 @@
             this.updateSettings({
                 allow_muc_invitations: true,
                 allow_muc: true,
+                muc_nickname_from_jid: false, // Use the node part of the user's JID as room nickname
                 auto_join_on_invite: false,  // Auto-join chatroom on invite
                 auto_join_rooms: [], // List of maps {'jid': 'room@example.org', 'nick': 'WizardKing69' },
                                      // providing room jids and nicks or simply a list JIDs.
@@ -694,7 +695,7 @@
                             'node': 'x-roomuser-item'
                         }),
                         this.onNickNameFound.bind(this),
-                        this.renderNicknameForm.bind(this)
+                        this.onNickNameNotFound.bind(this)
                     );
                 },
 
@@ -708,13 +709,51 @@
                         .find('query[node="x-roomuser-item"] identity')
                         .attr('name');
                     if (!nick) {
-                        this.renderNicknameForm();
+                        this.onNickNameNotFound();
                     } else {
                         this.join(nick);
                     }
                 },
 
+                onNickNameNotFound: function (message) {
+                    if (converse.muc_nickname_from_jid) {
+                        // We try to enter the room with the node part of
+                        // the user's JID.
+                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid)));
+                    } else {
+                        this.renderNicknameForm(message);
+                    }
+                },
+
+                onNicknameClash: function (presence) {
+                    /* When the nickname is already taken, we either render a
+                     * form for the user to choose a new nickname, or we
+                     * try to make the nickname unique by adding an integer to
+                     * it. So john will become john-2, and then john-3 and so on.
+                     *
+                     * Which option is take depends on the value of
+                     * muc_nickname_from_jid.
+                     */
+                    if (converse.muc_nickname_from_jid) {
+                        var nick = presence.getAttribute('from').split('/')[1];
+                        if (nick === Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid))) {
+                            this.join(nick + '-2');
+                        } else {
+                            var del= nick.lastIndexOf("-");
+                            var num = nick.substring(del+1, nick.length);
+                            this.join(nick.substring(0, del+1) + String(Number(num)+1));
+                        }
+                    } else {
+                        this.renderNicknameForm(
+                            __("The nickname you chose is reserved or currently in use, please choose a different one.")
+                        );
+                    }
+                },
+
                 renderNicknameForm: function (message) {
+                    /* Render a form which allows the user to choose their
+                     * nickname.
+                     */
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
                     if (typeof message !== "string") {
@@ -883,9 +922,10 @@
                     return el;
                 },
 
-                showErrorMessage: function ($error) {
+                showErrorMessage: function (presence) {
                     // We didn't enter the room, so we must remove it from the MUC
                     // add-on
+                    var $error = $(presence).find('error');
                     if ($error.attr('type') === 'auth') {
                         if ($error.find('not-authorized').length) {
                             this.renderPasswordForm();
@@ -904,7 +944,7 @@
                         } else if ($error.find('not-acceptable').length) {
                             this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
                         } else if ($error.find('conflict').length) {
-                            this.renderNicknameForm(__("The nickname you chose is reserved or currently in use, please choose a different one."));
+                            this.onNicknameClash(presence);
                         } else if ($error.find('item-not-found').length) {
                             this.showDisconnectMessage(__("This room does not (yet) exist"));
                         } else if ($error.find('service-unavailable').length) {
@@ -940,7 +980,7 @@
                     var nick = this.model.get('nick');
                     if ($presence.attr('type') === 'error') {
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
-                        this.showErrorMessage($presence.find('error'));
+                        this.showErrorMessage(pres);
                     } else {
                         is_self = ($presence.find("status[code='110']").length) ||
                             ($presence.attr('from') === this.model.get('id')+'/'+Strophe.escapeNode(nick));

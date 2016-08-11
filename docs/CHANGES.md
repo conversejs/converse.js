@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6 (Unreleased)
+- #674 Polish translation updated to the current master. [ser]
+- New config option [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
+
 ## 1.0.5 (2016-07-28)
 - In case of nickname conflict when joining a room, allow the user to choose a new one.
   [jcbrand]

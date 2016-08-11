@@ -639,6 +639,21 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
+muc_nickname_from_jid
+---------------------
+
+* Default: ``false``
+
+When set to ``true``, then users will not be prompted to provide nicknames for
+chat rooms. Instead, the node part of a user's JID (i.e. JID = node@domain/resource)
+will be used. If the user's nickname is already taken by another user in the
+chat room, then an integer will be added to make it unique.
+
+So, for example, if john@example.com joins a chatroom, his nickname will
+automatically be "john". If now john@differentdomain.com tries to join the
+room, his nickname will be "john-2", and if john@somethingelse.com joins, then
+his nickname will be "john-3", and so forth.
+
 notify_all_room_messages
 ------------------------
 

@@ -83,7 +83,7 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoDOM().hide();
+                    this.render().fetchMessages().insertIntoDOM().afterShown();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));

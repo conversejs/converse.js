@@ -267,10 +267,9 @@
 
                 // Test on chat that's not open
                 var box = converse_api.chats.get(jid);
-                expect(box instanceof Object).toBeTruthy();
-                var chatboxview = converse.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeFalsy();
+                expect(typeof box === 'undefined').toBeTruthy();
 
+                var chatboxview = converse.chatboxviews.get(jid);
                 // Test for single JID
                 test_utils.openChatBoxFor(jid);
                 box = converse_api.chats.get(jid);

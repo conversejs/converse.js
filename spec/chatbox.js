@@ -1041,16 +1041,13 @@
                     // <composing> state
                     var msg = $msg({
                             from: sender_jid,
-                            to: this.connection.jid,
+                            to: converse.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
-                        }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    this.chatboxes.onMessage(msg);
+                        }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                    converse.chatboxes.onMessage(msg);
                     expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                    var chatboxview = this.chatboxviews.get(sender_jid);
-                    expect(chatboxview).toBeDefined();
-                    expect(chatboxview.$el.is(':visible')).toBeFalsy(); // The chat box is not visible
-                }.bind(converse));
+                });
 
                 describe("An active notification", function () {
                     it("is sent when the user opens a chat box", function () {

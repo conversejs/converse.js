@@ -117,12 +117,10 @@
                     return null;
                 } else if (typeof jids === "string") {
                     chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
-                    chatbox.open();
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
                     chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
-                    chatbox.open();
                     return chatbox;
                 });
             },
@@ -138,7 +136,7 @@
                     });
                     return result;
                 } else if (typeof jids === "string") {
-                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
+                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(

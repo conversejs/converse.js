@@ -4,6 +4,9 @@
 - #632 Offline and Logout states do not properly update once users start
   chatting. [chrisuehlinger, jcband]
 - #674 Polish translation updated to the current master. [ser]
+- #677 Chatbox does not open after close. [jcbrand]
+- The behavior of `converse.chats.get` has changed. If the chat box is not
+  already open, then `undefined` will be returned. [jcbrand]
 - Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
 - `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to
   `onMessageSubmitted`, to make it the same as the method on `ChatBoxView`. [jcbrand]

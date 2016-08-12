@@ -1367,6 +1367,7 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
+                converse.emit('message', message);
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
                 if (!chatbox) {
@@ -1376,7 +1377,6 @@
                     return true; // We already have this message stored.
                 }
                 chatbox.createMessage($message, $delay, message);
-                converse.emit('message', message);
                 return true;
             },
 

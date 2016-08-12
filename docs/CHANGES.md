@@ -2,6 +2,9 @@
 
 ## 1.0.6 (Unreleased)
 - #674 Polish translation updated to the current master. [ser]
+- Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
+- `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to
+  `onMessageSubmitted`, to make it the same as the method on `ChatBoxView`. [jcbrand]
 - New config option [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
 - New config option [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc_instant_rooms) [jcbrand]
 

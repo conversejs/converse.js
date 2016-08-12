@@ -523,17 +523,11 @@
                         message = $textarea.val();
                         $textarea.val('').focus();
                         if (message !== '') {
-                            // XXX: leaky abstraction from MUC
-                            if (this.model.get('type') === 'chatroom') {
-                                this.onChatRoomMessageSubmitted(message);
-                            } else {
-                                this.onMessageSubmitted(message);
-                            }
+                            this.onMessageSubmitted(message);
                             converse.emit('messageSend', message);
                         }
                         this.setChatState(converse.ACTIVE);
-                    // XXX: leaky abstraction from MUC
-                    } else if (this.model.get('type') !== 'chatroom') { // chat state data is currently only for single user chat
+                    } else {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);

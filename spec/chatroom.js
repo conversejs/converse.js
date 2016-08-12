@@ -728,11 +728,11 @@
             it("to clear messages", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
                 spyOn(view, 'clearChatRoomMessages');
                 view.$el.find('.chat-textarea').text('/clear');
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onChatRoomMessageSubmitted).toHaveBeenCalled();
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.clearChatRoomMessages).toHaveBeenCalled();
 
             });
@@ -740,13 +740,13 @@
             it("to ban a user", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onChatRoomMessageSubmitted').andCallThrough();
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
                 spyOn(view, 'setAffiliation').andCallThrough();
                 spyOn(view, 'showStatusNotification').andCallThrough();
                 spyOn(view, 'validateRoleChangeCommand').andCallThrough();
                 view.$el.find('.chat-textarea').text('/ban');
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
-                expect(view.onChatRoomMessageSubmitted).toHaveBeenCalled();
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showStatusNotification).toHaveBeenCalledWith(
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
@@ -755,10 +755,10 @@
                 expect(view.setAffiliation).not.toHaveBeenCalled();
 
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onChatRoomMessageSubmitted directly, trying
+                // XXX: Calling onMessageSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onChatRoomMessageSubmitted('/ban jid This is the reason');
+                view.onMessageSubmitted('/ban jid This is the reason');
                 expect(view.validateRoleChangeCommand.callCount).toBe(2);
                 expect(view.showStatusNotification.callCount).toBe(1);
                 expect(view.setAffiliation).toHaveBeenCalled();

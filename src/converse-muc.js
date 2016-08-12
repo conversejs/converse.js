@@ -321,6 +321,18 @@
                     this.showStatusNotification(__("Error: could not execute the command"), true);
                 },
 
+                handleChatStateMessage: function (message) {
+                    /* Override the method on the ChatBoxView base class to
+                     * ignore <gone/> notifications in groupchats.
+                     *
+                     * As laid out in the business rules in XEP-0085
+                     * http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
+                     */
+                    if (message.get('chat_state') !== converse.GONE) {
+                        converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
+                    }
+                },
+
                 sendChatRoomMessage: function (text) {
                     var msgid = converse.connection.getUniqueId();
                     var msg = $msg({
@@ -391,7 +403,7 @@
                     return this;
                 },
 
-                onChatRoomMessageSubmitted: function (text) {
+                onMessageSubmitted: function (text) {
                     /* Gets called when the user presses enter to send off a
                      * message in a chat room.
                      *

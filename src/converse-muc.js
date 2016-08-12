@@ -990,7 +990,7 @@
                 },
 
                 onChatRoomPresence: function (pres) {
-                    var $presence = $(pres), is_self;
+                    var $presence = $(pres), is_self, new_room;
                     var nick = this.model.get('nick');
                     if ($presence.attr('type') === 'error') {
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
@@ -998,13 +998,15 @@
                     } else {
                         is_self = ($presence.find("status[code='110']").length) ||
                             ($presence.attr('from') === this.model.get('id')+'/'+Strophe.escapeNode(nick));
-                        if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                        new_room = $presence.find("status[code='201']").length;
+
+                        if (is_self) {
                             this.model.set('connection_status', Strophe.Status.CONNECTED);
-                        }
-                        if (converse.muc_instant_rooms) {
-                            this.hideSpinner().showStatusMessages(pres, is_self);
-                        } else {
-                            this.configureChatRoom();
+                            if (!converse.muc_instant_rooms && new_room) {
+                                this.configureChatRoom();
+                            } else {
+                                this.hideSpinner().showStatusMessages(pres, is_self);
+                            }
                         }
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);

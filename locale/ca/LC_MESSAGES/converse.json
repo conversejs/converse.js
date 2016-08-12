@@ -311,6 +311,10 @@
             null,
             "S'ha produït un error en intentar desar el formulari."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Nickname": [
             null,
             "Àlies"
@@ -430,10 +434,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "El vostre àlies no s'ajusta a les polítiques d'aquesta sala"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

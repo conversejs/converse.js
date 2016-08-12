@@ -250,6 +250,10 @@
             null,
             "Kesalahan terjadi saat menyimpan formulir ini."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Please choose your nickname": [
             null,
             ""
@@ -365,10 +369,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Nama panggilan anda tidak sesuai aturan ruangan ini"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

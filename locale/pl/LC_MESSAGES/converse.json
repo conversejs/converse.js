@@ -7,6 +7,14 @@
             "plural_forms": "nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
             "lang": "pl"
          },
+         "You have unread messages": [
+            null,
+            "Masz nieprzeczytane wiadomości"
+         ],
+         "Close this chat box": [
+            null,
+            "Zamknij okno rozmowy"
+         ],
          "Personal message": [
             null,
             "Wiadomość osobista"
@@ -37,7 +45,7 @@
          ],
          "Remove messages": [
             null,
-            "Usuń wiadomość"
+            "Usuń wiadomości"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
@@ -54,6 +62,10 @@
          "Clear all messages": [
             null,
             "Wyczyść wszystkie wiadomości"
+         ],
+         "Hide the list of occupants": [
+            null,
+            "Ukryj listę rozmówców"
          ],
          "Insert a smiley": [
             null,
@@ -87,9 +99,13 @@
             null,
             "Zaloguj się"
          ],
+         "Username": [
+            null,
+            "Nazwa użytkownika"
+         ],
          "user@server": [
             null,
-            "user@server"
+            "użytkownik@serwer"
          ],
          "password": [
             null,
@@ -97,7 +113,7 @@
          ],
          "Sign in": [
             null,
-            "Zarejestruj się"
+            "Zaloguj się"
          ],
          "I am %1$s": [
             null,
@@ -157,7 +173,7 @@
          ],
          "Log out": [
             null,
-            "Wyloguj"
+            "Wyloguj się"
          ],
          "Contact name": [
             null,
@@ -166,6 +182,10 @@
          "Search": [
             null,
             "Szukaj"
+         ],
+         "e.g. user@example.org": [
+            null,
+            "np. użytkownik@przykładowa-domena.pl"
          ],
          "Add": [
             null,
@@ -197,7 +217,7 @@
          ],
          "Attempting to reconnect": [
             null,
-            ""
+            "Staram się połączyć ponownie"
          ],
          "Error": [
             null,
@@ -205,7 +225,7 @@
          ],
          "Authenticating": [
             null,
-            "Autoryzacja"
+            "Autoryzuję"
          ],
          "Authentication Failed": [
             null,
@@ -219,6 +239,14 @@
             null,
             "Klient nie umożliwia subskrybcji obecności"
          ],
+         "Close this box": [
+            null,
+            "Zamknij okno"
+         ],
+         "Minimize this box": [
+            null,
+            "Zminimalizuj to okno"
+         ],
          "Click to restore this chat": [
             null,
             "Kliknij aby powrócić do rozmowy"
@@ -229,11 +257,11 @@
          ],
          "Minimize this chat box": [
             null,
-            ""
+            "Zminimalizuj okno czatu"
          ],
          "Message": [
             null,
-            "Wiadomość:"
+            "Wiadomość"
          ],
          "Error: could not execute the command": [
             null,
@@ -254,6 +282,10 @@
          "Ban user from room": [
             null,
             "Zablokuj dostępu do pokoju"
+         ],
+         "Change user role to occupant": [
+            null,
+            "Zmień prawa dostępu na zwykłego uczestnika"
          ],
          "Kick user from room": [
             null,
@@ -303,9 +335,21 @@
             null,
             "Wystąpił błąd w czasie próby zachowania formularza."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            "Ksywka jaką wybrałeś jest zarezerwowana albo w użyciu, wybierz proszę inną."
+         ],
+         "Please choose your nickname": [
+            null,
+            "Wybierz proszę ksywkę"
+         ],
          "Nickname": [
             null,
             "Ksywka"
+         ],
+         "Enter room": [
+            null,
+            "Wejdź do pokoju"
          ],
          "This chatroom requires a password": [
             null,
@@ -399,6 +443,10 @@
             null,
             "<strong>%1$s</strong> został usunięty ze względu na to, że nie jest członkiem"
          ],
+         "Your nickname has been automatically set to: <strong>%1$s</strong>": [
+            null,
+            "Twoja ksywka została automatycznie zmieniona na: <strong>%1$s</strong>"
+         ],
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
             "Twoja ksywka została zmieniona na: <strong>%1$s</strong>"
@@ -423,17 +471,33 @@
             null,
             "Twoja ksywka nie jest zgodna z regulaminem pokoju"
          ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
-         ],
          "This room does not (yet) exist": [
             null,
             "Ten pokój (jeszcze) nie istnieje"
          ],
+         "This room has reached its maximum number of occupants": [
+            null,
+            "Pokój przekroczył dozwoloną ilość rozmówców"
+         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Temat ustawiony przez %1$s na: %2$s"
+         ],
+         "Click to mention this user in your message.": [
+            null,
+            "Kliknij aby wspomnieć człowieka w wiadomości."
+         ],
+         "This user is a moderator.": [
+            null,
+            "Ten człowiek jest moderatorem"
+         ],
+         "This user can send messages in this room.": [
+            null,
+            "Ten człowiek może rozmawiać w niejszym pokoju"
+         ],
+         "This user can NOT send messages in this room.": [
+            null,
+            "Ten człowiek NIE może rozmawiać w niniejszym pokoju"
          ],
          "Invite": [
             null,
@@ -553,23 +617,27 @@
          ],
          "Notification from %1$s": [
             null,
-            ""
+            "Powiadomienie od %1$s"
          ],
          "%1$s says": [
             null,
-            ""
+            "%1$s powiedział"
+         ],
+         "has come online": [
+            null,
+            "połączył się"
          ],
          "wants to be your contact": [
             null,
-            ""
+            "chce być twoim kontaktem"
          ],
          "An error has occured": [
             null,
-            ""
+            "Wystąpił błąd"
          ],
          "Re-establishing encrypted session": [
             null,
-            "Przywrócenie sesji szyfrowanej"
+            "Przywacam sesję szyfrowaną"
          ],
          "Generating private key.": [
             null,
@@ -625,7 +693,7 @@
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
-            "Poprosimy cię o podanie pytania sprawdzającego i odpowiedzi na nie.\n\nTwój kontakt zostanie poproszony później o odpowiedź na to samo pytanie i jeśli udzieli tej samej odpowiedzi (ważna jest wielkość liter), tożsamość zostanie zwerfikowana."
+            "Poprosimy cię o podanie pytania sprawdzającego i odpowiedzi na nie.\n\nTwój kontakt zostanie poproszony później o odpowiedź na to samo pytanie i jeśli udzieli tej samej odpowiedzi (ważna jest wielkość liter), tożsamość zostanie zweryfikowana."
          ],
          "What is your security question?": [
             null,
@@ -717,7 +785,7 @@
          ],
          "Register": [
             null,
-            "Zarejestruj"
+            "Zarejestruj się"
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
@@ -733,7 +801,7 @@
          ],
          "Now logging you in": [
             null,
-            "Teraz jesteś logowany"
+            "Jesteś logowany"
          ],
          "Registered successfully": [
             null,
@@ -793,23 +861,23 @@
          ],
          "Filter": [
             null,
-            ""
+            "Filtr"
          ],
          "State": [
             null,
-            ""
+            "Stan"
          ],
          "Any": [
             null,
-            ""
+            "Dowolny"
          ],
          "Chatty": [
             null,
-            ""
+            "Gotowy do rozmowy"
          ],
          "Extended Away": [
             null,
-            ""
+            "Dłuższa nieobecność"
          ],
          "Click to remove this contact": [
             null,

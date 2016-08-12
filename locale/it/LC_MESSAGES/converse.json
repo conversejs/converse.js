@@ -303,6 +303,10 @@
             null,
             "Errore durante il salvataggio del modulo"
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Please choose your nickname": [
             null,
             ""
@@ -426,10 +430,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Il tuo soprannome non è conforme alle regole di questa stanza"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

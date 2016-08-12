@@ -326,6 +326,10 @@
             null,
             "A fout het voorgekom terwyl probeer is om die vorm te stoor."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Nickname": [
             null,
             "Bynaam"
@@ -445,10 +449,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Jou bynaam voldoen nie aan die kamer se beleid nie"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

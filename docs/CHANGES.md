@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.6 (Unreleased)
+## 1.0.6 (2016-08-12)
 - #632 Offline and Logout states do not properly update once users start
   chatting. [chrisuehlinger, jcband]
 - #674 Polish translation updated to the current master. [ser]

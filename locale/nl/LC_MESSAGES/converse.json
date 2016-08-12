@@ -243,6 +243,10 @@
             null,
             "Een error tijdens het opslaan van het formulier."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Please choose your nickname": [
             null,
             ""
@@ -358,10 +362,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Je nickname is niet conform policy"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

@@ -295,6 +295,10 @@
             null,
             "Трапилася помилка при спробі зберегти форму."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Nickname": [
             null,
             "Прізвисько"
@@ -414,10 +418,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Ваше прізвисько не відповідає політиці кімнати"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

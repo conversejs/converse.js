@@ -295,6 +295,10 @@
             null,
             "Beim Speichern des Formulars ist ein Fehler aufgetreten."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Nickname": [
             null,
             "Spitzname"
@@ -414,10 +418,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "Ungültiger Spitzname"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

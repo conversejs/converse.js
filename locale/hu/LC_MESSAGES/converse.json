@@ -310,6 +310,10 @@
             null,
             "Hiba történt az adatok mentése közben."
          ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
          "Nickname": [
             null,
             "Becenév"
@@ -429,10 +433,6 @@
          "Your nickname doesn't conform to this room's policies": [
             null,
             "A beceneved ütközik a csevegőszoba szabályzataival"
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
          ],
          "This room does not (yet) exist": [
             null,

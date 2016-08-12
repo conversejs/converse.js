@@ -198,6 +198,7 @@
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
+                    this.model.on('change:chat_state', this.sendChatState, this);
 
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
@@ -328,9 +329,33 @@
                      * As laid out in the business rules in XEP-0085
                      * http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
                      */
+                    if (message.get('fullname') === this.model.get('nick')) {
+                        // Don't know about other servers, but OpenFire sends
+                        // back to you your own chat state notifications.
+                        // We ignore them here...
+                        return;
+                    }
                     if (message.get('chat_state') !== converse.GONE) {
                         converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
                     }
+                },
+
+                sendChatState: function () {
+                    /* Sends a message with the status of the user in this chat session
+                     * as taken from the 'chat_state' attribute of the chat box.
+                     * See XEP-0085 Chat State Notifications.
+                     */
+                    var chat_state = this.model.get('chat_state');
+                    if (chat_state === converse.GONE) {
+                        // <gone/> is not applicable within MUC context
+                        return;
+                    }
+                    converse.connection.send(
+                        $msg({'to':this.model.get('jid'), 'type': 'groupchat'})
+                            .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
                 },
 
                 sendChatRoomMessage: function (text) {

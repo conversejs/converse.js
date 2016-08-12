@@ -1,6 +1,8 @@
 # Changelog
 
 ## 1.0.6 (Unreleased)
+- #632 Offline and Logout states do not properly update once users start
+  chatting. [chrisuehlinger, jcband]
 - #674 Polish translation updated to the current master. [ser]
 - Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
 - `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to

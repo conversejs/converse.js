@@ -1376,7 +1376,6 @@
                     return true; // We already have this message stored.
                 }
                 chatbox.createMessage($message, $delay, message);
-                converse.roster.addResource(contact_jid, resource);
                 converse.emit('message', message);
                 return true;
             },

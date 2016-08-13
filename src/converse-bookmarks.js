@@ -119,15 +119,14 @@
                                     .up()
                                 .up()
                             .up()
-                        .up()
-                        .c('publish-options')
-                            .c('x', {'xmlns': Strophe.NS.XFORM, 'type':'submit'})
-                                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                                    .c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up()
-                                .c('field', {'var':'pubsub#persist_items'})
-                                    .c('value').t('true').up().up()
-                                .c('field', {'var':'pubsub#access_model'})
-                                    .c('value').t('whitelist');
+                            .c('publish-options')
+                                .c('x', {'xmlns': Strophe.NS.XFORM, 'type':'submit'})
+                                    .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                        .c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up()
+                                    .c('field', {'var':'pubsub#persist_items'})
+                                        .c('value').t('true').up().up()
+                                    .c('field', {'var':'pubsub#access_model'})
+                                        .c('value').t('whitelist');
                     converse.connection.sendIQ(stanza, this.onBookmarkAdded, this.onBookmarkError);
                 },
 

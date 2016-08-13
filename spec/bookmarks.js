@@ -91,20 +91,20 @@
                                 "</storage>"+
                             "</item>"+
                         "</publish>"+
+                        "<publish-options>"+
+                            "<x xmlns='jabber:x:data' type='submit'>"+
+                                "<field var='FORM_TYPE' type='hidden'>"+
+                                    "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
+                                "</field>"+
+                                "<field var='pubsub#persist_items'>"+
+                                    "<value>true</value>"+
+                                "</field>"+
+                                "<field var='pubsub#access_model'>"+
+                                    "<value>whitelist</value>"+
+                                "</field>"+
+                            "</x>"+
+                        "</publish-options>"+
                     "</pubsub>"+
-                    "<publish-options>"+
-                        "<x xmlns='jabber:x:data' type='submit'>"+
-                            "<field var='FORM_TYPE' type='hidden'>"+
-                                "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
-                            "</field>"+
-                            "<field var='pubsub#persist_items'>"+
-                                "<value>true</value>"+
-                            "</field>"+
-                            "<field var='pubsub#access_model'>"+
-                                "<value>whitelist</value>"+
-                            "</field>"+
-                        "</x>"+
-                    "</publish-options>"+
                 "</iq>"
             );
 

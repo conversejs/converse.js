@@ -162,7 +162,7 @@
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
-            'PAUSED':     20000,
+            'PAUSED':     10000,
             'INACTIVE':   90000
         };
 

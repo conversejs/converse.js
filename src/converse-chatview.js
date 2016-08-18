@@ -323,7 +323,7 @@
                 handleChatStateMessage: function (message) {
                     if (message.get('chat_state') === converse.COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
-                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 10000);
+                        this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 20000);
                     } else if (message.get('chat_state') === converse.PAUSED) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                     } else if (_.contains([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {

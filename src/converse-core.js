@@ -95,6 +95,7 @@
         'online':       1
     };
     converse.LOGIN = "login";
+    converse.LOGOUT = "logout";
     converse.ANONYMOUS  = "anonymous";
     converse.PREBIND = "prebind";
     converse.OPENED = 'opened';
@@ -398,6 +399,7 @@
 
 
         this.reconnect = _.debounce(function (condition) {
+            converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
             converse.log('Attempting to reconnect');
@@ -405,41 +407,60 @@
             converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {
-                converse.attemptNonPreboundSession();
+                converse.autoLogin();
             } else if (converse.prebind_url) {
                 converse.startNewBOSHSession();
             }
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
-                converse.reconnect(condition);
-                return 'reconnecting';
-            } else {
-                converse._tearDown();
-                converse.emit('disconnected');
-                return 'disconnected';
+            if (converse.disconnection_cause !== converse.LOGOUT) {
+                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+                    converse.reconnect(condition);
+                    converse.log('RECONNECTING');
+                    return 'reconnecting';
+                } else if (
+                        (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) &&
+                            converse.auto_reconnect) {
+                    window.setTimeout(_.partial(converse.reconnect, condition), 5000);
+                    converse.log('RECONNECTING IN 5 SECONDS');
+                    return 'reconnecting';
+                }
+            }
+            delete converse.connection.reconnecting;
+            converse._tearDown();
+            converse.emit('disconnected');
+            converse.log('DISCONNECTED');
+            return 'disconnected';
+        };
+
+        this.setDisconnectionCause = function (connection_status) {
+            if (typeof converse.disconnection_cause === "undefined") {
+                converse.disconnection_cause = connection_status;
             }
         };
 
-        this.onConnectStatusChanged = function (status, condition, reconnect) {
+        this.onConnectStatusChanged = function (status, condition) {
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
-                if ((typeof reconnect !== 'undefined') && (reconnect)) {
+                if (converse.connection.reconnecting) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onReconnected();
                 } else {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
                     if (converse.connection.restored) {
-                        converse.send_initial_presence = false; // No need to send an initial presence stanza when
-                                                                // we're restoring an existing session.
+                        // No need to send an initial presence stanza when
+                        // we're restoring an existing session.
+                        converse.send_initial_presence = false;
                     }
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
+                converse.setDisconnectionCause(status);
                 converse.onDisconnected(condition);
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(__('Error'), 'error');
@@ -451,16 +472,10 @@
                 converse.giveFeedback(__('Authentication Failed'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-            } else if (status === Strophe.Status.CONNFAIL) {
-                if (converse.connection.authenticated) {
-                    // Only set the disconnection_cause if we're still
-                    // authenticated. If we're not, then the user logged out,
-                    // and it's therefore not strictly speaking a connection
-                    // failure (so we won't automatically reconnect).
-                    converse.disconnection_cause = Strophe.Status.CONNFAIL;
-                }
-            } else if (status === Strophe.Status.DISCONNECTING) {
-                if (condition) {
+            } else if (status === Strophe.Status.CONNFAIL ||
+                       status === Strophe.Status.DISCONNECTING) {
+                converse.setDisconnectionCause(status);
+                if (status === Strophe.Status.DISCONNECTING && condition) {
                     converse.giveFeedback(condition, 'error');
                 }
             }
@@ -518,6 +533,7 @@
         };
 
         this.logOut = function () {
+            converse.disconnection_cause = converse.LOGOUT;
             converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             if (typeof converse.connection !== 'undefined') {
@@ -590,10 +606,10 @@
             // We need to re-register all the event handlers on the newly
             // created connection.
             var deferred = new $.Deferred();
-            this.initStatus().done(function () {
-                this.afterReconnected();
+            converse.initStatus().done(function () {
+                converse.afterReconnected();
                 deferred.resolve();
-            }.bind(this));
+            });
             converse.emit('reconnected');
             return deferred.promise();
         };
@@ -1732,7 +1748,8 @@
                 }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === converse.LOGIN) {
-                if (!this.password) {
+                var password = converse.connection.pass || this.password;
+                if (!password) {
                     throw new Error("initConnection: If you use auto_login and "+
                         "authentication='login' then you also need to provide a password.");
                 }
@@ -1742,7 +1759,7 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
-                this.connection.connect(this.jid, this.password, this.onConnectStatusChanged);
+                this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };
 

@@ -58,6 +58,11 @@
                 return result;
             },
 
+            afterReconnected: function () {
+                this._super.afterReconnected.apply(this, arguments);
+                converse.chatboxviews.get("controlbox").onConnected();
+            },
+
             _tearDown: function () {
                 this._super._tearDown.apply(this, arguments);
                 if (this.rosterview) {

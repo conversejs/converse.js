@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.7 (Unreleased)
+- Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
+
 ## 1.0.6 (2016-08-12)
 - #632 Offline and Logout states do not properly update once users start
   chatting. [chrisuehlinger, jcband]

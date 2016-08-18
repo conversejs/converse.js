@@ -1021,6 +1021,7 @@
                             $(this).remove();
                             that.$el.find('.chat-area').removeClass('hidden');
                             that.$el.find('.occupants').removeClass('hidden');
+                            that.scrollDown();
                         });
                     }
                     return this;

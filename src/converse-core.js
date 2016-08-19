@@ -423,8 +423,8 @@
                         (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
                         converse.disconnection_cause === Strophe.Status.DISCONNECTED) &&
                             converse.auto_reconnect) {
-                    window.setTimeout(_.partial(converse.reconnect, condition), 5000);
-                    converse.log('RECONNECTING IN 5 SECONDS');
+                    window.setTimeout(_.partial(converse.reconnect, condition), 3000);
+                    converse.log('RECONNECTING IN 3 SECONDS');
                     return 'reconnecting';
                 }
             }

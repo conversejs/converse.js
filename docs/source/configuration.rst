@@ -256,6 +256,18 @@ auto_reconnect
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
 
+This option works best when you have `authentication` set to `prebind` and have
+also specified a `prebind_url` URL, from where converse.js can fetch the BOSH
+tokens. In this case, converse.js will automaticallly reconnect when the
+connection drops but also reestablish earlier lost connections (due to
+network outages, closing your laptop etc.).
+
+When `authentication` is set to `login`, then this option will only work when
+the page hasn't been reloaded yet, because then the user's password has been
+wiped from memory. This configuration can however still be useful when using
+converse.js in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
+or `electron <http://electron.atom.io/>`_.
+
 auto_subscribe
 --------------
 

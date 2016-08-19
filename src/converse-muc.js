@@ -1602,16 +1602,15 @@
             }
             /* ------------------------------------------------------------ */
 
-            var _transform = function (jid, nick, fetcher) {
+            var _transform = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();
-                return converse.wrappedChatBox(fetcher({
+                return converse.wrappedChatBox(fetcher(_.extend({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                    'nick': nick,
                     'type': 'chatroom',
                     'box_id': b64_sha1(jid)
-                }));
+                }, attrs)));
             };
 
 
@@ -1637,16 +1636,26 @@
                             });
                         }
                     },
-                    'open': function (jids, nick) {
+                    'open': function (jids, attrs) {
+                        if (typeof attrs === "string") {
+                            attrs = {'nick': attrs};
+                        } else if (typeof attrs === "undefined") {
+                            attrs = {};
+                        }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {
-                            return _transform(jids, nick, fetcher);
+                            return _transform(jids, attrs, fetcher);
                         }
-                        return _.map(jids, _.partial(_transform, _, nick, fetcher));
+                        return _.map(jids, _.partial(_transform, _, attrs, fetcher));
                     },
-                    'get': function (jids, nick, create) {
+                    'get': function (jids, attrs, create) {
+                        if (typeof attrs === "string") {
+                            attrs = {'nick': attrs};
+                        } else if (typeof attrs === "undefined") {
+                            attrs = {};
+                        }
                         if (typeof jids === "undefined") {
                             var result = [];
                             converse.chatboxes.each(function (chatbox) {
@@ -1657,13 +1666,13 @@
                             return result;
                         }
                         var fetcher = _.partial(converse.chatboxviews.getChatBox.bind(converse.chatboxviews), _, create);
-                        if (!nick) {
-                            nick = Strophe.getNodeFromJid(converse.bare_jid);
+                        if (!attrs.nick) {
+                            attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "string") {
-                            return _transform(jids, nick, fetcher);
+                            return _transform(jids, attrs, fetcher);
                         }
-                        return _.map(jids, _.partial(_transform, _, nick, fetcher));
+                        return _.map(jids, _.partial(_transform, _, attrs, fetcher));
                     }
                 }
             });

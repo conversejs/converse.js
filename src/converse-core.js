@@ -1396,7 +1396,7 @@
                 return true;
             },
 
-            getChatBox: function (jid, create) {
+            getChatBox: function (jid, create, attrs) {
                 /* Returns a chat box or optionally return a newly
                  * created one if one doesn't exist.
                  *
@@ -1413,14 +1413,14 @@
                         converse.log('Could not get roster item for JID '+bare_jid, 'error');
                         return;
                     }
-                    chatbox = this.create({
+                    chatbox = this.create(_.extend({
                         'id': bare_jid,
                         'jid': bare_jid,
                         'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
                         'image_type': roster_item.get('image_type'),
                         'image': roster_item.get('image'),
                         'url': roster_item.get('url')
-                    });
+                    }, attrs || {}));
                 }
                 return chatbox;
             }

@@ -403,8 +403,9 @@
             converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
-            converse.log('Attempting to reconnect');
-            converse.giveFeedback(__('Attempting to reconnect'), 'error');
+            converse.log('The connection has dropped, attempting to reconnect.');
+            converse.giveFeedback(
+                __('The connection has dropped, attempting to reconnect.'), 'warn');
             converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {

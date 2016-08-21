@@ -178,7 +178,7 @@ archived_messages_page_size
 
 * Default:  ``20``
 
-See also: `message_archiving`
+See also: `message_archiving`_
 
 This feature applies to `XEP-0313: Message Archive Management (MAM) <https://xmpp.org/extensions/xep-0313.html>`_
 and will only take effect if your server supports MAM.
@@ -634,6 +634,28 @@ Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
+message_storage
+----------------
+
+* Default:  ``session``
+
+Valid options: ``session``, ``local``.
+
+This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
+(``localStorage`` or ``sessionStorage``) used by converse.js to cache messages (private and group).
+
+The main difference between the two is that `sessionStorage` only persists while
+the current tab or window containing a converse.js instance is open. As soon as
+it's closed, the data is cleared.
+
+Data in `localStorage` on the other hand is kept indefinitely, which can have
+privacy implications on public computers or when multiple people are using the
+same computer.
+
+See also the `storage`_ option, which applies to other cached data, such as
+which chats you have open, what features the XMPP server supports and what
+your online status is.
+
 muc_history_max_stanzas
 -----------------------
 
@@ -838,26 +860,39 @@ storage
 
 Valid options: ``session``, ``local``.
 
-This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
+This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
 (``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
 
-Originally converse.js used only localStorage, however sessionStorage is from a
+Originally converse.js used only `localStorage`, however `sessionStorage` is from a
 privacy perspective a better choice.
 
-The main difference between the two is that sessionStorage only persists while
+The main difference between the two is that `sessionStorage` only persists while
 the current tab or window containing a converse.js instance is open. As soon as
 it's closed, the data is cleared.
 
-Data in localStorage on the other hand is kept indefinitely.
+Data in `localStorage` on the other hand is kept indefinitely.
+
+The data that is cached includes which chats you had open, what features the
+XMPP server supports and what your online status was.
+
+Since version 1.0.7, the store for messages is now configurable separately with
+the `message_storage`_ option, to allow you to cache messages for longer in the
+browser (with `localStorage`) while still using `sessionStorage` for other
+data.
 
 .. note::
-    Since version 0.8.0, the use of local storage is not recommended. The
-    statuses (online, away, busy etc.) of your roster contacts are cached in
-    the browser storage. If you use local storage, these values are stored for
-    multiple sessions, and they will likely become out of sync with your contacts'
-    actual statuses. The session storage doesn't have this problem, because
-    roster contact statuses will not become out of sync in a single session,
-    only across more than one session.
+    Between versions 0.8.0 and 1.0.7, setting the value of this option to "local"
+    is not recommended. The statuses (online, away, busy etc.) of your roster
+    contacts are cached in the browser storage. If you use local storage, these
+    values are stored for multiple sessions, and they will likely become out of
+    sync with your contacts' actual statuses. The session storage doesn't have
+    this problem, because roster contact statuses will not become out of sync in
+    a single session, only across more than one session.
+
+    Since version 1.0.7, the "storage" option doesn't apply anymore to how roster
+    contacts and their statuses are stored (they're now always stored in session
+    storage), to address the above issue.
+    
 
 sticky_controlbox
 -----------------

@@ -2,6 +2,8 @@
 
 ## 1.0.7 (Unreleased)
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
+- Add new configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
+- Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
 
 ## 1.0.6 (2016-08-12)
 - #632 Offline and Logout states do not properly update once users start

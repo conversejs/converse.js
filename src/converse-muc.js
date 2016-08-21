@@ -204,7 +204,7 @@
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
                     });
                     var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
-                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.chatroomview = this;
 
                     this.render().$el.hide();

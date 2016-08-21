@@ -242,6 +242,7 @@
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
+            message_storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
             visible_toolbar_buttons: {
@@ -640,10 +641,10 @@
 
         this.initRoster = function () {
             this.roster = new this.RosterContacts();
-            this.roster.browserStorage = new Backbone.BrowserStorage[this.storage](
+            this.roster.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.contacts-'+this.bare_jid));
             this.rostergroups = new converse.RosterGroups();
-            this.rostergroups.browserStorage = new Backbone.BrowserStorage[converse.storage](
+            this.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
         };
 
@@ -1212,7 +1213,7 @@
 
             initialize: function () {
                 this.messages = new converse.Messages();
-                this.messages.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                this.messages.browserStorage = new Backbone.BrowserStorage[converse.message_storage](
                     b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
                 this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened

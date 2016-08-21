@@ -656,20 +656,31 @@ Returns an object representing a multi user chat box (room).
 It takes 3 parameters:
 
 * the room JID (if not specified, all rooms will be returned).
-* the user's nickname (if not specified, the node part of the user's JID will be used).
-* boolean, indicating whether the room should be created if not found (default: `false`)
+* a map (object) containing any extra room attributes For example, if you want
+  to specify the nickname, use ``{'nick': 'bloodninja'}``. Previously (before
+  version 1.0.7, the second parameter only accepted the nickname (as a string
+  value). This is currently still accepted, but then you can't pass in any
+  other room attributes. If the nickname is not specified then the node part of
+  the user's JID will be used.
+* a boolean, indicating whether the room should be created if not found (default: `false`)
 
 .. code-block:: javascript
 
     var nick = 'dread-pirate-roberts';
     var create_if_not_found = true;
-    converse.rooms.open('group@muc.example.com', nick, create_if_not_found)
+    converse.rooms.open('group@muc.example.com', {'nick': nick}, create_if_not_found)
 
 open
 ~~~~
 
 Opens a multi user chat box and returns an object representing it.
 Similar to chats.get API
+
+It takes 2 parameters:
+
+* the room JID (if not specified, all rooms will be returned).
+* a map (object) containing any extra room attributes. For example, if you want
+  to specify the nickname, use ``{'nick': 'bloodninja'}``.
 
 To open a single multi user chat box, provide the JID of the room:
 
@@ -687,7 +698,7 @@ To setup a custom nickname when joining the room, provide the optional nick argu
 
 .. code-block:: javascript
 
-    converse.rooms.open('group@muc.example.com', 'mycustomnick')
+    converse.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
 
 close
 ~~~~~

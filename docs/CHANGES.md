@@ -2,6 +2,7 @@
 
 ## 1.0.7 (Unreleased)
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
+- Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
 - Add new configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
 - Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
 

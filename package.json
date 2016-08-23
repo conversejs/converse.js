@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "requirejs": "~2.2.0",
-    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#master",
+    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#0a43995de5186b6a575719127a28eda2f3f2fb86",
     "jquery": "1.12.3",
     "jed": "0.5.4",
     "underscore": "~1.8.3",

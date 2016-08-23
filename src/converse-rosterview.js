@@ -126,7 +126,7 @@
                             label_state: __('State'),
                             label_any: __('Any'),
                             label_online: __('Online'),
-                            label_chatty: __('Chatty'),
+                            label_chatty: __('Chat'),
                             label_busy: __('Busy'),
                             label_away: __('Away'),
                             label_xa: __('Extended Away'),

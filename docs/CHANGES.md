@@ -5,6 +5,8 @@
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
 - Add new configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
 - Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
+- Fixed wrong chat state value, should be `chat`, not `chatty`.
+  See [RFC 3921](https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.1.2.2). [jcbrand]
 
 ## 1.0.6 (2016-08-12)
 - #632 Offline and Logout states do not properly update once users start

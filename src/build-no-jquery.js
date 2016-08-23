@@ -1,6 +1,6 @@
 ({
     baseUrl: "../",
-    name: "components/almond/almond.js",
+    name: "node_modules/almond/almond.js",
     out: "../dist/converse.nojquery.min.js",
     include: ['converse'],
     exclude: ['jquery', 'jquery-private'],

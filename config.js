@@ -14,6 +14,7 @@ if (typeof(require) === 'undefined') {
 require.config({
     baseUrl: '.',
     paths: {
+        "almond":                   "node_modules/almond/almond",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",

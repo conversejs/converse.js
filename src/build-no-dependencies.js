@@ -1,6 +1,6 @@
 ({
     baseUrl: "../",
-    name: "node_modules/almond/almond.js",
+    name: "almond",
     out: "../dist/converse-no-dependencies.min.js",
     include: ['converse'],
     excludeShallow: [

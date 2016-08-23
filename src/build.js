@@ -1,6 +1,6 @@
 ({
     baseUrl: "../",
-    name: "node_modules/almond/almond.js",
+    name: "almond",
     out: "../dist/converse.min.js",
     mainConfigFile: '../config.js',
     include: ['converse'],

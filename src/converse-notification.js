@@ -195,15 +195,7 @@
             };
 
             converse.showFeedbackNotification = function (data) {
-                var subject;
-                if (data.klass === 'error') {
-                    subject = __('An error has occured');
-                } else if (data.klass === 'warn') {
-                    subject = __('Please be aware');
-                } else {
-                    return;
-                }
-                var n = new Notification(subject, {
+                var n = new Notification(data.subject, {
                         body: data.message,
                         lang: converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'

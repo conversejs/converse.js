@@ -373,17 +373,21 @@
             converse.everySecondTrigger = window.setInterval(converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (message, klass) {
+        this.giveFeedback = function (subject, klass, message) {
             $('.conn-feedback').each(function (idx, el) {
                 var $el = $(el);
-                $el.addClass('conn-feedback').text(message);
+                $el.addClass('conn-feedback').text(subject);
                 if (klass) {
                     $el.addClass(klass);
                 } else {
                     $el.removeClass('error');
                 }
             });
-            converse.emit('feedback', {'message': message, 'klass': klass});
+            converse.emit('feedback', {
+                'klass': klass,
+                'message': message,
+                'subject': subject
+            });
         };
 
         this.rejectPresenceSubscription = function (jid, message) {
@@ -405,7 +409,9 @@
             converse.connection.reset();
             converse.log('The connection has dropped, attempting to reconnect.');
             converse.giveFeedback(
-                __('The connection has dropped, attempting to reconnect.'), 'warn');
+                __("Reconnecting"), 'warn',
+                __('The connection has dropped, attempting to reconnect.')
+            );
             converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {
@@ -464,22 +470,28 @@
             } else if (status === Strophe.Status.DISCONNECTED) {
                 converse.setDisconnectionCause(status);
                 converse.onDisconnected(condition);
+                if (status === Strophe.Status.DISCONNECTING && condition) {
+                    converse.giveFeedback(
+                        __("Disconnected"), 'warn',
+                        __("The connection to the chat server has dropped")
+                    );
+                }
             } else if (status === Strophe.Status.ERROR) {
-                converse.giveFeedback(__('Error'), 'error');
+                converse.giveFeedback(
+                    __('Connection error'), 'error',
+                    __('An error occurred while connecting to the chat server.')
+                );
             } else if (status === Strophe.Status.CONNECTING) {
                 converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.giveFeedback(__('Authentication Failed'), 'error');
+                converse.giveFeedback(__('Authentication failed.'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
             } else if (status === Strophe.Status.CONNFAIL ||
                        status === Strophe.Status.DISCONNECTING) {
                 converse.setDisconnectionCause(status);
-                if (status === Strophe.Status.DISCONNECTING && condition) {
-                    converse.giveFeedback(condition, 'error');
-                }
             }
         };
 

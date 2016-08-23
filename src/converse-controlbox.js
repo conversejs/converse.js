@@ -49,18 +49,18 @@
 
             onDisconnected: function () {
                 var result = this._super.onDisconnected.apply(this, arguments);
+                // Set connected to `false`, so that if we reconnect,
+                // "onConnected" will be called, to fetch the roster again and
+                // to send out a presence stanza.
+                var view = converse.chatboxviews.get('controlbox');
+                view.model.set({connected:false});
+                // If we're not going to reconnect, then render the login
+                // panel.
                 if (result === 'disconnected') {
-                    var view = converse.chatboxviews.get('controlbox');
-                    view.model.set({connected:false});
                     view.$('#controlbox-tabs').empty();
                     view.renderLoginPanel();
                 }
                 return result;
-            },
-
-            afterReconnected: function () {
-                this._super.afterReconnected.apply(this, arguments);
-                converse.chatboxviews.get("controlbox").onConnected();
             },
 
             _tearDown: function () {

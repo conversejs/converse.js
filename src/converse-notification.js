@@ -195,12 +195,14 @@
             };
 
             converse.showFeedbackNotification = function (data) {
-                var n = new Notification(data.subject, {
-                        body: data.message,
-                        lang: converse.i18n.locale_data.converse[""].lang,
-                        icon: 'logo/conversejs.png'
-                    });
-                setTimeout(n.close.bind(n), 5000);
+                if (data.klass === 'error' || data.klass === 'warn') {
+                    var n = new Notification(data.subject, {
+                            body: data.message,
+                            lang: converse.i18n.locale_data.converse[""].lang,
+                            icon: 'logo/conversejs.png'
+                        });
+                    setTimeout(n.close.bind(n), 5000);
+                }
             };
 
             converse.handleChatStateNotification = function (evt, contact) {

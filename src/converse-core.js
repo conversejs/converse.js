@@ -409,8 +409,7 @@
             converse.connection.reset();
             converse.log('The connection has dropped, attempting to reconnect.');
             converse.giveFeedback(
-                __("Reconnecting"), 'warn',
-                __('The connection has dropped, attempting to reconnect.')
+                __("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.')
             );
             converse.clearSession();
             converse._tearDown();
@@ -1764,8 +1763,13 @@
             } else if (this.authentication === converse.LOGIN) {
                 var password = converse.connection.pass || this.password;
                 if (!password) {
-                    throw new Error("initConnection: If you use auto_login and "+
-                        "authentication='login' then you also need to provide a password.");
+                    if (this.auto_login && !this.password) {
+                        throw new Error("initConnection: If you use auto_login and "+
+                            "authentication='login' then you also need to provide a password.");
+                    }
+                    converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+                    converse.onDisconnected();
+                    converse.giveFeedback(''); // Wipe the feedback
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {

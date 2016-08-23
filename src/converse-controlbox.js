@@ -64,7 +64,13 @@
             },
 
             afterReconnected: function () {
-                view.model.set({connected:true});
+                this._super.afterReconnected.apply(this, arguments);
+                var view = converse.chatboxviews.get('controlbox');
+                if (view.model.get('connected')) {
+                    converse.chatboxviews.get("controlbox").onConnected();
+                } else {
+                    view.model.set({connected:true});
+                }
             },
 
             _tearDown: function () {

@@ -63,6 +63,10 @@
                 return result;
             },
 
+            afterReconnected: function () {
+                view.model.set({connected:true});
+            },
+
             _tearDown: function () {
                 this._super._tearDown.apply(this, arguments);
                 if (this.rosterview) {

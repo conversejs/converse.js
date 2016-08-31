@@ -1041,10 +1041,10 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                converse.emit('roster', iq);
                 $(iq).children('query').find('item').each(function (idx, item) {
                     this.updateContact(item);
                 }.bind(this));
+                converse.emit('roster', iq);
             },
 
             updateContact: function (item) {

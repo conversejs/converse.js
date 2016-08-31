@@ -60,12 +60,12 @@
             // New functions which don't exist yet can also be added.
  
             _initialize: function () {
-                this._super._initialize.apply(this, arguments);
+                this.__super__._initialize.apply(this, arguments);
                 this.otr = new this.OTR();
             },
 
             registerGlobalEventHandlers: function () {
-                this._super.registerGlobalEventHandlers();
+                this.__super__.registerGlobalEventHandlers();
 
                 $(document).click(function () {
                     if ($('.toggle-otr ul').is(':visible')) {
@@ -78,7 +78,7 @@
             },
 
             wrappedChatBox: function (chatbox) {
-                var wrapped_chatbox = this._super.wrappedChatBox.apply(this, arguments);
+                var wrapped_chatbox = this.__super__.wrappedChatBox.apply(this, arguments);
                 if (!chatbox) { return; }
                 return _.extend(wrapped_chatbox, {
                     'endOTR': chatbox.endOTR.bind(chatbox),
@@ -88,7 +88,7 @@
 
             ChatBox: {
                 initialize: function () {
-                    this._super.initialize.apply(this, arguments);
+                    this.__super__.initialize.apply(this, arguments);
                     if (this.get('box_id') !== 'controlbox') {
                         this.save({
                             'otr_status': this.get('otr_status') || UNENCRYPTED
@@ -102,17 +102,17 @@
                      * OTR session is still being established, so there are no
                      * "visible" OTR messages being exchanged.
                      */
-                    return this._super.shouldPlayNotification.apply(this, arguments) &&
+                    return this.__super__.shouldPlayNotification.apply(this, arguments) &&
                         !(utils.isOTRMessage($message[0]) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
                 createMessage: function ($message, $delay, original_stanza) {
-                    var converse = this._super.converse,
+                    var converse = this.__super__.converse,
                         $body = $message.children('body'),
                         text = ($body.length > 0 ? $body.text() : undefined);
 
                     if ((!text) || (!converse.allow_otr)) {
-                        return this._super.createMessage.apply(this, arguments);
+                        return this.__super__.createMessage.apply(this, arguments);
                     }
                     if (text.match(/^\?OTRv23?/)) {
                         this.initiateOTR(text);
@@ -128,14 +128,14 @@
                                 }
                             } else {
                                 // Normal unencrypted message.
-                                return this._super.createMessage.apply(this, arguments);
+                                return this.__super__.createMessage.apply(this, arguments);
                             }
                         }
                     }
                 },
                 
                 getSession: function (callback) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
                     var pass, instance_tag, saved_key, pass_check;
                     if (converse.cache_otr_key) {
@@ -226,7 +226,7 @@
                     // send the query message to them.
                     this.save({'otr_status': UNENCRYPTED});
                     this.getSession(function (session) {
-                        var converse = this._super.converse;
+                        var converse = this.__super__.converse;
                         this.otr = new otr.OTR({
                             fragment_size: 140,
                             send_interval: 200,
@@ -273,8 +273,8 @@
                 },
 
                 initialize: function () {
-                    var converse = this._super.converse;
-                    this._super.initialize.apply(this, arguments);
+                    var converse = this.__super__.converse;
+                    this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                     this.model.on('showOTRError', this.showOTRError, this);
                     this.model.on('showSentOTRMessage', function (text) {
@@ -289,7 +289,7 @@
                 },
 
                 createMessageStanza: function () {
-                    var stanza = this._super.createMessageStanza.apply(this, arguments);
+                    var stanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (this.model.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
                         // OTR messages aren't carbon copied
                         stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
@@ -301,7 +301,7 @@
                 },
 
                 onMessageSubmitted: function (text) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     if (!converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
@@ -322,7 +322,7 @@
                         this.model.otr.sendMsg(text);
                         this.model.trigger('showSentOTRMessage', text);
                     } else {
-                        this._super.onMessageSubmitted.apply(this, arguments);
+                        this.__super__.onMessageSubmitted.apply(this, arguments);
                     }
                 },
 
@@ -346,7 +346,7 @@
                 },
 
                 showOTRError: function (msg) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     if (msg === 'Message cannot be sent at this time.') {
                         this.showHelpMessages(
                             [__('Your message could not be sent')], 'error');
@@ -378,7 +378,7 @@
                 },
 
                 authOTR: function (ev) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     var scheme = $(ev.target).data().scheme;
                     var result, question, answer;
                     if (scheme === 'fingerprint') {
@@ -425,7 +425,7 @@
                 },
 
                 renderToolbar: function (options) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     if (!converse.show_toolbar) {
                         return;
                     }
@@ -447,7 +447,7 @@
                         otr_tooltip: this.getOTRTooltip(),
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
-                    this._super.renderToolbar.call(this, options);
+                    this.__super__.renderToolbar.call(this, options);
                     this.$el.find('.chat-toolbar').append(
                             converse.templates.toolbar_otr(
                                 _.extend(this.model.toJSON(), options || {})

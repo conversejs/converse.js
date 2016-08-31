@@ -44,13 +44,13 @@
             Features: {
                 addClientFeatures: function () {
                     converse.connection.disco.addFeature(Strophe.NS.MAM);
-                    return this._super.addClientFeatures.apply(this, arguments);
+                    return this.__super__.addClientFeatures.apply(this, arguments);
                 }
             },
 
             ChatBox: {
                 getMessageAttributes: function ($message, $delay, original_stanza) {
-                    var attrs = this._super.getMessageAttributes.apply(this, arguments);
+                    var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
                     attrs.archive_id = $(original_stanza).find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id');
                     return attrs;
                 }
@@ -58,7 +58,7 @@
 
             ChatBoxView: {
                 render: function () {
-                    var result = this._super.render.apply(this, arguments);
+                    var result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
@@ -67,7 +67,7 @@
 
                 afterMessagesFetched: function () {
                     if (this.disable_mam || !converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        return this._super.afterMessagesFetched.apply(this, arguments);
+                        return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
                     if (this.model.messages.length < converse.archived_messages_page_size) {
                         this.fetchArchivedMessages({
@@ -76,7 +76,7 @@
                             'max': converse.archived_messages_page_size
                         });
                     }
-                    return this._super.afterMessagesFetched.apply(this, arguments);
+                    return this.__super__.afterMessagesFetched.apply(this, arguments);
                 },
 
                 fetchArchivedMessages: function (options) {
@@ -119,7 +119,7 @@
 
             ChatRoomView: {
                 render: function () {
-                    var result = this._super.render.apply(this, arguments);
+                    var result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }

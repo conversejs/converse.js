@@ -55,8 +55,8 @@
                     /* Also render a registration panel, when rendering the
                      * login panel.
                      */
-                    this._super.renderLoginPanel.apply(this, arguments);
-                    var converse = this._super.converse;
+                    this.__super__.renderLoginPanel.apply(this, arguments);
+                    var converse = this.__super__.converse;
                     if (converse.allow_registration) {
                         this.registerpanel = new converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),

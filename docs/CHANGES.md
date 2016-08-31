@@ -1,6 +1,7 @@
 # Changelog
 
-## 1.0.7 (Unreleased)
+## 2.0.0 (Unreleased)
+- Backwards incompatible change: the `_super` attribute in plugins is now named `__super__`. [jcbrand]
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
 - Add new configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]

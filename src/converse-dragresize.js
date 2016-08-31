@@ -56,12 +56,12 @@
                     this.resizing = null;
                 }.bind(this));
 
-                return this._super.registerGlobalEventHandlers.apply(this, arguments);
+                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
             },
 
             ChatBox: {
                 initialize: function () {
-                    var result = this._super.initialize.apply(this, arguments),
+                    var result = this.__super__.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
                     save({
@@ -81,11 +81,11 @@
 
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this._super.initialize.apply(this, arguments);
+                    this.__super__.initialize.apply(this, arguments);
                 },
 
                 render: function () {
-                    var result = this._super.render.apply(this, arguments);
+                    var result = this.__super__.render.apply(this, arguments);
                     this.setWidth();
                     return result;
                 },
@@ -100,7 +100,7 @@
 
                 _show: function () {
                     this.initDragResize().setDimensions();
-                    this._super._show.apply(this, arguments);
+                    this.__super__._show.apply(this, arguments);
                 },
 
                 initDragResize: function () {
@@ -230,17 +230,17 @@
 
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this._super.initialize.apply(this, arguments);
+                    this.__super__.initialize.apply(this, arguments);
                 },
 
                 renderLoginPanel: function () {
-                    var result = this._super.renderLoginPanel.apply(this, arguments);
+                    var result = this.__super__.renderLoginPanel.apply(this, arguments);
                     this.initDragResize().setDimensions();
                     return result;
                 },
 
                 renderContactsPanel: function () {
-                    var result = this._super.renderContactsPanel.apply(this, arguments);
+                    var result = this.__super__.renderContactsPanel.apply(this, arguments);
                     this.initDragResize().setDimensions();
                     return result;
                 }
@@ -255,11 +255,11 @@
 
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this._super.initialize.apply(this, arguments);
+                    this.__super__.initialize.apply(this, arguments);
                 },
 
                 render: function () {
-                    var result = this._super.render.apply(this, arguments);
+                    var result = this.__super__.render.apply(this, arguments);
                     this.setWidth();
                     return result;
                 }

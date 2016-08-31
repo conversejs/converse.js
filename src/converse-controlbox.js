@@ -37,18 +37,18 @@
 
             initSession: function () {
                 this.controlboxtoggle = new this.ControlBoxToggle();
-                this._super.initSession.apply(this, arguments);
+                this.__super__.initSession.apply(this, arguments);
             },
 
             initConnection: function () {
-                this._super.initConnection.apply(this, arguments);
+                this.__super__.initConnection.apply(this, arguments);
                 if (this.connection) {
                     this.addControlBox();
                 }
             },
 
             onDisconnected: function () {
-                var result = this._super.onDisconnected.apply(this, arguments);
+                var result = this.__super__.onDisconnected.apply(this, arguments);
                 // Set connected to `false`, so that if we reconnect,
                 // "onConnected" will be called, to fetch the roster again and
                 // to send out a presence stanza.
@@ -64,7 +64,7 @@
             },
 
             afterReconnected: function () {
-                this._super.afterReconnected.apply(this, arguments);
+                this.__super__.afterReconnected.apply(this, arguments);
                 var view = converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {
                     converse.chatboxviews.get("controlbox").onConnected();
@@ -74,7 +74,7 @@
             },
 
             _tearDown: function () {
-                this._super._tearDown.apply(this, arguments);
+                this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
                     this.rosterview.unregisterHandlers();
                     // Removes roster groups
@@ -84,7 +84,7 @@
             },
 
             clearSession: function () {
-                this._super.clearSession.apply(this, arguments);
+                this.__super__.clearSession.apply(this, arguments);
                 if (typeof this.connection !== 'undefined' && this.connection.connected) {
                     this.chatboxes.get('controlbox').save({'connected': false});
                 }
@@ -92,12 +92,12 @@
 
             ChatBoxes: {
                 chatBoxMayBeShown: function (chatbox) {
-                    return this._super.chatBoxMayBeShown.apply(this, arguments) &&
+                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
                            chatbox.get('id') !== 'controlbox';
                 },
 
                 onChatBoxesFetched: function (collection, resp) {
-                    this._super.onChatBoxesFetched.apply(this, arguments);
+                    this.__super__.onChatBoxesFetched.apply(this, arguments);
                     if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
                         this.add({
                             id: 'controlbox',
@@ -121,7 +121,7 @@
                             return this.add(item.get('id'), view);
                         }
                     } else {
-                        return this._super.onChatBoxAdded.apply(this, arguments);
+                        return this.__super__.onChatBoxAdded.apply(this, arguments);
                     }
                 },
 
@@ -146,7 +146,7 @@
                             return controlbox.$el.outerWidth(true);
                         }
                     } else {
-                        return this._super.getChatBoxWidth.apply(this, arguments);
+                        return this.__super__.getChatBoxWidth.apply(this, arguments);
                     }
                 }
             },
@@ -160,7 +160,7 @@
                             'num_unread': 0
                         });
                     } else {
-                        this._super.initialize.apply(this, arguments);
+                        this.__super__.initialize.apply(this, arguments);
                     }
                 },
             },

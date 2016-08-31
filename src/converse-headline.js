@@ -53,7 +53,7 @@
                         this.add(item.get('id'), view);
                         return view;
                     } else {
-                        return this._super.onChatBoxAdded.apply(this, arguments);
+                        return this.__super__.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }

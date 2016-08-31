@@ -28,7 +28,7 @@
             // New functions which don't exist yet can also be added.
             afterReconnected: function () {
                 this.rosterview.registerRosterXHandler();
-                this._super.afterReconnected.apply(this, arguments);
+                this.__super__.afterReconnected.apply(this, arguments);
             },
 
             RosterGroups: {
@@ -126,7 +126,7 @@
                             label_state: __('State'),
                             label_any: __('Any'),
                             label_online: __('Online'),
-                            label_chatty: __('Chat'),
+                            label_chatty: __('Chatty'),
                             label_busy: __('Busy'),
                             label_away: __('Away'),
                             label_xa: __('Extended Away'),

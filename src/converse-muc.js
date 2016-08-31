@@ -66,14 +66,14 @@
                 */
                 if (!chatbox) { return; }
                 var view = converse.chatboxviews.get(chatbox.get('id'));
-                var box = this._super.wrappedChatBox.apply(this, arguments);
+                var box = this.__super__.wrappedChatBox.apply(this, arguments);
                 box.is_chatroom = view.is_chatroom;
                 return box;
             },
 
             Features: {
                 addClientFeatures: function () {
-                    this._super.addClientFeatures.apply(this, arguments);
+                    this.__super__.addClientFeatures.apply(this, arguments);
                     if (converse.allow_muc_invitations) {
                         converse.connection.disco.addFeature('jabber:x:conference'); // Invites
                     }
@@ -85,8 +85,8 @@
 
             ControlBoxView: {
                 renderContactsPanel: function () {
-                    var converse = this._super.converse;
-                    this._super.renderContactsPanel.apply(this, arguments);
+                    var converse = this.__super__.converse;
+                    this.__super__.renderContactsPanel.apply(this, arguments);
                     if (converse.allow_muc) {
                         this.roomspanel = new converse.RoomsPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
@@ -108,8 +108,8 @@
                 onConnected: function () {
                     // TODO: This can probably be refactored to be an event
                     // handler (and therefore removed from overrides)
-                    var converse = this._super.converse;
-                    this._super.onConnected.apply(this, arguments);
+                    var converse = this.__super__.converse;
+                    this.__super__.onConnected.apply(this, arguments);
 
                     if (this.model.get('connected')) {
                         converse.features.off('add', this.featureAdded, this);
@@ -126,7 +126,7 @@
                 },
 
                 featureAdded: function (feature) {
-                    var converse = this._super.converse;
+                    var converse = this.__super__.converse;
                     if ((feature.get('var') === Strophe.NS.MUC) && (converse.allow_muc)) {
                         this.roomspanel.model.save({muc_domain: feature.get('from')});
                         var $server= this.$el.find('input.new-chatroom-server');
@@ -144,7 +144,7 @@
                         view = new converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
-                        return this._super.onChatBoxAdded.apply(this, arguments);
+                        return this.__super__.onChatBoxAdded.apply(this, arguments);
                     }
                 }
             }

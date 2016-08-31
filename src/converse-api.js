@@ -204,7 +204,7 @@
                  * method.
                  *
                  * If a method is overridden, then the original method will still be
-                 * available via the _super attribute.
+                 * available via the __super__ attribute.
                  *
                  * name: The attribute being overridden.
                  * value: The value of the attribute being overridden.
@@ -215,7 +215,7 @@
                 /* Helper method for overriding or extending Converse's Backbone Views or Models
                  *
                  * When a method is overriden, the original will still be available
-                 * on the _super attribute of the object being overridden.
+                 * on the __super__ attribute of the object being overridden.
                  *
                  * obj: The Backbone View or Model
                  * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend

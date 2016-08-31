@@ -31,7 +31,7 @@
 
             Features: {
                 addClientFeatures: function () {
-                    this._super.addClientFeatures.apply(this, arguments);
+                    this.__super__.addClientFeatures.apply(this, arguments);
                     if (converse.use_vcards) {
                         converse.connection.disco.addFeature(Strophe.NS.VCARD);
                     }

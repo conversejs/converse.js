@@ -82,7 +82,7 @@
     };
 
     // Make converse pluggable
-    pluggable.enable(converse, 'converse');
+    pluggable.enable(converse, 'converse', 'pluggable');
 
     // Module-level constants
     converse.STATUS_WEIGHTS = {

@@ -33,7 +33,7 @@
             // New functions which don't exist yet can also be added.
 
             _initialize: function () {
-                this._super._initialize.apply(this, arguments);
+                this.__super__._initialize.apply(this, arguments);
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
@@ -46,7 +46,7 @@
                         converse.chatboxviews.trimChats();
                     }
                 }, 200));
-                return this._super.registerGlobalEventHandlers.apply(this, arguments);
+                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
             },
 
             wrappedChatBox: function (chatbox) {
@@ -54,7 +54,7 @@
                 * returned via the API.
                 */
                 if (!chatbox) { return; }
-                var box = this._super.wrappedChatBox.apply(this, arguments);
+                var box = this.__super__.wrappedChatBox.apply(this, arguments);
                 box.maximize = chatbox.maximize.bind(chatbox);
                 box.minimize = chatbox.minimize.bind(chatbox);
                 return box;
@@ -62,7 +62,7 @@
 
             ChatBox: {
                 initialize: function () {
-                    this._super.initialize.apply(this, arguments);
+                    this.__super__.initialize.apply(this, arguments);
                     if (this.get('id') === 'controlbox') {
                         return;
                     }
@@ -94,11 +94,11 @@
 
                 initialize: function () {
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    return this._super.initialize.apply(this, arguments);
+                    return this.__super__.initialize.apply(this, arguments);
                 },
 
                 afterShown: function () {
-                    this._super.afterShown.apply(this, arguments);
+                    this.__super__.afterShown.apply(this, arguments);
                     if (!this.model.get('minimized')) {
                         converse.chatboxviews.trimChats(this);
                     }
@@ -106,18 +106,18 @@
 
                 shouldShowOnTextMessage: function () {
                     return !this.model.get('minimized') &&
-                        this._super.shouldShowOnTextMessage.apply(this, arguments);
+                        this.__super__.shouldShowOnTextMessage.apply(this, arguments);
                 },
 
                 setChatBoxHeight: function (height) {
                     if (!this.model.get('minimized')) {
-                        return this._super.setChatBoxHeight.apply(this, arguments);
+                        return this.__super__.setChatBoxHeight.apply(this, arguments);
                     }
                 },
 
                 setChatBoxWidth: function (width) {
                     if (!this.model.get('minimized')) {
-                        return this._super.setChatBoxWidth.apply(this, arguments);
+                        return this.__super__.setChatBoxWidth.apply(this, arguments);
                     }
                 },
 
@@ -173,7 +173,7 @@
                             this.maximize();
                         }
                     }, this);
-                    var result = this._super.initialize.apply(this, arguments);
+                    var result = this.__super__.initialize.apply(this, arguments);
                     if (this.model.get('minimized')) {
                         this.hide();
                     }
@@ -183,7 +183,7 @@
 
             ChatBoxes: {
                 chatBoxMayBeShown: function (chatbox) {
-                    return this._super.chatBoxMayBeShown.apply(this, arguments) &&
+                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
                            !chatbox.get('minimized');
                 },
             },
@@ -192,7 +192,7 @@
                 showChat: function (attrs) {
                     /* Find the chat box and show it. If it doesn't exist, create it.
                      */
-                    var chatbox = this._super.showChat.apply(this, arguments);
+                    var chatbox = this.__super__.showChat.apply(this, arguments);
                     if (chatbox.get('minimized')) {
                         chatbox.maximize();
                     }

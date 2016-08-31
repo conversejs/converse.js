@@ -1030,14 +1030,21 @@ When converse.js has learned of a service provided by the XMPP server. See XEP-0
 ``converse.listen.on('serviceDiscovered', function (event, service) { ... });``
 
 
-
 Writing a converse.js plugin
 ============================
 
-Converse.js exposes a plugin mechanism which allows developers to extend and
-override its functionality.
+Developers are able to extend and override the objects, functions and the
+Backbone models and views that make up converse.js by means of writing plugins.
 
-You register a plugin as follows:
+Converse.js uses `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_ as
+its plugin architecture.
+
+To understand how this plugin architecture works, please read the
+`pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
+and to grok its inner workins, please refer to the `annotated source code
+<https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
+
+You register a converse.js plugin as follows:
 
 .. code-block:: javascript
 
@@ -1146,28 +1153,28 @@ An example plugin
                     // ...
 
                     // You can access the original function being overridden
-                    // via the _super attribute.
+                    // via the __super__ attribute.
                     // Make sure to pass on the arguments supplied to this
                     // function and also to apply the proper "this" object.
-                    this._super.onConnected.apply(this, arguments);
+                    this.__super__.onConnected.apply(this, arguments);
                 },
 
                 XMPPStatus: {
                     // Override converse.js's XMPPStatus Backbone model so that we can override the
                     // function that sends out the presence stanza.
                     sendPresence: function (type, status_message, jid) {
-                        // The "converse" object is available via the _super
+                        // The "converse" object is available via the __super__
                         // attribute.
-                        var converse = this._super.converse;
+                        var converse = this.__super__.converse;
 
                         // Custom code can come here
                         // ...
 
                         // You can call the original overridden method, by
-                        // accessing it via the _super attribute.
+                        // accessing it via the __super__ attribute.
                         // When calling it, you need to apply the proper
                         // context as reference by the "this" variable.
-                        this._super.sendPresence.apply(this, arguments);
+                        this.__super__.sendPresence.apply(this, arguments);
                     }
                 },
             }

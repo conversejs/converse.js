@@ -139,11 +139,15 @@
                     this.$content.find('div.chat-event').remove();
                 },
 
-                showStatusNotification: function (message, keep_old) {
+                showStatusNotification: function (message, keep_old, permanent) {
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    this.$content.append($('<div class="chat-info chat-event"></div>').text(message));
+                    var $el = $('<div class="chat-info"></div>').text(message);
+                    if (!permanent) {
+                        $el.addClass('chat-event');
+                    }
+                    this.$content.append($el);
                     this.scrollDown();
                 },
 
@@ -291,6 +295,14 @@
                         // Add special class to mark groupchat messages in which we
                         // are mentioned.
                         extra_classes += ' mentioned';
+                    }
+                    if (text.length > 8000) {
+                        text = text.substring(0, 10) + '...';
+                        this.showStatusNotification(
+                            __("A very large message has been received."+
+                               "This might be due to an attack meant to degrade the chat performance."+
+                               "Output has been shortened."),
+                            true, true);
                     }
                     return $(template(
                             _.extend(this.getExtraMessageTemplateAttributes(attrs), {

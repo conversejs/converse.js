@@ -94,12 +94,13 @@
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
     };
+    converse.ANONYMOUS  = "anonymous";
+    converse.CLOSED = 'closed';
+    converse.EXTERNAL = "external";
     converse.LOGIN = "login";
     converse.LOGOUT = "logout";
-    converse.ANONYMOUS  = "anonymous";
-    converse.PREBIND = "prebind";
     converse.OPENED = 'opened';
-    converse.CLOSED = 'closed';
+    converse.PREBIND = "prebind";
 
     var PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
@@ -214,7 +215,7 @@
         this.default_settings = {
             allow_contact_requests: true,
             animate: true,
-            authentication: 'login', // Available values are "login", "prebind", "anonymous".
+            authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
             auto_login: false, // Currently only used in connection with anonymous login
             auto_reconnect: false,

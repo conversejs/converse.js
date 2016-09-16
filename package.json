@@ -45,18 +45,19 @@
     "po2json": "^0.3.0"
   },
   "dependencies": {
-    "requirejs": "~2.2.0",
-    "pluggable.js": "0.0.2",
-    "jquery": "1.12.3",
-    "jed": "0.5.4",
-    "underscore": "~1.8.3",
+    "almond": "~0.3.1",
     "backbone": "1.1.2",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.2",
-    "otr": "0.2.16",
     "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
-    "almond": "~0.3.1",
+    "jed": "0.5.4",
+    "jquery": "1.12.3",
+    "jquery.browser": ">=0.1.0",
     "moment": "~2.12.0",
-    "jquery.browser": ">=0.1.0"
+    "otr": "0.2.16",
+    "pluggable.js": "0.0.2",
+    "requirejs": "~2.2.0",
+    "strophe.js": "1.2.8",
+    "underscore": "~1.8.3"
   }
 }

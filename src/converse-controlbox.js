@@ -368,8 +368,9 @@
                 initialize: function (cfg) {
                     cfg.$parent.html(this.$el.html(
                         converse.templates.login_panel({
-                            'LOGIN': converse.LOGIN,
                             'ANONYMOUS': converse.ANONYMOUS,
+                            'EXTERNAL': converse.EXTERNAL,
+                            'LOGIN': converse.LOGIN,
                             'PREBIND': converse.PREBIND,
                             'auto_login': converse.auto_login,
                             'authentication': converse.authentication,
@@ -406,11 +407,11 @@
                         password = $pw_input.val(),
                         errors = false;
 
-                    if (! jid) {
+                    if (!jid) {
                         errors = true;
                         $jid_input.addClass('error');
                     }
-                    if (! password)  {
+                    if (!password && converse.authentication !== converse.EXTERNAL)  {
                         errors = true;
                         $pw_input.addClass('error');
                     }

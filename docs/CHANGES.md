@@ -1,6 +1,8 @@
 # Changelog
 
 ## 2.0.0 (2016-09-16)
+- #656 Online users count not shown initially [amanzur]
+- #674 Polish translation updated [ser]
 - Backwards incompatible change: the `_super` attribute in plugins is now named `__super__`. [jcbrand]
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]

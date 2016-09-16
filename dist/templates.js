@@ -546,16 +546,20 @@ __p += '\n        <span class="spinner login-submit"/>\n    ';
 __p += '\n    ';
  if (!auto_login) { ;
 __p += '\n        ';
- if (authentication == LOGIN) { ;
+ if (authentication == LOGIN || authentication == EXTERNAL) { ;
 __p += '\n            <label>' +
 ((__t = (label_username)) == null ? '' : __t) +
 '</label>\n            <input type="text" name="jid" placeholder="' +
 ((__t = (placeholder_username)) == null ? '' : __t) +
-'">\n            <label>' +
+'">\n            ';
+ if (authentication !== EXTERNAL) { ;
+__p += '\n                <label>' +
 ((__t = (label_password)) == null ? '' : __t) +
-'</label>\n            <input type="password" name="password" placeholder="' +
+'</label>\n                <input type="password" name="password" placeholder="' +
 ((__t = (placeholder_password)) == null ? '' : __t) +
-'">\n            <input class="pure-button button-primary" type="submit" value="' +
+'">\n            ';
+ } ;
+__p += '\n            <input class="pure-button button-primary" type="submit" value="' +
 ((__t = (label_login)) == null ? '' : __t) +
 '">\n            <span class="conn-feedback"></span>\n        ';
  } ;
@@ -988,10 +992,10 @@ __p += ' selected="selected" ';
 __p += '\n            value="online">' +
 ((__t = (label_online)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'chatty') { ;
+ if (chat_state === 'chat') { ;
 __p += ' selected="selected" ';
  } ;
-__p += '\n            value="chatty">' +
+__p += '\n            value="chat">' +
 ((__t = (label_chatty)) == null ? '' : __t) +
 '</option>\n        <option ';
  if (chat_state === 'dnd') { ;

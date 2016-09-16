@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-12 20:41+0000\n"
+"POT-Creation-Date: 2016-09-16 11:45+0000\n"
 "PO-Revision-Date: 2016-08-01 10:22+0000\n"
 "Last-Translator: Serge Victor <converse.js@random.re>\n"
 "Language-Team: Polish\n"
@@ -32,228 +32,257 @@ msgstr "Zamknij okno rozmowy"
 msgid "Personal message"
 msgstr "Wiadomość osobista"
 
-#: src/converse-chatview.js:285
+#: src/converse-chatview.js:289
 msgid "me"
 msgstr "ja"
 
-#: src/converse-chatview.js:325
+#: src/converse-chatview.js:302
+msgid ""
+"A very large message has been received.This might be due to an attack meant "
+"to degrade the chat performance.Output has been shortened."
+msgstr ""
+
+#: src/converse-chatview.js:337
 msgid "is typing"
 msgstr "pisze"
 
-#: src/converse-chatview.js:328
+#: src/converse-chatview.js:340
 msgid "has stopped typing"
 msgstr "przestał pisać"
 
-#: src/converse-chatview.js:332 src/converse-chatview.js:586
+#: src/converse-chatview.js:344 src/converse-chatview.js:598
 #: src/converse-notification.js:171
 msgid "has gone away"
 msgstr "uciekł"
 
-#: src/converse-chatview.js:456 src/converse-muc.js:468
+#: src/converse-chatview.js:468 src/converse-muc.js:468
 msgid "Show this menu"
 msgstr "Pokaż menu"
 
-#: src/converse-chatview.js:457
+#: src/converse-chatview.js:469
 msgid "Write in the third person"
 msgstr "Pisz w trzeciej osobie"
 
-#: src/converse-chatview.js:458 src/converse-muc.js:466
+#: src/converse-chatview.js:470 src/converse-muc.js:466
 msgid "Remove messages"
 msgstr "Usuń wiadomości"
 
-#: src/converse-chatview.js:539
+#: src/converse-chatview.js:551
 msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr ""
 "Potwierdź czy rzeczywiście chcesz wyczyścić wiadomości z okienka rozmowy?"
 
-#: src/converse-chatview.js:584 src/converse-notification.js:169
+#: src/converse-chatview.js:596 src/converse-notification.js:169
 msgid "has gone offline"
 msgstr "wyłączył się"
 
-#: src/converse-chatview.js:588 src/converse-notification.js:173
+#: src/converse-chatview.js:600 src/converse-notification.js:173
 msgid "is busy"
 msgstr "zajęty"
 
-#: src/converse-chatview.js:631
+#: src/converse-chatview.js:643
 msgid "Clear all messages"
 msgstr "Wyczyść wszystkie wiadomości"
 
-#: src/converse-chatview.js:632
+#: src/converse-chatview.js:644
 msgid "Hide the list of occupants"
 msgstr "Ukryj listę rozmówców"
 
-#: src/converse-chatview.js:633
+#: src/converse-chatview.js:645
 msgid "Insert a smiley"
 msgstr "Wstaw uśmieszek"
 
-#: src/converse-chatview.js:634
+#: src/converse-chatview.js:646
 msgid "Start a call"
 msgstr "Zadzwoń"
 
-#: src/converse-controlbox.js:176 src/converse-core.js:586
-#: src/converse-core.js:655 src/converse-rosterview.js:62
+#: src/converse-controlbox.js:191 src/converse-core.js:616
+#: src/converse-core.js:685 src/converse-rosterview.js:62
 msgid "Contacts"
 msgstr "Kontakty"
 
-#: src/converse-controlbox.js:261 src/converse-core.js:447
+#: src/converse-controlbox.js:276 src/converse-core.js:485
 msgid "Connecting"
 msgstr "Łączę się"
 
-#: src/converse-controlbox.js:361
+#: src/converse-controlbox.js:377
 msgid "XMPP Username:"
 msgstr "Nazwa użytkownika XMPP:"
 
-#: src/converse-controlbox.js:362
+#: src/converse-controlbox.js:378
 msgid "Password:"
 msgstr "Hasło:"
 
-#: src/converse-controlbox.js:363
+#: src/converse-controlbox.js:379
 msgid "Click here to log in anonymously"
 msgstr "Kliknij tutaj aby zalogować się anonimowo"
 
-#: src/converse-controlbox.js:364
+#: src/converse-controlbox.js:380
 msgid "Log In"
 msgstr "Zaloguj się"
 
-#: src/converse-controlbox.js:365
+#: src/converse-controlbox.js:381
 msgid "Username"
 msgstr "Nazwa użytkownika"
 
-#: src/converse-controlbox.js:365
+#: src/converse-controlbox.js:381
 msgid "user@server"
 msgstr "użytkownik@serwer"
 
-#: src/converse-controlbox.js:366
+#: src/converse-controlbox.js:382
 msgid "password"
 msgstr "hasło"
 
-#: src/converse-controlbox.js:373
+#: src/converse-controlbox.js:389
 msgid "Sign in"
 msgstr "Zaloguj się"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:461 src/converse-controlbox.js:536
+#: src/converse-controlbox.js:477 src/converse-controlbox.js:552
 msgid "I am %1$s"
 msgstr "Jestem %1$s"
 
-#: src/converse-controlbox.js:463 src/converse-controlbox.js:541
+#: src/converse-controlbox.js:479 src/converse-controlbox.js:557
 msgid "Click here to write a custom status message"
 msgstr "Kliknij aby wpisać nowy status"
 
-#: src/converse-controlbox.js:464 src/converse-controlbox.js:542
+#: src/converse-controlbox.js:480 src/converse-controlbox.js:558
 msgid "Click to change your chat status"
 msgstr "Kliknij aby zmienić status rozmowy"
 
-#: src/converse-controlbox.js:489
+#: src/converse-controlbox.js:505
 msgid "Custom status"
 msgstr "Własny status"
 
-#: src/converse-controlbox.js:490 src/converse-muc.js:633
+#: src/converse-controlbox.js:506 src/converse-muc.js:633
 msgid "Save"
 msgstr "Zachowaj"
 
-#: src/converse-controlbox.js:518 src/converse-controlbox.js:528
+#: src/converse-controlbox.js:534 src/converse-controlbox.js:544
 msgid "online"
 msgstr "dostępny"
 
-#: src/converse-controlbox.js:520
+#: src/converse-controlbox.js:536
 msgid "busy"
 msgstr "zajęty"
 
-#: src/converse-controlbox.js:522
+#: src/converse-controlbox.js:538
 msgid "away for long"
 msgstr "dłużej nieobecny"
 
-#: src/converse-controlbox.js:524
+#: src/converse-controlbox.js:540
 msgid "away"
 msgstr "nieobecny"
 
-#: src/converse-controlbox.js:526
+#: src/converse-controlbox.js:542
 msgid "offline"
 msgstr "rozłączony"
 
-#: src/converse-controlbox.js:567 src/converse-rosterview.js:128
+#: src/converse-controlbox.js:583 src/converse-rosterview.js:128
 msgid "Online"
 msgstr "Dostępny"
 
-#: src/converse-controlbox.js:568 src/converse-rosterview.js:130
+#: src/converse-controlbox.js:584 src/converse-rosterview.js:130
 msgid "Busy"
 msgstr "Zajęty"
 
-#: src/converse-controlbox.js:569 src/converse-rosterview.js:131
+#: src/converse-controlbox.js:585 src/converse-rosterview.js:131
 msgid "Away"
 msgstr "Nieobecny"
 
-#: src/converse-controlbox.js:570 src/converse-rosterview.js:133
+#: src/converse-controlbox.js:586 src/converse-rosterview.js:133
 msgid "Offline"
 msgstr "Rozłączony"
 
-#: src/converse-controlbox.js:571
+#: src/converse-controlbox.js:587
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: src/converse-controlbox.js:578
+#: src/converse-controlbox.js:594
 msgid "Contact name"
 msgstr "Nazwa kontaktu"
 
-#: src/converse-controlbox.js:579
+#: src/converse-controlbox.js:595
 msgid "Search"
 msgstr "Szukaj"
 
-#: src/converse-controlbox.js:583
+#: src/converse-controlbox.js:599
 msgid "e.g. user@example.org"
 msgstr "np. użytkownik@przykładowa-domena.pl"
 
-#: src/converse-controlbox.js:584
+#: src/converse-controlbox.js:600
 msgid "Add"
 msgstr "Dodaj"
 
-#: src/converse-controlbox.js:589
+#: src/converse-controlbox.js:605
 msgid "Click to add new chat contacts"
 msgstr "Kliknij aby dodać nowe kontakty"
 
-#: src/converse-controlbox.js:590
+#: src/converse-controlbox.js:606
 msgid "Add a contact"
 msgstr "Dodaj kontakt"
 
-#: src/converse-controlbox.js:614
+#: src/converse-controlbox.js:630
 msgid "No users found"
 msgstr "Nie znaleziono użytkowników"
 
-#: src/converse-controlbox.js:620
+#: src/converse-controlbox.js:636
 msgid "Click to add as a chat contact"
 msgstr "Kliknij aby dodać jako kontakt"
 
-#: src/converse-controlbox.js:679
+#: src/converse-controlbox.js:695
 msgid "Toggle chat"
 msgstr "Przełącz rozmowę"
 
-#: src/converse-core.js:209
+#: src/converse-core.js:211
 msgid "Click to hide these contacts"
 msgstr "Kliknij aby schować te kontakty"
 
-#: src/converse-core.js:404
-msgid "Attempting to reconnect"
-msgstr "Staram się połączyć ponownie"
+#: src/converse-core.js:413
+msgid "Reconnecting"
+msgstr "Przywracam połączenie"
 
-#: src/converse-core.js:445
-msgid "Error"
-msgstr "Błąd"
+#: src/converse-core.js:413
+msgid "The connection has dropped, attempting to reconnect."
+msgstr ""
 
-#: src/converse-core.js:449
+#: src/converse-core.js:475
+msgid "Disconnected"
+msgstr ""
+
+#: src/converse-core.js:476
+msgid "The connection to the chat server has dropped"
+msgstr ""
+
+#: src/converse-core.js:481
+#, fuzzy
+msgid "Connection error"
+msgstr "Łączę się"
+
+#: src/converse-core.js:482
+#, fuzzy
+msgid "An error occurred while connecting to the chat server."
+msgstr "Wystąpił błąd w czasie próby zachowania formularza."
+
+#: src/converse-core.js:487
 msgid "Authenticating"
 msgstr "Autoryzuję"
 
-#: src/converse-core.js:451 src/converse-core.js:452
+#: src/converse-core.js:489
+#, fuzzy
+msgid "Authentication failed."
+msgstr "Autoryzacja nie powiodła się"
+
+#: src/converse-core.js:490
 msgid "Authentication Failed"
 msgstr "Autoryzacja nie powiodła się"
 
-#: src/converse-core.js:916
+#: src/converse-core.js:946
 msgid "Sorry, there was an error while trying to add "
 msgstr "Wystąpił błąd w czasie próby dodania "
 
-#: src/converse-core.js:1087
+#: src/converse-core.js:1117
 msgid "This client does not allow presence subscriptions"
 msgstr "Klient nie umożliwia subskrybcji obecności"
 
@@ -365,7 +394,7 @@ msgstr ""
 msgid "Please choose your nickname"
 msgstr "Wybierz proszę ksywkę"
 
-#: src/converse-muc.js:817 src/converse-muc.js:1347
+#: src/converse-muc.js:817 src/converse-muc.js:1348
 msgid "Nickname"
 msgstr "Ksywka"
 
@@ -520,39 +549,39 @@ msgstr "Ten pokój (jeszcze) nie istnieje"
 msgid "This room has reached its maximum number of occupants"
 msgstr "Pokój przekroczył dozwoloną ilość rozmówców"
 
-#: src/converse-muc.js:1058
+#: src/converse-muc.js:1059
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Temat ustawiony przez %1$s na: %2$s"
 
-#: src/converse-muc.js:1145
+#: src/converse-muc.js:1146
 msgid "Click to mention this user in your message."
 msgstr "Kliknij aby wspomnieć człowieka w wiadomości."
 
-#: src/converse-muc.js:1146
+#: src/converse-muc.js:1147
 msgid "This user is a moderator."
 msgstr "Ten człowiek jest moderatorem"
 
-#: src/converse-muc.js:1147
+#: src/converse-muc.js:1148
 msgid "This user can send messages in this room."
 msgstr "Ten człowiek może rozmawiać w niejszym pokoju"
 
-#: src/converse-muc.js:1148
+#: src/converse-muc.js:1149
 msgid "This user can NOT send messages in this room."
 msgstr "Ten człowiek NIE może rozmawiać w niniejszym pokoju"
 
-#: src/converse-muc.js:1184
+#: src/converse-muc.js:1185
 msgid "Invite"
 msgstr "Zaproś"
 
-#: src/converse-muc.js:1185
+#: src/converse-muc.js:1186
 msgid "Occupants"
 msgstr "Uczestników"
 
-#: src/converse-muc.js:1303
+#: src/converse-muc.js:1304
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
 msgstr "Zamierzasz zaprosić %1$s do pokoju rozmów \"%2$s\". "
 
-#: src/converse-muc.js:1304
+#: src/converse-muc.js:1305
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
@@ -560,106 +589,106 @@ msgstr ""
 "Masz opcjonalną możliwość dołączenia wiadomości, która wyjaśni przyczynę "
 "zaproszenia."
 
-#: src/converse-muc.js:1346
+#: src/converse-muc.js:1347
 msgid "Room name"
 msgstr "Nazwa pokoju"
 
-#: src/converse-muc.js:1348
+#: src/converse-muc.js:1349
 msgid "Server"
 msgstr "Serwer"
 
-#: src/converse-muc.js:1349
+#: src/converse-muc.js:1350
 msgid "Join Room"
 msgstr "Wejdź do pokoju"
 
-#: src/converse-muc.js:1350
+#: src/converse-muc.js:1351
 msgid "Show rooms"
 msgstr "Pokaż pokoje"
 
-#: src/converse-muc.js:1354
+#: src/converse-muc.js:1355
 msgid "Rooms"
 msgstr "Pokoje"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: src/converse-muc.js:1374
+#: src/converse-muc.js:1375
 msgid "No rooms on %1$s"
 msgstr "Brak jest pokojów na %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: src/converse-muc.js:1388
+#: src/converse-muc.js:1389
 msgid "Rooms on %1$s"
 msgstr "Pokoje na %1$s"
 
-#: src/converse-muc.js:1397
+#: src/converse-muc.js:1398
 msgid "Click to open this room"
 msgstr "Kliknij aby wejść do pokoju"
 
-#: src/converse-muc.js:1398
+#: src/converse-muc.js:1399
 msgid "Show more information on this room"
 msgstr "Pokaż więcej informacji o pokoju"
 
-#: src/converse-muc.js:1470
+#: src/converse-muc.js:1471
 msgid "Description:"
 msgstr "Opis:"
 
-#: src/converse-muc.js:1471
+#: src/converse-muc.js:1472
 msgid "Occupants:"
 msgstr "Uczestnicy:"
 
-#: src/converse-muc.js:1472
+#: src/converse-muc.js:1473
 msgid "Features:"
 msgstr "Możliwości:"
 
-#: src/converse-muc.js:1473
+#: src/converse-muc.js:1474
 msgid "Requires authentication"
 msgstr "Wymaga autoryzacji"
 
-#: src/converse-muc.js:1474
+#: src/converse-muc.js:1475
 msgid "Hidden"
 msgstr "Ukryty"
 
-#: src/converse-muc.js:1475
+#: src/converse-muc.js:1476
 msgid "Requires an invitation"
 msgstr "Wymaga zaproszenia"
 
-#: src/converse-muc.js:1476
+#: src/converse-muc.js:1477
 msgid "Moderated"
 msgstr "Moderowany"
 
-#: src/converse-muc.js:1477
+#: src/converse-muc.js:1478
 msgid "Non-anonymous"
 msgstr "Nieanonimowy"
 
-#: src/converse-muc.js:1478
+#: src/converse-muc.js:1479
 msgid "Open room"
 msgstr "Otwarty pokój"
 
-#: src/converse-muc.js:1479
+#: src/converse-muc.js:1480
 msgid "Permanent room"
 msgstr "Stały pokój"
 
-#: src/converse-muc.js:1480
+#: src/converse-muc.js:1481
 msgid "Public"
 msgstr "Publiczny"
 
-#: src/converse-muc.js:1481
+#: src/converse-muc.js:1482
 msgid "Semi-anonymous"
 msgstr "Półanonimowy"
 
-#: src/converse-muc.js:1482
+#: src/converse-muc.js:1483
 msgid "Temporary room"
 msgstr "Pokój tymczasowy"
 
-#: src/converse-muc.js:1483
+#: src/converse-muc.js:1484
 msgid "Unmoderated"
 msgstr "Niemoderowany"
 
-#: src/converse-muc.js:1549
+#: src/converse-muc.js:1550
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr "%1$s zaprosił(a) cię do wejścia do pokoju rozmów %2$s"
 
-#: src/converse-muc.js:1554
+#: src/converse-muc.js:1555
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
@@ -682,10 +711,6 @@ msgstr "połączył się"
 #: src/converse-notification.js:190
 msgid "wants to be your contact"
 msgstr "chce być twoim kontaktem"
-
-#: src/converse-notification.js:198
-msgid "An error has occured"
-msgstr "Wystąpił błąd"
 
 #. Verified that the passphrase is still the same
 #: src/converse-otr.js:152
@@ -1029,6 +1054,15 @@ msgstr "Wystąpił błąd w trakcie próby usunięcia "
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"
 
+#~ msgid "Attempting to reconnect"
+#~ msgstr "Staram się połączyć ponownie"
+
+#~ msgid "Error"
+#~ msgstr "Błąd"
+
+#~ msgid "An error has occured"
+#~ msgstr "Wystąpił błąd"
+
 #~ msgid "Your nickname is already taken"
 #~ msgstr "Twoja ksywka jest już w użyciu"
 
@@ -1038,9 +1072,6 @@ msgstr "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"
 #, fuzzy
 #~ msgid "View more information on this person"
 #~ msgstr "Pokaż więcej informacji o pokoju"
-
-#~ msgid "Reconnecting"
-#~ msgstr "Przywracam połączenie"
 
 #~ msgid "Contact username"
 #~ msgstr "Ksywka kontaktu"

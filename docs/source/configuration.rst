@@ -35,7 +35,7 @@ authentication
 --------------
 
 * Default:  ``login``
-* Allowed values: `login`_, `anonymous`_, `prebind`_
+* Allowed values: `login`_, `external`, `anonymous`_, `prebind`_
 
 This option states the way converse.js will authenticate.
 
@@ -45,6 +45,16 @@ login
 The default means is ``login``, which means that the user either logs in manually with their
 username and password, or automatically if used together with ``auto_login=true``
 and ``jid`` and ``password`` values. See `auto_login`_.
+
+external
+~~~~~~~~
+
+This setting will still show a login form and submit button, but the form will
+only contain an input for the user's JID, *not* for the password.
+
+That's because this setting is intended to be used when you are using
+SASL-EXTERNAL as authentication mechanism, in which case a password is usually
+not required.
 
 anonymous
 ~~~~~~~~~

@@ -19,6 +19,10 @@
             null,
             ""
          ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             ""
@@ -203,15 +207,31 @@
             null,
             ""
          ],
-         "Attempting to reconnect": [
+         "Reconnecting": [
             null,
             ""
          ],
-         "Error": [
+         "The connection has dropped, attempting to reconnect.": [
+            null,
+            ""
+         ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
+         "Connection error": [
             null,
             ""
          ],
          "Authenticating": [
+            null,
+            ""
+         ],
+         "Authentication failed.": [
             null,
             ""
          ],
@@ -592,10 +612,6 @@
             ""
          ],
          "wants to be your contact": [
-            null,
-            ""
-         ],
-         "An error has occured": [
             null,
             ""
          ],

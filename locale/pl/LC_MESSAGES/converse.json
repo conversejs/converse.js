@@ -23,6 +23,10 @@
             null,
             "ja"
          ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "pisze"
@@ -215,13 +219,21 @@
             null,
             "Kliknij aby schować te kontakty"
          ],
-         "Attempting to reconnect": [
+         "Reconnecting": [
             null,
-            "Staram się połączyć ponownie"
+            "Przywracam połączenie"
          ],
-         "Error": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
-            "Błąd"
+            ""
+         ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
          ],
          "Authenticating": [
             null,
@@ -630,10 +642,6 @@
          "wants to be your contact": [
             null,
             "chce być twoim kontaktem"
-         ],
-         "An error has occured": [
-            null,
-            "Wystąpił błąd"
          ],
          "Re-establishing encrypted session": [
             null,

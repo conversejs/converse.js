@@ -15,6 +15,10 @@
             null,
             "אני"
          ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "מקליד(ה) כעת"
@@ -195,9 +199,21 @@
             null,
             "לחץ כדי להסתיר את אנשי קשר אלה"
          ],
-         "Error": [
+         "Reconnecting": [
             null,
-            "שגיאה"
+            "כעת מתחבר"
+         ],
+         "The connection has dropped, attempting to reconnect.": [
+            null,
+            ""
+         ],
+         "Disconnected": [
+            null,
+            "מנותק"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
          ],
          "Authenticating": [
             null,
@@ -556,10 +572,6 @@
             ""
          ],
          "wants to be your contact": [
-            null,
-            ""
-         ],
-         "An error has occured": [
             null,
             ""
          ],

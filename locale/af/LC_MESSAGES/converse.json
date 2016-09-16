@@ -18,6 +18,10 @@
             null,
             "ek"
          ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "tik tans"
@@ -206,13 +210,21 @@
             null,
             "Klik om hierdie kontakte te verskuil"
          ],
-         "Attempting to reconnect": [
+         "Reconnecting": [
+            null,
+            "Herkonnekteer"
+         ],
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "Error": [
+         "Disconnected": [
             null,
-            "Fout"
+            "Ontkoppel"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
          ],
          "Authenticating": [
             null,
@@ -593,10 +605,6 @@
          "wants to be your contact": [
             null,
             "wil jou kontak wees"
-         ],
-         "An error has occured": [
-            null,
-            "'n Fout het voorgekom"
          ],
          "Re-establishing encrypted session": [
             null,

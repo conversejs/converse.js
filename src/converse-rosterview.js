@@ -296,43 +296,16 @@
                     return this;
                 },
 
-                fetch: function () {
-                    this.model.fetch({
-                        silent: true, // We use the success handler to handle groups that were added,
-                                    // we need to first have all groups before positionFetchedGroups
-                                    // will work properly.
-                        success: function (collection, resp, options) {
-                            if (collection.length !== 0) {
-                                this.positionFetchedGroups(collection, resp, options);
-                            }
-                            converse.roster.fetch({
-                                add: true,
-                                success: function (collection) {
-                                    if (collection.length === 0) {
-                                        /* We don't have any roster contacts stored in sessionStorage,
-                                         * so lets fetch the roster from the XMPP server. We pass in
-                                         * 'sendPresence' as callback method, because after initially
-                                         * fetching the roster we are ready to receive presence
-                                         * updates from our contacts.
-                                         */
-                                        converse.roster.fetchFromServer(
-                                                converse.xmppstatus.sendPresence.bind(converse.xmppstatus));
-                                    } else {
-                                        converse.emit('cachedRoster', collection);
-                                        if (converse.send_initial_presence) {
-                                            /* We're not going to fetch the roster again because we have
-                                            * it already cached in sessionStorage, but we still need to
-                                            * send out a presence stanza because this is a new session.
-                                            * See: https://github.com/jcbrand/converse.js/issues/536
-                                            */
-                                            converse.xmppstatus.sendPresence();
-                                        }
-                                    }
-                                }
-                            });
-                        }.bind(this)
-                    });
-                    return this;
+                populate: function () {
+                    /* Fetch the roster groups, position them and then fetch
+                     * the roster contacts.
+                     */
+                    var deferred = new $.Deferred();
+                    this.model.fetchRosterGroups().then(function () {
+                        this.positionFetchedGroups.apply(this, arguments);
+                        converse.roster.fetchRosterContacts().then(deferred.resolve);
+                    }.bind(this));
+                    return deferred.promise();
                 },
 
                 filter: function (query, type) {
@@ -448,6 +421,9 @@
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
+                    if (model.length === 0) {
+                        return;
+                    }
                     model.sort();
                     model.each(function (group, idx) {
                         var view = this.get(group.get('name'));

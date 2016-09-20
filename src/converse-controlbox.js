@@ -262,7 +262,10 @@
                      */
                     converse.rosterview = new converse.RosterView({model: converse.rostergroups});
                     this.contactspanel.$el.append(converse.rosterview.$el);
-                    converse.rosterview.render().fetch().update();
+                    converse.rosterview.render().populate().then(function () {
+                        converse.rosterview.update();
+                        converse.sendInitialPresence();
+                    });
                     return this;
                 },
 

@@ -677,6 +677,13 @@
                 }, null, 'presence', null);
         };
 
+
+        this.sendInitialPresence = function () {
+            if (converse.send_initial_presence) {
+                converse.xmppstatus.sendPresence();
+            }
+        };
+
         this.onStatusInitialized = function () {
             this.registerIntervalHandler();
             this.initRoster();
@@ -863,6 +870,36 @@
                 } else  {
                     return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
+            },
+
+            fetchRosterContacts: function () {
+                /* Fetches the roster contacts, first by trying the
+                 * sessionStorage cache, and if that's empty, then by querying
+                 * the XMPP server.
+                 *
+                 * Returns a promise which resolves once the contacts have been
+                 * fetched.
+                 */
+                var deferred = new $.Deferred();
+                this.fetch({
+                    add: true,
+                    success: function (collection) {
+                        if (collection.length === 0) {
+                            /* We don't have any roster contacts stored in sessionStorage,
+                             * so lets fetch the roster from the XMPP server. We pass in
+                             * 'sendPresence' as callback method, because after initially
+                             * fetching the roster we are ready to receive presence
+                             * updates from our contacts.
+                             */
+                            converse.send_initial_presence = true;
+                            converse.roster.fetchFromServer(deferred.resolve);
+                        } else {
+                            converse.emit('cachedRoster', collection);
+                            deferred.resolve();
+                        }
+                    }
+                });
+                return deferred.promise();
             },
 
             subscribeToSuggestedItems: function (msg) {
@@ -1204,6 +1241,22 @@
 
         this.RosterGroups = Backbone.Collection.extend({
             model: converse.RosterGroup,
+
+            fetchRosterGroups: function () {
+                /* Fetches all the roster groups from sessionStorage.
+                 *
+                 * Returns a promise which resolves once the groups have been
+                 * returned.
+                 */
+                var deferred = new $.Deferred();
+                this.fetch({
+                    silent: true, // We need to first have all groups before
+                                  // we can start positioning them, so we set
+                                  // 'silent' to true.
+                    success: deferred.resolve
+                });
+                return deferred.promise();
+            }
         });
 
 

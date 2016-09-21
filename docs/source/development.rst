@@ -768,7 +768,7 @@ Converse.js emits events to which you can subscribe from your own Javascript.
 Concerning events, the following methods are available under the "listen"
 grouping:
 
-* **on(eventName, callback)**:
+* **on(eventName, callback, [context])**:
 
     Calling the ``on`` method allows you to subscribe to an event.
     Every time the event fires, the callback method specified by ``callback`` will be
@@ -778,6 +778,7 @@ grouping:
 
     * ``eventName`` is the event name as a string.
     * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
 
     For example:
 
@@ -785,7 +786,7 @@ grouping:
 
         converse.listen.on('message', function (event, messageXML) { ... });
 
-* **once(eventName, callback)**:
+* **once(eventName, callback, [context])**:
 
     Calling the ``once`` method allows you to listen to an event
     exactly once.
@@ -794,6 +795,7 @@ grouping:
 
     * ``eventName`` is the event name as a string.
     * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
 
     For example:
 

@@ -160,11 +160,11 @@
             }
         },
         'listen': {
-            'once': function (evt, handler) {
-                converse.once(evt, handler);
+            'once': function (evt, handler, context) {
+                converse.once(evt, handler, context);
             },
-            'on': function (evt, handler) {
-                converse.on(evt, handler);
+            'on': function (evt, handler, context) {
+                converse.on(evt, handler, context);
             },
             'not': function (evt, handler) {
                 converse.off(evt, handler);

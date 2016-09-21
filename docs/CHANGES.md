@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 (Unreleased)
+- Allow the context (i.e. `this` value) to be passed in when registering event
+  listeners with `converse.listen.on` and `converse.listen.once`. [jcbrand]
+
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]
 - #674 Polish translation updated [ser]

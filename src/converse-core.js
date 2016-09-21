@@ -667,6 +667,19 @@
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
         };
 
+        this.populateRoster = function () {
+            /* Fetch all the roster groups, and then the roster contacts.
+             * Emit an event after fetching is done in each case.
+             */
+            converse.rostergroups.fetchRosterGroups().then(function () {
+                converse.emit('rosterGroupsFetched');
+                converse.roster.fetchRosterContacts().then(function () {
+                    converse.emit('rosterContactsFetched');
+                    converse.sendInitialPresence();
+                });
+            });
+        };
+
         this.unregisterPresenceHandler = function () {
             if (typeof converse.presence_ref !== 'undefined') {
                 converse.connection.deleteHandler(converse.presence_ref);
@@ -693,6 +706,7 @@
         this.onStatusInitialized = function () {
             this.registerIntervalHandler();
             this.initRoster();
+            this.populateRoster();
             this.chatboxes.onConnected();
             this.registerPresenceHandler();
             this.giveFeedback(__('Contacts'));

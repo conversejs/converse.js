@@ -39,10 +39,7 @@
                 converse.rosterview = new converse.RosterView({
                     'model': converse.rostergroups
                 });
-                converse.rosterview.render().populate().then(function () {
-                    converse.rosterview.update();
-                    converse.sendInitialPresence();
-                });
+                converse.rosterview.render();
             },
 
             RosterGroups: {
@@ -248,17 +245,13 @@
                     converse.roster.on("remove", this.update, this);
                     this.model.on("add", this.onGroupAdd, this);
                     this.model.on("reset", this.reset, this);
-                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
-                    // Create a model on which we can store filter properties
-                    var model = new converse.RosterFilter();
-                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
-                    model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-                    this.filter_view = new converse.RosterFilterView({'model': model});
-                    this.filter_view.model.on('change', this.updateFilter, this);
-                    this.filter_view.model.fetch();
+                    converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
+                    converse.on('rosterContactsFetched', this.update, this);
+                    this.createRosterFilter();
                 },
 
                 render: function () {
+                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                     this.$el.html(this.filter_view.render());
                     if (!converse.allow_contact_requests) {
                         // XXX: if we ever support live editing of config then
@@ -266,6 +259,16 @@
                         this.$el.addClass('no-contact-requests');
                     }
                     return this;
+                },
+
+                createRosterFilter: function () {
+                    // Create a model on which we can store filter properties
+                    var model = new converse.RosterFilter();
+                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
+                    model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                    this.filter_view = new converse.RosterFilterView({'model': model});
+                    this.filter_view.model.on('change', this.updateFilter, this);
+                    this.filter_view.model.fetch();
                 },
 
                 updateFilter: _.debounce(function () {
@@ -308,18 +311,6 @@
                         this.filter_view.hide();
                     }
                     return this;
-                },
-
-                populate: function () {
-                    /* Fetch the roster groups, position them and then fetch
-                     * the roster contacts.
-                     */
-                    var deferred = new $.Deferred();
-                    this.model.fetchRosterGroups().then(function () {
-                        this.positionFetchedGroups.apply(this, arguments);
-                        converse.roster.fetchRosterContacts().then(deferred.resolve);
-                    }.bind(this));
-                    return deferred.promise();
                 },
 
                 filter: function (query, type) {
@@ -435,11 +426,8 @@
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
-                    if (model.length === 0) {
-                        return;
-                    }
-                    model.sort();
-                    model.each(function (group, idx) {
+                    this.model.sort();
+                    this.model.each(function (group, idx) {
                         var view = this.get(group.get('name'));
                         if (!view) {
                             view = new converse.RosterGroupView({model: group});

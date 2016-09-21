@@ -996,6 +996,19 @@ When the roster has been received from the XMPP server.
 See also the `cachedRoster` event further up, which gets called instead of
 `roster` if its already in `sessionStorage`.
 
+rosterContactsFetched
+~~~~~~~~~~~~~~~~~~~~~
+
+Triggered once roster contacts have been fetched. Used by the
+`converse-rosterview.js` plugin to know when it can start to show the roster.
+
+rosterGroupsFetched
+~~~~~~~~~~~~~~~~~~~
+
+Triggered once roster groups have been fetched. Used by the
+`converse-rosterview.js` plugin to know when it can start alphabetically
+position roster groups.
+
 rosterPush
 ~~~~~~~~~~
 

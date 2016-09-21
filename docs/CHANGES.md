@@ -3,6 +3,8 @@
 ## 2.0.1 (Unreleased)
 - Allow the context (i.e. `this` value) to be passed in when registering event
   listeners with `converse.listen.on` and `converse.listen.once`. [jcbrand]
+- New event ['rosterContactsFetched'](https://conversejs.org/docs/html/development.html#rosterContactsFetched) [jcbrand]
+- New event ['rosterGroupsFetched'](https://conversejs.org/docs/html/development.html#rosterGroupsFetched) [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

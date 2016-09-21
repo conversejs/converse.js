@@ -39,9 +39,11 @@
     "grunt-contrib-jst": "~1.0.0",
     "grunt-json": "^0.2.0",
     "http-server": "^0.7.4",
+    "jquery-easing": "0.0.1",
     "jshint": "^2.8.0",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
+    "requirejs": "~2.2.0",
     "po2json": "^0.3.0"
   },
   "dependencies": {
@@ -49,14 +51,15 @@
     "backbone": "1.1.2",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.2",
-    "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
+    "crypto-js": "3.1.2-5",
     "jed": "0.5.4",
     "jquery": "1.12.3",
     "jquery.browser": ">=0.1.0",
     "moment": "~2.12.0",
     "otr": "0.2.16",
     "pluggable.js": "0.0.2",
-    "requirejs": "~2.2.0",
+    "requirejs-undertemplate": "~0.0.4",
+    "requirejs-text": "~2.0.12",
     "strophe.js": "1.2.8",
     "underscore": "~1.8.3"
   }

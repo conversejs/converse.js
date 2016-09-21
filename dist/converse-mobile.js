@@ -1,5 +1,5 @@
 /**
- * @license almond 0.3.2 Copyright jQuery Foundation and other contributors.
+ * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
  * Released under MIT license, http://github.com/requirejs/almond/LICENSE
  */
 //Going sloppy to avoid 'use strict' string cost, but strict practices should
@@ -195,32 +195,39 @@ var requirejs, require, define;
         return [prefix, name];
     }
 
+    //Creates a parts array for a relName where first part is plugin ID,
+    //second part is resource ID. Assumes relName has already been normalized.
+    function makeRelParts(relName) {
+        return relName ? splitPrefix(relName) : [];
+    }
+
     /**
      * Makes a name map, normalizing the name, and using a plugin
      * for normalization if necessary. Grabs a ref to plugin
      * too, as an optimization.
      */
-    makeMap = function (name, relName) {
+    makeMap = function (name, relParts) {
         var plugin,
             parts = splitPrefix(name),
-            prefix = parts[0];
+            prefix = parts[0],
+            relResourceName = relParts[1];
 
         name = parts[1];
 
         if (prefix) {
-            prefix = normalize(prefix, relName);
+            prefix = normalize(prefix, relResourceName);
             plugin = callDep(prefix);
         }
 
         //Normalize according
         if (prefix) {
             if (plugin && plugin.normalize) {
-                name = plugin.normalize(name, makeNormalize(relName));
+                name = plugin.normalize(name, makeNormalize(relResourceName));
             } else {
-                name = normalize(name, relName);
+                name = normalize(name, relResourceName);
             }
         } else {
-            name = normalize(name, relName);
+            name = normalize(name, relResourceName);
             parts = splitPrefix(name);
             prefix = parts[0];
             name = parts[1];
@@ -267,13 +274,14 @@ var requirejs, require, define;
     };
 
     main = function (name, deps, callback, relName) {
-        var cjsModule, depName, ret, map, i,
+        var cjsModule, depName, ret, map, i, relParts,
             args = [],
             callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
+        relParts = makeRelParts(relName);
 
         //Call the callback to define the module, if necessary.
         if (callbackType === 'undefined' || callbackType === 'function') {
@@ -282,7 +290,7 @@ var requirejs, require, define;
             //Default to [require, exports, module] if no deps
             deps = !deps.length && callback.length ? ['require', 'exports', 'module'] : deps;
             for (i = 0; i < deps.length; i += 1) {
-                map = makeMap(deps[i], relName);
+                map = makeMap(deps[i], relParts);
                 depName = map.f;
 
                 //Fast path CommonJS standard dependencies.
@@ -338,7 +346,7 @@ var requirejs, require, define;
             //deps arg is the module name, and second arg (if passed)
             //is just the relName.
             //Normalize module name, if it contains . or ..
-            return callDep(makeMap(deps, callback).f);
+            return callDep(makeMap(deps, makeRelParts(callback)).f);
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
@@ -23958,8 +23966,9 @@ return Strophe;
 }));
 
 /**
- * @license text 2.0.15 Copyright jQuery Foundation and other contributors.
- * Released under MIT license, http://github.com/requirejs/text/LICENSE
+ * @license RequireJS text 2.0.12 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
+ * Available via the MIT or new BSD license.
+ * see: http://github.com/requirejs/text for details
  */
 /*jslint regexp: true */
 /*global require, XMLHttpRequest, ActiveXObject,
@@ -23980,26 +23989,8 @@ define('text',['module'], function (module) {
         buildMap = {},
         masterConfig = (module.config && module.config()) || {};
 
-    function useDefault(value, defaultValue) {
-        return value === undefined || value === '' ? defaultValue : value;
-    }
-
-    //Allow for default ports for http and https.
-    function isSamePort(protocol1, port1, protocol2, port2) {
-        if (port1 === port2) {
-            return true;
-        } else if (protocol1 === protocol2) {
-            if (protocol1 === 'http') {
-                return useDefault(port1, '80') === useDefault(port2, '80');
-            } else if (protocol1 === 'https') {
-                return useDefault(port1, '443') === useDefault(port2, '443');
-            }
-        }
-        return false;
-    }
-
     text = {
-        version: '2.0.15',
+        version: '2.0.12',
 
         strip: function (content) {
             //Strips <?xml ...?> declarations so that external SVG and XML
@@ -24061,13 +24052,13 @@ define('text',['module'], function (module) {
         parseName: function (name) {
             var modName, ext, temp,
                 strip = false,
-                index = name.lastIndexOf("."),
+                index = name.indexOf("."),
                 isRelative = name.indexOf('./') === 0 ||
                              name.indexOf('../') === 0;
 
             if (index !== -1 && (!isRelative || index > 1)) {
                 modName = name.substring(0, index);
-                ext = name.substring(index + 1);
+                ext = name.substring(index + 1, name.length);
             } else {
                 modName = name;
             }
@@ -24117,7 +24108,7 @@ define('text',['module'], function (module) {
 
             return (!uProtocol || uProtocol === protocol) &&
                    (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || isSamePort(uProtocol, uPort, protocol, port));
+                   ((!uPort && !uHostName) || uPort === port);
         },
 
         finishLoad: function (name, strip, content, onLoad) {
@@ -24220,8 +24211,7 @@ define('text',['module'], function (module) {
             typeof process !== "undefined" &&
             process.versions &&
             !!process.versions.node &&
-            !process.versions['node-webkit'] &&
-            !process.versions['atom-shell'])) {
+            !process.versions['node-webkit'])) {
         //Using special require.nodeRequire, something added by r.js.
         fs = require.nodeRequire('fs');
 
@@ -24229,7 +24219,7 @@ define('text',['module'], function (module) {
             try {
                 var file = fs.readFileSync(url, 'utf8');
                 //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-                if (file[0] === '\uFEFF') {
+                if (file.indexOf('\uFEFF') === 0) {
                     file = file.substring(1);
                 }
                 callback(file);
@@ -24418,7 +24408,7 @@ define('tpl',['text', 'underscore'], function (text, _) {
                 onload(buildMap[moduleName]);
 
             } else {
-                var ext = (config.tpl && config.tpl.extension) || '.html';
+                var ext = config.tpl && !_.isUndefined(config.tpl.extension) ? config.tpl.extension : '.html';
                 var path = (config.tpl && config.tpl.path) || '';
                 text.load(path + moduleName + ext, parentRequire, function (source) {
                     buildMap[moduleName] = _.template(source);
@@ -26191,11 +26181,7 @@ define("polyfill", function(){});
     function PluginSocket (plugged, name) {
         this.name = name; 
         this.plugged = plugged;
-        if (typeof this.plugged.__super__ === 'undefined') {
-            this.plugged.__super__ = {};
-        } else if (typeof this.plugged.__super__ === 'string') {
-            this.plugged.__super__ = { '__string__': this.plugged.__super__ };
-        }
+        this.plugged.__super__ = {};
         this.plugins = {};
         this.initialized_plugins = [];
     }
@@ -28695,13 +28681,19 @@ return Backbone.BrowserStorage;
             $(event_context).trigger(evt, data);
         },
 
-        once: function (evt, handler) {
+        once: function (evt, handler, context) {
+            if (context) {
+                handler = handler.bind(context);
+            }
             $(event_context).one(evt, handler);
         },
 
-        on: function (evt, handler) {
+        on: function (evt, handler, context) {
             if (_.contains(['ready', 'initialized'], evt)) {
                 converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
+            }
+            if (context) {
+                handler = handler.bind(context);
             }
             $(event_context).bind(evt, handler);
         },
@@ -29283,33 +29275,54 @@ return Backbone.BrowserStorage;
         };
 
         this.initRoster = function () {
-            this.roster = new this.RosterContacts();
-            this.roster.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.contacts-'+this.bare_jid));
-            this.rostergroups = new converse.RosterGroups();
-            this.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+            converse.roster = new converse.RosterContacts();
+            converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.contacts-'+converse.bare_jid));
+            converse.rostergroups = new converse.RosterGroups();
+            converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
         };
 
+        this.populateRoster = function () {
+            /* Fetch all the roster groups, and then the roster contacts.
+             * Emit an event after fetching is done in each case.
+             */
+            converse.rostergroups.fetchRosterGroups().then(function () {
+                converse.emit('rosterGroupsFetched');
+                converse.roster.fetchRosterContacts().then(function () {
+                    converse.emit('rosterContactsFetched');
+                    converse.sendInitialPresence();
+                });
+            });
+        };
+
         this.unregisterPresenceHandler = function () {
-            if (typeof this.presence_ref !== 'undefined') {
-                this.connection.deleteHandler(this.presence_ref);
-                delete this.presence_ref;
+            if (typeof converse.presence_ref !== 'undefined') {
+                converse.connection.deleteHandler(converse.presence_ref);
+                delete converse.presence_ref;
             }
         };
 
         this.registerPresenceHandler = function () {
-            this.unregisterPresenceHandler();
-            this.presence_ref = converse.connection.addHandler(
+            converse.unregisterPresenceHandler();
+            converse.presence_ref = converse.connection.addHandler(
                 function (presence) {
                     converse.roster.presenceHandler(presence);
                     return true;
                 }, null, 'presence', null);
         };
 
+
+        this.sendInitialPresence = function () {
+            if (converse.send_initial_presence) {
+                converse.xmppstatus.sendPresence();
+            }
+        };
+
         this.onStatusInitialized = function () {
             this.registerIntervalHandler();
             this.initRoster();
+            this.populateRoster();
             this.chatboxes.onConnected();
             this.registerPresenceHandler();
             this.giveFeedback(__('Contacts'));
@@ -29493,6 +29506,36 @@ return Backbone.BrowserStorage;
                 } else  {
                     return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
+            },
+
+            fetchRosterContacts: function () {
+                /* Fetches the roster contacts, first by trying the
+                 * sessionStorage cache, and if that's empty, then by querying
+                 * the XMPP server.
+                 *
+                 * Returns a promise which resolves once the contacts have been
+                 * fetched.
+                 */
+                var deferred = new $.Deferred();
+                this.fetch({
+                    add: true,
+                    success: function (collection) {
+                        if (collection.length === 0) {
+                            /* We don't have any roster contacts stored in sessionStorage,
+                             * so lets fetch the roster from the XMPP server. We pass in
+                             * 'sendPresence' as callback method, because after initially
+                             * fetching the roster we are ready to receive presence
+                             * updates from our contacts.
+                             */
+                            converse.send_initial_presence = true;
+                            converse.roster.fetchFromServer(deferred.resolve);
+                        } else {
+                            converse.emit('cachedRoster', collection);
+                            deferred.resolve();
+                        }
+                    }
+                });
+                return deferred.promise();
             },
 
             subscribeToSuggestedItems: function (msg) {
@@ -29834,6 +29877,22 @@ return Backbone.BrowserStorage;
 
         this.RosterGroups = Backbone.Collection.extend({
             model: converse.RosterGroup,
+
+            fetchRosterGroups: function () {
+                /* Fetches all the roster groups from sessionStorage.
+                 *
+                 * Returns a promise which resolves once the groups have been
+                 * returned.
+                 */
+                var deferred = new $.Deferred();
+                this.fetch({
+                    silent: true, // We need to first have all groups before
+                                  // we can start positioning them, so we set
+                                  // 'silent' to true.
+                    success: deferred.resolve
+                });
+                return deferred.promise();
+            }
         });
 
 
@@ -30690,11 +30749,11 @@ return Backbone.BrowserStorage;
             }
         },
         'listen': {
-            'once': function (evt, handler) {
-                converse.once(evt, handler);
+            'once': function (evt, handler, context) {
+                converse.once(evt, handler, context);
             },
-            'on': function (evt, handler) {
-                converse.on(evt, handler);
+            'on': function (evt, handler, context) {
+                converse.on(evt, handler, context);
             },
             'not': function (evt, handler) {
                 converse.off(evt, handler);
@@ -32689,6 +32748,17 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
+            initRoster: function () {
+                /* Create an instance of RosterView once the RosterGroups
+                 * collection has been created (in converse-core.js)
+                 */
+                this.__super__.initRoster.apply(this, arguments);
+                converse.rosterview = new converse.RosterView({
+                    'model': converse.rostergroups
+                });
+                converse.rosterview.render();
+            },
+
             RosterGroups: {
                 comparator: function () {
                     // RosterGroupsComparator only gets set later (once i18n is
@@ -32892,17 +32962,13 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     converse.roster.on("remove", this.update, this);
                     this.model.on("add", this.onGroupAdd, this);
                     this.model.on("reset", this.reset, this);
-                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
-                    // Create a model on which we can store filter properties
-                    var model = new converse.RosterFilter();
-                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
-                    model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-                    this.filter_view = new converse.RosterFilterView({'model': model});
-                    this.filter_view.model.on('change', this.updateFilter, this);
-                    this.filter_view.model.fetch();
+                    converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
+                    converse.on('rosterContactsFetched', this.update, this);
+                    this.createRosterFilter();
                 },
 
                 render: function () {
+                    this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                     this.$el.html(this.filter_view.render());
                     if (!converse.allow_contact_requests) {
                         // XXX: if we ever support live editing of config then
@@ -32910,6 +32976,16 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                         this.$el.addClass('no-contact-requests');
                     }
                     return this;
+                },
+
+                createRosterFilter: function () {
+                    // Create a model on which we can store filter properties
+                    var model = new converse.RosterFilter();
+                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
+                    model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                    this.filter_view = new converse.RosterFilterView({'model': model});
+                    this.filter_view.model.on('change', this.updateFilter, this);
+                    this.filter_view.model.fetch();
                 },
 
                 updateFilter: _.debounce(function () {
@@ -32951,45 +33027,6 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     } else if (!this.filter_view.isActive()) {
                         this.filter_view.hide();
                     }
-                    return this;
-                },
-
-                fetch: function () {
-                    this.model.fetch({
-                        silent: true, // We use the success handler to handle groups that were added,
-                                    // we need to first have all groups before positionFetchedGroups
-                                    // will work properly.
-                        success: function (collection, resp, options) {
-                            if (collection.length !== 0) {
-                                this.positionFetchedGroups(collection, resp, options);
-                            }
-                            converse.roster.fetch({
-                                add: true,
-                                success: function (collection) {
-                                    if (collection.length === 0) {
-                                        /* We don't have any roster contacts stored in sessionStorage,
-                                         * so lets fetch the roster from the XMPP server. We pass in
-                                         * 'sendPresence' as callback method, because after initially
-                                         * fetching the roster we are ready to receive presence
-                                         * updates from our contacts.
-                                         */
-                                        converse.roster.fetchFromServer(
-                                                converse.xmppstatus.sendPresence.bind(converse.xmppstatus));
-                                    } else {
-                                        converse.emit('cachedRoster', collection);
-                                        if (converse.send_initial_presence) {
-                                            /* We're not going to fetch the roster again because we have
-                                            * it already cached in sessionStorage, but we still need to
-                                            * send out a presence stanza because this is a new session.
-                                            * See: https://github.com/jcbrand/converse.js/issues/536
-                                            */
-                                            converse.xmppstatus.sendPresence();
-                                        }
-                                    }
-                                }
-                            });
-                        }.bind(this)
-                    });
                     return this;
                 },
 
@@ -33106,8 +33143,8 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
-                    model.sort();
-                    model.each(function (group, idx) {
+                    this.model.sort();
+                    this.model.each(function (group, idx) {
                         var view = this.get(group.get('name'));
                         if (!view) {
                             view = new converse.RosterGroupView({model: group});
@@ -33782,7 +33819,7 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.initRoster();
+                        this.insertRoster();
                     }
                     if (typeof this.model.get('closed')==='undefined') {
                         this.model.set('closed', !converse.show_controlbox_by_default);
@@ -33818,17 +33855,14 @@ define('text!zh',[],function () { return '{\n   "domain": "converse",\n   "local
 
                 onConnected: function () {
                     if (this.model.get('connected')) {
-                        this.render().initRoster();
+                        this.render().insertRoster();
                     }
                 },
 
-                initRoster: function () {
-                    /* We initialize the roster, which will appear inside the
-                     * Contacts Panel.
+                insertRoster: function () {
+                    /* Place the rosterview inside the "Contacts" panel.
                      */
-                    converse.rosterview = new converse.RosterView({model: converse.rostergroups});
                     this.contactspanel.$el.append(converse.rosterview.$el);
-                    converse.rosterview.render().fetch().update();
                     return this;
                 },
 

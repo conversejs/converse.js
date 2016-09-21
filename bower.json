@@ -8,10 +8,6 @@
     "sinon": "^1.17.3"
   },
   "dependencies": {
-    "requirejs": "~2.2.0",
-    "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
-    "requirejs-text": "~2.0.14",
-    "requirejs-tpl-jcbrand": "*",
     "bootstrap": "~3.2.0",
     "fontawesome": "~4.1.0",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",

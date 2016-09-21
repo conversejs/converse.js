@@ -653,24 +653,24 @@
         };
 
         this.initRoster = function () {
-            this.roster = new this.RosterContacts();
-            this.roster.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.contacts-'+this.bare_jid));
-            this.rostergroups = new converse.RosterGroups();
-            this.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+            converse.roster = new converse.RosterContacts();
+            converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.contacts-'+converse.bare_jid));
+            converse.rostergroups = new converse.RosterGroups();
+            converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
         };
 
         this.unregisterPresenceHandler = function () {
-            if (typeof this.presence_ref !== 'undefined') {
-                this.connection.deleteHandler(this.presence_ref);
-                delete this.presence_ref;
+            if (typeof converse.presence_ref !== 'undefined') {
+                converse.connection.deleteHandler(converse.presence_ref);
+                delete converse.presence_ref;
             }
         };
 
         this.registerPresenceHandler = function () {
-            this.unregisterPresenceHandler();
-            this.presence_ref = converse.connection.addHandler(
+            converse.unregisterPresenceHandler();
+            converse.presence_ref = converse.connection.addHandler(
                 function (presence) {
                     converse.roster.presenceHandler(presence);
                     return true;

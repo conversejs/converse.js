@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "bower": "latest",
+    "greenkeeper": "^4.0.0",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.1.0",
     "grunt-contrib-cssmin": "~1.0.1",
@@ -43,8 +44,8 @@
     "jshint": "^2.8.0",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
-    "requirejs": "~2.2.0",
-    "po2json": "^0.3.0"
+    "po2json": "^0.3.0",
+    "requirejs": "~2.2.0"
   },
   "dependencies": {
     "almond": "~0.3.1",

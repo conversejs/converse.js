@@ -31,6 +31,20 @@
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
+            initRoster: function () {
+                /* Create an instance of RosterView once the RosterGroups
+                 * collection has been created (in converse-core.js)
+                 */
+                this.__super__.initRoster.apply(this, arguments);
+                converse.rosterview = new converse.RosterView({
+                    'model': converse.rostergroups
+                });
+                converse.rosterview.render().populate().then(function () {
+                    converse.rosterview.update();
+                    converse.sendInitialPresence();
+                });
+            },
+
             RosterGroups: {
                 comparator: function () {
                     // RosterGroupsComparator only gets set later (once i18n is

@@ -216,7 +216,7 @@
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.initRoster();
+                        this.insertRoster();
                     }
                     if (typeof this.model.get('closed')==='undefined') {
                         this.model.set('closed', !converse.show_controlbox_by_default);
@@ -252,20 +252,14 @@
 
                 onConnected: function () {
                     if (this.model.get('connected')) {
-                        this.render().initRoster();
+                        this.render().insertRoster();
                     }
                 },
 
-                initRoster: function () {
-                    /* We initialize the roster, which will appear inside the
-                     * Contacts Panel.
+                insertRoster: function () {
+                    /* Place the rosterview inside the "Contacts" panel.
                      */
-                    converse.rosterview = new converse.RosterView({model: converse.rostergroups});
                     this.contactspanel.$el.append(converse.rosterview.$el);
-                    converse.rosterview.render().populate().then(function () {
-                        converse.rosterview.update();
-                        converse.sendInitialPresence();
-                    });
                     return this;
                 },
 

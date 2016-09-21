@@ -50,7 +50,7 @@
                 },
 
                 render: function (options) {
-                    this._super.render.apply(this, arguments);
+                    this.__super__.render.apply(this, arguments);
                     var label_bookmark = _('Bookmark this room');
                     // TODO: check if bookmarked, and if so, add button-on class
                     this.$el.find('.chat-head-chatroom .icon-wrench').before(

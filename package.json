@@ -39,13 +39,13 @@
     "grunt-contrib-cssmin": "~1.0.1",
     "grunt-contrib-jst": "~1.0.0",
     "grunt-json": "^0.2.0",
-    "http-server": "^0.7.4",
+    "http-server": "^0.9.0",
     "jquery-easing": "0.0.1",
     "jshint": "^2.8.0",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
-    "po2json": "^0.3.0",
-    "requirejs": "~2.2.0"
+    "po2json": "^0.4.4",
+    "requirejs": "2.3.2"
   },
   "dependencies": {
     "almond": "~0.3.1",
@@ -54,9 +54,9 @@
     "backbone.overview": "0.0.2",
     "crypto-js": "3.1.2-5",
     "jed": "0.5.4",
-    "jquery": "1.12.3",
+    "jquery": "1.12.4",
     "jquery.browser": ">=0.1.0",
-    "moment": "~2.12.0",
+    "moment": "~2.13.0",
     "otr": "0.2.16",
     "pluggable.js": "0.0.2",
     "requirejs-undertemplate": "~0.0.4",

@@ -27,7 +27,6 @@
             var view = converse.chatboxviews.get(jid);
             spyOn(view, 'renderBookmarkForm').andCallThrough();
             spyOn(view, 'cancelConfiguration').andCallThrough();
-            spyOn(view, 'onBookmarkError').andCallThrough();
 
             var $bookmark = view.$el.find('.icon-pushpin');
             $bookmark.click();
@@ -124,6 +123,11 @@
         });
 
         describe("when bookmarked", function () {
+            beforeEach(function () {
+                test_utils.closeAllChatBoxes();
+                converse.bookmarks.reset();
+            });
+
             it("displays that it's bookmarked through its bookmark icon", function () {
                 runs(function () {
                     test_utils.openChatRoom('lounge', 'localhost', 'dummy');
@@ -141,10 +145,68 @@
             });
 
             it("can be unbookmarked", function () {
-                // TODO
-                // Mock bookmark data received from the server.
-                // Open the room
-                // Click the bookmark icon to unbookmark
+                var sent_stanza, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                spyOn(converse.connection, 'getUniqueId').andCallThrough();
+
+                runs(function () {
+                    test_utils.openChatRoom('theplay', 'conference.shakespeare.lit', 'JC');
+                });
+                waits(100);
+                runs(function () {
+                    var jid = 'theplay@conference.shakespeare.lit';
+                    var view = converse.chatboxviews.get(jid);
+                    spyOn(view, 'toggleBookmark').andCallThrough();
+                    spyOn(converse.bookmarks, 'sendBookmarkStanza').andCallThrough();
+                    view.delegateEvents();
+                    converse.bookmarks.create({
+                        'jid': view.model.get('jid'),
+                        'autojoin': false,
+                        'name':  'The Play',
+                        'nick': ' Othello'
+                    });
+                    expect(converse.bookmarks.length).toBe(1);
+                    view.model.save('bookmarked', true);
+                    var $bookmark_icon = view.$('.icon-pushpin');
+                    expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
+                    $bookmark_icon.click();
+                    expect(converse.bookmarks.sendBookmarkStanza).toHaveBeenCalled();
+                    expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
+                    expect(view.toggleBookmark).toHaveBeenCalled();
+                    expect(converse.bookmarks.length).toBe(0);
+
+                    // Check that an IQ stanza is sent out, containing no
+                    // conferences to bookmark (since we removed the one and
+                    // only bookmark).
+                    expect(sent_stanza.toLocaleString()).toBe(
+                        "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
+                                "<publish node='storage:bookmarks'>"+
+                                    "<item id='current'>"+
+                                        "<storage xmlns='storage:bookmarks'/>"+
+                                    "</item>"+
+                                "</publish>"+
+                                "<publish-options>"+
+                                    "<x xmlns='jabber:x:data' type='submit'>"+
+                                        "<field var='FORM_TYPE' type='hidden'>"+
+                                            "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
+                                        "</field>"+
+                                        "<field var='pubsub#persist_items'>"+
+                                            "<value>true</value>"+
+                                        "</field>"+
+                                        "<field var='pubsub#access_model'>"+
+                                            "<value>whitelist</value>"+
+                                        "</field>"+
+                                    "</x>"+
+                                "</publish-options>"+
+                            "</pubsub>"+
+                        "</iq>"
+                    );
+                });
             });
         });
     });

@@ -2,11 +2,12 @@
 (function (root, factory) {
     define([
         "jquery",
+        "underscore",
         "utils",
         "mock",
         "test_utils"
         ], factory);
-} (this, function ($, utils, mock, test_utils) {
+} (this, function ($, _, utils, mock, test_utils) {
     "use strict";
     var $iq = converse_api.env.$iq,
         Strophe = converse_api.env.Strophe;
@@ -122,6 +123,26 @@
             // nothing to test for here.
         });
 
+        it("will be automatilly opened if 'autojoin' is set on the bookmark", function () {
+            var jid = 'lounge@localhost';
+            converse.bookmarks.create({
+                'jid': jid,
+                'autojoin': false,
+                'name':  'The Lounge',
+                'nick': ' Othello'
+            });
+            expect(_.isUndefined(converse.chatboxviews.get(jid))).toBeTruthy();
+
+            jid = 'theplay@conference.shakespeare.lit';
+            converse.bookmarks.create({
+                'jid': jid,
+                'autojoin': true,
+                'name':  'The Play',
+                'nick': ' Othello'
+            });
+            expect(_.isUndefined(converse.chatboxviews.get(jid))).toBeFalsy();
+        });
+
         describe("when bookmarked", function () {
             beforeEach(function () {
                 test_utils.closeAllChatBoxes();
@@ -145,7 +166,7 @@
             });
 
             it("can be unbookmarked", function () {
-                var sent_stanza, IQ_id;
+                var view, sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                     sent_stanza = iq;
@@ -159,7 +180,7 @@
                 waits(100);
                 runs(function () {
                     var jid = 'theplay@conference.shakespeare.lit';
-                    var view = converse.chatboxviews.get(jid);
+                    view = converse.chatboxviews.get(jid);
                     spyOn(view, 'toggleBookmark').andCallThrough();
                     spyOn(converse.bookmarks, 'sendBookmarkStanza').andCallThrough();
                     view.delegateEvents();
@@ -170,7 +191,10 @@
                         'nick': ' Othello'
                     });
                     expect(converse.bookmarks.length).toBe(1);
-                    view.model.save('bookmarked', true);
+                });
+                waits(100);
+                runs(function () {
+                    expect(view.model.get('bookmarked')).toBeTruthy();
                     var $bookmark_icon = view.$('.icon-pushpin');
                     expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
                     $bookmark_icon.click();

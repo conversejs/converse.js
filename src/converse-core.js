@@ -1676,7 +1676,8 @@
             initialize: function () {
                 this.addClientIdentities().addClientFeatures();
                 this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.features'+converse.bare_jid));
+                    b64_sha1('converse.features'+converse.bare_jid)
+                );
                 this.on('add', this.onFeatureAdded, this);
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this

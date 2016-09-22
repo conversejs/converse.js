@@ -52,6 +52,7 @@
                 initialize: function () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:bookmarked', this.onBookmarked, this);
+                    this.setBookmarkState();
                 },
 
                 render: function (options) {
@@ -65,7 +66,22 @@
                 },
 
                 onBookmarked: function () {
-                    this.$('.icon-pushpin').toggleClass('button-on');
+                    if (this.model.get('bookmarked')) {
+                        this.$('.icon-pushpin').addClass('button-on');
+                    } else {
+                        this.$('.icon-pushpin').removeClass('button-on');
+                    }
+                },
+
+                setBookmarkState: function () {
+                    if (!_.isUndefined(converse.bookmarks)) {
+                        var models = converse.bookmarks.where({'jid': this.model.get('jid')});
+                        if (!models.length) {
+                            this.model.save('bookmarked', false);
+                        } else {
+                            this.model.save('bookmarked', true);
+                        }
+                    }
                 },
 
                 renderBookmarkForm: function () {
@@ -129,15 +145,29 @@
              */
             var converse = this.converse;
 
+            converse.Bookmark = Backbone.Model;
+
             converse.Bookmarks = Backbone.Collection.extend({
+                model: converse.Bookmark,
 
                 initialize: function () {
                     this.on('add', this.markRoomAsBookmarked, this);
+                    this.on('add', this.openBookmarkedRoom, this);
                     this.on('remove', this.markRoomAsUnbookmarked, this);
+
+                    this.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                        b64_sha1('converse.room-bookmarks'+converse.bare_jid)
+                    );
+                },
+
+                openBookmarkedRoom: function (bookmark) {
+                    if (bookmark.get('autojoin')) {
+                        converse_api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
+                    }
                 },
 
                 fetchBookmarks: function () {
-                    converse.bookmarks.fetch({
+                    this.fetch({
                         'add': true,
                         'success': this.onCachedBookmarksFetched.bind(this),
                         'error':  this.onCachedBookmarksFetched.bind(this)
@@ -247,9 +277,6 @@
 
             converse.initBookmarks = function () {
                 converse.bookmarks = new converse.Bookmarks();
-                var id = b64_sha1('converse.room-bookmarks');
-                converse.bookmarks.id = id;
-                converse.bookmarks.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
                 converse.bookmarks.fetchBookmarks();
             };
             converse.on('connected', converse.initBookmarks);

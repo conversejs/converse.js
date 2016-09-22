@@ -699,7 +699,7 @@
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'", function () {
                 test_utils.openChatRoom('lounge', 'localhost', 'dummy');
-                var view = this.chatboxviews.get('lounge@localhost');
+                var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'close').andCallThrough();
                 spyOn(converse, 'emit');
                 spyOn(view, 'leave');
@@ -711,9 +711,9 @@
                 runs(function () {
                     expect(view.close).toHaveBeenCalled();
                     expect(view.leave).toHaveBeenCalled();
-                    expect(this.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                }.bind(converse));
-            }.bind(converse));
+                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                });
+            });
         }.bind(converse));
 
 

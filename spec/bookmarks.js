@@ -27,7 +27,6 @@
             var view = converse.chatboxviews.get(jid);
             spyOn(view, 'renderBookmarkForm').andCallThrough();
             spyOn(view, 'cancelConfiguration').andCallThrough();
-            spyOn(view, 'onBookmarkAdded').andCallThrough();
             spyOn(view, 'onBookmarkError').andCallThrough();
 
             var $bookmark = view.$el.find('.icon-pushpin');
@@ -72,11 +71,13 @@
              *      </pubsub>
              *  </iq>
              */
+            expect(view.model.get('bookmarked')).toBeFalsy();
             var $form = view.$el.find('.chatroom-form');
             $form.find('input[name="name"]').val('Play&apos;s the Thing');
             $form.find('input[name="autojoin"]').prop('checked', true);
             $form.find('input[name="nick"]').val('JC');
             $form.submit();
+            expect(view.model.get('bookmarked')).toBeTruthy();
             expect($bookmark.hasClass('on-button'), true);
 
             expect(sent_stanza.toLocaleString()).toBe(
@@ -118,16 +119,25 @@
                 'id':IQ_id
             });
             converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(view.onBookmarkAdded).toHaveBeenCalled();
-
+            // We ignore this IQ stanza... (unless it's an error stanza), so
+            // nothing to test for here.
         });
 
         describe("when bookmarked", function () {
             it("displays that it's bookmarked through its bookmark icon", function () {
-                // TODO
-                // Mock bookmark data received from the server.
-                // Open the room
-                // Check that the icon has 'button-on' class.
+                runs(function () {
+                    test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                });
+                waits(100);
+                runs(function () {
+                    var view = converse.chatboxviews.get('lounge@localhost');
+                    var $bookmark_icon = view.$('.icon-pushpin');
+                    expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
+                    view.model.set('bookmarked', true);
+                    expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
+                    view.model.set('bookmarked', false);
+                    expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
+                });
             });
 
             it("can be unbookmarked", function () {

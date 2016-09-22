@@ -49,13 +49,23 @@
                     'click .toggle-bookmark': 'toggleBookmark'
                 },
 
+                initialize: function () {
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:bookmarked', this.onBookmarked, this);
+                },
+
                 render: function (options) {
                     this.__super__.render.apply(this, arguments);
                     var label_bookmark = _('Bookmark this room');
-                    // TODO: check if bookmarked, and if so, add button-on class
-                    this.$el.find('.chat-head-chatroom .icon-wrench').before(
-                        '<a class="chatbox-btn toggle-bookmark icon-pushpin" title="'+label_bookmark+'"></a>');
+                    var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
+                            (this.model.get('bookmarked') ? 'button-on"' : '"') +
+                            'title="'+label_bookmark+'"></a>';
+                    this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
                     return this;
+                },
+
+                onBookmarked: function () {
+                    this.$('.icon-pushpin').toggleClass('button-on');
                 },
 
                 renderBookmarkForm: function () {
@@ -77,14 +87,13 @@
 
                 addBookmark: function (ev) {
                     ev.preventDefault();
-
                     converse.bookmarks.create({
-                        'id': this.model.get('id'),
+                        'jid': this.model.get('jid'),
                         'autojoin': this.$el.find('.chatroom-form').find('input[name=autojoin]').val(),
                         'name':  this.$el.find('.chatroom-form').find('input[name=name]').val(),
                         'nick':  this.$el.find('.chatroom-form').find('input[name=nick]').val()
                     });
-                    this.$('.icon-pushpin').addClass('button-on');
+                    this.model.save('bookmarked', true);
 
                     var that = this,
                         $form = $(ev.target);
@@ -127,17 +136,13 @@
                                         .c('value').t('true').up().up()
                                     .c('field', {'var':'pubsub#access_model'})
                                         .c('value').t('whitelist');
-                    converse.connection.sendIQ(stanza, this.onBookmarkAdded, this.onBookmarkError);
+                    converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
                 },
 
-                onBookmarkAdded: function (iq) {
-                    converse.log("Bookmark successfully added");
-                    converse.log(iq);
-                },
-                    
                 onBookmarkError: function (iq) {
-                    converse.log("Error while trying to add bookmark");
+                    converse.log("Error while trying to add bookmark", "error");
                     converse.log(iq);
+                    this.model.save('bookmarked', false);
                     window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
                 },
 
@@ -163,30 +168,46 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+
             converse.Bookmarks = Backbone.Collection.extend({
                 
                 onCachedBookmarksFetched: function () {
-                    if (!window.sessionStorage.getItem(this.browserStorage.name) || this.models.length > 0) {
-                        // There weren't any cached bookmarks, so we query to XMPP
-                        // server
+                    if (!window.sessionStorage.getItem(this.browserStorage.name)) {
+                        // There aren't any cached bookmarks, so we query the
+                        // XMPP server.
                         var stanza = $iq({
                             'from': converse.connection.jid,
                             'type': 'get',
                         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                             .c('items', {'node': 'storage:bookmarks'});
-                        converse.connection.sendIQ(stanza, this.onBookmarksReceived.bind(this), this.onBookmarksReceivedError);
+                        converse.connection.sendIQ(
+                            stanza,
+                            this.onBookmarksReceived.bind(this),
+                            this.onBookmarksReceivedError
+                        );
+                    } else {
+                        this.models.each(this.markRoomAsBookmarked);
+                    }
+                },
+
+                markRoomAsBookmarked: function (bookmark) {
+                    var room = converse.chatboxes.get(bookmark.get('jid'));
+                    if (!_.isUndefined(room)) {
+                        room.save('bookmarked', true);
                     }
                 },
 
                 onBookmarksReceived: function (iq) {
-                    var rooms = $(iq).find('items[node="storage:bookmarks"] item[id="current"] storage conference');
-                    _.each(rooms, function (room) {
-                        this.create({
-                            'jid': room.jid,
-                            'name': room.name,
-                            'autojoin': room.autojoin,
-                            'nick': room.querySelector('nick').text
-                        });
+                    var bookmarks = $(iq).find(
+                        'items[node="storage:bookmarks"] item[id="current"] storage conference'
+                    );
+                    _.each(bookmarks, function (bookmark) {
+                        this.markRoomAsBookmarked(this.create({
+                            'jid': bookmark.getAttribute('jid'),
+                            'name': bookmark.getAttribute('name'),
+                            'autojoin': bookmark.getAttribute('autojoin'),
+                            'nick': bookmark.querySelector('nick').textContent
+                        }));
                     }.bind(this));
                 },
 

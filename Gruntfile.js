@@ -1,24 +1,5 @@
 module.exports = function(grunt) {
     grunt.initConfig({
-        jst: {
-            compile: {
-                options: {
-                    namespace: 'templates',
-                    templateSettings: {
-                        evaluate : /\{\[([\s\S]+?)\]\}/g,
-                        interpolate : /\{\{([\s\S]+?)\}\}/g
-                    },
-                    processName: function (filepath) {
-                        // E.g. src/templates/trimmed_chat.html
-                        return filepath.match(/src\/templates\/([a-z_]+)\.html/)[1];
-
-                    }
-                },
-                files: {
-                    "dist/templates.js": ["src/templates/*.html"]
-                },
-            }
-        },
         cssmin: {
             options: {
                 banner: "/*"+
@@ -48,6 +29,5 @@ module.exports = function(grunt) {
         }
     });
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-jst');
     grunt.loadNpmTasks('grunt-json');
 };

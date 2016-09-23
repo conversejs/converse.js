@@ -37,7 +37,6 @@
     "grunt": "^1.0.1",
     "grunt-cli": "^1.1.0",
     "grunt-contrib-cssmin": "~1.0.1",
-    "grunt-contrib-jst": "~1.0.0",
     "grunt-json": "^0.2.0",
     "http-server": "^0.9.0",
     "jquery-easing": "0.0.1",

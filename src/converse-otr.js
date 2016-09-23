@@ -13,10 +13,12 @@
     define("converse-otr", [
             "otr",
             "converse-core",
-            "converse-api"
+            "converse-api",
+            "tpl!toolbar_otr"
     ], factory);
-}(this, function (otr, converse, converse_api) {
+}(this, function (otr, converse, converse_api, tpl_toolbar_otr) {
     "use strict";
+    converse.templates.toolbar_otr = tpl_toolbar_otr;
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         utils = converse_api.env.utils,

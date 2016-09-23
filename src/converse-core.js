@@ -22,13 +22,16 @@
         "utils",
         "moment_with_locales",
         "strophe",
-        "converse-templates",
         "pluggable",
+        "tpl!chats_panel",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function ($, _, dummy, utils, moment, Strophe, templates, pluggable) {
+}(this, function (
+        $, _, dummy, utils, moment,
+        Strophe, pluggable, tpl_chats_panel
+    ) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -59,7 +62,7 @@
     var event_context = {};
 
     var converse = {
-        templates: templates,
+        templates: {'chats_panel': tpl_chats_panel},
 
         emit: function (evt, data) {
             $(event_context).trigger(evt, data);

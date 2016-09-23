@@ -10,12 +10,54 @@
     define("converse-controlbox", [
             "converse-core",
             "converse-api",
-            // TODO: The next two dependencies can be made optional
-            "converse-rosterview",
-            "converse-chatview"
+            "tpl!add_contact_dropdown",
+            "tpl!add_contact_form",
+            "tpl!change_status_message",
+            "tpl!chat_status",
+            "tpl!choose_status",
+            "tpl!contacts_panel",
+            "tpl!contacts_tab",
+            "tpl!controlbox",
+            "tpl!controlbox_toggle",
+            "tpl!login_panel",
+            "tpl!login_tab",
+            "tpl!search_contact",
+            "tpl!status_option",
+            "converse-chatview",
+            "converse-rosterview"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (
+            converse,
+            converse_api,
+            tpl_add_contact_dropdown,
+            tpl_add_contact_form,
+            tpl_change_status_message,
+            tpl_chat_status,
+            tpl_choose_status,
+            tpl_contacts_panel,
+            tpl_contacts_tab,
+            tpl_controlbox,
+            tpl_controlbox_toggle,
+            tpl_login_panel,
+            tpl_login_tab,
+            tpl_search_contact,
+            tpl_status_option
+        ) {
     "use strict";
+    converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
+    converse.templates.add_contact_form = tpl_add_contact_form;
+    converse.templates.change_status_message = tpl_change_status_message;
+    converse.templates.chat_status = tpl_chat_status;
+    converse.templates.choose_status = tpl_choose_status;
+    converse.templates.contacts_panel = tpl_contacts_panel;
+    converse.templates.contacts_tab = tpl_contacts_tab;
+    converse.templates.controlbox = tpl_controlbox;
+    converse.templates.controlbox_toggle = tpl_controlbox_toggle;
+    converse.templates.login_panel = tpl_login_panel;
+    converse.templates.login_tab = tpl_login_tab;
+    converse.templates.search_contact = tpl_search_contact;
+    converse.templates.status_option = tpl_status_option;
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         utils = converse_api.env.utils;

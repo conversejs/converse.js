@@ -60,7 +60,6 @@ require.config({
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",
         "converse-rosterview":      "src/converse-rosterview",
-        "converse-templates":       "src/converse-templates",
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
@@ -155,13 +154,11 @@ require.config({
         "new_day":                  "src/templates/new_day",
         "occupant":                 "src/templates/occupant",
         "pending_contact":          "src/templates/pending_contact",
-        "pending_contacts":         "src/templates/pending_contacts",
         "register_panel":           "src/templates/register_panel",
         "register_tab":             "src/templates/register_tab",
         "registration_form":        "src/templates/registration_form",
         "registration_request":     "src/templates/registration_request",
         "requesting_contact":       "src/templates/requesting_contact",
-        "requesting_contacts":      "src/templates/requesting_contacts",
         "room_description":         "src/templates/room_description",
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
@@ -174,7 +171,6 @@ require.config({
         "toolbar":                  "src/templates/toolbar",
         "toolbar_otr":              "src/templates/toolbar_otr",
         "trimmed_chat":             "src/templates/trimmed_chat",
-        "vcard":                    "src/templates/vcard",
         "chatbox_minimize":         "src/templates/chatbox_minimize"
     },
 

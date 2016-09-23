@@ -14,31 +14,31 @@
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
 
     <!-- BEGIN JQUERY -->
-    <script type="text/javascript" src="components/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="components/jquery.browser/dist/jquery.browser.js"></script>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="node_modules/jquery.browser/dist/jquery.browser.js"></script>
     <script type="text/javascript" src="components/typeahead.js/index.js"></script>
     <!-- END JQUERY -->
 
     <!-- BEGIN OTR: Off-the-record encryption stuff. Can be omitted if OTR is not used. -->
-    <script type="text/javascript" src="components/otr/build/dep/salsa20.js"></script>
+    <script type="text/javascript" src="node_modules/otr/build/dep/salsa20.js"></script>
     <script type="text/javascript" src="src/bigint.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/core.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/enc-base64.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/core.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/enc-base64.js"></script>
     <script type="text/javascript" src="components/crypto-js-evanvosberg/src/md5.js"></script>
     <script type="text/javascript" src="components/crypto-js-evanvosberg/src/evpkdf.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/cipher-core.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/aes.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/sha1.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/sha256.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/hmac.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/pad-nopadding.js"></script>
-    <script type="text/javascript" src="components/otr/vendor/cryptojs/mode-ctr.js"></script>
-    <script type="text/javascript" src="components/otr/build/dep/eventemitter.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/cipher-core.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/aes.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/sha1.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/sha256.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/hmac.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/pad-nopadding.js"></script>
+    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/mode-ctr.js"></script>
+    <script type="text/javascript" src="node_modules/otr/build/dep/eventemitter.js"></script>
     <script type="text/javascript" src="src/otr.js"></script>
     <!-- END OTR -->
 
     <!-- BEGIN STROPHE -->
-    <script type="text/javascript" src="components/strophejs/strophe.js"></script>
+    <script type="text/javascript" src="node_modules/strophe.js/strophe.js"></script>
     <script type="text/javascript" src="components/strophejs-plugins/vcard/strophe.vcard.js"></script>
     <script type="text/javascript" src="components/strophejs-plugins/disco/strophe.disco.js"></script>
     <script type="text/javascript" src="components/strophejs-plugins/rsm/strophe.rsm.js"></script>
@@ -46,10 +46,10 @@
     <!-- END STROPHE -->
 
     <!-- BEGIN BACKBONE -->
-    <script type="text/javascript" src="components/underscore/underscore.js"></script>
-    <script type="text/javascript" src="components/backbone//backbone.js"></script>
-    <script type="text/javascript" src="components/backbone.browserStorage/backbone.browserStorage.js"></script>
-    <script type="text/javascript" src="components/backbone.overview/backbone.overview.js"></script>
+    <script type="text/javascript" src="node_modules/underscore/underscore.js"></script>
+    <script type="text/javascript" src="node_modules/backbone//backbone.js"></script>
+    <script type="text/javascript" src="node_modules/backbone.browserStorage/backbone.browserStorage.js"></script>
+    <script type="text/javascript" src="node_modules/backbone.overview/backbone.overview.js"></script>
     <!-- END BACKBONE -->
 
     <!-- BEGIN I18N -->
@@ -59,11 +59,11 @@
         src/locales.js to remove those you don't need, and then run `make
         build` to generates a new dist/locales.js file.
     -->
-    <script type="text/javascript" src="components/jed/jed.js"></script>
+    <script type="text/javascript" src="node_modules/jed/jed.js"></script>
     <script type="text/javascript" src="dist/locales.js"></script>
     <!-- END I18N -->
 
-    <script type="text/javascript" src="components/momentjs/min/moment-with-locales.js"></script>
+    <script type="text/javascript" src="node_modules/moment/min/moment-with-locales.js"></script>
     <script type="text/javascript" src="dist/converse-no-dependencies.js"></script>
 </head>
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">

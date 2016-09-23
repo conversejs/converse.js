@@ -13,11 +13,51 @@
     define("converse-muc", [
             "converse-core",
             "converse-api",
+            "tpl!chatarea",
+            "tpl!chatroom",
+            "tpl!chatroom_form",
+            "tpl!chatroom_nickname_form",
+            "tpl!chatroom_password_form",
+            "tpl!chatroom_sidebar",
+            "tpl!chatrooms_tab",
+            "tpl!info",
+            "tpl!occupant",
+            "tpl!room_description",
+            "tpl!room_item",
+            "tpl!room_panel",
             "typeahead",
             "converse-chatview"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (
+            converse,
+            converse_api,
+            tpl_chatarea,
+            tpl_chatroom,
+            tpl_chatroom_form,
+            tpl_chatroom_nickname_form,
+            tpl_chatroom_password_form,
+            tpl_chatroom_sidebar,
+            tpl_chatrooms_tab,
+            tpl_info,
+            tpl_occupant,
+            tpl_room_description,
+            tpl_room_item,
+            tpl_room_panel
+    ) {
     "use strict";
+    converse.templates.chatarea = tpl_chatarea;
+    converse.templates.chatroom = tpl_chatroom;
+    converse.templates.chatroom_form = tpl_chatroom_form;
+    converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
+    converse.templates.chatroom_password_form = tpl_chatroom_password_form;
+    converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
+    converse.templates.chatrooms_tab = tpl_chatrooms_tab;
+    converse.templates.info = tpl_info;
+    converse.templates.occupant = tpl_occupant;
+    converse.templates.room_description = tpl_room_description;
+    converse.templates.room_item = tpl_room_item;
+    converse.templates.room_panel = tpl_room_panel;
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,

@@ -23,38 +23,41 @@ Creating builds
 Creating builds and distribution files
 ======================================
 
-We  use `require.js <http://requirejs.org>`_ to keep track of *Converse.js* and
-its dependencies and to to bundle them together in a single file fit for
-deployment to a production site.
+Converse.js uses `AMD (Asynchronous Modules Definition) <http://requirejs.org/docs/whyamd.html#amd>`_
+to define modules and their dependencies.
 
-To create the distributable bundles, simply run::
+Dependencies can then be loaded on-the-fly with `require.js <http://requirejs.org>`_.
+This is very useful during development, but when it comes to
+deployement, it's usually desired to create a single, minified distribution build.
+
+For this, the `r.js optimizer <http://requirejs.org/docs/optimization.html>`_
+is used together with `almond.js <https://github.com/requirejs/almond>`_, which
+is a minimal AMD API implementation that replaces require.js in builds (in
+order to keep the build smaller).
+
+To create the distribution build, simply run::
 
     make dist
 
 This command does the following:
 
-* It creates different Javascript bundles of Converse.js.
-  The individual javascript files will be bundled and minified with `require.js`_'s
-  optimization tool, using `almond <https://github.com/jrburke/almond>`_.
-  You can `read more about require.js's optimizer here <http://requirejs.org/docs/optimization.html>`_.
-
-* It bundles the HTML templates in ``./src/templates/`` into a single file called ``templates.js``.
-  This file can then be included via the ``<script>`` tag. See for example the ``non_amd.html`` example page.
+* It creates different builds of Converse.js in the ``./dist/`` directory.
 
 * It bundles all the translation files in ``./locale/`` into a single file ``locales.js``.
   This file can then be included via the ``<script>`` tag. See for example the ``non_amd.html`` example page.
 
 * Also, the CSS files in the ``./css`` directory will be minified.
 
-The built Javasript bundles are contained in the ``./dist`` directory:
+The Javascript build files are contained in the ``./dist`` directory:
 
 .. code-block:: bash
 
     jc@conversejs:~/converse.js (master)$ ls dist/
-    converse.js               converse-no-dependencies.js      
-    converse.min.js           converse-no-dependencies.min.js  
-    converse.nojquery.js      locales.js
-    converse.nojquery.min.js  templates.js
+    converse-mobile.js               converse.min.js
+    converse-mobile.min.js           converse.nojquery.js
+    converse-no-dependencies.js      converse.nojquery.min.js
+    converse-no-dependencies.min.js  locales.js
+    converse.js
 
 .. _`minification`:
 

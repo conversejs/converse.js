@@ -7,9 +7,30 @@
 /*global Backbone, define */
 
 (function (root, factory) {
-    define("converse-rosterview", ["converse-core", "converse-api"], factory);
-}(this, function (converse, converse_api) {
+    define("converse-rosterview", [
+            "converse-core",
+            "converse-api",
+            "tpl!group_header",
+            "tpl!pending_contact",
+            "tpl!requesting_contact",
+            "tpl!roster",
+            "tpl!roster_item"
+    ], factory);
+}(this, function (
+            converse,
+            converse_api, 
+            tpl_group_header,
+            tpl_pending_contact,
+            tpl_requesting_contact,
+            tpl_roster,
+            tpl_roster_item) {
     "use strict";
+    converse.templates.group_header = tpl_group_header;
+    converse.templates.pending_contact = tpl_pending_contact;
+    converse.templates.requesting_contact = tpl_requesting_contact;
+    converse.templates.roster = tpl_roster;
+    converse.templates.roster_item = tpl_roster_item;
+
     var $ = converse_api.env.jQuery,
         utils = converse_api.env.utils,
         Strophe = converse_api.env.Strophe,

@@ -4,9 +4,26 @@
         "jquery",
         "jquery.browser",
         "underscore",
-        "converse-templates"
+        "tpl!field",
+        "tpl!select_option",
+        "tpl!form_select",
+        "tpl!form_textarea",
+        "tpl!form_checkbox",
+        "tpl!form_username",
+        "tpl!form_input",
+        "tpl!form_captcha"
     ], factory);
-}(this, function ($, dummy, _, templates) {
+}(this, function (
+        $, dummy, _,
+        tpl_field,
+        tpl_select_option,
+        tpl_form_select,
+        tpl_form_textarea,
+        tpl_form_checkbox,
+        tpl_form_username,
+        tpl_form_input,
+        tpl_form_captcha
+    ) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -249,7 +266,7 @@
             } else {
                 value = $input.val();
             }
-            return $(templates.field({
+            return $(tpl_field({
                 name: $input.attr('name'),
                 value: value
             }))[0];
@@ -291,14 +308,14 @@
                 $options = $field.children('option');
                 for (j=0; j<$options.length; j++) {
                     value = $($options[j]).find('value').text();
-                    options.push(templates.select_option({
+                    options.push(tpl_select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
                         selected: (values.indexOf(value) >= 0),
                         required: $field.find('required').length
                     }));
                 }
-                return templates.form_select({
+                return tpl_form_select({
                     name: $field.attr('var'),
                     label: $field.attr('label'),
                     options: options.join(''),
@@ -308,14 +325,14 @@
             } else if ($field.attr('type') === 'fixed') {
                 return $('<p class="form-help">').text($field.find('value').text());
             } else if ($field.attr('type') === 'jid-multi') {
-                return templates.form_textarea({
+                return tpl_form_textarea({
                     name: $field.attr('var'),
                     label: $field.attr('label') || '',
                     value: $field.find('value').text(),
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type') === 'boolean') {
-                return templates.form_checkbox({
+                return tpl_form_checkbox({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
@@ -323,7 +340,7 @@
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type') && $field.attr('var') === 'username') {
-                return templates.form_username({
+                return tpl_form_username({
                     domain: ' @'+this.domain,
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
@@ -332,7 +349,7 @@
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type')) {
-                return templates.form_input({
+                return tpl_form_input({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
@@ -343,7 +360,7 @@
                 if ($field.attr('var') === 'ocr') { // Captcha
                     return _.reduce(_.map($field.find('uri'),
                             $.proxy(function (uri) {
-                                return templates.form_captcha({
+                                return tpl_form_captcha({
                                     label: this.$field.attr('label'),
                                     name: this.$field.attr('var'),
                                     data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),

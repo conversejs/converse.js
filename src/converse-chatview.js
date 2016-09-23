@@ -7,9 +7,31 @@
 /*global Backbone, define */
 
 (function (root, factory) {
-    define("converse-chatview", ["converse-core", "converse-api"], factory);
-}(this, function (converse, converse_api) {
+    define("converse-chatview", [
+            "converse-core",
+            "converse-api",
+            "tpl!chatbox",
+            "tpl!new_day",
+            "tpl!action",
+            "tpl!message",
+            "tpl!toolbar"
+    ], factory);
+}(this, function (
+            converse,
+            converse_api,
+            tpl_chatbox,
+            tpl_new_day,
+            tpl_action,
+            tpl_message,
+            tpl_toolbar
+    ) {
     "use strict";
+    converse.templates.chatbox = tpl_chatbox;
+    converse.templates.new_day = tpl_new_day;
+    converse.templates.action = tpl_action;
+    converse.templates.message = tpl_message;
+    converse.templates.toolbar = tpl_toolbar;
+
     var $ = converse_api.env.jQuery,
         utils = converse_api.env.utils,
         Strophe = converse_api.env.Strophe,

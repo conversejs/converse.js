@@ -10,12 +10,25 @@
     define("converse-minimize", [
             "converse-core",
             "converse-api",
+            "tpl!chatbox_minimize",
+            "tpl!toggle_chats",
+            "tpl!trimmed_chat",
             "converse-controlbox",
             "converse-chatview",
             "converse-muc"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (
+        converse,
+        converse_api,
+        tpl_chatbox_minimize,
+        tpl_toggle_chats,
+        tpl_trimmed_chat
+    ) {
     "use strict";
+    converse.templates.chatbox_minimize = tpl_chatbox_minimize;
+    converse.templates.toggle_chats = tpl_toggle_chats;
+    converse.templates.trimmed_chat = tpl_trimmed_chat;
+
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._,
         b64_sha1 = converse_api.env.b64_sha1,

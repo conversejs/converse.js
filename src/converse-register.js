@@ -13,10 +13,29 @@
     define("converse-register", [
             "converse-core",
             "converse-api",
+            "tpl!form_username",
+            "tpl!register_panel",
+            "tpl!register_tab",
+            "tpl!registration_form",
+            "tpl!registration_request",
             "converse-controlbox"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (
+            converse,
+            converse_api,
+            tpl_form_username,
+            tpl_register_panel,
+            tpl_register_tab,
+            tpl_registration_form,
+            tpl_registration_request) {
+
     "use strict";
+    converse.templates.form_username = tpl_form_username;
+    converse.templates.register_panel = tpl_register_panel;
+    converse.templates.register_tab = tpl_register_tab;
+    converse.templates.registration_form = tpl_registration_form;
+    converse.templates.registration_request = tpl_registration_request;
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         utils = converse_api.env.utils,

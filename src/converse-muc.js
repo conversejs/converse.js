@@ -766,7 +766,7 @@
                 },
 
                 checkForReservedNick: function () {
-                    /* User service-discovery to as the XMPP server whether
+                    /* User service-discovery to ask the XMPP server whether
                      * this user has a reserved nickname for this room.
                      * If so, we'll use that, otherwise we render the nickname
                      * form.

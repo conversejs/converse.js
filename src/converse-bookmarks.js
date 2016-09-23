@@ -65,6 +65,19 @@
                     return this;
                 },
 
+                checkForReservedNick: function () {
+                    /* Check if the user has a bookmark with a saved nickanme
+                     * for this room, and if so use it.
+                     * Otherwise delegate to the super method.
+                     */
+                    var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    if (!_.isUndefined(model) && model.get('nick')) {
+                        this.join(this.model.get('nick'));
+                    } else {
+                        this.__super__.checkForReservedNick.apply(this, arguments);
+                    }
+                },
+
                 onBookmarked: function () {
                     if (this.model.get('bookmarked')) {
                         this.$('.icon-pushpin').addClass('button-on');
@@ -263,7 +276,7 @@
                         this.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
-                            'autojoin': bookmark.getAttribute('autojoin'),
+                            'autojoin': bookmark.getAttribute('autojoin') === 'true',
                             'nick': bookmark.querySelector('nick').textContent
                         });
                     }.bind(this));

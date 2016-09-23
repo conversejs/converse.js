@@ -233,6 +233,33 @@
                 });
             });
         });
+
+        describe("and when autojoin is set", function () {
+            beforeEach(function () {
+                converse.bookmarks.reset();
+            });
+
+            it("will be be opened and joined automatically upon login", function () {
+                spyOn(converse_api.rooms, 'open');
+                var jid = 'theplay@conference.shakespeare.lit';
+                var model = converse.bookmarks.create({
+                    'jid': jid,
+                    'autojoin': false,
+                    'name':  'The Play',
+                    'nick': ''
+                });
+                expect(converse_api.rooms.open).not.toHaveBeenCalled();
+                converse.bookmarks.remove(model);
+
+                converse.bookmarks.create({
+                    'jid': jid,
+                    'autojoin': true,
+                    'name':  'Hamlet',
+                    'nick': ''
+                });
+                expect(converse_api.rooms.open).toHaveBeenCalled();
+            });
+        });
     });
 
     describe("Bookmarks", function () {
@@ -345,9 +372,16 @@
                                     'name': 'The Play&apos;s the Thing',
                                     'autojoin': 'true',
                                     'jid': 'theplay@conference.shakespeare.lit'
-                                }).c('nick').t('JC');
+                                }).c('nick').t('JC').up().up()
+                                .c('conference', {
+                                    'name': 'Another room',
+                                    'autojoin': 'false',
+                                    'jid': 'another@conference.shakespeare.lit'
+                                }).c('nick').t('JC').up().up();
             converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(converse.bookmarks.models.length).toBe(1);
+            expect(converse.bookmarks.models.length).toBe(2);
+            expect(converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
+            expect(converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
         });
     });
 }));

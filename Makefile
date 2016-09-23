@@ -10,6 +10,7 @@ PHANTOMJS       ?= ./node_modules/.bin/phantomjs
 RJS				?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
+CLEANCSS        ?= ./node_modules/.bin/cleancss
 SPHINXBUILD     ?= ./bin/sphinx-build
 SPHINXOPTS      =
 
@@ -38,7 +39,6 @@ help:
 	@echo " changes       Make an overview of all changed/added/deprecated items added to the documentation."
 	@echo " clean         Remove downloaded the stamp-* guard files as well as all NPM, bower and Ruby packages."
 	@echo " css           Generate CSS from the Sass files."
-	@echo " cssmin        Minify the CSS files."
 	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
 	@echo " epub          Export the documentation to epub."
 	@echo " html          Make standalone HTML files of the documentation."
@@ -127,10 +127,13 @@ dev: stamp-bower stamp-bundler build
 ## Builds
 
 .PHONY: css
-css: css/converse.css
+css: sass/*.scss css/converse.css css/converse.min.css
 
 css/converse.css:: stamp-bundler stamp-bower sass
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+
+css/converse.min.css:: stamp-npm
+	$(CLEANCSS) css/converse.css > css/converse.min.css
 
 .PHONY: watch
 watch: stamp-bundler
@@ -165,16 +168,11 @@ dist/converse-mobile.js: stamp-bower src locale components *.js
 .PHONY: jsmin
 jsmin: $(BUILDS)
 
-.PHONY: cssmin 
-cssmin: stamp-npm
-	$(GRUNT) cssmin
-
 .PHONY: dist
 dist:: build
 
 .PHONY: build
-build:: stamp-npm
-	$(GRUNT) cssmin
+build:: stamp-npm css
 	$(GRUNT) json
 	make jsmin
 

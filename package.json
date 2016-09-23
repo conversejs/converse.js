@@ -45,7 +45,9 @@
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
     "po2json": "^0.4.4",
-    "requirejs": "2.3.2"
+    "requirejs": "2.3.2",
+    "requirejs-undertemplate": "~0.0.4",
+    "text": "requirejs/text#2.0.14"
   },
   "dependencies": {
     "almond": "~0.3.1",
@@ -59,8 +61,6 @@
     "moment": "~2.13.0",
     "otr": "0.2.16",
     "pluggable.js": "0.0.2",
-    "requirejs-undertemplate": "~0.0.4",
-    "requirejs-text": "~2.0.12",
     "strophe.js": "1.2.8",
     "underscore": "~1.8.3"
   }

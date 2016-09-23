@@ -38,7 +38,7 @@ require.config({
         "strophe.ping":             "src/strophe.ping",
         "strophe.rsm":              "components/strophejs-plugins/rsm/strophe.rsm",
         "strophe.vcard":            "src/strophe.vcard",
-        "text":                     "node_modules/requirejs-text/text",
+        "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/requirejs-undertemplate/tpl",
         "typeahead":                "components/typeahead.js/index",
         "underscore":               "node_modules/underscore/underscore",

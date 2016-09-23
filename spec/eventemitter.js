@@ -16,24 +16,24 @@
         it("allows you to subscribe to emitted events", function () {
             this.callback = function () {};
             spyOn(this, 'callback');
-            converse.on('initialized', this.callback);
-            converse.emit('initialized');
+            converse.on('connected', this.callback);
+            converse.emit('connected');
             expect(this.callback).toHaveBeenCalled();
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 2);
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 3);
         });
 
         it("allows you to listen once for an emitted event", function () {
             this.callback = function () {};
             spyOn(this, 'callback');
-            converse.once('initialized', this.callback);
-            converse.emit('initialized');
+            converse.once('connected', this.callback);
+            converse.emit('connected');
             expect(this.callback).toHaveBeenCalled();
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 1);
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 1);
         });
 
@@ -45,23 +45,23 @@
             spyOn(this, 'callback');
             spyOn(this, 'anotherCallback');
             spyOn(this, 'neverCalled');
-            converse.on('initialized', this.callback);
-            converse.on('initialized', this.anotherCallback);
+            converse.on('connected', this.callback);
+            converse.on('connected', this.anotherCallback);
 
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback).toHaveBeenCalled();
             expect(this.anotherCallback).toHaveBeenCalled();
 
-            converse.off('initialized', this.callback);
+            converse.off('connected', this.callback);
 
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 1);
             expect(this.anotherCallback.callCount, 2);
 
-            converse.once('initialized', this.neverCalled);
-            converse.off('initialized', this.neverCalled);
+            converse.once('connected', this.neverCalled);
+            converse.off('connected', this.neverCalled);
 
-            converse.emit('initialized');
+            converse.emit('connected');
             expect(this.callback.callCount, 1);
             expect(this.anotherCallback.callCount, 3);
             expect(this.neverCalled).not.toHaveBeenCalled();

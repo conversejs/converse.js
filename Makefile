@@ -28,7 +28,7 @@ JSHINTEXCEPTIONS = $(GENERATED) \
 CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
 .PHONY: all
-all: dev
+all: dev dist
 
 .PHONY: help
 help:
@@ -121,7 +121,7 @@ clean:
 	-rm -rf node_modules components .bundle
 
 .PHONY: dev
-dev: stamp-bower stamp-bundler build
+dev: stamp-bower stamp-bundler
 
 ########################################################################
 ## Builds

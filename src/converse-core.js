@@ -143,6 +143,7 @@
 
     converse.initialize = function (settings, callback) {
         "use strict";
+        settings = typeof settings !== "undefined" ? settings : {};
         var init_deferred = new $.Deferred();
         var converse = this;
         var unloadevent;

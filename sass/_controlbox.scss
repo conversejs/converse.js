@@ -201,6 +201,12 @@
                     }
                 }
             }
+
+            /* Custom addition for CSP */
+            dd.search-xmpp {
+                display: none;
+            }
+
             dd.search-xmpp ul {
                 box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
                 li:hover {

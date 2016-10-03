@@ -6,7 +6,7 @@
 - New event ['rosterContactsFetched'](https://conversejs.org/docs/html/development.html#rosterContactsFetched) [jcbrand]
 - New event ['rosterGroupsFetched'](https://conversejs.org/docs/html/development.html#rosterGroupsFetched) [jcbrand]
 - HTML templates are now loaded in the respective modules/plugins. [jcbrand]
-- Start improving Content-Security-Policy compatibility by removing inline CSS.
+- Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

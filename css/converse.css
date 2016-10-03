@@ -1655,33 +1655,37 @@
       #conversejs #controlbox #chatrooms #available-chatrooms dd.available-chatroom div.room-info {
         clear: left;
         width: 100%; }
-  #conversejs #controlbox .dropdown a {
-    width: 148px;
-    display: inline-block;
-    line-height: 25px; }
-  #conversejs #controlbox .dropdown li {
-    list-style: none;
-    padding-left: 0; }
-  #conversejs #controlbox .dropdown dd ul {
-    padding: 0;
-    list-style: none;
-    position: absolute;
-    left: 0;
-    top: 0;
-    border: 1px solid #B1BFC4;
-    width: 100%;
-    z-index: 21;
-    background-color: #FCFDFD; }
-    #conversejs #controlbox .dropdown dd ul li:hover {
-      background-color: #DCF9F6; }
-  #conversejs #controlbox .dropdown dd.search-xmpp ul {
-    box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
-    #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
+  #conversejs #controlbox .dropdown {
+    /* Custom addition for CSP */ }
+    #conversejs #controlbox .dropdown a {
+      width: 148px;
+      display: inline-block;
+      line-height: 25px; }
+    #conversejs #controlbox .dropdown li {
+      list-style: none;
+      padding-left: 0; }
+    #conversejs #controlbox .dropdown dd ul {
+      padding: 0;
+      list-style: none;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border: 1px solid #B1BFC4;
+      width: 100%;
+      z-index: 21;
       background-color: #FCFDFD; }
-  #conversejs #controlbox .dropdown dt a span {
-    cursor: pointer;
-    display: block;
-    padding: 4px 7px 0 5px; }
+      #conversejs #controlbox .dropdown dd ul li:hover {
+        background-color: #DCF9F6; }
+    #conversejs #controlbox .dropdown dd.search-xmpp {
+      display: none; }
+    #conversejs #controlbox .dropdown dd.search-xmpp ul {
+      box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
+      #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
+        background-color: #FCFDFD; }
+    #conversejs #controlbox .dropdown dt a span {
+      cursor: pointer;
+      display: block;
+      padding: 4px 7px 0 5px; }
   #conversejs #controlbox #select-xmpp-status {
     float: right;
     margin-right: 0.5em; }
@@ -1836,9 +1840,12 @@
   height: calc(100% - 50px - 20px);
   overflow: hidden;
   padding: 0;
-  padding-bottom: 3em; }
+  padding-bottom: 3em;
+  /* Custom addition for CSP */ }
   #conversejs #converse-roster.no-contact-requests {
     height: calc(100% - 25px - 20px); }
+  #conversejs #converse-roster #online-count {
+    display: none; }
   #conversejs #converse-roster .search-xmpp ul li.chat-info {
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-group {

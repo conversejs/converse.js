@@ -13,6 +13,11 @@
         height: calc(100% - #{$controlbox-dropdown-height} - 20px);
     }
 
+    /* Custom addition for CSP */
+    #online-count {
+        display: none;
+    }
+
     .search-xmpp {
         ul {
             li.chat-info {

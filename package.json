@@ -55,7 +55,7 @@
     "backbone.overview": "0.0.2",
     "crypto-js": "3.1.2-5",
     "jed": "0.5.4",
-    "jquery": "1.12.4",
+    "jquery": "2.2.3",
     "jquery.browser": ">=0.1.0",
     "moment": "~2.13.0",
     "otr": "0.2.16",

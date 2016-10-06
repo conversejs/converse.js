@@ -77,6 +77,9 @@
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
+                    if (_.isUndefined(converse.bookmarks)) {
+                        return;
+                    }
                     var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(this.model.get('nick'));

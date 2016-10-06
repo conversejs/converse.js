@@ -16,6 +16,7 @@
         afterEach(function () {
             test_utils.closeControlBox();
             converse.connection = original_connection;
+            converse._initialize();
         });
 
         it("is not available unless allow_registration=true",  function () {

@@ -85,6 +85,7 @@
     };
 
     utils.openRoomsPanel = function () {
+        utils.openControlBox();
         var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').last().find('a').click();

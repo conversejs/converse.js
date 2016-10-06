@@ -405,13 +405,17 @@
                                         'jid': 'theplay@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up()
                                     .c('conference', {
+                                        'name': 'Bookmark with a very very long name that will be shortened',
+                                        'autojoin': 'false',
+                                        'jid': 'theplay@conference.shakespeare.lit'
+                                    }).c('nick').t('JC').up().up()
+                                    .c('conference', {
                                         'name': 'Another room',
                                         'autojoin': 'false',
                                         'jid': 'another@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up();
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect(converse.bookmarks.models.length).toBe(2);
-                expect($('#chatrooms ul.bookmarks li').length).toBe(2);
+                expect($('#chatrooms ul.bookmarks li').length).toBe(3);
             });
         });
     });

@@ -1,17 +1,23 @@
 #conversejs {
     #controlbox {
         .bookmarks-list {
-            margin-top: 1em;
+            margin-top: 2em;
             .bookmarks-toggle {
                 display: block;
                 font-weight: bold;
                 color: $text-color;
+                margin-bottom: 0.5em;
             }
             .bookmarks {
                 li {
-                    padding: 1em 1em;
+                    padding: 0.3em 1em;
                     .open-room {
-                        float: left;
+                        display: inline-block;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        width: 75%;
+                        text-align: left;
                     }
                     .room-info {
                         float: right;

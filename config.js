@@ -124,15 +124,18 @@ require.config({
         "action":                   "src/templates/action",
         "add_contact_dropdown":     "src/templates/add_contact_dropdown",
         "add_contact_form":         "src/templates/add_contact_form",
+        "bookmark":                 "src/templates/bookmark",
+        "bookmarks_list":           "src/templates/bookmarks_list",
         "change_status_message":    "src/templates/change_status_message",
         "chat_status":              "src/templates/chat_status",
         "chatarea":                 "src/templates/chatarea",
         "chatbox":                  "src/templates/chatbox",
+        "chatbox_minimize":         "src/templates/chatbox_minimize",
         "chatroom":                 "src/templates/chatroom",
-        "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_bookmark_form":   "src/templates/chatroom_bookmark_form",
-        "chatroom_password_form":   "src/templates/chatroom_password_form",
+        "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_nickname_form":   "src/templates/chatroom_nickname_form",
+        "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",
         "chatrooms_tab":            "src/templates/chatrooms_tab",
         "chats_panel":              "src/templates/chats_panel",
@@ -172,8 +175,7 @@ require.config({
         "toggle_chats":             "src/templates/toggle_chats",
         "toolbar":                  "src/templates/toolbar",
         "toolbar_otr":              "src/templates/toolbar_otr",
-        "trimmed_chat":             "src/templates/trimmed_chat",
-        "chatbox_minimize":         "src/templates/chatbox_minimize"
+        "trimmed_chat":             "src/templates/trimmed_chat"
     },
 
     map: {

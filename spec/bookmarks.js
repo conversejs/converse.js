@@ -123,7 +123,7 @@
             // nothing to test for here.
         });
 
-        it("will be automatilly opened if 'autojoin' is set on the bookmark", function () {
+        it("will be automatically opened if 'autojoin' is set on the bookmark", function () {
             var jid = 'lounge@localhost';
             converse.bookmarks.create({
                 'jid': jid,
@@ -198,11 +198,9 @@
                     var $bookmark_icon = view.$('.icon-pushpin');
                     expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
                     $bookmark_icon.click();
-                    expect(converse.bookmarks.sendBookmarkStanza).toHaveBeenCalled();
-                    expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
                     expect(view.toggleBookmark).toHaveBeenCalled();
+                    expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
                     expect(converse.bookmarks.length).toBe(0);
-
                     // Check that an IQ stanza is sent out, containing no
                     // conferences to bookmark (since we removed the one and
                     // only bookmark).
@@ -382,6 +380,39 @@
             expect(converse.bookmarks.models.length).toBe(2);
             expect(converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
             expect(converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
+        });
+
+        describe("The rooms panel", function () {
+            beforeEach(function () {
+                test_utils.openRoomsPanel();
+            });
+
+            it("shows a list of bookmarks", function () {
+                var IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                converse.emit('connected');
+                var stanza = $iq({'to': converse.connection.jid, 'type':'result', 'id':IQ_id})
+                    .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('items', {'node': 'storage:bookmarks'})
+                            .c('item', {'id': 'current'})
+                                .c('storage', {'xmlns': 'storage:bookmarks'})
+                                    .c('conference', {
+                                        'name': 'The Play&apos;s the Thing',
+                                        'autojoin': 'false',
+                                        'jid': 'theplay@conference.shakespeare.lit'
+                                    }).c('nick').t('JC').up().up()
+                                    .c('conference', {
+                                        'name': 'Another room',
+                                        'autojoin': 'false',
+                                        'jid': 'another@conference.shakespeare.lit'
+                                    }).c('nick').t('JC').up().up();
+                converse.connection._dataRecv(test_utils.createRequest(stanza));
+                expect(converse.bookmarks.models.length).toBe(2);
+                expect($('#chatrooms ul.bookmarks li').length).toBe(2);
+            });
         });
     });
 }));

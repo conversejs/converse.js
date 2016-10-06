@@ -1615,7 +1615,8 @@
   #conversejs #controlbox #chatrooms form.add-chatroom input[type=text] {
     width: 100%; }
   #conversejs #controlbox #chatrooms #available-chatrooms {
-    padding: 0 1em 2em 1em;
+    margin: 0 1em;
+    padding: 0;
     text-align: left; }
     #conversejs #controlbox #chatrooms #available-chatrooms dt {
       border: none;
@@ -2165,5 +2166,20 @@
     position: absolute;
     right: 116px;
     bottom: 10px; }
+
+#conversejs #controlbox .bookmarks-list {
+  margin-top: 1em; }
+  #conversejs #controlbox .bookmarks-list .bookmarks-toggle {
+    display: block;
+    font-weight: bold;
+    color: #818479; }
+  #conversejs #controlbox .bookmarks-list .bookmarks li {
+    padding: 1em 1em; }
+    #conversejs #controlbox .bookmarks-list .bookmarks li .open-room {
+      float: left; }
+    #conversejs #controlbox .bookmarks-list .bookmarks li .room-info {
+      float: right; }
+    #conversejs #controlbox .bookmarks-list .bookmarks li .remove-bookmark {
+      float: right; }
 
 /*# sourceMappingURL=converse.css.map */

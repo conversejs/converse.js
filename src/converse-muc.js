@@ -1484,20 +1484,20 @@
 
                 showRoomInfo: function (ev) {
                     var target = ev.target,
-                        $dd = $(target).parent('dd'),
-                        $div = $dd.find('div.room-info');
+                        $parent = $(target).parent('dd'),
+                        $div = $parent.find('div.room-info');
                     if ($div.length) {
                         $div.remove();
                     } else {
-                        $dd.find('span.spinner').remove();
-                        $dd.append('<span class="spinner hor_centered"/>');
+                        $parent.find('span.spinner').remove();
+                        $parent.append('<span class="spinner hor_centered"/>');
                         converse.connection.disco.info(
                             $(target).attr('data-room-jid'),
                             null,
                             function (stanza) {
                                 var $stanza = $(stanza);
                                 // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                                $dd.find('span.spinner').replaceWith(
+                                $parent.find('span.spinner').replaceWith(
                                     converse.templates.room_description({
                                         'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                                         'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
@@ -1533,7 +1533,7 @@
 
                 createChatRoom: function (ev) {
                     ev.preventDefault();
-                    var name, $name, server, $server, jid, chatroom;
+                    var name, $name, server, $server, jid;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
                         jid = $(ev.target).attr('data-room-jid');
@@ -1554,7 +1554,7 @@
                             return;
                         }
                     }
-                    chatroom = converse.chatboxviews.showChat({
+                    converse.chatboxviews.showChat({
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),

@@ -1,0 +1,26 @@
+#conversejs {
+    #controlbox {
+        .bookmarks-list {
+            margin-top: 1em;
+            .bookmarks-toggle {
+                display: block;
+                font-weight: bold;
+                color: $text-color;
+            }
+            .bookmarks {
+                li {
+                    padding: 1em 1em;
+                    .open-room {
+                        float: left;
+                    }
+                    .room-info {
+                        float: right;
+                    }
+                    .remove-bookmark {
+                        float: right;
+                    }
+                }
+            }
+        }
+    }
+}

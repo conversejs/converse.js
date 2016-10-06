@@ -312,12 +312,6 @@
                         'label_bookmarks': __('Bookmarked Rooms')
                     }));
                     this.$bookmarks = this.$('.bookmarks');
-                    var controlboxview = converse.chatboxviews.get('controlbox');
-                    if (_.isUndefined(controlboxview)) {
-                        return this.$el;
-                    }
-                    controlboxview.$('#chatrooms .bookmarks-list').remove();
-                    this.$el.prependTo(controlboxview.$('#chatrooms'));
                     return this.$el;
                 },
 
@@ -332,18 +326,20 @@
                 },
 
                 onBookmarkAdded: function (item) {
-                    if (_.isUndefined(this.$bookmarks)) {
-                        this.render();
-                    }
-                    this.$bookmarks.append($(
-                        converse.templates.bookmark({
+                    // TODO: Try to come up with a way to avoid DOM reflows.
+                    var $bookmark = $(converse.templates.bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
                             'open_title': __('Click to open this room'),
                             'info_title': __('Show more information on this room'),
                             'info_remove': __('Remove this bookmark')
-                        })
-                    ));
+                        }));
+                    if (_.isUndefined(this.$bookmarks)) {
+                        this.render();
+                        var controlboxview = converse.chatboxviews.get('controlbox');
+                        this.$el.prependTo(controlboxview.$('#chatrooms'));
+                    }
+                    this.$bookmarks.append($bookmark);
                 },
 
                 toggleBookmarksList: function (ev) {
@@ -365,9 +361,6 @@
                     {'model': converse.bookmarks}
                 );
                 converse.bookmarks.fetchBookmarks();
-                // TODO: think of performance here... we probably only want to
-                // show the bookmarks after they have been fetched
-                converse.bookmarksview.render();
             };
             converse.on('connected', converse.initBookmarks);
             converse.on('reconnected', converse.initBookmarks);

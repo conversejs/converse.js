@@ -385,6 +385,8 @@
         describe("The rooms panel", function () {
             beforeEach(function () {
                 test_utils.openRoomsPanel();
+                converse.bookmarks.reset();
+                converse.chatboxviews.get('controlbox').$('#chatrooms ul.bookmarks').html('');
             });
 
             it("shows a list of bookmarks", function () {

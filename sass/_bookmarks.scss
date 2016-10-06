@@ -1,7 +1,6 @@
 #conversejs {
     #controlbox {
         .bookmarks-list {
-            margin-top: 2em;
             .bookmarks-toggle {
                 display: block;
                 font-weight: bold;
@@ -10,7 +9,7 @@
             }
             .bookmarks {
                 li {
-                    padding: 0.3em 1em;
+                    padding: 0.1em 1em;
                     .open-room {
                         display: inline-block;
                         overflow: hidden;

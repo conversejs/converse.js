@@ -23,13 +23,12 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 ## Features
 
 -   Single-user chat
+-   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)
 -   Direct invitations to chat rooms [XEP 249](http://xmpp.org/extensions/xep-0249.html)
 -   vCard support [XEP 54](http://xmpp.org/extensions/xep-0054.html)
 -   Service discovery [XEP 30](http://xmpp.org/extensions/xep-0030.html)
 -   In-band registration [XEP 77](http://xmpp.org/extensions/xep-0077.html)
--   Contact rosters and groups
--   Contact subscriptions
 -   Chat room bookmarks [XEP 48](http://xmpp.org/extensions/xep-0048.html)
 -   Roster item exchange [XEP 144](http://xmpp.org/extensions/tmp/xep-0144-1.1.html)
 -   Chat statuses (online, busy, away, offline)

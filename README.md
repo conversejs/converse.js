@@ -67,7 +67,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Tests
 
-We use behavior-driven tests written with [jasmine.js](http://pivotal.github.io/jasmine).
+We use behavior-driven tests written with [jasmine.js](https://jasmine.github.io/).
 
 Open [tests.html](https://github.com/jcbrand/converse.js/blob/master/tests.html) in your browser, and the tests will run automatically.
 

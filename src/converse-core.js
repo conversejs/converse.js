@@ -233,6 +233,7 @@
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
             bosh_service_url: undefined, // The BOSH connection manager URL.
+            connection_options: {},
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
             debug: false,
@@ -1916,9 +1917,12 @@
                 throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
             }
             if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url);
+                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
             } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(this.bosh_service_url, {'keepalive': this.keepalive});
+                this.connection = new Strophe.Connection(
+                    this.bosh_service_url,
+                    _.extend(this.connection_options, {'keepalive': this.keepalive})
+                );
             } else {
                 throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
             }

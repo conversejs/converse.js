@@ -8,6 +8,7 @@
 - HTML templates are now loaded in the respective modules/plugins. [jcbrand]
 - Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
 - Add support for XEP-0048, chat room bookmarks [jcbrand]
+- New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection_options) [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]
@@ -15,7 +16,7 @@
 - Backwards incompatible change: the `_super` attribute in plugins is now named `__super__`. [jcbrand]
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
-- Add new configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
+- New configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
 - Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
 - Fixed wrong chat state value, should be `chat`, not `chatty`.
   See [RFC 3921](https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.1.2.2). [jcbrand]
@@ -31,8 +32,8 @@
 - Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
 - `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to
   `onMessageSubmitted`, to make it the same as the method on `ChatBoxView`. [jcbrand]
-- New config option [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
-- New config option [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc_instant_rooms) [jcbrand]
+- New configuration setting [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
+- New configuration setting [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc_instant_rooms) [jcbrand]
 
 ## 1.0.5 (2016-07-28)
 - In case of nickname conflict when joining a room, allow the user to choose a new one.

@@ -368,6 +368,34 @@ then you'll receive notification messages each time this happens.
 Receiving constant notifications that a user's client is connecting and disconnecting
 is annoying, so this option allows you to ignore those JIDs.
 
+connection_options
+------------------
+
+* Default:  ``{}``
+* Type:  Object
+
+Converse.js relies on `Strophe.js <http://strophe.im>`_ to establish and
+maintain a connection to the XMPP server.
+
+This option allows you to pass a map of configuration options to be passed into
+the ``Strophe.Connection`` constructor.
+
+For documentation on the configuration options that ``Strophe.Connection``
+accepts, refer to the
+`Strophe.Connection documentation <http://strophe.im/strophejs/doc/1.2.8/files/strophe-js.html#Strophe.Connection.Strophe.Connection>`_.
+
+As an example, suppose you want to restrict the supported SASL authentication
+mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
+``key:value`` pair::
+
+        converse.initialize({
+            connection_options: {
+                'mechanisms': [
+                    converse.env.Strophe.SASLMD5,
+                ]
+            },
+        });
+
 credentials_url
 ---------------
 

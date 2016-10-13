@@ -43,7 +43,7 @@
     "jshint": "^2.8.0",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
-    "po2json": "^0.4.4",
+    "po2json": "^0.4.5",
     "requirejs": "2.3.2",
     "requirejs-undertemplate": "~0.0.4",
     "text": "requirejs/text#2.0.14"

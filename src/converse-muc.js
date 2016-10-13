@@ -306,7 +306,6 @@
                 },
 
                 close: function (ev) {
-                    converse.connection.deleteHandler(this.handler);
                     this.leave();
                     converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
@@ -586,27 +585,12 @@
                     }
                 },
 
-                handleMUCStanza: function (stanza) {
-                    var xmlns, xquery, i;
-                    var from = stanza.getAttribute('from');
+                handleMUCMessage: function (stanza) {
                     var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
-                    if (!from || (this.model.get('id') !== from.split("/")[0])  || is_mam) {
+                    if (is_mam) {
                         return true;
                     }
-                    if (stanza.nodeName === "message") {
-                        _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
-                    } else if (stanza.nodeName === "presence") {
-                        xquery = stanza.getElementsByTagName("x");
-                        if (xquery.length > 0) {
-                            for (i = 0; i < xquery.length; i++) {
-                                xmlns = xquery[i].getAttribute("xmlns");
-                                if (xmlns && xmlns.match(Strophe.NS.MUC)) {
-                                    this.onChatRoomPresence(stanza);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
                     return true;
                 },
 
@@ -622,7 +606,35 @@
                     return node + "@" + domain + (nick !== null ? "/" + nick : "");
                 },
 
+                registerHandlers: function () {
+                    var room_jid = this.model.get('jid');
+                    this.removeHandlers();
+                    this.presence_handler = converse.connection.addHandler(
+                        this.onChatRoomPresence.bind(this),
+                        Strophe.NS.MUC, 'presence', null, null, room_jid,
+                        {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
+                    );
+                    this.message_handler = converse.connection.addHandler(
+                        this.handleMUCMessage.bind(this),
+                        null, 'message', null, null, room_jid,
+                        {'matchBareFromJid': true}
+                    );
+                },
+
+                removeHandlers: function () {
+                    if (this.message_handler) {
+                        converse.connection.deleteHandler(this.message_handler);
+                        delete this.message_handler;
+                    }
+                    if (this.presence_handler) {
+                        converse.connection.deleteHandler(this.presence_handler);
+                        delete this.presence_handler;
+                    }
+                    return this;
+                },
+
                 join: function (nick, password) {
+                    this.registerHandlers();
                     var stanza = $pres({
                         'from': converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
@@ -630,9 +642,6 @@
                       .c("history", {'maxstanzas': converse.muc_history_max_stanzas}).up();
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
-                    }
-                    if (!this.handler) {
-                        this.handler = converse.connection.addHandler(this.handleMUCStanza.bind(this));
                     }
                     this.model.set('connection_status', Strophe.Status.CONNECTING);
                     return converse.connection.send(stanza);
@@ -649,11 +658,12 @@
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
                     }
+                    var that = this;
                     converse.connection.addHandler(
                         function () {
-                            this.model.set('connection_status', Strophe.Status.DISCONNECTED);
-                        }.bind(this),
-                        null, "presence", null, presenceid);
+                            that.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                            that.removeHandlers();
+                        }, null, "presence", null, presenceid);
                     converse.connection.send(presence);
                 },
 
@@ -1092,6 +1102,7 @@
                         }
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);
+                    return true;
                 },
 
                 setChatRoomSubject: function (sender, subject) {
@@ -1687,6 +1698,9 @@
                             attrs = {};
                         }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
+                        if (!attrs.nick) {
+                            attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
+                        }
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {

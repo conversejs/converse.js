@@ -173,9 +173,8 @@
             it("shows users currently present in the room", function () {
                 test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
                 var name;
-                var view = this.chatboxviews.get('lounge@localhost'),
+                var view = converse.chatboxviews.get('lounge@localhost'),
                     $occupants = view.$('.occupant-list');
-                spyOn(view, 'onChatRoomPresence').andCallThrough();
                 var presence, role;
                 for (var i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
@@ -191,9 +190,7 @@
                         role: role
                     }).up()
                     .c('status').attrs({code:'110'}).nodeTree;
-
                     converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.onChatRoomPresence).toHaveBeenCalled();
                     expect($occupants.find('li').length).toBe(2+i);
                     expect($($occupants.find('li')[i+1]).text()).toBe(mock.chatroom_names[i]);
                     expect($($occupants.find('li')[i+1]).hasClass('moderator')).toBe(role === "moderator");
@@ -216,10 +213,9 @@
                         role: 'none'
                     }).nodeTree;
                     converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.onChatRoomPresence).toHaveBeenCalled();
                     expect($occupants.find('li').length).toBe(i+1);
                 }
-            }.bind(converse));
+            });
 
             it("indicates moderators by means of a special css class and tooltip", function () {
                 test_utils.openAndEnterChatRoom('lounge', 'localhost', 'dummy');
@@ -524,7 +520,6 @@
                 test_utils.openAndEnterChatRoom('lounge', 'localhost', 'oldnick');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 var $chat_content = view.$el.find('.chat-content');
-                spyOn(view, 'onChatRoomPresence').andCallThrough();
 
                 // The user has just entered the room and receives their own
                 // presence from the server.
@@ -544,7 +539,6 @@
                   .c('status').attrs({code:'210'}).nodeTree;
 
                 converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.onChatRoomPresence).toHaveBeenCalled();
                 var $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("oldnick");
@@ -569,7 +563,6 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
 
@@ -590,7 +583,6 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.onChatRoomPresence).toHaveBeenCalled();
                 expect($chat_content.find('div.chat-info').length).toBe(2);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
                 $occupants = view.$('.occupant-list');

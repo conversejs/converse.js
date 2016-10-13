@@ -943,7 +943,7 @@ messageSend
 
 When a message will be sent out.
 
-``storage_memoryconverse.listen.on('messageSend', function (event, messageText) { ... });``
+``converse.listen.on('messageSend', function (event, messageText) { ... });``
 
 noResumeableSession
 ~~~~~~~~~~~~~~~~~~~

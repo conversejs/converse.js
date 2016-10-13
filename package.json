@@ -61,6 +61,7 @@
     "otr": "0.2.16",
     "pluggable.js": "0.0.2",
     "strophe.js": "1.2.8",
+    "strophejs-plugins": "0.0.7",
     "underscore": "~1.8.3"
   }
 }

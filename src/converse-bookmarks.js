@@ -365,8 +365,7 @@
                 );
                 converse.bookmarks.fetchBookmarks();
             };
-            converse.on('connected', converse.initBookmarks);
-            converse.on('reconnected', converse.initBookmarks);
+            converse.on('chatBoxesFetched', converse.initBookmarks);
         }
     });
 }));

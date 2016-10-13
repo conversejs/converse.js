@@ -320,7 +320,7 @@
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
-            converse.emit('connected');
+            converse.emit('chatBoxesFetched');
 
             /* Client requests all items
              * -------------------------
@@ -395,7 +395,7 @@
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                converse.emit('connected');
+                converse.emit('chatBoxesFetched');
                 var stanza = $iq({'to': converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})

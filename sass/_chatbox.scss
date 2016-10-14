@@ -43,7 +43,6 @@
             background-color: $chat-head-color;
         }
         .user-custom-message {
-            clear: left;
             color: white;
             font-size: 80%;
             font-style: italic;
@@ -52,7 +51,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             margin: 0;
-            padding-top: 0.2em;
+            padding-top: 0.5em;
         }
     }
     .chatbox-btn {

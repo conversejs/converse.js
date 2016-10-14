@@ -124,6 +124,7 @@ require.config({
         "action":                   "src/templates/action",
         "add_contact_dropdown":     "src/templates/add_contact_dropdown",
         "add_contact_form":         "src/templates/add_contact_form",
+        "avatar":                   "src/templates/avatar",
         "bookmark":                 "src/templates/bookmark",
         "bookmarks_list":           "src/templates/bookmarks_list",
         "change_status_message":    "src/templates/change_status_message",

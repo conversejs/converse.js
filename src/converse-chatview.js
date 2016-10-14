@@ -14,7 +14,8 @@
             "tpl!new_day",
             "tpl!action",
             "tpl!message",
-            "tpl!toolbar"
+            "tpl!toolbar",
+            "tpl!avatar"
     ], factory);
 }(this, function (
             converse,
@@ -23,7 +24,8 @@
             tpl_new_day,
             tpl_action,
             tpl_message,
-            tpl_toolbar
+            tpl_toolbar,
+            tpl_avatar
     ) {
     "use strict";
     converse.templates.chatbox = tpl_chatbox;
@@ -31,6 +33,7 @@
     converse.templates.action = tpl_action;
     converse.templates.message = tpl_message;
     converse.templates.toolbar = tpl_toolbar;
+    converse.templates.avatar = tpl_avatar;
 
     var $ = converse_api.env.jQuery,
         utils = converse_api.env.utils,
@@ -76,6 +79,8 @@
              */
             this.updateSettings({
                 show_toolbar: true,
+                chatview_avatar_width: 32,
+                chatview_avatar_height: 32,
             });
 
             converse.ChatBoxView = Backbone.View.extend({
@@ -680,8 +685,13 @@
                     if (!this.model.get('image')) {
                         return;
                     }
+                    var width = converse.chatview_avatar_width;
+                    var height = converse.chatview_avatar_height;
                     var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                        canvas = $('<canvas height="32px" width="32px" class="avatar"></canvas>').get(0);
+                        canvas = $(converse.templates.avatar({
+                            'width': width,
+                            'height': height
+                        })).get(0);
 
                     if (!(canvas.getContext && canvas.getContext('2d'))) {
                         return this;
@@ -691,9 +701,9 @@
                     img.onload = function () {
                         var ratio = img.width/img.height;
                         if (ratio < 1) {
-                            ctx.drawImage(img, 0,0, 32, 32*(1/ratio));
+                            ctx.drawImage(img, 0,0, width, height*(1/ratio));
                         } else {
-                            ctx.drawImage(img, 0,0, 32, 32*ratio);
+                            ctx.drawImage(img, 0,0, width, height*ratio);
                         }
 
                     };

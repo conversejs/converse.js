@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window */
+/*global Backbone, define */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -284,7 +284,7 @@
                                         info_configure: __('Configure this room'),
                                     })));
                     this.renderChatArea();
-                    window.setTimeout(converse.refreshWebkit, 50);
+                    utils.refreshWebkit();
                     return this;
                 },
 

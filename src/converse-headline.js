@@ -110,7 +110,7 @@
                     }
                     this.$content = this.$el.find('.chat-content');
                     converse.emit('chatBoxOpened', this);
-                    window.setTimeout(utils.refreshWebkit, 50);
+                    utils.refreshWebkit();
                     return this;
                 }
             });

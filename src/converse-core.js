@@ -552,7 +552,7 @@
         };
 
         this.clearSession = function () {
-            if (this.roster) {
+            if (!_.isUndefined(this.roster)) {
                 this.roster.browserStorage._clear();
             }
             this.session.browserStorage._clear();

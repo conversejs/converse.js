@@ -51,6 +51,13 @@
             //
             // New functions which don't exist yet can also be added.
 
+            clearSession: function () {
+                this.__super__.clearSession.apply(this, arguments);
+                if (!_.isUndefined(this.bookmarks)) {
+                    this.bookmarks.browserStorage._clear();
+                }
+            },
+
             ChatRoomView: {
                 events: {
                     'click .toggle-bookmark': 'toggleBookmark'
@@ -97,6 +104,8 @@
                 },
 
                 setBookmarkState: function () {
+                    /* Set whether the room is bookmarked or not.
+                     */
                     if (!_.isUndefined(converse.bookmarks)) {
                         var models = converse.bookmarks.where({'jid': this.model.get('jid')});
                         if (!models.length) {
@@ -188,15 +197,16 @@
                 },
 
                 fetchBookmarks: function () {
+                    var deferred = new $.Deferred();
                     this.fetch({
-                        'add': true,
-                        'success': this.onCachedBookmarksFetched.bind(this),
-                        'error':  this.onCachedBookmarksFetched.bind(this)
+                        'silent': true,
+                        'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
+                        'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
                     });
+                    return deferred.promise();
                 },
 
                 sendBookmarkStanza: function () {
-                    var deferred = new $.Deferred();
                     var stanza = $iq({
                             'type': 'set',
                             'from': converse.connection.jid,
@@ -222,34 +232,30 @@
                                 .c('value').t('true').up().up()
                             .c('field', {'var':'pubsub#access_model'})
                                 .c('value').t('whitelist');
-                    converse.connection.sendIQ(
-                        stanza,
-                        deferred.resolve,
-                        _.bind(this.onBookmarkError, this, deferred)
-                    );
-                    return deferred.promise();
+                    converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
                 },
 
-                onBookmarkError: function (deferred, iq) {
+                onBookmarkError: function (iq) {
                     converse.log("Error while trying to add bookmark", "error");
                     converse.log(iq);
                     // We remove all locally cached bookmarks and fetch them
                     // again from the server.
                     this.reset();
-                    this.fetchBookmarksFromServer();
+                    this.fetchBookmarksFromServer(null);
                     window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
-                    return deferred.reject();
                 },
 
-                onCachedBookmarksFetched: function () {
+                onCachedBookmarksFetched: function (deferred) {
                     if (!window.sessionStorage.getItem(this.browserStorage.name)) {
                         // There aren't any cached bookmarks, so we query the
                         // XMPP server.
-                        this.fetchBookmarksFromServer();
+                        this.fetchBookmarksFromServer(deferred);
+                    } else {
+                        return deferred.resolve();
                     }
                 },
 
-                fetchBookmarksFromServer: function () {
+                fetchBookmarksFromServer: function (deferred) {
                     var stanza = $iq({
                         'from': converse.connection.jid,
                         'type': 'get',
@@ -257,8 +263,8 @@
                         .c('items', {'node': 'storage:bookmarks'});
                     converse.connection.sendIQ(
                         stanza,
-                        this.onBookmarksReceived.bind(this),
-                        this.onBookmarksReceivedError
+                        _.bind(this.onBookmarksReceived, this, deferred),
+                        _.partial(this.onBookmarksReceivedError, deferred)
                     );
                 },
 
@@ -276,23 +282,30 @@
                     }
                 },
 
-                onBookmarksReceived: function (iq) {
+                onBookmarksReceived: function (deferred, iq) {
                     var bookmarks = $(iq).find(
                         'items[node="storage:bookmarks"] item[id="current"] storage conference'
                     );
+                    var that = this;
                     _.each(bookmarks, function (bookmark) {
-                        this.create({
+                        that.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
                             'nick': bookmark.querySelector('nick').textContent
-                        });
-                    }.bind(this));
+                        }, {'silent':true});
+                    });
+                    if (!_.isUndefined(deferred)) {
+                        return deferred.resolve();
+                    }
                 },
 
-                onBookmarksReceivedError: function (iq) {
+                onBookmarksReceivedError: function (deferred, iq) {
                     converse.log('Error while fetching bookmarks');
                     converse.log(iq);
+                    if (!_.isUndefined(deferred)) {
+                        return deferred.reject();
+                    }
                 }
             });
 
@@ -300,12 +313,14 @@
                 tagName: 'div',
                 className: 'bookmarks-list',
                 events: {
-                    'click .remove-bookmark': 'removebookmark',
+                    'click .remove-bookmark': 'removeBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList'
                 },
 
                 initialize: function () {
-                    this.model.on('add', this.onBookmarkAdded, this);
+                    this.model.on('add', this.addBookmarkListElement, this);
+                    this.model.on('remove', this.removeBookmarkListElement, this);
+                    this.render();
                 },
 
                 render: function (cfg) {
@@ -314,7 +329,9 @@
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
                     }));
-                    this.$bookmarks = this.$('.bookmarks');
+                    this.model.each(this.addBookmarkListElement, this);
+                    var controlboxview = converse.chatboxviews.get('controlbox');
+                    this.$el.prependTo(controlboxview.$('#chatrooms'));
                     return this.$el;
                 },
 
@@ -323,13 +340,11 @@
                     var name = $(ev.target).data('bookmarkName');
                     var jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        var models = converse.bookmarks.where({'jid': jid});
-                        converse.bookmarks.remove(models);
+                        _.each(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
                     }
                 },
 
-                onBookmarkAdded: function (item) {
-                    // TODO: Try to come up with a way to avoid DOM reflows.
+                addBookmarkListElement: function (item) {
                     var $bookmark = $(converse.templates.bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
@@ -337,12 +352,11 @@
                             'info_title': __('Show more information on this room'),
                             'info_remove': __('Remove this bookmark')
                         }));
-                    if (_.isUndefined(this.$bookmarks)) {
-                        this.render();
-                        var controlboxview = converse.chatboxviews.get('controlbox');
-                        this.$el.prependTo(controlboxview.$('#chatrooms'));
-                    }
-                    this.$bookmarks.append($bookmark);
+                    this.$('.bookmarks').append($bookmark);
+                },
+
+                removeBookmarkListElement: function (item) {
+                    this.$('[data-room-jid="'+item.get('jid')+'"]:first').parent().remove();
                 },
 
                 toggleBookmarksList: function (ev) {
@@ -360,10 +374,11 @@
 
             converse.initBookmarks = function () {
                 converse.bookmarks = new converse.Bookmarks();
-                converse.bookmarksview = new converse.BookmarksView(
-                    {'model': converse.bookmarks}
-                );
-                converse.bookmarks.fetchBookmarks();
+                converse.bookmarks.fetchBookmarks().then(function () {
+                    converse.bookmarksview = new converse.BookmarksView(
+                        {'model': converse.bookmarks}
+                    );
+                });
             };
             converse.on('chatBoxesFetched', converse.initBookmarks);
         }

@@ -1313,8 +1313,7 @@
     line-height: 15px;
     display: block;
     text-overflow: ellipsis;
-    overflow: hidden;
-    height: 2em; }
+    overflow: hidden; }
     #conversejs .chatbox .chat-title a {
       color: white;
       width: 100%; }

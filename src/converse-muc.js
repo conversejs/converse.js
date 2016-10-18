@@ -1382,7 +1382,7 @@
                     'submit form.add-chatroom': 'createChatRoom',
                     'click input#show-rooms': 'showRooms',
                     'click a.open-room': 'createChatRoom',
-                    'click a.room-info': 'showRoomInfo',
+                    'click a.room-info': 'toggleRoomInfo',
                     'change input[name=server]': 'setDomain',
                     'change input[name=nick]': 'setNick'
                 },
@@ -1493,7 +1493,47 @@
                     this.updateRoomsList();
                 },
 
-                showRoomInfo: function (ev) {
+                insertRoomInfo: function ($parent, stanza) {
+                    /* Insert room info (based on returned #disco IQ stanza)
+                     */
+                    var $stanza = $(stanza);
+                    // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+                    $parent.find('span.spinner').replaceWith(
+                        converse.templates.room_description({
+                            'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
+                            'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
+                            'hidden': $stanza.find('feature[var="muc_hidden"]').length,
+                            'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
+                            'moderated': $stanza.find('feature[var="muc_moderated"]').length,
+                            'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
+                            'open': $stanza.find('feature[var="muc_open"]').length,
+                            'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
+                            'persistent': $stanza.find('feature[var="muc_persistent"]').length,
+                            'publicroom': $stanza.find('feature[var="muc_public"]').length,
+                            'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
+                            'temporary': $stanza.find('feature[var="muc_temporary"]').length,
+                            'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
+                            'label_desc': __('Description:'),
+                            'label_occ': __('Occupants:'),
+                            'label_features': __('Features:'),
+                            'label_requires_auth': __('Requires authentication'),
+                            'label_hidden': __('Hidden'),
+                            'label_requires_invite': __('Requires an invitation'),
+                            'label_moderated': __('Moderated'),
+                            'label_non_anon': __('Non-anonymous'),
+                            'label_open_room': __('Open room'),
+                            'label_permanent_room': __('Permanent room'),
+                            'label_public': __('Public'),
+                            'label_semi_anon':  __('Semi-anonymous'),
+                            'label_temp_room':  __('Temporary room'),
+                            'label_unmoderated': __('Unmoderated')
+                        })
+                    );
+                },
+
+                toggleRoomInfo: function (ev) {
+                    /* Show/hide extra information about a room in the listing.
+                     */
                     var target = ev.target,
                         $parent = $(target).parent('dd'),
                         $div = $parent.find('div.room-info');
@@ -1503,42 +1543,8 @@
                         $parent.find('span.spinner').remove();
                         $parent.append('<span class="spinner hor_centered"/>');
                         converse.connection.disco.info(
-                            $(target).attr('data-room-jid'),
-                            null,
-                            function (stanza) {
-                                var $stanza = $(stanza);
-                                // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                                $parent.find('span.spinner').replaceWith(
-                                    converse.templates.room_description({
-                                        'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
-                                        'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
-                                        'hidden': $stanza.find('feature[var="muc_hidden"]').length,
-                                        'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
-                                        'moderated': $stanza.find('feature[var="muc_moderated"]').length,
-                                        'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
-                                        'open': $stanza.find('feature[var="muc_open"]').length,
-                                        'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
-                                        'persistent': $stanza.find('feature[var="muc_persistent"]').length,
-                                        'publicroom': $stanza.find('feature[var="muc_public"]').length,
-                                        'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
-                                        'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-                                        'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
-                                        'label_desc': __('Description:'),
-                                        'label_occ': __('Occupants:'),
-                                        'label_features': __('Features:'),
-                                        'label_requires_auth': __('Requires authentication'),
-                                        'label_hidden': __('Hidden'),
-                                        'label_requires_invite': __('Requires an invitation'),
-                                        'label_moderated': __('Moderated'),
-                                        'label_non_anon': __('Non-anonymous'),
-                                        'label_open_room': __('Open room'),
-                                        'label_permanent_room': __('Permanent room'),
-                                        'label_public': __('Public'),
-                                        'label_semi_anon':  __('Semi-anonymous'),
-                                        'label_temp_room':  __('Temporary room'),
-                                        'label_unmoderated': __('Unmoderated')
-                                    }));
-                            }.bind(this));
+                            $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent)
+                        );
                     }
                 },
 

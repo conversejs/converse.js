@@ -386,7 +386,7 @@
             beforeEach(function () {
                 test_utils.openRoomsPanel();
                 converse.bookmarks.reset();
-                converse.chatboxviews.get('controlbox').$('#chatrooms ul.bookmarks').html('');
+                converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
             });
 
             it("shows a list of bookmarks", function () {
@@ -417,7 +417,7 @@
                                         'jid': 'another@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up();
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect($('#chatrooms ul.bookmarks li').length).toBe(3);
+                expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
             });
         });
     });

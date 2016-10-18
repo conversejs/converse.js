@@ -1,28 +1,26 @@
 #conversejs {
     #controlbox {
-        .bookmarks-list {
-            .bookmarks-toggle {
-                display: block;
-                font-weight: bold;
-                color: $text-color;
-                margin-bottom: 0.5em;
-            }
-            .bookmarks {
-                li {
-                    padding: 0.1em 1em;
-                    .open-room {
-                        display: inline-block;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        width: 75%;
-                        text-align: left;
-                    }
-                    .room-info {
-                        float: right;
-                    }
-                    .remove-bookmark {
-                        float: right;
+        #chatrooms {
+            .bookmarks-list {
+                .bookmarks-toggle {
+                    display: block;
+                    font-weight: bold;
+                    color: $text-color;
+                    margin-bottom: 0.5em;
+                }
+                dl.rooms-list.bookmarks {
+                    dd.available-chatroom {
+                        a {
+                            &.room-info {
+                                clear: none;
+                            }
+                            &.open-room {
+                                width: 75%;
+                            }
+                        }
+                        .remove-bookmark {
+                            float: right;
+                        }
                     }
                 }
             }

@@ -450,6 +450,7 @@
             }
             delete converse.connection.reconnecting;
             converse._tearDown();
+            converse.chatboxviews.closeAllChatBoxes();
             converse.emit('disconnected');
             converse.log('DISCONNECTED');
             return 'disconnected';

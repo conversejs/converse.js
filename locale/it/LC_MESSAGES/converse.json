@@ -17,7 +17,7 @@
          ],
          "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
             null,
-            ""
+            "Un messaggio molto lungo è stato ricevuto. Questo potrebbe ridurre le prestazioni. Il messaggio mostrato è stato tagliato"
          ],
          "is typing": [
             null,
@@ -29,7 +29,7 @@
          ],
          "has gone away": [
             null,
-            ""
+            "è andato via"
          ],
          "Show this menu": [
             null,
@@ -45,11 +45,11 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            ""
+            "Sei sicuro di volere rimuovere i messaggi da questa finestra di chat?"
          ],
          "has gone offline": [
             null,
-            ""
+            "è offline"
          ],
          "is busy": [
             null,
@@ -61,15 +61,15 @@
          ],
          "Hide the list of occupants": [
             null,
-            ""
+            "Nascondi la lista dei partecipanti"
          ],
          "Insert a smiley": [
             null,
-            ""
+            "Inserisci smiley"
          ],
          "Start a call": [
             null,
-            ""
+            "Inizia chiamata"
          ],
          "Contacts": [
             null,
@@ -213,7 +213,7 @@
          ],
          "The connection to the chat server has dropped": [
             null,
-            ""
+            "La connessione col server è stata persa"
          ],
          "Authenticating": [
             null,
@@ -253,7 +253,7 @@
          ],
          "Error: the \"": [
             null,
-            ""
+            "Errore: il \""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -269,7 +269,7 @@
          ],
          "Change user role to occupant": [
             null,
-            ""
+            "Cambia ruolo dei partecipanti"
          ],
          "Kick user from room": [
             null,
@@ -289,7 +289,7 @@
          ],
          "Change your nickname": [
             null,
-            ""
+            "Cambia Nickname"
          ],
          "Grant moderator role to user": [
             null,
@@ -321,7 +321,7 @@
          ],
          "Please choose your nickname": [
             null,
-            ""
+            "Perfavore scegli un nickname"
          ],
          "Nickname": [
             null,

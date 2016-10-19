@@ -127,13 +127,19 @@ dev: stamp-bower stamp-bundler build
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css
 
 css/converse.css:: stamp-bundler stamp-bower sass
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 css/converse.min.css:: stamp-npm
 	$(CLEANCSS) css/converse.css > css/converse.min.css
+
+css/theme.min.css:: stamp-npm
+	$(CLEANCSS) css/theme.css > css/theme.min.css
+
+css/mobile.min.css:: stamp-npm
+	$(CLEANCSS) css/mobile.css > css/mobile.min.css
 
 .PHONY: watch
 watch: stamp-bundler

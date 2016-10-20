@@ -18,6 +18,7 @@ require.config({
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "converse":                 "src/converse",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
@@ -25,6 +26,7 @@ require.config({
         "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd",          // XXX: Only required for https://conversejs.org website
         "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/pluggable",
+        "polyfill":                 "src/polyfill",
         "strophe":                  "node_modules/strophe.js/src/wrapper",
         "strophe-base64":           "node_modules/strophe.js/src/base64",
         "strophe-bosh":             "node_modules/strophe.js/src/bosh",
@@ -43,7 +45,6 @@ require.config({
         "typeahead":                "components/typeahead.js/index",
         "underscore":               "node_modules/underscore/underscore",
         "utils":                    "src/utils",
-        "polyfill":                 "src/polyfill",
         
         // Converse
         "converse-api":             "src/converse-api",

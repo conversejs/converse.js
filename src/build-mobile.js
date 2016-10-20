@@ -7,7 +7,7 @@
         "converse-minimize",
         "converse-dragresize"
     ],
-    include: ['converse'],
+    include: ['src/converse'],
     insertRequire: ['converse'],
     wrap: {
         endFile: ["wrapper-mobile.js"]

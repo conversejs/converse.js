@@ -2,7 +2,7 @@
     baseUrl: "../",
     name: "almond",
     out: "../dist/converse-no-dependencies.min.js",
-    include: ['converse'],
+    include: ['src/converse'],
     excludeShallow: [
         'locales',
         'text!af',

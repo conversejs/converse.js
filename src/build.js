@@ -3,6 +3,6 @@
     name: "almond",
     out: "../dist/converse.min.js",
     mainConfigFile: '../config.js',
-    include: ['converse'],
+    include: ['src/converse'],
     insertRequire: ['converse'],
 })

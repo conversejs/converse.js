@@ -7,14 +7,6 @@
 /*global Backbone, define, window, document, locales */
 
 (function (root, factory) {
-    // Two modules are loaded as dependencies.
-    //
-    // * **converse-dependencies**: A list of dependencies converse.js depends on.
-    //   The path to this module is in main.js and the module itself can be overridden.
-    // * **converse-templates**: The HTML templates used by converse.js.
-    //
-    // The dependencies are then split up and passed into the factory function,
-    // which contains and instantiates converse.js.
     define("converse-core", [
         "jquery",
         "underscore",

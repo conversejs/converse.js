@@ -34,8 +34,8 @@ if (typeof define !== 'undefined') {
         /* END: Removable components */
 
     ], function(converse_api) {
+        converse_api.env.jQuery(window).trigger('converse-loaded', converse_api);
         window.converse = converse_api;
-        $(window).trigger('converse-loaded', converse_api);
         return converse_api;
     });
 }

@@ -15,6 +15,11 @@ h5 {
     font-weight: bold;
 }
 
+.toctree-l1 > a {
+    font-size: 110%;
+    font-weight: bold;
+}
+
 .navbar-brand {
     padding-top: 7px;
 }

@@ -12,8 +12,8 @@ Writing Documentation
 
 .. note:: Contributions to the documentation are much appreciated.
 
-What is used to write the documentation
-=======================================
+What is used to write the documentation?
+========================================
 
 This documentation is written in `Sphinx <http://sphinx-doc.org/>`_, a
 documentation generator written in `Python <http://python.org>`_.
@@ -24,15 +24,15 @@ a very easy to write plain text format, relatively similar to Markdown.
 So see what the source looks like, click the **Source** link in the footer of
 this page.
 
-Where is the documentation
-==========================
+Where is the documentation?
+===========================
 
 The reST documentation files are located in the
 `converse.js code repository <https://github.com/jcbrand/converse.js/tree/master/docs/source>`_
 under ``docs/source``.
 
-How to generate HTML from the source files
-==========================================
+How to generate HTML from the source files?
+===========================================
 
 Install Dependencies
 --------------------

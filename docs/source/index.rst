@@ -48,10 +48,7 @@ Table of Contents
    setup
    configuration
    development
-   style_guide 
    theming
    translations
    troubleshooting
    documentation
-   builds
-

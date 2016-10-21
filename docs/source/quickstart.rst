@@ -6,7 +6,8 @@
 Quickstart (to get a demo up and running)
 =========================================
 
-Converse.js has a [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), provided by [KeyCDN](http://keycdn.com/), which hosts its Javascript and CSS files.
+Converse.js has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
+which hosts its Javascript and CSS files.
 
 The latest versions of these files are available at these URLs:
 

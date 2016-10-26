@@ -57,7 +57,7 @@
     "po2json": "^0.4.4",
     "requirejs": "2.3.2",
     "requirejs-undertemplate": "~0.0.4",
-    "strophe.js": "strophe/strophejs#b583d9e6c57f04d3be492866209d8e2143acf9a0",
+    "strophe.js": "1.2.9",
     "strophejs-plugins": "0.0.7",
     "text": "requirejs/text#2.0.15",
     "underscore": "~1.8.3"

@@ -146,33 +146,39 @@
                 },
 
                 onConnected: function () {
-                    // TODO: This can probably be refactored to be an event
-                    // handler (and therefore removed from overrides)
                     var converse = this.__super__.converse;
                     this.__super__.onConnected.apply(this, arguments);
 
-                    if (this.model.get('connected')) {
-                        converse.features.off('add', this.featureAdded, this);
-                        converse.features.on('add', this.featureAdded, this);
-                        // Features could have been added before the controlbox was
-                        // initialized. We're only interested in MUC
-                        var feature = converse.features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            this.featureAdded(feature);
+                    if (_.isUndefined(converse.muc_domain)) {
+                        if (this.model.get('connected')) {
+                            converse.features.off('add', this.featureAdded, this);
+                            converse.features.on('add', this.featureAdded, this);
+                            // Features could have been added before the controlbox was
+                            // initialized. We're only interested in MUC
+                            var feature = converse.features.findWhere({
+                                'var': Strophe.NS.MUC
+                            });
+                            if (feature) {
+                                this.featureAdded(feature);
+                            }
                         }
+                    } else {
+                        this.setMUCDomain(converse.muc_domain);
+                    }
+                },
+
+                setMUCDomain: function (domain) {
+                    this.roomspanel.model.save({'muc_domain': domain});
+                    var $server= this.$el.find('input.new-chatroom-server');
+                    if (!$server.is(':focus')) {
+                        $server.val(this.roomspanel.model.get('muc_domain'));
                     }
                 },
 
                 featureAdded: function (feature) {
                     var converse = this.__super__.converse;
                     if ((feature.get('var') === Strophe.NS.MUC) && (converse.allow_muc)) {
-                        this.roomspanel.model.save({muc_domain: feature.get('from')});
-                        var $server= this.$el.find('input.new-chatroom-server');
-                        if (! $server.is(':focus')) {
-                            $server.val(this.roomspanel.model.get('muc_domain'));
-                        }
+                        this.setMUCDomain(feature.get('from'));
                     }
                 }
             },
@@ -206,6 +212,7 @@
                 auto_join_rooms: [],
                 auto_list_rooms: false,
                 hide_muc_server: false,
+                muc_domain: undefined,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
                 muc_nickname_from_jid: false

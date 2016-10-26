@@ -515,6 +515,8 @@ fullname
 If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
+.. _`hide_muc_server`:
+
 hide_muc_server
 ---------------
 
@@ -693,6 +695,17 @@ same computer.
 See also the `storage`_ option, which applies to other cached data, such as
 which chats you have open, what features the XMPP server supports and what
 your online status is.
+
+muc_domain
+----------
+
+* Default:  ``undefined``
+
+The MUC (multi-user chat) domain that should be used. By default converse.js
+will attempt to get the MUC domain from the XMPP host of the currently logged in
+user.
+
+This setting will override that. You might want to combine this setting with `hide_muc_server`_.
 
 muc_history_max_stanzas
 -----------------------

@@ -69,6 +69,7 @@ require([
             require([
                 "console-runner",
                 //"spec/transcripts",
+                "spec/utils",
                 "spec/converse",
                 "spec/bookmarks",
                 "spec/headline",

@@ -81,13 +81,19 @@
                 show_toolbar: true,
                 chatview_avatar_width: 32,
                 chatview_avatar_height: 32,
+                visible_toolbar_buttons: {
+                    'emoticons': true,
+                    'call': false,
+                    'clear': true,
+                    'toggle_occupants': true // Leaky abstraction from MUC
+                },
             });
 
             converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
                 className: 'chatbox',
-                is_chatroom: false,  // This is not a multi-user chatroom
+                is_chatroom: false,  // Leaky abstraction from MUC
 
                 events: {
                     'click .close-chatbox-button': 'close',

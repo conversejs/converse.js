@@ -208,8 +208,7 @@
                 hide_muc_server: false,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
-                muc_nickname_from_jid: false,
-                show_toolbar: true,
+                muc_nickname_from_jid: false
             });
 
 

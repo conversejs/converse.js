@@ -233,6 +233,22 @@
             return false;
         },
 
+        applyUserSettings: function applyUserSettings (context, settings, user_settings) {
+            /* Configuration settings might be nested objects. We only want to
+             * add settings which are whitelisted.
+             */
+            for (var k in settings) {
+                if (_.isUndefined(user_settings[k])) {
+                    continue;
+                }
+                if (_.isObject(settings[k])) {
+                    applyUserSettings(context[k], settings[k], user_settings[k]);
+                } else {
+                    context[k] = user_settings[k];
+                }
+            }
+        },
+
         refreshWebkit: function () {
             /* This works around a webkit bug. Refreshes the browser's viewport,
              * otherwise chatboxes are not moved along when one is closed.

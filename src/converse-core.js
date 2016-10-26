@@ -179,29 +179,10 @@
         this.PAUSED = 'paused';
         this.GONE = 'gone';
 
-
         // Detect support for the user's locale
         // ------------------------------------
         this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
-
-        this.user_settings = settings; // Save the user settings so that they can be used by plugins
-
-        this.wrappedChatBox = function (chatbox) {
-            /* Wrap a chatbox for outside consumption (i.e. so that it can be
-             * returned via the API.
-             */
-            if (!chatbox) { return; }
-            var view = converse.chatboxviews.get(chatbox.get('id'));
-            return {
-                'close': view.close.bind(view),
-                'focus': view.focus.bind(view),
-                'get': chatbox.get.bind(chatbox),
-                'open': view.show.bind(view),
-                'set': chatbox.set.bind(chatbox)
-            };
-        };
-
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
@@ -250,17 +231,10 @@
             message_storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
-            visible_toolbar_buttons: {
-                'emoticons': true,
-                'call': false,
-                'clear': true,
-                'toggle_occupants': true
-            },
             websocket_url: undefined,
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
-
         _.extend(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
@@ -276,14 +250,6 @@
             }
         }
 
-        if (settings.visible_toolbar_buttons) {
-            _.extend(
-                this.visible_toolbar_buttons,
-                _.pick(settings.visible_toolbar_buttons, [
-                    'emoticons', 'call', 'clear', 'toggle_occupants'
-                ]
-            ));
-        }
         $.fx.off = !this.animate;
 
         // Module-level variables
@@ -299,9 +265,24 @@
          */
         this.send_initial_presence = true;
         this.msg_counter = 0;
+        this.user_settings = settings; // Save the user settings so that they can be used by plugins
 
         // Module-level functions
         // ----------------------
+        this.wrappedChatBox = function (chatbox) {
+            /* Wrap a chatbox for outside consumption (i.e. so that it can be
+             * returned via the API.
+             */
+            if (!chatbox) { return; }
+            var view = converse.chatboxviews.get(chatbox.get('id'));
+            return {
+                'close': view.close.bind(view),
+                'focus': view.focus.bind(view),
+                'get': chatbox.get.bind(chatbox),
+                'open': view.show.bind(view),
+                'set': chatbox.set.bind(chatbox)
+            };
+        };
 
         this.generateResource = function () {
             return '/converse.js-' + Math.floor(Math.random()*139749825).toString();
@@ -1960,7 +1941,7 @@
              */
             _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            utils.applyUserSettings(converse, settings, converse.user_settings);
         };
         converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,

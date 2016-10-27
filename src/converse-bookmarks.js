@@ -143,7 +143,6 @@
                         'name':  $form.find('input[name=name]').val(),
                         'nick':  $form.find('input[name=nick]').val()
                     });
-                    this.model.save('bookmarked', true);
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
@@ -179,6 +178,7 @@
                 model: converse.Bookmark,
 
                 initialize: function () {
+                    this.on('bookmarksFetched', this.onBookmarksFetched, this);
                     this.on('add', this.markRoomAsBookmarked, this);
                     this.on('add', this.openBookmarkedRoom, this);
                     this.on('add', this.sendBookmarkStanza, this);
@@ -190,10 +190,15 @@
                     );
                 },
 
+                onBookmarksFetched: function () {
+                    this.each(_.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
+                },
+
                 openBookmarkedRoom: function (bookmark) {
                     if (bookmark.get('autojoin')) {
                         converse_api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
                     }
+                    return bookmark;
                 },
 
                 fetchBookmarks: function () {
@@ -251,6 +256,7 @@
                         // XMPP server.
                         this.fetchBookmarksFromServer(deferred);
                     } else {
+                        this.trigger('bookmarksFetched');
                         return deferred.resolve();
                     }
                 },
@@ -295,6 +301,7 @@
                             'nick': bookmark.querySelector('nick').textContent
                         }, {'silent':true});
                     });
+                    this.trigger('bookmarksFetched');
                     if (!_.isUndefined(deferred)) {
                         return deferred.resolve();
                     }

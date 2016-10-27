@@ -1825,6 +1825,7 @@
                     converse.disconnection_cause = Strophe.Status.AUTHFAIL;
                     converse.onDisconnected();
                     converse.giveFeedback(''); // Wipe the feedback
+                    return;
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {

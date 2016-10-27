@@ -388,6 +388,7 @@
                 });
             };
             converse.on('chatBoxesFetched', converse.initBookmarks);
+            converse.on('reconnected', converse.initBookmarks);
         }
     });
 }));

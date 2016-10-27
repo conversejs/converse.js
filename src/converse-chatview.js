@@ -84,8 +84,7 @@
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,
-                    'clear': true,
-                    'toggle_occupants': true // Leaky abstraction from MUC
+                    'clear': true
                 },
             });
 
@@ -668,22 +667,25 @@
                     return this;
                 },
 
-                renderToolbar: function (options) {
-                    if (!converse.show_toolbar) {
-                        return;
-                    }
-                    options = _.extend(options || {}, {
-                        label_clear: __('Clear all messages'),
-                        label_hide_occupants: __('Hide the list of occupants'),
-                        label_insert_smiley: __('Insert a smiley'),
-                        label_start_call: __('Start a call'),
-                        show_call_button: converse.visible_toolbar_buttons.call,
-                        show_clear_button: converse.visible_toolbar_buttons.clear,
-                        show_emoticons: converse.visible_toolbar_buttons.emoticons,
-                        // FIXME Leaky abstraction MUC
-                        show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
+                getToolbarOptions: function (options) {
+                    return _.extend(options || {}, {
+                        'label_clear': __('Clear all messages'),
+                        'label_insert_smiley': __('Insert a smiley'),
+                        'label_start_call': __('Start a call'),
+                        'show_call_button': converse.visible_toolbar_buttons.call,
+                        'show_clear_button': converse.visible_toolbar_buttons.clear,
+                        'show_emoticons': converse.visible_toolbar_buttons.emoticons,
                     });
-                    this.$el.find('.chat-toolbar').html(converse.templates.toolbar(_.extend(this.model.toJSON(), options || {})));
+                },
+
+                renderToolbar: function (toolbar, options) {
+                    if (!converse.show_toolbar) { return; }
+                    toolbar = toolbar || converse.templates.toolbar;
+                    options = _.extend(
+                        this.model.toJSON(),
+                        this.getToolbarOptions(options || {})
+                    );
+                    this.$el.find('.chat-toolbar').html(toolbar(options));
                     return this;
                 },
 

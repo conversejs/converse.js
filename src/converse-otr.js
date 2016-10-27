@@ -426,7 +426,7 @@
                     }
                 },
 
-                renderToolbar: function (options) {
+                renderToolbar: function (toolbar, options) {
                     var converse = this.__super__.converse;
                     if (!converse.show_toolbar) {
                         return;
@@ -449,7 +449,7 @@
                         otr_tooltip: this.getOTRTooltip(),
                         otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
-                    this.__super__.renderToolbar.call(this, options);
+                    this.__super__.renderToolbar.apply(this, arguments);
                     this.$el.find('.chat-toolbar').append(
                             converse.templates.toolbar_otr(
                                 _.extend(this.model.toJSON(), options || {})

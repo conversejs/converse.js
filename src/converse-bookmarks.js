@@ -379,7 +379,7 @@
                 }
             });
 
-            converse.initBookmarks = function () {
+            var initBookmarks = function () {
                 converse.bookmarks = new converse.Bookmarks();
                 converse.bookmarks.fetchBookmarks().then(function () {
                     converse.bookmarksview = new converse.BookmarksView(
@@ -387,8 +387,16 @@
                     );
                 });
             };
-            converse.on('chatBoxesFetched', converse.initBookmarks);
-            converse.on('reconnected', converse.initBookmarks);
+            converse.on('chatBoxesFetched', initBookmarks);
+
+            var afterReconnection = function () {
+                if (_.isUndefined(converse.bookmarksview)) {
+                    initBookmarks();
+                } else {
+                    converse.bookmarksview.render();
+                }
+            };
+            converse.on('reconnected', afterReconnection);
         }
     });
 }));

@@ -341,7 +341,9 @@
                     })).hide();
                     this.model.each(this.renderBookmarkListElement, this);
                     var controlboxview = converse.chatboxviews.get('controlbox');
-                    this.$el.prependTo(controlboxview.$('#chatrooms'));
+                    if (!_.isUndefined(controlboxview)) {
+                        this.$el.prependTo(controlboxview.$('#chatrooms'));
+                    }
                     return this.$el;
                 },
 

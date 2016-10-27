@@ -148,19 +148,19 @@
                 onConnected: function () {
                     var converse = this.__super__.converse;
                     this.__super__.onConnected.apply(this, arguments);
-
+                    if (!this.model.get('connected')) {
+                        return;
+                    }
                     if (_.isUndefined(converse.muc_domain)) {
-                        if (this.model.get('connected')) {
-                            converse.features.off('add', this.featureAdded, this);
-                            converse.features.on('add', this.featureAdded, this);
-                            // Features could have been added before the controlbox was
-                            // initialized. We're only interested in MUC
-                            var feature = converse.features.findWhere({
-                                'var': Strophe.NS.MUC
-                            });
-                            if (feature) {
-                                this.featureAdded(feature);
-                            }
+                        converse.features.off('add', this.featureAdded, this);
+                        converse.features.on('add', this.featureAdded, this);
+                        // Features could have been added before the controlbox was
+                        // initialized. We're only interested in MUC
+                        var feature = converse.features.findWhere({
+                            'var': Strophe.NS.MUC
+                        });
+                        if (feature) {
+                            this.featureAdded(feature);
                         }
                     } else {
                         this.setMUCDomain(converse.muc_domain);

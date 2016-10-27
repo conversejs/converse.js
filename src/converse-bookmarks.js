@@ -129,15 +129,14 @@
                             label_submit: __('Save'),
                             label_cancel: __('Cancel')
                         }));
-                    this.$('.chatroom-form').submit(this.addBookmark.bind(this));
+                    this.$('.chatroom-form').submit(this.onBookmarkFormSubmitted.bind(this));
                     this.$('.chatroom-form .button-cancel').on('click', this.cancelConfiguration.bind(this));
                 },
 
-                addBookmark: function (ev) {
+                onBookmarkFormSubmitted: function (ev) {
                     ev.preventDefault();
-                    var $form = $(ev.target),
-                        that = this;
-                    converse.bookmarks.create({
+                    var $form = $(ev.target), that = this;
+                    converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
                         'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
                         'name':  $form.find('input[name=name]').val(),
@@ -159,7 +158,9 @@
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
-                        converse.bookmarks.remove(models);
+                        _.each(models, function (model) {
+                            model.destroy();
+                        });
                         this.$('.icon-pushpin').removeClass('button-on');
                     }
                 }
@@ -178,20 +179,15 @@
                 model: converse.Bookmark,
 
                 initialize: function () {
-                    this.on('bookmarksFetched', this.onBookmarksFetched, this);
-                    this.on('add', this.markRoomAsBookmarked, this);
-                    this.on('add', this.openBookmarkedRoom, this);
-                    this.on('add', this.sendBookmarkStanza, this);
+                    this.on('add', _.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
+                    var cache_key = 'converse.room-bookmarks'+converse.bare_jid;
+                    this.cached_flag = b64_sha1(cache_key+'fetched');
                     this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                        b64_sha1('converse.room-bookmarks'+converse.bare_jid)
+                        b64_sha1(cache_key)
                     );
-                },
-
-                onBookmarksFetched: function () {
-                    this.each(_.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
                 },
 
                 openBookmarkedRoom: function (bookmark) {
@@ -203,12 +199,31 @@
 
                 fetchBookmarks: function () {
                     var deferred = new $.Deferred();
-                    this.fetch({
-                        'silent': true,
-                        'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
-                        'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
-                    });
-                    return deferred.promise();
+                    var promise = deferred.promise();
+                    if (window.sessionStorage.getItem(this.browserStorage.name)) {
+                        this.fetch({
+                            'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
+                            'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
+                        });
+                    } else if (! window.sessionStorage.getItem(this.cached_flag)) {
+                        // There aren't any cached bookmarks, and the cache is
+                        // not set to null. So we query the XMPP server.
+                        // If nothing is returned from the XMPP server, we set
+                        // the cache to null to avoid calling the server again.
+                        this.fetchBookmarksFromServer(deferred);
+                    } else {
+                        deferred.resolve();
+                    }
+                    return promise;
+                },
+
+                onCachedBookmarksFetched: function (deferred) {
+                    return deferred.resolve();
+                },
+
+                createBookmark: function (options) {
+                    converse.bookmarks.create(options);
+                    converse.bookmarks.sendBookmarkStanza();
                 },
 
                 sendBookmarkStanza: function () {
@@ -220,7 +235,6 @@
                             .c('publish', {'node': 'storage:bookmarks'})
                                 .c('item', {'id': 'current'})
                                     .c('storage', {'xmlns':'storage:bookmarks'});
-
                     this.each(function (model) {
                         stanza = stanza.c('conference', {
                             'name': model.get('name'),
@@ -250,17 +264,6 @@
                     window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
                 },
 
-                onCachedBookmarksFetched: function (deferred) {
-                    if (!window.sessionStorage.getItem(this.browserStorage.name)) {
-                        // There aren't any cached bookmarks, so we query the
-                        // XMPP server.
-                        this.fetchBookmarksFromServer(deferred);
-                    } else {
-                        this.trigger('bookmarksFetched');
-                        return deferred.resolve();
-                    }
-                },
-
                 fetchBookmarksFromServer: function (deferred) {
                     var stanza = $iq({
                         'from': converse.connection.jid,
@@ -270,7 +273,7 @@
                     converse.connection.sendIQ(
                         stanza,
                         _.bind(this.onBookmarksReceived, this, deferred),
-                        _.partial(this.onBookmarksReceivedError, deferred)
+                        _.bind(this.onBookmarksReceivedError, this, deferred)
                     );
                 },
 
@@ -299,15 +302,15 @@
                             'name': bookmark.getAttribute('name'),
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
                             'nick': bookmark.querySelector('nick').textContent
-                        }, {'silent':true});
+                        });
                     });
-                    this.trigger('bookmarksFetched');
                     if (!_.isUndefined(deferred)) {
                         return deferred.resolve();
                     }
                 },
 
                 onBookmarksReceivedError: function (deferred, iq) {
+                    window.sessionStorage.setItem(this.cached_flag, true);
                     converse.log('Error while fetching bookmarks');
                     converse.log(iq);
                     if (!_.isUndefined(deferred)) {
@@ -325,7 +328,7 @@
                 },
 
                 initialize: function () {
-                    this.model.on('add', this.addBookmarkListElement, this);
+                    this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
                     this.render();
                 },
@@ -335,8 +338,8 @@
                         'toggle_state': converse.OPENED,
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
-                    }));
-                    this.model.each(this.addBookmarkListElement, this);
+                    })).hide();
+                    this.model.each(this.renderBookmarkListElement, this);
                     var controlboxview = converse.chatboxviews.get('controlbox');
                     this.$el.prependTo(controlboxview.$('#chatrooms'));
                     return this.$el;
@@ -351,7 +354,7 @@
                     }
                 },
 
-                addBookmarkListElement: function (item) {
+                renderBookmarkListElement: function (item) {
                     var $bookmark = $(converse.templates.bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
@@ -360,10 +363,16 @@
                             'info_remove': __('Remove this bookmark')
                         }));
                     this.$('.bookmarks').append($bookmark);
+                    if (!this.$el.is(':visible')) {
+                        this.$el.show();
+                    }
                 },
 
                 removeBookmarkListElement: function (item) {
                     this.$('[data-room-jid="'+item.get('jid')+'"]:first').parent().remove();
+                    if (this.model.length === 0) {
+                        this.$el.hide();
+                    }
                 },
 
                 toggleBookmarksList: function (ev) {
@@ -381,7 +390,7 @@
 
             var initBookmarks = function () {
                 converse.bookmarks = new converse.Bookmarks();
-                converse.bookmarks.fetchBookmarks().then(function () {
+                converse.bookmarks.fetchBookmarks().always(function () {
                     converse.bookmarksview = new converse.BookmarksView(
                         {'model': converse.bookmarks}
                     );

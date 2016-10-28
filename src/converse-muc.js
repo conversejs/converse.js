@@ -242,7 +242,7 @@
                     'click .toggle-occupants a': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
-                    'keypress textarea.chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize: function () {

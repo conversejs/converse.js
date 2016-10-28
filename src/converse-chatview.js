@@ -96,7 +96,7 @@
 
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'keypress textarea.chat-textarea': 'keyPressed',
+                    'keypress .chat-textarea': 'keyPressed',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',

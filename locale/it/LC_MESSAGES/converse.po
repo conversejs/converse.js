@@ -1,14 +1,15 @@
-# German translations for Converse.js package.
+# Italian translations for Converse.js package.
 # Copyright (C) 2013 Jan-Carel Brand
 # This file is distributed under the same license as the Converse.js package.
 # JC Brand <jc@opkode.com>, 2013.
+# Camaran <camaran@gmail.com>, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-09-16 11:45+0000\n"
-"PO-Revision-Date: 2016-04-07 10:23+0000\n"
+"PO-Revision-Date: 2016-11-01 11:24+0100\n"
 "Last-Translator: Fabio Bas <ctrlaltca@gmail.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -19,18 +20,16 @@ msgstr ""
 "domain: converse\n"
 "lang: it\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 1.8.11\n"
 
 #: src/converse-chatview.js:103 src/converse-headline.js:99
 #: src/converse-muc.js:252
-#, fuzzy
 msgid "You have unread messages"
-msgstr "Rimuovi messaggi"
+msgstr "Hai messaggi non letti"
 
 #: src/converse-chatview.js:104
-#, fuzzy
 msgid "Close this chat box"
-msgstr "Clicca per ripristinare questa chat"
+msgstr "Chiudi questa chat"
 
 #: src/converse-chatview.js:105
 msgid "Personal message"
@@ -57,7 +56,7 @@ msgstr "ha smesso di scrivere"
 #: src/converse-chatview.js:344 src/converse-chatview.js:598
 #: src/converse-notification.js:171
 msgid "has gone away"
-msgstr ""
+msgstr "si è allontanato"
 
 #: src/converse-chatview.js:468 src/converse-muc.js:468
 msgid "Show this menu"
@@ -73,11 +72,11 @@ msgstr "Rimuovi messaggi"
 
 #: src/converse-chatview.js:551
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Sei sicuro di volere pulire i messaggi da questo chat box?"
 
 #: src/converse-chatview.js:596 src/converse-notification.js:169
 msgid "has gone offline"
-msgstr ""
+msgstr "è andato offline"
 
 #: src/converse-chatview.js:600 src/converse-notification.js:173
 msgid "is busy"
@@ -89,15 +88,15 @@ msgstr "Pulisci tutti i messaggi"
 
 #: src/converse-chatview.js:644
 msgid "Hide the list of occupants"
-msgstr ""
+msgstr "Nascondi la lista degli occupanti"
 
 #: src/converse-chatview.js:645
 msgid "Insert a smiley"
-msgstr ""
+msgstr "Inserisci uno smiley"
 
 #: src/converse-chatview.js:646
 msgid "Start a call"
-msgstr ""
+msgstr "Inizia una chiamata"
 
 #: src/converse-controlbox.js:191 src/converse-core.js:616
 #: src/converse-core.js:685 src/converse-rosterview.js:62
@@ -125,9 +124,8 @@ msgid "Log In"
 msgstr "Entra"
 
 #: src/converse-controlbox.js:381
-#, fuzzy
 msgid "Username"
-msgstr "XMPP Username:"
+msgstr "Username"
 
 #: src/converse-controlbox.js:381
 msgid "user@server"
@@ -212,9 +210,8 @@ msgid "Search"
 msgstr "Cerca"
 
 #: src/converse-controlbox.js:599
-#, fuzzy
 msgid "e.g. user@example.org"
-msgstr "es. user@example.com"
+msgstr "es. user@example.org"
 
 #: src/converse-controlbox.js:600
 msgid "Add"
@@ -245,9 +242,8 @@ msgid "Click to hide these contacts"
 msgstr "Clicca per nascondere questi contatti"
 
 #: src/converse-core.js:413
-#, fuzzy
 msgid "Reconnecting"
-msgstr "Connessione in corso"
+msgstr "Riconnessione"
 
 #: src/converse-core.js:413
 msgid "The connection has dropped, attempting to reconnect."
@@ -262,23 +258,20 @@ msgid "The connection to the chat server has dropped"
 msgstr ""
 
 #: src/converse-core.js:481
-#, fuzzy
 msgid "Connection error"
-msgstr "Connessione fallita"
+msgstr "Errore di connessione"
 
 #: src/converse-core.js:482
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "Errore durante il salvataggio del modulo"
+msgstr "Si è verificato un errore durante la connessione al server."
 
 #: src/converse-core.js:487
 msgid "Authenticating"
 msgstr "Autenticazione in corso"
 
 #: src/converse-core.js:489
-#, fuzzy
 msgid "Authentication failed."
-msgstr "Autenticazione fallita"
+msgstr "Autenticazione fallita."
 
 #: src/converse-core.js:490
 msgid "Authentication Failed"
@@ -293,14 +286,12 @@ msgid "This client does not allow presence subscriptions"
 msgstr "Questo client non consente sottoscrizioni di presenza"
 
 #: src/converse-headline.js:100
-#, fuzzy
 msgid "Close this box"
-msgstr "Clicca per ripristinare questa chat"
+msgstr "Chiudi questo box"
 
 #: src/converse-headline.js:101
-#, fuzzy
 msgid "Minimize this box"
-msgstr "Ridotto"
+msgstr "Riduci questo box"
 
 #: src/converse-minimize.js:315
 msgid "Click to restore this chat"
@@ -312,7 +303,7 @@ msgstr "Ridotto"
 
 #: src/converse-minimize.js:488
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Riduci questo chat box"
 
 #: src/converse-muc.js:254
 msgid "Message"
@@ -367,9 +358,8 @@ msgid "Grant moderator role to user"
 msgstr ""
 
 #: src/converse-muc.js:475
-#, fuzzy
 msgid "Grant ownership of this room"
-msgstr "Non sei nella lista dei membri di questa stanza"
+msgstr ""
 
 #: src/converse-muc.js:476
 msgid "Revoke user's membership"
@@ -397,19 +387,19 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Il nickname scelto è riservato o attualmente in uso, indicane uno diverso."
 
 #: src/converse-muc.js:816
 msgid "Please choose your nickname"
-msgstr ""
+msgstr "Scegli il tuo nickname"
 
 #: src/converse-muc.js:817 src/converse-muc.js:1348
 msgid "Nickname"
 msgstr "Soprannome"
 
 #: src/converse-muc.js:818
-#, fuzzy
 msgid "Enter room"
-msgstr "Stanza aperta"
+msgstr "Entra nella stanza"
 
 #: src/converse-muc.js:836
 msgid "This chatroom requires a password"
@@ -558,33 +548,28 @@ msgid "This room does not (yet) exist"
 msgstr "Questa stanza non esiste (per ora)"
 
 #: src/converse-muc.js:1002
-#, fuzzy
 msgid "This room has reached its maximum number of occupants"
-msgstr "Questa stanza ha raggiunto il limite massimo di utenti"
+msgstr "Questa stanza ha raggiunto il limite massimo di occupanti"
 
 #: src/converse-muc.js:1059
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Topic impostato da %1$s a: %2$s"
 
 #: src/converse-muc.js:1146
-#, fuzzy
 msgid "Click to mention this user in your message."
-msgstr "Clicca per aprire questa stanza"
+msgstr "Clicca per menzionare questo utente nel tuo messaggio."
 
 #: src/converse-muc.js:1147
-#, fuzzy
 msgid "This user is a moderator."
-msgstr "Questo utente è un moderatore"
+msgstr "Questo utente è un moderatore."
 
 #: src/converse-muc.js:1148
-#, fuzzy
 msgid "This user can send messages in this room."
-msgstr "Questo utente può inviare messaggi in questa stanza"
+msgstr "Questo utente può inviare messaggi in questa stanza."
 
 #: src/converse-muc.js:1149
-#, fuzzy
 msgid "This user can NOT send messages in this room."
-msgstr "Questo utente NON può inviare messaggi in questa stanza"
+msgstr "Questo utente NON può inviare messaggi in questa stanza."
 
 #: src/converse-muc.js:1185
 msgid "Invite"
@@ -715,16 +700,15 @@ msgstr ""
 #. give type "headline"
 #: src/converse-notification.js:136
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Notifica da %1$s"
 
 #: src/converse-notification.js:139 src/converse-notification.js:147
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s dice"
 
 #: src/converse-notification.js:175
-#, fuzzy
 msgid "has come online"
-msgstr "Questo contatto è online"
+msgstr "è online"
 
 #: src/converse-notification.js:190
 msgid "wants to be your contact"
@@ -733,11 +717,11 @@ msgstr ""
 #. Verified that the passphrase is still the same
 #: src/converse-otr.js:152
 msgid "Re-establishing encrypted session"
-msgstr ""
+msgstr "Ristabilisci sessione criptata"
 
 #: src/converse-otr.js:164
 msgid "Generating private key."
-msgstr ""
+msgstr "Generazione chiave private in corso."
 
 #: src/converse-otr.js:165
 msgid "Your browser might become unresponsive."
@@ -946,11 +930,12 @@ msgid "Return"
 msgstr ""
 
 #: src/converse-register.js:366
-#, fuzzy
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
-msgstr "Il provider ha respinto il tentativo di registrazione."
+msgstr ""
+"Il provider ha respinto il tentativo di registrazione. Controlla i dati "
+"inseriti."
 
 #: src/converse-rosterview.js:55
 msgid "This contact is busy"
@@ -998,7 +983,7 @@ msgstr "Senza Gruppo"
 
 #: src/converse-rosterview.js:123
 msgid "Filter"
-msgstr ""
+msgstr "Filtri"
 
 #: src/converse-rosterview.js:126
 msgid "State"
@@ -1014,7 +999,7 @@ msgstr ""
 
 #: src/converse-rosterview.js:132
 msgid "Extended Away"
-msgstr ""
+msgstr "Away estesa"
 
 #: src/converse-rosterview.js:595 src/converse-rosterview.js:616
 msgid "Click to remove this contact"

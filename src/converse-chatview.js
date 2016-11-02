@@ -337,18 +337,21 @@
                                "Output has been shortened."),
                             true, true);
                     }
-                    return $(template(
-                            _.extend(this.getExtraMessageTemplateAttributes(attrs), {
-                                'msgid': attrs.msgid,
-                                'sender': attrs.sender,
-                                'time': msg_time.format('hh:mm'),
-                                'isodate': msg_time.format(),
-                                'username': username,
-                                'extra_classes': extra_classes
-                            })
-                        )).find('.chat-msg-content').first().text(text)
-                            .addHyperlinks()
-                            .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
+                    var $msg = $(template(
+                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                            'msgid': attrs.msgid,
+                            'sender': attrs.sender,
+                            'time': msg_time.format('hh:mm'),
+                            'isodate': msg_time.format(),
+                            'username': username,
+                            'extra_classes': extra_classes
+                        })
+                    ));
+                    $msg.find('.chat-msg-content').first()
+                        .text(text)
+                        .addHyperlinks()
+                        .addEmoticons(converse.visible_toolbar_buttons.emoticons);
+                    return $msg;
                 },
 
                 showHelpMessages: function (msgs, type, spinner) {

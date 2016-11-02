@@ -242,10 +242,10 @@
                      *  (Object) attrs: An object containing the message attributes.
                      */
                     var msg_dates, idx,
-                        $first_msg = this.$content.children('.chat-message:first'),
+                        $first_msg = this.$content.find('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         current_msg_date = moment(attrs.time) || moment,
-                        last_msg_date = this.$content.children('.chat-message:last').data('isodate');
+                        last_msg_date = this.$content.find('.chat-message:last').data('isodate');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
@@ -276,7 +276,7 @@
                     }
                     // Find the correct place to position the message
                     current_msg_date = current_msg_date.format();
-                    msg_dates = _.map(this.$content.children('.chat-message'), function (el) {
+                    msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
                         return $(el).data('isodate');
                     });
                     msg_dates.push(current_msg_date);

@@ -668,7 +668,17 @@
                     return converse.connection.send(stanza);
                 },
 
+                cleanup: function () {
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                    this.removeHandlers();
+                },
+
                 leave: function(exit_msg) {
+                    if (!converse.connection.connected) {
+                        // Don't send out a stanza if we're not connected.
+                        this.cleanup();
+                        return;
+                    }
                     var presenceid = converse.connection.getUniqueId();
                     var presence = $pres({
                         type: "unavailable",
@@ -679,12 +689,10 @@
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
                     }
-                    var that = this;
                     converse.connection.addHandler(
-                        function () {
-                            that.model.set('connection_status', Strophe.Status.DISCONNECTED);
-                            that.removeHandlers();
-                        }, null, "presence", null, presenceid);
+                        this.cleanup.bind(this),
+                        null, "presence", null, presenceid
+                    );
                     converse.connection.send(presence);
                 },
 

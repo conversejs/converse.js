@@ -390,13 +390,15 @@
 
 
         this.reconnect = _.debounce(function (condition) {
+            converse.log('The connection has dropped, attempting to reconnect.');
+            converse.giveFeedback(
+                __("Reconnecting"),
+                'warn',
+                __('The connection has dropped, attempting to reconnect.')
+            );
             converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
-            converse.log('The connection has dropped, attempting to reconnect.');
-            converse.giveFeedback(
-                __("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.')
-            );
             converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {
@@ -566,7 +568,6 @@
                 converse.clearMsgCounter();
             }
             converse.windowState = state;
-
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -684,15 +685,15 @@
         };
 
         this.onStatusInitialized = function () {
-            this.registerIntervalHandler();
-            this.initRoster();
-            this.populateRoster();
-            this.chatboxes.onConnected();
-            this.registerPresenceHandler();
-            this.giveFeedback(__('Contacts'));
-            if (typeof this.callback === 'function') {
+            converse.registerIntervalHandler();
+            converse.initRoster();
+            converse.populateRoster();
+            converse.chatboxes.onConnected();
+            converse.registerPresenceHandler();
+            converse.giveFeedback(__('Contacts'));
+            if (typeof converse.callback === 'function') {
                 // XXX: Deprecate in favor of init_deferred
-                this.callback();
+                converse.callback();
             }
             if (converse.connection.service === 'jasmine tests') {
                 init_deferred.resolve(converse);
@@ -702,10 +703,17 @@
             converse.emit('initialized');
         };
 
+        this.setUserJid = function () {
+            converse.jid = converse.connection.jid;
+            converse.bare_jid = Strophe.getBareJidFromJid(converse.connection.jid);
+            converse.resource = Strophe.getResourceFromJid(converse.connection.jid);
+            converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
+        };
+
         this.onConnected = function (callback) {
-            // When reconnecting, there might be some open chat boxes. We don't
-            // know whether these boxes are of the same account or not, so we
-            // close them now.
+            /* Called as soon as a new connection has been established, either
+             * by logging in or by attaching to an existing BOSH session.
+             */
             // XXX: ran into an issue where a returned PubSub BOSH response was
             // not received by the browser. The solution was to flush the
             // connection early on. I don't know what the underlying cause of
@@ -715,17 +723,14 @@
             // In any case, flushing here (sending out a new BOSH request)
             // solves the problem.
             converse.connection.flush();
-            /* Called as soon as a new connection has been established, either
-             * by logging in or by attaching to an existing BOSH session.
-             */
-            this.chatboxviews.closeAllChatBoxes();
-            this.jid = this.connection.jid;
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.resource = Strophe.getResourceFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.features = new this.Features();
-            this.enableCarbons();
-            this.initStatus().done(_.bind(this.onStatusInitialized, this));
+            // When reconnecting, there might be some open chat boxes. We don't
+            // know whether these boxes are of the same account or not, so we
+            // close them now.
+            converse.chatboxviews.closeAllChatBoxes();
+            converse.setUserJid();
+            converse.features = new converse.Features();
+            converse.enableCarbons();
+            converse.initStatus().done(converse.onStatusInitialized);
             converse.emit('connected');
             converse.emit('ready'); // BBB: Will be removed.
         };
@@ -1367,11 +1372,12 @@
                  * This method gets overridden entirely in src/converse-controlbox.js
                  * if the controlbox plugin is active.
                  */
+                var that = this;
                 collection.each(function (chatbox) {
-                    if (this.chatBoxMayBeShown(chatbox)) {
+                    if (that.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
-                }.bind(this));
+                });
                 converse.emit('chatBoxesFetched');
             },
 

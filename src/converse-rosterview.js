@@ -392,7 +392,6 @@
                     );
                 },
 
-
                 onGroupAdd: function (group) {
                     var view = new converse.RosterGroupView({model: group});
                     this.add(group.get('name'), view.render());

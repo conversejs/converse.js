@@ -6,114 +6,6 @@
             "domain": "converse",
             "lang": "zh"
          },
-         " e.g. conversejs.org": [
-            null,
-            ""
-         ],
-         "unencrypted": [
-            null,
-            "未加密"
-         ],
-         "unverified": [
-            null,
-            "未验证"
-         ],
-         "verified": [
-            null,
-            "已验证"
-         ],
-         "finished": [
-            null,
-            "结束了"
-         ],
-         "This contact is busy": [
-            null,
-            "对方忙碌中"
-         ],
-         "This contact is online": [
-            null,
-            "对方在线中"
-         ],
-         "This contact is offline": [
-            null,
-            "对方已下线"
-         ],
-         "This contact is unavailable": [
-            null,
-            "对方免打扰"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "对方暂时离开"
-         ],
-         "This contact is away": [
-            null,
-            "对方离开"
-         ],
-         "My contacts": [
-            null,
-            "我的好友列表"
-         ],
-         "Pending contacts": [
-            null,
-            "保留中的联系人"
-         ],
-         "Contact requests": [
-            null,
-            "来自好友的请求"
-         ],
-         "Ungrouped": [
-            null,
-            ""
-         ],
-         "Contacts": [
-            null,
-            "联系人"
-         ],
-         "Groups": [
-            null,
-            ""
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Error": [
-            null,
-            "错误"
-         ],
-         "Connecting": [
-            null,
-            "连接中"
-         ],
-         "Authenticating": [
-            null,
-            "验证中"
-         ],
-         "Authentication Failed": [
-            null,
-            "验证失败"
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "重新建立加密会话"
-         ],
-         "Generating private key.": [
-            null,
-            "正在生成私钥"
-         ],
-         "Your browser might become unresponsive.": [
-            null,
-            "您的浏览器可能会暂时无响应"
-         ],
-         "Could not verify this user's identify.": [
-            null,
-            "无法验证对方信息。"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
          "Personal message": [
             null,
             "私信"
@@ -121,6 +13,10 @@
          "me": [
             null,
             "我"
+         ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
          ],
          "is typing": [
             null,
@@ -146,77 +42,77 @@
             null,
             "你确定清除此次的聊天记录吗？"
          ],
-         "Your message could not be sent": [
+         "Hide the list of occupants": [
             null,
-            "您的消息无法送出"
-         ],
-         "We received an unencrypted message": [
-            null,
-            "我们收到了一条未加密的信息"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "我们收到一条无法读取的信息"
-         ],
-         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
-            "这里是指纹。请与 %1$s 确认。\n\n您的 %2$s 指纹: %3$s\n\n%1$s 的指纹: %4$s\n\n如果确认符合，请点击OK，否则点击取消"
-         ],
-         "What is your security question?": [
-            null,
-            "您的安全问题是?"
-         ],
-         "What is the answer to the security question?": [
-            null,
-            "此安全问题的答案是?"
-         ],
-         "Invalid authentication scheme provided": [
-            null,
-            "非法的认证方式"
-         ],
-         "Your messages are not encrypted anymore": [
-            null,
-            "您的消息将不再被加密"
-         ],
-         "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
-            "您的消息未加密。点击这里来启用OTR加密"
-         ],
-         "End encrypted conversation": [
-            null,
-            "结束加密的会话"
+            ""
          ],
          "Insert a smiley": [
             null,
             ""
          ],
-         "Hide the list of occupants": [
-            null,
-            ""
-         ],
-         "Refresh encrypted conversation": [
-            null,
-            "刷新加密的会话"
-         ],
          "Start a call": [
             null,
             ""
          ],
-         "Start encrypted conversation": [
+         "Contacts": [
             null,
-            "开始加密的会话"
+            "联系人"
          ],
-         "Verify with fingerprints": [
+         "Connecting": [
             null,
-            "验证指纹"
+            "连接中"
          ],
-         "Verify with SMP": [
+         "Password:": [
             null,
-            "验证SMP"
+            "密码:"
          ],
-         "What's this?": [
+         "Log In": [
             null,
-            "这是什么?"
+            "登录"
+         ],
+         "user@server": [
+            null,
+            ""
+         ],
+         "Sign in": [
+            null,
+            "登录"
+         ],
+         "I am %1$s": [
+            null,
+            "我现在%1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "点击这里，填写状态信息"
+         ],
+         "Click to change your chat status": [
+            null,
+            "点击这里改变聊天状态"
+         ],
+         "Custom status": [
+            null,
+            "DIY状态"
+         ],
+         "Save": [
+            null,
+            "保存"
+         ],
+         "online": [
+            null,
+            "在线"
+         ],
+         "busy": [
+            null,
+            "忙碌"
+         ],
+         "away for long": [
+            null,
+            "长时间离开"
+         ],
+         "away": [
+            null,
+            "离开"
          ],
          "Online": [
             null,
@@ -242,7 +138,7 @@
             null,
             "搜索"
          ],
-         "e.g. user@example.com": [
+         "e.g. user@example.org": [
             null,
             ""
          ],
@@ -266,119 +162,43 @@
             null,
             "点击添加为好友"
          ],
-         "Room name": [
+         "Toggle chat": [
             null,
-            "聊天室名称"
+            "折叠聊天窗口"
          ],
-         "Nickname": [
-            null,
-            "昵称"
-         ],
-         "Server": [
-            null,
-            "服务器"
-         ],
-         "Show rooms": [
-            null,
-            "显示所有聊天室"
-         ],
-         "Rooms": [
-            null,
-            "聊天室"
-         ],
-         "No rooms on %1$s": [
-            null,
-            "%1$s 上没有聊天室"
-         ],
-         "Rooms on %1$s": [
-            null,
-            "%1$s 上的聊天室"
-         ],
-         "Click to open this room": [
-            null,
-            "打开聊天室"
-         ],
-         "Show more information on this room": [
-            null,
-            "显示次聊天室的更多信息"
-         ],
-         "Description:": [
-            null,
-            "描述: "
-         ],
-         "Occupants:": [
-            null,
-            "成员:"
-         ],
-         "Features:": [
-            null,
-            "特性:"
-         ],
-         "Requires authentication": [
-            null,
-            "需要验证"
-         ],
-         "Hidden": [
-            null,
-            "隐藏的"
-         ],
-         "Requires an invitation": [
-            null,
-            "需要被邀请"
-         ],
-         "Moderated": [
-            null,
-            "发言受限"
-         ],
-         "Non-anonymous": [
-            null,
-            "非匿名"
-         ],
-         "Open room": [
-            null,
-            "打开聊天室"
-         ],
-         "Permanent room": [
-            null,
-            "永久聊天室"
-         ],
-         "Public": [
-            null,
-            "公开的"
-         ],
-         "Semi-anonymous": [
-            null,
-            "半匿名"
-         ],
-         "Temporary room": [
-            null,
-            "临时聊天室"
-         ],
-         "Unmoderated": [
-            null,
-            "无发言限制"
-         ],
-         "This user is a moderator": [
-            null,
-            "此用户是主持人"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "此用户在这房间里可发消息"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "此用户不可在此房间发消息"
-         ],
-         "Invite...": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+         "Disconnected": [
+            null,
+            "连接已断开"
+         ],
+         "The connection to the chat server has dropped": [
             null,
             ""
          ],
-         "You may optionally include a message, explaining the reason for the invitation.": [
+         "Authenticating": [
+            null,
+            "验证中"
+         ],
+         "Authentication Failed": [
+            null,
+            "验证失败"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimized": [
+            null,
+            "最小化的"
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -426,10 +246,6 @@
             null,
             ""
          ],
-         "Save": [
-            null,
-            "保存"
-         ],
          "Cancel": [
             null,
             "取消"
@@ -437,6 +253,18 @@
          "An error occurred while trying to save the form.": [
             null,
             "保存表单是出错。"
+         ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "昵称"
          ],
          "This chatroom requires a password": [
             null,
@@ -546,21 +374,113 @@
             null,
             "您的昵称不符合此房间标准"
          ],
-         "Your nickname is already taken": [
-            null,
-            "您的昵称已被占用"
-         ],
          "This room does not (yet) exist": [
             null,
             "此房间不存在"
          ],
-         "This room has reached it's maximum number of occupants": [
-            null,
-            "此房间人数已达上线"
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "%1$s 设置话题为: %2$s"
+         ],
+         "Invite": [
+            null,
+            ""
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            ""
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Room name": [
+            null,
+            "聊天室名称"
+         ],
+         "Server": [
+            null,
+            "服务器"
+         ],
+         "Show rooms": [
+            null,
+            "显示所有聊天室"
+         ],
+         "Rooms": [
+            null,
+            "聊天室"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "%1$s 上没有聊天室"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "%1$s 上的聊天室"
+         ],
+         "Click to open this room": [
+            null,
+            "打开聊天室"
+         ],
+         "Show more information on this room": [
+            null,
+            "显示次聊天室的更多信息"
+         ],
+         "Description:": [
+            null,
+            "描述: "
+         ],
+         "Occupants:": [
+            null,
+            "成员:"
+         ],
+         "Features:": [
+            null,
+            "特性:"
+         ],
+         "Requires authentication": [
+            null,
+            "需要验证"
+         ],
+         "Hidden": [
+            null,
+            "隐藏的"
+         ],
+         "Requires an invitation": [
+            null,
+            "需要被邀请"
+         ],
+         "Moderated": [
+            null,
+            "发言受限"
+         ],
+         "Non-anonymous": [
+            null,
+            "非匿名"
+         ],
+         "Open room": [
+            null,
+            "打开聊天室"
+         ],
+         "Permanent room": [
+            null,
+            "永久聊天室"
+         ],
+         "Public": [
+            null,
+            "公开的"
+         ],
+         "Semi-anonymous": [
+            null,
+            "半匿名"
+         ],
+         "Temporary room": [
+            null,
+            "临时聊天室"
+         ],
+         "Unmoderated": [
+            null,
+            "无发言限制"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -570,69 +490,113 @@
             null,
             ""
          ],
-         "Minimized": [
-            null,
-            "最小化的"
-         ],
-         "Click to remove this contact": [
-            null,
-            "点击移除联系人"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "点击与对方交谈"
-         ],
-         "Name": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "Sorry, there was an error while trying to remove ": [
+         "%1$s says": [
             null,
             ""
          ],
-         "Sorry, there was an error while trying to add ": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "This client does not allow presence subscriptions": [
+         "Re-establishing encrypted session": [
+            null,
+            "重新建立加密会话"
+         ],
+         "Generating private key.": [
+            null,
+            "正在生成私钥"
+         ],
+         "Your browser might become unresponsive.": [
+            null,
+            "您的浏览器可能会暂时无响应"
+         ],
+         "Could not verify this user's identify.": [
+            null,
+            "无法验证对方信息。"
+         ],
+         "Your messages are not encrypted anymore": [
+            null,
+            "您的消息将不再被加密"
+         ],
+         "Your message could not be sent": [
+            null,
+            "您的消息无法送出"
+         ],
+         "We received an unencrypted message": [
+            null,
+            "我们收到了一条未加密的信息"
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            "我们收到一条无法读取的信息"
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            "这里是指纹。请与 %1$s 确认。\n\n您的 %2$s 指纹: %3$s\n\n%1$s 的指纹: %4$s\n\n如果确认符合，请点击OK，否则点击取消"
+         ],
+         "What is your security question?": [
+            null,
+            "您的安全问题是?"
+         ],
+         "What is the answer to the security question?": [
+            null,
+            "此安全问题的答案是?"
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            "非法的认证方式"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "您的消息未加密。点击这里来启用OTR加密"
+         ],
+         "End encrypted conversation": [
+            null,
+            "结束加密的会话"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "刷新加密的会话"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "开始加密的会话"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "验证指纹"
+         ],
+         "Verify with SMP": [
+            null,
+            "验证SMP"
+         ],
+         "What's this?": [
+            null,
+            "这是什么?"
+         ],
+         "unencrypted": [
+            null,
+            "未加密"
+         ],
+         "unverified": [
+            null,
+            "未验证"
+         ],
+         "verified": [
+            null,
+            "已验证"
+         ],
+         "finished": [
+            null,
+            "结束了"
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
-         ],
-         "Type to filter": [
-            null,
-            ""
-         ],
-         "I am %1$s": [
-            null,
-            "我现在%1$s"
-         ],
-         "Click here to write a custom status message": [
-            null,
-            "点击这里，填写状态信息"
-         ],
-         "Click to change your chat status": [
-            null,
-            "点击这里改变聊天状态"
-         ],
-         "Custom status": [
-            null,
-            "DIY状态"
-         ],
-         "online": [
-            null,
-            "在线"
-         ],
-         "busy": [
-            null,
-            "忙碌"
-         ],
-         "away for long": [
-            null,
-            "长时间离开"
-         ],
-         "away": [
-            null,
-            "离开"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -682,25 +646,85 @@
             null,
             ""
          ],
-         "Password:": [
+         "This contact is busy": [
             null,
-            "密码:"
+            "对方忙碌中"
          ],
-         "Log In": [
+         "This contact is online": [
             null,
-            "登录"
+            "对方在线中"
          ],
-         "user@server": [
+         "This contact is offline": [
+            null,
+            "对方已下线"
+         ],
+         "This contact is unavailable": [
+            null,
+            "对方免打扰"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "对方暂时离开"
+         ],
+         "This contact is away": [
+            null,
+            "对方离开"
+         ],
+         "Groups": [
             null,
             ""
          ],
-         "Sign in": [
+         "My contacts": [
             null,
-            "登录"
+            "我的好友列表"
          ],
-         "Toggle chat": [
+         "Pending contacts": [
             null,
-            "折叠聊天窗口"
+            "保留中的联系人"
+         ],
+         "Contact requests": [
+            null,
+            "来自好友的请求"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "点击移除联系人"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "点击与对方交谈"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            ""
          ]
       }
    }

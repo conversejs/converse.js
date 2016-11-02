@@ -1,0 +1,11 @@
+#conversejs {
+    left: 0px;
+    right: 0px;
+}
+.converse-chatroom {
+    font-size: 14px;
+}
+.intro {
+  padding: 0;
+  height: 100vh;
+}

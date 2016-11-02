@@ -13,6 +13,11 @@
         height: calc(100% - #{$controlbox-dropdown-height} - 20px);
     }
 
+    /* Custom addition for CSP */
+    #online-count {
+        display: none;
+    }
+
     .search-xmpp {
         ul {
             li.chat-info {
@@ -43,6 +48,16 @@
         /* (jQ addClass:) if mouse is over the 'x' input area*/
         .roster-filter.onX {
             cursor: pointer;
+        }
+        .state-type {
+            float: left;
+            border: 1px solid #999;
+            font-size: calc(#{$font-size} - 2px);
+            height: $controlbox-dropdown-height;
+            margin: 0;
+            padding: 0;
+            padding-left: 0.4em;
+            width: 53%;
         }
         .filter-type {
             display: table-cell;
@@ -82,6 +97,7 @@
             border: none;
             clear: both;
             color: $text-color;
+            background-color: $light-background-color;
             display: block;
             height: 24px;
             overflow-y: hidden;

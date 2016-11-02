@@ -3,11 +3,13 @@
         <span class="spinner login-submit"/>
     {[ } ]}
     {[ if (!auto_login) { ]}
-        {[ if (authentication == LOGIN) { ]}
+        {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{label_username}}</label>
             <input type="text" name="jid" placeholder="{{placeholder_username}}">
-            <label>{{label_password}}</label>
-            <input type="password" name="password" placeholder="{{placeholder_password}}">
+            {[ if (authentication !== EXTERNAL) { ]}
+                <label>{{label_password}}</label>
+                <input type="password" name="password" placeholder="{{placeholder_password}}">
+            {[ } ]}
             <input class="pure-button button-primary" type="submit" value="{{label_login}}">
             <span class="conn-feedback"></span>
         {[ } ]}

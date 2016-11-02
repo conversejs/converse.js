@@ -35,7 +35,7 @@ authentication
 --------------
 
 * Default:  ``login``
-* Allowed values: `login`_, `anonymous`_, `prebind`_
+* Allowed values: `login`_, `external`, `anonymous`_, `prebind`_
 
 This option states the way converse.js will authenticate.
 
@@ -46,12 +46,24 @@ The default means is ``login``, which means that the user either logs in manuall
 username and password, or automatically if used together with ``auto_login=true``
 and ``jid`` and ``password`` values. See `auto_login`_.
 
+external
+~~~~~~~~
+
+This setting will still show a login form and submit button, but the form will
+only contain an input for the user's JID, *not* for the password.
+
+That's because this setting is intended to be used when you are using
+SASL-EXTERNAL as authentication mechanism, in which case a password is usually
+not required.
+
 anonymous
 ~~~~~~~~~
 
 This enables anonymous login if the XMPP server supports it. This option can be
 used together with `auto_login`_ to automatically and anonymously log a user in
 as soon as the page loads.
+
+The server's domain is passed in via the `jid`_ setting.
 
 prebind
 ~~~~~~~
@@ -139,6 +151,15 @@ allow_muc
 Allow multi-user chat (muc) in chatrooms. Setting this to ``false`` will remove
 the ``Chatrooms`` tab from the control box.
 
+allow_muc_invitations
+---------------------
+
+* Default:  ``true``
+
+Allows users to be invited to join MUC chat rooms. An "Invite" widget will
+appear in the sidebar of the chat room where you can type in the JID of a user
+to invite into the chat room.
+
 allow_otr
 ---------
 
@@ -167,7 +188,7 @@ archived_messages_page_size
 
 * Default:  ``20``
 
-See also: `message_archiving`
+See also: `message_archiving`_
 
 This feature applies to `XEP-0313: Message Archive Management (MAM) <https://xmpp.org/extensions/xep-0313.html>`_
 and will only take effect if your server supports MAM.
@@ -201,11 +222,19 @@ auto_login
 This option can be used to let converse.js automatically log the user in as
 soon as the page loads.
 
-It should be used either with ``authentication`` set to ``anonymous`` or to
-``login``.
+It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
 
 If ``authentication`` is set to ``login``, then you will also need to provide a
 valid ``jid`` and ``password`` values.
+
+If ``authentication`` is set to ``anonymous``, then you will also need to provide the
+server's domain via the `jid`_ setting.
+
+This is a useful setting if you'd like to create a custom login form in your
+website. You'll need to write some Javascript to accept that custom form's
+login credentials, then you can pass those credentials (``jid`` and
+``password``) to ``converse.initialize`` to start converse.js and log the user
+into their XMPP account.
 
 auto_away
 ---------
@@ -237,6 +266,18 @@ auto_reconnect
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
 
+This option works best when you have `authentication` set to `prebind` and have
+also specified a `prebind_url` URL, from where converse.js can fetch the BOSH
+tokens. In this case, converse.js will automaticallly reconnect when the
+connection drops but also reestablish earlier lost connections (due to
+network outages, closing your laptop etc.).
+
+When `authentication` is set to `login`, then this option will only work when
+the page hasn't been reloaded yet, because then the user's password has been
+wiped from memory. This configuration can however still be useful when using
+converse.js in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
+or `electron <http://electron.atom.io/>`_.
+
 auto_subscribe
 --------------
 
@@ -245,11 +286,28 @@ auto_subscribe
 If true, the user will automatically subscribe back to any contact requests.
 
 auto_join_on_invite
---------------
+-------------------
 
 * Default:  ``false``
 
 If true, the user will automatically join a chatroom on invite without any confirm.
+
+
+auto_join_rooms
+---------------
+
+* Default:  ``[]``
+
+This settings allows you to provide a list of groupchat conversations to be
+automatically joined once the user has logged in.
+
+You can either specify a simple list of room JIDs, in which case your nickname
+will be taken from your JID, or you can specify a list of maps, where each map
+specifies the room's JID and the nickname that should be used.
+
+For example:
+
+    `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
 
 .. _`bosh-service-url`:
 
@@ -293,12 +351,77 @@ This setting can only be used together with ``allow_otr = true``.
     to retrieve your private key and read your all the chat messages in your
     current session. Previous sessions however cannot be decrypted.
 
+chatstate_notification_blacklist
+--------------------------------
+
+* Default: ``[]``
+
+A list of JIDs to be ignored when showing desktop notifications of changed chat states.
+
+Some user's clients routinely connect and disconnect (likely on mobile) and
+each time a chat state notificaion is received (``online`` when connecting and
+then ``offline`` when disconnecting).
+
+When desktop notifications are turned on (see `show-desktop-notifications`_),
+then you'll receive notification messages each time this happens.
+
+Receiving constant notifications that a user's client is connecting and disconnecting
+is annoying, so this option allows you to ignore those JIDs.
+
+connection_options
+------------------
+
+* Default:  ``{}``
+* Type:  Object
+
+Converse.js relies on `Strophe.js <http://strophe.im>`_ to establish and
+maintain a connection to the XMPP server.
+
+This option allows you to pass a map of configuration options to be passed into
+the ``Strophe.Connection`` constructor.
+
+For documentation on the configuration options that ``Strophe.Connection``
+accepts, refer to the
+`Strophe.Connection documentation <http://strophe.im/strophejs/doc/1.2.8/files/strophe-js.html#Strophe.Connection.Strophe.Connection>`_.
+
+As an example, suppose you want to restrict the supported SASL authentication
+mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
+``key:value`` pair::
+
+        converse.initialize({
+            connection_options: {
+                'mechanisms': [
+                    converse.env.Strophe.SASLMD5,
+                ]
+            },
+        });
+
+credentials_url
+---------------
+
+* Default:  ``null``
+* Type:  URL
+
+This setting should be used in conjunction with ``authentication`` set to ``login`` and :ref:`keepalive` set to ``true``.
+
+It allows you to specify a URL which converse.js will call when it needs to get
+the username and password (or authentication token) which converse.js will use
+to automatically log the user in.
+
+The server behind ``credentials_url`` should return a JSON encoded object::
+
+    {
+        "jid": "me@example.com/resource",
+        "password": "Ilikecats!",
+    }
+
+
 csi_waiting_time
 ----------------
 
 * Default: ``0``
 
-This option adds support for **XEP-0085 Chat State Indication**.
+This option adds support for `XEP-0352 Client State Indication <http://xmpp.org/extensions/xep-0352.html>_`
 
 If converse.js is idle for the configured amount of seconds, a chat state
 indication of ``inactive`` will be sent out to the XMPP server (if the server
@@ -307,6 +430,8 @@ supports CSI).
 Afterwards, ss soon as there is any activity (for example, the mouse moves),
 a chat state indication of ``active`` will be sent out.
 
+A value of ``0`` means that this feature is disabled.
+
 debug
 -----
 
@@ -314,12 +439,149 @@ debug
 
 If set to true, debugging output will be logged to the browser console.
 
+default_domain
+--------------
+
+* Default:  ``undefined``
+
+Specify a domain to act as the default for user JIDs. This allows users to log
+in with only the username part of their JID, instead of the full JID.
+
+For example, if ``default_domain`` is ``example.org``, then the user:
+``johnny@example.org`` can log in with only ``johnny``.
+
+JIDs with other domains are still allowed but need to be provided in full.
+To specify only one domain and disallow other domains, see the `locked_domain`_
+option.
+
+default_state
+-------------
+
+* Default: ``'online'``
+
+The default chat status that the user wil have. If you for example set this to
+``'chat'``, then converse.js will send out a presence stanza with ``"show"``
+set to ``'chat'`` as soon as you've been logged in.
+
 domain_placeholder
 ------------------
 
 * Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
+
+expose_rid_and_sid
+------------------
+
+* Default:  ``false``
+
+Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
+globally via the API. This allows other scripts served on the same page to use
+these values.
+
+*Beware*: a malicious script could use these tokens to assume your identity
+and inject fake chat messages.
+
+filter_by_resource
+------------------
+
+* Default:  ``false``
+
+Before version 1.0.3 converse.js would ignore received messages if they were
+intended for a different resource then the current user had. It was decided to
+drop this restriction but leave it configurable.
+
+forward_messages
+----------------
+
+* Default:  ``false``
+
+If set to ``true``, sent messages will also be forwarded to the sending user's
+bare JID (their Jabber ID independent of any chat clients aka resources).
+
+This means that sent messages are visible from all the user's chat clients,
+and not just the one from which it was actually sent.
+
+This is especially important for web chat, such as converse.js, where each
+browser tab functions as a separate chat client, with its own resource.
+
+This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+
+For an alternative approach, see also `message_carbons`_.
+
+fullname
+--------
+
+If you are using prebinding, can specify the fullname of the currently
+logged in user, otherwise the user's vCard will be fetched.
+
+.. _`hide_muc_server`:
+
+hide_muc_server
+---------------
+
+* Default:  ``false``
+
+Hide the ``server`` input field of the form inside the ``Room`` panel of the
+controlbox. Useful if you want to restrict users to a specific XMPP server of
+your choosing.
+
+hide_offline_users
+------------------
+
+* Default:  ``false``
+
+If set to ``true``, then don't show offline users.
+
+include_offline_state
+---------------------
+
+* Default: `false`
+
+Originally, converse.js included an `offline` state which the user could
+choose (along with `online`, `busy` and `away`).
+
+Eventually it was however decided to remove this state, since the `offline`
+state doesn't propagate across tabs like the others do.
+
+What's meant by "propagate across tabs", is that when you set the state to
+`offline` in one tab, and you have instances of converse.js open in other tabs
+in your browser, then those instances will not have their states changed to
+`offline` as well. For the other statees the change is however propagated.
+
+The reason for this is that according to the XMPP spec, there is no `offline`
+state. The only defined states are:
+
+* away -- The entity or resource is temporarily away.
+* chat -- The entity or resource is actively interested in chattiIng.
+* dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
+* xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
+
+Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info.
+
+What used to happen in converse.js when the `offline` state was chosen, is
+that a presence stanza with a `type` of `unavailable` was sent out.
+
+This is actually exactly what happens when you log out of converse.js as well,
+with the notable exception that in the `offline` state, the connection is not
+terminated. So you can at any time change your state to something else and
+start chatting again.
+
+This might be useful to people, however the fact that the `offline` state
+doesn't propagate across tabs means that the user experience is inconsistent,
+confusing and appears "broken".
+
+If you are however aware of this issue and still want to allow the `offline`
+state, then you can set this option to `true` to enable it.
+
+i18n
+----
+
+* Default:  Auto-detection of the User/Browser language
+
+If no locale is matching available locales, the default is ``en``.
+Specify the locale/language. The language must be in the ``locales`` object. Refer to
+``./locale/locales.js`` to see which locales are supported.
 
 jid
 ---
@@ -359,18 +621,37 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+locked_domain
+-------------
+
+* Default:  ``undefined``
+
+Similar to `default_domain`_ but no other domains are allowed.
 
 message_archiving
 -----------------
 
 * Default:  ``never``
 
-Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_
+Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
+whereby messages are archived in the XMPP server for later retrieval. Note, your XMPP server must support
+XEP-0313 MAM for this to work.
 
-This sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+This option sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
 
 ``roster`` means that only messages to and from JIDs in your roster will be
 archived. The other two values are self-explanatory.
+
+
+message_archiving_timeout
+-------------------------
+
+* Default:  ``8000``
+
+The amount of time (in milliseconds) to wait when requesting archived messages
+from the XMPP server.
+
+Used in conjunction with `message_archiving` and in context of `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_.
 
 message_carbons
 ---------------
@@ -393,6 +674,39 @@ Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
+message_storage
+----------------
+
+* Default:  ``session``
+
+Valid options: ``session``, ``local``.
+
+This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
+(``localStorage`` or ``sessionStorage``) used by converse.js to cache messages (private and group).
+
+The main difference between the two is that `sessionStorage` only persists while
+the current tab or window containing a converse.js instance is open. As soon as
+it's closed, the data is cleared.
+
+Data in `localStorage` on the other hand is kept indefinitely, which can have
+privacy implications on public computers or when multiple people are using the
+same computer.
+
+See also the `storage`_ option, which applies to other cached data, such as
+which chats you have open, what features the XMPP server supports and what
+your online status is.
+
+muc_domain
+----------
+
+* Default:  ``undefined``
+
+The MUC (multi-user chat) domain that should be used. By default converse.js
+will attempt to get the MUC domain from the XMPP host of the currently logged in
+user.
+
+This setting will override that. You might want to combine this setting with `hide_muc_server`_.
+
 muc_history_max_stanzas
 -----------------------
 
@@ -410,79 +724,67 @@ different approach.
 If you're using MAM for archiving chat room messages, you might want to set
 this option to zero.
 
-expose_rid_and_sid
+muc_instant_rooms
 ------------------
 
-* Default:  ``false``
+* Default: ``true``
 
-Allow the prebind tokens, RID (request ID) and SID (session ID), to be exposed
-globally via the API. This allows other scripts served on the same page to use
-these values.
+Determines whether 'instant' (also called 'dynamic' in OpenFire) rooms are created.
+Otherwise rooms first have to be configured before they're available to other
+users (so-called "registered rooms" in `MUC-0045 <http://xmpp.org/extensions/xep-0045.html#createroom>`_).
 
-*Beware*: a malicious script could use these tokens to assume your identity
-and inject fake chat messages.
+From a UX perspective, if this settings is `false`, then a configuration form will
+render, that has to be filled in first, before the room can be joined by other
+users.
 
-forward_messages
-----------------
+muc_nickname_from_jid
+---------------------
 
-* Default:  ``false``
+* Default: ``false``
 
-If set to ``true``, sent messages will also be forwarded to the sending user's
-bare JID (their Jabber ID independent of any chat clients aka resources).
+When set to ``true``, then users will not be prompted to provide nicknames for
+chat rooms. Instead, the node part of a user's JID (i.e. JID = node@domain/resource)
+will be used. If the user's nickname is already taken by another user in the
+chat room, then an integer will be added to make it unique.
 
-This means that sent messages are visible from all the user's chat clients,
-and not just the one from which it was actually sent.
+So, for example, if john@example.com joins a chatroom, his nickname will
+automatically be "john". If now john@differentdomain.com tries to join the
+room, his nickname will be "john-2", and if john@somethingelse.com joins, then
+his nickname will be "john-3", and so forth.
 
-This is especially important for web chat, such as converse.js, where each
-browser tab functions as a separate chat client, with its own resource.
+notify_all_room_messages
+------------------------
 
-This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
+* Default: ``false``
 
-For an alternative approach, see also `message_carbons`_.
+By default, sound and desktop notifications will only be made when you are
+mentioned in a room. If you set this setting to `true`, then you will be
+notified of all messages received in a room.
 
-fullname
---------
+You can also pass an array of room JIDs to this option, to only apply it to
+certain rooms.
 
-If you are using prebinding, can specify the fullname of the currently
-logged in user, otherwise the user's vCard will be fetched.
+notification_icon
+-----------------
 
-hide_muc_server
----------------
+* Default: ``'/logo/conversejs.png'``
 
-* Default:  ``false``
+This option specifies which icon is shown in HTML5 notifications, as provided
+by the ``src/converse-notification.js`` plugin.
 
-Hide the ``server`` input field of the form inside the ``Room`` panel of the
-controlbox. Useful if you want to restrict users to a specific XMPP server of
-your choosing.
-
-hide_offline_users
-------------------
-
-* Default:  ``false``
-
-If set to ``true``, then don't show offline users.
-
-i18n
-----
-
-* Default:  Auto-detection of the User/Browser language
-
-If no locale is matching available locales, the default is ``en``.
-Specify the locale/language. The language must be in the ``locales`` object. Refer to
-``./locale/locales.js`` to see which locales are supported.
-
-.. _`play-sounds`:
 
 ping_interval
 -------------
 
-* Default:  ``300``
+* Default:  ``180``
 
 Make ping to server in order to keep connection with server killing sessions after idle timeout.
 The ping are sent only if no messages are sent in the last ``ping_interval`` seconds
 You need to set the value to any positive value to enable this functionality.
 
 If you set this value to ``0`` or any negative value, il will disable this functionality.
+
+.. _`play-sounds`:
 
 play_sounds
 -----------
@@ -497,6 +799,8 @@ formatted sound files. We need both, because neither format is supported by all 
 
 You can set the URL where the sound files are hosted with the `sounds_path`_
 option.
+
+Requires the `src/converse-notification.js` plugin.
 
 .. _`prebind_url`:
 
@@ -563,6 +867,23 @@ However, be aware that even if this value is set to ``false``, if the
 controlbox is open, and the page is reloaded, then it will stay open on the new
 page as well.
 
+.. _`show-desktop-notifications`:
+
+show_desktop_notifications
+--------------------------
+
+* Default: ``true``
+
+Should HTML5 desktop notifications be shown?
+
+Notification will be shown in the following cases:
+
+* the browser is not visible nor focused and a private message is received.
+* the browser is not visible nor focused and a groupchat message is received which mentions you.
+* `auto_subscribe` is set to `false` and a new contact request is received.
+
+Requires the `src/converse-notification.js` plugin.
+
 show_only_online_users
 ----------------------
 
@@ -590,27 +911,84 @@ storage
 
 Valid options: ``session``, ``local``.
 
-This option determines the type of `storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
+This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
 (``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
 
-Originally converse.js used only localStorage, however sessionStorage is from a
+Originally converse.js used only `localStorage`, however `sessionStorage` is from a
 privacy perspective a better choice.
 
-The main difference between the two is that sessionStorage only persists while
+The main difference between the two is that `sessionStorage` only persists while
 the current tab or window containing a converse.js instance is open. As soon as
 it's closed, the data is cleared.
 
-Data in localStorage on the other hand is kept indefinitely.
+Data in `localStorage` on the other hand is kept indefinitely.
+
+The data that is cached includes which chats you had open, what features the
+XMPP server supports and what your online status was.
+
+Since version 1.0.7, the store for messages is now configurable separately with
+the `message_storage`_ option, to allow you to cache messages for longer in the
+browser (with `localStorage`) while still using `sessionStorage` for other
+data.
 
 .. note::
-    Since version 0.8.0, the use of local storage is not recommended. The
-    statuses (online, away, busy etc.) of your roster contacts are cached in
-    the browser storage. If you use local storage, these values are stored for
-    multiple sessions, and they will likely become out of sync with your contacts'
-    actual statuses. The session storage doesn't have this problem, because
-    roster contact statuses will not become out of sync in a single session,
-    only across more than one session.
+    Between versions 0.8.0 and 1.0.7, setting the value of this option to "local"
+    is not recommended. The statuses (online, away, busy etc.) of your roster
+    contacts are cached in the browser storage. If you use local storage, these
+    values are stored for multiple sessions, and they will likely become out of
+    sync with your contacts' actual statuses. The session storage doesn't have
+    this problem, because roster contact statuses will not become out of sync in
+    a single session, only across more than one session.
 
+    Since version 1.0.7, the "storage" option doesn't apply anymore to how roster
+    contacts and their statuses are stored (they're now always stored in session
+    storage), to address the above issue.
+    
+
+sticky_controlbox
+-----------------
+
+* Default: ``false``
+
+If set to ``true``, the control box (which includes the login, registration,
+contacts and rooms tabs) will not be closeable. It won't have a close button at
+all.
+
+The idea behind this setting is to provide a better experience on mobile
+devices when the intent is to use converse.js as a web app. In this case
+it doesn't make sense to close the control box, as there's often then nothing
+"behind" it that's relevant to the user.
+
+
+strict_plugin_dependencies
+--------------------------
+
+* Default: ``false``
+
+When set to ``true`` and a plugin tries to override an object which doesn't
+exist (for example because the plugin which provides that object is not
+loaded), then an error will be raised.
+
+Otherwise a message will simply be logged and the override instruction ignored.
+
+This allows plugins to have "soft" dependencies which aren't declared as
+as dependencies.
+
+synchronize_availability
+--------------------
+
+* Default: ``true``
+
+Valid options: ``true``, ``false``, ``a resource name``.
+
+This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
+if you change your status to `busy` in a different chat client, your status will change to `busy` in converse.js as well.
+
+If set to ``true``, converse.js will synchronize with all other clients you are logged in with.
+
+If set to ``false``, this feature is disabled.
+
+If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
 
 use_otr_by_default
 ------------------
@@ -668,7 +1046,7 @@ websocket_url
 
 * Default: ``undefined``
 
-This option is used to specify a 
+This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
 converse.js can connect to.
 
@@ -684,7 +1062,7 @@ support.
     Please note that not older browsers do not support websockets. For older
     browsers you'll want to specify a BOSH URL. See the :ref:`bosh-service-url`
     configuration setting).
-    
+
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
 

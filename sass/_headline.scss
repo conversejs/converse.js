@@ -1,0 +1,10 @@
+#conversejs {
+    .chatbox.headlines {
+        .chat-head {
+            &.chat-head-chatbox {
+                background-color: $headline-head-color;
+            }
+        }
+    }
+}
+

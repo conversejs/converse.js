@@ -1,9 +1,153 @@
 # Changelog
 
-## 0.10.1 (Unreleased)
+## 2.0.1 (Unreleased)
+- Allow the context (i.e. `this` value) to be passed in when registering event
+  listeners with `converse.listen.on` and `converse.listen.once`. [jcbrand]
+- New event ['rosterContactsFetched'](https://conversejs.org/docs/html/development.html#rosterContactsFetched) [jcbrand]
+- New event ['rosterGroupsFetched'](https://conversejs.org/docs/html/development.html#rosterGroupsFetched) [jcbrand]
+- HTML templates are now loaded in the respective modules/plugins. [jcbrand]
+- Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
+- Add support for XEP-0048, chat room bookmarks [jcbrand]
+- New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection_options) [jcbrand]
+- #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
 
-- #524 Added `auto_join_on_invite` parameter for automatically joining chatrooms. [ben]
-- FIX: A chatroom invite might come from someone not in your roster list. [ben]
+## 2.0.0 (2016-09-16)
+- #656 Online users count not shown initially [amanzur]
+- #674 Polish translation updated [ser]
+- Backwards incompatible change: the `_super` attribute in plugins is now named `__super__`. [jcbrand]
+- Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
+- Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
+- New configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
+- Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
+- Fixed wrong chat state value, should be `chat`, not `chatty`.
+  See [RFC 3921](https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.1.2.2). [jcbrand]
+- Adds support for SASL-EXTERNAL. [jcbrand]
+
+## 1.0.6 (2016-08-12)
+- #632 Offline and Logout states do not properly update once users start
+  chatting. [chrisuehlinger, jcband]
+- #674 Polish translation updated to the current master. [ser]
+- #677 Chatbox does not open after close. [jcbrand]
+- The behavior of `converse.chats.get` has changed. If the chat box is not
+  already open, then `undefined` will be returned. [jcbrand]
+- Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
+- `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to
+  `onMessageSubmitted`, to make it the same as the method on `ChatBoxView`. [jcbrand]
+- New configuration setting [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
+- New configuration setting [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc_instant_rooms) [jcbrand]
+
+## 1.0.5 (2016-07-28)
+- In case of nickname conflict when joining a room, allow the user to choose a new one.
+  [jcbrand]
+- Check whether the user has a reserved nickname before entering a room, and if so,
+  use it. [jcbrand]
+- Mention someone in your chat room message by clicking on their name in the occupants
+  list. [jcbrand]
+- #645 When accepting a contact request, the contact didn't appear in the
+  pending contacts group. [jcbrand]
+- Bugfix: allow multiple MAM queries to be made simultaneously. [jcbrand]
+
+## 1.0.4 (2016-07-26)
+
+- Restrict occupants sidebar to 30% chatroom width. [jcbrand]
+- Made requesting contacts more visible, by placing them at the top of the roster. [jcbrand]
+- `insertIntoPage` method of `ChatBoxView` has been renamed to `insertIntoDOM`,
+  to make it the same as the method of `ChatRoomView`. [jcbrand]
+- Render error messages received from the server (for undelivered chat messages). [jcbrand]
+- Don't hide requesting contacts when filtering by chat state. [jcbrand]
+- When logging in anonymously, the server JID can now be passed in via `converse.initialize`
+  or via `converse.user.login`. [jcbrand]
+
+## 1.0.3 (2016-06-20)
+
+- Update the plugin architecture to allow plugins to have optional dependencies [jcbrand]
+- Bugfix. Login form doesn't render after logging out, when `auto_reconnect = false` [jcbrand]
+- Also indicate new day for the first day's messages. [jcbrand]
+- Chat bot messages don't appear when they have the same ids as their commands. [jcbrand]
+- Updated onDisconnected method to fire disconnected event even if `auto_reconnect = false`. [kamranzafar]
+- Bugfix: MAM messages weren't being fetched oldest first. [jcbrand]
+- Add processing hints to chat state notifications [jcbrand]
+- Don't use sound and desktop notifications for OTR messages (when setting up the session) [jcbrand]
+- New config option [default_state](https://conversejs.org/docs/html/configuration.html#default_state) [jcbrand]
+- New API method `converse.rooms.close()` [jcbrand]
+- New configuration setting [allow_muc_invites](https://conversejs.org/docs/html/configuration.html#allow-muc-invites) [jcbrand]
+- Add new event [pluginsInitialized](https://conversejs.org/docs/html/development.html#pluginsInitialized) [jcbrand]
+- #553 Add processing hints to OTR messages [jcbrand]
+- #650 Don't ignore incoming messages with same JID as current user (might be MAM archived) [jcbrand]
+- #656 online users count in minimized chat window on initialization corrected [amanzur]
+
+## 1.0.2 (2016-05-24)
+
+- Bugfix. Bind `sendPresence` to the right context. Bug that slipped in during
+  the release of `1.0.1`. [jcbrand]
+
+## 1.0.1 (2016-05-24)
+
+- Bugfix. Roster filter sometimes gets hidden when it shouldn't. [jcbrand]
+- Chat boxes weren't being initialized due to typo. [jcbrand]
+- Flush request queue just after connection. Solves a problem with PubSub and
+  Prosody, whereby BOSH HTTP responses weren't being received. [jcbrand]
+
+## 1.0.0 (2016-05-03)
+
+- Add catalan language [JoseMariaRubioMoral]
+- Split converse.js up into different plugin modules. [jcbrand]
+- Better Sass/CSS for responsive/mobile views. New mobile-only build. [jcbrand]
+- Roster contacts can now be filtered by chat state and roster filters are
+  remembered across page loads. [jcbrand]
+- Add support for messages with type `headline`, often used for notifications
+  from the server. [jcbrand]
+- Add stanza-specific event listener `converse.listen.stanza`.
+  As a result `converse.listen.on('message');` has been deprecated, use
+  `converse.stanza.on('message');` instead. [jcbrand]
+- Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
+- Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
+- New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
+- New config option [sticky_controlbox](https://conversejs.org/docs/html/configuration.html#sticky_controlbox) [jcbrand]
+- New config option [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials_url) [jcbrand]
+- Don't play sound notifications for OTR messages which are setting up an
+  encrypted session. [jcbrand]
+- Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
+- Removed the `account.logout` API, instead use `user.logout`. [jcbrand]
+- Use `rel=noopener` with links that contain `target=_blank` to prevent potential
+  phishing attacks. [More info here](https://mathiasbynens.github.io/rel-noopener/)
+  [jcbrand]
+- #156 Add the option `auto_join_rooms` which allows you to automatically
+  connect to certain rooms once logged in. [jcbrand]
+- #261 `show_controlbox_by_default` config not working [diditopher]
+- #443 HTML5 notifications of received messages [jcbrand]
+- #534 Updated Russian translation [badfiles]
+- #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
+- #573 xgettext build error: `'javascript' unknown` [jcbrand]
+- #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message_archiving_timeout) [jcbrand]
+- #587 Fix issue when logging out with `auto_logout=true` [davec82]
+- #589 Save scroll position on minimize and restore it on maximize [rlanvin]
+- #592 Add random resource for `auto_login`, add method generateResource to
+  generate random resource [davec82]
+- #598 Add option `synchronize_availability` [davec82]
+- #600 Fix change xmpp status also on icon-status click [davec82]
+- #616 converse-otr should depend on converse-minimize  [jcbrand]
+- #609 Remove split of fullname [lixmal]
+
+## 0.10.1 (2016-02-06)
+
+- #352 When the user has manually scrolled up in a chat window, don't scroll
+  down on chat event notifications. [jcbrand]
+- #524 Added [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto_join_on_invite)
+  parameter for automatically joining chatrooms. [ben]
+- #520 Set specific domain. Two new options [default_domain](https://conversejs.org/docs/html/configuration.html#default_domain)
+  and [locked_domain](https://conversejs.org/docs/html/configuration.html#locked_domain). [jcbrand]
+- #521 Not sending presence when connecting after disconnection. [jcbrand]
+- #535 Messages not received when room with mixed-case JID is used. [jcbrand]
+- #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
+- #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
+- #547 By default the `offline` state is no longer choosable.
+  See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
+- A chatroom invite might come from someone not in your roster list. [ben]
+- #487 Empty the resources array when the resource is null [rlanvin]
+- #534 Updated Russian translation [LaconicTranslator]
+- #555 The status restored from sessionStorage is never updated [jcbrand]
+- #559 Remove reconnection timer once connected succesfully [m0cs]
 
 ## 0.10.0 (2015-11-05)
 
@@ -242,7 +386,7 @@
 
 ## 0.7.4 (2014-03-05)
 
-**note:** 
+**note:**
 *This release contains an important security fix. Thanks to Renaud Dubourguais from [Synacktiv](http://synacktiv.com) for reporting the vulnerability.*
 
 - #125 Bugfix: crypto dependencies loaded in wrong order [jcbrand]

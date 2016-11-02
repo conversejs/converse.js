@@ -8,6 +8,7 @@ $inverse-link-color: white !default;
 $link-shadow-color: #FAFAFA !default;
 $text-shadow-color: #FAFAFA !default;
 $text-color: #818479 !default;
+$light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
 $icon-color: #114327 !default;
 $save-button-color: #436F64 !default;
@@ -37,14 +38,20 @@ $toolbar-height: 25px !default;
 $toolbar-color: #FFF5EE !default;
 
 $moderator-color: #D24E2B !default;
+$online-color: #1A9707 !default;
+
+$error-color: #D24E2B !default;
 
 $chatbox-border-radius: 4px !default;
 $bottom-gutter-height: 35px !default;
 $chatbox-hover-height: 6px !default;
 
-$mobile_landscape_length: 480px !default;
+$mobile_landscape_height: 450px !default;
+$mobile_portrait_length: 480px !default;
 
+$font-size-small: 12px !default;
 $font-size: 14px !default;
+$font-size-large: 16px !default;
 $legend-font-size: 16px !default;
 
 $chat-width: 200px !default;
@@ -56,15 +63,18 @@ $mobile-chat-width: 100% !default;
 $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
-$font-path: "../fonticons/fonts/" !default;
+/* $font-path: "../fonticons/fonts/" !default; */
+$font-path: "https://cdn.conversejs.org/fonticons/fonts/" !default;
 
 $chatroom-width: 300px !default;
 $chatroom-head-color: #E76F51 !default;
 $chatroom-color-light: #FF977C !default;
 $chatroom-color-dark: #D24E2B !default;
 
+$headline-head-color: #2A9D8F !default;
+
 $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;
 $box-close-button-padding-left: 4px !default;
 $box-close-button-padding-right: 4px !default;
-$box-close-font-size: 9px !default;
+$box-close-font-size: 10px !default;

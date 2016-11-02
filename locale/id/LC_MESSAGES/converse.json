@@ -6,118 +6,6 @@
             "domain": "converse",
             "lang": "id"
          },
-         " e.g. conversejs.org": [
-            null,
-            ""
-         ],
-         "unencrypted": [
-            null,
-            "tak dienkripsi"
-         ],
-         "unverified": [
-            null,
-            "tak diverifikasi"
-         ],
-         "verified": [
-            null,
-            "diverifikasi"
-         ],
-         "finished": [
-            null,
-            "selesai"
-         ],
-         "This contact is busy": [
-            null,
-            "Teman ini sedang sibuk"
-         ],
-         "This contact is online": [
-            null,
-            "Teman ini terhubung"
-         ],
-         "This contact is offline": [
-            null,
-            "Teman ini tidak terhubung"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Teman ini tidak tersedia"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Teman ini tidak di tempat untuk waktu yang lama"
-         ],
-         "This contact is away": [
-            null,
-            "Teman ini tidak di tempat"
-         ],
-         "My contacts": [
-            null,
-            "Teman saya"
-         ],
-         "Pending contacts": [
-            null,
-            "Teman yang menunggu"
-         ],
-         "Contact requests": [
-            null,
-            "Permintaan pertemanan"
-         ],
-         "Ungrouped": [
-            null,
-            ""
-         ],
-         "Contacts": [
-            null,
-            "Teman"
-         ],
-         "Groups": [
-            null,
-            ""
-         ],
-         "Attempting to reconnect in 5 seconds": [
-            null,
-            ""
-         ],
-         "Error": [
-            null,
-            "Kesalahan"
-         ],
-         "Connecting": [
-            null,
-            "Menyambung"
-         ],
-         "Authenticating": [
-            null,
-            "Melakukan otentikasi"
-         ],
-         "Authentication Failed": [
-            null,
-            "Otentikasi gagal"
-         ],
-         "Re-establishing encrypted session": [
-            null,
-            "Menyambung kembali sesi terenkripsi"
-         ],
-         "Generating private key.": [
-            null,
-            ""
-         ],
-         "Your browser might become unresponsive.": [
-            null,
-            ""
-         ],
-         "Could not verify this user's identify.": [
-            null,
-            "Tak dapat melakukan verifikasi identitas pengguna ini."
-         ],
-         "Exchanging private key with contact.": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
          "Personal message": [
             null,
             "Pesan pribadi"
@@ -125,6 +13,10 @@
          "me": [
             null,
             "saya"
+         ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
          ],
          "is typing": [
             null,
@@ -150,77 +42,77 @@
             null,
             ""
          ],
-         "Your message could not be sent": [
+         "Hide the list of occupants": [
             null,
-            "Pesan anda tak dapat dikirim"
-         ],
-         "We received an unencrypted message": [
-            null,
-            "Kami menerima pesan terenkripsi"
-         ],
-         "We received an unreadable encrypted message": [
-            null,
-            "Kami menerima pesan terenkripsi yang gagal dibaca"
-         ],
-         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
-            null,
-            "Ini adalah sidik jari anda, konfirmasikan bersama mereka dengan %1$s, di luar percakapan ini.\n\nSidik jari untuk anda, %2$s: %3$s\n\nSidik jari untuk %1$s: %4$s\n\nJika anda bisa mengkonfirmasi sidik jadi cocok, klik Lanjutkan, jika tidak klik Batal."
-         ],
-         "What is your security question?": [
-            null,
-            "Apakah pertanyaan keamanan anda?"
-         ],
-         "What is the answer to the security question?": [
-            null,
-            "Apa jawaban dari pertanyaan keamanan tersebut?"
-         ],
-         "Invalid authentication scheme provided": [
-            null,
-            "Skema otentikasi salah"
-         ],
-         "Your messages are not encrypted anymore": [
-            null,
-            "Pesan anda tidak lagi terenkripsi"
-         ],
-         "Your messages are not encrypted. Click here to enable OTR encryption.": [
-            null,
-            "Pesan anda tak terenkripsi. Klik di sini untuk menyalakan enkripsi OTR."
-         ],
-         "End encrypted conversation": [
-            null,
-            "Sudahi percakapan terenkripsi"
+            ""
          ],
          "Insert a smiley": [
             null,
             ""
          ],
-         "Hide the list of occupants": [
-            null,
-            ""
-         ],
-         "Refresh encrypted conversation": [
-            null,
-            "Setel ulang percakapan terenkripsi"
-         ],
          "Start a call": [
             null,
             ""
          ],
-         "Start encrypted conversation": [
+         "Contacts": [
             null,
-            "Mulai sesi terenkripsi"
+            "Teman"
          ],
-         "Verify with fingerprints": [
+         "Connecting": [
             null,
-            "Verifikasi menggunakan sidik jari"
+            "Menyambung"
          ],
-         "Verify with SMP": [
+         "Password:": [
             null,
-            "Verifikasi menggunakan SMP"
+            "Kata sandi:"
          ],
-         "What's this?": [
+         "Log In": [
             null,
-            "Apakah ini?"
+            "Masuk"
+         ],
+         "user@server": [
+            null,
+            ""
+         ],
+         "Sign in": [
+            null,
+            "Masuk"
+         ],
+         "I am %1$s": [
+            null,
+            "Saya %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Klik untuk menulis status kustom"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Klik untuk mengganti status"
+         ],
+         "Custom status": [
+            null,
+            "Status kustom"
+         ],
+         "Save": [
+            null,
+            "Simpan"
+         ],
+         "online": [
+            null,
+            "terhubung"
+         ],
+         "busy": [
+            null,
+            "sibuk"
+         ],
+         "away for long": [
+            null,
+            "lama tak di tempat"
+         ],
+         "away": [
+            null,
+            "tak di tempat"
          ],
          "Online": [
             null,
@@ -246,7 +138,7 @@
             null,
             "Cari"
          ],
-         "e.g. user@example.com": [
+         "e.g. user@example.org": [
             null,
             ""
          ],
@@ -270,119 +162,47 @@
             null,
             "Klik untuk menambahkan sebagai teman"
          ],
-         "Room name": [
-            null,
-            "Nama ruangan"
-         ],
-         "Nickname": [
-            null,
-            "Nama panggilan"
-         ],
-         "Server": [
-            null,
-            "Server"
-         ],
-         "Show rooms": [
-            null,
-            "Perlihatkan ruangan"
-         ],
-         "Rooms": [
-            null,
-            "Ruangan"
-         ],
-         "No rooms on %1$s": [
-            null,
-            "Tak ada ruangan di %1$s"
-         ],
-         "Rooms on %1$s": [
-            null,
-            "Ruangan di %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik untuk membuka ruangan ini"
-         ],
-         "Show more information on this room": [
-            null,
-            "Tampilkan informasi ruangan ini"
-         ],
-         "Description:": [
-            null,
-            "Keterangan:"
-         ],
-         "Occupants:": [
-            null,
-            "Penghuni:"
-         ],
-         "Features:": [
-            null,
-            "Fitur:"
-         ],
-         "Requires authentication": [
-            null,
-            "Membutuhkan otentikasi"
-         ],
-         "Hidden": [
-            null,
-            "Tersembunyi"
-         ],
-         "Requires an invitation": [
-            null,
-            "Membutuhkan undangan"
-         ],
-         "Moderated": [
-            null,
-            "Dimoderasi"
-         ],
-         "Non-anonymous": [
-            null,
-            "Tidak anonim"
-         ],
-         "Open room": [
-            null,
-            "Ruangan terbuka"
-         ],
-         "Permanent room": [
-            null,
-            "Ruangan permanen"
-         ],
-         "Public": [
-            null,
-            "Umum"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi-anonim"
-         ],
-         "Temporary room": [
-            null,
-            "Ruangan sementara"
-         ],
-         "Unmoderated": [
-            null,
-            "Tak dimoderasi"
-         ],
-         "This user is a moderator": [
-            null,
-            "Pengguna ini adalah moderator"
-         ],
-         "This user can send messages in this room": [
-            null,
-            "Pengguna ini dapat mengirim pesan di ruangan ini"
-         ],
-         "This user can NOT send messages in this room": [
-            null,
-            "Pengguna ini tak dapat mengirim pesan di ruangan ini"
-         ],
-         "Invite...": [
+         "Toggle chat": [
             null,
             ""
          ],
-         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "You may optionally include a message, explaining the reason for the invitation.": [
+         "Disconnected": [
+            null,
+            "Terputus"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
+         "Authenticating": [
+            null,
+            "Melakukan otentikasi"
+         ],
+         "Authentication Failed": [
+            null,
+            "Otentikasi gagal"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            ""
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimize this box": [
+            null,
+            ""
+         ],
+         "Minimized": [
+            null,
+            ""
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -430,10 +250,6 @@
             null,
             ""
          ],
-         "Save": [
-            null,
-            "Simpan"
-         ],
          "Cancel": [
             null,
             "Batal"
@@ -441,6 +257,18 @@
          "An error occurred while trying to save the form.": [
             null,
             "Kesalahan terjadi saat menyimpan formulir ini."
+         ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
+         "Please choose your nickname": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Nama panggilan"
          ],
          "This chatroom requires a password": [
             null,
@@ -550,21 +378,113 @@
             null,
             "Nama panggilan anda tidak sesuai aturan ruangan ini"
          ],
-         "Your nickname is already taken": [
-            null,
-            "Nama panggilan anda telah digunakan orang lain"
-         ],
          "This room does not (yet) exist": [
             null,
             "Ruangan ini belum dibuat"
          ],
-         "This room has reached it's maximum number of occupants": [
-            null,
-            "Ruangan ini telah mencapai jumlah penghuni maksimum"
-         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Topik diganti oleh %1$s menjadi: %2$s"
+         ],
+         "Invite": [
+            null,
+            ""
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            ""
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Room name": [
+            null,
+            "Nama ruangan"
+         ],
+         "Server": [
+            null,
+            "Server"
+         ],
+         "Show rooms": [
+            null,
+            "Perlihatkan ruangan"
+         ],
+         "Rooms": [
+            null,
+            "Ruangan"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "Tak ada ruangan di %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Ruangan di %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Klik untuk membuka ruangan ini"
+         ],
+         "Show more information on this room": [
+            null,
+            "Tampilkan informasi ruangan ini"
+         ],
+         "Description:": [
+            null,
+            "Keterangan:"
+         ],
+         "Occupants:": [
+            null,
+            "Penghuni:"
+         ],
+         "Features:": [
+            null,
+            "Fitur:"
+         ],
+         "Requires authentication": [
+            null,
+            "Membutuhkan otentikasi"
+         ],
+         "Hidden": [
+            null,
+            "Tersembunyi"
+         ],
+         "Requires an invitation": [
+            null,
+            "Membutuhkan undangan"
+         ],
+         "Moderated": [
+            null,
+            "Dimoderasi"
+         ],
+         "Non-anonymous": [
+            null,
+            "Tidak anonim"
+         ],
+         "Open room": [
+            null,
+            "Ruangan terbuka"
+         ],
+         "Permanent room": [
+            null,
+            "Ruangan permanen"
+         ],
+         "Public": [
+            null,
+            "Umum"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonim"
+         ],
+         "Temporary room": [
+            null,
+            "Ruangan sementara"
+         ],
+         "Unmoderated": [
+            null,
+            "Tak dimoderasi"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -574,69 +494,117 @@
             null,
             ""
          ],
-         "Minimized": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "Click to remove this contact": [
-            null,
-            "Klik untuk menghapus teman ini"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klik untuk mulai perbinjangan dengan teman ini"
-         ],
-         "Name": [
+         "%1$s says": [
             null,
             ""
          ],
-         "Sorry, there was an error while trying to remove ": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Sorry, there was an error while trying to add ": [
+         "Re-establishing encrypted session": [
+            null,
+            "Menyambung kembali sesi terenkripsi"
+         ],
+         "Generating private key.": [
             null,
             ""
          ],
-         "This client does not allow presence subscriptions": [
+         "Your browser might become unresponsive.": [
             null,
             ""
          ],
-         "Type to filter": [
+         "Could not verify this user's identify.": [
+            null,
+            "Tak dapat melakukan verifikasi identitas pengguna ini."
+         ],
+         "Exchanging private key with contact.": [
             null,
             ""
          ],
-         "I am %1$s": [
+         "Your messages are not encrypted anymore": [
             null,
-            "Saya %1$s"
+            "Pesan anda tidak lagi terenkripsi"
          ],
-         "Click here to write a custom status message": [
+         "Your message could not be sent": [
             null,
-            "Klik untuk menulis status kustom"
+            "Pesan anda tak dapat dikirim"
          ],
-         "Click to change your chat status": [
+         "We received an unencrypted message": [
             null,
-            "Klik untuk mengganti status"
+            "Kami menerima pesan terenkripsi"
          ],
-         "Custom status": [
+         "We received an unreadable encrypted message": [
             null,
-            "Status kustom"
+            "Kami menerima pesan terenkripsi yang gagal dibaca"
          ],
-         "online": [
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            "terhubung"
+            "Ini adalah sidik jari anda, konfirmasikan bersama mereka dengan %1$s, di luar percakapan ini.\n\nSidik jari untuk anda, %2$s: %3$s\n\nSidik jari untuk %1$s: %4$s\n\nJika anda bisa mengkonfirmasi sidik jadi cocok, klik Lanjutkan, jika tidak klik Batal."
          ],
-         "busy": [
+         "What is your security question?": [
             null,
-            "sibuk"
+            "Apakah pertanyaan keamanan anda?"
          ],
-         "away for long": [
+         "What is the answer to the security question?": [
             null,
-            "lama tak di tempat"
+            "Apa jawaban dari pertanyaan keamanan tersebut?"
          ],
-         "away": [
+         "Invalid authentication scheme provided": [
             null,
-            "tak di tempat"
+            "Skema otentikasi salah"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "Pesan anda tak terenkripsi. Klik di sini untuk menyalakan enkripsi OTR."
+         ],
+         "End encrypted conversation": [
+            null,
+            "Sudahi percakapan terenkripsi"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Setel ulang percakapan terenkripsi"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Mulai sesi terenkripsi"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Verifikasi menggunakan sidik jari"
+         ],
+         "Verify with SMP": [
+            null,
+            "Verifikasi menggunakan SMP"
+         ],
+         "What's this?": [
+            null,
+            "Apakah ini?"
+         ],
+         "unencrypted": [
+            null,
+            "tak dienkripsi"
+         ],
+         "unverified": [
+            null,
+            "tak diverifikasi"
+         ],
+         "verified": [
+            null,
+            "diverifikasi"
+         ],
+         "finished": [
+            null,
+            "selesai"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            ""
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -686,23 +654,83 @@
             null,
             ""
          ],
-         "Password:": [
+         "This contact is busy": [
             null,
-            "Kata sandi:"
+            "Teman ini sedang sibuk"
          ],
-         "Log In": [
+         "This contact is online": [
             null,
-            "Masuk"
+            "Teman ini terhubung"
          ],
-         "user@server": [
+         "This contact is offline": [
+            null,
+            "Teman ini tidak terhubung"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Teman ini tidak tersedia"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Teman ini tidak di tempat untuk waktu yang lama"
+         ],
+         "This contact is away": [
+            null,
+            "Teman ini tidak di tempat"
+         ],
+         "Groups": [
             null,
             ""
          ],
-         "Sign in": [
+         "My contacts": [
             null,
-            "Masuk"
+            "Teman saya"
          ],
-         "Toggle chat": [
+         "Pending contacts": [
+            null,
+            "Teman yang menunggu"
+         ],
+         "Contact requests": [
+            null,
+            "Permintaan pertemanan"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "Klik untuk menghapus teman ini"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klik untuk mulai perbinjangan dengan teman ini"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

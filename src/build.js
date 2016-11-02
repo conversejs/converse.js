@@ -1,10 +1,8 @@
 ({
     baseUrl: "../",
-    name: "components/almond/almond.js",
-    out: "../builds/converse.min.js",
-    include: ['main'],
-    mainConfigFile: '../main.js',
-    paths: {
-        "converse-dependencies":    "src/deps-full"
-    }
+    name: "almond",
+    out: "../dist/converse.min.js",
+    mainConfigFile: '../config.js',
+    include: ['src/converse'],
+    insertRequire: ['converse'],
 })

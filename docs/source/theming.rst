@@ -65,11 +65,11 @@ To generate the CSS you can run::
 
     make css
 
-Creating builds
-===============
+Creating dist files
+===================
 
-Once you've themed converse.js, you'll want to create new minified builds of
-the Javascript and CSS files.
+Once you've themed converse.js, you'll want to create new minified distribution
+files of all the Javascript and CSS.
 
 Please refer to the :doc:`builds` section for information on how this is done.
 

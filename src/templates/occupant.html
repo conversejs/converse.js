@@ -1,11 +1,10 @@
-<li class="{{role}}"
+<li class="{{role}} occupant" id="{{id}}"
     {[ if (role === "moderator") { ]}
-       title="{{desc_moderator}}"
+       title="{{desc_moderator}} {{hint_occupant}}"
     {[ } ]}
     {[ if (role === "occupant") { ]}
-       title="{{desc_occupant}}"
+       title="{{desc_occupant}} {{hint_occupant}}"
     {[ } ]}
     {[ if (role === "visitor") { ]}
-       title="{{desc_visitor}}"
-    {[ } ]}
->{{nick}}</li>
+       title="{{desc_visitor}} {{hint_occupant}}"
+    {[ } ]}>{{nick}}</li>

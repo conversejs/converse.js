@@ -1,11 +1,29 @@
-/*global jQuery, templates, escape, Jed, _ */
+/*global escape, locales, Jed */
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(["jquery", "underscore", "converse-templates", "locales"], factory);
-    } else {
-        root.utils = factory(jQuery, _, templates);
-    }
-}(this, function ($, _, templates, locales) {
+    define([
+        "jquery",
+        "jquery.browser",
+        "underscore",
+        "tpl!field",
+        "tpl!select_option",
+        "tpl!form_select",
+        "tpl!form_textarea",
+        "tpl!form_checkbox",
+        "tpl!form_username",
+        "tpl!form_input",
+        "tpl!form_captcha"
+    ], factory);
+}(this, function (
+        $, dummy, _,
+        tpl_field,
+        tpl_select_option,
+        tpl_form_select,
+        tpl_form_textarea,
+        tpl_form_checkbox,
+        tpl_form_username,
+        tpl_form_input,
+        tpl_form_captcha
+    ) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -17,6 +35,16 @@
         'jid-multi': 'textarea',
         'list-single': 'dropdown',
         'list-multi': 'dropdown'
+    };
+
+    var isImage = function (url) {
+        var deferred = new $.Deferred();
+        $("<img>", {
+            src: url,
+            error: deferred.reject,
+            load: deferred.resolve
+        });
+        return deferred.promise();
     };
 
     $.expr[':'].emptyVal = function(obj){
@@ -33,19 +61,33 @@
         return false;
     };
 
+    $.fn.throttledHTML = _.throttle($.fn.html, 500);
+
     $.fn.addHyperlinks = function () {
         if (this.length > 0) {
             this.each(function (i, obj) {
-                var x = $(obj).html();
+                var prot, escaped_url;
+                var $obj = $(obj);
+                var x = $obj.html();
                 var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
                 if (list) {
                     for (i=0; i<list.length; i++) {
-                        var prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], "<a target='_blank' href='" + prot + escaped_url + "'>"+ list[i] + "</a>" );
+                        prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
+                        escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
                     }
                 }
-                $(obj).html(x);
+                $obj.html(x);
+                _.each(list, function (url) {
+                    isImage(url).then(function () {
+                        var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
+                        var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
+                        event.target.className = 'chat-image';
+                        x = x.replace(new_url, event.target.outerHTML);
+                        $obj.throttledHTML(x);
+                    });
+                });
             });
         }
         return this;
@@ -90,6 +132,11 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
+            if (typeof Jed === "undefined") {
+                return str;
+            }
+            // FIXME: this can be refactored to take the i18n obj as a
+            // parameter.
             // Translation factory
             if (typeof this.i18n === "undefined") {
                 this.i18n = locales.en;
@@ -110,13 +157,122 @@
 
         ___: function (str) {
             /* XXX: This is part of a hack to get gettext to scan strings to be
-                * translated. Strings we cannot send to the function above because
-                * they require variable interpolation and we don't yet have the
-                * variables at scan time.
-                *
-                * See actionInfoMessages
-                */
+             * translated. Strings we cannot send to the function above because
+             * they require variable interpolation and we don't yet have the
+             * variables at scan time.
+             *
+             * See actionInfoMessages in src/converse-muc.js
+             */
             return str;
+        },
+
+        isLocaleAvailable: function (locale, available) {
+            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+             *
+             * Parameters:
+             *      (Function) available - returns a boolean indicating whether the locale is supported
+             */
+            if (available(locale)) {
+                return locale;
+            } else {
+                var sublocale = locale.split("-")[0];
+                if (sublocale !== locale && available(sublocale)) {
+                    return sublocale;
+                }
+            }
+        },
+
+        detectLocale: function (library_check) {
+            /* Determine which locale is supported by the user's system as well
+             * as by the relevant library (e.g. converse.js or moment.js).
+             *
+             * Parameters:
+             *      (Function) library_check - returns a boolean indicating whether the locale is supported
+             */
+            var locale, i;
+            if (window.navigator.userLanguage) {
+                locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+            }
+            if (window.navigator.languages && !locale) {
+                for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                    locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+                }
+            }
+            if (window.navigator.browserLanguage && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            }
+            if (window.navigator.language && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+            }
+            if (window.navigator.systemLanguage && !locale) {
+                locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            }
+            return locale || 'en';
+        },
+
+        isOTRMessage: function (message) {
+            var $body = $(message).children('body'),
+                text = ($body.length > 0 ? $body.text() : undefined);
+            return text && !!text.match(/^\?OTR/);
+        },
+
+        isHeadlineMessage: function (message) {
+            var $message = $(message),
+                from_jid = $message.attr('from');
+            if ($message.attr('type') === 'headline' ||
+                // Some servers (I'm looking at you Prosody) don't set the message
+                // type to "headline" when sending server messages. For now we
+                // check if an @ signal is included, and if not, we assume it's
+                // a headline message.
+                (   $message.attr('type') !== 'error' &&
+                    typeof from_jid !== 'undefined' &&
+                    from_jid.indexOf('@') === -1
+                )) {
+                return true;
+            }
+            return false;
+        },
+
+        merge: function merge (first, second) {
+            /* Merge the second object into the first one.
+             */
+            for (var k in second) {
+                if (_.isObject(first[k])) {
+                    merge(first[k], second[k]);
+                } else {
+                    first[k] = second[k];
+                }
+            }
+        },
+
+        applyUserSettings: function applyUserSettings (context, settings, user_settings) {
+            /* Configuration settings might be nested objects. We only want to
+             * add settings which are whitelisted.
+             */
+            for (var k in settings) {
+                if (_.isUndefined(user_settings[k])) {
+                    continue;
+                }
+                if (_.isObject(settings[k])) {
+                    applyUserSettings(context[k], settings[k], user_settings[k]);
+                } else {
+                    context[k] = user_settings[k];
+                }
+            }
+        },
+
+        refreshWebkit: function () {
+            /* This works around a webkit bug. Refreshes the browser's viewport,
+             * otherwise chatboxes are not moved along when one is closed.
+             */
+            if ($.browser.webkit && window.requestAnimationFrame) {
+                window.requestAnimationFrame(function () {
+                    var conversejs = document.getElementById('conversejs');
+                    conversejs.style.display = 'none';
+                    var tmp = conversejs.offsetHeight; // jshint ignore:line
+                    conversejs.style.display = 'block';
+                });
+            }
         },
 
         webForm2xForm: function (field) {
@@ -140,10 +296,26 @@
             } else {
                 value = $input.val();
             }
-            return $(templates.field({
+            return $(tpl_field({
                 name: $input.attr('name'),
                 value: value
             }))[0];
+        },
+
+        contains: function (attr, query) {
+            return function (item) {
+                if (typeof attr === 'object') {
+                    var value = false;
+                    _.each(attr, function (a) {
+                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    });
+                    return value;
+                } else if (typeof attr === 'string') {
+                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                } else {
+                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
+                }
+            };
         },
 
         xForm2webForm: function ($field, $stanza) {
@@ -166,14 +338,14 @@
                 $options = $field.children('option');
                 for (j=0; j<$options.length; j++) {
                     value = $($options[j]).find('value').text();
-                    options.push(templates.select_option({
+                    options.push(tpl_select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
                         selected: (values.indexOf(value) >= 0),
                         required: $field.find('required').length
                     }));
                 }
-                return templates.form_select({
+                return tpl_form_select({
                     name: $field.attr('var'),
                     label: $field.attr('label'),
                     options: options.join(''),
@@ -183,14 +355,14 @@
             } else if ($field.attr('type') === 'fixed') {
                 return $('<p class="form-help">').text($field.find('value').text());
             } else if ($field.attr('type') === 'jid-multi') {
-                return templates.form_textarea({
+                return tpl_form_textarea({
                     name: $field.attr('var'),
                     label: $field.attr('label') || '',
                     value: $field.find('value').text(),
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type') === 'boolean') {
-                return templates.form_checkbox({
+                return tpl_form_checkbox({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
@@ -198,7 +370,7 @@
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type') && $field.attr('var') === 'username') {
-                return templates.form_username({
+                return tpl_form_username({
                     domain: ' @'+this.domain,
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
@@ -207,7 +379,7 @@
                     required: $field.find('required').length
                 });
             } else if ($field.attr('type')) {
-                return templates.form_input({
+                return tpl_form_input({
                     name: $field.attr('var'),
                     type: XFORM_TYPE_MAP[$field.attr('type')],
                     label: $field.attr('label') || '',
@@ -218,7 +390,7 @@
                 if ($field.attr('var') === 'ocr') { // Captcha
                     return _.reduce(_.map($field.find('uri'),
                             $.proxy(function (uri) {
-                                return templates.form_captcha({
+                                return tpl_form_captcha({
                                     label: this.$field.attr('label'),
                                     name: this.$field.attr('var'),
                                     data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
@@ -232,6 +404,12 @@
                 }
             }
         }
+    };
+
+    utils.contains.not = function (attr, query) {
+        return function (item) {
+            return !(utils.contains(attr, query)(item));
+        };
     };
     return utils;
 }));

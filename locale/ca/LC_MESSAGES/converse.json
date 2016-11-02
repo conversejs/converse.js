@@ -1,0 +1,860 @@
+{
+   "domain": "converse",
+   "locale_data": {
+      "converse": {
+         "": {
+            "domain": "converse",
+            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "lang": "ca"
+         },
+         "Close this chat box": [
+            null,
+            "Tanca aquest quadre del xat"
+         ],
+         "Personal message": [
+            null,
+            "Missatge personal"
+         ],
+         "me": [
+            null,
+            "jo"
+         ],
+         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
+         "is typing": [
+            null,
+            "està escrivint"
+         ],
+         "has stopped typing": [
+            null,
+            "ha deixat d'escriure"
+         ],
+         "has gone away": [
+            null,
+            "ha marxat"
+         ],
+         "Show this menu": [
+            null,
+            "Mostra aquest menú"
+         ],
+         "Write in the third person": [
+            null,
+            "Escriu en tercera persona"
+         ],
+         "Remove messages": [
+            null,
+            "Elimina els missatges"
+         ],
+         "Are you sure you want to clear the messages from this chat box?": [
+            null,
+            "Segur que voleu esborrar els missatges d'aquest quadre del xat?"
+         ],
+         "has gone offline": [
+            null,
+            "s'ha desconnectat"
+         ],
+         "is busy": [
+            null,
+            "està ocupat"
+         ],
+         "Clear all messages": [
+            null,
+            "Esborra tots els missatges"
+         ],
+         "Hide the list of occupants": [
+            null,
+            "Amaga la llista d'ocupants"
+         ],
+         "Insert a smiley": [
+            null,
+            "Insereix una cara somrient"
+         ],
+         "Start a call": [
+            null,
+            "Inicia una trucada"
+         ],
+         "Contacts": [
+            null,
+            "Contactes"
+         ],
+         "Connecting": [
+            null,
+            "S'està establint la connexió"
+         ],
+         "XMPP Username:": [
+            null,
+            "Nom d'usuari XMPP:"
+         ],
+         "Password:": [
+            null,
+            "Contrasenya:"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Feu clic aquí per iniciar la sessió de manera anònima"
+         ],
+         "Log In": [
+            null,
+            "Inicia la sessió"
+         ],
+         "user@server": [
+            null,
+            "usuari@servidor"
+         ],
+         "password": [
+            null,
+            "contrasenya"
+         ],
+         "Sign in": [
+            null,
+            "Inicia la sessió"
+         ],
+         "I am %1$s": [
+            null,
+            "Estic %1$s"
+         ],
+         "Click here to write a custom status message": [
+            null,
+            "Feu clic aquí per escriure un missatge d'estat personalitzat"
+         ],
+         "Click to change your chat status": [
+            null,
+            "Feu clic per canviar l'estat del xat"
+         ],
+         "Custom status": [
+            null,
+            "Estat personalitzat"
+         ],
+         "Save": [
+            null,
+            "Desa"
+         ],
+         "online": [
+            null,
+            "en línia"
+         ],
+         "busy": [
+            null,
+            "ocupat"
+         ],
+         "away for long": [
+            null,
+            "absent durant una estona"
+         ],
+         "away": [
+            null,
+            "absent"
+         ],
+         "offline": [
+            null,
+            "desconnectat"
+         ],
+         "Online": [
+            null,
+            "En línia"
+         ],
+         "Busy": [
+            null,
+            "Ocupat"
+         ],
+         "Away": [
+            null,
+            "Absent"
+         ],
+         "Offline": [
+            null,
+            "Desconnectat"
+         ],
+         "Log out": [
+            null,
+            "Tanca la sessió"
+         ],
+         "Contact name": [
+            null,
+            "Nom del contacte"
+         ],
+         "Search": [
+            null,
+            "Cerca"
+         ],
+         "Add": [
+            null,
+            "Afegeix"
+         ],
+         "Click to add new chat contacts": [
+            null,
+            "Feu clic per afegir contactes nous al xat"
+         ],
+         "Add a contact": [
+            null,
+            "Afegeix un contacte"
+         ],
+         "No users found": [
+            null,
+            "No s'ha trobat cap usuari"
+         ],
+         "Click to add as a chat contact": [
+            null,
+            "Feu clic per afegir com a contacte del xat"
+         ],
+         "Toggle chat": [
+            null,
+            "Canvia de xat"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Feu clic per amagar aquests contactes"
+         ],
+         "The connection has dropped, attempting to reconnect.": [
+            null,
+            ""
+         ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
+         "Authenticating": [
+            null,
+            "S'està efectuant l'autenticació"
+         ],
+         "Authentication Failed": [
+            null,
+            "Error d'autenticació"
+         ],
+         "Sorry, there was an error while trying to add ": [
+            null,
+            "S'ha produït un error en intentar afegir "
+         ],
+         "This client does not allow presence subscriptions": [
+            null,
+            "Aquest client no admet les subscripcions de presència"
+         ],
+         "Click to restore this chat": [
+            null,
+            "Feu clic per restaurar aquest xat"
+         ],
+         "Minimized": [
+            null,
+            "Minimitzat"
+         ],
+         "Minimize this chat box": [
+            null,
+            "Minimitza aquest quadre del xat"
+         ],
+         "Message": [
+            null,
+            "Missatge"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Error: no s'ha pogut executar l'ordre"
+         ],
+         "Error: the \"": [
+            null,
+            "Error: el \""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Segur que voleu esborrar els missatges d'aquesta sala?"
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            "Canvia l'afiliació de l'usuari a administrador"
+         ],
+         "Ban user from room": [
+            null,
+            "Expulsa l'usuari de la sala"
+         ],
+         "Change user role to occupant": [
+            null,
+            "Canvia el rol de l'usuari a ocupant"
+         ],
+         "Kick user from room": [
+            null,
+            "Expulsa l'usuari de la sala"
+         ],
+         "Write in 3rd person": [
+            null,
+            "Escriu en tercera persona"
+         ],
+         "Grant membership to a user": [
+            null,
+            "Atorga una afiliació a un usuari"
+         ],
+         "Remove user's ability to post messages": [
+            null,
+            "Elimina la capacitat de l'usuari de publicar missatges"
+         ],
+         "Change your nickname": [
+            null,
+            "Canvieu el vostre àlies"
+         ],
+         "Grant moderator role to user": [
+            null,
+            "Atorga el rol de moderador a l'usuari"
+         ],
+         "Grant ownership of this room": [
+            null,
+            "Atorga la propietat d'aquesta sala"
+         ],
+         "Revoke user's membership": [
+            null,
+            "Revoca l'afiliació de l'usuari"
+         ],
+         "Set room topic": [
+            null,
+            "Defineix un tema per a la sala"
+         ],
+         "Allow muted user to post messages": [
+            null,
+            "Permet que un usuari silenciat publiqui missatges"
+         ],
+         "Cancel": [
+            null,
+            "Cancel·la"
+         ],
+         "An error occurred while trying to save the form.": [
+            null,
+            "S'ha produït un error en intentar desar el formulari."
+         ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Àlies"
+         ],
+         "This chatroom requires a password": [
+            null,
+            "Aquesta sala de xat requereix una contrasenya"
+         ],
+         "Password: ": [
+            null,
+            "Contrasenya:"
+         ],
+         "Submit": [
+            null,
+            "Envia"
+         ],
+         "This room is not anonymous": [
+            null,
+            "Aquesta sala no és anònima"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Aquesta sala ara mostra membres no disponibles"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Aquesta sala no mostra membres no disponibles"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "S'ha canviat la configuració de la sala no relacionada amb la privadesa"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "El registre de la sala està habilitat"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "El registre de la sala està deshabilitat"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Aquesta sala ara no és anònima"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Aquesta sala ara és parcialment anònima"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Aquesta sala ara és totalment anònima"
+         ],
+         "A new room has been created": [
+            null,
+            "S'ha creat una sala nova"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Se us ha expulsat d'aquesta sala"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Se us ha expulsat d'aquesta sala"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Se us ha eliminat d'aquesta sala a causa d'un canvi d'afiliació"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Se us ha eliminat d'aquesta sala perquè ara només permet membres i no en sou membre"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat multiusuari)."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "S'ha expulsat <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "L'àlies de <strong>%1$s</strong> ha canviat"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "S'ha expulsat <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "El vostre àlies ha canviat a: <strong>%1$s</strong>"
+         ],
+         "The reason given is: \"": [
+            null,
+            "El motiu indicat és: \""
+         ],
+         "You are not on the member list of this room": [
+            null,
+            "No sou a la llista de membres d'aquesta sala"
+         ],
+         "No nickname was specified": [
+            null,
+            "No s'ha especificat cap àlies"
+         ],
+         "You are not allowed to create new rooms": [
+            null,
+            "No teniu permís per crear sales noves"
+         ],
+         "Your nickname doesn't conform to this room's policies": [
+            null,
+            "El vostre àlies no s'ajusta a les polítiques d'aquesta sala"
+         ],
+         "This room does not (yet) exist": [
+            null,
+            "Aquesta sala (encara) no existeix"
+         ],
+         "Topic set by %1$s to: %2$s": [
+            null,
+            "Tema definit per %1$s en: %2$s"
+         ],
+         "Occupants": [
+            null,
+            "Ocupants"
+         ],
+         "You are about to invite %1$s to the chat room \"%2$s\". ": [
+            null,
+            "Esteu a punt de convidar %1$s a la sala de xat \"%2$s\". "
+         ],
+         "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            "Teniu l'opció d'incloure un missatge per explicar el motiu de la invitació."
+         ],
+         "Room name": [
+            null,
+            "Nom de la sala"
+         ],
+         "Server": [
+            null,
+            "Servidor"
+         ],
+         "Join Room": [
+            null,
+            "Uneix-me a la sala"
+         ],
+         "Show rooms": [
+            null,
+            "Mostra les sales"
+         ],
+         "Rooms": [
+            null,
+            "Sales"
+         ],
+         "No rooms on %1$s": [
+            null,
+            "No hi ha cap sala a %1$s"
+         ],
+         "Rooms on %1$s": [
+            null,
+            "Sales a %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Feu clic per obrir aquesta sala"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostra més informació d'aquesta sala"
+         ],
+         "Description:": [
+            null,
+            "Descripció:"
+         ],
+         "Occupants:": [
+            null,
+            "Ocupants:"
+         ],
+         "Features:": [
+            null,
+            "Característiques:"
+         ],
+         "Requires authentication": [
+            null,
+            "Cal autenticar-se"
+         ],
+         "Hidden": [
+            null,
+            "Amagat"
+         ],
+         "Requires an invitation": [
+            null,
+            "Cal tenir una invitació"
+         ],
+         "Moderated": [
+            null,
+            "Moderada"
+         ],
+         "Non-anonymous": [
+            null,
+            "No és anònima"
+         ],
+         "Open room": [
+            null,
+            "Obre la sala"
+         ],
+         "Permanent room": [
+            null,
+            "Sala permanent"
+         ],
+         "Public": [
+            null,
+            "Pública"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semianònima"
+         ],
+         "Temporary room": [
+            null,
+            "Sala temporal"
+         ],
+         "Unmoderated": [
+            null,
+            "No moderada"
+         ],
+         "%1$s has invited you to join a chat room: %2$s": [
+            null,
+            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"
+         ],
+         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \"%3$s\"": [
+            null,
+            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \"%3$s\""
+         ],
+         "Notification from %1$s": [
+            null,
+            ""
+         ],
+         "%1$s says": [
+            null,
+            ""
+         ],
+         "wants to be your contact": [
+            null,
+            ""
+         ],
+         "Re-establishing encrypted session": [
+            null,
+            "S'està tornant a establir la sessió xifrada"
+         ],
+         "Generating private key.": [
+            null,
+            "S'està generant la clau privada"
+         ],
+         "Your browser might become unresponsive.": [
+            null,
+            "És possible que el navegador no respongui."
+         ],
+         "Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s": [
+            null,
+            "Sol·licitud d'autenticació de %1$s\n\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\n\n%2$s"
+         ],
+         "Could not verify this user's identify.": [
+            null,
+            "No s'ha pogut verificar la identitat d'aquest usuari."
+         ],
+         "Exchanging private key with contact.": [
+            null,
+            "S'està intercanviant la clau privada amb el contacte."
+         ],
+         "Your messages are not encrypted anymore": [
+            null,
+            "Els vostres missatges ja no estan xifrats"
+         ],
+         "Your messages are now encrypted but your contact's identity has not been verified.": [
+            null,
+            "Ara, els vostres missatges estan xifrats, però no s'ha verificat la identitat del contacte."
+         ],
+         "Your contact's identify has been verified.": [
+            null,
+            "S'ha verificat la identitat del contacte."
+         ],
+         "Your contact has ended encryption on their end, you should do the same.": [
+            null,
+            "El contacte ha conclòs el xifratge; cal que feu el mateix."
+         ],
+         "Your message could not be sent": [
+            null,
+            "No s'ha pogut enviar el missatge"
+         ],
+         "We received an unencrypted message": [
+            null,
+            "Hem rebut un missatge sense xifrar"
+         ],
+         "We received an unreadable encrypted message": [
+            null,
+            "Hem rebut un missatge xifrat il·legible"
+         ],
+         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
+            null,
+            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d'aquest xat.\n\nEmpremta de l'usuari %2$s: %3$s\n\nEmpremta de %1$s: %4$s\n\nSi heu confirmat que les empremtes coincideixen, feu clic a D'acord; en cas contrari, feu clic a Cancel·la."
+         ],
+         "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
+            null,
+            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\n\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se'n verificarà la identitat."
+         ],
+         "What is your security question?": [
+            null,
+            "Quina és la vostra pregunta de seguretat?"
+         ],
+         "What is the answer to the security question?": [
+            null,
+            "Quina és la resposta a la pregunta de seguretat?"
+         ],
+         "Invalid authentication scheme provided": [
+            null,
+            "S'ha indicat un esquema d'autenticació no vàlid"
+         ],
+         "Your messages are not encrypted. Click here to enable OTR encryption.": [
+            null,
+            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."
+         ],
+         "Your messages are encrypted, but your contact has not been verified.": [
+            null,
+            "Els vostres missatges estan xifrats, però no s'ha verificat el contacte."
+         ],
+         "Your messages are encrypted and your contact verified.": [
+            null,
+            "Els vostres missatges estan xifrats i s'ha verificat el contacte."
+         ],
+         "Your contact has closed their end of the private session, you should do the same": [
+            null,
+            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."
+         ],
+         "End encrypted conversation": [
+            null,
+            "Finalitza la conversa xifrada"
+         ],
+         "Refresh encrypted conversation": [
+            null,
+            "Actualitza la conversa xifrada"
+         ],
+         "Start encrypted conversation": [
+            null,
+            "Comença la conversa xifrada"
+         ],
+         "Verify with fingerprints": [
+            null,
+            "Verifica amb empremtes"
+         ],
+         "Verify with SMP": [
+            null,
+            "Verifica amb SMP"
+         ],
+         "What's this?": [
+            null,
+            "Què és això?"
+         ],
+         "unencrypted": [
+            null,
+            "sense xifrar"
+         ],
+         "unverified": [
+            null,
+            "sense verificar"
+         ],
+         "verified": [
+            null,
+            "verificat"
+         ],
+         "finished": [
+            null,
+            "acabat"
+         ],
+         " e.g. conversejs.org": [
+            null,
+            "p. ex. conversejs.org"
+         ],
+         "Your XMPP provider's domain name:": [
+            null,
+            "Nom de domini del vostre proveïdor XMPP:"
+         ],
+         "Fetch registration form": [
+            null,
+            "Obtingues un formulari de registre"
+         ],
+         "Tip: A list of public XMPP providers is available": [
+            null,
+            "Consell: hi ha disponible una llista de proveïdors XMPP públics"
+         ],
+         "here": [
+            null,
+            "aquí"
+         ],
+         "Register": [
+            null,
+            "Registre"
+         ],
+         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
+            null,
+            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."
+         ],
+         "Requesting a registration form from the XMPP server": [
+            null,
+            "S'està sol·licitant un formulari de registre del servidor XMPP"
+         ],
+         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+            null,
+            "Ha passat alguna cosa mentre s'establia la connexió amb \"%1$s\". Segur que existeix?"
+         ],
+         "Now logging you in": [
+            null,
+            "S'està iniciant la vostra sessió"
+         ],
+         "Registered successfully": [
+            null,
+            "Registre correcte"
+         ],
+         "Return": [
+            null,
+            "Torna"
+         ],
+         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            "El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que heu introduït siguin correctes."
+         ],
+         "This contact is busy": [
+            null,
+            "Aquest contacte està ocupat"
+         ],
+         "This contact is online": [
+            null,
+            "Aquest contacte està en línia"
+         ],
+         "This contact is offline": [
+            null,
+            "Aquest contacte està desconnectat"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Aquest contacte no està disponible"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Aquest contacte està absent durant un període prolongat"
+         ],
+         "This contact is away": [
+            null,
+            "Aquest contacte està absent"
+         ],
+         "Groups": [
+            null,
+            "Grups"
+         ],
+         "My contacts": [
+            null,
+            "Els meus contactes"
+         ],
+         "Pending contacts": [
+            null,
+            "Contactes pendents"
+         ],
+         "Contact requests": [
+            null,
+            "Sol·licituds de contacte"
+         ],
+         "Ungrouped": [
+            null,
+            "Sense agrupar"
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Click to remove this contact": [
+            null,
+            "Feu clic per eliminar aquest contacte"
+         ],
+         "Click to accept this contact request": [
+            null,
+            "Feu clic per acceptar aquesta sol·licitud de contacte"
+         ],
+         "Click to decline this contact request": [
+            null,
+            "Feu clic per rebutjar aquesta sol·licitud de contacte"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Feu clic per conversar amb aquest contacte"
+         ],
+         "Name": [
+            null,
+            "Nom"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Segur que voleu eliminar aquest contacte?"
+         ],
+         "Sorry, there was an error while trying to remove ": [
+            null,
+            "S'ha produït un error en intentar eliminar "
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
+         ]
+      }
+   }
+}

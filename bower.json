@@ -1,40 +1,18 @@
 {
   "name": "converse.js",
   "description": "Web-based XMPP/Jabber chat client written in javascript",
-  "version": "0.10.0",
+  "version": "2.0.0",
   "license": "MPL-2.0",
   "devDependencies": {
-    "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
-    "otr": "0.2.12",
-    "requirejs-text": "~2.0.10",
-    "requirejs-tpl-jcbrand": "*"
-  },
-  "dependencies": {
-    "requirejs": "~2.1.15",
-    "jquery": "1.11.0",
-    "jed": "0.5.4",
-    "underscore": "~1.8.3",
-    "backbone": "1.1.2",
-    "backbone.browserStorage": "0.0.2",
-    "backbone.overview": "0.0.1",
-    "otr": "0.2.12",
-    "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
-    "almond": "~0.3.0",
-    "requirejs-text": "~2.0.12",
-    "requirejs-tpl-jcbrand": "*",
-    "momentjs": "~2.10.6",
-    "jquery.browser": ">=0.0.7",
     "bootstrap": "~3.2.0",
+    "bourbon": "~4.2.6",
+    "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
     "fontawesome": "~4.1.0",
-    "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js",
-    "skeleton-sass": "~2.0.3",
-    "strophejs": "1.2.3",
-    "strophejs-plugins": "https://github.com/strophe/strophejs-plugins.git#amd",
-    "bourbon": "~4.2.3"
+    "jasmine": "https://github.com/jcbrand/jasmine.git#1_3_x",
+    "sinon": "^1.17.3",
+    "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js"
   },
-  "resolutions": {
-    "backbone": "1.1.2"
-  },
+  "dependencies": {},
   "exportsOverride": {},
   "ignore": [
     "docs",

@@ -16,45 +16,40 @@
 
         describe("Authentication", function () {
             it("needs either a bosh_service_url a websocket_url or both", function () {
-                expect(converse.initConnection.bind({})).toThrow(
+                var url = converse.bosh_service_url;
+                var connection = converse.connection;
+                delete converse.bosh_service_url;
+                delete converse.connection;
+                expect(converse.initConnection.bind(converse)).toThrow(
                     new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
+                converse.bosh_service_url = url;
+                converse.connection = connection;
             });
 
             describe("with prebind", function () {
                 it("needs a jid when also using keepalive", function () {
                     var authentication = converse.authentication;
-                    var connection = converse.connection;
                     var jid = converse.jid;
-                    converse.bosh_service_url = "localhost";
-                    converse.connection = undefined;
-                    converse.jid = undefined;
+                    delete converse.jid;
                     converse.keepalive = true;
                     converse.authentication = "prebind";
-                    expect(converse.initConnection.bind(converse)).toThrow(
-                        new Error("initConnection: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
+                    expect(converse.logIn.bind(converse)).toThrow(
+                        new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
                     converse.authentication= authentication;
-                    converse.bosh_service_url = undefined;
-                    converse.connection = connection;
                     converse.jid = jid;
-                    converse.keepalive = undefined;
+                    converse.keepalive = false;
                 });
 
                 it("needs jid, rid and sid values when not using keepalive", function () {
                     var authentication = converse.authentication;
-                    var connection = converse.connection;
                     var jid = converse.jid;
-                    converse.bosh_service_url = "localhost";
-                    converse.connection = undefined;
-                    converse.jid = undefined;
-                    converse.keepalive = false;
+                    delete converse.jid;
                     converse.authentication = "prebind";
-                    expect(converse.initConnection.bind(converse)).toThrow(
-                        new Error("initConnection: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values"));
+                    expect(converse.logIn.bind(converse)).toThrow(
+                        new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values"));
                     converse.authentication= authentication;
                     converse.bosh_service_url = undefined;
-                    converse.connection = connection;
                     converse.jid = jid;
-                    converse.keepalive = undefined;
                 });
             });
         });
@@ -98,7 +93,7 @@
             it("happens when the client is idle for long enough", function () {
                 var i = 0;
                 // Usually initialized by registerIntervalHandler
-                converse.idle_seconds = 0; 
+                converse.idle_seconds = 0;
                 converse.auto_changed_status = false;
 
                 // The relevant config options
@@ -265,25 +260,23 @@
                 test_utils.createContacts('current');
             }, converse));
 
-            it("has a method 'get' which returns a wrapped chat box", $.proxy(function () {
+            it("has a method 'get' which returns a wrapped chat box", function () {
                 // Test on chat that doesn't exist.
                 expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 // Test on chat that's not open
-                var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var box = converse_api.chats.get(jid);
-                expect(box instanceof Object).toBeTruthy();
-                var chatboxview = this.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeFalsy();
+                expect(typeof box === 'undefined').toBeTruthy();
 
+                var chatboxview = converse.chatboxviews.get(jid);
                 // Test for single JID
                 test_utils.openChatBoxFor(jid);
                 box = converse_api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
-                chatboxview = this.chatboxviews.get(jid);
+                chatboxview = converse.chatboxviews.get(jid);
                 expect(chatboxview.$el.is(':visible')).toBeTruthy();
-
                 // Test for multiple JIDs
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(jid2);
@@ -291,30 +284,32 @@
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                 expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
-            }, converse));
+            });
 
-            it("has a method 'open' which opens and returns a wrapped chat box", $.proxy(function () {
-                // Test on chat that doesn't exist.
-                expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
-
+            it("has a method 'open' which opens and returns a wrapped chat box", function () {
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var box = converse_api.chats.open(jid);
-                expect(box instanceof Object).toBeTruthy();
-                expect(box.get('box_id')).toBe(b64_sha1(jid));
-                expect(
-                    Object.keys(box),
-                    ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
-                );
-                var chatboxview = this.chatboxviews.get(jid);
-                expect(chatboxview.$el.is(':visible')).toBeTruthy();
-
-                // Test for multiple JIDs
-                var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var list = converse_api.chats.open([jid, jid2]);
-                expect(Array.isArray(list)).toBeTruthy();
-                expect(list[0].get('box_id')).toBe(b64_sha1(jid));
-                expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
-            }, converse));
+                var chatboxview;
+                waits('300'); // ChatBox.show() is debounced for 250ms
+                runs(function () {
+                    // Test on chat that doesn't exist.
+                    expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                    var box = converse_api.chats.open(jid);
+                    expect(box instanceof Object).toBeTruthy();
+                    expect(box.get('box_id')).toBe(b64_sha1(jid));
+                    expect(
+                        Object.keys(box),
+                        ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
+                    );
+                    chatboxview = converse.chatboxviews.get(jid);
+                    expect(chatboxview.$el.is(':visible')).toBeTruthy();
+                    // Test for multiple JIDs
+                    var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var list = converse_api.chats.open([jid, jid2]);
+                    expect(Array.isArray(list)).toBeTruthy();
+                    expect(list[0].get('box_id')).toBe(b64_sha1(jid));
+                    expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
+                });
+            });
         }, converse));
 
         describe("The \"settings\" API", $.proxy(function() {

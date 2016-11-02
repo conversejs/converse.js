@@ -6,21 +6,27 @@
 Quickstart (to get a demo up and running)
 =========================================
 
-When you download a specific release of *Converse.js* there will be two minified files inside the zip file.
+Converse.js has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
+which hosts its Javascript and CSS files.
 
-* builds/converse.min.js
-* css/converse.min.css
+The latest versions of these files are available at these URLs:
 
-You can include these two files inside the *<head>* element of your website via the *script* and *link*
-tags:
+* https://cdn.conversejs.org/dist/converse.min.js
+* https://cdn.conversejs.org/css/converse.min.css
+
+For a specific version of the files, you can put the version in the URL, as so:
+
+* https://cdn.conversejs.org/1.0.3/dist/converse.min.js
+* https://cdn.conversejs.org/1.0.3/css/converse.min.css
+
+You can include these two URLs inside the *<head>* element of your website via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="css/converse.min.css">
-    <script src="builds/converse.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/css/converse.min.css">
+    <script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
 
-You need to initialize Converse.js with configuration settings according to
-your requirements.
+You need to initialize Converse.js with configuration settings according to your requirements.
 
 Please refer to the :ref:`configuration-variables` section for info on all the available configuration settings.
 

@@ -4,20 +4,21 @@
     <div class="dragresize dragresize-left"></div>
     <div class="chat-head chat-head-chatbox">
         <a class="chatbox-btn close-chatbox-button icon-close" title="{{info_close}}"></a>
-        <a class="chatbox-btn toggle-chatbox-button icon-minus" title="{{info_minimize}}"></a>
         <div class="chat-title">
             {[ if (url) { ]}
-                <a href="{{url}}" target="_blank" class="user">
+                <a href="{{url}}" target="_blank" rel="noopener" class="user">
             {[ } ]}
-                    {{ fullname }}
+                    {{ title }}
             {[ if (url) { ]}
                 </a>
             {[ } ]}
+            <p class="user-custom-message"><p/>
         </div>
-        <p class="user-custom-message"><p/>
     </div>
     <div class="chat-body">
         <div class="chat-content"></div>
+        <div class="new-msgs-indicator hidden">▼ {{ unread_msgs }} ▼</div>
+        {[ if (show_textarea) { ]}
         <form class="sendXMPPMessage" action="" method="post">
             {[ if (show_toolbar) { ]}
                 <ul class="chat-toolbar no-text-select"></ul>
@@ -27,5 +28,6 @@
             class="chat-textarea"
             placeholder="{{label_personal_message}}"/>
         </form>
+        {[ } ]}
     </div>
 </div>

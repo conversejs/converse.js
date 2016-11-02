@@ -1,7 +1,9 @@
 // Extra test dependencies
 config.paths.mock = "tests/mock";
 config.paths.test_utils = "tests/utils";
+config.paths.sinon = "components/sinon/lib/sinon";
 config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";
+config.paths.transcripts = "converse-logs/converse-logs";
 config.paths["jasmine-html"] = "components/jasmine/lib/jasmine-core/jasmine-html";
 config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
 config.shim['jasmine-html'] = {
@@ -34,9 +36,11 @@ require([
     "jquery",
     "converse",
     "mock",
-    "jasmine-html"
-    ], function($, converse, mock, jasmine) {
+    "jasmine-html",
+    "sinon"
+    ], function($, converse, mock, jasmine, sinon) {
         // Set up converse.js
+        window.sinon = sinon;
         window.converse_api = converse;
         window.localStorage.clear();
         window.sessionStorage.clear();
@@ -44,11 +48,15 @@ require([
         converse.initialize({
             i18n: window.locales.en,
             auto_subscribe: false,
-            animate: false,
+            bosh_service_url: 'localhost',
             connection: mock.mock_connection,
+            animate: false,
             no_trimming: true,
-            debug: false
-        }, function (converse) {
+            auto_login: true,
+            jid: 'dummy@localhost',
+            password: 'secret',
+            debug: true 
+        }).then(function (converse) {
             window.converse = converse;
             window.crypto = {
                 getRandomValues: function (buf) {
@@ -60,7 +68,11 @@ require([
             };
             require([
                 "console-runner",
+                //"spec/transcripts",
+                "spec/utils",
                 "spec/converse",
+                "spec/bookmarks",
+                "spec/headline",
                 "spec/disco",
                 "spec/protocol",
                 "spec/mam",
@@ -70,12 +82,12 @@ require([
                 "spec/chatbox",
                 "spec/chatroom",
                 "spec/minchats",
+                "spec/notification",
                 "spec/profiling",
+                "spec/ping",
                 "spec/register",
-                "spec/xmppstatus"
+                "spec/xmppstatus",
             ], function () {
-                // Make sure this callback is only called once.
-                delete converse.callback;
                 // Stub the trimChat method. It causes havoc when running with
                 // phantomJS.
                 converse.ChatBoxViews.prototype.trimChat = function () {};

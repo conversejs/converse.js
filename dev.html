@@ -13,7 +13,9 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <script data-main="main" src="components/requirejs/require.js"></script>
+    <script src="node_modules/requirejs/require.js"></script>
+    <script src="config.js"></script>
+    <script src="src/converse.js"></script>
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -52,12 +54,26 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
+            auto_away: 300,
+            i18n: locales['af'],
+            auto_join_rooms: [
+                'discuss@conference.conversejs.org',
+                'prosody@conference.prosody.im',
+                'jdev@conference.jabber.org'
+            ],
+            notify_all_room_messages: [
+                'discuss@conference.conversejs.org'
+            ],
+            auto_reconnect: true,
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             keepalive: true,
             message_carbons: true,
+            message_archiving: 'always',
             play_sounds: true,
             roster_groups: true,
             show_controlbox_by_default: true,
+            strict_plugin_dependencies: false,
+            chatstate_notification_blacklist: ['mulles@movim.eu'],
             xhr_user_search: false,
             debug: true
         });

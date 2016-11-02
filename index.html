@@ -12,11 +12,11 @@
     <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
     <script type="text/javascript" src="analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <![if gte IE 9]>
-        <script src="builds/converse.min.js"></script>
+        <script src="dist/converse.js"></script>
     <![endif]>
 </head>
 
@@ -46,11 +46,6 @@
                     <li class="page-scroll">
                         <a href="#features">Features</a>
                     </li>
-                    <!--
-                    <li class="page-scroll">
-                        <a href="#donate">Donate</a>
-                    </li>
-                    -->
                     <li class="page-scroll">
                         <a href="#contact">Contact</a>
                     </li>
@@ -117,13 +112,15 @@
                             <h2>Integration</h2>
                         </header>
                         <ul class="integration">
+                            <li><a href="https://github.com/mikemarsian/conversejs-rails" target="_blank">Ruby on Rails</a></li>
                             <li><a href="http://github.com/collective/collective.xmpp.chat" target="_blank">Plone</a></li>
                             <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank">Django (option 1)</a></li>
                             <li><a href="https://github.com/fpytloun/django-xmpp" target="_blank">Django (option 2)</a></li>
-                            <li><a href="https://github.com/priyadi/roundcube-converse.js-xmpp-plugin" target="_blank">Roundcube</a></li>
+                            <li><a href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin" target="_blank">Roundcube</a></li>
                             <li><a href="http://wordpress.org/plugins/conversejs" target="_blank">Wordpress</a></li>
                             <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank">Patternslib</a></li>
                             <li><a href="https://github.com/keensoft/alfresco-js-chat-share" target="_blank">Alfresco</a></li>
+                            <li><a href="https://github.com/friendica/friendica-addons/tree/master/xmpp/converse" target="_blank">Friendica</a></li>
                         </ul>
                     </section>
                 </div>
@@ -136,23 +133,25 @@
                         </header>
                         <ul class="features">
                             <li>Single-user chat</li>
+                            <li>Contacts and groups</li>
                             <li>Multi-user chatrooms (<a href="http://xmpp.org/extensions/xep-0045.html" target="_blank">XEP 45</a>)</li>
+                            <li>Chatroom bookmarks (<a href="http://xmpp.org/extensions/xep-0048.html" target="_blank">XEP 48</a>)</li>
                             <li>Direct invitations to chat rooms (<a href="http://xmpp.org/extensions/xep-0249.html" target="_blank">XEP 249</a>)</li>
                             <li>vCard support (<a href="http://xmpp.org/extensions/xep-0054.html" target="_blank">XEP 54</a>)</li>
                             <li>Service discovery (<a href="http://xmpp.org/extensions/xep-0030.html" target="_blank">XEP 30</a>)</li>
                             <li>In-band registration (<a href="http://xmpp.org/extensions/xep-0077.html" target="_blank">XEP 77</a>)</li>
-                            <li>Contact rosters and groups</li>
-                            <li>Contact subscriptions</li>
-                            <li>Roster item exchange (<a href="http://xmpp.org/extensions/tmp/xep-0144-1.1.html" target="_blank">XEP 144</a>)</li>
-                            <li>Chat statuses (online, busy, away, offline)</li>
+                            <li>Roster item exchange (<a href="http://xmpp.org/extensions/xep-0144.html" target="_blank">XEP 144</a>)</li>
+                            <li>Chat statuses (online, busy, away)</li>
                             <li>Custom status messages</li>
-                            <li>Typing and state notifications (<a href="http://xmpp.org/extensions/xep-0085.html" target="_blank">XEP 85</a>)</li>
+                            <li>Typing and chat state notifications (<a href="http://xmpp.org/extensions/xep-0085.html" target="_blank">XEP 85</a>)</li>
+                            <li>Desktop notifications</li>
                             <li>Messages appear in all connected chat clients (<a href="http://xmpp.org/extensions/xep-0280.html" target="_blank">XEP 280</a>)</li>
                             <li>Third person "/me" messages (<a href="http://xmpp.org/extensions/xep-0245.html" target="_blank">XEP 245</a>)</li>
                             <li>XMPP Ping (<a href="http://xmpp.org/extensions/xep-0199.html" target="_blank">XEP 199</a>)</li>
                             <li>Server-side archiving of messages (<a href="http://xmpp.org/extensions/xep-0313.html" target="_blank">XEP 313</a>)</li>
                             <li>Client state indication (<a href="http://xmpp.org/extensions/xep-0352.html" target="_blank">XEP 352</a>)</li>
                             <li>Off-the-record encryption</li>
+                            <li>Supports anonymous logins, see the <a href="https://conversejs.org/demo/anonymous.html" target="_blank">anonymous login demo</a>.</li>
                             <li>Translated into 16 languages</li>
                         </ul>
                 </div>
@@ -199,6 +198,9 @@
                         <li>I'm available for features and <a href="http://opkode.com/contact" target="_blank">consulting</a>.</li>
                     </ul>
                 </div>
+                <div class="sponsors">
+                    Converse.js is supported by <a href="https://www.keycdn.com/" target="_blank"><img style="height: 2em" src="/logo/keycdn.svg" alt="KeyCDN"></a>
+                </div>
             </div>
         </div>
     </section>
@@ -244,7 +246,6 @@
             play_sounds: true,
             roster_groups: true,
             show_controlbox_by_default: true,
-            xhr_user_search: false
         });
     });
 </script>

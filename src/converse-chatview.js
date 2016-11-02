@@ -344,7 +344,6 @@
                                 'time': msg_time.format('hh:mm'),
                                 'isodate': msg_time.format(),
                                 'username': username,
-                                'message': '',
                                 'extra_classes': extra_classes
                             })
                         )).children('.chat-msg-content').first().text(text)

@@ -60,6 +60,8 @@
     converse.templates.room_item = tpl_room_item;
     converse.templates.room_panel = tpl_room_panel;
 
+    var ROOMS_PANEL_ID = 'chatrooms';
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,
@@ -1434,9 +1436,17 @@
                                 'label_join': __('Join Room'),
                                 'label_show_rooms': __('Show rooms')
                             })
-                        ).hide());
+                        ));
                     this.$tabs = this.$parent.parent().find('#controlbox-tabs');
-                    this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Rooms')}));
+
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    this.$tabs.append(converse.templates.chatrooms_tab({
+                        'label_rooms': __('Rooms'),
+                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
+                    }));
+                    if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
+                        this.$el.addClass('hidden');
+                    }
                     return this;
                 },
 

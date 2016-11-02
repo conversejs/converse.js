@@ -1,1 +1,4 @@
-<li><a class="s current" href="#users">{{label_contacts}}</a></li>
+<li><a class="s {[ if (is_current) { ]} current {[ } ]}"
+       data-id="users" href="#users">
+    {{label_contacts}}
+</a></li>

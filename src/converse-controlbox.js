@@ -58,6 +58,8 @@
     converse.templates.search_contact = tpl_search_contact;
     converse.templates.status_option = tpl_status_option;
 
+    var USERS_PANEL_ID = 'users';
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         utils = converse_api.env.utils;
@@ -323,6 +325,9 @@
                 },
 
                 renderContactsPanel: function () {
+                    if (_.isUndefined(this.model.get('active-panel'))) {
+                        this.model.save({'active-panel': USERS_PANEL_ID});
+                    }
                     this.contactspanel = new converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });
@@ -366,11 +371,12 @@
                 },
 
                 onControlBoxToggleHidden: function () {
+                    var that = this;
                     this.$el.show('fast', function () {
                         converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
-                        converse.emit('controlBoxOpened', this);
-                    }.bind(this));
+                        converse.emit('controlBoxOpened', that);
+                    });
                 },
 
                 show: function () {
@@ -386,10 +392,13 @@
                     var $tab = $(ev.target),
                         $sibling = $tab.parent().siblings('li').children('a'),
                         $tab_panel = $($tab.attr('href'));
-                    $($sibling.attr('href')).hide();
+                    $($sibling.attr('href')).addClass('hidden');
                     $sibling.removeClass('current');
                     $tab.addClass('current');
-                    $tab_panel.show();
+                    $tab_panel.removeClass('hidden');
+                    if (converse.connection.connected) {
+                        this.model.save({'active-panel': $tab.data('id')});
+                    }
                     return this;
                 },
 
@@ -631,7 +640,11 @@
                         include_offline_state: converse.include_offline_state,
                         allow_logout: converse.allow_logout
                     });
-                    this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    this.$tabs.append(converse.templates.contacts_tab({
+                        'label_contacts': LABEL_CONTACTS,
+                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
+                    }));
                     if (converse.xhr_user_search) {
                         markup = converse.templates.search_contact({
                             label_contact_name: __('Contact name'),
@@ -651,6 +664,9 @@
                     }
                     this.$el.html(widgets);
                     this.$el.find('.search-xmpp ul').append(markup);
+                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
+                        this.$el.addClass('hidden');
+                    }
                     return this;
                 },
 

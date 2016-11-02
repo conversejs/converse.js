@@ -81,7 +81,7 @@
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': this
                         });
-                        this.registerpanel.render().$el.hide();
+                        this.registerpanel.render().$el.addClass('hidden');
                     }
                     return this;
                 }

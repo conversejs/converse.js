@@ -680,11 +680,7 @@
                 // XXX: Deprecate in favor of init_deferred
                 converse.callback();
             }
-            if (converse.connection.service === 'jasmine tests') {
-                init_deferred.resolve(converse);
-            } else {
-                init_deferred.resolve();
-            }
+            init_deferred.resolve();
             converse.emit('initialized');
         };
 
@@ -1961,7 +1957,13 @@
         converse.emit('pluginsInitialized');
         converse._initialize();
         converse.registerGlobalEventHandlers();
-        return init_deferred.promise();
+
+        if (!_.isUndefined(converse.connection) &&
+            converse.connection.service === 'jasmine tests') {
+            return converse;
+        } else {
+            return init_deferred.promise();
+        }
     };
     return converse;
 }));

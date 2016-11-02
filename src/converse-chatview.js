@@ -219,13 +219,14 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
+                    var that = this;
                     var insert = prepend ? this.$content.prepend : this.$content.append;
                     _.compose(
                         this.scrollDownMessageHeight.bind(this),
                         function ($el) {
-                            insert.call(this.$content, $el);
+                            insert.call(that.$content, $el);
                             return $el;
-                        }.bind(this)
+                        }
                     )(this.renderMessage(attrs));
                 },
 
@@ -345,7 +346,7 @@
                                 'username': username,
                                 'extra_classes': extra_classes
                             })
-                        )).children('.chat-msg-content').first().text(text)
+                        )).find('.chat-msg-content').first().text(text)
                             .addHyperlinks()
                             .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
                 },

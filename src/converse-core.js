@@ -540,6 +540,7 @@
                 converse.connection.disconnect();
                 converse.connection.reset();
             }
+            converse.emit('logout');
         };
 
         this.saveWindowState = function (ev, hidden) {

@@ -430,7 +430,7 @@
                         type: 'groupchat',
                         id: msgid
                     }).c("body").t(text).up()
-                    .c("x", {xmlns: "jabber:x:event"}).c("composing");
+                    .c("x", {xmlns: "jabber:x:event"}).c(converse.COMPOSING);
                     converse.connection.send(msg);
                     this.model.messages.create({
                         fullname: this.model.get('nick'),

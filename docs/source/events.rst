@@ -118,6 +118,13 @@ Once converse.js has been initialized.
 
 See also `pluginsInitialized`_.
 
+logout
+~~~~~~
+
+The user has logged out.
+
+``converse.listen.on('logout', function (event) { ... });``
+
 messageSend
 ~~~~~~~~~~~
 

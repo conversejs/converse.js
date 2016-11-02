@@ -1,12 +1,7 @@
 (function (root, factory) {
-    define("test_utils", [
-        'jquery',
-        'mock'
-    ],
-        function($, mock) {
-            return factory($, mock);
-        });
-}(this, function ($, mock) {
+    define("test_utils", ['converse', 'mock'], factory);
+}(this, function (converse_api, mock) {
+    var $ = converse_api.env.jQuery;
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
     var Strophe = converse_api.env.Strophe;
@@ -23,7 +18,7 @@
         return req;
     };
 
-    utils.closeAllChatBoxes = function () {
+    utils.closeAllChatBoxes = function (converse) {
         var i, chatbox;
         for (i=converse.chatboxes.models.length-1; i>-1; i--) {
             chatbox = converse.chatboxes.models[i];
@@ -78,7 +73,7 @@
         $('#controlbox').remove();
     };
 
-    utils.openContactsPanel = function () {
+    utils.openContactsPanel = function (converse) {
         var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').first().find('a').click();
@@ -100,7 +95,7 @@
         return views;
     };
 
-    utils.openChatBoxFor = function (jid) {
+    utils.openChatBoxFor = function (converse, jid) {
         return converse.roster.get(jid).trigger("open");
     };
 
@@ -172,7 +167,7 @@
         view.model.messages.browserStorage._clear();
     };
 
-    utils.createContacts = function (type, length) {
+    utils.createContacts = function (converse, type, length) {
         /* Create current (as opposed to requesting or pending) contacts
          * for the user's roster.
          *

@@ -45,71 +45,49 @@ require([
         window.localStorage.clear();
         window.sessionStorage.clear();
 
-        converse.initialize({
-            i18n: window.locales.en,
-            auto_subscribe: false,
-            bosh_service_url: 'localhost',
-            connection: mock.mock_connection,
-            animate: false,
-            no_trimming: true,
-            auto_login: true,
-            jid: 'dummy@localhost',
-            password: 'secret',
-            debug: true 
-        }).then(function (converse) {
-            window.converse = converse;
-            window.crypto = {
-                getRandomValues: function (buf) {
-                    var i;
-                    for (i=0, len=buf.length; i<len; i++) {
-                        buf[i] = Math.floor(Math.random()*256);
-                    }
-                }
-            };
-            require([
-                "console-runner",
-                //"spec/transcripts",
-                "spec/utils",
-                "spec/converse",
-                "spec/bookmarks",
-                "spec/headline",
-                "spec/disco",
-                "spec/protocol",
-                "spec/mam",
-                "spec/otr",
-                "spec/eventemitter",
-                "spec/controlbox",
-                "spec/chatbox",
-                "spec/chatroom",
-                "spec/minchats",
-                "spec/notification",
-                "spec/profiling",
-                "spec/ping",
-                "spec/register",
-                "spec/xmppstatus",
-            ], function () {
-                // Stub the trimChat method. It causes havoc when running with
-                // phantomJS.
-                converse.ChatBoxViews.prototype.trimChat = function () {};
-
-                // Jasmine stuff
-                var jasmineEnv = jasmine.getEnv();
-                var reporter;
-                if (/PhantomJS/.test(navigator.userAgent)) {
-                    reporter = new jasmine.ConsoleReporter();
-                    window.console_reporter = reporter;
-                    jasmineEnv.addReporter(reporter);
-                    jasmineEnv.updateInterval = 0;
-                } else {
-                    reporter = new jasmine.HtmlReporter();
-                    jasmineEnv.addReporter(reporter);
-                    jasmineEnv.specFilter = function(spec) {
-                        return reporter.specFilter(spec);
-                    };
-                    jasmineEnv.updateInterval = 0;
-                }
-                jasmineEnv.execute();
-            });
+        require([
+            "console-runner",
+            //"spec/transcripts",
+            "spec/utils",
+            "spec/converse",
+            /*
+            "spec/bookmarks",
+            "spec/headline",
+            "spec/disco",
+            */
+            "spec/protocol",
+            /*
+            "spec/mam",
+            "spec/otr",
+            "spec/eventemitter",
+            "spec/controlbox",
+            "spec/chatbox",
+            "spec/chatroom",
+            "spec/minchats",
+            "spec/notification",
+            "spec/profiling",
+            "spec/ping",
+            "spec/register",
+            "spec/xmppstatus",
+            */
+        ], function () {
+            // Jasmine stuff
+            var jasmineEnv = jasmine.getEnv();
+            var reporter;
+            if (/PhantomJS/.test(navigator.userAgent)) {
+                reporter = new jasmine.ConsoleReporter();
+                window.console_reporter = reporter;
+                jasmineEnv.addReporter(reporter);
+                jasmineEnv.updateInterval = 0;
+            } else {
+                reporter = new jasmine.HtmlReporter();
+                jasmineEnv.addReporter(reporter);
+                jasmineEnv.specFilter = function(spec) {
+                    return reporter.specFilter(spec);
+                };
+                jasmineEnv.updateInterval = 0;
+            }
+            jasmineEnv.execute();
         });
     }
 );

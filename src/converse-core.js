@@ -1950,6 +1950,15 @@
             utils.merge(converse, settings);
             utils.applyUserSettings(converse, settings, converse.user_settings);
         };
+
+        // If initialize gets called a second time (e.g. during tests), then we
+        // need to re-apply all plugins (for a new converse instance), and we
+        // therefore need to clear this array that prevents plugins from being
+        // initialized twice.
+        // If initialize is called for the first time, then this array is empty
+        // in any case.
+        converse.pluggable.initialized_plugins = [];
+
         converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
             'converse': converse

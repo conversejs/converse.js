@@ -1,5 +1,13 @@
-Integrating converseijs into other frameworks
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
+Integrating converse.js into other frameworks
 =============================================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
 
 Angular.js
 ----------

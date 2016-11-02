@@ -1,5 +1,13 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
 Developer guidelines
 ====================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
 
 If you want to work with the non-minified Javascript and CSS files you'll soon
 notice that there are references to missing *components* and *node_modules* directories.

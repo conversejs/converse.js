@@ -1,5 +1,14 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
 Events emitted by converse.js
 =============================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+
 
 .. note:: see also :ref:`listen-grouping` above.
 

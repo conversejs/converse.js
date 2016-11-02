@@ -19,6 +19,7 @@
             "tpl!chatroom_nickname_form",
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
+            "tpl!chatroom_toolbar",
             "tpl!chatrooms_tab",
             "tpl!info",
             "tpl!occupant",
@@ -37,6 +38,7 @@
             tpl_chatroom_nickname_form,
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
+            tpl_chatroom_toolbar,
             tpl_chatrooms_tab,
             tpl_info,
             tpl_occupant,
@@ -215,7 +217,10 @@
                 muc_domain: undefined,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
-                muc_nickname_from_jid: false
+                muc_nickname_from_jid: false,
+                visible_toolbar_buttons: {
+                    'toggle_occupants': true
+                },
             });
 
 
@@ -237,7 +242,7 @@
                     'click .toggle-occupants a': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
-                    'keypress textarea.chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed'
                 },
 
                 initialize: function () {
@@ -304,11 +309,21 @@
                                     'label_message': __('Message')
                                 }))
                             .append(this.occupantsview.render().$el);
-                        this.renderToolbar();
+                        this.renderToolbar(tpl_chatroom_toolbar);
                         this.$content = this.$el.find('.chat-content');
                     }
                     this.toggleOccupants(null, true);
                     return this;
+                },
+
+                getToolbarOptions: function () {
+                    return _.extend(
+                        converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
+                        {
+                          label_hide_occupants: __('Hide the list of occupants'),
+                          show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
+                        }
+                    );
                 },
 
                 close: function (ev) {
@@ -415,7 +430,7 @@
                         type: 'groupchat',
                         id: msgid
                     }).c("body").t(text).up()
-                    .c("x", {xmlns: "jabber:x:event"}).c("composing");
+                    .c("x", {xmlns: "jabber:x:event"}).c(converse.COMPOSING);
                     converse.connection.send(msg);
                     this.model.messages.create({
                         fullname: this.model.get('nick'),

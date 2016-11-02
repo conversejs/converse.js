@@ -233,6 +233,18 @@
             return false;
         },
 
+        merge: function merge (first, second) {
+            /* Merge the second object into the first one.
+             */
+            for (var k in second) {
+                if (_.isObject(first[k])) {
+                    merge(first[k], second[k]);
+                } else {
+                    first[k] = second[k];
+                }
+            }
+        },
+
         applyUserSettings: function applyUserSettings (context, settings, user_settings) {
             /* Configuration settings might be nested objects. We only want to
              * add settings which are whitelisted.

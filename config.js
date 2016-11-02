@@ -139,6 +139,7 @@ require.config({
         "chatroom_nickname_form":   "src/templates/chatroom_nickname_form",
         "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",
+        "chatroom_toolbar":         "src/templates/chatroom_toolbar",
         "chatrooms_tab":            "src/templates/chatrooms_tab",
         "chats_panel":              "src/templates/chats_panel",
         "choose_status":            "src/templates/choose_status",

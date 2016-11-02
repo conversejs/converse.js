@@ -44,6 +44,15 @@
             expect(context.visible_toolbar_buttons.call).toBeFalsy();
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
             expect(context.visible_toolbar_buttons.invalid).toBeFalsy();
+
+            user_settings = {
+                visible_toolbar_buttons: {
+                    'toggle_occupants': true
+                }
+            };
+            utils.applyUserSettings(context, settings, user_settings);
+            expect(Object.keys(context.visible_toolbar_buttons)).toEqual(Object.keys(settings.visible_toolbar_buttons));
+            expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
         });
     });
 }));

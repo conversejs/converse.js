@@ -542,6 +542,7 @@
                 converse.connection.disconnect();
                 converse.connection.reset();
             }
+            converse.emit('logout');
         };
 
         this.saveWindowState = function (ev, hidden) {
@@ -1946,8 +1947,8 @@
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
              */
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
+            utils.merge(converse.default_settings, settings);
+            utils.merge(converse, settings);
             utils.applyUserSettings(converse, settings, converse.user_settings);
         };
         converse.pluggable.initializePlugins({

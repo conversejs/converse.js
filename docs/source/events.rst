@@ -196,12 +196,27 @@ Triggered once roster groups have been fetched. Used by the
 `converse-rosterview.js` plugin to know when it can start alphabetically
 position roster groups.
 
+rosterInitialized
+~~~~~~~~~~~~~~~~~
+
+The Backbone collections `RosterContacts` and `RosterGroups` have been created,
+but not yet populated with data.
+
+This event is useful when you want to create views for these collections.
+
 rosterPush
 ~~~~~~~~~~
 
 When the roster receives a push event from server. (i.e. New entry in your buddy list)
 
 ``converse.listen.on('rosterPush', function (event, items) { ... });``
+
+rosterReadyAfterReconnection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Similar to `rosterInitialized`, but instead pertaining to reconnection. This
+event indicates that the Backbone collections representing the roster and its
+groups are now again available after converse.js has reconnected.
 
 statusInitialized
 ~~~~~~~~~~~~~~~~~

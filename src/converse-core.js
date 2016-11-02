@@ -399,7 +399,6 @@
             converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
-            converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {
                 converse.autoLogin();
@@ -597,25 +596,6 @@
             }
         };
 
-        this.afterReconnected = function () {
-            this.registerPresenceHandler();
-            this.chatboxes.registerMessageHandler();
-            this.xmppstatus.sendPresence();
-            this.giveFeedback(__('Contacts'));
-        };
-
-        this.onReconnected = function () {
-            // We need to re-register all the event handlers on the newly
-            // created connection.
-            var deferred = new $.Deferred();
-            converse.initStatus().done(function () {
-                converse.afterReconnected();
-                deferred.resolve();
-            });
-            converse.emit('reconnected');
-            return deferred.promise();
-        };
-
         this.enableCarbons = function () {
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
@@ -641,12 +621,16 @@
         };
 
         this.initRoster = function () {
+            /* Initialize the Bakcbone collections that represent the contats
+             * roster and the roster groups.
+             */
             converse.roster = new converse.RosterContacts();
             converse.roster.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.contacts-'+converse.bare_jid));
             converse.rostergroups = new converse.RosterGroups();
             converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
+            converse.emit('rosterInitialized');
         };
 
         this.populateRoster = function () {
@@ -734,6 +718,25 @@
             converse.initStatus().done(converse.onStatusInitialized);
             converse.emit('connected');
             converse.emit('ready'); // BBB: Will be removed.
+        };
+
+        this.onReconnected = function () {
+            /* Called when converse has succesfully reconnected to the XMPP
+             * server after the session was dropped.
+             * Similar to the `onConnected` method, but skips a few unnecessary
+             * steps.
+             */
+            converse.setUserJid();
+            converse.registerPresenceHandler();
+            converse.chatboxes.registerMessageHandler();
+            // Give event handlers a chance to register views for the roster
+            // and its groups, before we start populating.
+            converse.emit('rosterReadyAfterReconnection');
+            converse.populateRoster();
+            converse.chatboxes.onConnected();
+            converse.xmppstatus.sendPresence();
+            converse.emit('reconnected');
+            converse.giveFeedback(__('Contacts'));
         };
 
         this.RosterContact = Backbone.Model.extend({

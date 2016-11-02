@@ -121,7 +121,11 @@
                     this.rosterview.unregisterHandlers();
                     // Removes roster groups
                     this.rosterview.model.off().reset();
-                    this.rosterview.undelegateEvents().remove();
+                    this.rosterview.each(function (groupview) {
+                        groupview.removeAll();
+                        groupview.remove();
+                    });
+                    this.rosterview.remove();
                 }
             },
 

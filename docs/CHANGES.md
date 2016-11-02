@@ -10,6 +10,7 @@
 - Add support for XEP-0048, chat room bookmarks [jcbrand]
 - New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection_options) [jcbrand]
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
+- #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

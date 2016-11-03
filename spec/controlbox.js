@@ -1148,6 +1148,17 @@
             expect($panels.children().last().is(':visible')).toBe(false);
         }));
 
+        it("remembers which tab was open last", mock.initConverse(function (converse) {
+            test_utils.openControlBox();
+            var cbview = converse.chatboxviews.get('controlbox');
+            var $tabs = cbview.$el.find('#controlbox-tabs');
+            expect(cbview.model.get('active-panel')).toBe('users');
+            $tabs.find('li').last().find('a').click();
+            expect(cbview.model.get('active-panel')).toBe('chatrooms');
+            $tabs.find('li').first().find('a').click();
+            expect(cbview.model.get('active-panel')).toBe('users');
+        }));
+
         describe("chatrooms panel", function () {
             afterEach(function () {
                 converse_api.user.logout();

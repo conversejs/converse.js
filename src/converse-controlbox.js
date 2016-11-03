@@ -175,8 +175,9 @@
 
                 closeAllChatBoxes: function () {
                     this.each(function (view) {
-                        if (view.model.get('id') !== 'controlbox') {
-                            view.close();
+                        if (!converse.connection.connected ||
+                            view.model.get('id') !== 'controlbox') {
+                                view.close();
                         }
                     });
                     return this;
@@ -361,6 +362,9 @@
                     this.$el.hide('fast', function () {
                         utils.refreshWebkit();
                         converse.emit('chatBoxClosed', this);
+                        if (!converse.connection.connected) {
+                            converse.controlboxtoggle.render();
+                        }
                         converse.controlboxtoggle.show(function () {
                             if (typeof callback === "function") {
                                 callback();
@@ -738,7 +742,7 @@
                 },
 
                 initialize: function () {
-                    this.render();
+                    $('#conversejs').prepend(this.render());
                     this.updateOnlineCount();
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
@@ -749,17 +753,15 @@
                 },
 
                 render: function () {
-                    $('#conversejs').prepend(this.$el.html(
-                        converse.templates.controlbox_toggle({
-                            'label_toggle': __('Toggle chat')
-                        })
-                    ));
                     // We let the render method of ControlBoxView decide whether
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    this.$el.hide();
-                    return this;
+                    return this.$el.html(
+                        converse.templates.controlbox_toggle({
+                            'label_toggle': __('Toggle chat')
+                        })
+                    ).hide();
                 },
 
                 updateOnlineCount: _.debounce(function () {

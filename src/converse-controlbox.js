@@ -127,7 +127,7 @@
                         groupview.removeAll();
                         groupview.remove();
                     });
-                    this.rosterview.remove();
+                    this.rosterview.removeAll().remove();
                 }
             },
 

@@ -56,6 +56,11 @@ That's because this setting is intended to be used when you are using
 SASL-EXTERNAL as authentication mechanism, in which case a password is usually
 not required.
 
+SASL-EXTERNAL is generally used together with x509 client certificates to
+enable passwordless login or 2-factor authentication.
+
+For more details on this, `read this blog post <https://opkode.com/blog/strophe_converse_sasl_external/>`_.
+
 anonymous
 ~~~~~~~~~
 

@@ -96,3 +96,12 @@ Here are the different commands that may be used in a chat room:
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
 | **voice**  | Allow a muted user to post messages to the room.                                             | /voice $nickname [$reason]                                    |
 +------------+----------------------------------------------------------------------------------------------+---------------------------------------------------------------+
+
+Passwordless login with client certificates
+===========================================
+
+Converse.js supports the SASL-EXTERNAL authentication mechanism, which can be
+used together with x509 client certificates to enable passwordless login or
+even 2-factor authentication.
+
+For more info, `read this blog post <https://opkode.com/blog/strophe_converse_sasl_external/>`_.

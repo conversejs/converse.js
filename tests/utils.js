@@ -79,14 +79,14 @@
         $tabs.find('li').first().find('a').click();
     };
 
-    utils.openRoomsPanel = function () {
+    utils.openRoomsPanel = function (converse) {
         utils.openControlBox();
         var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').last().find('a').click();
     };
 
-    utils.openChatBoxes = function (amount) {
+    utils.openChatBoxes = function (converse, amount) {
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
             jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -99,25 +99,25 @@
         return converse.roster.get(jid).trigger("open");
     };
 
-    utils.openChatRoom = function (room, server, nick) {
+    utils.openChatRoom = function (converse, room, server, nick) {
         // Open a new chatroom
-        this.openControlBox();
-        this.openRoomsPanel();
+        this.openControlBox(converse);
+        this.openRoomsPanel(converse);
         var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
         roomspanel.$el.find('input.new-chatroom-name').val(room);
         roomspanel.$el.find('input.new-chatroom-nick').val(nick);
         roomspanel.$el.find('input.new-chatroom-server').val(server);
         roomspanel.$el.find('form').submit();
-        this.closeControlBox();
+        this.closeControlBox(converse);
     };
 
-    utils.openAndEnterChatRoom = function (room, server, nick) {
+    utils.openAndEnterChatRoom = function (converse, room, server, nick) {
         var IQ_id, sendIQ = converse.connection.sendIQ;
         spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
             IQ_id = sendIQ.bind(this)(iq, callback, errback);
         });
 
-        utils.openChatRoom(room, server);
+        utils.openChatRoom(converse, room, server);
         var view = converse.chatboxviews.get(room+'@'+server);
 
         // The XMPP server returns the reserved nick for this user.
@@ -160,7 +160,7 @@
         return this;
     };
 
-    utils.clearChatBoxMessages = function (jid) {
+    utils.clearChatBoxMessages = function (converse, jid) {
         var view = converse.chatboxviews.get(jid);
         view.$el.find('.chat-content').empty();
         view.model.messages.reset();
@@ -190,7 +190,9 @@
             requesting = false;
             ask = null;
         } else if (type === 'all') {
-            this.createContacts('current').createContacts('requesting').createContacts('pending');
+            this.createContacts(converse, 'current')
+                .createContacts(converse, 'requesting')
+                .createContacts(converse, 'pending');
             return this;
         } else {
             throw "Need to specify the type of contact to create";
@@ -214,7 +216,7 @@
         return this;
     };
 
-    utils.createGroupedContacts = function () {
+    utils.createGroupedContacts = function (converse) {
         /* Create grouped contacts
          */
         var i=0, j=0;

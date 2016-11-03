@@ -1,28 +1,27 @@
-/*global converse */
 (function (root, factory) {
-    define([
-        "jquery",
-        "underscore",
-        "mock",
-        "test_utils"
-        ], function ($, _, mock, test_utils) {
-            return factory($, _, mock, test_utils);
-        }
-    );
-} (this, function ($, _, mock, test_utils) {
+    define(["mock", "test_utils"], factory);
+} (this, function (mock, test_utils) {
     "use strict";
+    var _ = converse_api.env._;
+    var $ = converse_api.env.jQuery;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var $msg = converse_api.env.$msg;
     var moment = converse_api.env.moment;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
-    describe("Message Archive Management", $.proxy(function (mock, test_utils) {
+    describe("Message Archive Management", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
 
-        describe("The archive.query API", $.proxy(function (mock, test_utils) {
+        describe("The archive.query API", function () {
 
-           it("can be used to query for all archived messages", function () {
+            afterEach(function () {
+                converse_api.user.logout();
+                converse_api.listen.not();
+                test_utils.clearBrowserStorage();
+            });
+
+           it("can be used to query for all archived messages", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -36,9 +35,9 @@
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'><query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'/></iq>");
-            });
+            }));
 
-           it("can be used to query for all messages to/from a particular JID", function () {
+           it("can be used to query for all messages to/from a particular JID", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -64,9 +63,9 @@
                         "</query>"+
                     "</iq>"
                 );
-            });
+            }));
 
-           it("can be used to query for all messages in a certain timespan", function () {
+           it("can be used to query for all messages in a certain timespan", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -101,15 +100,18 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("throws a TypeError if an invalid date is provided", function () {
+           it("throws a TypeError if an invalid date is provided", mock.initConverse(function (converse) {
+                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    converse.features.create({'var': Strophe.NS.MAM});
+                }
                 expect(_.partial(converse_api.archive.query, {'start': 'not a real date'})).toThrow(
                     new TypeError('archive.query: invalid date provided for: start')
                 );
-           });
+           }));
 
-           it("can be used to query for all messages after a certain time", function () {
+           it("can be used to query for all messages after a certain time", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -136,9 +138,9 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("can be used to query for a limited set of results", function () {
+           it("can be used to query for a limited set of results", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -168,9 +170,9 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("can be used to page through results", function () {
+           it("can be used to page through results", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -205,9 +207,9 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("accepts \"before\" with an empty string as value to reverse the order", function () {
+           it("accepts \"before\" with an empty string as value to reverse the order", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -234,9 +236,9 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("accepts a Strophe.RSM object for the query options", function () {
+           it("accepts a Strophe.RSM object for the query options", mock.initConverse(function (converse) {
                 // Normally the user wouldn't manually make a Strophe.RSM object
                 // and pass it in. However, in the callback method an RSM object is
                 // returned which can be reused for easy paging. This test is
@@ -276,9 +278,9 @@
                         "</query>"+
                     "</iq>"
                 );
-           });
+           }));
 
-           it("accepts a callback function, which it passes the messages and a Strophe.RSM object", function () {
+           it("accepts a callback function, which it passes the messages and a Strophe.RSM object", mock.initConverse(function (converse) {
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
@@ -365,13 +367,19 @@
                 expect(args[1].count).toBe('16');
                 expect(args[1].first).toBe('23452-4534-1');
                 expect(args[1].last).toBe('390-2342-22');
-           });
+           }));
 
-        }, converse, mock, test_utils));
+        });
 
-        describe("The default preference", $.proxy(function (mock, test_utils) {
+        describe("The default preference", function () {
 
-            it("is set once server support for MAM has been confirmed", function () {
+            afterEach(function () {
+                converse_api.user.logout();
+                converse_api.listen.not();
+                test_utils.clearBrowserStorage();
+            });
+
+            it("is set once server support for MAM has been confirmed", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -443,7 +451,7 @@
 
                 // Restore
                 converse.message_archiving = 'never';
-            });
-        }, converse, mock, test_utils));
-    }, converse, mock, test_utils));
+            }));
+        });
+    });
 }));

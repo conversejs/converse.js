@@ -1,36 +1,39 @@
-/*global converse */
 (function (root, factory) {
-    define([
-        "jquery",
-        "converse-ping"
-        ], function ($) {
-            return factory($);
-        }
-    );
-} (this, function ($) {
+    define(["mock", "test_utils", "converse-ping"], factory);
+} (this, function (mock, test_utils) {
     "use strict";
 
     describe("XMPP Ping", function () {
         describe("Ping and pong handlers", function () {
-            it("are registered when converse.js is connected", function () {
+            afterEach(function () {
+                converse_api.user.logout();
+                test_utils.clearBrowserStorage();
+            });
+
+            it("are registered when converse.js is connected", mock.initConverse(function (converse) {
                 spyOn(converse, 'registerPingHandler').andCallThrough();
                 spyOn(converse, 'registerPongHandler').andCallThrough();
                 converse.emit('connected');
                 expect(converse.registerPingHandler).toHaveBeenCalled();
                 expect(converse.registerPongHandler).toHaveBeenCalled();
-            });
+            }));
 
-            it("are registered when converse.js reconnected", function () {
+            it("are registered when converse.js reconnected", mock.initConverse(function (converse) {
                 spyOn(converse, 'registerPingHandler').andCallThrough();
                 spyOn(converse, 'registerPongHandler').andCallThrough();
                 converse.emit('reconnected');
                 expect(converse.registerPingHandler).toHaveBeenCalled();
                 expect(converse.registerPongHandler).toHaveBeenCalled();
-            });
+            }));
         });
 
         describe("An IQ stanza", function () {
-            it("is sent out when converse.js pings a server", function () {
+            afterEach(function () {
+                converse_api.user.logout();
+                test_utils.clearBrowserStorage();
+            });
+
+            it("is sent out when converse.js pings a server", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -42,7 +45,7 @@
                     "<iq type='get' to='localhost' id='"+IQ_id+"' xmlns='jabber:client'>"+
                         "<ping xmlns='urn:xmpp:ping'/>"+
                     "</iq>");
-            });
+            }));
         });
     });
 }));

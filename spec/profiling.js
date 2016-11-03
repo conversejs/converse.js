@@ -1,26 +1,16 @@
-/*global converse */
 (function (root, factory) {
-    define([
-        "jquery",
-        "underscore",
-        "mock",
-        "test_utils"
-        ], function ($, _, mock, test_utils) {
-            return factory($, _, mock, test_utils);
-        }
-    );
-} (this, function ($, _, mock, test_utils) {
-    var Strophe = converse_api.env.Strophe;
+    define(["mock", "test_utils"], factory);
+} (this, function (mock, test_utils) {
+    var _ = converse_api.env._;
     var $iq = converse_api.env.$iq;
 
     describe("Profiling", function() {
-        beforeEach(function() {
+        afterEach(function () {
+            converse_api.user.logout();
             test_utils.clearBrowserStorage();
-            converse.rosterview.model.reset();
-            converse.connection._changeConnectStatus(Strophe.Status.CONNECTED);
         });
 
-        xit("adds hundreds of contacts to the roster", $.proxy(function() {
+        xit("adds hundreds of contacts to the roster", mock.initConverse(function(converse) {
             converse.roster_groups = false;
             expect(this.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
@@ -41,9 +31,9 @@
             });
             this.roster.onReceivedFromServer(stanza.tree());
             // expect(this.roster.pluck('jid').length).toBe(400);
-        }, converse));
+        }));
 
-        xit("adds hundreds of contacts to the roster, with roster groups", $.proxy(function() {
+        xit("adds hundreds of contacts to the roster, with roster groups", mock.initConverse(function(converse) {
             // converse.show_only_online_users = true;
             converse.roster_groups = true;
             expect(this.roster.pluck('jid').length).toBe(0);
@@ -65,6 +55,6 @@
             });
             this.roster.onReceivedFromServer(stanza.tree());
             //expect(this.roster.pluck('jid').length).toBe(400);
-        }, converse));
+        }));
     });
 }));

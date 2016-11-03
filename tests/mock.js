@@ -75,9 +75,9 @@
         };
     }();
 
-    mock.initConverse = function (func) {
+    mock.initConverse = function (func, settings) {
         return function () {
-            var converse = converse_api.initialize({
+            var converse = converse_api.initialize(_.extend({
                 i18n: window.locales.en,
                 auto_subscribe: false,
                 bosh_service_url: 'localhost',
@@ -86,9 +86,8 @@
                 no_trimming: true,
                 auto_login: true,
                 jid: 'dummy@localhost',
-                password: 'secret',
-                debug: true
-            });
+                password: 'secret'
+            }, settings || {}));
             converse.ChatBoxViews.prototype.trimChat = function () {};
             return func(converse);
         };

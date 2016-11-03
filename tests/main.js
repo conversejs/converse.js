@@ -50,13 +50,10 @@ require([
             //"spec/transcripts",
             "spec/utils",
             "spec/converse",
-            /*
             "spec/bookmarks",
             "spec/headline",
             "spec/disco",
-            */
             "spec/protocol",
-            /*
             "spec/mam",
             "spec/otr",
             "spec/eventemitter",
@@ -68,8 +65,7 @@ require([
             "spec/profiling",
             "spec/ping",
             "spec/register",
-            "spec/xmppstatus",
-            */
+            "spec/xmppstatus"
         ], function () {
             // Jasmine stuff
             var jasmineEnv = jasmine.getEnv();

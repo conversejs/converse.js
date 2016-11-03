@@ -23,6 +23,7 @@
 
             afterEach(function () {
                 converse_api.user.logout();
+                converse_api.listen.not();
                 test_utils.clearBrowserStorage();
             });
 

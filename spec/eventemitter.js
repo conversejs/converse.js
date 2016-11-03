@@ -1,19 +1,10 @@
-/*global converse */
 (function (root, factory) {
-    define([
-        "jquery",
-        "mock",
-        "test_utils"
-        ], function ($, mock, test_utils) {
-            return factory($, mock, test_utils);
-        }
-    );
-} (this, function ($, mock, test_utils) {
-    return describe("The Converse Event Emitter", $.proxy(function(mock, test_utils) {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+    define(["mock", "test_utils"], factory);
+} (this, function (mock, test_utils) {
 
-        it("allows you to subscribe to emitted events", function () {
+    return describe("The Converse Event Emitter", function() {
+
+        it("allows you to subscribe to emitted events", mock.initConverse(function (converse) {
             this.callback = function () {};
             spyOn(this, 'callback');
             converse.on('connected', this.callback);
@@ -23,9 +14,9 @@
             expect(this.callback.callCount, 2);
             converse.emit('connected');
             expect(this.callback.callCount, 3);
-        });
+        }));
 
-        it("allows you to listen once for an emitted event", function () {
+        it("allows you to listen once for an emitted event", mock.initConverse(function (converse) {
             this.callback = function () {};
             spyOn(this, 'callback');
             converse.once('connected', this.callback);
@@ -35,9 +26,9 @@
             expect(this.callback.callCount, 1);
             converse.emit('connected');
             expect(this.callback.callCount, 1);
-        });
+        }));
 
-        it("allows you to stop listening or subscribing to an event", function () {
+        it("allows you to stop listening or subscribing to an event", mock.initConverse(function (converse) {
             this.callback = function () {};
             this.anotherCallback = function () {};
             this.neverCalled = function () {};
@@ -65,6 +56,6 @@
             expect(this.callback.callCount, 1);
             expect(this.anotherCallback.callCount, 3);
             expect(this.neverCalled).not.toHaveBeenCalled();
-        });
-    }, converse, mock, test_utils));
+        }));
+    });
 }));

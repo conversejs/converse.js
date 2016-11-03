@@ -535,12 +535,13 @@
 
         this.logOut = function () {
             converse.disconnection_cause = converse.LOGOUT;
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.clearSession();
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
                 converse.connection.reset();
             }
+            converse.clearSession();
+            converse._tearDown();
+            converse.chatboxviews.closeAllChatBoxes();
             converse.emit('logout');
         };
 

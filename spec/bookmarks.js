@@ -15,6 +15,7 @@
 
         afterEach(function () {
             converse_api.user.logout();
+            converse_api.listen.not();
             test_utils.clearBrowserStorage();
         });
 
@@ -151,6 +152,7 @@
 
             afterEach(function () {
                 converse_api.user.logout();
+                converse_api.listen.not();
                 test_utils.clearBrowserStorage();
             });
 
@@ -240,6 +242,7 @@
         describe("and when autojoin is set", function () {
             afterEach(function () {
                 converse_api.user.logout();
+                converse_api.listen.not();
                 test_utils.clearBrowserStorage();
             });
 
@@ -270,6 +273,7 @@
 
         afterEach(function () {
             converse_api.user.logout();
+            converse_api.listen.not();
             test_utils.clearBrowserStorage();
         });
 
@@ -392,6 +396,7 @@
         describe("The rooms panel", function () {
             afterEach(function () {
                 converse_api.user.logout();
+                converse_api.listen.not();
                 test_utils.clearBrowserStorage();
             });
 
@@ -425,6 +430,30 @@
                                     }).c('nick').t('JC').up().up();
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
+            }));
+
+            it("remembers the toggle state of the bookmarks list", mock.initConverse(function (converse) {
+                runs(function () {
+                    converse.bookmarks.create({
+                        'jid': 'theplay@conference.shakespeare.lit',
+                        'autojoin': false,
+                        'name':  'The Play',
+                        'nick': ''
+                    });
+                    converse.emit('chatBoxesFetched');
+                    test_utils.openControlBox().openRoomsPanel(converse);
+                });
+                waits(100);
+                runs(function () {
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.OPENED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.CLOSED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.OPENED);
+                });
             }));
         });
     });

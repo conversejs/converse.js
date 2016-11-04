@@ -1,5 +1,13 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
 The converse.js developer API
 =============================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
 
 .. note:: The API documented here is available in Converse.js 0.8.4 and higher.
         Earlier versions of Converse.js might have different API methods or none at all.
@@ -77,8 +85,8 @@ For example, to send a message stanza:
     converse.send(msg);
 
 
-The "archive" grouping
-----------------------
+The **archive** grouping
+------------------------
 
 Converse.js supports the *Message Archive Management*
 (`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
@@ -236,8 +244,8 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
         converse.archive.query(rsm, callback, errback);
     }
 
-The "connection" grouping
--------------------------
+The **connection** grouping
+---------------------------
 
 This grouping collects API functions related to the XMPP connection.
 
@@ -253,8 +261,8 @@ disconnect
 Terminates the connection.
 
 
-The "user" grouping
--------------------
+The **user** grouping
+---------------------
 
 This grouping collects API functions related to the current logged in user.
 
@@ -294,8 +302,8 @@ Log the user out of the current XMPP session.
     converse.user.logout();
 
 
-The "status" sub-grouping
-~~~~~~~~~~~~~~~~~~~~~~~~~
+The **status** sub-grouping
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Set and get the user's chat status, also called their *availability*.
 
@@ -334,8 +342,8 @@ second parameter:
 
     converse.user.status.set('dnd', 'In a meeting');
 
-The "message" sub-grouping
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+The **message** sub-grouping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``user.status.message`` sub-grouping exposes methods for setting and
 retrieving the user's custom status message.
@@ -347,8 +355,8 @@ retrieving the user's custom status message.
     converse.user.status.message.get(); // Returns "In a meeting"
 
 
-The "contacts" grouping
------------------------
+The **contacts** grouping
+-------------------------
 
 get
 ~~~
@@ -427,8 +435,8 @@ You may also provide the fullname. If not present, we use the jid as fullname:
 
     converse.contacts.add('buddy@example.com', 'Buddy')
 
-The "chats" grouping
---------------------
+The **chats** grouping
+----------------------
 
 Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
 
@@ -504,8 +512,8 @@ To return an array of chat boxes, provide an array of JIDs:
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
-The "rooms" grouping
---------------------
+The **rooms** grouping
+----------------------
 
 get
 ~~~
@@ -565,8 +573,8 @@ Lets you close open chat rooms. You can call this method without any arguments
 to close all open chat rooms, or you can specify a single JID or an array of
 JIDs.
 
-The "settings" grouping
------------------------
+The **settings** grouping
+-------------------------
 
 This grouping allows you to get or set the configuration settings of converse.js.
 
@@ -601,8 +609,8 @@ Note, this is not an alternative to calling ``converse.initialize``, which still
 to be called. Generally, you'd use this method after converse.js is already
 running and you want to change the configuration on-the-fly.
 
-The "tokens" grouping
----------------------
+The **tokens** grouping
+-----------------------
 
 get
 ~~~
@@ -618,8 +626,8 @@ Example:
 
 .. _`listen-grouping`:
 
-The "listen" grouping
----------------------
+The **listen** grouping
+-----------------------
 
 Converse.js emits events to which you can subscribe from your own Javascript.
 

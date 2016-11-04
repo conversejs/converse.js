@@ -1,4 +1,3 @@
-/*global converse */
 (function (root, factory) {
     define([
         "jquery",
@@ -14,7 +13,13 @@
 
     describe("A chat room", function () {
 
-        it("can be bookmarked", function () {
+        afterEach(function () {
+            converse_api.user.logout();
+            converse_api.listen.not();
+            test_utils.clearBrowserStorage();
+        });
+
+        it("can be bookmarked", mock.initConverse(function (converse) {
             var sent_stanza, IQ_id;
             var sendIQ = converse.connection.sendIQ;
             spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -23,7 +28,7 @@
             });
             spyOn(converse.connection, 'getUniqueId').andCallThrough();
 
-            test_utils.openChatRoom('theplay', 'conference.shakespeare.lit', 'JC');
+            test_utils.openChatRoom(converse, 'theplay', 'conference.shakespeare.lit', 'JC');
             var jid = 'theplay@conference.shakespeare.lit';
             var view = converse.chatboxviews.get(jid);
             spyOn(view, 'renderBookmarkForm').andCallThrough();
@@ -121,9 +126,9 @@
             converse.connection._dataRecv(test_utils.createRequest(stanza));
             // We ignore this IQ stanza... (unless it's an error stanza), so
             // nothing to test for here.
-        });
+        }));
 
-        it("will be automatically opened if 'autojoin' is set on the bookmark", function () {
+        it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(function (converse) {
             var jid = 'lounge@localhost';
             converse.bookmarks.create({
                 'jid': jid,
@@ -141,17 +146,19 @@
                 'nick': ' Othello'
             });
             expect(_.isUndefined(converse.chatboxviews.get(jid))).toBeFalsy();
-        });
+        }));
 
         describe("when bookmarked", function () {
-            beforeEach(function () {
-                test_utils.closeAllChatBoxes();
-                converse.bookmarks.reset();
+
+            afterEach(function () {
+                converse_api.user.logout();
+                converse_api.listen.not();
+                test_utils.clearBrowserStorage();
             });
 
-            it("displays that it's bookmarked through its bookmark icon", function () {
+            it("displays that it's bookmarked through its bookmark icon", mock.initConverse(function (converse) {
                 runs(function () {
-                    test_utils.openChatRoom('lounge', 'localhost', 'dummy');
+                    test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 });
                 waits(100);
                 runs(function () {
@@ -163,9 +170,9 @@
                     view.model.set('bookmarked', false);
                     expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
                 });
-            });
+            }));
 
-            it("can be unbookmarked", function () {
+            it("can be unbookmarked", mock.initConverse(function (converse) {
                 var view, sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -175,7 +182,7 @@
                 spyOn(converse.connection, 'getUniqueId').andCallThrough();
 
                 runs(function () {
-                    test_utils.openChatRoom('theplay', 'conference.shakespeare.lit', 'JC');
+                    test_utils.openChatRoom(converse, 'theplay', 'conference.shakespeare.lit', 'JC');
                 });
                 waits(100);
                 runs(function () {
@@ -229,15 +236,17 @@
                         "</iq>"
                     );
                 });
-            });
+            }));
         });
 
         describe("and when autojoin is set", function () {
-            beforeEach(function () {
-                converse.bookmarks.reset();
+            afterEach(function () {
+                converse_api.user.logout();
+                converse_api.listen.not();
+                test_utils.clearBrowserStorage();
             });
 
-            it("will be be opened and joined automatically upon login", function () {
+            it("will be be opened and joined automatically upon login", mock.initConverse(function (converse) {
                 spyOn(converse_api.rooms, 'open');
                 var jid = 'theplay@conference.shakespeare.lit';
                 var model = converse.bookmarks.create({
@@ -256,17 +265,19 @@
                     'nick': ''
                 });
                 expect(converse_api.rooms.open).toHaveBeenCalled();
-            });
+            }));
         });
     });
 
     describe("Bookmarks", function () {
 
-        beforeEach(function () {
-            window.sessionStorage.clear();
+        afterEach(function () {
+            converse_api.user.logout();
+            converse_api.listen.not();
+            test_utils.clearBrowserStorage();
         });
 
-        it("can be pushed from the XMPP server", function () {
+        it("can be pushed from the XMPP server", mock.initConverse(function (converse) {
             // TODO
             /* The stored data is automatically pushed to all of the user's
              * connected resources.
@@ -311,9 +322,9 @@
              * </event>
              * </message>
              */
-        });
+        }));
 
-        it("can be retrieved from the XMPP server", function () {
+        it("can be retrieved from the XMPP server", mock.initConverse(function (converse) {
             var sent_stanza, IQ_id,
                 sendIQ = converse.connection.sendIQ;
             spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -380,21 +391,22 @@
             expect(converse.bookmarks.models.length).toBe(2);
             expect(converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
             expect(converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
-        });
+        }));
 
         describe("The rooms panel", function () {
-            beforeEach(function () {
-                test_utils.openRoomsPanel();
-                converse.bookmarks.reset();
-                converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
+            afterEach(function () {
+                converse_api.user.logout();
+                converse_api.listen.not();
+                test_utils.clearBrowserStorage();
             });
 
-            it("shows a list of bookmarks", function () {
+            it("shows a list of bookmarks", mock.initConverse(function (converse) {
                 var IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
+                converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
                 converse.emit('chatBoxesFetched');
                 var stanza = $iq({'to': converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
@@ -418,7 +430,31 @@
                                     }).c('nick').t('JC').up().up();
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
-            });
+            }));
+
+            it("remembers the toggle state of the bookmarks list", mock.initConverse(function (converse) {
+                runs(function () {
+                    converse.bookmarks.create({
+                        'jid': 'theplay@conference.shakespeare.lit',
+                        'autojoin': false,
+                        'name':  'The Play',
+                        'nick': ''
+                    });
+                    converse.emit('chatBoxesFetched');
+                    test_utils.openControlBox().openRoomsPanel(converse);
+                });
+                waits(100);
+                runs(function () {
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.OPENED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.CLOSED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(converse.bookmarksview.list_model.get('toggle-state')).toBe(converse.OPENED);
+                });
+            }));
         });
     });
 }));

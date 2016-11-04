@@ -175,6 +175,12 @@
 
             converse.Bookmark = Backbone.Model;
 
+            converse.BookmarksList = Backbone.Model.extend({
+                defaults: {
+                    "toggle-state":  converse.OPENED
+                }
+            });
+
             converse.Bookmarks = Backbone.Collection.extend({
                 model: converse.Bookmark,
 
@@ -330,15 +336,26 @@
                 initialize: function () {
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
+
+                    var cachekey = 'converse.room-bookmarks'+converse.bare_jid+'-list-model';
+                    this.list_model = new converse.BookmarksList();
+                    this.list_model.id = cachekey;
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                        b64_sha1(cachekey)
+                    );
+                    this.list_model.fetch();
                     this.render();
                 },
 
                 render: function (cfg) {
                     this.$el.html(converse.templates.bookmarks_list({
-                        'toggle_state': converse.OPENED,
+                        'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
                     })).hide();
+                    if (this.list_model.get('toggle-state') !== converse.OPENED) {
+                        this.$('.bookmarks').hide();
+                    }
                     this.model.each(this.renderBookmarkListElement, this);
                     var controlboxview = converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
@@ -381,11 +398,13 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
-                        this.$('.bookmarks').slideUp();
+                        this.$('.bookmarks').slideUp('fast');
+                        this.list_model.save({'toggle-state': converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
-                        this.$('.bookmarks').slideDown();
+                        this.$('.bookmarks').slideDown('fast');
+                        this.list_model.save({'toggle-state': converse.OPENED});
                     }
                 }
             });

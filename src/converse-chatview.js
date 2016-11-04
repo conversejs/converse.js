@@ -219,13 +219,14 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
+                    var that = this;
                     var insert = prepend ? this.$content.prepend : this.$content.append;
                     _.compose(
                         this.scrollDownMessageHeight.bind(this),
                         function ($el) {
-                            insert.call(this.$content, $el);
+                            insert.call(that.$content, $el);
                             return $el;
-                        }.bind(this)
+                        }
                     )(this.renderMessage(attrs));
                 },
 
@@ -241,10 +242,10 @@
                      *  (Object) attrs: An object containing the message attributes.
                      */
                     var msg_dates, idx,
-                        $first_msg = this.$content.children('.chat-message:first'),
+                        $first_msg = this.$content.find('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         current_msg_date = moment(attrs.time) || moment,
-                        last_msg_date = this.$content.children('.chat-message:last').data('isodate');
+                        last_msg_date = this.$content.find('.chat-message:last').data('isodate');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
@@ -275,7 +276,7 @@
                     }
                     // Find the correct place to position the message
                     current_msg_date = current_msg_date.format();
-                    msg_dates = _.map(this.$content.children('.chat-message'), function (el) {
+                    msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
                         return $(el).data('isodate');
                     });
                     msg_dates.push(current_msg_date);
@@ -336,19 +337,21 @@
                                "Output has been shortened."),
                             true, true);
                     }
-                    return $(template(
-                            _.extend(this.getExtraMessageTemplateAttributes(attrs), {
-                                'msgid': attrs.msgid,
-                                'sender': attrs.sender,
-                                'time': msg_time.format('hh:mm'),
-                                'isodate': msg_time.format(),
-                                'username': username,
-                                'message': '',
-                                'extra_classes': extra_classes
-                            })
-                        )).children('.chat-msg-content').first().text(text)
-                            .addHyperlinks()
-                            .addEmoticons(converse.visible_toolbar_buttons.emoticons).parent();
+                    var $msg = $(template(
+                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                            'msgid': attrs.msgid,
+                            'sender': attrs.sender,
+                            'time': msg_time.format('hh:mm'),
+                            'isodate': msg_time.format(),
+                            'username': username,
+                            'extra_classes': extra_classes
+                        })
+                    ));
+                    $msg.find('.chat-msg-content').first()
+                        .text(text)
+                        .addHyperlinks()
+                        .addEmoticons(converse.visible_toolbar_buttons.emoticons);
+                    return $msg;
                 },
 
                 showHelpMessages: function (msgs, type, spinner) {

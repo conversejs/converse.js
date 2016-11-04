@@ -58,6 +58,8 @@
     converse.templates.search_contact = tpl_search_contact;
     converse.templates.status_option = tpl_status_option;
 
+    var USERS_PANEL_ID = 'users';
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         utils = converse_api.env.utils;
@@ -121,13 +123,17 @@
                     this.rosterview.unregisterHandlers();
                     // Removes roster groups
                     this.rosterview.model.off().reset();
-                    this.rosterview.undelegateEvents().remove();
+                    this.rosterview.each(function (groupview) {
+                        groupview.removeAll();
+                        groupview.remove();
+                    });
+                    this.rosterview.removeAll().remove();
                 }
             },
 
             clearSession: function () {
                 this.__super__.clearSession.apply(this, arguments);
-                if (typeof this.connection !== 'undefined' && this.connection.connected) {
+                if (_.isUndefined(this.connection) && this.connection.connected) {
                     this.chatboxes.get('controlbox').save({'connected': false});
                 }
             },
@@ -169,8 +175,9 @@
 
                 closeAllChatBoxes: function () {
                     this.each(function (view) {
-                        if (view.model.get('id') !== 'controlbox') {
-                            view.close();
+                        if (!converse.connection.connected ||
+                            view.model.get('id') !== 'controlbox') {
+                                view.close();
                         }
                     });
                     return this;
@@ -319,6 +326,9 @@
                 },
 
                 renderContactsPanel: function () {
+                    if (_.isUndefined(this.model.get('active-panel'))) {
+                        this.model.save({'active-panel': USERS_PANEL_ID});
+                    }
                     this.contactspanel = new converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });
@@ -352,6 +362,9 @@
                     this.$el.hide('fast', function () {
                         utils.refreshWebkit();
                         converse.emit('chatBoxClosed', this);
+                        if (!converse.connection.connected) {
+                            converse.controlboxtoggle.render();
+                        }
                         converse.controlboxtoggle.show(function () {
                             if (typeof callback === "function") {
                                 callback();
@@ -362,11 +375,12 @@
                 },
 
                 onControlBoxToggleHidden: function () {
+                    var that = this;
                     this.$el.show('fast', function () {
                         converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
-                        converse.emit('controlBoxOpened', this);
-                    }.bind(this));
+                        converse.emit('controlBoxOpened', that);
+                    });
                 },
 
                 show: function () {
@@ -382,10 +396,13 @@
                     var $tab = $(ev.target),
                         $sibling = $tab.parent().siblings('li').children('a'),
                         $tab_panel = $($tab.attr('href'));
-                    $($sibling.attr('href')).hide();
+                    $($sibling.attr('href')).addClass('hidden');
                     $sibling.removeClass('current');
                     $tab.addClass('current');
-                    $tab_panel.show();
+                    $tab_panel.removeClass('hidden');
+                    if (converse.connection.connected) {
+                        this.model.save({'active-panel': $tab.data('id')});
+                    }
                     return this;
                 },
 
@@ -627,7 +644,11 @@
                         include_offline_state: converse.include_offline_state,
                         allow_logout: converse.allow_logout
                     });
-                    this.$tabs.append(converse.templates.contacts_tab({label_contacts: LABEL_CONTACTS}));
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    this.$tabs.append(converse.templates.contacts_tab({
+                        'label_contacts': LABEL_CONTACTS,
+                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
+                    }));
                     if (converse.xhr_user_search) {
                         markup = converse.templates.search_contact({
                             label_contact_name: __('Contact name'),
@@ -647,6 +668,9 @@
                     }
                     this.$el.html(widgets);
                     this.$el.find('.search-xmpp ul').append(markup);
+                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
+                        this.$el.addClass('hidden');
+                    }
                     return this;
                 },
 
@@ -718,7 +742,7 @@
                 },
 
                 initialize: function () {
-                    this.render();
+                    $('#conversejs').prepend(this.render());
                     this.updateOnlineCount();
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
@@ -729,17 +753,15 @@
                 },
 
                 render: function () {
-                    $('#conversejs').prepend(this.$el.html(
-                        converse.templates.controlbox_toggle({
-                            'label_toggle': __('Toggle chat')
-                        })
-                    ));
                     // We let the render method of ControlBoxView decide whether
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    this.$el.hide();
-                    return this;
+                    return this.$el.html(
+                        converse.templates.controlbox_toggle({
+                            'label_toggle': __('Toggle chat')
+                        })
+                    ).hide();
                 },
 
                 updateOnlineCount: _.debounce(function () {

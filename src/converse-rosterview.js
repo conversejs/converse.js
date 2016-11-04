@@ -52,17 +52,6 @@
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
-            initRoster: function () {
-                /* Create an instance of RosterView once the RosterGroups
-                 * collection has been created (in converse-core.js)
-                 */
-                this.__super__.initRoster.apply(this, arguments);
-                converse.rosterview = new converse.RosterView({
-                    'model': converse.rostergroups
-                });
-                converse.rosterview.render();
-            },
-
             RosterGroups: {
                 comparator: function () {
                     // RosterGroupsComparator only gets set later (once i18n is
@@ -391,7 +380,6 @@
                         Strophe.NS.ROSTERX, 'message', null
                     );
                 },
-
 
                 onGroupAdd: function (group) {
                     var view = new converse.RosterGroupView({model: group});
@@ -901,6 +889,20 @@
                     }
                 }
             });
+
+            /* -------- Event Handlers ----------- */
+
+            var initRoster = function () {
+                /* Create an instance of RosterView once the RosterGroups
+                 * collection has been created (in converse-core.js)
+                 */
+                converse.rosterview = new converse.RosterView({
+                    'model': converse.rostergroups
+                });
+                converse.rosterview.render();
+            };
+            converse.on('rosterInitialized', initRoster);
+            converse.on('rosterReadyAfterReconnection', initRoster);
         }
     });
 }));

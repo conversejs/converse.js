@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2.0.1 (Unreleased)
+- #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
+- #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
+- Removed shared state between tests. All tests are now isolated. [jcbrand]
 - Allow the context (i.e. `this` value) to be passed in when registering event
   listeners with `converse.listen.on` and `converse.listen.once`. [jcbrand]
 - New event ['rosterContactsFetched'](https://conversejs.org/docs/html/development.html#rosterContactsFetched) [jcbrand]
@@ -9,7 +12,6 @@
 - Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
 - Add support for XEP-0048, chat room bookmarks [jcbrand]
 - New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection_options) [jcbrand]
-- #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

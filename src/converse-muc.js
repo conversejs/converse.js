@@ -60,6 +60,8 @@
     converse.templates.room_item = tpl_room_item;
     converse.templates.room_panel = tpl_room_panel;
 
+    var ROOMS_PANEL_ID = 'chatrooms';
+
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,
@@ -668,7 +670,17 @@
                     return converse.connection.send(stanza);
                 },
 
+                cleanup: function () {
+                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                    this.removeHandlers();
+                },
+
                 leave: function(exit_msg) {
+                    if (!converse.connection.connected) {
+                        // Don't send out a stanza if we're not connected.
+                        this.cleanup();
+                        return;
+                    }
                     var presenceid = converse.connection.getUniqueId();
                     var presence = $pres({
                         type: "unavailable",
@@ -679,12 +691,10 @@
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
                     }
-                    var that = this;
                     converse.connection.addHandler(
-                        function () {
-                            that.model.set('connection_status', Strophe.Status.DISCONNECTED);
-                            that.removeHandlers();
-                        }, null, "presence", null, presenceid);
+                        this.cleanup.bind(this),
+                        null, "presence", null, presenceid
+                    );
                     converse.connection.send(presence);
                 },
 
@@ -1426,9 +1436,17 @@
                                 'label_join': __('Join Room'),
                                 'label_show_rooms': __('Show rooms')
                             })
-                        ).hide());
+                        ));
                     this.$tabs = this.$parent.parent().find('#controlbox-tabs');
-                    this.$tabs.append(converse.templates.chatrooms_tab({label_rooms: __('Rooms')}));
+
+                    var controlbox = converse.chatboxes.get('controlbox');
+                    this.$tabs.append(converse.templates.chatrooms_tab({
+                        'label_rooms': __('Rooms'),
+                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
+                    }));
+                    if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
+                        this.$el.addClass('hidden');
+                    }
                     return this;
                 },
 

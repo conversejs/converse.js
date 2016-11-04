@@ -164,11 +164,13 @@
                     callback = options;
                     errback = callback;
                 }
+                /*
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.log('This server does not support XEP-0313, Message Archive Management');
                     errback(null);
                     return;
                 }
+                */
                 var queryid = converse.connection.getUniqueId();
                 var attrs = {'type':'set'};
                 if (typeof options !== "undefined" && options.groupchat) {

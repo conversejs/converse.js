@@ -1,5 +1,13 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
 Integrating converse.js into other frameworks
 =============================================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
 
 Angular.js
 ----------
@@ -8,7 +16,7 @@ Angular.js has the concept of a `service <https://docs.angularjs.org/guide/servi
 which is a special kind of `provider <https://docs.angularjs.org/guide/providers>`_.
 
 An angular.js service is a constructor or object which provides an API defined by the
-writer of the service. The goal of a service is to organize and share code, so
+author of the service. The goal of a service is to organize and share code, so
 that it can be used across an application.
 
 So, if we wanted to properly integrate converse.js into an angular.js
@@ -16,7 +24,7 @@ application, then putting it into a service is a good approach.
 
 This lets us avoid having a global ``converse`` API object (accessible via
 ``windows.converse``), and instead we can get hold of the converse API via
-angular.js dependency injection, when we specify it as a dependency for our
+angular's dependency injection, when we specify it as a dependency for our
 angular components.
 
 Below is an example code that wraps converse.js as an angular.js service.
@@ -24,16 +32,27 @@ Below is an example code that wraps converse.js as an angular.js service.
 .. code-block:: javascript
 
     angular.module('converse', []).service('converse', function() {
-        var deferred = new $.Deferred(),
-            promise = deferred.promise();
+        // We create three promises, which will be resolved at various times
+        var loaded_deferred = new $.Deferred(), // Converse.js has been loaded
+            connected_deferred = new $.Deferred(), // An XMPP connection has been established
+            roster_deferred = new $.Deferred(); // The contacts roster has been fetched.
 
+        var loaded_promise = loaded_deferred.promise(),
+            connected_promise = connected_deferred.promise(),
+            roster_promise = roster_deferred.promise();
+
+        // This is the API of the service.
         var service = {
-            'load': _.constant(promise),
+            'waitUntilLoaded': _.constant(loaded_promise),
             'initialize': function initConverse(options) {
-                this.load().done(_.partial(this.api.initialize, options));
-            }
+                this.waitUntilLoaded().done(_.partial(this.api.initialize, options));
+            },
+            'waitUntilConnected': _.constant(connected_promise),
+            'waitUntilRosterFetched': _.constant(roster_promise),
         };
 
+        // Here we define the core components of converse.js that will be
+        // loaded and used.
         define("converse", [
             "converse-api",
             // START: Removable components
@@ -93,7 +112,7 @@ your components, for example:
         // Your custom code can come here..
 
         // Then when you're ready, you can initialize converse.js
-        converse.load().done(function () {
+        converse.waitUntilLoaded().done(function () {
             converse.initialize({
                 'allow_logout': false,
                 'auto_login': 'true',
@@ -108,7 +127,7 @@ your components, for example:
         });
     });
 
-You might have noticed the ``load()`` method being called on the ``converse``
+You might have noticed the ``waitUntilLoaded()`` method being called on the ``converse``
 service. This is a special method added to the service (see the implementation
 example above) that makes sure that converse.js is loaded and available. It
 returns a jQuery promise which resolves once converse.js is available.

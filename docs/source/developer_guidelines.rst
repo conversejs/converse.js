@@ -1,5 +1,13 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
 Developer guidelines
 ====================
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
 
 If you want to work with the non-minified Javascript and CSS files you'll soon
 notice that there are references to missing *components* and *node_modules* directories.
@@ -95,9 +103,27 @@ to use it this way, please refer to
 for an example of how and in what order all the Javascript files that converse.js
 depends on need to be loaded.
 
+Brief description of converse.js's dependencies
+-----------------------------------------------
 
-Before submitting a pull request
---------------------------------
+Converse.js relies on the following dependencies:
+
+* `JQuery <http://jquery.com/>`_ for DOM manipulation and `promises <http://api.jquery.com/promise/>`_.
+* `moment.js <http://momentjs.com/>`_ provides a better API for handling dates and times.
+* `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
+  build XMPP stanzas, to send them, and to register handlers for received stanzas.
+* `Underscore <http://underscorejs.org/>`_ provides very useful utility functions.
+* `Backbone <http://backbonejs.org/>`_ is used to model the data as Models and
+  Collections and to create Views that render the UI.
+* `backbone.overview <http://github.com/jcbrand/backbone.overview>`_ provides
+  Overviews, which are to Views as Backbone Collections are to Models.
+* `pluggable.js <https://github.com/jcbrand/pluggable.js>`_ is the plugin
+  architecture for Converse.js. It registers and initializes plugins and
+  allows existing attributes, functions and objects on converse.js to be
+  overridden inside plugins.
+
+When submitting a pull request
+------------------------------
 
 Please follow the usual github workflow. Create your own local fork of this repository,
 make your changes and then submit a pull request.

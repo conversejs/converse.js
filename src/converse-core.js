@@ -390,14 +390,15 @@
 
 
         this.reconnect = _.debounce(function (condition) {
+            converse.log('The connection has dropped, attempting to reconnect.');
+            converse.giveFeedback(
+                __("Reconnecting"),
+                'warn',
+                __('The connection has dropped, attempting to reconnect.')
+            );
             converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
-            converse.log('The connection has dropped, attempting to reconnect.');
-            converse.giveFeedback(
-                __("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.')
-            );
-            converse.clearSession();
             converse._tearDown();
             if (converse.authentication !== "prebind") {
                 converse.autoLogin();
@@ -534,12 +535,13 @@
 
         this.logOut = function () {
             converse.disconnection_cause = converse.LOGOUT;
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.clearSession();
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
                 converse.connection.reset();
             }
+            converse.clearSession();
+            converse._tearDown();
+            converse.chatboxviews.closeAllChatBoxes();
             converse.emit('logout');
         };
 
@@ -567,7 +569,6 @@
                 converse.clearMsgCounter();
             }
             converse.windowState = state;
-
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -596,25 +597,6 @@
             }
         };
 
-        this.afterReconnected = function () {
-            this.registerPresenceHandler();
-            this.chatboxes.registerMessageHandler();
-            this.xmppstatus.sendPresence();
-            this.giveFeedback(__('Contacts'));
-        };
-
-        this.onReconnected = function () {
-            // We need to re-register all the event handlers on the newly
-            // created connection.
-            var deferred = new $.Deferred();
-            converse.initStatus().done(function () {
-                converse.afterReconnected();
-                deferred.resolve();
-            });
-            converse.emit('reconnected');
-            return deferred.promise();
-        };
-
         this.enableCarbons = function () {
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
@@ -640,12 +622,16 @@
         };
 
         this.initRoster = function () {
+            /* Initialize the Bakcbone collections that represent the contats
+             * roster and the roster groups.
+             */
             converse.roster = new converse.RosterContacts();
             converse.roster.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.contacts-'+converse.bare_jid));
             converse.rostergroups = new converse.RosterGroups();
             converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
                 b64_sha1('converse.roster.groups'+converse.bare_jid));
+            converse.emit('rosterInitialized');
         };
 
         this.populateRoster = function () {
@@ -685,28 +671,31 @@
         };
 
         this.onStatusInitialized = function () {
-            this.registerIntervalHandler();
-            this.initRoster();
-            this.populateRoster();
-            this.chatboxes.onConnected();
-            this.registerPresenceHandler();
-            this.giveFeedback(__('Contacts'));
-            if (typeof this.callback === 'function') {
+            converse.registerIntervalHandler();
+            converse.initRoster();
+            converse.populateRoster();
+            converse.chatboxes.onConnected();
+            converse.registerPresenceHandler();
+            converse.giveFeedback(__('Contacts'));
+            if (typeof converse.callback === 'function') {
                 // XXX: Deprecate in favor of init_deferred
-                this.callback();
+                converse.callback();
             }
-            if (converse.connection.service === 'jasmine tests') {
-                init_deferred.resolve(converse);
-            } else {
-                init_deferred.resolve();
-            }
+            init_deferred.resolve();
             converse.emit('initialized');
         };
 
+        this.setUserJid = function () {
+            converse.jid = converse.connection.jid;
+            converse.bare_jid = Strophe.getBareJidFromJid(converse.connection.jid);
+            converse.resource = Strophe.getResourceFromJid(converse.connection.jid);
+            converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
+        };
+
         this.onConnected = function (callback) {
-            // When reconnecting, there might be some open chat boxes. We don't
-            // know whether these boxes are of the same account or not, so we
-            // close them now.
+            /* Called as soon as a new connection has been established, either
+             * by logging in or by attaching to an existing BOSH session.
+             */
             // XXX: ran into an issue where a returned PubSub BOSH response was
             // not received by the browser. The solution was to flush the
             // connection early on. I don't know what the underlying cause of
@@ -716,19 +705,35 @@
             // In any case, flushing here (sending out a new BOSH request)
             // solves the problem.
             converse.connection.flush();
-            /* Called as soon as a new connection has been established, either
-             * by logging in or by attaching to an existing BOSH session.
-             */
-            this.chatboxviews.closeAllChatBoxes();
-            this.jid = this.connection.jid;
-            this.bare_jid = Strophe.getBareJidFromJid(this.connection.jid);
-            this.resource = Strophe.getResourceFromJid(this.connection.jid);
-            this.domain = Strophe.getDomainFromJid(this.connection.jid);
-            this.features = new this.Features();
-            this.enableCarbons();
-            this.initStatus().done(_.bind(this.onStatusInitialized, this));
+            // When reconnecting, there might be some open chat boxes. We don't
+            // know whether these boxes are of the same account or not, so we
+            // close them now.
+            converse.chatboxviews.closeAllChatBoxes();
+            converse.setUserJid();
+            converse.features = new converse.Features();
+            converse.enableCarbons();
+            converse.initStatus().done(converse.onStatusInitialized);
             converse.emit('connected');
             converse.emit('ready'); // BBB: Will be removed.
+        };
+
+        this.onReconnected = function () {
+            /* Called when converse has succesfully reconnected to the XMPP
+             * server after the session was dropped.
+             * Similar to the `onConnected` method, but skips a few unnecessary
+             * steps.
+             */
+            converse.setUserJid();
+            converse.registerPresenceHandler();
+            converse.chatboxes.registerMessageHandler();
+            // Give event handlers a chance to register views for the roster
+            // and its groups, before we start populating.
+            converse.emit('rosterReadyAfterReconnection');
+            converse.populateRoster();
+            converse.chatboxes.onConnected();
+            converse.xmppstatus.sendPresence();
+            converse.emit('reconnected');
+            converse.giveFeedback(__('Contacts'));
         };
 
         this.RosterContact = Backbone.Model.extend({
@@ -1368,11 +1373,12 @@
                  * This method gets overridden entirely in src/converse-controlbox.js
                  * if the controlbox plugin is active.
                  */
+                var that = this;
                 collection.each(function (chatbox) {
-                    if (this.chatBoxMayBeShown(chatbox)) {
+                    if (that.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
-                }.bind(this));
+                });
                 converse.emit('chatBoxesFetched');
             },
 
@@ -1945,6 +1951,15 @@
             utils.merge(converse, settings);
             utils.applyUserSettings(converse, settings, converse.user_settings);
         };
+
+        // If initialize gets called a second time (e.g. during tests), then we
+        // need to re-apply all plugins (for a new converse instance), and we
+        // therefore need to clear this array that prevents plugins from being
+        // initialized twice.
+        // If initialize is called for the first time, then this array is empty
+        // in any case.
+        converse.pluggable.initialized_plugins = [];
+
         converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
             'converse': converse
@@ -1952,7 +1967,13 @@
         converse.emit('pluginsInitialized');
         converse._initialize();
         converse.registerGlobalEventHandlers();
-        return init_deferred.promise();
+
+        if (!_.isUndefined(converse.connection) &&
+            converse.connection.service === 'jasmine tests') {
+            return converse;
+        } else {
+            return init_deferred.promise();
+        }
     };
     return converse;
 }));

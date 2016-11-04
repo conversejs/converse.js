@@ -1,4 +1,3 @@
-/*global converse */
 (function (root, factory) {
     define([
         "jquery",
@@ -13,12 +12,12 @@
 
     describe("A headlines box", function () {
 
-        beforeEach(function () {
-            test_utils.openControlBox();
-            test_utils.openContactsPanel();
+        afterEach(function () {
+            converse_api.user.logout();
+            test_utils.clearBrowserStorage();
         });
 
-        it("will not open nor display non-headline messages", function () {
+        it("will not open nor display non-headline messages", mock.initConverse(function (converse) {
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -29,6 +28,8 @@
              *      <body>SORRY FOR THIS ADVERT</body
              *  </message
              */
+            test_utils.openControlBox();
+            test_utils.openContactsPanel(converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -47,11 +48,10 @@
                 expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
                 utils.isHeadlineMessage.restore();
             });
+        }));
 
-        });
 
-
-        it("will open and display headline messages", function () {
+        it("will open and display headline messages", mock.initConverse(function (converse) {
             /*
              *  <message from='notify.example.com'
              *          to='romeo@im.example.com'
@@ -66,6 +66,8 @@
              *  </x>
              *  </message>
              */
+            test_utils.openControlBox();
+            test_utils.openContactsPanel(converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -91,6 +93,6 @@
                 expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
                 utils.isHeadlineMessage.restore(); // unwraps
             });
-        });
+        }));
     });
 }));

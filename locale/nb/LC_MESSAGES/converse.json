@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "nb"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Lagre"
+         ],
+         "Cancel": [
+            null,
+            "Avbryt"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Klikk for å åpne dette rommet"
+         ],
+         "Show more information on this room": [
+            null,
+            "Vis mer informasjon om dette rommet"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Personlig melding"
@@ -98,10 +142,6 @@
          "Custom status": [
             null,
             "Personlig status"
-         ],
-         "Save": [
-            null,
-            "Lagre"
          ],
          "online": [
             null,
@@ -283,10 +323,6 @@
             null,
             "Tillat stumme brukere å skrive meldinger"
          ],
-         "Cancel": [
-            null,
-            "Avbryt"
-         ],
          "An error occurred while trying to save the form.": [
             null,
             "En feil skjedde under lagring av skjemaet."
@@ -462,14 +498,6 @@
          "Rooms on %1$s": [
             null,
             "Rom på %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Klikk for å åpne dette rommet"
-         ],
-         "Show more information on this room": [
-            null,
-            "Vis mer informasjon om dette rommet"
          ],
          "Description:": [
             null,

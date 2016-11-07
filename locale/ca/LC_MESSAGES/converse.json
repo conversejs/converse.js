@@ -7,6 +7,46 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "ca"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Desa"
+         ],
+         "Cancel": [
+            null,
+            "Cancel·la"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Feu clic per obrir aquesta sala"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostra més informació d'aquesta sala"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Close this chat box": [
             null,
             "Tanca aquest quadre del xat"
@@ -62,10 +102,6 @@
          "Clear all messages": [
             null,
             "Esborra tots els missatges"
-         ],
-         "Hide the list of occupants": [
-            null,
-            "Amaga la llista d'ocupants"
          ],
          "Insert a smiley": [
             null,
@@ -126,10 +162,6 @@
          "Custom status": [
             null,
             "Estat personalitzat"
-         ],
-         "Save": [
-            null,
-            "Desa"
          ],
          "online": [
             null,
@@ -251,6 +283,10 @@
             null,
             "Missatge"
          ],
+         "Hide the list of occupants": [
+            null,
+            "Amaga la llista d'ocupants"
+         ],
          "Error: could not execute the command": [
             null,
             "Error: no s'ha pogut executar l'ordre"
@@ -314,10 +350,6 @@
          "Allow muted user to post messages": [
             null,
             "Permet que un usuari silenciat publiqui missatges"
-         ],
-         "Cancel": [
-            null,
-            "Cancel·la"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -494,14 +526,6 @@
          "Rooms on %1$s": [
             null,
             "Sales a %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Feu clic per obrir aquesta sala"
-         ],
-         "Show more information on this room": [
-            null,
-            "Mostra més informació d'aquesta sala"
          ],
          "Description:": [
             null,

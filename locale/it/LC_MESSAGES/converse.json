@@ -7,6 +7,54 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "it"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Salva"
+         ],
+         "Cancel": [
+            null,
+            "Annulla"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Clicca per aprire questa stanza"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostra più informazioni su questa stanza"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
+         "You have unread messages": [
+            null,
+            "Hai messaggi non letti"
+         ],
+         "Close this chat box": [
+            null,
+            "Chiudi questa chat"
+         ],
          "Personal message": [
             null,
             "Messaggio personale"
@@ -17,7 +65,7 @@
          ],
          "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
             null,
-            "Un messaggio molto lungo è stato ricevuto. Questo potrebbe ridurre le prestazioni. Il messaggio mostrato è stato tagliato"
+            ""
          ],
          "is typing": [
             null,
@@ -29,7 +77,7 @@
          ],
          "has gone away": [
             null,
-            "è andato via"
+            "si è allontanato"
          ],
          "Show this menu": [
             null,
@@ -45,11 +93,11 @@
          ],
          "Are you sure you want to clear the messages from this chat box?": [
             null,
-            "Sei sicuro di volere rimuovere i messaggi da questa finestra di chat?"
+            "Sei sicuro di volere pulire i messaggi da questo chat box?"
          ],
          "has gone offline": [
             null,
-            "è offline"
+            "è andato offline"
          ],
          "is busy": [
             null,
@@ -59,17 +107,13 @@
             null,
             "Pulisci tutti i messaggi"
          ],
-         "Hide the list of occupants": [
-            null,
-            "Nascondi la lista dei partecipanti"
-         ],
          "Insert a smiley": [
             null,
-            "Inserisci smiley"
+            "Inserisci uno smiley"
          ],
          "Start a call": [
             null,
-            "Inizia chiamata"
+            "Inizia una chiamata"
          ],
          "Contacts": [
             null,
@@ -94,6 +138,10 @@
          "Log In": [
             null,
             "Entra"
+         ],
+         "Username": [
+            null,
+            "Username"
          ],
          "user@server": [
             null,
@@ -122,10 +170,6 @@
          "Custom status": [
             null,
             "Stato personalizzato"
-         ],
-         "Save": [
-            null,
-            "Salva"
          ],
          "online": [
             null,
@@ -175,6 +219,10 @@
             null,
             "Cerca"
          ],
+         "e.g. user@example.org": [
+            null,
+            "es. user@example.org"
+         ],
          "Add": [
             null,
             "Aggiungi"
@@ -203,6 +251,10 @@
             null,
             "Clicca per nascondere questi contatti"
          ],
+         "Reconnecting": [
+            null,
+            "Riconnessione"
+         ],
          "The connection has dropped, attempting to reconnect.": [
             null,
             ""
@@ -213,11 +265,23 @@
          ],
          "The connection to the chat server has dropped": [
             null,
-            "La connessione col server è stata persa"
+            ""
+         ],
+         "Connection error": [
+            null,
+            "Errore di connessione"
+         ],
+         "An error occurred while connecting to the chat server.": [
+            null,
+            "Si è verificato un errore durante la connessione al server."
          ],
          "Authenticating": [
             null,
             "Autenticazione in corso"
+         ],
+         "Authentication failed.": [
+            null,
+            "Autenticazione fallita."
          ],
          "Authentication Failed": [
             null,
@@ -231,6 +295,14 @@
             null,
             "Questo client non consente sottoscrizioni di presenza"
          ],
+         "Close this box": [
+            null,
+            "Chiudi questo box"
+         ],
+         "Minimize this box": [
+            null,
+            "Riduci questo box"
+         ],
          "Click to restore this chat": [
             null,
             "Clicca per ripristinare questa chat"
@@ -241,11 +313,15 @@
          ],
          "Minimize this chat box": [
             null,
-            ""
+            "Riduci questo chat box"
          ],
          "Message": [
             null,
             "Messaggio"
+         ],
+         "Hide the list of occupants": [
+            null,
+            "Nascondi la lista degli occupanti"
          ],
          "Error: could not execute the command": [
             null,
@@ -253,7 +329,7 @@
          ],
          "Error: the \"": [
             null,
-            "Errore: il \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -269,7 +345,7 @@
          ],
          "Change user role to occupant": [
             null,
-            "Cambia ruolo dei partecipanti"
+            ""
          ],
          "Kick user from room": [
             null,
@@ -289,9 +365,13 @@
          ],
          "Change your nickname": [
             null,
-            "Cambia Nickname"
+            ""
          ],
          "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Grant ownership of this room": [
             null,
             ""
          ],
@@ -307,25 +387,25 @@
             null,
             ""
          ],
-         "Cancel": [
-            null,
-            "Annulla"
-         ],
          "An error occurred while trying to save the form.": [
             null,
             "Errore durante il salvataggio del modulo"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            ""
+            "Il nickname scelto è riservato o attualmente in uso, indicane uno diverso."
          ],
          "Please choose your nickname": [
             null,
-            "Perfavore scegli un nickname"
+            "Scegli il tuo nickname"
          ],
          "Nickname": [
             null,
             "Soprannome"
+         ],
+         "Enter room": [
+            null,
+            "Entra nella stanza"
          ],
          "This chatroom requires a password": [
             null,
@@ -447,9 +527,29 @@
             null,
             "Questa stanza non esiste (per ora)"
          ],
+         "This room has reached its maximum number of occupants": [
+            null,
+            "Questa stanza ha raggiunto il limite massimo di occupanti"
+         ],
          "Topic set by %1$s to: %2$s": [
             null,
             "Topic impostato da %1$s a: %2$s"
+         ],
+         "Click to mention this user in your message.": [
+            null,
+            "Clicca per menzionare questo utente nel tuo messaggio."
+         ],
+         "This user is a moderator.": [
+            null,
+            "Questo utente è un moderatore."
+         ],
+         "This user can send messages in this room.": [
+            null,
+            "Questo utente può inviare messaggi in questa stanza."
+         ],
+         "This user can NOT send messages in this room.": [
+            null,
+            "Questo utente NON può inviare messaggi in questa stanza."
          ],
          "Invite": [
             null,
@@ -494,14 +594,6 @@
          "Rooms on %1$s": [
             null,
             "Stanze su %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Clicca per aprire questa stanza"
-         ],
-         "Show more information on this room": [
-            null,
-            "Mostra più informazioni su questa stanza"
          ],
          "Description:": [
             null,
@@ -569,11 +661,15 @@
          ],
          "Notification from %1$s": [
             null,
-            ""
+            "Notifica da %1$s"
          ],
          "%1$s says": [
             null,
-            ""
+            "%1$s dice"
+         ],
+         "has come online": [
+            null,
+            "è online"
          ],
          "wants to be your contact": [
             null,
@@ -581,11 +677,11 @@
          ],
          "Re-establishing encrypted session": [
             null,
-            ""
+            "Ristabilisci sessione criptata"
          ],
          "Generating private key.": [
             null,
-            ""
+            "Generazione chiave private in corso."
          ],
          "Your browser might become unresponsive.": [
             null,
@@ -755,6 +851,10 @@
             null,
             ""
          ],
+         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            "Il provider ha respinto il tentativo di registrazione. Controlla i dati inseriti."
+         ],
          "This contact is busy": [
             null,
             "Questo contatto è occupato"
@@ -801,7 +901,7 @@
          ],
          "Filter": [
             null,
-            ""
+            "Filtri"
          ],
          "State": [
             null,
@@ -817,7 +917,7 @@
          ],
          "Extended Away": [
             null,
-            ""
+            "Away estesa"
          ],
          "Click to remove this contact": [
             null,

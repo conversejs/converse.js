@@ -6,6 +6,50 @@
             "domain": "converse",
             "lang": "zh"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "保存"
+         ],
+         "Cancel": [
+            null,
+            "取消"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "打开聊天室"
+         ],
+         "Show more information on this room": [
+            null,
+            "显示次聊天室的更多信息"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "私信"
@@ -41,10 +85,6 @@
          "Are you sure you want to clear the messages from this chat box?": [
             null,
             "你确定清除此次的聊天记录吗？"
-         ],
-         "Hide the list of occupants": [
-            null,
-            ""
          ],
          "Insert a smiley": [
             null,
@@ -93,10 +133,6 @@
          "Custom status": [
             null,
             "DIY状态"
-         ],
-         "Save": [
-            null,
-            "保存"
          ],
          "online": [
             null,
@@ -206,6 +242,10 @@
             null,
             "信息"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -245,10 +285,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "取消"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -417,14 +453,6 @@
          "Rooms on %1$s": [
             null,
             "%1$s 上的聊天室"
-         ],
-         "Click to open this room": [
-            null,
-            "打开聊天室"
-         ],
-         "Show more information on this room": [
-            null,
-            "显示次聊天室的更多信息"
          ],
          "Description:": [
             null,

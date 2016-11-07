@@ -6,6 +6,46 @@
             "domain": "converse",
             "lang": "hu"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Ment"
+         ],
+         "Cancel": [
+            null,
+            "Mégsem"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Belépés a csevegőszobába"
+         ],
+         "Show more information on this room": [
+            null,
+            "További információk a csevegőszobáról"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Close this chat box": [
             null,
             "A csevegés bezárása"
@@ -61,10 +101,6 @@
          "Clear all messages": [
             null,
             "Üzenetek törlése"
-         ],
-         "Hide the list of occupants": [
-            null,
-            "A résztvevők listájának elrejtése"
          ],
          "Insert a smiley": [
             null,
@@ -125,10 +161,6 @@
          "Custom status": [
             null,
             "Egyedi státusz"
-         ],
-         "Save": [
-            null,
-            "Ment"
          ],
          "online": [
             null,
@@ -254,6 +286,10 @@
             null,
             "Üzenet"
          ],
+         "Hide the list of occupants": [
+            null,
+            "A résztvevők listájának elrejtése"
+         ],
          "Error: could not execute the command": [
             null,
             "Hiba: A parancs nem értelmezett"
@@ -317,10 +353,6 @@
          "Allow muted user to post messages": [
             null,
             "Elnémított felhasználók is küldhetnek üzeneteket"
-         ],
-         "Cancel": [
-            null,
-            "Mégsem"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -501,14 +533,6 @@
          "Rooms on %1$s": [
             null,
             "Csevegőszobák a(z) %1$s szerveren:"
-         ],
-         "Click to open this room": [
-            null,
-            "Belépés a csevegőszobába"
-         ],
-         "Show more information on this room": [
-            null,
-            "További információk a csevegőszobáról"
          ],
          "Description:": [
             null,

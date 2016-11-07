@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=2; plural=(n > 1);",
             "lang": "pt_BR"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Salvar"
+         ],
+         "Cancel": [
+            null,
+            "Cancelar"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "CLique para abrir a sala"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostrar mais informações nessa sala"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Mensagem pessoal"
@@ -34,10 +78,6 @@
          "Are you sure you want to clear the messages from this chat box?": [
             null,
             "Tem certeza que deseja limpar as mensagens dessa caixa?"
-         ],
-         "Hide the list of occupants": [
-            null,
-            ""
          ],
          "Insert a smiley": [
             null,
@@ -86,10 +126,6 @@
          "Custom status": [
             null,
             "Status customizado"
-         ],
-         "Save": [
-            null,
-            "Salvar"
          ],
          "online": [
             null,
@@ -199,6 +235,10 @@
             null,
             "Mensagem"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -238,10 +278,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "Cancelar"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -410,14 +446,6 @@
          "Rooms on %1$s": [
             null,
             "Salas em %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "CLique para abrir a sala"
-         ],
-         "Show more information on this room": [
-            null,
-            "Mostrar mais informações nessa sala"
          ],
          "Description:": [
             null,

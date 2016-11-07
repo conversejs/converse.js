@@ -7,6 +7,54 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "en"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Save"
+         ],
+         "Cancel": [
+            null,
+            "Cancel"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Click to open this room"
+         ],
+         "Show more information on this room": [
+            null,
+            "Show more information on this room"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Close this chat box": [
             null,
             ""
@@ -60,10 +108,6 @@
             ""
          ],
          "Clear all messages": [
-            null,
-            ""
-         ],
-         "Hide the list of occupants": [
             null,
             ""
          ],
@@ -126,10 +170,6 @@
          "Custom status": [
             null,
             "Custom status"
-         ],
-         "Save": [
-            null,
-            "Save"
          ],
          "online": [
             null,
@@ -271,6 +311,10 @@
             null,
             "Message"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -334,10 +378,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "Cancel"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -526,14 +566,6 @@
          "Rooms on %1$s": [
             null,
             "Rooms on %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Click to open this room"
-         ],
-         "Show more information on this room": [
-            null,
-            "Show more information on this room"
          ],
          "Description:": [
             null,

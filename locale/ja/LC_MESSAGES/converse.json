@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=1; plural=0;",
             "lang": "JA"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "保存"
+         ],
+         "Cancel": [
+            null,
+            "キャンセル"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "クリックしてこの談話室を開く"
+         ],
+         "Show more information on this room": [
+            null,
+            "この談話室についての詳細を見る"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "私信"
@@ -40,10 +84,6 @@
             "メッセージを削除"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
-            ""
-         ],
-         "Hide the list of occupants": [
             null,
             ""
          ],
@@ -94,10 +134,6 @@
          "Custom status": [
             null,
             "独自の在席状況"
-         ],
-         "Save": [
-            null,
-            "保存"
          ],
          "online": [
             null,
@@ -211,6 +247,10 @@
             null,
             "メッセージ"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -250,10 +290,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "キャンセル"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -422,14 +458,6 @@
          "Rooms on %1$s": [
             null,
             "%1$s の談話室一覧"
-         ],
-         "Click to open this room": [
-            null,
-            "クリックしてこの談話室を開く"
-         ],
-         "Show more information on this room": [
-            null,
-            "この談話室についての詳細を見る"
          ],
          "Description:": [
             null,

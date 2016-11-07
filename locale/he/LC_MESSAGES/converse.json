@@ -7,6 +7,46 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "he"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "שמור"
+         ],
+         "Cancel": [
+            null,
+            "ביטול"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "לחץ כדי לפתוח את חדר זה"
+         ],
+         "Show more information on this room": [
+            null,
+            "הצג עוד מידע אודות חדר זה"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "הודעה אישית"
@@ -118,10 +158,6 @@
          "Custom status": [
             null,
             "מצב מותאם"
-         ],
-         "Save": [
-            null,
-            "שמור"
          ],
          "online": [
             null,
@@ -307,10 +343,6 @@
             null,
             "התר למשתמש מושתק לפרסם הודעות"
          ],
-         "Cancel": [
-            null,
-            "ביטול"
-         ],
          "An error occurred while trying to save the form.": [
             null,
             "אירעה שגיאה במהלך ניסיון שמירת הטופס."
@@ -490,14 +522,6 @@
          "Rooms on %1$s": [
             null,
             "חדרים על %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "לחץ כדי לפתוח את חדר זה"
-         ],
-         "Show more information on this room": [
-            null,
-            "הצג עוד מידע אודות חדר זה"
          ],
          "Description:": [
             null,

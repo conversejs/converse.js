@@ -7,6 +7,46 @@
             "plural_forms": "nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
             "lang": "pl"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Zachowaj"
+         ],
+         "Cancel": [
+            null,
+            "Anuluj"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Kliknij aby wejść do pokoju"
+         ],
+         "Show more information on this room": [
+            null,
+            "Pokaż więcej informacji o pokoju"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "You have unread messages": [
             null,
             "Masz nieprzeczytane wiadomości"
@@ -66,10 +106,6 @@
          "Clear all messages": [
             null,
             "Wyczyść wszystkie wiadomości"
-         ],
-         "Hide the list of occupants": [
-            null,
-            "Ukryj listę rozmówców"
          ],
          "Insert a smiley": [
             null,
@@ -134,10 +170,6 @@
          "Custom status": [
             null,
             "Własny status"
-         ],
-         "Save": [
-            null,
-            "Zachowaj"
          ],
          "online": [
             null,
@@ -275,6 +307,10 @@
             null,
             "Wiadomość"
          ],
+         "Hide the list of occupants": [
+            null,
+            "Ukryj listę rozmówców"
+         ],
          "Error: could not execute the command": [
             null,
             "Błąd: nie potrafię uruchomić polecenia"
@@ -338,10 +374,6 @@
          "Allow muted user to post messages": [
             null,
             "Pozwól uciszonemu człowiekowi na rozmowę"
-         ],
-         "Cancel": [
-            null,
-            "Anuluj"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -554,14 +586,6 @@
          "Rooms on %1$s": [
             null,
             "Pokoje na %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Kliknij aby wejść do pokoju"
-         ],
-         "Show more information on this room": [
-            null,
-            "Pokaż więcej informacji o pokoju"
          ],
          "Description:": [
             null,

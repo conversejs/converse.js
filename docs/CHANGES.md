@@ -2,6 +2,7 @@
 
 ## 2.0.1 (Unreleased)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
+- #705 White content after submitting password on chatrooms [jcbrand]
 - #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
 - Removed shared state between tests. All tests are now isolated. [jcbrand]
 - Allow the context (i.e. `this` value) to be passed in when registering event

@@ -11,12 +11,13 @@
     <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="../components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="../components/fontawesome/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="../css/theme.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="../css/converse.css" />
-    <script src="../config.js"></script> <!-- Base require.js configuration -->
-    <script src="../components/requirejs/require.js"></script>
-    <script src="config.js"></script> <!-- Just set the baseUrl since we're in a subfolder -->
-    <script src="../src/converse.js"></script>
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/theme.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/converse.min.css" />
+    <script type="text/javascript" src="../analytics.js"></script>
+    <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+    <![if gte IE 9]>
+	<script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
+    <![endif]>
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -51,6 +52,7 @@
 <script>
     require(['converse'], function (converse) {
         converse.initialize({
+            allow_logout: false, // No point in logging out when we have auto_login as true.
             allow_muc_invitations: false, // Doesn't make sense to allow because only
                                           // roster contacts can be invited
             allow_contact_requests: false, // Contacts from other servers cannot,

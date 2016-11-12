@@ -6,6 +6,46 @@
             "domain": "converse",
             "lang": "ru"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Сохранить"
+         ],
+         "Cancel": [
+            null,
+            "Отменить"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Зайти в чат"
+         ],
+         "Show more information on this room": [
+            null,
+            "Показать больше информации об этом чате"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Close this chat box": [
             null,
             "Закрыть это окно чата"
@@ -61,10 +101,6 @@
          "Clear all messages": [
             null,
             "Очистить все сообщения"
-         ],
-         "Hide the list of occupants": [
-            null,
-            "Спрятать список участников"
          ],
          "Insert a smiley": [
             null,
@@ -125,10 +161,6 @@
          "Custom status": [
             null,
             "Произвольный статус"
-         ],
-         "Save": [
-            null,
-            "Сохранить"
          ],
          "online": [
             null,
@@ -246,6 +278,10 @@
             null,
             "Сообщение"
          ],
+         "Hide the list of occupants": [
+            null,
+            "Спрятать список участников"
+         ],
          "Error: could not execute the command": [
             null,
             "Ошибка: невозможно выполнить команду"
@@ -301,10 +337,6 @@
          "Allow muted user to post messages": [
             null,
             "Разрешить заглушенным пользователям отправлять сообщения"
-         ],
-         "Cancel": [
-            null,
-            "Отменить"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -477,14 +509,6 @@
          "Rooms on %1$s": [
             null,
             "Чаты %1$s:"
-         ],
-         "Click to open this room": [
-            null,
-            "Зайти в чат"
-         ],
-         "Show more information on this room": [
-            null,
-            "Показать больше информации об этом чате"
          ],
          "Description:": [
             null,

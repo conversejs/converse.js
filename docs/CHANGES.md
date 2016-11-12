@@ -1,7 +1,11 @@
 # Changelog
 
-## 2.0.1 (Unreleased)
+## 2.0.2 (Unreleased)
+- #721 keepalive not working with anonymous authentication [jcbrand]
+
+## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
+- #705 White content after submitting password on chatrooms [jcbrand]
 - #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
 - Removed shared state between tests. All tests are now isolated. [jcbrand]
 - Allow the context (i.e. `this` value) to be passed in when registering event
@@ -11,7 +15,7 @@
 - HTML templates are now loaded in the respective modules/plugins. [jcbrand]
 - Start improving Content-Security-Policy compatibility by removing inline CSS. [mathiasertl]
 - Add support for XEP-0048, chat room bookmarks [jcbrand]
-- New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection_options) [jcbrand]
+- New configuration setting [connection_options](https://conversejs.org/docs/html/configuration.html#connection-options) [jcbrand]
 
 ## 2.0.0 (2016-09-16)
 - #656 Online users count not shown initially [amanzur]

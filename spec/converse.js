@@ -46,13 +46,11 @@
                 }));
 
                 it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (converse) {
-                    var authentication = converse.authentication;
                     var jid = converse.jid;
                     delete converse.jid;
                     converse.authentication = "prebind";
                     expect(converse.logIn.bind(converse)).toThrow(
-                        new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values"));
-                    converse.authentication= authentication;
+                        new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
                     converse.bosh_service_url = undefined;
                     converse.jid = jid;
                 }));

@@ -178,7 +178,7 @@ jsmin: $(BUILDS)
 dist:: build
 
 .PHONY: build
-build:: stamp-npm css
+build:: stamp-bundler stamp-bower css
 	$(GRUNT) json
 	make jsmin
 

@@ -2,7 +2,7 @@
     baseUrl: "../",
     name: "almond",
     out: "../dist/converse.nojquery.min.js",
-    include: ['src/converse'],
+    include: ['converse'],
     exclude: ['jquery', 'jquery-private'],
     insertRequire: ['converse'],
     mainConfigFile: '../config.js',

@@ -6,6 +6,46 @@
             "domain": "converse",
             "lang": "af"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Stoor"
+         ],
+         "Cancel": [
+            null,
+            "Kanseleer"
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Klik om hierdie kletskamer te open"
+         ],
+         "Show more information on this room": [
+            null,
+            "Wys meer inligting aangaande hierdie kletskamer"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Close this chat box": [
             null,
             "Sluit hierdie kletskas"
@@ -61,10 +101,6 @@
          "Clear all messages": [
             null,
             "Vee alle boodskappe uit"
-         ],
-         "Hide the list of occupants": [
-            null,
-            "Verskuil die lys van deelnemers"
          ],
          "Insert a smiley": [
             null,
@@ -129,10 +165,6 @@
          "Custom status": [
             null,
             "Doelgemaakte status"
-         ],
-         "Save": [
-            null,
-            "Stoor"
          ],
          "online": [
             null,
@@ -266,6 +298,10 @@
             null,
             "Boodskap"
          ],
+         "Hide the list of occupants": [
+            null,
+            "Verskuil die lys van deelnemers"
+         ],
          "Error: could not execute the command": [
             null,
             "Fout: kon nie die opdrag uitvoer nie"
@@ -329,10 +365,6 @@
          "Allow muted user to post messages": [
             null,
             "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
-         ],
-         "Cancel": [
-            null,
-            "Kanseleer"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -517,14 +549,6 @@
          "Rooms on %1$s": [
             null,
             "Kletskamers op %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik om hierdie kletskamer te open"
-         ],
-         "Show more information on this room": [
-            null,
-            "Wys meer inligting aangaande hierdie kletskamer"
          ],
          "Description:": [
             null,

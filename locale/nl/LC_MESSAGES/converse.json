@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "nl"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Opslaan"
+         ],
+         "Cancel": [
+            null,
+            "Annuleren"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Klik om room te openen"
+         ],
+         "Show more information on this room": [
+            null,
+            "Toon meer informatie over deze room"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Persoonlijk bericht"
@@ -32,10 +76,6 @@
             "Verwijder bericht"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
-            ""
-         ],
-         "Hide the list of occupants": [
             null,
             ""
          ],
@@ -86,10 +126,6 @@
          "Custom status": [
             null,
             ""
-         ],
-         "Save": [
-            null,
-            "Opslaan"
          ],
          "online": [
             null,
@@ -203,6 +239,10 @@
             null,
             "Bericht"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -242,10 +282,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "Annuleren"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -414,14 +450,6 @@
          "Rooms on %1$s": [
             null,
             "Room op %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik om room te openen"
-         ],
-         "Show more information on this room": [
-            null,
-            "Toon meer informatie over deze room"
          ],
          "Description:": [
             null,

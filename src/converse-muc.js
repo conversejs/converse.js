@@ -914,7 +914,7 @@
                 },
 
                 renderPasswordForm: function () {
-                    this.$('.chatroom-body').children().hide();
+                    this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
                     this.$('.chatroom-body').append(
                         converse.templates.chatroom_password_form({
@@ -926,8 +926,8 @@
                 },
 
                 showDisconnectMessage: function (msg) {
-                    this.$('.chat-area').hide();
-                    this.$('.occupants').hide();
+                    this.$('.chat-area').addClass('hidden');
+                    this.$('.occupants').addClass('hidden');
                     this.$('span.centered.spinner').remove();
                     this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
                 },

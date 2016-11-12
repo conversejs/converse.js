@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
             "lang": "uk"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Зберегти"
+         ],
+         "Cancel": [
+            null,
+            "Відміна"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Клацніть, щоб увійти в цю кімнату"
+         ],
+         "Show more information on this room": [
+            null,
+            "Показати більше інформації про цю кімату"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Персональна вісточка"
@@ -110,10 +154,6 @@
          "Custom status": [
             null,
             "Власний статус"
-         ],
-         "Save": [
-            null,
-            "Зберегти"
          ],
          "online": [
             null,
@@ -299,10 +339,6 @@
             null,
             "Дозволити безголосому користувачу слати повідомлення"
          ],
-         "Cancel": [
-            null,
-            "Відміна"
-         ],
          "An error occurred while trying to save the form.": [
             null,
             "Трапилася помилка при спробі зберегти форму."
@@ -482,14 +518,6 @@
          "Rooms on %1$s": [
             null,
             "Кімнати на %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Клацніть, щоб увійти в цю кімнату"
-         ],
-         "Show more information on this room": [
-            null,
-            "Показати більше інформації про цю кімату"
          ],
          "Description:": [
             null,

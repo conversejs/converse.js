@@ -1757,31 +1757,30 @@
         };
 
         this.startNewBOSHSession = function () {
+            var that = this;
             $.ajax({
                 url:  this.prebind_url,
                 type: 'GET',
                 dataType: "json",
                 success: function (response) {
-                    this.connection.attach(
+                    that.connection.attach(
                             response.jid,
                             response.sid,
                             response.rid,
-                            this.onConnectStatusChanged
+                            that.onConnectStatusChanged
                     );
-                }.bind(this),
+                },
                 error: function (response) {
-                    delete this.connection;
-                    this.emit('noResumeableSession');
-                }.bind(this)
+                    delete that.connection;
+                    that.emit('noResumeableSession');
+                }
             });
         };
 
         this.attemptPreboundSession = function (tokens) {
             /* Handle session resumption or initialization when prebind is being used.
              */
-            if (this.jid && this.sid && this.rid) {
-                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
-            } else if (this.keepalive) {
+            if (this.keepalive) {
                 if (!this.jid) {
                     throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
                                     "you must supply the JID of the current user.");
@@ -1792,18 +1791,16 @@
                     this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
+            }
+
+            // No keepalive, or session resumption has failed.
+            if (this.jid && this.sid && this.rid) {
+                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
+            } else if (this.prebind_url) {
+                return this.startNewBOSHSession();
             } else {
                 throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
-                    "then you MUST supply JID, RID and SID values");
-            }
-            // We haven't been able to attach yet. Let's see if there
-            // is a prebind_url, otherwise there's nothing with which
-            // we can attach.
-            if (this.prebind_url) {
-                this.startNewBOSHSession();
-            } else {
-                delete this.connection;
-                this.emit('noResumeableSession');
+                    "then you MUST supply JID, RID and SID values or a prebind_url.");
             }
         };
 
@@ -1844,7 +1841,7 @@
             }
         };
 
-        this.attemptNonPreboundSession = function () {
+        this.attemptNonPreboundSession = function (credentials) {
             /* Handle session resumption or initialization when prebind is not being used.
              *
              * Two potential options exist and are handled in this method:
@@ -1860,7 +1857,11 @@
                 }
             }
             if (this.auto_login) {
-                if (this.credentials_url) {
+                if (credentials) {
+                    // When credentials are passed in, they override prebinding
+                    // or credentials fetching via HTTP
+                    this.autoLogin(credentials);
+                } else if (this.credentials_url) {
                     this.fetchLoginCredentials().done(this.autoLogin.bind(this));
                 } else if (!this.jid) {
                     throw new Error(
@@ -1870,24 +1871,19 @@
                         "username and password can be fetched (via credentials_url)."
                     );
                 } else {
+                    // Probably ANONYMOUS login
                     this.autoLogin();
                 }
             }
         };
 
         this.logIn = function (credentials) {
-            if (credentials || this.authentication === converse.ANONYMOUS) {
-                // When credentials are passed in, they override prebinding
-                // or credentials fetching via HTTP
-                this.autoLogin(credentials);
+            // We now try to resume or automatically set up a new session.
+            // Otherwise the user will be shown a login form.
+            if (this.authentication === converse.PREBIND) {
+                this.attemptPreboundSession();
             } else {
-                // We now try to resume or automatically set up a new session.
-                // Otherwise the user will be shown a login form.
-                if (this.authentication === converse.PREBIND) {
-                    this.attemptPreboundSession();
-                } else {
-                    this.attemptNonPreboundSession();
-                }
+                this.attemptNonPreboundSession(credentials);
             }
         };
 

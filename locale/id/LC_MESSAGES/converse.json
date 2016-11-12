@@ -6,6 +6,50 @@
             "domain": "converse",
             "lang": "id"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Simpan"
+         ],
+         "Cancel": [
+            null,
+            "Batal"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Klik untuk membuka ruangan ini"
+         ],
+         "Show more information on this room": [
+            null,
+            "Tampilkan informasi ruangan ini"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Pesan pribadi"
@@ -39,10 +83,6 @@
             "Hapus pesan"
          ],
          "Are you sure you want to clear the messages from this chat box?": [
-            null,
-            ""
-         ],
-         "Hide the list of occupants": [
             null,
             ""
          ],
@@ -93,10 +133,6 @@
          "Custom status": [
             null,
             "Status kustom"
-         ],
-         "Save": [
-            null,
-            "Simpan"
          ],
          "online": [
             null,
@@ -210,6 +246,10 @@
             null,
             "Pesan"
          ],
+         "Hide the list of occupants": [
+            null,
+            ""
+         ],
          "Error: could not execute the command": [
             null,
             ""
@@ -249,10 +289,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "Cancel": [
-            null,
-            "Batal"
          ],
          "An error occurred while trying to save the form.": [
             null,
@@ -421,14 +457,6 @@
          "Rooms on %1$s": [
             null,
             "Ruangan di %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik untuk membuka ruangan ini"
-         ],
-         "Show more information on this room": [
-            null,
-            "Tampilkan informasi ruangan ini"
          ],
          "Description:": [
             null,

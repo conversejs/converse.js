@@ -7,6 +7,50 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "de"
          },
+         "Bookmark this room": [
+            null,
+            ""
+         ],
+         "The name for this bookmark:": [
+            null,
+            ""
+         ],
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Save": [
+            null,
+            "Speichern"
+         ],
+         "Cancel": [
+            null,
+            "Abbrechen"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarked Rooms": [
+            null,
+            ""
+         ],
+         "Click to open this room": [
+            null,
+            "Hier klicken um diesen Raum zu öffnen"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mehr Information über diesen Raum zeigen"
+         ],
+         "Remove this bookmark": [
+            null,
+            ""
+         ],
          "Personal message": [
             null,
             "Persönliche Nachricht"
@@ -110,10 +154,6 @@
          "Custom status": [
             null,
             "Statusnachricht"
-         ],
-         "Save": [
-            null,
-            "Speichern"
          ],
          "online": [
             null,
@@ -299,10 +339,6 @@
             null,
             ""
          ],
-         "Cancel": [
-            null,
-            "Abbrechen"
-         ],
          "An error occurred while trying to save the form.": [
             null,
             "Beim Speichern des Formulars ist ein Fehler aufgetreten."
@@ -482,14 +518,6 @@
          "Rooms on %1$s": [
             null,
             "Räume auf %1$s"
-         ],
-         "Click to open this room": [
-            null,
-            "Hier klicken um diesen Raum zu öffnen"
-         ],
-         "Show more information on this room": [
-            null,
-            "Mehr Information über diesen Raum zeigen"
          ],
          "Description:": [
             null,

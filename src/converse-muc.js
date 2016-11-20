@@ -754,6 +754,44 @@
                         });
                 },
 
+                autoConfigureChatRoom: function (stanza) {
+                    /* Automatically configure room based on the
+                     * 'roomconfigure' data on this view's model.
+                     */
+                    var that = this, configArray = [],
+                        $fields = $(stanza).find('field'),
+                        count = $fields.length,
+                        config = this.model.get('roomconfig');
+
+                    $fields.each(function () {
+                        var fieldname = this.getAttribute('var').replace('muc#roomconfig_', ''),
+                            type = this.getAttribute('type'),
+                            value;
+                        if (fieldname in config) {
+                            switch (type) {
+                                case 'boolean':
+                                    value = config[fieldname] ? 1 : 0;
+                                    break;
+                                case 'list-multi':
+                                    // TODO: we don't yet handle "list-multi" types
+                                    value = this.innerHTML;
+                                    break;
+                                default:
+                                    value = config[fieldname];
+                            }
+                            this.innerHTML = $build('value').t(value);
+                        }
+                        configArray.push(this);
+                        if (!--count) {
+                            that.sendConfiguration(
+                                configArray,
+                                that.onConfigSaved.bind(that),
+                                that.onErrorConfigSaved.bind(that)
+                            );
+                        }
+                    });
+                },
+
                 onConfigSaved: function (stanza) {
                     // TODO: provide feedback
                 },
@@ -774,20 +812,27 @@
                 },
 
                 configureChatRoom: function (ev) {
+                    var handleIQ;
                     if (typeof ev !== 'undefined' && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    if (this.$el.find('div.chatroom-form-container').length) {
-                        return;
+                    if (this.model.get('auto_configure')) {
+                        handleIQ = this.autoConfigureChatRoom.bind(this);
+                    } else {
+                        if (this.$el.find('div.chatroom-form-container').length) {
+                            return;
+                        }
+                        var $body = this.$('.chatroom-body');
+                        $body.children().addClass('hidden');
+                        $body.append(converse.templates.chatroom_form());
+                        handleIQ = this.renderConfigurationForm.bind(this);
                     }
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$('.chatroom-body').append(converse.templates.chatroom_form());
                     converse.connection.sendIQ(
-                            $iq({
-                                to: this.model.get('jid'),
-                                type: "get"
-                            }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
-                            this.renderConfigurationForm.bind(this)
+                        $iq({
+                            'to': this.model.get('jid'),
+                            'type': "get"
+                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
+                        handleIQ
                     );
                 },
 

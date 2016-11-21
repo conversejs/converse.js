@@ -268,7 +268,7 @@
                     'type': 'result',
                     'id': IQ_id,
                     'from': view.model.get('jid'),
-                    'to': converse.connection.jid 
+                    'to': converse.connection.jid
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
                   .c('identity', {'category': 'conference', 'name': 'thirdwitch', 'type': 'text'});
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -529,7 +529,7 @@
                 expect($occupants.children().first(0).text()).toBe("oldnick");
 
                 expect($chat_content.find('div.chat-info').length).toBe(1);
-                expect($chat_content.find('div.chat-info').html()).toBe(__(view.newNicknameMessages["210"], "oldnick"));
+                expect($chat_content.find('div.chat-info').html()).toBe(__(converse.muc.newNicknameMessages["210"], "oldnick"));
 
                 presence = $pres().attrs({
                         from:'lounge@localhost/oldnick',
@@ -549,7 +549,7 @@
 
                 converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect($chat_content.find('div.chat-info').length).toBe(2);
-                expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
+                expect($chat_content.find('div.chat-info').last().html()).toBe(__(converse.muc.newNicknameMessages["303"], "newnick"));
 
                 $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(0);
@@ -569,7 +569,7 @@
 
                 converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect($chat_content.find('div.chat-info').length).toBe(2);
-                expect($chat_content.find('div.chat-info').last().html()).toBe(__(view.newNicknameMessages["303"], "newnick"));
+                expect($chat_content.find('div.chat-info').last().html()).toBe(__(converse.muc.newNicknameMessages["303"], "newnick"));
                 $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("newnick");
@@ -746,7 +746,7 @@
                 converse_api.listen.not();
                 test_utils.clearBrowserStorage();
             });
-            
+
             var submitRoomForm = function (converse) {
                 var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
                 var $input = roomspanel.$el.find('input.new-chatroom-name');

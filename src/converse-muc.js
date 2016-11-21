@@ -79,6 +79,74 @@
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
 
+    /* http://xmpp.org/extensions/xep-0045.html
+     * ----------------------------------------
+     * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
+     * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
+     * 102 message      Configuration change    Inform occupants that room now shows unavailable members
+     * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
+     * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
+     * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
+     * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
+     * 171 message      Configuration change    Inform occupants that room logging is now disabled
+     * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
+     * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
+     * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
+     * 201 presence     Entering a room         Inform user that a new room has been created
+     * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
+     * 301 presence     Removal from room       Inform user that he or she has been banned from the room
+     * 303 presence     Exiting a room          Inform all occupants of new room nickname
+     * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
+     * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
+     * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
+     * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+     */
+    converse.muc = {
+        infoMessages: {
+            100: __('This room is not anonymous'),
+            102: __('This room now shows unavailable members'),
+            103: __('This room does not show unavailable members'),
+            104: __('Non-privacy-related room configuration has changed'),
+            170: __('Room logging is now enabled'),
+            171: __('Room logging is now disabled'),
+            172: __('This room is now non-anonymous'),
+            173: __('This room is now semi-anonymous'),
+            174: __('This room is now fully-anonymous'),
+            201: __('A new room has been created')
+        },
+
+        disconnectMessages: {
+            301: __('You have been banned from this room'),
+            307: __('You have been kicked from this room'),
+            321: __("You have been removed from this room because of an affiliation change"),
+            322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
+            332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+        },
+
+        actionInfoMessages: {
+            /* XXX: Note the triple underscore function and not double
+             * underscore.
+             *
+             * This is a hack. We can't pass the strings to __ because we
+             * don't yet know what the variable to interpolate is.
+             *
+             * Triple underscore will just return the string again, but we
+             * can then at least tell gettext to scan for it so that these
+             * strings are picked up by the translation machinery.
+             */
+            301: ___("<strong>%1$s</strong> has been banned"),
+            303: ___("<strong>%1$s</strong>'s nickname has changed"),
+            307: ___("<strong>%1$s</strong> has been kicked out"),
+            321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
+            322: ___("<strong>%1$s</strong> has been removed for not being a member")
+        },
+
+        newNicknameMessages: {
+            210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
+            303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
+        }
+    };
+
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
     Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
@@ -977,130 +1045,103 @@
                     this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
                 },
 
-                /* http://xmpp.org/extensions/xep-0045.html
-                 * ----------------------------------------
-                 * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-                 * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-                 * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-                 * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-                 * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-                 * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-                 * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-                 * 171 message      Configuration change    Inform occupants that room logging is now disabled
-                 * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-                 * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-                 * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-                 * 201 presence     Entering a room         Inform user that a new room has been created
-                 * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-                 * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-                 * 303 presence     Exiting a room          Inform all occupants of new room nickname
-                 * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-                 * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-                 * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-                 * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-                 */
-                infoMessages: {
-                    100: __('This room is not anonymous'),
-                    102: __('This room now shows unavailable members'),
-                    103: __('This room does not show unavailable members'),
-                    104: __('Non-privacy-related room configuration has changed'),
-                    170: __('Room logging is now enabled'),
-                    171: __('Room logging is now disabled'),
-                    172: __('This room is now non-anonymous'),
-                    173: __('This room is now semi-anonymous'),
-                    174: __('This room is now fully-anonymous'),
-                    201: __('A new room has been created')
-                },
-
-                disconnectMessages: {
-                    301: __('You have been banned from this room'),
-                    307: __('You have been kicked from this room'),
-                    321: __("You have been removed from this room because of an affiliation change"),
-                    322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
-                },
-
-                actionInfoMessages: {
-                    /* XXX: Note the triple underscore function and not double
-                     * underscore.
-                     *
-                     * This is a hack. We can't pass the strings to __ because we
-                     * don't yet know what the variable to interpolate is.
-                     *
-                     * Triple underscore will just return the string again, but we
-                     * can then at least tell gettext to scan for it so that these
-                     * strings are picked up by the translation machinery.
-                     */
-                    301: ___("<strong>%1$s</strong> has been banned"),
-                    303: ___("<strong>%1$s</strong>'s nickname has changed"),
-                    307: ___("<strong>%1$s</strong> has been kicked out"),
-                    321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
-                    322: ___("<strong>%1$s</strong> has been removed for not being a member")
-                },
-
-                newNicknameMessages: {
-                    210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
-                    303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
-                },
-
-                showStatusMessages: function (el, is_self) {
-                    /* Check for status codes and communicate their purpose to the user.
-                     * Allow user to configure chat room if they are the owner.
-                     * See: http://xmpp.org/registrar/mucstatus.html
-                     */
-                    var $el = $(el), i, disconnect_msgs = [], msgs = [], reasons = [];
-
-                    $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
-                        var $item = $(x).find('item');
-                        if (Strophe.getBareJidFromJid($item.attr('jid')) === converse.bare_jid && $item.attr('affiliation') === 'owner') {
-                            this.$el.find('a.configure-chatroom-button').show();
+                getMessageFromStatus: function (stat, is_self, from_nick, item) {
+                    var code = stat.getAttribute('code');
+                    if (is_self && code === "210") {
+                        return __(converse.muc.newNicknameMessages[code], from_nick);
+                    } else if (is_self && code === "303") {
+                        return __(converse.muc.newNicknameMessages[code], item.getAttribute('nick'));
+                    } else if (!is_self && (code in converse.muc.actionInfoMessages)) {
+                        return __(converse.muc.actionInfoMessages[code], from_nick);
+                    } else if (code in converse.muc.infoMessages) {
+                        return converse.muc.infoMessages[code];
+                    } else if (code !== '110') {
+                        if (stat.textContent) {
+                            // Sometimes the status contains human readable text and not a code.
+                            return stat.textContent;
                         }
-                        $(x).find('item reason').each(function (idx, reason) {
-                            if ($(reason).text()) {
-                                reasons.push($(reason).text());
-                            }
-                        });
-                        $(x).find('status').each(function (idx, stat) {
-                            var code = stat.getAttribute('code');
-                            var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')));
-                            if (is_self && code === "210") {
-                                msgs.push(__(this.newNicknameMessages[code], from_nick));
-                            } else if (is_self && code === "303") {
-                                msgs.push(__(this.newNicknameMessages[code], $item.attr('nick')));
-                            } else if (is_self && _.contains(_.keys(this.disconnectMessages), code)) {
-                                disconnect_msgs.push(this.disconnectMessages[code]);
-                            } else if (!is_self && _.contains(_.keys(this.actionInfoMessages), code)) {
-                                msgs.push(__(this.actionInfoMessages[code], from_nick));
-                            } else if (_.contains(_.keys(this.infoMessages), code)) {
-                                msgs.push(this.infoMessages[code]);
-                            } else if (code !== '110') {
-                                if ($(stat).text()) {
-                                    msgs.push($(stat).text()); // Sometimes the status contains human readable text and not a code.
-                                }
-                            }
-                        }.bind(this));
-                    }.bind(this));
+                    }
+                    return;
+                },
 
-                    if (disconnect_msgs.length > 0) {
-                        for (i=0; i<disconnect_msgs.length; i++) {
-                            this.showDisconnectMessage(disconnect_msgs[i]);
-                        }
-                        for (i=0; i<reasons.length; i++) {
-                            this.showDisconnectMessage(__('The reason given is: "'+reasons[i]+'"'), true);
+                parseXUserElement: function (x, is_self, from_nick) {
+                    /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
+                     * element and construct a map containing relevant
+                     * information.
+                     */
+                    // By using querySelector, we assume here there is one
+                    // <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
+                    // element. This appears to be a safe assumption, since
+                    // each <x/> element pertains to a single user.
+                    var item = x.querySelector('item');
+                    // Show the configure button if user is the room owner.
+                    var jid = item.getAttribute('jid');
+                    var affiliation = item.getAttribute('affiliation');
+                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid && affiliation === 'owner') {
+                        this.$el.find('a.configure-chatroom-button').show();
+                    }
+                    // Extract notification messages, reasons and
+                    // disconnection messages from the <x/> node.
+                    var statuses = x.querySelectorAll('status');
+                    var mapper = _.partial(this.getMessageFromStatus, _, is_self, from_nick, item);
+                    var notification = {
+                        'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
+                    };
+                    var reason = item.querySelector('reason');
+                    if (reason) {
+                        notification.reason = reason ? reason.textContent : undefined;
+                    }
+                    var actor = item.querySelector('actor');
+                    if (actor) {
+                        notification.actor = actor ? actor.getAttribute('nick') : undefined;
+                    }
+                    var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
+                    var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnectMessages));
+                    var disconnected = is_self && disconnection_codes.length > 0;
+                    if (disconnected) {
+                        notification.disconnected = true;
+                        notification.disconnection_message = converse.muc.disconnectMessages[disconnection_codes[0]];
+                    }
+                    return notification;
+                },
+
+                displayNotificationsforUser: function (notification) {
+                    /* Given the notification object generated by
+                     * parseXUserElement, display any relevant messages and
+                     * information to the user.
+                     */
+                    var that = this;
+                    if (notification.disconnected) {
+                        this.showDisconnectMessage(notification.disconnection_message);
+                        if (notification.reason) {
+                            this.showDisconnectMessage(__('The reason given is: "'+notification.reason+'"'), true);
                         }
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                         return;
                     }
-                    for (i=0; i<msgs.length; i++) {
-                        this.$content.append(converse.templates.info({message: msgs[i]}));
+                    _.each(notification.messages, function (message) {
+                        that.$content.append(converse.templates.info({'message': message}));
+                    });
+                    if (notification.reason) {
+                        this.showStatusNotification(__('The reason given is: "'+notification.reason+'"'), true);
                     }
-                    for (i=0; i<reasons.length; i++) {
-                        this.showStatusNotification(__('The reason given is: "'+reasons[i]+'"'), true);
-                    }
-                    if (disconnect_msgs.length || msgs.length || reasons.length) {
+                    if (notification.messages.length) {
                         this.scrollDown();
                     }
-                    return el;
+                },
+
+                showStatusMessages: function (presence, is_self) {
+                    /* Check for status codes and communicate their purpose to the user.
+                     * Allows user to configure chat room if they are the owner.
+                     * See: http://xmpp.org/registrar/mucstatus.html
+                     */
+                    var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(presence.getAttribute('from')));
+                    var notifications = _.map(
+                        presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]'),
+                        _.partial(this.parseXUserElement.bind(this), _, is_self, from_nick)
+                    );
+                    _.each(notifications, this.displayNotificationsforUser.bind(this));
+                    return presence;
                 },
 
                 showErrorMessage: function (presence) {

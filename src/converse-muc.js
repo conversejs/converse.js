@@ -1113,8 +1113,11 @@
                     var that = this;
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
+                        if (notification.actor) {
+                            this.showDisconnectMessage(__(___('This action was done by <strong>%1$s</strong>.'), notification.actor));
+                        }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__('The reason given is: "'+notification.reason+'"'), true);
+                            this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
                         }
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                         return;

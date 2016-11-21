@@ -2,6 +2,8 @@
 
 ## 2.0.2 (Unreleased)
 - #721 keepalive not working with anonymous authentication [jcbrand]
+- Enable new rooms to be configured automatically, with a default config, via `rooms.open`.
+  For details, refer to the [relevant documentation](https://conversejs.org/docs/html/developer_api.html#the-rooms-grouping) [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

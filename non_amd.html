@@ -10,8 +10,8 @@
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/theme.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/converse.min.css" />
 
     <!-- BEGIN JQUERY -->
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
@@ -64,7 +64,8 @@
     <!-- END I18N -->
 
     <script type="text/javascript" src="node_modules/moment/min/moment-with-locales.js"></script>
-    <script type="text/javascript" src="dist/converse-no-dependencies.js"></script>
+
+	<script src="https://cdn.conversejs.org/dist/converse-no-dependencies.min.js"></script>
 </head>
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
     <section class="intro">
@@ -74,6 +75,10 @@
                     <div class="col-md-8 col-md-offset-2">
                         <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
                         <p class="intro-text">Example page without require.js and AMD module loading.</p>
+                        <p class="intro-text">For this page to work, you need to
+                            <a href="https://conversejs.org/docs/html/developer_guidelines.html#installing-the-development-and-front-end-dependencies">
+                            install the 3rd party dependencies</a> of converse.js.
+                        </p>
                         <div class="page-scroll">
                         </div>
                     </div>

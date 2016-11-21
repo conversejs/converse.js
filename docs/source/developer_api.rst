@@ -540,12 +540,12 @@ open
 ~~~~
 
 Opens a multi user chat box and returns an object representing it.
-Similar to chats.get API
+Similar to the ``chats.get`` API.
 
 It takes 2 parameters:
 
-* the room JID (if not specified, all rooms will be returned).
-* a map (object) containing any extra room attributes. For example, if you want
+* The room JID or JIDs (if not specified, all currently open rooms will be returned).
+* A map (object) containing any extra room attributes. For example, if you want
   to specify the nickname, use ``{'nick': 'bloodninja'}``.
 
 To open a single multi user chat box, provide the JID of the room:
@@ -565,6 +565,41 @@ To setup a custom nickname when joining the room, provide the optional nick argu
 .. code-block:: javascript
 
     converse.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+
+Room attributes that may be passed in:
+
+* *nick*: The nickname to be used
+* *auto_configure*: A boolean, indicating whether the room should be configured
+  automatically or not. If set to ``true``, then it makes sense to pass in
+  configuration settings.
+* *roomconfig*: A map of configuration settings to be used when the room gets
+  configured automatically. Currently it doesn't make sense to specify
+  ``roomconfig`` values if ``auto_configure`` is set to ``false``.
+  For a list of configuration values that can be passed in, refer to these values
+  in the `XEP-0045 MUC specification <http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner>`_.
+  The values should be named without the ``muc#roomconfig_`` prefix.
+
+For example, opening a room with a specific default configuration:
+
+.. code-block:: javascript
+
+    converse.rooms.open(
+        'myroom@conference.example.org',
+        { 'nick': 'coolguy69',
+          'auto_configure': true,
+          'roomconfig': {
+            'changesubject': false,
+            'membersonly': true,
+            'persistentroom': true,
+            'publicroom': true,
+            'roomdesc': 'Comfy room for hanging out',
+            'whois': 'anyone'
+          }
+        },
+        true
+    );
+
+.. note:: `multi-list` configuration values are not yet supported.
 
 close
 ~~~~~

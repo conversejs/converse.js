@@ -592,7 +592,6 @@
                                 'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
                             })
                         ));
-                        converse.controlboxtoggle.showControlBox();
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.$el.addClass('current-xmpp-contact');
                         this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);

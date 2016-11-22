@@ -926,9 +926,6 @@
                         fullname: mock.req_names[i]
                     });
                     expect(converse.rosterview.update).toHaveBeenCalled();
-                    // When a requesting contact is added, the controlbox must
-                    // be opened.
-                    expect(converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
                 }
                 // Check that they are sorted alphabetically
                 children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');

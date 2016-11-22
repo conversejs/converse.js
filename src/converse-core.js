@@ -15,15 +15,11 @@
         "moment_with_locales",
         "strophe",
         "pluggable",
-        "tpl!chats_panel",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function (
-        $, _, dummy, utils, moment,
-        Strophe, pluggable, tpl_chats_panel
-    ) {
+}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -54,7 +50,7 @@
     var event_context = {};
 
     var converse = {
-        templates: {'chats_panel': tpl_chats_panel},
+        templates: {},
 
         emit: function (evt, data) {
             $(event_context).trigger(evt, data);
@@ -1517,7 +1513,7 @@
                         $el = $('<div id="conversejs">');
                         $('body').append($el);
                     }
-                    $el.html(converse.templates.chats_panel());
+                    $el.html('');
                     this.setElement($el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
@@ -1923,9 +1919,13 @@
             return this;
         };
 
-        this._initialize = function () {
+        this.initChatBoxes = function () {
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
+        };
+
+        this._initialize = function () {
+            this.initChatBoxes();
             this.initSession();
             this.initConnection();
             this.setUpXMLLogging();

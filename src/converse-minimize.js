@@ -13,6 +13,7 @@
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
+            "tpl!chats_panel",
             "converse-controlbox",
             "converse-chatview",
             "converse-muc"
@@ -22,12 +23,14 @@
         converse_api,
         tpl_chatbox_minimize,
         tpl_toggle_chats,
-        tpl_trimmed_chat
+        tpl_trimmed_chat,
+        tpl_chats_panel
     ) {
     "use strict";
     converse.templates.chatbox_minimize = tpl_chatbox_minimize;
     converse.templates.toggle_chats = tpl_toggle_chats;
     converse.templates.trimmed_chat = tpl_trimmed_chat;
+    converse.templates.chats_panel = tpl_chats_panel;
 
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._,
@@ -45,12 +48,12 @@
             //
             // New functions which don't exist yet can also be added.
 
-            _initialize: function () {
-                this.__super__._initialize.apply(this, arguments);
+            initChatBoxes: function () {
+                var result = this.__super__.initChatBoxes.apply(this, arguments);
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
-                return this;
+                return result;
             },
 
             registerGlobalEventHandlers: function () {
@@ -158,8 +161,7 @@
 
                 maximize: function () {
                     // Restores a minimized chat box
-                    var chatboxviews = converse.chatboxviews;
-                    this.$el.insertAfter(chatboxviews.get("controlbox").$el)
+                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el)
                         .show('fast', this.onMaximized.bind(this));
                     return this;
                 },
@@ -372,12 +374,15 @@
 
 
             converse.MinimizedChats = Backbone.Overview.extend({
-                el: "#minimized-chats",
+                tagName: 'div',
+                id: "minimized-chats",
+                className: 'hidden',
                 events: {
                     "click #toggle-minimized-chats": "toggle"
                 },
 
                 initialize: function () {
+                    this.render();
                     this.initToggle();
                     this.model.on("add", this.onChanged, this);
                     this.model.on("destroy", this.removeChat, this);
@@ -404,11 +409,16 @@
                 },
 
                 render: function () {
+                    if (!this.el.parentElement) {
+                        this.el.innerHTML = converse.templates.chats_panel();
+                        converse.chatboxviews.el.appendChild(this.el);
+                    }
                     if (this.keys().length === 0) {
-                        this.$el.hide();
+                        this.el.classList.add('hidden');
                         converse.chatboxviews.trimChats.bind(converse.chatboxviews);
-                    } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
-                        this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
+                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+                        this.el.classList.remove('hidden');
+                        converse.chatboxviews.trimChats();
                     }
                     return this.$el;
                 },

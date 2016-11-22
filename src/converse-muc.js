@@ -102,7 +102,7 @@
      * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
      */
     converse.muc = {
-        infoMessages: {
+        info_messages: {
             100: __('This room is not anonymous'),
             102: __('This room now shows unavailable members'),
             103: __('This room does not show unavailable members'),
@@ -115,7 +115,7 @@
             201: __('A new room has been created')
         },
 
-        disconnectMessages: {
+        disconnect_messages: {
             301: __('You have been banned from this room'),
             307: __('You have been kicked from this room'),
             321: __("You have been removed from this room because of an affiliation change"),
@@ -123,7 +123,7 @@
             332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
         },
 
-        actionInfoMessages: {
+        action_info_messages: {
             /* XXX: Note the triple underscore function and not double
              * underscore.
              *
@@ -141,7 +141,7 @@
             322: ___("<strong>%1$s</strong> has been removed for not being a member")
         },
 
-        newNicknameMessages: {
+        new_nickname_messages: {
             210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
             303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
         }
@@ -1048,13 +1048,13 @@
                 getMessageFromStatus: function (stat, is_self, from_nick, item) {
                     var code = stat.getAttribute('code');
                     if (is_self && code === "210") {
-                        return __(converse.muc.newNicknameMessages[code], from_nick);
+                        return __(converse.muc.new_nickname_messages[code], from_nick);
                     } else if (is_self && code === "303") {
-                        return __(converse.muc.newNicknameMessages[code], item.getAttribute('nick'));
-                    } else if (!is_self && (code in converse.muc.actionInfoMessages)) {
-                        return __(converse.muc.actionInfoMessages[code], from_nick);
-                    } else if (code in converse.muc.infoMessages) {
-                        return converse.muc.infoMessages[code];
+                        return __(converse.muc.new_nickname_messages[code], item.getAttribute('nick'));
+                    } else if (!is_self && (code in converse.muc.action_info_messages)) {
+                        return __(converse.muc.action_info_messages[code], from_nick);
+                    } else if (code in converse.muc.info_messages) {
+                        return converse.muc.info_messages[code];
                     } else if (code !== '110') {
                         if (stat.textContent) {
                             // Sometimes the status contains human readable text and not a code.
@@ -1096,11 +1096,11 @@
                         notification.actor = actor ? actor.getAttribute('nick') : undefined;
                     }
                     var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
-                    var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnectMessages));
+                    var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnect_messages));
                     var disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
                         notification.disconnected = true;
-                        notification.disconnection_message = converse.muc.disconnectMessages[disconnection_codes[0]];
+                        notification.disconnection_message = converse.muc.disconnect_messages[disconnection_codes[0]];
                     }
                     return notification;
                 },

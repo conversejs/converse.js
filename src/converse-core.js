@@ -534,6 +534,7 @@
         };
 
         this.logOut = function () {
+            converse.chatboxviews.closeAllChatBoxes();
             converse.disconnection_cause = converse.LOGOUT;
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
@@ -541,7 +542,6 @@
             }
             converse.clearSession();
             converse._tearDown();
-            converse.chatboxviews.closeAllChatBoxes();
             converse.emit('logout');
         };
 

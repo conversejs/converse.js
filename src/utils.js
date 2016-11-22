@@ -253,7 +253,7 @@
                 if (_.isUndefined(user_settings[k])) {
                     continue;
                 }
-                if (_.isObject(settings[k])) {
+                if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
                     applyUserSettings(context[k], settings[k], user_settings[k]);
                 } else {
                     context[k] = user_settings[k];

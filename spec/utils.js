@@ -12,6 +12,7 @@
                 show_toolbar: true,
                 chatview_avatar_width: 32,
                 chatview_avatar_height: 32,
+                auto_join_rooms: [],
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,
@@ -26,6 +27,9 @@
                 show_toolbar: false,
                 chatview_avatar_width: 32,
                 chatview_avatar_height: 48,
+                auto_join_rooms: [
+                    'anonymous@conference.nomnom.im',
+                ],
                 visible_toolbar_buttons: {
                     'emoticons': false,
                     'call': false,
@@ -44,6 +48,8 @@
             expect(context.visible_toolbar_buttons.call).toBeFalsy();
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
             expect(context.visible_toolbar_buttons.invalid).toBeFalsy();
+            expect(context.auto_join_rooms.length).toBe(1);
+            expect(context.auto_join_rooms[0]).toBe('anonymous@conference.nomnom.im');
 
             user_settings = {
                 visible_toolbar_buttons: {

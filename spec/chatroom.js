@@ -656,18 +656,17 @@
                 runs(function () {
                     view.$el.find('.toggle-chatbox-button').click();
                 });
-                waits(50);
+                waits(350);
                 runs(function () {
                     expect(view.minimize).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-                    expect(converse.emit.callCount, 2);
                     expect(view.$el.is(':visible')).toBeFalsy();
                     expect(view.model.get('minimized')).toBeTruthy();
                     expect(view.minimize).toHaveBeenCalled();
                     var trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                     trimmedview.$("a.restore-chat").click();
                 });
-                waits(250);
+                waits(350);
                 runs(function () {
                     expect(view.maximize).toHaveBeenCalled();
                     expect(converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));

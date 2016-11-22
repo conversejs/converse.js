@@ -208,6 +208,32 @@
                 locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
             }
             return locale || 'en';
+
+        },
+
+        fadeIn: function (el, callback) {
+            if ($.fx.off) {
+                el.classList.remove('hidden');
+                callback();
+                return;
+            }
+            el.style.opacity = 0;
+            el.classList.remove('hidden');
+            var last = +new Date();
+            var tick = function() {
+                el.style.opacity = +el.style.opacity + (new Date() - last) / 100;
+                last = +new Date();
+                if (+el.style.opacity < 1) {
+                    if (!_.isUndefined(window.requestAnimationFrame)) {
+                        window.requestAnimationFrame(tick);
+                    } else {
+                        window.setTimeout(tick, 16);
+                    }
+                } else {
+                    callback();
+                }
+            };
+            tick();
         },
 
         isOTRMessage: function (message) {

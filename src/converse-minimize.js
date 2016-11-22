@@ -145,24 +145,11 @@
                     }
                 },
 
-                onMaximized: function () {
-                    converse.chatboxviews.trimChats(this);
-                    utils.refreshWebkit();
-                    this.$content.scrollTop(this.model.get('scroll'));
-                    this.setChatState(converse.ACTIVE).focus();
-                    this.scrollDown();
-                    converse.emit('chatBoxMaximized', this);
-                },
-
-                onMinimized: function () {
-                    utils.refreshWebkit();
-                    converse.emit('chatBoxMinimized', this);
-                },
-
                 maximize: function () {
                     // Restores a minimized chat box
-                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el)
-                        .show('fast', this.onMaximized.bind(this));
+                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    this.show();
+                    converse.emit('chatBoxMaximized', this);
                     return this;
                 },
 
@@ -171,7 +158,8 @@
                     // save the scroll position to restore it on maximize
                     this.model.save({'scroll': this.$content.scrollTop()});
                     this.setChatState(converse.INACTIVE).model.minimize();
-                    this.$el.hide('fast', this.onMinimized.bind(this));
+                    this.hide();
+                    converse.emit('chatBoxMinimized', this);
                 },
             },
 
@@ -270,7 +258,7 @@
                             // conditions.
                             view = this.get(oldest_chat.get('id'));
                             if (view) {
-                                view.$el.hide();
+                                view.hide();
                             }
                             oldest_chat.minimize();
                         }

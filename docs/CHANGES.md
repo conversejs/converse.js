@@ -6,6 +6,9 @@
   For details, refer to the [relevant documentation](https://conversejs.org/docs/html/developer_api.html#the-rooms-grouping) [jcbrand]
 - Bugfix: Arrays in configuration settings were ignored. [jcbrand]
 - Bugfix: Chatboxes aren't closed when logging out. [jcbrand]
+- Bugfix: Trying to save data on the `ControlBox` model before `ChatBoxes`
+  collection has its `browserStorage` configured.
+  Causes `Error: A "url" property or function must be specified`. [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

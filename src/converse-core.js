@@ -673,8 +673,8 @@
         this.onStatusInitialized = function () {
             converse.registerIntervalHandler();
             converse.initRoster();
-            converse.populateRoster();
             converse.chatboxes.onConnected();
+            converse.populateRoster();
             converse.registerPresenceHandler();
             converse.giveFeedback(__('Contacts'));
             if (typeof converse.callback === 'function') {
@@ -729,8 +729,8 @@
             // Give event handlers a chance to register views for the roster
             // and its groups, before we start populating.
             converse.emit('rosterReadyAfterReconnection');
-            converse.populateRoster();
             converse.chatboxes.onConnected();
+            converse.populateRoster();
             converse.xmppstatus.sendPresence();
             converse.emit('reconnected');
             converse.giveFeedback(__('Contacts'));

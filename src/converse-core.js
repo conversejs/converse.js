@@ -400,19 +400,17 @@
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
+                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                     converse.reconnect(condition);
                     converse.log('RECONNECTING');
-                    return 'reconnecting';
-                } else if (
-                        (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) &&
-                            converse.auto_reconnect) {
+                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
                     window.setTimeout(_.partial(converse.reconnect, condition), 3000);
                     converse.log('RECONNECTING IN 3 SECONDS');
-                    return 'reconnecting';
                 }
+                converse.emit('reconnecting');
+                return 'reconnecting';
             }
             delete converse.connection.reconnecting;
             converse._tearDown();

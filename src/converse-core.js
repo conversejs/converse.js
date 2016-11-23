@@ -722,9 +722,13 @@
             converse.setUserJid();
             converse.registerPresenceHandler();
             converse.chatboxes.registerMessageHandler();
-            // Give event handlers a chance to register views for the roster
-            // and its groups, before we start populating.
-            converse.emit('rosterReadyAfterReconnection');
+            if (_.isUndefined(converse.roster)) {
+                converse.initRoster();
+            } else {
+                // Give event handlers a chance to register views for the
+                // roster and its groups, before we start populating.
+                converse.emit('rosterReadyAfterReconnection');
+            }
             converse.chatboxes.onConnected();
             converse.populateRoster();
             converse.xmppstatus.sendPresence();

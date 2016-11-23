@@ -10,6 +10,11 @@
   collection has its `browserStorage` configured.
   Causes `Error: A "url" property or function must be specified`. [jcbrand]
 - Don't open the controlbox on contact requests. [jcbrand]
+- Bugfix: Reconnection fails when original connection was never established. [jcbrand]
+- If a `credentials_url` is provided, then keep on attempting to reconnect when connection is down.  [jcbrand]
+- Remove (undocumented) `callback` config parameter for `converse.initialize`.
+  Instead, `converse.initialize` returns a promise which will resolve once
+  initialization is complete. [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

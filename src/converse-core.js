@@ -1064,7 +1064,7 @@
                     return true;
                 }
                 _converse.connection.send($iq({type: 'result', id: id, from: _converse.connection.jid}));
-
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
                 var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('rosterPush', iq);
@@ -1085,6 +1085,7 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
                 var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('roster', iq);
@@ -1134,7 +1135,7 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
+                var nick_el = presence.querySelector('nick[xmlns='+Strophe.NS.NICK+']');
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',

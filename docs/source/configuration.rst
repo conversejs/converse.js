@@ -114,6 +114,14 @@ Here's an example of converse.js being initialized with these three options:
         allow_logout: false
     });
 
+allow_bookmarks
+---------------
+
+* Default:  ``true``
+
+Enables/disables chatroom bookmarks functionality.
+This setting is only applicable if the ``converse-bookmarks`` plugin is loaded.
+
 allow_chat_pending_contacts
 ---------------------------
 

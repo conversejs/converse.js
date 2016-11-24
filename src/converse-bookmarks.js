@@ -71,11 +71,13 @@
 
                 render: function (options) {
                     this.__super__.render.apply(this, arguments);
-                    var label_bookmark = _('Bookmark this room');
-                    var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
-                            (this.model.get('bookmarked') ? 'button-on"' : '"') +
-                            'title="'+label_bookmark+'"></a>';
-                    this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
+                    if (converse.allow_bookmarks) {
+                        var label_bookmark = _('Bookmark this room');
+                        var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
+                                (this.model.get('bookmarked') ? 'button-on"' : '"') +
+                                'title="'+label_bookmark+'"></a>';
+                        this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
+                    }
                     return this;
                 },
 
@@ -84,7 +86,7 @@
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    if (_.isUndefined(converse.bookmarks)) {
+                    if (_.isUndefined(converse.bookmarks) || !converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                     var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
@@ -172,6 +174,13 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            // Configuration values for this plugin
+            // ====================================
+            // Refer to docs/source/configuration.rst for explanations of these
+            // configuration settings.
+            this.updateSettings({
+                allow_bookmarks: true
+            });
 
             converse.Bookmark = Backbone.Model;
 
@@ -410,6 +419,9 @@
             });
 
             var initBookmarks = function () {
+                if (!converse.allow_bookmarks) {
+                    return;
+                }
                 converse.bookmarks = new converse.Bookmarks();
                 converse.bookmarks.fetchBookmarks().always(function () {
                     converse.bookmarksview = new converse.BookmarksView(
@@ -420,6 +432,9 @@
             converse.on('chatBoxesFetched', initBookmarks);
 
             var afterReconnection = function () {
+                if (!converse.allow_bookmarks) {
+                    return;
+                }
                 if (_.isUndefined(converse.bookmarksview)) {
                     initBookmarks();
                 } else {

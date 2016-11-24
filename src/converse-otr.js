@@ -108,10 +108,9 @@
                         !(utils.isOTRMessage($message[0]) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
-                createMessage: function ($message, $delay, original_stanza) {
+                createMessage: function (message, delay, original_stanza) {
                     var converse = this.__super__.converse,
-                        $body = $message.children('body'),
-                        text = ($body.length > 0 ? $body.text() : undefined);
+                        text = _.propertyOf(message.querySelector('body'))('textContent');
 
                     if ((!text) || (!converse.allow_otr)) {
                         return this.__super__.createMessage.apply(this, arguments);

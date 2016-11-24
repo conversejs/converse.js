@@ -367,12 +367,12 @@
 
         this.giveFeedback = function (subject, klass, message) {
             $('.conn-feedback').each(function (idx, el) {
-                var $el = $(el);
-                $el.addClass('conn-feedback').text(subject);
+                el.classList.add('conn-feedback');
+                el.textContent = subject;
                 if (klass) {
-                    $el.addClass(klass);
+                    el.classList.add(klass);
                 } else {
-                    $el.removeClass('error');
+                    el.classList.remove('error');
                 }
             });
             converse.emit('feedback', {
@@ -616,7 +616,7 @@
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler(function (iq) {
-                if ($(iq).find('error').length > 0) {
+                if (iq.querySelectorAll('error').length > 0) {
                     converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
                     this.session.save({carbons_enabled: true});
@@ -913,10 +913,13 @@
             },
 
             subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function (i, items) {
+                _.each(msg.querySelectorAll('item'), function () {
                     if (this.getAttribute('action') === 'add') {
                         converse.roster.addAndSubscribe(
-                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
+                            this.getAttribute('jid'),
+                            null,
+                            converse.xmppstatus.get('fullname')
+                        );
                     }
                 });
                 return true;
@@ -1067,10 +1070,9 @@
                     return true;
                 }
                 converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
 
+                var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                _.each(items, this.updateContact.bind(this));
                 converse.emit('rosterPush', iq);
                 return true;
             },
@@ -1089,9 +1091,8 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
+                var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                _.each(items, this.updateContact.bind(this));
                 converse.emit('roster', iq);
             },
 
@@ -1105,7 +1106,7 @@
                     contact = this.get(jid),
                     ask = item.getAttribute("ask"),
                     subscription = item.getAttribute("subscription");
-                $.map(item.getElementsByTagName('group'), function (group) {
+                _.each(item.getElementsByTagName('group'), function (group) {
                     groups.push(Strophe.getText(group));
                 });
                 if (!contact) {
@@ -1142,13 +1143,13 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick = $(presence).children('nick[xmlns='+Strophe.NS.NICK+']').text();
+                var nick_el = presence.querySelector('nick[xmlns='+Strophe.NS.NICK+']');
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: nick || bare_jid,
+                    fullname: nick_el && nick_el.textContent || bare_jid,
                 };
                 this.create(user_data);
                 converse.emit('contactRequest', user_data);
@@ -1184,14 +1185,13 @@
             },
 
             presenceHandler: function (presence) {
-                var $presence = $(presence),
-                    presence_type = presence.getAttribute('type');
+                var presence_type = presence.getAttribute('type');
                 if (presence_type === 'error') { return true; }
                 var jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
-                    chat_status = $presence.find('show').text() || 'online',
-                    status_message = $presence.find('status'),
+                    chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                    status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
@@ -1203,18 +1203,16 @@
                         // synchronize_availability option set to update,
                         // we'll update ours as well.
                         converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) {
-                            converse.xmppstatus.save({
-                                'status_message': status_message.text()
-                            });
+                        if (status_message) {
+                            converse.xmppstatus.save({'status_message': status_message});
                         }
                     }
                     return;
-                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                } else if (presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC+'"]').length) {
                     return; // Ignore MUC
                 }
-                if (contact && (status_message.text() !== contact.get('status'))) {
-                    contact.save({'status': status_message.text()});
+                if (contact && (status_message !== contact.get('status'))) {
+                    contact.save({'status': status_message});
                 }
                 if (presence_type === 'subscribed' && contact) {
                     contact.ackSubscribe();
@@ -1304,35 +1302,35 @@
                 });
             },
 
-            getMessageAttributes: function ($message, $delay, original_stanza) {
-                $delay = $delay || $message.find('delay');
-                var type = $message.attr('type'),
+            getMessageAttributes: function (message, delay, original_stanza) {
+                delay = delay || message.querySelector('delay');
+                var type = message.getAttribute('type'),
                     body, stamp, time, sender, from;
 
                 if (type === 'error') {
-                    body = $message.find('error').children('text').text();
+                    body = _.propertyOf(message.querySelector('error text'))('textContent');
                 } else {
-                    body = $message.children('body').text();
+                    body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
-                var delayed = $delay.length > 0,
+                var delayed = !_.isNull(delay),
                     fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
-                    chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
-                        $message.find(converse.PAUSED).length && converse.PAUSED ||
-                        $message.find(converse.INACTIVE).length && converse.INACTIVE ||
-                        $message.find(converse.ACTIVE).length && converse.ACTIVE ||
-                        $message.find(converse.GONE).length && converse.GONE;
+                    chat_state = message.getElementsByTagName(converse.COMPOSING).length && converse.COMPOSING ||
+                        message.getElementsByTagName(converse.PAUSED).length && converse.PAUSED ||
+                        message.getElementsByTagName(converse.INACTIVE).length && converse.INACTIVE ||
+                        message.getElementsByTagName(converse.ACTIVE).length && converse.ACTIVE ||
+                        message.getElementsByTagName(converse.GONE).length && converse.GONE;
 
                 if (is_groupchat) {
-                    from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
+                    from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
                 } else {
-                    from = Strophe.getBareJidFromJid($message.attr('from'));
+                    from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
                 if (_.isEmpty(fullname)) {
                     fullname = from;
                 }
                 if (delayed) {
-                    stamp = $delay.attr('stamp');
+                    stamp = delay.getAttribute('stamp');
                     time = stamp;
                 } else {
                     time = moment().format();
@@ -1348,13 +1346,13 @@
                     'delayed': delayed,
                     'fullname': fullname,
                     'message': body || undefined,
-                    'msgid': $message.attr('id'),
+                    'msgid': message.getAttribute('id'),
                     'sender': sender,
                     'time': time
                 };
             },
 
-            createMessage: function ($message, $delay, original_stanza) {
+            createMessage: function (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             }
         });
@@ -1401,8 +1399,7 @@
                 /* Handler method for all incoming error message stanzas
                  */
                 // TODO: we can likely just reuse "onMessage" below
-                var $message = $(message),
-                    from_jid =  Strophe.getBareJidFromJid($message.attr('from'));
+                var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                 if (from_jid === converse.bare_jid) {
                     return true;
                 }
@@ -1411,7 +1408,7 @@
                 if (!chatbox) {
                     return true;
                 }
-                chatbox.createMessage($message, null, message);
+                chatbox.createMessage(message, null, message);
                 return true;
             },
 
@@ -1419,12 +1416,12 @@
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
-                var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid,
+                var original_stanza = message,
+                    contact_jid, forwarded, delay, from_bare_jid,
                     from_resource, is_me, msgid,
                     chatbox, resource,
-                    from_jid = $message.attr('from'),
-                    to_jid = $message.attr('to'),
+                    from_jid = message.getAttribute('from'),
+                    to_jid = message.getAttribute('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
                 if (converse.filter_by_resource && (to_resource && to_resource !== converse.resource)) {
@@ -1443,17 +1440,17 @@
                     );
                     return true;
                 }
-                $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
-                    $message = $forwarded.children('message');
-                    $delay = $forwarded.children('delay');
-                    from_jid = $message.attr('from');
-                    to_jid = $message.attr('to');
+                forwarded = message.querySelector('forwarded');
+                if (!_.isNull(forwarded)) {
+                    message = forwarded.querySelector('message');
+                    delay = forwarded.querySelector('delay');
+                    from_jid = message.getAttribute('from');
+                    to_jid = message.getAttribute('to');
                 }
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid === converse.bare_jid;
-                msgid = $message.attr('id');
+                msgid = message.getAttribute('id');
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -1464,14 +1461,14 @@
                 }
                 converse.emit('message', message);
                 // Get chat box, but only create a new one when the message has a body.
-                chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
+                chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 if (!chatbox) {
                     return true;
                 }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                chatbox.createMessage($message, $delay, message);
+                chatbox.createMessage(message, delay, original_stanza);
                 return true;
             },
 
@@ -1704,12 +1701,13 @@
             },
 
             onItems: function (stanza) {
-                $(stanza).find('query item').each(function (idx, item) {
+                var that = this;
+                _.each(stanza.querySelectorAll('query item'), function (item) {
                     converse.connection.disco.info(
-                        $(item).attr('jid'),
+                        item.getAttribute('jid'),
                         null,
-                        this.onInfo.bind(this));
-                }.bind(this));
+                        that.onInfo.bind(that));
+                });
             },
 
             onInfo: function (stanza) {
@@ -1720,11 +1718,11 @@
                     return;
                 }
                 $stanza.find('feature').each(function (idx, feature) {
-                    var namespace = $(feature).attr('var');
+                    var namespace = feature.getAttribute('var');
                     this[namespace] = true;
                     this.create({
                         'var': namespace,
-                        'from': $stanza.attr('from')
+                        'from': stanza.getAttribute('from')
                     });
                 }.bind(this));
             }

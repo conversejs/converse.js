@@ -85,7 +85,7 @@
                      * Otherwise delegate to the super method.
                      */
                     if (_.isUndefined(converse.bookmarks)) {
-                        return;
+                        return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                     var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {

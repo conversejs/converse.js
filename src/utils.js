@@ -79,12 +79,12 @@
                 }
                 $obj.html(x);
                 _.each(list, function (url) {
-                    isImage(url).then(function () {
+                    isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
                         var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
-                        event.target.className = 'chat-image';
-                        x = x.replace(new_url, event.target.outerHTML);
+                        ev.target.className = 'chat-image';
+                        x = x.replace(new_url, ev.target.outerHTML);
                         $obj.throttledHTML(x);
                     });
                 });

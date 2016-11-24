@@ -2,10 +2,22 @@
 
 ## 2.0.2 (Unreleased)
 - #721 keepalive not working with anonymous authentication [jcbrand]
+- #723 Bugfix: Arrays in configuration settings were ignored. [jcbrand]
+- #734 Bugfix. `converse.rooms.open` ignored the `muc_nickname_from_jid` setting. [jcbrand]
 - Enable new rooms to be configured automatically, with a default config, via `rooms.open`.
   For details, refer to the [relevant documentation](https://conversejs.org/docs/html/developer_api.html#the-rooms-grouping) [jcbrand]
-- Bugfix: Arrays in configuration settings were ignored. [jcbrand]
 - Bugfix: Chatboxes aren't closed when logging out. [jcbrand]
+- Bugfix: Trying to save data on the `ControlBox` model before `ChatBoxes`
+  collection has its `browserStorage` configured.
+  Causes `Error: A "url" property or function must be specified`. [jcbrand]
+- Don't open the controlbox on contact requests. [jcbrand]
+- Bugfix: Reconnection fails when original connection was never established. [jcbrand]
+- If a `credentials_url` is provided, then keep on attempting to reconnect when connection is down.  [jcbrand]
+- Remove (undocumented) `callback` config parameter for `converse.initialize`.
+  Instead, `converse.initialize` returns a promise which will resolve once
+  initialization is complete. [jcbrand]
+- New event ['reconnecting'](https://conversejs.org/docs/html/development.html#reconnecting) [jcbrand]
+- New configuration setting [allow_bookmarks](https://conversejs.org/docs/html/configuration.html#allow_bookmarks) [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

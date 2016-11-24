@@ -15,15 +15,11 @@
         "moment_with_locales",
         "strophe",
         "pluggable",
-        "tpl!chats_panel",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function (
-        $, _, dummy, utils, moment,
-        Strophe, pluggable, tpl_chats_panel
-    ) {
+}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -54,7 +50,7 @@
     var event_context = {};
 
     var converse = {
-        templates: {'chats_panel': tpl_chats_panel},
+        templates: {},
 
         emit: function (evt, data) {
             $(event_context).trigger(evt, data);
@@ -400,27 +396,21 @@
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
             converse._tearDown();
-            if (converse.authentication !== "prebind") {
-                converse.autoLogin();
-            } else if (converse.prebind_url) {
-                converse.startNewBOSHSession();
-            }
+            converse.logIn(null, true);
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
+                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                     converse.reconnect(condition);
                     converse.log('RECONNECTING');
-                    return 'reconnecting';
-                } else if (
-                        (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) &&
-                            converse.auto_reconnect) {
+                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
                     window.setTimeout(_.partial(converse.reconnect, condition), 3000);
                     converse.log('RECONNECTING IN 3 SECONDS');
-                    return 'reconnecting';
                 }
+                converse.emit('reconnecting');
+                return 'reconnecting';
             }
             delete converse.connection.reconnecting;
             converse._tearDown();
@@ -444,7 +434,7 @@
                 delete converse.disconnection_cause;
                 if (converse.connection.reconnecting) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
-                    converse.onReconnected();
+                    converse.onConnected(true);
                 } else {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
                     if (converse.connection.restored) {
@@ -670,19 +660,33 @@
             }
         };
 
-        this.onStatusInitialized = function () {
-            converse.registerIntervalHandler();
-            converse.initRoster();
-            converse.populateRoster();
+        this.onStatusInitialized = function (reconnecting) {
+            /* Continue with session establishment (e.g. fetching chat boxes,
+             * populating the roster etc.) necessary once the connection has
+             * been established.
+             */
+            if (reconnecting) {
+                // No need to recreate the roster, otherwise we lose our
+                // cached data. However we still emit an event, to give
+                // event handlers a chance to register views for the
+                // roster and its groups, before we start populating.
+                converse.emit('rosterReadyAfterReconnection');
+            } else {
+                converse.registerIntervalHandler();
+                converse.initRoster();
+            }
+            // First set up chat boxes, before populating the roster, so that
+            // the controlbox is properly set up and ready for the rosterview.
             converse.chatboxes.onConnected();
+            converse.populateRoster();
             converse.registerPresenceHandler();
             converse.giveFeedback(__('Contacts'));
-            if (typeof converse.callback === 'function') {
-                // XXX: Deprecate in favor of init_deferred
-                converse.callback();
+            if (reconnecting) {
+                converse.xmppstatus.sendPresence();
+            } else {
+                init_deferred.resolve();
+                converse.emit('initialized');
             }
-            init_deferred.resolve();
-            converse.emit('initialized');
         };
 
         this.setUserJid = function () {
@@ -692,48 +696,33 @@
             converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
         };
 
-        this.onConnected = function (callback) {
+        this.onConnected = function (reconnecting) {
             /* Called as soon as a new connection has been established, either
              * by logging in or by attaching to an existing BOSH session.
              */
-            // XXX: ran into an issue where a returned PubSub BOSH response was
-            // not received by the browser. The solution was to flush the
-            // connection early on. I don't know what the underlying cause of
-            // this issue is, and whether it's a Strophe.js or Prosody bug.
-            // My suspicion is that Prosody replies to an invalid/expired
-            // Request, which is why the browser then doesn't receive it.
-            // In any case, flushing here (sending out a new BOSH request)
-            // solves the problem.
+            // Solves problem of returned PubSub BOSH response not received
+            // by browser.
             converse.connection.flush();
-            // When reconnecting, there might be some open chat boxes. We don't
-            // know whether these boxes are of the same account or not, so we
-            // close them now.
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.setUserJid();
-            converse.features = new converse.Features();
-            converse.enableCarbons();
-            converse.initStatus().done(converse.onStatusInitialized);
-            converse.emit('connected');
-            converse.emit('ready'); // BBB: Will be removed.
-        };
 
-        this.onReconnected = function () {
-            /* Called when converse has succesfully reconnected to the XMPP
-             * server after the session was dropped.
-             * Similar to the `onConnected` method, but skips a few unnecessary
-             * steps.
-             */
             converse.setUserJid();
-            converse.registerPresenceHandler();
-            converse.chatboxes.registerMessageHandler();
-            // Give event handlers a chance to register views for the roster
-            // and its groups, before we start populating.
-            converse.emit('rosterReadyAfterReconnection');
-            converse.populateRoster();
-            converse.chatboxes.onConnected();
-            converse.xmppstatus.sendPresence();
-            converse.emit('reconnected');
-            converse.giveFeedback(__('Contacts'));
+            converse.enableCarbons();
+
+            // If there's no xmppstatus obj, then we were never connected to
+            // begin with, so we set reconnecting to false.
+            reconnecting = _.isUndefined(converse.xmppstatus) ? false : reconnecting;
+
+            if (reconnecting) {
+                converse.onStatusInitialized(true);
+                converse.emit('reconnected');
+            } else {
+                // There might be some open chat boxes. We don't
+                // know whether these boxes are of the same account or not, so we
+                // close them now.
+                converse.chatboxviews.closeAllChatBoxes();
+                converse.features = new converse.Features();
+                converse.initStatus().done(_.partial(converse.onStatusInitialized, false));
+                converse.emit('connected');
+            }
         };
 
         this.RosterContact = Backbone.Model.extend({
@@ -1517,7 +1506,7 @@
                         $el = $('<div id="conversejs">');
                         $('body').append($el);
                     }
-                    $el.html(converse.templates.chats_panel());
+                    $el.html('');
                     this.setElement($el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
@@ -1777,10 +1766,10 @@
             });
         };
 
-        this.attemptPreboundSession = function (tokens) {
+        this.attemptPreboundSession = function (reconnecting) {
             /* Handle session resumption or initialization when prebind is being used.
              */
-            if (this.keepalive) {
+            if (!reconnecting && this.keepalive) {
                 if (!this.jid) {
                     throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
                                     "you must supply the JID of the current user.");
@@ -1794,7 +1783,7 @@
             }
 
             // No keepalive, or session resumption has failed.
-            if (this.jid && this.sid && this.rid) {
+            if (!reconnecting && this.jid && this.sid && this.rid) {
                 return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
             } else if (this.prebind_url) {
                 return this.startNewBOSHSession();
@@ -1841,14 +1830,14 @@
             }
         };
 
-        this.attemptNonPreboundSession = function (credentials) {
+        this.attemptNonPreboundSession = function (credentials, reconnecting) {
             /* Handle session resumption or initialization when prebind is not being used.
              *
              * Two potential options exist and are handled in this method:
              *  1. keepalive
              *  2. auto_login
              */
-            if (this.keepalive) {
+            if (this.keepalive && !reconnecting) {
                 try {
                     return this.connection.restore(this.jid, this.onConnectStatusChanged);
                 } catch (e) {
@@ -1877,13 +1866,13 @@
             }
         };
 
-        this.logIn = function (credentials) {
+        this.logIn = function (credentials, reconnecting) {
             // We now try to resume or automatically set up a new session.
             // Otherwise the user will be shown a login form.
             if (this.authentication === converse.PREBIND) {
-                this.attemptPreboundSession();
+                this.attemptPreboundSession(reconnecting);
             } else {
-                this.attemptNonPreboundSession(credentials);
+                this.attemptNonPreboundSession(credentials, reconnecting);
             }
         };
 
@@ -1923,9 +1912,13 @@
             return this;
         };
 
-        this._initialize = function () {
+        this.initChatBoxes = function () {
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
+        };
+
+        this._initialize = function () {
+            this.initChatBoxes();
             this.initSession();
             this.initConnection();
             this.setUpXMLLogging();

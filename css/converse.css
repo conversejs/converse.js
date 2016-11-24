@@ -1527,7 +1527,6 @@
       left: 0; }
 
 #conversejs #controlbox {
-  display: none;
   margin-right: 1em; }
   @media screen and (max-width: 480px) {
     #conversejs #controlbox {
@@ -2119,7 +2118,6 @@
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   color: white;
-  display: none;
   float: right;
   font-weight: bold;
   height: 100%;

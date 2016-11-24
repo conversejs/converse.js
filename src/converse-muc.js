@@ -300,7 +300,7 @@
                  */
                 length: 300,
                 tagName: 'div',
-                className: 'chatbox chatroom',
+                className: 'chatbox chatroom hidden',
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
@@ -327,8 +327,7 @@
                     var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.chatroomview = this;
-
-                    this.render().$el.hide();
+                    this.render();
                     this.occupantsview.model.fetch({add:true});
                     var nick = this.model.get('nick');
                     if (!nick) {
@@ -1832,7 +1831,7 @@
                             attrs = {};
                         }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
-                        if (!attrs.nick) {
+                        if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "undefined") {

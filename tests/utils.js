@@ -50,12 +50,13 @@
     };
 
     utils.openControlBox = function () {
-        var toggle = $(".toggle-controlbox");
+        var $toggle = $(".toggle-controlbox");
         if (!$("#controlbox").is(':visible')) {
-            if (!toggle.is(':visible')) {
-                toggle.show(toggle.click);
+            if (!$toggle.is(':visible')) {
+                $toggle[0].classList.remove('hidden');
+                $toggle.click();
             } else {
-                toggle.click();
+                $toggle.click();
             }
         }
         return this;
@@ -74,6 +75,7 @@
     };
 
     utils.openContactsPanel = function (converse) {
+        this.openControlBox(converse);
         var cbview = converse.chatboxviews.get('controlbox');
         var $tabs = cbview.$el.find('#controlbox-tabs');
         $tabs.find('li').first().find('a').click();

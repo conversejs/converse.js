@@ -159,6 +159,12 @@ is in `converse-notifications.js <https://github.com/jcbrand/converse.js/blob/ma
 
 ``converse.listen.on('pluginsInitialized', function (event) { ... });``
 
+reconnecting
+~~~~~~~~~~~~
+
+Fired once converse.js has determined that it will attempt to reconnect (and
+each subsequent time, if it attempts repeatedly).
+
 reconnected
 ~~~~~~~~~~~
 

@@ -847,50 +847,51 @@
                     test_utils.createContacts(converse, 'current');
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(converse);
-
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(converse, 'emit').andCallThrough();
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var chatview = converse.chatboxviews.get(contact_jid);
-                    expect(chatview.$el.is(':visible')).toBeTruthy();
-                    expect(chatview.model.get('minimized')).toBeFalsy();
-                    chatview.$el.find('.toggle-chatbox-button').click();
-                    expect(chatview.model.get('minimized')).toBeTruthy();
-                    var message = 'This message is sent to a minimized chatbox';
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var msg = $msg({
-                        from: sender_jid,
-                        to: converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t(message).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                    var trimmed_chatboxes = converse.minimized_chats;
-                    var trimmedview = trimmed_chatboxes.get(contact_jid);
-                    var $count = trimmedview.$el.find('.chat-head-message-count');
-                    expect(chatview.$el.is(':visible')).toBeFalsy();
-                    expect(trimmedview.model.get('minimized')).toBeTruthy();
-                    expect($count.is(':visible')).toBeTruthy();
-                    expect($count.html()).toBe('1');
-                    converse.chatboxes.onMessage(
-                        $msg({
-                            from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    runs(function () {
+                        spyOn(converse, 'emit').andCallThrough();
+                        test_utils.openChatBoxFor(converse, contact_jid);
+                        var chatview = converse.chatboxviews.get(contact_jid);
+                        expect(chatview.$el.is(':visible')).toBeTruthy();
+                        expect(chatview.model.get('minimized')).toBeFalsy();
+                        chatview.$el.find('.toggle-chatbox-button').click();
+                        expect(chatview.model.get('minimized')).toBeTruthy();
+                        var message = 'This message is sent to a minimized chatbox';
+                        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        var msg = $msg({
+                            from: sender_jid,
                             to: converse.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
-                        }).c('body').t('This message is also sent to a minimized chatbox').up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                    );
-                    expect(chatview.$el.is(':visible')).toBeFalsy();
-                    expect(trimmedview.model.get('minimized')).toBeTruthy();
-                    $count = trimmedview.$el.find('.chat-head-message-count');
-                    expect($count.is(':visible')).toBeTruthy();
-                    expect($count.html()).toBe('2');
-                    trimmedview.$el.find('.restore-chat').click();
-                    expect(trimmed_chatboxes.keys().length).toBe(0);
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                        converse.chatboxes.onMessage(msg);
+                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                        var trimmed_chatboxes = converse.minimized_chats;
+                        var trimmedview = trimmed_chatboxes.get(contact_jid);
+                        var $count = trimmedview.$el.find('.chat-head-message-count');
+                        expect(chatview.$el.is(':visible')).toBeFalsy();
+                        expect(trimmedview.model.get('minimized')).toBeTruthy();
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.html()).toBe('1');
+                        converse.chatboxes.onMessage(
+                            $msg({
+                                from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                                to: converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t('This message is also sent to a minimized chatbox').up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                        );
+                        expect(chatview.$el.is(':visible')).toBeFalsy();
+                        expect(trimmedview.model.get('minimized')).toBeTruthy();
+                        $count = trimmedview.$el.find('.chat-head-message-count');
+                        expect($count.is(':visible')).toBeTruthy();
+                        expect($count.html()).toBe('2');
+                        trimmedview.$el.find('.restore-chat').click();
+                        expect(trimmed_chatboxes.keys().length).toBe(0);
+                    });
                 }));
 
                 it("will indicate when it has a time difference of more than a day between it and its predecessor", mock.initConverse(function (converse) {
@@ -1198,22 +1199,27 @@
                         test_utils.createContacts(converse, 'current');
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(converse);
-
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(converse, contact_jid);
-                        var view = converse.chatboxviews.get(contact_jid);
-                        view.minimize();
-                        expect(view.model.get('chat_state')).toBe('inactive');
-                        spyOn(converse.connection, 'send');
-                        view.maximize();
-                        expect(view.model.get('chat_state')).toBe('active');
-                        expect(converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('active');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+
+                        runs(function () {
+                            test_utils.openChatBoxFor(converse, contact_jid);
+                        });
+                        waits(300); // ChatBox.show() is debounced for 250ms
+                        runs(function () {
+                            var view = converse.chatboxviews.get(contact_jid);
+                            view.model.minimize();
+                            expect(view.model.get('chat_state')).toBe('inactive');
+                            spyOn(converse.connection, 'send');
+                            view.model.maximize();
+                            expect(view.model.get('chat_state')).toBe('active');
+                            expect(converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect($stanza.attr('to')).toBe(contact_jid);
+                            expect($stanza.children().length).toBe(3);
+                            expect($stanza.children().get(0).tagName).toBe('active');
+                            expect($stanza.children().get(1).tagName).toBe('no-store');
+                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        });
                     }));
                 });
 

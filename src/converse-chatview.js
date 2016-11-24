@@ -91,7 +91,7 @@
             converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
-                className: 'chatbox',
+                className: 'chatbox hidden',
                 is_chatroom: false,  // Leaky abstraction from MUC
 
                 events: {
@@ -115,7 +115,7 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoDOM().afterShown();
+                    this.render().fetchMessages().insertIntoDOM();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
@@ -730,7 +730,7 @@
                 },
 
                 hide: function () {
-                    this.$el.hide();
+                    this.el.classList.add('hidden');
                     utils.refreshWebkit();
                     return this;
                 },
@@ -754,7 +754,7 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    this.$el.fadeIn(this.afterShown.bind(this));
+                    utils.fadeIn(this.el, this.afterShown.bind(this));
                 },
 
                 show: function (focus) {

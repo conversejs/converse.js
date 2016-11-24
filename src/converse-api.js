@@ -112,11 +112,15 @@
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
+                    chatbox = converse.wrappedChatBox(
+                        converse.chatboxes.getChatBox(jids, true).trigger('show')
+                    );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
+                    chatbox = converse.wrappedChatBox(
+                        converse.chatboxes.getChatBox(jid, true).trigger('show')
+                    );
                     return chatbox;
                 });
             },

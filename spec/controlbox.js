@@ -904,37 +904,41 @@
             });
 
             it("can be added to the roster and they will be sorted alphabetically", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'requesting').openControlBox();
-                test_utils.openContactsPanel(converse);
-                converse.rosterview.model.reset(); // We want to manually create users so that we can spy
                 var i, children;
                 var names = [];
-                spyOn(converse, 'emit');
-                spyOn(converse.rosterview, 'update').andCallThrough();
-                spyOn(converse.controlboxtoggle, 'showControlBox').andCallThrough();
                 var addName = function (idx, item) {
                     if (!$(item).hasClass('request-actions')) {
                         names.push($(item).text().replace(/^\s+|\s+$/g, ''));
                     }
                 };
-                for (i=0; i<mock.req_names.length; i++) {
-                    converse.roster.create({
-                        jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        subscription: 'none',
-                        ask: null,
-                        requesting: true,
-                        fullname: mock.req_names[i]
-                    });
+                runs(function () {
+                    test_utils.openContactsPanel(converse);
+                });
+                waits(250);
+                runs(function () {
+                    spyOn(converse, 'emit');
+                    spyOn(converse.rosterview, 'update').andCallThrough();
+                    spyOn(converse.controlboxtoggle, 'showControlBox').andCallThrough();
+                    for (i=0; i<mock.req_names.length; i++) {
+                        converse.roster.create({
+                            jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            subscription: 'none',
+                            ask: null,
+                            requesting: true,
+                            fullname: mock.req_names[i]
+                        });
+                    }
+                });
+                waits(250);
+                runs(function () {
                     expect(converse.rosterview.update).toHaveBeenCalled();
-                    // When a requesting contact is added, the controlbox must
-                    // be opened.
-                    expect(converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
-                }
-                // Check that they are sorted alphabetically
-                children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
-                names = [];
-                children.each(addName);
-                expect(names.join('')).toEqual(mock.req_names.slice(0,i+1).sort().join(''));
+                    // Check that they are sorted alphabetically
+                    children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
+                    names = [];
+                    children.each(addName);
+                    expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
+                });
+
             }));
 
             it("do not have a header if there aren't any", mock.initConverse(function (converse) {
@@ -951,7 +955,7 @@
                         fullname: name
                     });
                 });
-                waits(50);
+                waits(350);
                 runs(function () {
                     expect(converse.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")

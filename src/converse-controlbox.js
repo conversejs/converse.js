@@ -359,24 +359,23 @@
                 },
 
                 hide: function (callback) {
-                    this.$el.hide('fast', function () {
-                        utils.refreshWebkit();
-                        converse.emit('chatBoxClosed', this);
-                        if (!converse.connection.connected) {
-                            converse.controlboxtoggle.render();
+                    this.$el.addClass('hidden');
+                    utils.refreshWebkit();
+                    converse.emit('chatBoxClosed', this);
+                    if (!converse.connection.connected) {
+                        converse.controlboxtoggle.render();
+                    }
+                    converse.controlboxtoggle.show(function () {
+                        if (typeof callback === "function") {
+                            callback();
                         }
-                        converse.controlboxtoggle.show(function () {
-                            if (typeof callback === "function") {
-                                callback();
-                            }
-                        });
                     });
                     return this;
                 },
 
                 onControlBoxToggleHidden: function () {
                     var that = this;
-                    this.$el.show('fast', function () {
+                    utils.fadeIn(this.el, function () {
                         converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
                         converse.emit('controlBoxOpened', that);
@@ -732,7 +731,7 @@
 
             converse.ControlBoxToggle = Backbone.View.extend({
                 tagName: 'a',
-                className: 'toggle-controlbox',
+                className: 'toggle-controlbox hidden',
                 id: 'toggle-controlbox',
                 events: {
                     'click': 'onClick'
@@ -742,7 +741,7 @@
                 },
 
                 initialize: function () {
-                    $('#conversejs').prepend(this.render());
+                    converse.chatboxviews.$el.prepend(this.render());
                     this.updateOnlineCount();
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
@@ -761,7 +760,7 @@
                         converse.templates.controlbox_toggle({
                             'label_toggle': __('Toggle chat')
                         })
-                    ).hide();
+                    );
                 },
 
                 updateOnlineCount: _.debounce(function () {
@@ -776,11 +775,12 @@
                 }, converse.animate ? 100 : 0),
 
                 hide: function (callback) {
-                    this.$el.fadeOut('fast', callback);
+                    this.el.classList.add('hidden');
+                    callback();
                 },
 
                 show: function (callback) {
-                    this.$el.show('fast', callback);
+                    utils.fadeIn(this.el, callback);
                 },
 
                 showControlBox: function () {

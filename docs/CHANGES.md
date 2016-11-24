@@ -16,6 +16,7 @@
   Instead, `converse.initialize` returns a promise which will resolve once
   initialization is complete. [jcbrand]
 - New event ['reconnecting'](https://conversejs.org/docs/html/development.html#reconnecting) [jcbrand]
+- #723, #734: Bugfix. `converse.rooms.open` ignored the `muc_nickname_from_jid` setting. [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

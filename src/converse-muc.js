@@ -1831,7 +1831,7 @@
                             attrs = {};
                         }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
-                        if (!attrs.nick) {
+                        if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "undefined") {

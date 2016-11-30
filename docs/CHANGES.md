@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3 (2016-11-30)
+- #735 Room configuration button not visible. [jcbrand]
+- CSS fix for fadeIn animation. [jcbrand]
+
 ## 2.0.2 (2016-11-30)
 - #721 keepalive not working with anonymous authentication [jcbrand]
 - #723 Bugfix: Arrays in configuration settings were ignored. [jcbrand]

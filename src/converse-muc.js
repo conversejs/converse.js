@@ -1138,8 +1138,12 @@
                      * See: http://xmpp.org/registrar/mucstatus.html
                      */
                     var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(presence.getAttribute('from')));
+                    // XXX: Unfortunately presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]') returns []
+                    var elements = _.filter(presence.querySelectorAll('x'), function (x) {
+                        return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
+                    });
                     var notifications = _.map(
-                        presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]'),
+                        elements,
                         _.partial(this.parseXUserElement.bind(this), _, is_self, from_nick)
                     );
                     _.each(notifications, this.displayNotificationsforUser.bind(this));

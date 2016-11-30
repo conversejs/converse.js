@@ -55,8 +55,8 @@
         100% { opacity: 1 }
     }
     @-webkit-keyframes fadein {
-        0% { font-size: 0 }
-        100% { font-size: 40px }
+        0% { opacity: 0 }
+        100% { opacity: 1 }
     }
 
     .visible {

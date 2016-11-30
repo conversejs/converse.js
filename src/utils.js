@@ -217,23 +217,12 @@
                 callback();
                 return;
             }
-            el.style.opacity = 0;
+            el.addEventListener("animationend", function () {
+                el.classList.remove('visible');
+                callback();
+            }, false);
+            el.classList.add('visible');
             el.classList.remove('hidden');
-            var last = +new Date();
-            var tick = function() {
-                el.style.opacity = +el.style.opacity + (new Date() - last) / 100;
-                last = +new Date();
-                if (+el.style.opacity < 1) {
-                    if (!_.isUndefined(window.requestAnimationFrame)) {
-                        window.requestAnimationFrame(tick);
-                    } else {
-                        window.setTimeout(tick, 16);
-                    }
-                } else {
-                    callback();
-                }
-            };
-            tick();
         },
 
         isOTRMessage: function (message) {

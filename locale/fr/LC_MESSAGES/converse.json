@@ -279,6 +279,90 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "Ce salon n'est pas anonyme"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Ce salon affiche maintenant les membres indisponibles"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Ce salon n'affiche pas les membres indisponibles"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Les paramètres du salon non liés à la confidentialité ont été modifiés"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Le logging du salon est activé"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Le logging du salon est désactivé"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Ce salon est maintenant non-anonyme"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Ce salon est maintenant semi-anonyme"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Ce salon est maintenant entièrement anonyme"
+         ],
+         "A new room has been created": [
+            null,
+            "Un nouveau salon a été créé"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Vous avez été banni de ce salon"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Vous avez été expulsé de ce salon"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Vous avez été retiré de ce salon du fait d'un changement d'affiliation"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n'êtes pas membre"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> a été banni"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> a changé son nom"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> a été expulsé"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> a été supprimé à cause d'un changement d'affiliation"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> a été supprimé car il n'est pas membre"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Votre alias a été modifié en: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Message"
@@ -366,90 +450,6 @@
          "Submit": [
             null,
             "Soumettre"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Ce salon n'est pas anonyme"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Ce salon affiche maintenant les membres indisponibles"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Ce salon n'affiche pas les membres indisponibles"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Les paramètres du salon non liés à la confidentialité ont été modifiés"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "Le logging du salon est activé"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "Le logging du salon est désactivé"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ce salon est maintenant non-anonyme"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Ce salon est maintenant semi-anonyme"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Ce salon est maintenant entièrement anonyme"
-         ],
-         "A new room has been created": [
-            null,
-            "Un nouveau salon a été créé"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Vous avez été banni de ce salon"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Vous avez été expulsé de ce salon"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Vous avez été retiré de ce salon du fait d'un changement d'affiliation"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n'êtes pas membre"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> a été banni"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> a changé son nom"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> a été expulsé"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> a été supprimé à cause d'un changement d'affiliation"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> a été supprimé car il n'est pas membre"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Votre alias a été modifié en: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

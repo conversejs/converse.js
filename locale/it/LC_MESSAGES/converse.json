@@ -315,6 +315,90 @@
             null,
             "Riduci questo chat box"
          ],
+         "This room is not anonymous": [
+            null,
+            "Questa stanza non è anonima"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Questa stanza mostra i membri non disponibili al momento"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Questa stanza non mostra i membri non disponibili"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Una configurazione della stanza non legata alla privacy è stata modificata"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "La registrazione è abilitata nella stanza"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "La registrazione è disabilitata nella stanza"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Questa stanza è non-anonima"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Questa stanza è semi-anonima"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Questa stanza è completamente-anonima"
+         ],
+         "A new room has been created": [
+            null,
+            "Una nuova stanza è stata creata"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Sei stato bandito da questa stanza"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Sei stato espulso da questa stanza"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Sei stato rimosso da questa stanza a causa di un cambio di affiliazione"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento"
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> è stato bandito"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> nickname è cambiato"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> è stato espulso"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> è stato rimosso a causa di un cambio di affiliazione"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> è stato rimosso in quanto non membro"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Il tuo nickname è stato cambiato: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Messaggio"
@@ -419,89 +503,9 @@
             null,
             "Invia"
          ],
-         "This room is not anonymous": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
-            "Questa stanza non è anonima"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Questa stanza mostra i membri non disponibili al momento"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Questa stanza non mostra i membri non disponibili"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Una configurazione della stanza non legata alla privacy è stata modificata"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "La registrazione è abilitata nella stanza"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "La registrazione è disabilitata nella stanza"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Questa stanza è non-anonima"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Questa stanza è semi-anonima"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Questa stanza è completamente-anonima"
-         ],
-         "A new room has been created": [
-            null,
-            "Una nuova stanza è stata creata"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Sei stato bandito da questa stanza"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Sei stato espulso da questa stanza"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Sei stato rimosso da questa stanza a causa di un cambio di affiliazione"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Sei stato rimosso da questa stanza poiché ora la stanza accetta solo membri"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Sei stato rimosso da questa stanza poiché il servizio MUC (Chat multi utente) è in fase di spegnimento"
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> è stato bandito"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> nickname è cambiato"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> è stato espulso"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> è stato rimosso a causa di un cambio di affiliazione"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> è stato rimosso in quanto non membro"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Il tuo nickname è stato cambiato: <strong>%1$s</strong>"
+            ""
          ],
          "The reason given is: \"": [
             null,

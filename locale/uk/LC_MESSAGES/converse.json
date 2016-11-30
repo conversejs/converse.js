@@ -275,6 +275,90 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "Ця кімната не є анонімною"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Ця кімната вже показує недоступних учасників"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Ця кімната не показує недоступних учасників"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Змінено конфігурацію кімнати, не повязану з приватністю"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Журналювання кімнати тепер ввімкнено"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Журналювання кімнати тепер вимкнено"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Ця кімната тепер не-анонімна"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Ця кімната тепер напів-анонімна"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Ця кімната тепер повністю анонімна"
+         ],
+         "A new room has been created": [
+            null,
+            "Створено нову кімнату"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Вам заблокували доступ до цієї кімнати"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Вас викинули з цієї кімнати"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> заблоковано"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "Прізвисько <strong>%1$s</strong> змінено"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> було викинуто звідси"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> було видалено через зміни власності кімнати"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> було виделано через відсутність членства"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Повідомлення"
@@ -362,90 +446,6 @@
          "Submit": [
             null,
             "Надіслати"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Ця кімната не є анонімною"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Ця кімната вже показує недоступних учасників"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Ця кімната не показує недоступних учасників"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Змінено конфігурацію кімнати, не повязану з приватністю"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "Журналювання кімнати тепер ввімкнено"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "Журналювання кімнати тепер вимкнено"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ця кімната тепер не-анонімна"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Ця кімната тепер напів-анонімна"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Ця кімната тепер повністю анонімна"
-         ],
-         "A new room has been created": [
-            null,
-            "Створено нову кімнату"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Вам заблокували доступ до цієї кімнати"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Вас викинули з цієї кімнати"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Вас видалено з кімнати у зв'язку зі змінами власності кімнати"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> заблоковано"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "Прізвисько <strong>%1$s</strong> змінено"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> було викинуто звідси"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> було видалено через зміни власності кімнати"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> було виделано через відсутність членства"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

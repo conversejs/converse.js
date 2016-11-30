@@ -263,90 +263,6 @@
             null,
             ""
          ],
-         "Message": [
-            null,
-            "Melding"
-         ],
-         "Error: could not execute the command": [
-            null,
-            "Feil: kunne ikke utføre kommandoen"
-         ],
-         "Error: the \"": [
-            null,
-            ""
-         ],
-         "Are you sure you want to clear the messages from this room?": [
-            null,
-            "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
-         ],
-         "Change user's affiliation to admin": [
-            null,
-            ""
-         ],
-         "Ban user from room": [
-            null,
-            "Utesteng bruker fra rommet"
-         ],
-         "Kick user from room": [
-            null,
-            "Kast ut bruker fra rommet"
-         ],
-         "Write in 3rd person": [
-            null,
-            "Skriv i tredjeperson"
-         ],
-         "Grant membership to a user": [
-            null,
-            ""
-         ],
-         "Remove user's ability to post messages": [
-            null,
-            "Fjern brukerens muligheter til å skrive meldinger"
-         ],
-         "Change your nickname": [
-            null,
-            "Endre ditt kallenavn"
-         ],
-         "Grant moderator role to user": [
-            null,
-            ""
-         ],
-         "Revoke user's membership": [
-            null,
-            ""
-         ],
-         "Set room topic": [
-            null,
-            "Endre rommets emne"
-         ],
-         "Allow muted user to post messages": [
-            null,
-            "Tillat stumme brukere å skrive meldinger"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "En feil skjedde under lagring av skjemaet."
-         ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
-            null,
-            ""
-         ],
-         "Nickname": [
-            null,
-            "Kallenavn"
-         ],
-         "This chatroom requires a password": [
-            null,
-            "Dette rommet krever et passord"
-         ],
-         "Password: ": [
-            null,
-            "Passord:"
-         ],
-         "Submit": [
-            null,
-            "Send"
-         ],
          "This room is not anonymous": [
             null,
             "Dette rommet er ikke anonymt"
@@ -430,6 +346,90 @@
          "Your nickname has been changed to: <strong>%1$s</strong>": [
             null,
             "Ditt kallenavn har blitt endret til <strong>%1$s</strong> "
+         ],
+         "Message": [
+            null,
+            "Melding"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Feil: kunne ikke utføre kommandoen"
+         ],
+         "Error: the \"": [
+            null,
+            ""
+         ],
+         "Are you sure you want to clear the messages from this room?": [
+            null,
+            "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
+         ],
+         "Change user's affiliation to admin": [
+            null,
+            ""
+         ],
+         "Ban user from room": [
+            null,
+            "Utesteng bruker fra rommet"
+         ],
+         "Kick user from room": [
+            null,
+            "Kast ut bruker fra rommet"
+         ],
+         "Write in 3rd person": [
+            null,
+            "Skriv i tredjeperson"
+         ],
+         "Grant membership to a user": [
+            null,
+            ""
+         ],
+         "Remove user's ability to post messages": [
+            null,
+            "Fjern brukerens muligheter til å skrive meldinger"
+         ],
+         "Change your nickname": [
+            null,
+            "Endre ditt kallenavn"
+         ],
+         "Grant moderator role to user": [
+            null,
+            ""
+         ],
+         "Revoke user's membership": [
+            null,
+            ""
+         ],
+         "Set room topic": [
+            null,
+            "Endre rommets emne"
+         ],
+         "Allow muted user to post messages": [
+            null,
+            "Tillat stumme brukere å skrive meldinger"
+         ],
+         "An error occurred while trying to save the form.": [
+            null,
+            "En feil skjedde under lagring av skjemaet."
+         ],
+         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+            null,
+            ""
+         ],
+         "Nickname": [
+            null,
+            "Kallenavn"
+         ],
+         "This chatroom requires a password": [
+            null,
+            "Dette rommet krever et passord"
+         ],
+         "Password: ": [
+            null,
+            "Passord:"
+         ],
+         "Submit": [
+            null,
+            "Send"
          ],
          "The reason given is: \"": [
             null,

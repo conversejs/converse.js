@@ -238,6 +238,82 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "此为非匿名聊天室"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "此聊天室显示不可用用户"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "此聊天室不显示不可用用户"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "此聊天室设置(非私密性)已改变"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "聊天室聊天记录已启用"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "聊天室聊天记录已禁用"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "此聊天室非匿名"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "此聊天室半匿名"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "此聊天室完全匿名"
+         ],
+         "A new room has been created": [
+            null,
+            "新聊天室已创建"
+         ],
+         "You have been banned from this room": [
+            null,
+            "您已被此聊天室禁止入内"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "您已被踢出次房间"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "由于关系变化，您已被移除此房间"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "由于服务不可用，您已被移除此房间。"
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> 已被禁止"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> 已被踢出"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "由于关系解除、<strong>%1$s</strong> 已被移除"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "由于不是成员、<strong>%1$s</strong> 已被移除"
+         ],
          "Message": [
             null,
             "信息"
@@ -314,81 +390,9 @@
             null,
             "发送"
          ],
-         "This room is not anonymous": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
-            "此为非匿名聊天室"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "此聊天室显示不可用用户"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "此聊天室不显示不可用用户"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "此聊天室设置(非私密性)已改变"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "聊天室聊天记录已启用"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "聊天室聊天记录已禁用"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "此聊天室非匿名"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "此聊天室半匿名"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "此聊天室完全匿名"
-         ],
-         "A new room has been created": [
-            null,
-            "新聊天室已创建"
-         ],
-         "You have been banned from this room": [
-            null,
-            "您已被此聊天室禁止入内"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "您已被踢出次房间"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "由于关系变化，您已被移除此房间"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "由于服务不可用，您已被移除此房间。"
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> 已被禁止"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> 已被踢出"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "由于关系解除、<strong>%1$s</strong> 已被移除"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "由于不是成员、<strong>%1$s</strong> 已被移除"
+            ""
          ],
          "The reason given is: \"": [
             null,

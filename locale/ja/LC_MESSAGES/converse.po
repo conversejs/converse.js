@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:25+0000\n"
+"POT-Creation-Date: 2016-11-30 17:49+0000\n"
 "PO-Revision-Date: 2014-01-07 11:32+0900\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Language JA\n"
@@ -61,11 +61,11 @@ msgstr ""
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "クリックしてこの相手先を削除"
 
-#: src/converse-bookmarks.js:389 src/converse-muc.js:1580
+#: src/converse-bookmarks.js:389 src/converse-muc.js:1584
 msgid "Click to open this room"
 msgstr "クリックしてこの談話室を開く"
 
-#: src/converse-bookmarks.js:390 src/converse-muc.js:1581
+#: src/converse-bookmarks.js:390 src/converse-muc.js:1585
 msgid "Show more information on this room"
 msgstr "この談話室についての詳細を見る"
 
@@ -407,7 +407,7 @@ msgstr "この談話室はただいま匿名です"
 msgid "A new room has been created"
 msgstr "新しい談話室が作成されました"
 
-#: src/converse-muc.js:119 src/converse-muc.js:1159
+#: src/converse-muc.js:119 src/converse-muc.js:1163
 msgid "You have been banned from this room"
 msgstr "この談話室から締め出されました"
 
@@ -577,7 +577,7 @@ msgstr ""
 msgid "Please choose your nickname"
 msgstr ""
 
-#: src/converse-muc.js:1014 src/converse-muc.js:1522
+#: src/converse-muc.js:1014 src/converse-muc.js:1526
 msgid "Nickname"
 msgstr "ニックネーム"
 
@@ -611,167 +611,167 @@ msgstr ""
 msgid "The reason given is: \""
 msgstr ""
 
-#: src/converse-muc.js:1157
+#: src/converse-muc.js:1161
 msgid "You are not on the member list of this room"
 msgstr "この談話室のメンバー一覧にいません"
 
-#: src/converse-muc.js:1163
+#: src/converse-muc.js:1167
 msgid "No nickname was specified"
 msgstr "ニックネームがありません"
 
-#: src/converse-muc.js:1167
+#: src/converse-muc.js:1171
 msgid "You are not allowed to create new rooms"
 msgstr "新しい談話室を作成する権限がありません"
 
-#: src/converse-muc.js:1169
+#: src/converse-muc.js:1173
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "ニックネームがこの談話室のポリシーに従っていません"
 
-#: src/converse-muc.js:1173
+#: src/converse-muc.js:1177
 msgid "This room does not (yet) exist"
 msgstr "この談話室は存在しません"
 
-#: src/converse-muc.js:1175
+#: src/converse-muc.js:1179
 #, fuzzy
 msgid "This room has reached its maximum number of occupants"
 msgstr "この談話室は入室者数の上限に達しています"
 
-#: src/converse-muc.js:1233
+#: src/converse-muc.js:1237
 msgid "Topic set by %1$s to: %2$s"
 msgstr "%1$s が話題を設定しました: %2$s"
 
-#: src/converse-muc.js:1320
+#: src/converse-muc.js:1324
 #, fuzzy
 msgid "Click to mention this user in your message."
 msgstr "クリックしてこの談話室を開く"
 
-#: src/converse-muc.js:1321
+#: src/converse-muc.js:1325
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "このユーザーは司会者です"
 
-#: src/converse-muc.js:1322
+#: src/converse-muc.js:1326
 #, fuzzy
 msgid "This user can send messages in this room."
 msgstr "このユーザーはこの談話室で発言できます"
 
-#: src/converse-muc.js:1323
+#: src/converse-muc.js:1327
 #, fuzzy
 msgid "This user can NOT send messages in this room."
 msgstr "このユーザーはこの談話室で発言できません"
 
-#: src/converse-muc.js:1359
+#: src/converse-muc.js:1363
 msgid "Invite"
 msgstr ""
 
-#: src/converse-muc.js:1360
+#: src/converse-muc.js:1364
 #, fuzzy
 msgid "Occupants"
 msgstr "入室者:"
 
-#: src/converse-muc.js:1478
+#: src/converse-muc.js:1482
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
 msgstr ""
 
-#: src/converse-muc.js:1479
+#: src/converse-muc.js:1483
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
 msgstr ""
 
-#: src/converse-muc.js:1521
+#: src/converse-muc.js:1525
 msgid "Room name"
 msgstr "談話室の名前"
 
-#: src/converse-muc.js:1523
+#: src/converse-muc.js:1527
 msgid "Server"
 msgstr "サーバー"
 
-#: src/converse-muc.js:1524
+#: src/converse-muc.js:1528
 #, fuzzy
 msgid "Join Room"
 msgstr "入室"
 
-#: src/converse-muc.js:1525
+#: src/converse-muc.js:1529
 msgid "Show rooms"
 msgstr "談話室一覧を見る"
 
-#: src/converse-muc.js:1532
+#: src/converse-muc.js:1536
 msgid "Rooms"
 msgstr "談話室"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: src/converse-muc.js:1557
+#: src/converse-muc.js:1561
 msgid "No rooms on %1$s"
 msgstr "%1$s に談話室はありません"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: src/converse-muc.js:1571
+#: src/converse-muc.js:1575
 msgid "Rooms on %1$s"
 msgstr "%1$s の談話室一覧"
 
-#: src/converse-muc.js:1643
+#: src/converse-muc.js:1647
 msgid "Description:"
 msgstr "説明: "
 
-#: src/converse-muc.js:1644
+#: src/converse-muc.js:1648
 msgid "Occupants:"
 msgstr "入室者:"
 
-#: src/converse-muc.js:1645
+#: src/converse-muc.js:1649
 msgid "Features:"
 msgstr "特徴:"
 
-#: src/converse-muc.js:1646
+#: src/converse-muc.js:1650
 msgid "Requires authentication"
 msgstr "認証の要求"
 
-#: src/converse-muc.js:1647
+#: src/converse-muc.js:1651
 msgid "Hidden"
 msgstr "非表示"
 
-#: src/converse-muc.js:1648
+#: src/converse-muc.js:1652
 msgid "Requires an invitation"
 msgstr "招待の要求"
 
-#: src/converse-muc.js:1649
+#: src/converse-muc.js:1653
 msgid "Moderated"
 msgstr "発言制限"
 
-#: src/converse-muc.js:1650
+#: src/converse-muc.js:1654
 msgid "Non-anonymous"
 msgstr "非匿名"
 
-#: src/converse-muc.js:1651
+#: src/converse-muc.js:1655
 msgid "Open room"
 msgstr "開放談話室"
 
-#: src/converse-muc.js:1652
+#: src/converse-muc.js:1656
 msgid "Permanent room"
 msgstr "常設談話室"
 
-#: src/converse-muc.js:1653
+#: src/converse-muc.js:1657
 msgid "Public"
 msgstr "公開談話室"
 
-#: src/converse-muc.js:1654
+#: src/converse-muc.js:1658
 msgid "Semi-anonymous"
 msgstr "半匿名"
 
-#: src/converse-muc.js:1655
+#: src/converse-muc.js:1659
 msgid "Temporary room"
 msgstr "臨時談話室"
 
-#: src/converse-muc.js:1656
+#: src/converse-muc.js:1660
 msgid "Unmoderated"
 msgstr "発言制限なし"
 
-#: src/converse-muc.js:1738
+#: src/converse-muc.js:1742
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr ""
 
-#: src/converse-muc.js:1743
+#: src/converse-muc.js:1747
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""

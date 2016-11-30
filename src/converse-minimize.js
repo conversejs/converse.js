@@ -113,8 +113,8 @@
                     return this.__super__.initialize.apply(this, arguments);
                 },
 
-                afterShown: function () {
-                    this.__super__.afterShown.apply(this, arguments);
+                _show: function () {
+                    this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
                         converse.chatboxviews.trimChats(this);
                     }

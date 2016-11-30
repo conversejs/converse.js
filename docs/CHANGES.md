@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.2 (Unreleased)
+## 2.0.2 (2016-11-30)
 - #721 keepalive not working with anonymous authentication [jcbrand]
 - #723 Bugfix: Arrays in configuration settings were ignored. [jcbrand]
 - #734 Bugfix. `converse.rooms.open` ignored the `muc_nickname_from_jid` setting. [jcbrand]

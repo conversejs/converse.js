@@ -1180,12 +1180,12 @@ return __p;
                 }
                 $obj.html(x);
                 _.each(list, function (url) {
-                    isImage(url).then(function () {
+                    isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
                         var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
-                        event.target.className = 'chat-image';
-                        x = x.replace(new_url, event.target.outerHTML);
+                        ev.target.className = 'chat-image';
+                        x = x.replace(new_url, ev.target.outerHTML);
                         $obj.throttledHTML(x);
                     });
                 });
@@ -1309,6 +1309,21 @@ return __p;
                 locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
             }
             return locale || 'en';
+
+        },
+
+        fadeIn: function (el, callback) {
+            if ($.fx.off) {
+                el.classList.remove('hidden');
+                callback();
+                return;
+            }
+            el.addEventListener("animationend", function () {
+                el.classList.remove('visible');
+                callback();
+            }, false);
+            el.classList.add('visible');
+            el.classList.remove('hidden');
         },
 
         isOTRMessage: function (message) {
@@ -1354,7 +1369,7 @@ return __p;
                 if (_.isUndefined(user_settings[k])) {
                     continue;
                 }
-                if (_.isObject(settings[k])) {
+                if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
                     applyUserSettings(context[k], settings[k], user_settings[k]);
                 } else {
                     context[k] = user_settings[k];
@@ -1775,15 +1790,6 @@ define("polyfill", function(){});
     };
 }));
 
-
-define('tpl!chats_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div id="minimized-chats">\n    <a id="toggle-minimized-chats" href="#"></a>\n    <div class="flyout minimized-chats-flyout"></div>\n</div>\n';
-}
-return __p;
-}; });
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -1801,15 +1807,11 @@ return __p;
         "moment_with_locales",
         "strophe",
         "pluggable",
-        "tpl!chats_panel",
         "strophe.disco",
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function (
-        $, _, dummy, utils, moment,
-        Strophe, pluggable, tpl_chats_panel
-    ) {
+}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -1840,7 +1842,7 @@ return __p;
     var event_context = {};
 
     var converse = {
-        templates: {'chats_panel': tpl_chats_panel},
+        templates: {},
 
         emit: function (evt, data) {
             $(event_context).trigger(evt, data);
@@ -2186,27 +2188,21 @@ return __p;
             converse.connection.disconnect('re-connecting');
             converse.connection.reset();
             converse._tearDown();
-            if (converse.authentication !== "prebind") {
-                converse.autoLogin();
-            } else if (converse.prebind_url) {
-                converse.startNewBOSHSession();
-            }
+            converse.logIn(null, true);
         }, 1000);
 
         this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL && converse.auto_reconnect) {
+            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
+                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                     converse.reconnect(condition);
                     converse.log('RECONNECTING');
-                    return 'reconnecting';
-                } else if (
-                        (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) &&
-                            converse.auto_reconnect) {
+                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
                     window.setTimeout(_.partial(converse.reconnect, condition), 3000);
                     converse.log('RECONNECTING IN 3 SECONDS');
-                    return 'reconnecting';
                 }
+                converse.emit('reconnecting');
+                return 'reconnecting';
             }
             delete converse.connection.reconnecting;
             converse._tearDown();
@@ -2230,7 +2226,7 @@ return __p;
                 delete converse.disconnection_cause;
                 if (converse.connection.reconnecting) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
-                    converse.onReconnected();
+                    converse.onConnected(true);
                 } else {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
                     if (converse.connection.restored) {
@@ -2320,6 +2316,7 @@ return __p;
         };
 
         this.logOut = function () {
+            converse.chatboxviews.closeAllChatBoxes();
             converse.disconnection_cause = converse.LOGOUT;
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
@@ -2327,7 +2324,6 @@ return __p;
             }
             converse.clearSession();
             converse._tearDown();
-            converse.chatboxviews.closeAllChatBoxes();
             converse.emit('logout');
         };
 
@@ -2456,19 +2452,33 @@ return __p;
             }
         };
 
-        this.onStatusInitialized = function () {
-            converse.registerIntervalHandler();
-            converse.initRoster();
-            converse.populateRoster();
+        this.onStatusInitialized = function (reconnecting) {
+            /* Continue with session establishment (e.g. fetching chat boxes,
+             * populating the roster etc.) necessary once the connection has
+             * been established.
+             */
+            if (reconnecting) {
+                // No need to recreate the roster, otherwise we lose our
+                // cached data. However we still emit an event, to give
+                // event handlers a chance to register views for the
+                // roster and its groups, before we start populating.
+                converse.emit('rosterReadyAfterReconnection');
+            } else {
+                converse.registerIntervalHandler();
+                converse.initRoster();
+            }
+            // First set up chat boxes, before populating the roster, so that
+            // the controlbox is properly set up and ready for the rosterview.
             converse.chatboxes.onConnected();
+            converse.populateRoster();
             converse.registerPresenceHandler();
             converse.giveFeedback(__('Contacts'));
-            if (typeof converse.callback === 'function') {
-                // XXX: Deprecate in favor of init_deferred
-                converse.callback();
+            if (reconnecting) {
+                converse.xmppstatus.sendPresence();
+            } else {
+                init_deferred.resolve();
+                converse.emit('initialized');
             }
-            init_deferred.resolve();
-            converse.emit('initialized');
         };
 
         this.setUserJid = function () {
@@ -2478,48 +2488,33 @@ return __p;
             converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
         };
 
-        this.onConnected = function (callback) {
+        this.onConnected = function (reconnecting) {
             /* Called as soon as a new connection has been established, either
              * by logging in or by attaching to an existing BOSH session.
              */
-            // XXX: ran into an issue where a returned PubSub BOSH response was
-            // not received by the browser. The solution was to flush the
-            // connection early on. I don't know what the underlying cause of
-            // this issue is, and whether it's a Strophe.js or Prosody bug.
-            // My suspicion is that Prosody replies to an invalid/expired
-            // Request, which is why the browser then doesn't receive it.
-            // In any case, flushing here (sending out a new BOSH request)
-            // solves the problem.
+            // Solves problem of returned PubSub BOSH response not received
+            // by browser.
             converse.connection.flush();
-            // When reconnecting, there might be some open chat boxes. We don't
-            // know whether these boxes are of the same account or not, so we
-            // close them now.
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.setUserJid();
-            converse.features = new converse.Features();
-            converse.enableCarbons();
-            converse.initStatus().done(converse.onStatusInitialized);
-            converse.emit('connected');
-            converse.emit('ready'); // BBB: Will be removed.
-        };
 
-        this.onReconnected = function () {
-            /* Called when converse has succesfully reconnected to the XMPP
-             * server after the session was dropped.
-             * Similar to the `onConnected` method, but skips a few unnecessary
-             * steps.
-             */
             converse.setUserJid();
-            converse.registerPresenceHandler();
-            converse.chatboxes.registerMessageHandler();
-            // Give event handlers a chance to register views for the roster
-            // and its groups, before we start populating.
-            converse.emit('rosterReadyAfterReconnection');
-            converse.populateRoster();
-            converse.chatboxes.onConnected();
-            converse.xmppstatus.sendPresence();
-            converse.emit('reconnected');
-            converse.giveFeedback(__('Contacts'));
+            converse.enableCarbons();
+
+            // If there's no xmppstatus obj, then we were never connected to
+            // begin with, so we set reconnecting to false.
+            reconnecting = _.isUndefined(converse.xmppstatus) ? false : reconnecting;
+
+            if (reconnecting) {
+                converse.onStatusInitialized(true);
+                converse.emit('reconnected');
+            } else {
+                // There might be some open chat boxes. We don't
+                // know whether these boxes are of the same account or not, so we
+                // close them now.
+                converse.chatboxviews.closeAllChatBoxes();
+                converse.features = new converse.Features();
+                converse.initStatus().done(_.partial(converse.onStatusInitialized, false));
+                converse.emit('connected');
+            }
         };
 
         this.RosterContact = Backbone.Model.extend({
@@ -3303,7 +3298,7 @@ return __p;
                         $el = $('<div id="conversejs">');
                         $('body').append($el);
                     }
-                    $el.html(converse.templates.chats_panel());
+                    $el.html('');
                     this.setElement($el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
@@ -3543,31 +3538,30 @@ return __p;
         };
 
         this.startNewBOSHSession = function () {
+            var that = this;
             $.ajax({
                 url:  this.prebind_url,
                 type: 'GET',
                 dataType: "json",
                 success: function (response) {
-                    this.connection.attach(
+                    that.connection.attach(
                             response.jid,
                             response.sid,
                             response.rid,
-                            this.onConnectStatusChanged
+                            that.onConnectStatusChanged
                     );
-                }.bind(this),
+                },
                 error: function (response) {
-                    delete this.connection;
-                    this.emit('noResumeableSession');
-                }.bind(this)
+                    delete that.connection;
+                    that.emit('noResumeableSession');
+                }
             });
         };
 
-        this.attemptPreboundSession = function (tokens) {
+        this.attemptPreboundSession = function (reconnecting) {
             /* Handle session resumption or initialization when prebind is being used.
              */
-            if (this.jid && this.sid && this.rid) {
-                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
-            } else if (this.keepalive) {
+            if (!reconnecting && this.keepalive) {
                 if (!this.jid) {
                     throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
                                     "you must supply the JID of the current user.");
@@ -3578,18 +3572,16 @@ return __p;
                     this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
                     this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 }
+            }
+
+            // No keepalive, or session resumption has failed.
+            if (!reconnecting && this.jid && this.sid && this.rid) {
+                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
+            } else if (this.prebind_url) {
+                return this.startNewBOSHSession();
             } else {
                 throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
-                    "then you MUST supply JID, RID and SID values");
-            }
-            // We haven't been able to attach yet. Let's see if there
-            // is a prebind_url, otherwise there's nothing with which
-            // we can attach.
-            if (this.prebind_url) {
-                this.startNewBOSHSession();
-            } else {
-                delete this.connection;
-                this.emit('noResumeableSession');
+                    "then you MUST supply JID, RID and SID values or a prebind_url.");
             }
         };
 
@@ -3630,14 +3622,14 @@ return __p;
             }
         };
 
-        this.attemptNonPreboundSession = function () {
+        this.attemptNonPreboundSession = function (credentials, reconnecting) {
             /* Handle session resumption or initialization when prebind is not being used.
              *
              * Two potential options exist and are handled in this method:
              *  1. keepalive
              *  2. auto_login
              */
-            if (this.keepalive) {
+            if (this.keepalive && !reconnecting) {
                 try {
                     return this.connection.restore(this.jid, this.onConnectStatusChanged);
                 } catch (e) {
@@ -3646,7 +3638,11 @@ return __p;
                 }
             }
             if (this.auto_login) {
-                if (this.credentials_url) {
+                if (credentials) {
+                    // When credentials are passed in, they override prebinding
+                    // or credentials fetching via HTTP
+                    this.autoLogin(credentials);
+                } else if (this.credentials_url) {
                     this.fetchLoginCredentials().done(this.autoLogin.bind(this));
                 } else if (!this.jid) {
                     throw new Error(
@@ -3656,24 +3652,19 @@ return __p;
                         "username and password can be fetched (via credentials_url)."
                     );
                 } else {
+                    // Probably ANONYMOUS login
                     this.autoLogin();
                 }
             }
         };
 
-        this.logIn = function (credentials) {
-            if (credentials || this.authentication === converse.ANONYMOUS) {
-                // When credentials are passed in, they override prebinding
-                // or credentials fetching via HTTP
-                this.autoLogin(credentials);
+        this.logIn = function (credentials, reconnecting) {
+            // We now try to resume or automatically set up a new session.
+            // Otherwise the user will be shown a login form.
+            if (this.authentication === converse.PREBIND) {
+                this.attemptPreboundSession(reconnecting);
             } else {
-                // We now try to resume or automatically set up a new session.
-                // Otherwise the user will be shown a login form.
-                if (this.authentication === converse.PREBIND) {
-                    this.attemptPreboundSession();
-                } else {
-                    this.attemptNonPreboundSession();
-                }
+                this.attemptNonPreboundSession(credentials, reconnecting);
             }
         };
 
@@ -3713,9 +3704,13 @@ return __p;
             return this;
         };
 
-        this._initialize = function () {
+        this.initChatBoxes = function () {
             this.chatboxes = new this.ChatBoxes();
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
+        };
+
+        this._initialize = function () {
+            this.initChatBoxes();
             this.initSession();
             this.initConnection();
             this.setUpXMLLogging();
@@ -3878,11 +3873,15 @@ return __p;
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jids, true));
+                    chatbox = converse.wrappedChatBox(
+                        converse.chatboxes.getChatBox(jids, true).trigger('show')
+                    );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(converse.chatboxes.getChatBox(jid, true));
+                    chatbox = converse.wrappedChatBox(
+                        converse.chatboxes.getChatBox(jid, true).trigger('show')
+                    );
                     return chatbox;
                 });
             },
@@ -5229,7 +5228,7 @@ return __p;
             converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
-                className: 'chatbox',
+                className: 'chatbox hidden',
                 is_chatroom: false,  // Leaky abstraction from MUC
 
                 events: {
@@ -5253,7 +5252,7 @@ return __p;
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoDOM().afterShown();
+                    this.render().fetchMessages().insertIntoDOM();
                     // XXX: adding the event below to the events map above doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
@@ -5868,7 +5867,7 @@ return __p;
                 },
 
                 hide: function () {
-                    this.$el.hide();
+                    this.el.classList.add('hidden');
                     utils.refreshWebkit();
                     return this;
                 },
@@ -5892,7 +5891,7 @@ return __p;
                         if (focus) { this.focus(); }
                         return;
                     }
-                    this.$el.fadeIn(this.afterShown.bind(this));
+                    utils.fadeIn(this.el, this.afterShown.bind(this));
                 },
 
                 show: function (focus) {
@@ -6941,7 +6940,6 @@ return __p;
                                 'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
                             })
                         ));
-                        converse.controlboxtoggle.showControlBox();
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.$el.addClass('current-xmpp-contact');
                         this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
@@ -7617,24 +7615,23 @@ return __p;
                 },
 
                 hide: function (callback) {
-                    this.$el.hide('fast', function () {
-                        utils.refreshWebkit();
-                        converse.emit('chatBoxClosed', this);
-                        if (!converse.connection.connected) {
-                            converse.controlboxtoggle.render();
+                    this.$el.addClass('hidden');
+                    utils.refreshWebkit();
+                    converse.emit('chatBoxClosed', this);
+                    if (!converse.connection.connected) {
+                        converse.controlboxtoggle.render();
+                    }
+                    converse.controlboxtoggle.show(function () {
+                        if (typeof callback === "function") {
+                            callback();
                         }
-                        converse.controlboxtoggle.show(function () {
-                            if (typeof callback === "function") {
-                                callback();
-                            }
-                        });
                     });
                     return this;
                 },
 
                 onControlBoxToggleHidden: function () {
                     var that = this;
-                    this.$el.show('fast', function () {
+                    utils.fadeIn(this.el, function () {
                         converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
                         converse.emit('controlBoxOpened', that);
@@ -7990,7 +7987,7 @@ return __p;
 
             converse.ControlBoxToggle = Backbone.View.extend({
                 tagName: 'a',
-                className: 'toggle-controlbox',
+                className: 'toggle-controlbox hidden',
                 id: 'toggle-controlbox',
                 events: {
                     'click': 'onClick'
@@ -8000,7 +7997,7 @@ return __p;
                 },
 
                 initialize: function () {
-                    $('#conversejs').prepend(this.render());
+                    converse.chatboxviews.$el.prepend(this.render());
                     this.updateOnlineCount();
                     converse.on('initialized', function () {
                         converse.roster.on("add", this.updateOnlineCount, this);
@@ -8019,7 +8016,7 @@ return __p;
                         converse.templates.controlbox_toggle({
                             'label_toggle': __('Toggle chat')
                         })
-                    ).hide();
+                    );
                 },
 
                 updateOnlineCount: _.debounce(function () {
@@ -8034,11 +8031,12 @@ return __p;
                 }, converse.animate ? 100 : 0),
 
                 hide: function (callback) {
-                    this.$el.fadeOut('fast', callback);
+                    this.el.classList.add('hidden');
+                    callback();
                 },
 
                 show: function (callback) {
-                    this.$el.show('fast', callback);
+                    utils.fadeIn(this.el, callback);
                 },
 
                 showControlBox: function () {
@@ -8473,6 +8471,74 @@ return __p;
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
 
+    /* http://xmpp.org/extensions/xep-0045.html
+     * ----------------------------------------
+     * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
+     * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
+     * 102 message      Configuration change    Inform occupants that room now shows unavailable members
+     * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
+     * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
+     * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
+     * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
+     * 171 message      Configuration change    Inform occupants that room logging is now disabled
+     * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
+     * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
+     * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
+     * 201 presence     Entering a room         Inform user that a new room has been created
+     * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
+     * 301 presence     Removal from room       Inform user that he or she has been banned from the room
+     * 303 presence     Exiting a room          Inform all occupants of new room nickname
+     * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
+     * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
+     * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
+     * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+     */
+    converse.muc = {
+        info_messages: {
+            100: __('This room is not anonymous'),
+            102: __('This room now shows unavailable members'),
+            103: __('This room does not show unavailable members'),
+            104: __('Non-privacy-related room configuration has changed'),
+            170: __('Room logging is now enabled'),
+            171: __('Room logging is now disabled'),
+            172: __('This room is now non-anonymous'),
+            173: __('This room is now semi-anonymous'),
+            174: __('This room is now fully-anonymous'),
+            201: __('A new room has been created')
+        },
+
+        disconnect_messages: {
+            301: __('You have been banned from this room'),
+            307: __('You have been kicked from this room'),
+            321: __("You have been removed from this room because of an affiliation change"),
+            322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
+            332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+        },
+
+        action_info_messages: {
+            /* XXX: Note the triple underscore function and not double
+             * underscore.
+             *
+             * This is a hack. We can't pass the strings to __ because we
+             * don't yet know what the variable to interpolate is.
+             *
+             * Triple underscore will just return the string again, but we
+             * can then at least tell gettext to scan for it so that these
+             * strings are picked up by the translation machinery.
+             */
+            301: ___("<strong>%1$s</strong> has been banned"),
+            303: ___("<strong>%1$s</strong>'s nickname has changed"),
+            307: ___("<strong>%1$s</strong> has been kicked out"),
+            321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
+            322: ___("<strong>%1$s</strong> has been removed for not being a member")
+        },
+
+        new_nickname_messages: {
+            210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
+            303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
+        }
+    };
+
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
     Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
@@ -8626,7 +8692,7 @@ return __p;
                  */
                 length: 300,
                 tagName: 'div',
-                className: 'chatbox chatroom',
+                className: 'chatbox chatroom hidden',
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
@@ -8653,8 +8719,7 @@ return __p;
                     var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.chatroomview = this;
-
-                    this.render().$el.hide();
+                    this.render();
                     this.occupantsview.model.fetch({add:true});
                     var nick = this.model.get('nick');
                     if (!nick) {
@@ -9148,6 +9213,44 @@ return __p;
                         });
                 },
 
+                autoConfigureChatRoom: function (stanza) {
+                    /* Automatically configure room based on the
+                     * 'roomconfigure' data on this view's model.
+                     */
+                    var that = this, configArray = [],
+                        $fields = $(stanza).find('field'),
+                        count = $fields.length,
+                        config = this.model.get('roomconfig');
+
+                    $fields.each(function () {
+                        var fieldname = this.getAttribute('var').replace('muc#roomconfig_', ''),
+                            type = this.getAttribute('type'),
+                            value;
+                        if (fieldname in config) {
+                            switch (type) {
+                                case 'boolean':
+                                    value = config[fieldname] ? 1 : 0;
+                                    break;
+                                case 'list-multi':
+                                    // TODO: we don't yet handle "list-multi" types
+                                    value = this.innerHTML;
+                                    break;
+                                default:
+                                    value = config[fieldname];
+                            }
+                            this.innerHTML = $build('value').t(value);
+                        }
+                        configArray.push(this);
+                        if (!--count) {
+                            that.sendConfiguration(
+                                configArray,
+                                that.onConfigSaved.bind(that),
+                                that.onErrorConfigSaved.bind(that)
+                            );
+                        }
+                    });
+                },
+
                 onConfigSaved: function (stanza) {
                     // TODO: provide feedback
                 },
@@ -9168,20 +9271,27 @@ return __p;
                 },
 
                 configureChatRoom: function (ev) {
+                    var handleIQ;
                     if (typeof ev !== 'undefined' && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    if (this.$el.find('div.chatroom-form-container').length) {
-                        return;
+                    if (this.model.get('auto_configure')) {
+                        handleIQ = this.autoConfigureChatRoom.bind(this);
+                    } else {
+                        if (this.$el.find('div.chatroom-form-container').length) {
+                            return;
+                        }
+                        var $body = this.$('.chatroom-body');
+                        $body.children().addClass('hidden');
+                        $body.append(converse.templates.chatroom_form());
+                        handleIQ = this.renderConfigurationForm.bind(this);
                     }
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$('.chatroom-body').append(converse.templates.chatroom_form());
                     converse.connection.sendIQ(
-                            $iq({
-                                to: this.model.get('jid'),
-                                type: "get"
-                            }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
-                            this.renderConfigurationForm.bind(this)
+                        $iq({
+                            'to': this.model.get('jid'),
+                            'type': "get"
+                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
+                        handleIQ
                     );
                 },
 
@@ -9326,130 +9436,106 @@ return __p;
                     this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
                 },
 
-                /* http://xmpp.org/extensions/xep-0045.html
-                 * ----------------------------------------
-                 * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-                 * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-                 * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-                 * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-                 * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-                 * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-                 * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-                 * 171 message      Configuration change    Inform occupants that room logging is now disabled
-                 * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-                 * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-                 * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-                 * 201 presence     Entering a room         Inform user that a new room has been created
-                 * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-                 * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-                 * 303 presence     Exiting a room          Inform all occupants of new room nickname
-                 * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-                 * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-                 * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-                 * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-                 */
-                infoMessages: {
-                    100: __('This room is not anonymous'),
-                    102: __('This room now shows unavailable members'),
-                    103: __('This room does not show unavailable members'),
-                    104: __('Non-privacy-related room configuration has changed'),
-                    170: __('Room logging is now enabled'),
-                    171: __('Room logging is now disabled'),
-                    172: __('This room is now non-anonymous'),
-                    173: __('This room is now semi-anonymous'),
-                    174: __('This room is now fully-anonymous'),
-                    201: __('A new room has been created')
-                },
-
-                disconnectMessages: {
-                    301: __('You have been banned from this room'),
-                    307: __('You have been kicked from this room'),
-                    321: __("You have been removed from this room because of an affiliation change"),
-                    322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
-                },
-
-                actionInfoMessages: {
-                    /* XXX: Note the triple underscore function and not double
-                     * underscore.
-                     *
-                     * This is a hack. We can't pass the strings to __ because we
-                     * don't yet know what the variable to interpolate is.
-                     *
-                     * Triple underscore will just return the string again, but we
-                     * can then at least tell gettext to scan for it so that these
-                     * strings are picked up by the translation machinery.
-                     */
-                    301: ___("<strong>%1$s</strong> has been banned"),
-                    303: ___("<strong>%1$s</strong>'s nickname has changed"),
-                    307: ___("<strong>%1$s</strong> has been kicked out"),
-                    321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
-                    322: ___("<strong>%1$s</strong> has been removed for not being a member")
-                },
-
-                newNicknameMessages: {
-                    210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
-                    303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
-                },
-
-                showStatusMessages: function (el, is_self) {
-                    /* Check for status codes and communicate their purpose to the user.
-                     * Allow user to configure chat room if they are the owner.
-                     * See: http://xmpp.org/registrar/mucstatus.html
-                     */
-                    var $el = $(el), i, disconnect_msgs = [], msgs = [], reasons = [];
-
-                    $el.find('x[xmlns="'+Strophe.NS.MUC_USER+'"]').each(function (idx, x) {
-                        var $item = $(x).find('item');
-                        if (Strophe.getBareJidFromJid($item.attr('jid')) === converse.bare_jid && $item.attr('affiliation') === 'owner') {
-                            this.$el.find('a.configure-chatroom-button').show();
+                getMessageFromStatus: function (stat, is_self, from_nick, item) {
+                    var code = stat.getAttribute('code');
+                    if (is_self && code === "210") {
+                        return __(converse.muc.new_nickname_messages[code], from_nick);
+                    } else if (is_self && code === "303") {
+                        return __(converse.muc.new_nickname_messages[code], item.getAttribute('nick'));
+                    } else if (!is_self && (code in converse.muc.action_info_messages)) {
+                        return __(converse.muc.action_info_messages[code], from_nick);
+                    } else if (code in converse.muc.info_messages) {
+                        return converse.muc.info_messages[code];
+                    } else if (code !== '110') {
+                        if (stat.textContent) {
+                            // Sometimes the status contains human readable text and not a code.
+                            return stat.textContent;
                         }
-                        $(x).find('item reason').each(function (idx, reason) {
-                            if ($(reason).text()) {
-                                reasons.push($(reason).text());
-                            }
-                        });
-                        $(x).find('status').each(function (idx, stat) {
-                            var code = stat.getAttribute('code');
-                            var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid($el.attr('from')));
-                            if (is_self && code === "210") {
-                                msgs.push(__(this.newNicknameMessages[code], from_nick));
-                            } else if (is_self && code === "303") {
-                                msgs.push(__(this.newNicknameMessages[code], $item.attr('nick')));
-                            } else if (is_self && _.contains(_.keys(this.disconnectMessages), code)) {
-                                disconnect_msgs.push(this.disconnectMessages[code]);
-                            } else if (!is_self && _.contains(_.keys(this.actionInfoMessages), code)) {
-                                msgs.push(__(this.actionInfoMessages[code], from_nick));
-                            } else if (_.contains(_.keys(this.infoMessages), code)) {
-                                msgs.push(this.infoMessages[code]);
-                            } else if (code !== '110') {
-                                if ($(stat).text()) {
-                                    msgs.push($(stat).text()); // Sometimes the status contains human readable text and not a code.
-                                }
-                            }
-                        }.bind(this));
-                    }.bind(this));
+                    }
+                    return;
+                },
 
-                    if (disconnect_msgs.length > 0) {
-                        for (i=0; i<disconnect_msgs.length; i++) {
-                            this.showDisconnectMessage(disconnect_msgs[i]);
+                parseXUserElement: function (x, is_self, from_nick) {
+                    /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
+                     * element and construct a map containing relevant
+                     * information.
+                     */
+                    // By using querySelector, we assume here there is one
+                    // <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
+                    // element. This appears to be a safe assumption, since
+                    // each <x/> element pertains to a single user.
+                    var item = x.querySelector('item');
+                    // Show the configure button if user is the room owner.
+                    var jid = item.getAttribute('jid');
+                    var affiliation = item.getAttribute('affiliation');
+                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid && affiliation === 'owner') {
+                        this.$el.find('a.configure-chatroom-button').show();
+                    }
+                    // Extract notification messages, reasons and
+                    // disconnection messages from the <x/> node.
+                    var statuses = x.querySelectorAll('status');
+                    var mapper = _.partial(this.getMessageFromStatus, _, is_self, from_nick, item);
+                    var notification = {
+                        'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
+                    };
+                    var reason = item.querySelector('reason');
+                    if (reason) {
+                        notification.reason = reason ? reason.textContent : undefined;
+                    }
+                    var actor = item.querySelector('actor');
+                    if (actor) {
+                        notification.actor = actor ? actor.getAttribute('nick') : undefined;
+                    }
+                    var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
+                    var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnect_messages));
+                    var disconnected = is_self && disconnection_codes.length > 0;
+                    if (disconnected) {
+                        notification.disconnected = true;
+                        notification.disconnection_message = converse.muc.disconnect_messages[disconnection_codes[0]];
+                    }
+                    return notification;
+                },
+
+                displayNotificationsforUser: function (notification) {
+                    /* Given the notification object generated by
+                     * parseXUserElement, display any relevant messages and
+                     * information to the user.
+                     */
+                    var that = this;
+                    if (notification.disconnected) {
+                        this.showDisconnectMessage(notification.disconnection_message);
+                        if (notification.actor) {
+                            this.showDisconnectMessage(__(___('This action was done by <strong>%1$s</strong>.'), notification.actor));
                         }
-                        for (i=0; i<reasons.length; i++) {
-                            this.showDisconnectMessage(__('The reason given is: "'+reasons[i]+'"'), true);
+                        if (notification.reason) {
+                            this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
                         }
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                         return;
                     }
-                    for (i=0; i<msgs.length; i++) {
-                        this.$content.append(converse.templates.info({message: msgs[i]}));
+                    _.each(notification.messages, function (message) {
+                        that.$content.append(converse.templates.info({'message': message}));
+                    });
+                    if (notification.reason) {
+                        this.showStatusNotification(__('The reason given is: "'+notification.reason+'"'), true);
                     }
-                    for (i=0; i<reasons.length; i++) {
-                        this.showStatusNotification(__('The reason given is: "'+reasons[i]+'"'), true);
-                    }
-                    if (disconnect_msgs.length || msgs.length || reasons.length) {
+                    if (notification.messages.length) {
                         this.scrollDown();
                     }
-                    return el;
+                },
+
+                showStatusMessages: function (presence, is_self) {
+                    /* Check for status codes and communicate their purpose to the user.
+                     * Allows user to configure chat room if they are the owner.
+                     * See: http://xmpp.org/registrar/mucstatus.html
+                     */
+                    var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(presence.getAttribute('from')));
+                    var notifications = _.map(
+                        presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]'),
+                        _.partial(this.parseXUserElement.bind(this), _, is_self, from_nick)
+                    );
+                    _.each(notifications, this.displayNotificationsforUser.bind(this));
+                    return presence;
                 },
 
                 showErrorMessage: function (presence) {
@@ -10136,8 +10222,11 @@ return __p;
                         } else if (typeof attrs === "undefined") {
                             attrs = {};
                         }
+                        if (_.isUndefined(attrs.maximize)) {
+                            attrs.maximize = false;
+                        }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
-                        if (!attrs.nick) {
+                        if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "undefined") {
@@ -10313,11 +10402,13 @@ return __p;
 
                 render: function (options) {
                     this.__super__.render.apply(this, arguments);
-                    var label_bookmark = _('Bookmark this room');
-                    var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
-                            (this.model.get('bookmarked') ? 'button-on"' : '"') +
-                            'title="'+label_bookmark+'"></a>';
-                    this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
+                    if (converse.allow_bookmarks) {
+                        var label_bookmark = _('Bookmark this room');
+                        var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
+                                (this.model.get('bookmarked') ? 'button-on"' : '"') +
+                                'title="'+label_bookmark+'"></a>';
+                        this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
+                    }
                     return this;
                 },
 
@@ -10326,8 +10417,8 @@ return __p;
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    if (_.isUndefined(converse.bookmarks)) {
-                        return;
+                    if (_.isUndefined(converse.bookmarks) || !converse.allow_bookmarks) {
+                        return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                     var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
@@ -10414,6 +10505,13 @@ return __p;
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+            // Configuration values for this plugin
+            // ====================================
+            // Refer to docs/source/configuration.rst for explanations of these
+            // configuration settings.
+            this.updateSettings({
+                allow_bookmarks: true
+            });
 
             converse.Bookmark = Backbone.Model;
 
@@ -10652,6 +10750,9 @@ return __p;
             });
 
             var initBookmarks = function () {
+                if (!converse.allow_bookmarks) {
+                    return;
+                }
                 converse.bookmarks = new converse.Bookmarks();
                 converse.bookmarks.fetchBookmarks().always(function () {
                     converse.bookmarksview = new converse.BookmarksView(
@@ -10662,6 +10763,9 @@ return __p;
             converse.on('chatBoxesFetched', initBookmarks);
 
             var afterReconnection = function () {
+                if (!converse.allow_bookmarks) {
+                    return;
+                }
                 if (_.isUndefined(converse.bookmarksview)) {
                     initBookmarks();
                 } else {
@@ -12760,6 +12864,15 @@ __p+='\n    href="#">'+
 return __p;
 }; });
 
+
+define('tpl!chats_panel', [],function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
+}
+return __p;
+}; });
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -12775,6 +12888,7 @@ return __p;
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
+            "tpl!chats_panel",
             "converse-controlbox",
             "converse-chatview",
             "converse-muc"
@@ -12784,12 +12898,14 @@ return __p;
         converse_api,
         tpl_chatbox_minimize,
         tpl_toggle_chats,
-        tpl_trimmed_chat
+        tpl_trimmed_chat,
+        tpl_chats_panel
     ) {
     "use strict";
     converse.templates.chatbox_minimize = tpl_chatbox_minimize;
     converse.templates.toggle_chats = tpl_toggle_chats;
     converse.templates.trimmed_chat = tpl_trimmed_chat;
+    converse.templates.chats_panel = tpl_chats_panel;
 
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._,
@@ -12807,12 +12923,12 @@ return __p;
             //
             // New functions which don't exist yet can also be added.
 
-            _initialize: function () {
-                this.__super__._initialize.apply(this, arguments);
+            initChatBoxes: function () {
+                var result = this.__super__.initChatBoxes.apply(this, arguments);
                 converse.minimized_chats = new converse.MinimizedChats({
                     model: converse.chatboxes
                 });
-                return this;
+                return result;
             },
 
             registerGlobalEventHandlers: function () {
@@ -12872,8 +12988,8 @@ return __p;
                     return this.__super__.initialize.apply(this, arguments);
                 },
 
-                afterShown: function () {
-                    this.__super__.afterShown.apply(this, arguments);
+                _show: function () {
+                    this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
                         converse.chatboxviews.trimChats(this);
                     }
@@ -12904,25 +13020,11 @@ return __p;
                     }
                 },
 
-                onMaximized: function () {
-                    converse.chatboxviews.trimChats(this);
-                    utils.refreshWebkit();
-                    this.$content.scrollTop(this.model.get('scroll'));
-                    this.setChatState(converse.ACTIVE).focus();
-                    this.scrollDown();
-                    converse.emit('chatBoxMaximized', this);
-                },
-
-                onMinimized: function () {
-                    utils.refreshWebkit();
-                    converse.emit('chatBoxMinimized', this);
-                },
-
                 maximize: function () {
                     // Restores a minimized chat box
-                    var chatboxviews = converse.chatboxviews;
-                    this.$el.insertAfter(chatboxviews.get("controlbox").$el)
-                        .show('fast', this.onMaximized.bind(this));
+                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    this.show();
+                    converse.emit('chatBoxMaximized', this);
                     return this;
                 },
 
@@ -12931,7 +13033,8 @@ return __p;
                     // save the scroll position to restore it on maximize
                     this.model.save({'scroll': this.$content.scrollTop()});
                     this.setChatState(converse.INACTIVE).model.minimize();
-                    this.$el.hide('fast', this.onMinimized.bind(this));
+                    this.hide();
+                    converse.emit('chatBoxMinimized', this);
                 },
             },
 
@@ -12968,7 +13071,8 @@ return __p;
                     /* Find the chat box and show it. If it doesn't exist, create it.
                      */
                     var chatbox = this.__super__.showChat.apply(this, arguments);
-                    if (chatbox.get('minimized')) {
+                    var maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
+                    if (chatbox.get('minimized') && maximize) {
                         chatbox.maximize();
                     }
                     return chatbox;
@@ -13030,7 +13134,7 @@ return __p;
                             // conditions.
                             view = this.get(oldest_chat.get('id'));
                             if (view) {
-                                view.$el.hide();
+                                view.hide();
                             }
                             oldest_chat.minimize();
                         }
@@ -13134,12 +13238,15 @@ return __p;
 
 
             converse.MinimizedChats = Backbone.Overview.extend({
-                el: "#minimized-chats",
+                tagName: 'div',
+                id: "minimized-chats",
+                className: 'hidden',
                 events: {
                     "click #toggle-minimized-chats": "toggle"
                 },
 
                 initialize: function () {
+                    this.render();
                     this.initToggle();
                     this.model.on("add", this.onChanged, this);
                     this.model.on("destroy", this.removeChat, this);
@@ -13166,11 +13273,16 @@ return __p;
                 },
 
                 render: function () {
+                    if (!this.el.parentElement) {
+                        this.el.innerHTML = converse.templates.chats_panel();
+                        converse.chatboxviews.el.appendChild(this.el);
+                    }
                     if (this.keys().length === 0) {
-                        this.$el.hide();
+                        this.el.classList.add('hidden');
                         converse.chatboxviews.trimChats.bind(converse.chatboxviews);
-                    } else if (this.keys().length === 1 && !this.$el.is(':visible')) {
-                        this.$el.show('fast', converse.chatboxviews.trimChats.bind(converse.chatboxviews));
+                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+                        this.el.classList.remove('hidden');
+                        converse.chatboxviews.trimChats();
                     }
                     return this.$el;
                 },

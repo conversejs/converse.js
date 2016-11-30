@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "test_utils"], factory);
-} (this, function (mock, test_utils) {
+    define(["mock", "converse-api", "test_utils"], factory);
+} (this, function (mock, converse_api, test_utils) {
     "use strict";
     var $msg = converse_api.env.$msg;
 

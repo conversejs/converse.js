@@ -48,7 +48,7 @@
     "jquery": "2.2.3",
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
-    "jshint": "^2.8.0",
+    "jshint": "^2.9.4",
     "moment": "~2.13.0",
     "otr": "0.2.16",
     "phantom-jasmine": "0.1.8",

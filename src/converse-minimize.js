@@ -196,7 +196,8 @@
                     /* Find the chat box and show it. If it doesn't exist, create it.
                      */
                     var chatbox = this.__super__.showChat.apply(this, arguments);
-                    if (chatbox.get('minimized')) {
+                    var maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
+                    if (chatbox.get('minimized') && maximize) {
                         chatbox.maximize();
                     }
                     return chatbox;

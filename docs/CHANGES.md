@@ -18,6 +18,7 @@
   initialization is complete. [jcbrand]
 - New event ['reconnecting'](https://conversejs.org/docs/html/development.html#reconnecting) [jcbrand]
 - New configuration setting [allow_bookmarks](https://conversejs.org/docs/html/configuration.html#allow_bookmarks) [jcbrand]
+- The `rooms.open` API method will no longer maximize rooms that are minimized (unless `maximize: true` is passed in). [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

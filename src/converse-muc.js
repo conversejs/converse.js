@@ -1830,6 +1830,9 @@
                         } else if (typeof attrs === "undefined") {
                             attrs = {};
                         }
+                        if (_.isUndefined(attrs.maximize)) {
+                            attrs.maximize = false;
+                        }
                         var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
                         if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);

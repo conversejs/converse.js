@@ -578,6 +578,8 @@ Room attributes that may be passed in:
   For a list of configuration values that can be passed in, refer to these values
   in the `XEP-0045 MUC specification <http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner>`_.
   The values should be named without the ``muc#roomconfig_`` prefix.
+* *maximize*: A boolean, indicating whether minimized rooms should also be
+  maximized, when opened. Set to ``false`` by default.
 
 For example, opening a room with a specific default configuration:
 

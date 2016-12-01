@@ -242,6 +242,82 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "Ruangan ini tidak anonim"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Ruangan ini menampilkan anggota yang tak tersedia"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Ruangan ini tidak menampilkan anggota yang tak tersedia"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Konfigurasi ruangan yang tak berhubungan dengan privasi telah diubah"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Pencatatan di ruangan ini sekarang dinyalakan"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Pencatatan di ruangan ini sekarang dimatikan"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Ruangan ini sekarang tak-anonim"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Ruangan ini sekarang semi-anonim"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Ruangan ini sekarang anonim"
+         ],
+         "A new room has been created": [
+            null,
+            "Ruangan baru telah dibuat"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Anda telah dicekal dari ruangan ini"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Anda telah ditendang dari ruangan ini"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Anda telah dihapus dari ruangan ini karena perubahan afiliasi"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Anda telah dihapus dari ruangan ini karena ruangan ini hanya terbuka untuk anggota dan anda bukan anggota"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) telah dimatikan."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> telah dicekal"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> telah ditendang keluar"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> telah dihapus karena perubahan afiliasi"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> telah dihapus karena bukan anggota"
+         ],
          "Message": [
             null,
             "Pesan"
@@ -318,81 +394,9 @@
             null,
             "Kirim"
          ],
-         "This room is not anonymous": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
-            "Ruangan ini tidak anonim"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Ruangan ini menampilkan anggota yang tak tersedia"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Ruangan ini tidak menampilkan anggota yang tak tersedia"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Konfigurasi ruangan yang tak berhubungan dengan privasi telah diubah"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "Pencatatan di ruangan ini sekarang dinyalakan"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "Pencatatan di ruangan ini sekarang dimatikan"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ruangan ini sekarang tak-anonim"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Ruangan ini sekarang semi-anonim"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Ruangan ini sekarang anonim"
-         ],
-         "A new room has been created": [
-            null,
-            "Ruangan baru telah dibuat"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Anda telah dicekal dari ruangan ini"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Anda telah ditendang dari ruangan ini"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Anda telah dihapus dari ruangan ini karena perubahan afiliasi"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Anda telah dihapus dari ruangan ini karena ruangan ini hanya terbuka untuk anggota dan anda bukan anggota"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) telah dimatikan."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> telah dicekal"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> telah ditendang keluar"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> telah dihapus karena perubahan afiliasi"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> telah dihapus karena bukan anggota"
+            ""
          ],
          "The reason given is: \"": [
             null,

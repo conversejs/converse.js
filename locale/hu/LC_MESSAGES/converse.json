@@ -282,6 +282,90 @@
             null,
             "A csevegés minimalizálása"
          ],
+         "This room is not anonymous": [
+            null,
+            "Ez a szoba NEM névtelen"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Ez a szoba mutatja az elérhetetlen tagokat"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Ez a szoba nem mutatja az elérhetetlen tagokat"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "A szoba általános konfigurációja módosult"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "A szobába a belépés lehetséges"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "A szobába a belépés szünetel"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Ez a szoba most NEM névtelen"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Ez a szoba most félig névtelen"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Ez a szoba most teljesen névtelen"
+         ],
+         "A new room has been created": [
+            null,
+            "Létrejött egy új csevegőszoba"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Ki lettél tíltva ebből a szobából"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Ki lettél dobva ebből a szobából"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Taglista módosítás miatt kiléptettünk a csevegőszobából"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Kiléptettünk a csevegőszobából, mert mostantól csak a taglistán szereplők lehetnek jelen"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás leállításra került."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "A szobából kitíltva: <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> beceneve módosult"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "A szobából kidobva: <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "A beceneved a következőre módosult: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Üzenet"
@@ -377,90 +461,6 @@
          "Submit": [
             null,
             "Küldés"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Ez a szoba NEM névtelen"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Ez a szoba mutatja az elérhetetlen tagokat"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Ez a szoba nem mutatja az elérhetetlen tagokat"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "A szoba általános konfigurációja módosult"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "A szobába a belépés lehetséges"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "A szobába a belépés szünetel"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ez a szoba most NEM névtelen"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Ez a szoba most félig névtelen"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Ez a szoba most teljesen névtelen"
-         ],
-         "A new room has been created": [
-            null,
-            "Létrejött egy új csevegőszoba"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Ki lettél tíltva ebből a szobából"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Ki lettél dobva ebből a szobából"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Taglista módosítás miatt kiléptettünk a csevegőszobából"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Kiléptettünk a csevegőszobából, mert mostantól csak a taglistán szereplők lehetnek jelen"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás leállításra került."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "A szobából kitíltva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> beceneve módosult"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "A szobából kidobva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "A beceneved a következőre módosult: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

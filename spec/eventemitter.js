@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "test_utils"], factory);
-} (this, function (mock, test_utils) {
+    define(["mock", "converse-api", "test_utils"], factory);
+} (this, function (mock, converse_api, test_utils) {
 
     return describe("The Converse Event Emitter", function() {
 

@@ -274,6 +274,86 @@
             null,
             "Свернуть окно чата"
          ],
+         "This room is not anonymous": [
+            null,
+            "Этот чат не анонимный"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Этот чат показывает недоступных собеседников"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Этот чат не показывает недоступных собеседников"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Изменились настройки чата, не относящиеся к приватности"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Протокол чата включен"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Протокол чата выключен"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Этот чат больше не анонимный"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Этот чат частично анонимный"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Этот чат стал полностью анонимный"
+         ],
+         "A new room has been created": [
+            null,
+            "Появился новый чат"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Вам запрещено подключатся к этому чату"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Вас выкинули из чата"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Вас удалили из-за изменения прав"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Вы отключены от чата, потому что он теперь только для участников"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Вы отключены от этого чата, потому что службы чатов отключилась."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> забанен"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> выкинут"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> удалён, потому что изменились права"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> удалён, потому что не участник"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "Ваш псевдоним изменён на: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Сообщение"
@@ -361,86 +441,6 @@
          "Submit": [
             null,
             "Отправить"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Этот чат не анонимный"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Этот чат показывает недоступных собеседников"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Этот чат не показывает недоступных собеседников"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Изменились настройки чата, не относящиеся к приватности"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "Протокол чата включен"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "Протокол чата выключен"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Этот чат больше не анонимный"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Этот чат частично анонимный"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Этот чат стал полностью анонимный"
-         ],
-         "A new room has been created": [
-            null,
-            "Появился новый чат"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Вам запрещено подключатся к этому чату"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Вас выкинули из чата"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Вас удалили из-за изменения прав"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Вы отключены от чата, потому что он теперь только для участников"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Вы отключены от этого чата, потому что службы чатов отключилась."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> забанен"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> выкинут"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что изменились права"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что не участник"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ваш псевдоним изменён на: <strong>%1$s</strong>"
          ],
          "You are not on the member list of this room": [
             null,

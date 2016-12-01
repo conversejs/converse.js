@@ -279,6 +279,90 @@
             null,
             "Minimitza aquest quadre del xat"
          ],
+         "This room is not anonymous": [
+            null,
+            "Aquesta sala no és anònima"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Aquesta sala ara mostra membres no disponibles"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Aquesta sala no mostra membres no disponibles"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "S'ha canviat la configuració de la sala no relacionada amb la privadesa"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "El registre de la sala està habilitat"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "El registre de la sala està deshabilitat"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Aquesta sala ara no és anònima"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Aquesta sala ara és parcialment anònima"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Aquesta sala ara és totalment anònima"
+         ],
+         "A new room has been created": [
+            null,
+            "S'ha creat una sala nova"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Se us ha expulsat d'aquesta sala"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Se us ha expulsat d'aquesta sala"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Se us ha eliminat d'aquesta sala a causa d'un canvi d'afiliació"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Se us ha eliminat d'aquesta sala perquè ara només permet membres i no en sou membre"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat multiusuari)."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "S'ha expulsat <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "L'àlies de <strong>%1$s</strong> ha canviat"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "S'ha expulsat <strong>%1$s</strong>"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "El vostre àlies ha canviat a: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Missatge"
@@ -374,90 +458,6 @@
          "Submit": [
             null,
             "Envia"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Aquesta sala no és anònima"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Aquesta sala ara mostra membres no disponibles"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Aquesta sala no mostra membres no disponibles"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "S'ha canviat la configuració de la sala no relacionada amb la privadesa"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "El registre de la sala està habilitat"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "El registre de la sala està deshabilitat"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Aquesta sala ara no és anònima"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Aquesta sala ara és parcialment anònima"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Aquesta sala ara és totalment anònima"
-         ],
-         "A new room has been created": [
-            null,
-            "S'ha creat una sala nova"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Se us ha expulsat d'aquesta sala"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Se us ha expulsat d'aquesta sala"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Se us ha eliminat d'aquesta sala a causa d'un canvi d'afiliació"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Se us ha eliminat d'aquesta sala perquè ara només permet membres i no en sou membre"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat multiusuari)."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "S'ha expulsat <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "L'àlies de <strong>%1$s</strong> ha canviat"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "S'ha expulsat <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "El vostre àlies ha canviat a: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -48,7 +48,7 @@
     "jquery": "2.2.3",
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
-    "jshint": "^2.8.0",
+    "jshint": "^2.9.4",
     "moment": "~2.13.0",
     "otr": "0.2.16",
     "phantom-jasmine": "0.1.8",
@@ -57,7 +57,8 @@
     "po2json": "^0.4.4",
     "requirejs": "2.3.2",
     "requirejs-undertemplate": "~0.0.4",
-    "strophe.js": "https://github.com/strophe/strophejs#105e9cdbf0bd059ed66642fa1a49dc8836c9c8d3",
+    "strophe.js": "1.2.10",
+    "snyk": "^1.21.2",
     "strophejs-plugins": "0.0.7",
     "text": "requirejs/text#2.0.15",
     "underscore": "~1.8.3"

@@ -1091,7 +1091,33 @@
     display: block;
     margin: 0 auto;
     clear: both; }
+@keyframes fadein {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@-webkit-keyframes fadein {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+  #conversejs .visible {
+    visibility: visible;
+    opacity: 1;
+    -webkit-animation-name: fadein;
+    -moz-animation-name: fadein;
+    animation-name: fadein;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 350ms;
+    -moz-animation-duration: 350ms;
+    animation-duration: 350ms;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-timing-function: ease;
+    animation-timing-function: ease; }
   #conversejs .hidden {
+    opacity: 0;
     display: none; }
   #conversejs .locked {
     padding-right: 22px; }

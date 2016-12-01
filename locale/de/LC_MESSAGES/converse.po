@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-07 14:26+0000\n"
+"POT-Creation-Date: 2016-11-30 17:49+0000\n"
 "PO-Revision-Date: 2016-04-07 10:20+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German\n"
@@ -20,64 +20,64 @@ msgstr ""
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/converse-bookmarks.js:74 src/converse-bookmarks.js:124
+#: src/converse-bookmarks.js:75 src/converse-bookmarks.js:126
 msgid "Bookmark this room"
 msgstr ""
 
-#: src/converse-bookmarks.js:125
+#: src/converse-bookmarks.js:127
 msgid "The name for this bookmark:"
 msgstr ""
 
-#: src/converse-bookmarks.js:126
+#: src/converse-bookmarks.js:128
 msgid "Would you like this room to be automatically joined upon startup?"
 msgstr ""
 
-#: src/converse-bookmarks.js:127
+#: src/converse-bookmarks.js:129
 msgid "What should your nickname for this room be?"
 msgstr ""
 
-#: src/converse-bookmarks.js:129 src/converse-controlbox.js:562
-#: src/converse-muc.js:718
+#: src/converse-bookmarks.js:131 src/converse-controlbox.js:561
+#: src/converse-muc.js:785
 msgid "Save"
 msgstr "Speichern"
 
-#: src/converse-bookmarks.js:130 src/converse-muc.js:719
+#: src/converse-bookmarks.js:132 src/converse-muc.js:786
 #: src/converse-register.js:235 src/converse-register.js:350
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/converse-bookmarks.js:270
+#: src/converse-bookmarks.js:279
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr ""
 
-#: src/converse-bookmarks.js:353
+#: src/converse-bookmarks.js:362
 #, fuzzy
 msgid "Click to toggle the bookmarks list"
 msgstr "Hier klicken um diesen Raum zu öffnen"
 
-#: src/converse-bookmarks.js:354
+#: src/converse-bookmarks.js:363
 msgid "Bookmarked Rooms"
 msgstr ""
 
-#: src/converse-bookmarks.js:371
+#: src/converse-bookmarks.js:380
 #, fuzzy
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Wollen Sie diesen Kontakt wirklich entfernen?"
 
-#: src/converse-bookmarks.js:380 src/converse-muc.js:1492
+#: src/converse-bookmarks.js:389 src/converse-muc.js:1584
 msgid "Click to open this room"
 msgstr "Hier klicken um diesen Raum zu öffnen"
 
-#: src/converse-bookmarks.js:381 src/converse-muc.js:1493
+#: src/converse-bookmarks.js:390 src/converse-muc.js:1585
 msgid "Show more information on this room"
 msgstr "Mehr Information über diesen Raum zeigen"
 
-#: src/converse-bookmarks.js:382
+#: src/converse-bookmarks.js:391
 msgid "Remove this bookmark"
 msgstr ""
 
 #: src/converse-chatview.js:135 src/converse-headline.js:99
-#: src/converse-muc.js:309
+#: src/converse-muc.js:376
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Nachrichten entfernen"
@@ -114,7 +114,7 @@ msgstr "tippt nicht mehr"
 msgid "has gone away"
 msgstr "ist jetzt abwesend"
 
-#: src/converse-chatview.js:503 src/converse-muc.js:534
+#: src/converse-chatview.js:503 src/converse-muc.js:601
 msgid "Show this menu"
 msgstr "Dieses Menü anzeigen"
 
@@ -122,7 +122,7 @@ msgstr "Dieses Menü anzeigen"
 msgid "Write in the third person"
 msgstr "In der dritten Person schreiben"
 
-#: src/converse-chatview.js:505 src/converse-muc.js:532
+#: src/converse-chatview.js:505 src/converse-muc.js:599
 msgid "Remove messages"
 msgstr "Nachrichten entfernen"
 
@@ -152,192 +152,192 @@ msgstr ""
 msgid "Start a call"
 msgstr ""
 
-#: src/converse-controlbox.js:240 src/converse-core.js:679
-#: src/converse-core.js:736 src/converse-rosterview.js:83
+#: src/converse-controlbox.js:240 src/converse-core.js:683
+#: src/converse-rosterview.js:83
 msgid "Contacts"
 msgstr "Kontakte"
 
-#: src/converse-controlbox.js:322 src/converse-core.js:472
+#: src/converse-controlbox.js:322 src/converse-core.js:462
 msgid "Connecting"
 msgstr "Verbindungsaufbau …"
 
-#: src/converse-controlbox.js:433
+#: src/converse-controlbox.js:432
 msgid "XMPP Username:"
 msgstr "XMPP Benutzername"
 
-#: src/converse-controlbox.js:434
+#: src/converse-controlbox.js:433
 msgid "Password:"
 msgstr "Passwort:"
 
-#: src/converse-controlbox.js:435
+#: src/converse-controlbox.js:434
 msgid "Click here to log in anonymously"
 msgstr "Hier klicken um anonym anzumelden"
 
-#: src/converse-controlbox.js:436
+#: src/converse-controlbox.js:435
 msgid "Log In"
 msgstr "Anmelden"
 
-#: src/converse-controlbox.js:437
+#: src/converse-controlbox.js:436
 #, fuzzy
 msgid "Username"
 msgstr "XMPP Benutzername"
 
-#: src/converse-controlbox.js:437
+#: src/converse-controlbox.js:436
 msgid "user@server"
 msgstr ""
 
-#: src/converse-controlbox.js:438
+#: src/converse-controlbox.js:437
 #, fuzzy
 msgid "password"
 msgstr "Passwort:"
 
-#: src/converse-controlbox.js:445
+#: src/converse-controlbox.js:444
 msgid "Sign in"
 msgstr "Anmelden"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:533 src/converse-controlbox.js:608
+#: src/converse-controlbox.js:532 src/converse-controlbox.js:607
 msgid "I am %1$s"
 msgstr "Ich bin %1$s"
 
-#: src/converse-controlbox.js:535 src/converse-controlbox.js:613
+#: src/converse-controlbox.js:534 src/converse-controlbox.js:612
 msgid "Click here to write a custom status message"
 msgstr "Hier klicken um Statusnachricht zu ändern"
 
-#: src/converse-controlbox.js:536 src/converse-controlbox.js:614
+#: src/converse-controlbox.js:535 src/converse-controlbox.js:613
 msgid "Click to change your chat status"
 msgstr "Hier klicken um Status zu ändern"
 
-#: src/converse-controlbox.js:561
+#: src/converse-controlbox.js:560
 msgid "Custom status"
 msgstr "Statusnachricht"
 
-#: src/converse-controlbox.js:590 src/converse-controlbox.js:600
+#: src/converse-controlbox.js:589 src/converse-controlbox.js:599
 msgid "online"
 msgstr "online"
 
-#: src/converse-controlbox.js:592
+#: src/converse-controlbox.js:591
 msgid "busy"
 msgstr "beschäftigt"
 
-#: src/converse-controlbox.js:594
+#: src/converse-controlbox.js:593
 msgid "away for long"
 msgstr "länger abwesend"
 
-#: src/converse-controlbox.js:596
+#: src/converse-controlbox.js:595
 msgid "away"
 msgstr "abwesend"
 
-#: src/converse-controlbox.js:598
+#: src/converse-controlbox.js:597
 #, fuzzy
 msgid "offline"
 msgstr "Abgemeldet"
 
-#: src/converse-controlbox.js:639 src/converse-rosterview.js:149
+#: src/converse-controlbox.js:638 src/converse-rosterview.js:149
 msgid "Online"
 msgstr "Online"
 
-#: src/converse-controlbox.js:640 src/converse-rosterview.js:151
+#: src/converse-controlbox.js:639 src/converse-rosterview.js:151
 msgid "Busy"
 msgstr "Beschäftigt"
 
-#: src/converse-controlbox.js:641 src/converse-rosterview.js:152
+#: src/converse-controlbox.js:640 src/converse-rosterview.js:152
 msgid "Away"
 msgstr "Abwesend"
 
-#: src/converse-controlbox.js:642 src/converse-rosterview.js:154
+#: src/converse-controlbox.js:641 src/converse-rosterview.js:154
 msgid "Offline"
 msgstr "Abgemeldet"
 
-#: src/converse-controlbox.js:643
+#: src/converse-controlbox.js:642
 msgid "Log out"
 msgstr "Abmelden"
 
-#: src/converse-controlbox.js:654
+#: src/converse-controlbox.js:653
 msgid "Contact name"
 msgstr "Name des Kontakts"
 
-#: src/converse-controlbox.js:655
+#: src/converse-controlbox.js:654
 msgid "Search"
 msgstr "Suche"
 
-#: src/converse-controlbox.js:659
+#: src/converse-controlbox.js:658
 msgid "e.g. user@example.org"
 msgstr ""
 
-#: src/converse-controlbox.js:660
+#: src/converse-controlbox.js:659
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: src/converse-controlbox.js:665
+#: src/converse-controlbox.js:664
 msgid "Click to add new chat contacts"
 msgstr "Hier klicken um neuen Kontakt hinzuzufügen"
 
-#: src/converse-controlbox.js:666
+#: src/converse-controlbox.js:665
 msgid "Add a contact"
 msgstr "Kontakt hinzufügen"
 
-#: src/converse-controlbox.js:693
+#: src/converse-controlbox.js:692
 msgid "No users found"
 msgstr "Keine Benutzer gefunden"
 
-#: src/converse-controlbox.js:699
+#: src/converse-controlbox.js:698
 msgid "Click to add as a chat contact"
 msgstr "Hier klicken um als Kontakt hinzuzufügen"
 
-#: src/converse-controlbox.js:762
+#: src/converse-controlbox.js:761
 msgid "Toggle chat"
 msgstr "Chat ein-/ausblenden"
 
-#: src/converse-core.js:195
+#: src/converse-core.js:191
 msgid "Click to hide these contacts"
 msgstr "Hier klicken um diese Kontakte zu verstecken"
 
-#: src/converse-core.js:395
+#: src/converse-core.js:391
 msgid "Reconnecting"
 msgstr "Verbindung wiederherstellen …"
 
-#: src/converse-core.js:397
+#: src/converse-core.js:393
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:462
+#: src/converse-core.js:452
 msgid "Disconnected"
 msgstr ""
 
-#: src/converse-core.js:463
+#: src/converse-core.js:453
 msgid "The connection to the chat server has dropped"
 msgstr ""
 
-#: src/converse-core.js:468
+#: src/converse-core.js:458
 #, fuzzy
 msgid "Connection error"
 msgstr "Verbindungsaufbau …"
 
-#: src/converse-core.js:469
+#: src/converse-core.js:459
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
 
-#: src/converse-core.js:474
+#: src/converse-core.js:464
 msgid "Authenticating"
 msgstr "Authentifizierung"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:466
 #, fuzzy
 msgid "Authentication failed."
 msgstr "Authentifizierung gescheitert"
 
-#: src/converse-core.js:477
+#: src/converse-core.js:467
 msgid "Authentication Failed"
 msgstr "Authentifizierung gescheitert"
 
-#: src/converse-core.js:989
+#: src/converse-core.js:978
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1160
+#: src/converse-core.js:1149
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -351,198 +351,77 @@ msgstr "Hier klicken um diesen Chat wiederherzustellen"
 msgid "Minimize this box"
 msgstr "Minimiert"
 
-#: src/converse-minimize.js:328
+#: src/converse-minimize.js:319
 msgid "Click to restore this chat"
 msgstr "Hier klicken um diesen Chat wiederherzustellen"
 
-#: src/converse-minimize.js:485
+#: src/converse-minimize.js:484
 msgid "Minimized"
 msgstr "Minimiert"
 
-#: src/converse-minimize.js:501
+#: src/converse-minimize.js:500
 msgid "Minimize this chat box"
 msgstr ""
 
-#: src/converse-muc.js:296
-#, fuzzy
-msgid "Close and leave this room"
-msgstr "Hier klicken um diesen Raum zu öffnen"
-
-#: src/converse-muc.js:297
-#, fuzzy
-msgid "Configure this room"
-msgstr "Hier klicken um diesen Raum zu öffnen"
-
-#: src/converse-muc.js:311
-msgid "Message"
-msgstr "Nachricht"
-
-#: src/converse-muc.js:325
-#, fuzzy
-msgid "Hide the list of occupants"
-msgstr "Teilnehmerliste ausblenden"
-
-#: src/converse-muc.js:388
-msgid "Error: could not execute the command"
-msgstr "Fehler: Konnte den Befehl nicht ausführen"
-
-#: src/converse-muc.js:480
-msgid "Error: the \""
-msgstr ""
-
-#: src/converse-muc.js:490
-msgid "Are you sure you want to clear the messages from this room?"
-msgstr ""
-"Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"
-
-#: src/converse-muc.js:530
-msgid "Change user's affiliation to admin"
-msgstr ""
-
-#: src/converse-muc.js:531
-msgid "Ban user from room"
-msgstr "Verbanne einen Benutzer aus dem Raum."
-
-#: src/converse-muc.js:533
-#, fuzzy
-msgid "Change user role to occupant"
-msgstr "Benutzerrolle zu Teilnehmer ändern"
-
-#: src/converse-muc.js:535
-msgid "Kick user from room"
-msgstr "Werfe einen Benutzer aus dem Raum."
-
-#: src/converse-muc.js:536
-msgid "Write in 3rd person"
-msgstr "In der dritten Person schreiben"
-
-#: src/converse-muc.js:537
-msgid "Grant membership to a user"
-msgstr ""
-
-#: src/converse-muc.js:538
-msgid "Remove user's ability to post messages"
-msgstr ""
-
-#: src/converse-muc.js:539
-msgid "Change your nickname"
-msgstr "Spitznamen ändern"
-
-#: src/converse-muc.js:540
-msgid "Grant moderator role to user"
-msgstr ""
-
-#: src/converse-muc.js:541
-msgid "Grant ownership of this room"
-msgstr "Besitzrechte an diesem Raum vergeben"
-
-#: src/converse-muc.js:542
-msgid "Revoke user's membership"
-msgstr ""
-
-#: src/converse-muc.js:543
-msgid "Set room topic"
-msgstr "Chatraum Thema festlegen"
-
-#: src/converse-muc.js:544
-msgid "Allow muted user to post messages"
-msgstr ""
-
-#: src/converse-muc.js:762
-msgid "An error occurred while trying to save the form."
-msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
-
-#: src/converse-muc.js:885
-msgid ""
-"The nickname you chose is reserved or currently in use, please choose a "
-"different one."
-msgstr ""
-
-#: src/converse-muc.js:901
-#, fuzzy
-msgid "Please choose your nickname"
-msgstr "Spitznamen ändern"
-
-#: src/converse-muc.js:902 src/converse-muc.js:1434
-msgid "Nickname"
-msgstr "Spitzname"
-
-#: src/converse-muc.js:903
-#, fuzzy
-msgid "Enter room"
-msgstr "Offener Raum"
-
-#: src/converse-muc.js:921
-msgid "This chatroom requires a password"
-msgstr "Dieser Raum erfordert ein Passwort"
-
-#: src/converse-muc.js:922
-msgid "Password: "
-msgstr "Passwort: "
-
-#: src/converse-muc.js:923
-msgid "Submit"
-msgstr "Abschicken"
-
-#: src/converse-muc.js:958
+#: src/converse-muc.js:106
 msgid "This room is not anonymous"
 msgstr "Dieser Raum ist nicht anonym"
 
-#: src/converse-muc.js:959
+#: src/converse-muc.js:107
 msgid "This room now shows unavailable members"
 msgstr "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder an"
 
-#: src/converse-muc.js:960
+#: src/converse-muc.js:108
 msgid "This room does not show unavailable members"
 msgstr "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"
 
-#: src/converse-muc.js:961
+#: src/converse-muc.js:109
 msgid "Non-privacy-related room configuration has changed"
 msgstr "Die Raumkonfiguration hat sich geändert (nicht Privatsphäre relevant)"
 
-#: src/converse-muc.js:962
+#: src/converse-muc.js:110
 msgid "Room logging is now enabled"
 msgstr "Nachrichten in diesem Raum werden ab jetzt protokolliert."
 
-#: src/converse-muc.js:963
+#: src/converse-muc.js:111
 msgid "Room logging is now disabled"
 msgstr "Nachrichten in diesem Raum werden nicht mehr protokolliert."
 
-#: src/converse-muc.js:964
+#: src/converse-muc.js:112
 msgid "This room is now non-anonymous"
 msgstr "Dieser Raum ist jetzt nicht anonym"
 
-#: src/converse-muc.js:965
+#: src/converse-muc.js:113
 msgid "This room is now semi-anonymous"
 msgstr "Dieser Raum ist jetzt teils anonym"
 
-#: src/converse-muc.js:966
+#: src/converse-muc.js:114
 msgid "This room is now fully-anonymous"
 msgstr "Dieser Raum ist jetzt anonym"
 
-#: src/converse-muc.js:967
+#: src/converse-muc.js:115
 msgid "A new room has been created"
 msgstr "Ein neuer Raum wurde erstellt"
 
-#: src/converse-muc.js:971 src/converse-muc.js:1071
+#: src/converse-muc.js:119 src/converse-muc.js:1163
 msgid "You have been banned from this room"
 msgstr "Sie sind aus diesem Raum verbannt worden"
 
-#: src/converse-muc.js:972
+#: src/converse-muc.js:120
 msgid "You have been kicked from this room"
 msgstr "Sie wurden aus diesem Raum hinausgeworfen"
 
-#: src/converse-muc.js:973
+#: src/converse-muc.js:121
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "Sie wurden wegen einer Zugehörigkeitsänderung entfernt"
 
-#: src/converse-muc.js:974
+#: src/converse-muc.js:122
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
 msgstr "Sie wurden aus diesem Raum entfernt, da Sie kein Mitglied sind."
 
-#: src/converse-muc.js:975
+#: src/converse-muc.js:123
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
@@ -560,199 +439,330 @@ msgstr ""
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: src/converse-muc.js:989
+#: src/converse-muc.js:137
 msgid "<strong>%1$s</strong> has been banned"
 msgstr "<strong>%1$s</strong> ist verbannt worden"
 
-#: src/converse-muc.js:990
+#: src/converse-muc.js:138
 msgid "<strong>%1$s</strong>'s nickname has changed"
 msgstr "<strong>%1$s</strong> hat den Spitznamen geändert"
 
-#: src/converse-muc.js:991
+#: src/converse-muc.js:139
 msgid "<strong>%1$s</strong> has been kicked out"
 msgstr "<strong>%1$s</strong> wurde hinausgeworfen"
 
-#: src/converse-muc.js:992
+#: src/converse-muc.js:140
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr ""
 "<strong>%1$s</strong> wurde wegen einer Zugehörigkeitsänderung entfernt"
 
-#: src/converse-muc.js:993
+#: src/converse-muc.js:141
 msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> ist kein Mitglied und wurde daher entfernt"
 
-#: src/converse-muc.js:997
+#: src/converse-muc.js:145
 #, fuzzy
 msgid "Your nickname has been automatically set to: <strong>%1$s</strong>"
 msgstr "Ihr Spitzname wurde automatisiert geändert zu: <strong>%1$s</strong>"
 
-#: src/converse-muc.js:998
+#: src/converse-muc.js:146
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
 msgstr "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
 
-#: src/converse-muc.js:1044 src/converse-muc.js:1053
+#: src/converse-muc.js:363
+#, fuzzy
+msgid "Close and leave this room"
+msgstr "Hier klicken um diesen Raum zu öffnen"
+
+#: src/converse-muc.js:364
+#, fuzzy
+msgid "Configure this room"
+msgstr "Hier klicken um diesen Raum zu öffnen"
+
+#: src/converse-muc.js:378
+msgid "Message"
+msgstr "Nachricht"
+
+#: src/converse-muc.js:392
+#, fuzzy
+msgid "Hide the list of occupants"
+msgstr "Teilnehmerliste ausblenden"
+
+#: src/converse-muc.js:455
+msgid "Error: could not execute the command"
+msgstr "Fehler: Konnte den Befehl nicht ausführen"
+
+#: src/converse-muc.js:547
+msgid "Error: the \""
+msgstr ""
+
+#: src/converse-muc.js:557
+msgid "Are you sure you want to clear the messages from this room?"
+msgstr ""
+"Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"
+
+#: src/converse-muc.js:597
+msgid "Change user's affiliation to admin"
+msgstr ""
+
+#: src/converse-muc.js:598
+msgid "Ban user from room"
+msgstr "Verbanne einen Benutzer aus dem Raum."
+
+#: src/converse-muc.js:600
+#, fuzzy
+msgid "Change user role to occupant"
+msgstr "Benutzerrolle zu Teilnehmer ändern"
+
+#: src/converse-muc.js:602
+msgid "Kick user from room"
+msgstr "Werfe einen Benutzer aus dem Raum."
+
+#: src/converse-muc.js:603
+msgid "Write in 3rd person"
+msgstr "In der dritten Person schreiben"
+
+#: src/converse-muc.js:604
+msgid "Grant membership to a user"
+msgstr ""
+
+#: src/converse-muc.js:605
+msgid "Remove user's ability to post messages"
+msgstr ""
+
+#: src/converse-muc.js:606
+msgid "Change your nickname"
+msgstr "Spitznamen ändern"
+
+#: src/converse-muc.js:607
+msgid "Grant moderator role to user"
+msgstr ""
+
+#: src/converse-muc.js:608
+msgid "Grant ownership of this room"
+msgstr "Besitzrechte an diesem Raum vergeben"
+
+#: src/converse-muc.js:609
+msgid "Revoke user's membership"
+msgstr ""
+
+#: src/converse-muc.js:610
+msgid "Set room topic"
+msgstr "Chatraum Thema festlegen"
+
+#: src/converse-muc.js:611
+msgid "Allow muted user to post messages"
+msgstr ""
+
+#: src/converse-muc.js:867
+msgid "An error occurred while trying to save the form."
+msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
+
+#: src/converse-muc.js:997
+msgid ""
+"The nickname you chose is reserved or currently in use, please choose a "
+"different one."
+msgstr ""
+
+#: src/converse-muc.js:1013
+#, fuzzy
+msgid "Please choose your nickname"
+msgstr "Spitznamen ändern"
+
+#: src/converse-muc.js:1014 src/converse-muc.js:1526
+msgid "Nickname"
+msgstr "Spitzname"
+
+#: src/converse-muc.js:1015
+#, fuzzy
+msgid "Enter room"
+msgstr "Offener Raum"
+
+#: src/converse-muc.js:1033
+msgid "This chatroom requires a password"
+msgstr "Dieser Raum erfordert ein Passwort"
+
+#: src/converse-muc.js:1034
+msgid "Password: "
+msgstr "Passwort: "
+
+#: src/converse-muc.js:1035
+msgid "Submit"
+msgstr "Abschicken"
+
+#: src/converse-muc.js:1116
+#, fuzzy
+msgid "This action was done by <strong>%1$s</strong>."
+msgstr "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
+
+#: src/converse-muc.js:1119
+#, fuzzy
+msgid "The reason given is: <em>\"%1$s\"</em>."
+msgstr "Die angegebene Begründung lautet: \""
+
+#: src/converse-muc.js:1128
 msgid "The reason given is: \""
 msgstr "Die angegebene Begründung lautet: \""
 
-#: src/converse-muc.js:1069
+#: src/converse-muc.js:1161
 msgid "You are not on the member list of this room"
 msgstr "Sie sind nicht auf der Mitgliederliste dieses Raums"
 
-#: src/converse-muc.js:1075
+#: src/converse-muc.js:1167
 msgid "No nickname was specified"
 msgstr "Kein Spitzname festgelegt"
 
-#: src/converse-muc.js:1079
+#: src/converse-muc.js:1171
 msgid "You are not allowed to create new rooms"
 msgstr "Es ist Ihnen nicht erlaubt neue Räume anzulegen"
 
-#: src/converse-muc.js:1081
+#: src/converse-muc.js:1173
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "Ungültiger Spitzname"
 
-#: src/converse-muc.js:1085
+#: src/converse-muc.js:1177
 msgid "This room does not (yet) exist"
 msgstr "Dieser Raum existiert (noch) nicht"
 
-#: src/converse-muc.js:1087
+#: src/converse-muc.js:1179
 #, fuzzy
 msgid "This room has reached its maximum number of occupants"
 msgstr "Dieser Raum hat die maximale Mitgliederanzahl erreicht"
 
-#: src/converse-muc.js:1145
+#: src/converse-muc.js:1237
 msgid "Topic set by %1$s to: %2$s"
 msgstr "%1$s hat das Thema zu \"%2$s\" geändert"
 
-#: src/converse-muc.js:1232
+#: src/converse-muc.js:1324
 #, fuzzy
 msgid "Click to mention this user in your message."
 msgstr "Hier klicken um diesen Raum zu öffnen"
 
-#: src/converse-muc.js:1233
+#: src/converse-muc.js:1325
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "Dieser Benutzer ist ein Moderator"
 
-#: src/converse-muc.js:1234
+#: src/converse-muc.js:1326
 #, fuzzy
 msgid "This user can send messages in this room."
 msgstr "Dieser Benutzer kann Nachrichten in diesem Raum verschicken"
 
-#: src/converse-muc.js:1235
+#: src/converse-muc.js:1327
 #, fuzzy
 msgid "This user can NOT send messages in this room."
 msgstr "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken"
 
-#: src/converse-muc.js:1271
+#: src/converse-muc.js:1363
 msgid "Invite"
 msgstr "Einladen"
 
-#: src/converse-muc.js:1272
+#: src/converse-muc.js:1364
 msgid "Occupants"
 msgstr "Teilnehmer"
 
-#: src/converse-muc.js:1390
+#: src/converse-muc.js:1482
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
 msgstr ""
 
-#: src/converse-muc.js:1391
+#: src/converse-muc.js:1483
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
 msgstr ""
 
-#: src/converse-muc.js:1433
+#: src/converse-muc.js:1525
 msgid "Room name"
 msgstr "Raumname"
 
-#: src/converse-muc.js:1435
+#: src/converse-muc.js:1527
 msgid "Server"
 msgstr "Server"
 
-#: src/converse-muc.js:1436
+#: src/converse-muc.js:1528
 msgid "Join Room"
 msgstr "Raum betreten"
 
-#: src/converse-muc.js:1437
+#: src/converse-muc.js:1529
 msgid "Show rooms"
 msgstr "Räume anzeigen"
 
-#: src/converse-muc.js:1444
+#: src/converse-muc.js:1536
 msgid "Rooms"
 msgstr "Räume"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: src/converse-muc.js:1469
+#: src/converse-muc.js:1561
 msgid "No rooms on %1$s"
 msgstr "Keine Räume auf %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: src/converse-muc.js:1483
+#: src/converse-muc.js:1575
 msgid "Rooms on %1$s"
 msgstr "Räume auf %1$s"
 
-#: src/converse-muc.js:1555
+#: src/converse-muc.js:1647
 msgid "Description:"
 msgstr "Beschreibung"
 
-#: src/converse-muc.js:1556
+#: src/converse-muc.js:1648
 msgid "Occupants:"
 msgstr "Teilnehmer"
 
-#: src/converse-muc.js:1557
+#: src/converse-muc.js:1649
 msgid "Features:"
 msgstr "Funktionen:"
 
-#: src/converse-muc.js:1558
+#: src/converse-muc.js:1650
 msgid "Requires authentication"
 msgstr "Authentifizierung erforderlich"
 
-#: src/converse-muc.js:1559
+#: src/converse-muc.js:1651
 msgid "Hidden"
 msgstr "Versteckt"
 
-#: src/converse-muc.js:1560
+#: src/converse-muc.js:1652
 msgid "Requires an invitation"
 msgstr "Einladung erforderlich"
 
-#: src/converse-muc.js:1561
+#: src/converse-muc.js:1653
 msgid "Moderated"
 msgstr "Moderiert"
 
-#: src/converse-muc.js:1562
+#: src/converse-muc.js:1654
 msgid "Non-anonymous"
 msgstr "Nicht anonym"
 
-#: src/converse-muc.js:1563
+#: src/converse-muc.js:1655
 msgid "Open room"
 msgstr "Offener Raum"
 
-#: src/converse-muc.js:1564
+#: src/converse-muc.js:1656
 msgid "Permanent room"
 msgstr "Dauerhafter Raum"
 
-#: src/converse-muc.js:1565
+#: src/converse-muc.js:1657
 msgid "Public"
 msgstr "Öffentlich"
 
-#: src/converse-muc.js:1566
+#: src/converse-muc.js:1658
 msgid "Semi-anonymous"
 msgstr "Teils anonym"
 
-#: src/converse-muc.js:1567
+#: src/converse-muc.js:1659
 msgid "Temporary room"
 msgstr "Vorübergehender Raum"
 
-#: src/converse-muc.js:1568
+#: src/converse-muc.js:1660
 msgid "Unmoderated"
 msgstr "Unmoderiert"
 
-#: src/converse-muc.js:1650
+#: src/converse-muc.js:1742
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr "%1$s hat Sie in den Raum \"%2$s\" eingeladen"
 
-#: src/converse-muc.js:1655
+#: src/converse-muc.js:1747
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
@@ -1063,7 +1073,7 @@ msgstr ""
 msgid "Extended Away"
 msgstr ""
 
-#: src/converse-rosterview.js:582 src/converse-rosterview.js:603
+#: src/converse-rosterview.js:582 src/converse-rosterview.js:602
 msgid "Click to remove this contact"
 msgstr "Hier klicken um diesen Kontakt zu entfernen"
 
@@ -1075,23 +1085,23 @@ msgstr "Hier klicken um diese Kontaktanfrage zu akzeptieren"
 msgid "Click to decline this contact request"
 msgstr "Hier klicken um diese Kontaktanfrage zu abzulehnen"
 
-#: src/converse-rosterview.js:602
+#: src/converse-rosterview.js:601
 msgid "Click to chat with this contact"
 msgstr "Hier klicken um mit diesem Kontakt zu chatten"
 
-#: src/converse-rosterview.js:604
+#: src/converse-rosterview.js:603
 msgid "Name"
 msgstr ""
 
-#: src/converse-rosterview.js:659
+#: src/converse-rosterview.js:658
 msgid "Are you sure you want to remove this contact?"
 msgstr "Wollen Sie diesen Kontakt wirklich entfernen?"
 
-#: src/converse-rosterview.js:670
+#: src/converse-rosterview.js:669
 msgid "Sorry, there was an error while trying to remove "
 msgstr ""
 
-#: src/converse-rosterview.js:689
+#: src/converse-rosterview.js:688
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Wollen Sie diese Kontaktanfrage wirklich ablehnen?"
 

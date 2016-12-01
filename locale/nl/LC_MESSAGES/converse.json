@@ -235,6 +235,82 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "Deze room is niet annoniem"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            ""
+         ],
+         "This room does not show unavailable members": [
+            null,
+            ""
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            ""
+         ],
+         "Room logging is now enabled": [
+            null,
+            ""
+         ],
+         "Room logging is now disabled": [
+            null,
+            ""
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Deze room is nu niet annoniem"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Deze room is nu semie annoniem"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Deze room is nu volledig annoniem"
+         ],
+         "A new room has been created": [
+            null,
+            "Een nieuwe room is gemaakt"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Je bent verbannen uit deze room"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Je bent uit de room gegooid"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            ""
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            ""
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            ""
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> is verbannen"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> has been kicked out"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            ""
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            ""
+         ],
          "Message": [
             null,
             "Bericht"
@@ -311,79 +387,7 @@
             null,
             "Indienen"
          ],
-         "This room is not anonymous": [
-            null,
-            "Deze room is niet annoniem"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            ""
-         ],
-         "This room does not show unavailable members": [
-            null,
-            ""
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            ""
-         ],
-         "Room logging is now enabled": [
-            null,
-            ""
-         ],
-         "Room logging is now disabled": [
-            null,
-            ""
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Deze room is nu niet annoniem"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Deze room is nu semie annoniem"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Deze room is nu volledig annoniem"
-         ],
-         "A new room has been created": [
-            null,
-            "Een nieuwe room is gemaakt"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Je bent verbannen uit deze room"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Je bent uit de room gegooid"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            ""
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            ""
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            ""
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verbannen"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> has been kicked out"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            ""
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
             ""
          ],

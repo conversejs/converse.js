@@ -1,10 +1,11 @@
 (function (root, factory) {
     define([
         "utils",
+        "converse-api",
         "mock",
         "test_utils"
         ], factory);
-} (this, function (utils, mock, test_utils) {
+} (this, function (utils, converse_api, mock, test_utils) {
     "use strict";
     var _ = converse_api.env._;
     var $ = converse_api.env.jQuery;

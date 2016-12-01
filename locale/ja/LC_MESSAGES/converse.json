@@ -243,6 +243,82 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "この談話室は非匿名です"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "この談話室はメンバー以外にも見えます"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "この談話室はメンバー以外には見えません"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "談話室の設定(プライバシーに無関係)が変更されました"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "談話室の記録を取りはじめます"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "談話室の記録を止めます"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "この談話室はただいま非匿名です"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "この談話室はただいま半匿名です"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "この談話室はただいま匿名です"
+         ],
+         "A new room has been created": [
+            null,
+            "新しい談話室が作成されました"
+         ],
+         "You have been banned from this room": [
+            null,
+            "この談話室から締め出されました"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "この談話室から蹴り出されました"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "分掌の変更のため、この談話室から削除されました"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除されました"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> を締め出しました"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> を蹴り出しました"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "分掌の変更のため、<strong>%1$s</strong> を削除しました"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
+         ],
          "Message": [
             null,
             "メッセージ"
@@ -319,81 +395,9 @@
             null,
             "送信"
          ],
-         "This room is not anonymous": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
-            "この談話室は非匿名です"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "この談話室はメンバー以外にも見えます"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "この談話室はメンバー以外には見えません"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "談話室の設定(プライバシーに無関係)が変更されました"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "談話室の記録を取りはじめます"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "談話室の記録を止めます"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "この談話室はただいま非匿名です"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "この談話室はただいま半匿名です"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "この談話室はただいま匿名です"
-         ],
-         "A new room has been created": [
-            null,
-            "新しい談話室が作成されました"
-         ],
-         "You have been banned from this room": [
-            null,
-            "この談話室から締め出されました"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "この談話室から蹴り出されました"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "分掌の変更のため、この談話室から削除されました"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除されました"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> を締め出しました"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> を蹴り出しました"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "分掌の変更のため、<strong>%1$s</strong> を削除しました"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
+            ""
          ],
          "The reason given is: \"": [
             null,

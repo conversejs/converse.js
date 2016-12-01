@@ -49,9 +49,29 @@
         margin: 0 auto;
         clear: both;
     }
+
+    @keyframes fadein {
+        0% { opacity: 0 }
+        100% { opacity: 1 }
+    }
+    @-webkit-keyframes fadein {
+        0% { opacity: 0 }
+        100% { opacity: 1 }
+    }
+
+    .visible {
+        visibility: visible;
+        opacity: 1;
+        @include animation-name(fadein);
+        @include animation-fill-mode(forwards);
+        @include animation-duration(350ms);
+        @include animation-timing-function(ease);
+    }
     .hidden {
+        opacity: 0;
         display: none;
     }
+
     .locked {
         padding-right: 22px;
     }

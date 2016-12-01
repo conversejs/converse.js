@@ -1,6 +1,10 @@
 # Changelog
 
-## 2.0.2 (Unreleased)
+## 2.0.3 (2016-11-30)
+- #735 Room configuration button not visible. [jcbrand]
+- CSS fix for fadeIn animation. [jcbrand]
+
+## 2.0.2 (2016-11-30)
 - #721 keepalive not working with anonymous authentication [jcbrand]
 - #723 Bugfix: Arrays in configuration settings were ignored. [jcbrand]
 - #734 Bugfix. `converse.rooms.open` ignored the `muc_nickname_from_jid` setting. [jcbrand]
@@ -18,6 +22,7 @@
   initialization is complete. [jcbrand]
 - New event ['reconnecting'](https://conversejs.org/docs/html/development.html#reconnecting) [jcbrand]
 - New configuration setting [allow_bookmarks](https://conversejs.org/docs/html/configuration.html#allow_bookmarks) [jcbrand]
+- The `rooms.open` API method will no longer maximize rooms that are minimized (unless `maximize: true` is passed in). [jcbrand]
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]

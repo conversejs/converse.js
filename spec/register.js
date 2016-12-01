@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "test_utils"], factory);
-} (this, function (mock, test_utils) {
+    define(["mock", "converse-api", "test_utils"], factory);
+} (this, function (mock, converse_api, test_utils) {
     var $ = converse_api.env.jQuery;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;

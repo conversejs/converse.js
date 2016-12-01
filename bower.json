@@ -1,7 +1,7 @@
 {
   "name": "converse.js",
   "description": "Web-based XMPP/Jabber chat client written in javascript",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "license": "MPL-2.0",
   "devDependencies": {
     "bootstrap": "~3.2.0",

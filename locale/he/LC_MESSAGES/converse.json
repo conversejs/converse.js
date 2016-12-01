@@ -279,6 +279,90 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "חדר זה אינו אנונימי"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "חדר זה כעת מציג חברים לא זמינים"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "חדר זה לא מציג חברים לא זמינים"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "תצורת חדר אשר לא-קשורה-בפרטיות שונתה"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "יומן חדר הינו מופעל כעת"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "יומן חדר הינו מנוטרל כעת"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "חדר זה אינו אנונימי כעת"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "חדר זה הינו אנונימי-למחצה כעת"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "חדר זה הינו אנונימי-לחלוטין כעת"
+         ],
+         "A new room has been created": [
+            null,
+            "חדר חדש נוצר"
+         ],
+         "You have been banned from this room": [
+            null,
+            "נאסרת מתוך חדר זה"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "נבעטת מתוך חדר זה"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "הוסרת מתוך חדר זה משום שינוי שיוך"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> נאסר(ה)"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "השם כינוי של<strong>%1$s</strong> השתנה"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> נבעט(ה)"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> הוסרה(ה) משום שינוי שיוך"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "השם כינוי שלך שונה בשם: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "הודעה"
@@ -366,90 +450,6 @@
          "Submit": [
             null,
             "שלח"
-         ],
-         "This room is not anonymous": [
-            null,
-            "חדר זה אינו אנונימי"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "חדר זה כעת מציג חברים לא זמינים"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "חדר זה לא מציג חברים לא זמינים"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "תצורת חדר אשר לא-קשורה-בפרטיות שונתה"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "יומן חדר הינו מופעל כעת"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "יומן חדר הינו מנוטרל כעת"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "חדר זה אינו אנונימי כעת"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "חדר זה הינו אנונימי-למחצה כעת"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "חדר זה הינו אנונימי-לחלוטין כעת"
-         ],
-         "A new room has been created": [
-            null,
-            "חדר חדש נוצר"
-         ],
-         "You have been banned from this room": [
-            null,
-            "נאסרת מתוך חדר זה"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "נבעטת מתוך חדר זה"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "הוסרת מתוך חדר זה משום שינוי שיוך"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> נאסר(ה)"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "השם כינוי של<strong>%1$s</strong> השתנה"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> נבעט(ה)"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> הוסרה(ה) משום שינוי שיוך"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "השם כינוי שלך שונה בשם: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

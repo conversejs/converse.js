@@ -294,6 +294,90 @@
             null,
             "Minimeer hierdie kletskas"
          ],
+         "This room is not anonymous": [
+            null,
+            "Hierdie vertrek is nie anoniem nie"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Hierdie vertrek wys nou onbeskikbare lede"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Hierdie vertrek wys nie onbeskikbare lede nie"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Nie-privaatheidverwante kamer instellings het verander"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "Kamer log is nou aangeskakel"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "Kamer log is nou afgeskakel"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Hiedie kamer is nou nie anoniem nie"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Hierdie kamer is nou gedeeltelik anoniem"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Hierdie kamer is nou ten volle anoniem"
+         ],
+         "A new room has been created": [
+            null,
+            "'n Nuwe kamer is geskep"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Jy is uit die kamer verban"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Jy is uit die kamer geskop"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie."
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> is verban"
+         ],
+         "<strong>%1$s</strong>'s nickname has changed": [
+            null,
+            "<strong>%1$s</strong> se bynaam het verander"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> is uitgeskop"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
+         ],
+         "Your nickname has been changed to: <strong>%1$s</strong>": [
+            null,
+            "U bynaam is verander na: <strong>%1$s</strong>"
+         ],
          "Message": [
             null,
             "Boodskap"
@@ -389,90 +473,6 @@
          "Submit": [
             null,
             "Dien in"
-         ],
-         "This room is not anonymous": [
-            null,
-            "Hierdie vertrek is nie anoniem nie"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Hierdie vertrek wys nou onbeskikbare lede"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Hierdie vertrek wys nie onbeskikbare lede nie"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Nie-privaatheidverwante kamer instellings het verander"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "Kamer log is nou aangeskakel"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "Kamer log is nou afgeskakel"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Hiedie kamer is nou nie anoniem nie"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Hierdie kamer is nou gedeeltelik anoniem"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Hierdie kamer is nou ten volle anoniem"
-         ],
-         "A new room has been created": [
-            null,
-            "'n Nuwe kamer is geskep"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Jy is uit die kamer verban"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Jy is uit die kamer geskop"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie."
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verban"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> se bynaam het verander"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> is uitgeskop"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "U bynaam is verander na: <strong>%1$s</strong>"
          ],
          "The reason given is: \"": [
             null,

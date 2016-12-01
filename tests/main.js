@@ -10,6 +10,9 @@ config.shim['jasmine-html'] = {
     deps: ['jasmine'],
     exports: 'jasmine'
 };
+config.shim['console-runner'] = {
+    deps: ['jasmine']
+};
 require.config(config);
 
 // Polyfill 'bind' which is not available in phantomjs < 2.0
@@ -34,56 +37,49 @@ if (!Function.prototype.bind) {
 
 require([
     "jquery",
-    "converse",
     "mock",
     "jasmine-html",
-    "sinon"
-    ], function($, converse, mock, jasmine, sinon) {
-        // Set up converse.js
+    "sinon",
+    "console-runner",
+    //"spec/transcripts",
+    "spec/utils",
+    "spec/converse",
+    "spec/bookmarks",
+    "spec/headline",
+    "spec/disco",
+    "spec/protocol",
+    "spec/mam",
+    "spec/otr",
+    "spec/eventemitter",
+    "spec/controlbox",
+    "spec/chatbox",
+    "spec/chatroom",
+    "spec/minchats",
+    "spec/notification",
+    "spec/profiling",
+    "spec/ping",
+    "spec/register",
+    "spec/xmppstatus"
+    ], function($, mock, jasmine, sinon) {
         window.sinon = sinon;
-        window.converse_api = converse;
         window.localStorage.clear();
         window.sessionStorage.clear();
-
-        require([
-            "console-runner",
-            //"spec/transcripts",
-            "spec/utils",
-            "spec/converse",
-            "spec/bookmarks",
-            "spec/headline",
-            "spec/disco",
-            "spec/protocol",
-            "spec/mam",
-            "spec/otr",
-            "spec/eventemitter",
-            "spec/controlbox",
-            "spec/chatbox",
-            "spec/chatroom",
-            "spec/minchats",
-            "spec/notification",
-            "spec/profiling",
-            "spec/ping",
-            "spec/register",
-            "spec/xmppstatus"
-        ], function () {
-            // Jasmine stuff
-            var jasmineEnv = jasmine.getEnv();
-            var reporter;
-            if (/PhantomJS/.test(navigator.userAgent)) {
-                reporter = new jasmine.ConsoleReporter();
-                window.console_reporter = reporter;
-                jasmineEnv.addReporter(reporter);
-                jasmineEnv.updateInterval = 0;
-            } else {
-                reporter = new jasmine.HtmlReporter();
-                jasmineEnv.addReporter(reporter);
-                jasmineEnv.specFilter = function(spec) {
-                    return reporter.specFilter(spec);
-                };
-                jasmineEnv.updateInterval = 0;
-            }
-            jasmineEnv.execute();
-        });
+        // Jasmine stuff
+        var jasmineEnv = jasmine.getEnv();
+        var reporter;
+        if (/PhantomJS/.test(navigator.userAgent)) {
+            reporter = new jasmine.ConsoleReporter();
+            window.console_reporter = reporter;
+            jasmineEnv.addReporter(reporter);
+            jasmineEnv.updateInterval = 0;
+        } else {
+            reporter = new jasmine.HtmlReporter();
+            jasmineEnv.addReporter(reporter);
+            jasmineEnv.specFilter = function(spec) {
+                return reporter.specFilter(spec);
+            };
+            jasmineEnv.updateInterval = 0;
+        }
+        jasmineEnv.execute();
     }
 );

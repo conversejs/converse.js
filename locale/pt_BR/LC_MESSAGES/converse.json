@@ -231,6 +231,82 @@
             null,
             ""
          ],
+         "This room is not anonymous": [
+            null,
+            "Essa sala não é anônima"
+         ],
+         "This room now shows unavailable members": [
+            null,
+            "Agora esta sala mostra membros indisponíveis"
+         ],
+         "This room does not show unavailable members": [
+            null,
+            "Essa sala não mostra membros indisponíveis"
+         ],
+         "Non-privacy-related room configuration has changed": [
+            null,
+            "Configuraçõs não relacionadas à privacidade mudaram"
+         ],
+         "Room logging is now enabled": [
+            null,
+            "O log da sala está ativado"
+         ],
+         "Room logging is now disabled": [
+            null,
+            "O log da sala está desativado"
+         ],
+         "This room is now non-anonymous": [
+            null,
+            "Esse sala é não anônima"
+         ],
+         "This room is now semi-anonymous": [
+            null,
+            "Essa sala agora é semi anônima"
+         ],
+         "This room is now fully-anonymous": [
+            null,
+            "Essa sala agora é totalmente anônima"
+         ],
+         "A new room has been created": [
+            null,
+            "Uma nova sala foi criada"
+         ],
+         "You have been banned from this room": [
+            null,
+            "Você foi banido dessa sala"
+         ],
+         "You have been kicked from this room": [
+            null,
+            "Você foi expulso dessa sala"
+         ],
+         "You have been removed from this room because of an affiliation change": [
+            null,
+            "Você foi removido da sala devido a uma mudança de associação"
+         ],
+         "You have been removed from this room because the room has changed to members-only and you're not a member": [
+            null,
+            "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"
+         ],
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+            null,
+            "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"
+         ],
+         "<strong>%1$s</strong> has been banned": [
+            null,
+            "<strong>%1$s</strong> foi banido"
+         ],
+         "<strong>%1$s</strong> has been kicked out": [
+            null,
+            "<strong>%1$s</strong> foi expulso"
+         ],
+         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+            null,
+            "<srtong>%1$s</strong> foi removido por causa de troca de associação"
+         ],
+         "<strong>%1$s</strong> has been removed for not being a member": [
+            null,
+            "<strong>%1$s</strong> foi removido por não ser um membro"
+         ],
          "Message": [
             null,
             "Mensagem"
@@ -307,81 +383,9 @@
             null,
             "Enviar"
          ],
-         "This room is not anonymous": [
+         "The reason given is: <em>\"%1$s\"</em>.": [
             null,
-            "Essa sala não é anônima"
-         ],
-         "This room now shows unavailable members": [
-            null,
-            "Agora esta sala mostra membros indisponíveis"
-         ],
-         "This room does not show unavailable members": [
-            null,
-            "Essa sala não mostra membros indisponíveis"
-         ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Configuraçõs não relacionadas à privacidade mudaram"
-         ],
-         "Room logging is now enabled": [
-            null,
-            "O log da sala está ativado"
-         ],
-         "Room logging is now disabled": [
-            null,
-            "O log da sala está desativado"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Esse sala é não anônima"
-         ],
-         "This room is now semi-anonymous": [
-            null,
-            "Essa sala agora é semi anônima"
-         ],
-         "This room is now fully-anonymous": [
-            null,
-            "Essa sala agora é totalmente anônima"
-         ],
-         "A new room has been created": [
-            null,
-            "Uma nova sala foi criada"
-         ],
-         "You have been banned from this room": [
-            null,
-            "Você foi banido dessa sala"
-         ],
-         "You have been kicked from this room": [
-            null,
-            "Você foi expulso dessa sala"
-         ],
-         "You have been removed from this room because of an affiliation change": [
-            null,
-            "Você foi removido da sala devido a uma mudança de associação"
-         ],
-         "You have been removed from this room because the room has changed to members-only and you're not a member": [
-            null,
-            "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"
-         ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> foi banido"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> foi expulso"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<srtong>%1$s</strong> foi removido por causa de troca de associação"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> foi removido por não ser um membro"
+            ""
          ],
          "The reason given is: \"": [
             null,

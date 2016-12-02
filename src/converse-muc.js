@@ -20,6 +20,7 @@
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
             "tpl!chatroom_toolbar",
+            "tpl!chatroom_head",
             "tpl!chatrooms_tab",
             "tpl!info",
             "tpl!occupant",
@@ -39,6 +40,7 @@
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
             tpl_chatroom_toolbar,
+            tpl_chatroom_head,
             tpl_chatrooms_tab,
             tpl_info,
             tpl_occupant,
@@ -53,6 +55,7 @@
     converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
     converse.templates.chatroom_password_form = tpl_chatroom_password_form;
     converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
+    converse.templates.chatroom_head = tpl_chatroom_head;
     converse.templates.chatrooms_tab = tpl_chatrooms_tab;
     converse.templates.info = tpl_info;
     converse.templates.occupant = tpl_occupant;
@@ -109,7 +112,7 @@
             104: __('Non-privacy-related room configuration has changed'),
             170: __('Room logging is now enabled'),
             171: __('Room logging is now disabled'),
-            172: __('This room is now non-anonymous'),
+            172: __('This room is now no longer anonymous'),
             173: __('This room is now semi-anonymous'),
             174: __('This room is now fully-anonymous'),
             201: __('A new room has been created')
@@ -293,6 +296,14 @@
                 },
             });
 
+            converse.createChatRoom = function (settings) {
+                return converse.chatboxviews.showChat(
+                    _.extend(settings, {
+                        'type': 'chatroom',
+                        'affiliation': undefined
+                    })
+                );
+            };
 
             converse.ChatRoomView = converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
@@ -320,6 +331,8 @@
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:chat_state', this.sendChatState, this);
+                    this.model.on('change:affiliation', this.renderHeading, this);
+                    this.model.on('change:name', this.renderHeading, this);
 
                     this.occupantsview = new converse.ChatRoomOccupantsView({
                         model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
@@ -358,14 +371,23 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                            .html(converse.templates.chatroom(
-                                    _.extend(this.model.toJSON(), {
-                                        info_close: __('Close and leave this room'),
-                                        info_configure: __('Configure this room'),
-                                    })));
+                            .html(converse.templates.chatroom());
+                    this.renderHeading();
                     this.renderChatArea();
                     utils.refreshWebkit();
                     return this;
+                },
+
+                generateHeadingHTML: function () {
+                    return converse.templates.chatroom_head(
+                        _.extend(this.model.toJSON(), {
+                            info_close: __('Close and leave this room'),
+                            info_configure: __('Configure this room'),
+                    }));
+                },
+
+                renderHeading: function () {
+                    this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
                 },
 
                 renderChatArea: function () {
@@ -1044,13 +1066,25 @@
                     this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
                 },
 
-                getMessageFromStatus: function (stat, is_self, from_nick, item) {
-                    var code = stat.getAttribute('code');
+                getMessageFromStatus: function (stat, stanza, is_self) {
+                    /* Parameters:
+                     *  (XMLElement) stat: A <status> element.
+                     *  (Boolean) is_self: Whether the element refers to the
+                     *                     current user.
+                     *  (XMLElement) stanza: The original stanza received.
+                     */
+                    var code = stat.getAttribute('code'),
+                        from_nick;
                     if (is_self && code === "210") {
+                        from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
                         return __(converse.muc.new_nickname_messages[code], from_nick);
                     } else if (is_self && code === "303") {
-                        return __(converse.muc.new_nickname_messages[code], item.getAttribute('nick'));
+                        return __(
+                            converse.muc.new_nickname_messages[code],
+                            stanza.querySelector('x item').getAttribute('nick')
+                        );
                     } else if (!is_self && (code in converse.muc.action_info_messages)) {
+                        from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
                         return __(converse.muc.action_info_messages[code], from_nick);
                     } else if (code in converse.muc.info_messages) {
                         return converse.muc.info_messages[code];
@@ -1063,43 +1097,64 @@
                     return;
                 },
 
-                parseXUserElement: function (x, is_self, from_nick) {
+                showConfigureButtonIfRoomOwner: function (pres) {
+                    /* Show the configure button if the user is the room owner.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: A <presence> stanza.
+                     */
+                    // XXX: For some inexplicable reason, the following line of
+                    // code works in tests, but not with live data, even though
+                    // the passed in stanza looks exactly the same to me:
+                    // var item = pres.querySelector('x[xmlns="'+Strophe.NS.MUC_USER+'"] item');
+                    // If we want to eventually get rid of jQuery altogether,
+                    // then the Sizzle selector library might still be needed
+                    // here.
+                    var item = $(pres).find('x[xmlns="'+Strophe.NS.MUC_USER+'"] item').get(0);
+                    if (_.isUndefined(item)) {
+                        return;
+                    }
+                    var jid = item.getAttribute('jid');
+                    var affiliation = item.getAttribute('affiliation');
+                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid && affiliation) {
+                        this.model.save({'affiliation': affiliation});
+                    }
+                },
+
+                parseXUserElement: function (x, stanza, is_self) {
                     /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
                      * element and construct a map containing relevant
                      * information.
                      */
-                    // By using querySelector, we assume here there is one
-                    // <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
-                    // element. This appears to be a safe assumption, since
-                    // each <x/> element pertains to a single user.
-                    var item = x.querySelector('item');
-                    // Show the configure button if user is the room owner.
-                    var jid = item.getAttribute('jid');
-                    var affiliation = item.getAttribute('affiliation');
-                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid && affiliation === 'owner') {
-                        this.$el.find('a.configure-chatroom-button').show();
-                    }
-                    // Extract notification messages, reasons and
-                    // disconnection messages from the <x/> node.
+                    // 1. Get notification messages based on the <status> elements.
                     var statuses = x.querySelectorAll('status');
-                    var mapper = _.partial(this.getMessageFromStatus, _, is_self, from_nick, item);
+                    var mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
                     var notification = {
                         'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
                     };
-                    var reason = item.querySelector('reason');
-                    if (reason) {
-                        notification.reason = reason ? reason.textContent : undefined;
-                    }
-                    var actor = item.querySelector('actor');
-                    if (actor) {
-                        notification.actor = actor ? actor.getAttribute('nick') : undefined;
-                    }
+                    // 2. Get disconnection messages based on the <status> elements
                     var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
                     var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnect_messages));
                     var disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
                         notification.disconnected = true;
                         notification.disconnection_message = converse.muc.disconnect_messages[disconnection_codes[0]];
+                    }
+                    // 3. Find the reason and actor from the <item> element
+                    var item = x.querySelector('item');
+                    // By using querySelector above, we assume here there is
+                    // one <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
+                    // element. This appears to be a safe assumption, since
+                    // each <x/> element pertains to a single user.
+                    if (!_.isNull(item)) {
+                        var reason = item.querySelector('reason');
+                        if (reason) {
+                            notification.reason = reason ? reason.textContent : undefined;
+                        }
+                        var actor = item.querySelector('actor');
+                        if (actor) {
+                            notification.actor = actor ? actor.getAttribute('nick') : undefined;
+                        }
                     }
                     return notification;
                 },
@@ -1132,22 +1187,18 @@
                     }
                 },
 
-                showStatusMessages: function (presence, is_self) {
+                showStatusMessages: function (stanza, is_self) {
                     /* Check for status codes and communicate their purpose to the user.
                      * Allows user to configure chat room if they are the owner.
                      * See: http://xmpp.org/registrar/mucstatus.html
                      */
-                    var from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(presence.getAttribute('from')));
-                    // XXX: Unfortunately presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]') returns []
-                    var elements = _.filter(presence.querySelectorAll('x'), function (x) {
-                        return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
-                    });
+                    var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
                     var notifications = _.map(
                         elements,
-                        _.partial(this.parseXUserElement.bind(this), _, is_self, from_nick)
+                        _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
                     );
                     _.each(notifications, this.displayNotificationsforUser.bind(this));
-                    return presence;
+                    return stanza;
                 },
 
                 showErrorMessage: function (presence) {
@@ -1221,6 +1272,7 @@
                                 this.configureChatRoom();
                             } else {
                                 this.hideSpinner().showStatusMessages(pres, is_self);
+                                this.showConfigureButtonIfRoomOwner(pres);
                             }
                         }
                     }
@@ -1702,7 +1754,7 @@
                             return;
                         }
                     }
-                    converse.chatboxviews.showChat({
+                    converse.createChatRoom({
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -1750,7 +1802,7 @@
                     }
                 }
                 if (result === true) {
-                    var chatroom = converse.chatboxviews.showChat({
+                    var chatroom = converse.createChatRoom({
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
@@ -1837,16 +1889,15 @@
                         if (_.isUndefined(attrs.maximize)) {
                             attrs.maximize = false;
                         }
-                        var fetcher = converse.chatboxviews.showChat.bind(converse.chatboxviews);
                         if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {
-                            return _transform(jids, attrs, fetcher);
+                            return _transform(jids, attrs, converse.createChatRoom);
                         }
-                        return _.map(jids, _.partial(_transform, _, attrs, fetcher));
+                        return _.map(jids, _.partial(_transform, _, attrs, converse.createChatRoom));
                     },
                     'get': function (jids, attrs, create) {
                         if (typeof attrs === "string") {

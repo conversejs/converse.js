@@ -10,14 +10,16 @@
     define("converse-dragresize", [
             "converse-core",
             "converse-api",
+            "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse, converse_api, tpl_dragresize) {
     "use strict";
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
+    converse.templates.dragresize = tpl_dragresize;
 
     converse_api.plugins.add('converse-dragresize', {
 
@@ -260,12 +262,22 @@
 
                 render: function () {
                     var result = this.__super__.render.apply(this, arguments);
+                    this.renderDragResizeHandles();
                     this.setWidth();
                     return result;
+                },
+
+                renderDragResizeHandles: function () {
+                    var flyout = this.el.querySelector('.box-flyout');
+                    var div = document.createElement('div');
+                    div.innerHTML = converse.templates.dragresize();
+                    flyout.insertBefore(
+                        div.firstChild,
+                        flyout.firstChild
+                    );
                 }
             }
         },
-
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is

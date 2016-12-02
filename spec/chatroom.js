@@ -155,6 +155,36 @@
                 expect(view instanceof converse.ChatRoomView).toBe(true);
             }));
 
+            it("can be configured if you're its owner", mock.initConverse(function (converse) {
+                converse_api.rooms.open('room@conference.example.org', {'nick': 'some1'});
+                var view = converse.chatboxviews.get('room@conference.example.org');
+                spyOn(view, 'showConfigureButtonIfRoomOwner').andCallThrough();
+
+                /* <presence to="dummy@localhost/converse.js-29092160"
+                 *           from="room@conference.example.org/some1">
+                 *      <x xmlns="http://jabber.org/protocol/muc#user">
+                 *          <item affiliation="owner" jid="dummy@localhost/converse.js-29092160" role="moderator"/>
+                 *          <status code="110"/>
+                 *      </x>
+                 *  </presence></body>
+                 */
+                var presence = $pres({
+                        to: 'dummy@localhost/converse.js-29092160',
+                        from: 'room@conference.example.org/some1'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                      .c('item', {
+                        'affiliation': 'owner',
+                        'jid': 'dummy@localhost/converse.js-29092160',
+                        'role': 'moderator'
+                      }).up()
+                      .c('status', {code: '110'});
+                converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.showConfigureButtonIfRoomOwner).toHaveBeenCalled();
+                expect(view.$('.configure-chatroom-button').is(':visible')).toBeTruthy();
+                expect(view.$('.toggle-chatbox-button').is(':visible')).toBeTruthy();
+                expect(view.$('.toggle-bookmark').is(':visible')).toBeTruthy();
+            }));
+
             it("shows users currently present in the room", mock.initConverse(function (converse) {
                 test_utils.openAndEnterChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 var name;
@@ -573,6 +603,43 @@
                 $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("newnick");
+            }));
+
+            it("indicates when a room is no longer anonymous", mock.initConverse(function (converse) {
+                converse_api.rooms.open('room@conference.example.org', {
+                    'nick': 'some1',
+                    'roomconfig': {
+                        'changesubject': false,
+                        'membersonly': true,
+                        'persistentroom': true,
+                        'publicroom': true,
+                        'roomdesc': 'Welcome to this room',
+                        'whois': 'anyone'
+                    }
+                });
+                /* <message xmlns="jabber:client"
+                 *              type="groupchat"
+                 *              to="dummy@localhost/converse.js-27854181"
+                 *              from="room@conference.example.org">
+                 *      <x xmlns="http://jabber.org/protocol/muc#user">
+                 *          <status code="104"/>
+                 *          <status code="172"/>
+                 *      </x>
+                 *  </message>
+                 */
+                var message = $msg({
+                        type:'groupchat',
+                        to: 'dummy@localhost/converse.js-27854181',
+                        from: 'room@conference.example.org'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                      .c('status', {code: '104'}).up()
+                      .c('status', {code: '172'});
+                converse.connection._dataRecv(test_utils.createRequest(message));
+                var view = converse.chatboxviews.get('room@conference.example.org');
+                var $chat_body = view.$('.chatroom-body');
+                expect($chat_body.html().trim().indexOf(
+                    '<div class="chat-info">This room is now no longer anonymous</div>'
+                )).not.toBe(-1);
             }));
 
             it("informs users if they have been kicked out of the chat room", mock.initConverse(function (converse) {

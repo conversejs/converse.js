@@ -181,6 +181,18 @@
                         this.hide();
                     }
                     return result;
+                },
+
+                generateHeadingHTML: function () {
+                    var html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                    var div = document.createElement('div');
+                    div.innerHTML = html;
+                    var el = converse.templates.chatbox_minimize(
+                        {info_minimize: __('Minimize this chat box')}
+                    );
+                    var button = div.querySelector('.close-chatbox-button');
+                    button.insertAdjacentHTML('afterend', el);
+                    return div.innerHTML;
                 }
             },
 
@@ -497,7 +509,7 @@
                 // Inserts a "minimize" button in the chatview's header
                 var $el = view.$el.find('.toggle-chatbox-button');
                 var $new_el = converse.templates.chatbox_minimize(
-                    _.extend({info_minimize: __('Minimize this chat box')})
+                    {info_minimize: __('Minimize this chat box')}
                 );
                 if ($el.length) {
                     $el.replaceWith($new_el);
@@ -506,7 +518,6 @@
                 }
             };
             converse.on('chatBoxOpened', renderMinimizeButton);
-            converse.on('chatRoomOpened', renderMinimizeButton);
 
             converse.on('controlBoxOpened', function (evt, chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

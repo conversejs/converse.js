@@ -95,7 +95,7 @@
                 });
             }));
 
-           it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverse(function (converse) {
+           it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
                 var chatroomview;
                 var jid = 'lounge@localhost';
@@ -137,6 +137,94 @@
                     chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
                     chatroomview.close();
+                });
+                waits('300'); // ChatBox.show() is debounced for 250ms
+                runs(function () {
+                    converse.muc_instant_rooms = false;
+                    var sent_IQ, IQ_id;
+                    var sendIQ = converse.connection.sendIQ;
+                    spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                        sent_IQ = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    // Test with configuration
+                    converse_api.rooms.open('room@conference.example.org', {
+                        'nick': 'some1',
+                        'auto_configure': true,
+                        'roomconfig': {
+                            'changesubject': false,
+                            'membersonly': true,
+                            'persistentroom': true,
+                            'publicroom': true,
+                            'roomdesc': 'Welcome to this room',
+                            'whois': 'anyone'
+                        }
+                    });
+                    /* <presence xmlns="jabber:client" to="dummy@localhost/pda" from="room@conference.example.org/yo">
+                     *  <x xmlns="http://jabber.org/protocol/muc#user">
+                     *      <item affiliation="owner" jid="dummy@localhost/pda" role="moderator"/>
+                     *      <status code="110"/>
+                     *      <status code="201"/>
+                     *  </x>
+                     * </presence>
+                     */
+                    var presence = $pres({
+                            from:'room@conference.example.org/some1',
+                            to:'dummy@localhost/pda'
+                        })
+                        .c('x', {xmlns:'http://jabber.org/protocol/muc#user'})
+                        .c('item', {
+                            affiliation: 'owner',
+                            jid: 'dummy@localhost/pda',
+                            role: 'moderator'
+                        }).up()
+                        .c('status', {code:'110'}).up()
+                        .c('status', {code:'201'});
+                    converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(converse.connection.sendIQ).toHaveBeenCalled();
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='room@conference.example.org' type='get' xmlns='jabber:client' id='"+IQ_id+
+                        "'><query xmlns='http://jabber.org/protocol/muc#owner'/></iq>"
+                    );
+                    converse.connection._dataRecv(test_utils.createRequest($(
+                       '<iq xmlns="jabber:client"'+
+                       '     type="result"'+
+                       '     to="dummy@localhost/pda"'+
+                       '     from="room@conference.example.org" id="'+IQ_id+'">'+
+                       ' <query xmlns="http://jabber.org/protocol/muc#owner">'+
+                       '     <x xmlns="jabber:x:data" type="form">'+
+                       '     <title>Configuration for room@conference.example.org</title>'+
+                       '     <instructions>Complete and submit this form to configure the room.</instructions>'+
+                       '     <field var="FORM_TYPE" type="hidden">'+
+                       '         <value>http://jabber.org/protocol/muc#roomconfig</value>'+
+                       '     </field>'+
+                       '     <field type="text-single" var="muc#roomconfig_roomname" label="Name">'+
+                       '         <value>Room</value>'+
+                       '     </field>'+
+                       '     <field type="text-single" var="muc#roomconfig_roomdesc" label="Description"><value/></field>'+
+                       '     <field type="boolean" var="muc#roomconfig_persistentroom" label="Make Room Persistent?"/>'+
+                       '     <field type="boolean" var="muc#roomconfig_publicroom" label="Make Room Publicly Searchable?"><value>1</value></field>'+
+                       '     <field type="boolean" var="muc#roomconfig_changesubject" label="Allow Occupants to Change Subject?"/>'+
+                       '     <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">'+
+                       '        <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>'+
+                       '     </field>'+
+                       '     <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>'+
+                       '     <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>'+
+                       '     <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>'+
+                       '     <field type="text-single" var="muc#roomconfig_historylength" label="Maximum Number of History Messages Returned by Room">'+
+                       '        <value>20</value></field>'+
+                       '     </x>'+
+                       ' </query>'+
+                       ' </iq>')[0]));
+                    var $sent_stanza = $(sent_IQ.toLocaleString());
+                    expect($sent_stanza.find('field[var="muc#roomconfig_roomname"] value').text()).toBe('Room');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_roomdesc"] value').text()).toBe('Welcome to this room');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_persistentroom"] value').text()).toBe('1');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_publicroom"] value ').text()).toBe('1');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_changesubject"] value').text()).toBe('0');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_whois"] value ').text()).toBe('anyone');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_membersonly"] value').text()).toBe('1');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_historylength"] value').text()).toBe('20');
                 });
             }));
         });
@@ -608,6 +696,7 @@
             it("indicates when a room is no longer anonymous", mock.initConverse(function (converse) {
                 converse_api.rooms.open('room@conference.example.org', {
                     'nick': 'some1',
+                    'auto_configure': true,
                     'roomconfig': {
                         'changesubject': false,
                         'membersonly': true,

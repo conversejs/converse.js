@@ -816,7 +816,7 @@
                         .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                         .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
                     _.each(config, function (node) { iq.cnode(node).up(); });
-                    return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                    return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 saveConfiguration: function (ev) {
@@ -920,7 +920,7 @@
                         $iq({
                             'to': this.model.get('jid'),
                             'type': "get"
-                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}).tree(),
+                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
                         handleIQ
                     );
                 },

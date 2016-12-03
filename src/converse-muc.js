@@ -454,9 +454,15 @@
                 },
 
                 directInvite: function (recipient, reason) {
+                    /* Send a direct invitation as per XEP-0249
+                     *
+                     * Parameters:
+                     *    (String) recipient - JID of the person being invited
+                     *    (String) reason - Optional reason for the invitation
+                     */
                     var attrs = {
-                        xmlns: 'jabber:x:conference',
-                        jid: this.model.get('jid')
+                        'xmlns': 'jabber:x:conference',
+                        'jid': this.model.get('jid')
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
@@ -471,10 +477,6 @@
                         'recipient': recipient,
                         'reason': reason
                     });
-                },
-
-                onCommandError: function (stanza) {
-                    this.showStatusNotification(__("Error: could not execute the command"), true);
                 },
 
                 handleChatStateMessage: function (message) {
@@ -581,6 +583,10 @@
                         this.$content.empty();
                     }
                     return this;
+                },
+
+                onCommandError: function () {
+                    this.showStatusNotification(__("Error: could not execute the command"), true);
                 },
 
                 onMessageSubmitted: function (text) {
@@ -788,6 +794,21 @@
                 },
 
                 renderConfigurationForm: function (stanza) {
+                    /* Renders a form given an IQ stanza containing the current
+                     * room configuration.
+                     *
+                     * Returns a promise which resolves once the user has
+                     * either submitted the form, or canceled it.
+                     *
+                     * Parameters:
+                     *  (XMLElement) stanza: The IQ stanza containing the room config.
+                     */
+                    var that = this,
+                        deferred = new $.Deferred(),
+                        $body = this.$('.chatroom-body');
+                    $body.children().addClass('hidden');
+                    $body.append(converse.templates.chatroom_form());
+
                     var $form = this.$el.find('form.chatroom-form'),
                         $fieldset = $form.children('fieldset:first'),
                         $stanza = $(stanza),
@@ -806,47 +827,86 @@
                     $fieldset = $form.children('fieldset:last');
                     $fieldset.append('<input type="submit" class="pure-button button-primary" value="'+__('Save')+'"/>');
                     $fieldset.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
-                    $fieldset.find('input[type=button]').on('click', this.cancelConfiguration.bind(this));
-                    $form.on('submit', this.saveConfiguration.bind(this));
+                    $fieldset.find('input[type=button]').on('click', function (ev) {
+                        ev.preventDefault();
+                        that.cancelConfiguration();
+                        deferred.reject(stanza);
+                    });
+                    $form.on('submit', function (ev) {
+                        ev.preventDefault();
+                        that.saveConfiguration(ev.target)
+                            .done(deferred.resolve)
+                            .fail(_.partial(deferred, stanza));
+                    });
+                    return deferred.promise();
                 },
 
                 sendConfiguration: function(config, onSuccess, onError) {
-                    // Send an IQ stanza with the room configuration.
+                    /* Send an IQ stanza with the room configuration.
+                     *
+                     * Parameters:
+                     *  (Array) config: The room configuration
+                     *  (Function) onSuccess: Callback upon succesful IQ response
+                     *      The first parameter passed in is IQ containing the
+                     *      room configuration.
+                     *      The second is the response IQ from the server.
+                     *  (Function) onError: Callback upon error IQ response
+                     *      The first parameter passed in is IQ containing the
+                     *      room configuration.
+                     *      The second is the response IQ from the server.
+                     */
                     var iq = $iq({to: this.model.get('jid'), type: "set"})
                         .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                         .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-                    _.each(config, function (node) { iq.cnode(node).up(); });
+                    _.each(config || [], function (node) { iq.cnode(node).up(); });
+                    onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
+                    onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
                     return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
-                saveConfiguration: function (ev) {
-                    ev.preventDefault();
+                saveConfiguration: function (form) {
+                    /* Submit the room configuration form by sending an IQ
+                     * stanza to the server.
+                     *
+                     * Returns a promise which resolves once the XMPP server
+                     * has return a response IQ.
+                     *
+                     * Parameters:
+                     *  (HTMLElement) form: The configuration form DOM element.
+                     */
+                    var deferred = new $.Deferred();
                     var that = this;
-                    var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
-                        count = $inputs.length,
+                    var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                         configArray = [];
                     $inputs.each(function () {
                         configArray.push(utils.webForm2xForm(this));
-                        if (!--count) {
-                            that.sendConfiguration(
-                                configArray,
-                                that.onConfigSaved.bind(that),
-                                that.onErrorConfigSaved.bind(that)
-                            );
-                        }
                     });
+                    this.sendConfiguration(
+                        configArray,
+                        deferred.resolve,
+                        deferred.reject
+                    );
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
                             that.$el.find('.chat-area').removeClass('hidden');
                             that.$el.find('.occupants').removeClass('hidden');
                         });
+                    return deferred.promise();
                 },
 
                 autoConfigureChatRoom: function (stanza) {
                     /* Automatically configure room based on the
                      * 'roomconfigure' data on this view's model.
+                     *
+                     * Returns a promise which resolves once a response IQ has
+                     * been received.
+                     *
+                     * Parameters:
+                     *  (XMLElement) stanza: IQ stanza from the server,
+                     *       containing the configuration.
                      */
+                    var deferred = new $.Deferred();
                     var that = this, configArray = [],
                         $fields = $(stanza).find('field'),
                         count = $fields.length,
@@ -874,23 +934,18 @@
                         if (!--count) {
                             that.sendConfiguration(
                                 configArray,
-                                that.onConfigSaved.bind(that),
-                                that.onErrorConfigSaved.bind(that)
+                                deferred.resolve,
+                                _.partial(deferred.reject, stanza)
                             );
                         }
                     });
+                    return deferred.promise();
                 },
 
-                onConfigSaved: function (stanza) {
-                    // TODO: provide feedback
-                },
-
-                onErrorConfigSaved: function (stanza) {
-                    this.showStatusNotification(__("An error occurred while trying to save the form."));
-                },
-
-                cancelConfiguration: function (ev) {
-                    ev.preventDefault();
+                cancelConfiguration: function () {
+                    /* Remove the configuration form without submitting and
+                     * return to the chat view.
+                     */
                     var that = this;
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
@@ -900,29 +955,85 @@
                         });
                 },
 
-                configureChatRoom: function (ev) {
-                    var handleIQ;
-                    if (typeof ev !== 'undefined' && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    if (this.model.get('auto_configure')) {
-                        handleIQ = this.autoConfigureChatRoom.bind(this);
-                    } else {
-                        if (this.$el.find('div.chatroom-form-container').length) {
-                            return;
-                        }
-                        var $body = this.$('.chatroom-body');
-                        $body.children().addClass('hidden');
-                        $body.append(converse.templates.chatroom_form());
-                        handleIQ = this.renderConfigurationForm.bind(this);
-                    }
+                fetchRoomConfiguration: function (handler) {
+                    /* Send an IQ stanza to fetch the room configuration data.
+                     * Returns a promise which resolves once the response IQ
+                     * has been received.
+                     *
+                     * Parameters:
+                     *  (Function) handler: The handler for the response IQ
+                     */
+                    var that = this;
+                    var deferred = new $.Deferred();
                     converse.connection.sendIQ(
                         $iq({
                             'to': this.model.get('jid'),
                             'type': "get"
                         }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
-                        handleIQ
+                        function (iq) {
+                            if (handler) {
+                                handler.apply(that, arguments);
+                            }
+                            deferred.resolve(iq);
+                        },
+                        deferred.reject // errback
                     );
+                    return deferred.promise();
+                },
+
+                cacheRoomConfiguration: function () {
+                    /* Fetch the room configuration, parse it and then
+                     * save it on the Backbone.Model of this chat rooms.
+                     */
+                    var that = this;
+                    this.fetchRoomConfiguration().then(function (iq) {
+                        var roomconfig = {};
+                        _.each(iq.querySelectorAll('field'), function (field) {
+                            var type = field.getAttribute('type');
+                            if (type === 'hidden' && type === 'fixed') { return; }
+                            var fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
+                            var value = _.propertyOf(field.querySelector('value') || {})('textContent');
+                            /* Unfortunately we don't have enough information
+                             * to determine which values are actually integers, only
+                             * booleans.
+                             */
+                            if (type === "boolean") {
+                                value = parseInt(value, 10);
+                            }
+                            roomconfig[fieldname] = value;
+                        });
+                        that.model.save(roomconfig);
+                    });
+                },
+
+                configureChatRoom: function (ev) {
+                    /* Start the process of configuring a chat room, either by
+                     * rendering a configuration form, or by auto-configuring
+                     * based on the "roomconfig" data stored on the
+                     * Backbone.Model.
+                     *
+                     * Stores the new configuration on the Backbone.Model once
+                     * completed.
+                     *
+                     * Paremeters:
+                     *  (Event) ev: DOM event that might be passed in if this
+                     *      method is called due to a user action. In this
+                     *      case, auto-configure won't happen, regardless of
+                     *      the settings.
+                     */
+                    var that = this;
+                    if (_.isUndefined(ev) && this.model.get('auto_configure')) {
+                        this.fetchRoomConfiguration().then(function (iq) {
+                            that.autoConfigureChatRoom(iq).then(that.cacheRoomConfiguration.bind(that));
+                        });
+                    } else {
+                        if (typeof ev !== 'undefined' && ev.preventDefault) {
+                            ev.preventDefault();
+                        }
+                        this.fetchRoomConfiguration().then(function (iq) {
+                            that.renderConfigurationForm(iq).then(that.cacheRoomConfiguration.bind(that));
+                        });
+                    }
                 },
 
                 submitNickname: function (ev) {
@@ -1097,8 +1208,9 @@
                     return;
                 },
 
-                showConfigureButtonIfRoomOwner: function (pres) {
-                    /* Show the configure button if the user is the room owner.
+                findAndSaveOwnAffiliation: function (pres) {
+                    /* Parse the presence stanza for the current user's
+                     * affiliation.
                      *
                      * Parameters:
                      *  (XMLElement) pres: A <presence> stanza.
@@ -1187,12 +1299,22 @@
                     }
                 },
 
-                showStatusMessages: function (stanza, is_self) {
+                showStatusMessages: function (stanza) {
                     /* Check for status codes and communicate their purpose to the user.
-                     * Allows user to configure chat room if they are the owner.
                      * See: http://xmpp.org/registrar/mucstatus.html
+                     *
+                     * Parameters:
+                     *  (XMLElement) stanza: The message or presence stanza
+                     *      containing the status codes.
                      */
-                    var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
+                    var is_self = stanza.querySelectorAll("status[code='110']").length;
+
+                    // Unfortunately this doesn't work (returns empty list)
+                    // var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
+                    var elements = _.chain(stanza.querySelectorAll('x')).filter(function (x) {
+                        return x.getAttribute('xmlns') == Strophe.NS.MUC_USER;
+                    }).value();
+
                     var notifications = _.map(
                         elements,
                         _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
@@ -1255,28 +1377,59 @@
                     return this;
                 },
 
+                createInstantRoom: function () {
+                    /* Sends an empty IQ config stanza to inform the server that the
+                     * room should be created with its default configuration.
+                     *
+                     * See * http://xmpp.org/extensions/xep-0045.html#createroom-instant
+                     */
+                    this.sendConfiguration().then(this.cacheRoomConfiguration.bind(this));
+                },
+
                 onChatRoomPresence: function (pres) {
+                    /* Handles all MUC presence stanzas.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: The stanza
+                     */
                     var $presence = $(pres), is_self, new_room;
-                    var nick = this.model.get('nick');
+                    var show_status_messages = true;
                     if ($presence.attr('type') === 'error') {
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                         this.showErrorMessage(pres);
                     } else {
-                        is_self = ($presence.find("status[code='110']").length) ||
-                            ($presence.attr('from') === this.model.get('id')+'/'+Strophe.escapeNode(nick));
+                        is_self = $presence.find("status[code='110']").length;
                         new_room = $presence.find("status[code='201']").length;
-
                         if (is_self) {
-                            this.model.set('connection_status', Strophe.Status.CONNECTED);
-                            if (!converse.muc_instant_rooms && new_room) {
-                                this.configureChatRoom();
-                            } else {
-                                this.hideSpinner().showStatusMessages(pres, is_self);
-                                this.showConfigureButtonIfRoomOwner(pres);
-                            }
+                            this.findAndSaveOwnAffiliation(pres);
                         }
+                        if (is_self && new_room) {
+                            // This is a new room. It will now be configured
+                            // and the configuration cached on the
+                            // Backbone.Model.
+                            if (converse.muc_instant_rooms) {
+                                this.createInstantRoom(); // Accept default configuration
+                            } else {
+                                this.configureChatRoom();
+                                if (!this.model.get('auto_configure')) {
+                                    // We don't show status messages if the
+                                    // configuration form is being shown.
+                                    show_status_messages = false;
+                                }
+                            }
+                        } else if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                            // This is not a new room, and this is the first
+                            // presence received for this room (hence the
+                            // "connection_status" check), so we now cache the
+                            // room configuration.
+                            this.cacheRoomConfiguration();
+                        }
+                        if (show_status_messages) {
+                            this.hideSpinner().showStatusMessages(pres);
+                        }
+                        this.occupantsview.updateOccupantsOnPresence(pres);
+                        this.model.set('connection_status', Strophe.Status.CONNECTED);
                     }
-                    this.occupantsview.updateOccupantsOnPresence(pres);
                     return true;
                 },
 

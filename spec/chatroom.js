@@ -246,7 +246,7 @@
             it("can be configured if you're its owner", mock.initConverse(function (converse) {
                 converse_api.rooms.open('room@conference.example.org', {'nick': 'some1'});
                 var view = converse.chatboxviews.get('room@conference.example.org');
-                spyOn(view, 'showConfigureButtonIfRoomOwner').andCallThrough();
+                spyOn(view, 'findAndSaveOwnAffiliation').andCallThrough();
 
                 /* <presence to="dummy@localhost/converse.js-29092160"
                  *           from="room@conference.example.org/some1">
@@ -267,7 +267,7 @@
                       }).up()
                       .c('status', {code: '110'});
                 converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.showConfigureButtonIfRoomOwner).toHaveBeenCalled();
+                expect(view.findAndSaveOwnAffiliation).toHaveBeenCalled();
                 expect(view.$('.configure-chatroom-button').is(':visible')).toBeTruthy();
                 expect(view.$('.toggle-chatbox-button').is(':visible')).toBeTruthy();
                 expect(view.$('.toggle-bookmark').is(':visible')).toBeTruthy();
@@ -738,9 +738,10 @@
                  *      type='unavailable'>
                  *  <x xmlns='http://jabber.org/protocol/muc#user'>
                  *      <item affiliation='none' role='none'>
-                 *      <actor nick='Fluellen'/>
-                 *      <reason>Avaunt, you cullion!</reason>
+                 *          <actor nick='Fluellen'/>
+                 *          <reason>Avaunt, you cullion!</reason>
                  *      </item>
+                 *      <status code='110'/>
                  *      <status code='307'/>
                  *  </x>
                  *  </presence>
@@ -760,6 +761,7 @@
                     .c('actor').attrs({nick: 'Fluellen'}).up()
                     .c('reason').t('Avaunt, you cullion!').up()
                     .up()
+                    .c('status').attrs({code:'110'}).up()
                     .c('status').attrs({code:'307'}).nodeTree;
 
                 var view = converse.chatboxviews.get('lounge@localhost');

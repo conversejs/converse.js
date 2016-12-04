@@ -82,74 +82,6 @@
     var __ = utils.__.bind(converse);
     var ___ = utils.___;
 
-    /* http://xmpp.org/extensions/xep-0045.html
-     * ----------------------------------------
-     * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-     * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-     * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-     * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-     * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-     * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-     * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-     * 171 message      Configuration change    Inform occupants that room logging is now disabled
-     * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-     * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-     * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-     * 201 presence     Entering a room         Inform user that a new room has been created
-     * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-     * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-     * 303 presence     Exiting a room          Inform all occupants of new room nickname
-     * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-     * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-     * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-     * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
-     */
-    converse.muc = {
-        info_messages: {
-            100: __('This room is not anonymous'),
-            102: __('This room now shows unavailable members'),
-            103: __('This room does not show unavailable members'),
-            104: __('The room configuration has changed'),
-            170: __('Room logging is now enabled'),
-            171: __('Room logging is now disabled'),
-            172: __('This room is now no longer anonymous'),
-            173: __('This room is now semi-anonymous'),
-            174: __('This room is now fully-anonymous'),
-            201: __('A new room has been created')
-        },
-
-        disconnect_messages: {
-            301: __('You have been banned from this room'),
-            307: __('You have been kicked from this room'),
-            321: __("You have been removed from this room because of an affiliation change"),
-            322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-            332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
-        },
-
-        action_info_messages: {
-            /* XXX: Note the triple underscore function and not double
-             * underscore.
-             *
-             * This is a hack. We can't pass the strings to __ because we
-             * don't yet know what the variable to interpolate is.
-             *
-             * Triple underscore will just return the string again, but we
-             * can then at least tell gettext to scan for it so that these
-             * strings are picked up by the translation machinery.
-             */
-            301: ___("<strong>%1$s</strong> has been banned"),
-            303: ___("<strong>%1$s</strong>'s nickname has changed"),
-            307: ___("<strong>%1$s</strong> has been kicked out"),
-            321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
-            322: ___("<strong>%1$s</strong> has been removed for not being a member")
-        },
-
-        new_nickname_messages: {
-            210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
-            303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
-        }
-    };
-
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
     Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
@@ -276,6 +208,80 @@
              * loaded by converse.js's plugin machinery.
              */
             var converse = this.converse;
+
+            // XXX: Inside plugins, all calls to the translation machinery
+            // (e.g. utils.__) should only be done in the initialize function.
+            // If called before, we won't know what language the user wants,
+            // and it'll fallback to English.
+
+            /* http://xmpp.org/extensions/xep-0045.html
+             * ----------------------------------------
+             * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
+             * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
+             * 102 message      Configuration change    Inform occupants that room now shows unavailable members
+             * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
+             * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
+             * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
+             * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
+             * 171 message      Configuration change    Inform occupants that room logging is now disabled
+             * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
+             * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
+             * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
+             * 201 presence     Entering a room         Inform user that a new room has been created
+             * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
+             * 301 presence     Removal from room       Inform user that he or she has been banned from the room
+             * 303 presence     Exiting a room          Inform all occupants of new room nickname
+             * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
+             * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
+             * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
+             * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+             */
+            converse.muc = {
+                info_messages: {
+                    100: __('This room is not anonymous'),
+                    102: __('This room now shows unavailable members'),
+                    103: __('This room does not show unavailable members'),
+                    104: __('The room configuration has changed'),
+                    170: __('Room logging is now enabled'),
+                    171: __('Room logging is now disabled'),
+                    172: __('This room is now no longer anonymous'),
+                    173: __('This room is now semi-anonymous'),
+                    174: __('This room is now fully-anonymous'),
+                    201: __('A new room has been created')
+                },
+
+                disconnect_messages: {
+                    301: __('You have been banned from this room'),
+                    307: __('You have been kicked from this room'),
+                    321: __("You have been removed from this room because of an affiliation change"),
+                    322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
+                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+                },
+
+                action_info_messages: {
+                    /* XXX: Note the triple underscore function and not double
+                    * underscore.
+                    *
+                    * This is a hack. We can't pass the strings to __ because we
+                    * don't yet know what the variable to interpolate is.
+                    *
+                    * Triple underscore will just return the string again, but we
+                    * can then at least tell gettext to scan for it so that these
+                    * strings are picked up by the translation machinery.
+                    */
+                    301: ___("<strong>%1$s</strong> has been banned"),
+                    303: ___("<strong>%1$s</strong>'s nickname has changed"),
+                    307: ___("<strong>%1$s</strong> has been kicked out"),
+                    321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
+                    322: ___("<strong>%1$s</strong> has been removed for not being a member")
+                },
+
+                new_nickname_messages: {
+                    210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
+                    303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
+                }
+            };
+
             // Configuration values for this plugin
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these

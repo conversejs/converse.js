@@ -132,6 +132,8 @@
                 renderBookmarkForm: function () {
                     var $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
+                    // Remove any existing forms
+                    $body.find('form.chatroom-form').remove();
                     $body.append(
                         converse.templates.chatroom_bookmark_form({
                             heading: __('Bookmark this room'),

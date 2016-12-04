@@ -888,9 +888,11 @@
                     var that = this,
                         $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
+                    // Remove any existing forms
+                    $body.find('form.chatroom-form').remove();
                     $body.append(converse.templates.chatroom_form());
 
-                    var $form = this.$el.find('form.chatroom-form'),
+                    var $form = $body.find('form.chatroom-form'),
                         $fieldset = $form.children('fieldset:first'),
                         $stanza = $(stanza),
                         $fields = $stanza.find('field'),

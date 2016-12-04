@@ -297,6 +297,10 @@
             });
 
             converse.createChatRoom = function (settings) {
+                /* Creates a new chat room, making sure that certain attributes
+                 * are correct, for example that the "type" is set to
+                 * "chatroom".
+                 */
                 return converse.chatboxviews.showChat(
                     _.extend(settings, {
                         'type': 'chatroom',
@@ -379,6 +383,9 @@
                 },
 
                 generateHeadingHTML: function () {
+                    /* Pure function which returns the heading HTML to be
+                     * rendered.
+                     */
                     return converse.templates.chatroom_head(
                         _.extend(this.model.toJSON(), {
                             info_close: __('Close and leave this room'),
@@ -387,10 +394,15 @@
                 },
 
                 renderHeading: function () {
+                    /* Render the heading UI of the chat room.
+                     */
                     this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
                 },
 
                 renderChatArea: function () {
+                    /* Render the UI container in which chat room messages will
+                     * appear.
+                     */
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
                             .append(
@@ -418,11 +430,17 @@
                 },
 
                 close: function (ev) {
+                    /* Close this chat box, which implies leaving the room as
+                     * well.
+                     */
                     this.leave();
                     converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 toggleOccupants: function (ev, preserve_state) {
+                    /* Show or hide the right sidebar containing the chat
+                     * occupants (and the invite widget).
+                     */
                     if (ev) {
                         ev.preventDefault();
                         ev.stopPropagation();
@@ -516,6 +534,12 @@
                 },
 
                 sendChatRoomMessage: function (text) {
+                    /* Constuct a message stanza to be sent to this chat room,
+                     * and send it to the server.
+                     *
+                     * Parameters:
+                     *  (String) text: The message text to be sent.
+                     */
                     var msgid = converse.connection.getUniqueId();
                     var msg = $msg({
                         to: this.model.get('jid'),
@@ -577,6 +601,8 @@
                 },
 
                 clearChatRoomMessages: function (ev) {
+                    /* Remove all messages from the chat room UI.
+                     */
                     if (typeof ev !== "undefined") { ev.stopPropagation(); }
                     var result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
@@ -704,6 +730,14 @@
                 },
 
                 handleMUCMessage: function (stanza) {
+                    /* Handler for all MUC messages sent to this chat room.
+                     *
+                     * MAM (message archive management XEP-0313) messages are
+                     * ignored, since they're handled separately.
+                     *
+                     * Parameters:
+                     *  (XMLElement) stanza: The message stanza.
+                     */
                     var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
                     if (is_mam) {
                         return true;
@@ -713,6 +747,14 @@
                 },
 
                 getRoomJIDAndNick: function (nick) {
+                    /* Utility method to construct the JID for the current user
+                     * as occupant of the room.
+                     *
+                     * This is the room JID, with the user's nick added at the
+                     * end.
+                     *
+                     * For example: room@conference.example.org/nickname
+                     */
                     if (nick) {
                         this.model.save({'nick': nick});
                     } else {
@@ -725,6 +767,9 @@
                 },
 
                 registerHandlers: function () {
+                    /* Register presence and message handlers for this chat
+                     * room
+                     */
                     var room_jid = this.model.get('jid');
                     this.removeHandlers();
                     this.presence_handler = converse.connection.addHandler(
@@ -740,6 +785,9 @@
                 },
 
                 removeHandlers: function () {
+                    /* Remove the presence and message handlers that were
+                     * registered for this chat room.
+                     */
                     if (this.message_handler) {
                         converse.connection.deleteHandler(this.message_handler);
                         delete this.message_handler;
@@ -752,6 +800,13 @@
                 },
 
                 join: function (nick, password) {
+                    /* Join the chat room.
+                     *
+                     * Parameters:
+                     *  (String) nick: The user's nickname
+                     *  (String) password: Optional password, if required by
+                     *      the room.
+                     */
                     this.registerHandlers();
                     var stanza = $pres({
                         'from': converse.connection.jid,
@@ -771,6 +826,12 @@
                 },
 
                 leave: function(exit_msg) {
+                    /* Leave the chat room.
+                     *
+                     * Parameters:
+                     *  (String) exit_msg: Optional message to indicate your
+                     *      reason for leaving.
+                     */
                     if (!converse.connection.connected) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
@@ -1037,6 +1098,9 @@
                 },
 
                 submitNickname: function (ev) {
+                    /* Get the nickname value from the form and then join the
+                     * chat room with it.
+                     */
                     ev.preventDefault();
                     var $nick = this.$el.find('input[name=nick]');
                     var nick = $nick.val();
@@ -1075,8 +1139,12 @@
                 onNickNameFound: function (iq) {
                     /* We've received an IQ response from the server which
                      * might contain the user's reserved nickname.
-                     * If no nickname is found, we render a form for them to
-                     * specify one.
+                     * If no nickname is found we either render a form for
+                     * them to specify one, or we try to join the room with the
+                     * node of the user's JID.
+                     *
+                     * Parameters:
+                     *  (XMLElement) iq: The received IQ stanza
                      */
                     var nick = $(iq)
                         .find('query[node="x-roomuser-item"] identity')
@@ -1641,6 +1709,12 @@
                 },
 
                 updateOccupantsOnPresence: function (pres) {
+                    /* Given a presence stanza, update the occupant models
+                     * based on its contents.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: The presence stanza
+                     */
                     var data = this.parsePresence(pres);
                     if (data.type === 'error') {
                         return true;
@@ -1924,11 +1998,17 @@
                     this.model.save({nick: ev.target.value});
                 }
             });
+            /************************ End of ChatRoomView **********************/
 
-            /* Support for XEP-0249: Direct MUC invitations */
-            /* ------------------------------------------------------------ */
+
             converse.onDirectMUCInvitation = function (message) {
-                /*  A direct MUC invitation to join a room has been received */
+                /* A direct MUC invitation to join a room has been received
+                 * See XEP-0249: Direct MUC invitations.
+                 *
+                 * Parameters:
+                 *  (XMLElement) message: The message stanza containing the
+                 *        invitation.
+                 */
                 var $message = $(message),
                     $x = $message.children('x[xmlns="jabber:x:conference"]'),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
@@ -1973,7 +2053,24 @@
                 }
             };
 
+            if (converse.allow_muc_invitations) {
+                var registerDirectInvitationHandler = function () {
+                    converse.connection.addHandler(
+                        function (message) {
+                            converse.onDirectMUCInvitation(message);
+                            return true;
+                        }, 'jabber:x:conference', 'message');
+                };
+                converse.on('connected', registerDirectInvitationHandler);
+                converse.on('reconnected', registerDirectInvitationHandler);
+            }
+
             var autoJoinRooms = function () {
+                /* Automatically join chat rooms, based on the
+                 * "auto_join_rooms" configuration setting, which is an array
+                 * of strings (room JIDs) or objects (with room JID and other
+                 * settings).
+                 */
                 _.each(converse.auto_join_rooms, function (room) {
                     if (typeof room === 'string') {
                         converse_api.rooms.open(room);
@@ -1985,19 +2082,6 @@
                 });
             };
             converse.on('chatBoxesFetched', autoJoinRooms);
-
-            if (converse.allow_muc_invitations) {
-                var onConnected = function () {
-                    converse.connection.addHandler(
-                        function (message) {
-                            converse.onDirectMUCInvitation(message);
-                            return true;
-                        }, 'jabber:x:conference', 'message');
-                };
-                converse.on('connected', onConnected);
-                converse.on('reconnected', onConnected);
-            }
-            /* ------------------------------------------------------------ */
 
             var getWrappedChatBox = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();

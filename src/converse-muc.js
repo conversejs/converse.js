@@ -825,6 +825,11 @@
                      *      the room.
                      */
                     this.registerHandlers();
+                    if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
+                        // We have restored a chat room from session storage,
+                        // so we don't send out a presence stanza again.
+                        return;
+                    }
                     var stanza = $pres({
                         'from': converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
@@ -833,12 +838,12 @@
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
-                    this.model.set('connection_status', Strophe.Status.CONNECTING);
+                    this.model.save('connection_status', Strophe.Status.CONNECTING);
                     return converse.connection.send(stanza);
                 },
 
                 cleanup: function () {
-                    this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                    this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                     this.removeHandlers();
                 },
 
@@ -1371,7 +1376,7 @@
                         if (notification.reason) {
                             this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
                         }
-                        this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                        this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                         return;
                     }
                     _.each(notification.messages, function (message) {
@@ -1479,7 +1484,7 @@
                      *  (XMLElement) pres: The stanza
                      */
                     if (pres.getAttribute('type') === 'error') {
-                        this.model.set('connection_status', Strophe.Status.DISCONNECTED);
+                        this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                         this.showErrorMessage(pres);
                         return true;
                     } 
@@ -1514,7 +1519,7 @@
                         this.hideSpinner().showStatusMessages(pres);
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);
-                    this.model.set('connection_status', Strophe.Status.CONNECTED);
+                    this.model.save('connection_status', Strophe.Status.CONNECTED);
                     return true;
                 },
 
@@ -2191,6 +2196,33 @@
                     }
                 }
             });
+
+            var reconnectToChatRooms = function () {
+                /* Upon a reconnection event from converse, join again
+                 * all the open chat rooms.
+                 */
+                converse.chatboxviews.each(function (view) {
+                    if (view.model.get('type') === 'chatroom') {
+                        view.model.save('connection_status', Strophe.Status.DISCONNECTED);
+                        view.join(view.model.get('nick'));
+                    }
+                });
+            };
+            converse.on('reconnected', reconnectToChatRooms);
+
+            var disconnectChatRooms = function () {
+                /* When disconnecting, or reconnecting, mark all chat rooms as
+                 * disconnected, so that they will be properly entered again
+                 * when fetched from session storage.
+                 */
+                converse.chatboxes.each(function (model) {
+                    if (model.get('type') === 'chatroom') {
+                        model.save('connection_status', Strophe.Status.DISCONNECTED);
+                    }
+                });
+            };
+            converse.on('reconnecting', disconnectChatRooms);
+            converse.on('disconnecting', disconnectChatRooms);
         }
     });
 }));

@@ -91,32 +91,6 @@
                 }
             },
 
-            onDisconnected: function () {
-                var result = this.__super__.onDisconnected.apply(this, arguments);
-                // Set connected to `false`, so that if we reconnect,
-                // "onConnected" will be called, to fetch the roster again and
-                // to send out a presence stanza.
-                var view = converse.chatboxviews.get('controlbox');
-                view.model.set({connected:false});
-                // If we're not going to reconnect, then render the login
-                // panel.
-                if (result === 'disconnected') {
-                    view.$('#controlbox-tabs').empty();
-                    view.renderLoginPanel();
-                }
-                return result;
-            },
-
-            afterReconnected: function () {
-                this.__super__.afterReconnected.apply(this, arguments);
-                var view = converse.chatboxviews.get('controlbox');
-                if (view.model.get('connected')) {
-                    converse.chatboxviews.get("controlbox").onConnected();
-                } else {
-                    view.model.set({connected:true});
-                }
-            },
-
             _tearDown: function () {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
@@ -809,6 +783,32 @@
                     }
                 }
             });
+
+            var disconnect =  function () {
+                /* Upon disconnection, set connected to `false`, so that if
+                 * we reconnect,
+                 * "onConnected" will be called, to fetch the roster again and
+                 * to send out a presence stanza.
+                 */
+                var view = converse.chatboxviews.get('controlbox');
+                view.model.set({connected:false});
+                view.$('#controlbox-tabs').empty();
+                view.renderLoginPanel();
+            };
+            converse.on('disconnected', disconnect);
+
+            var afterReconnected = function () {
+                /* After reconnection makes sure the controlbox's is aware.
+                 */
+                var view = converse.chatboxviews.get('controlbox');
+                if (view.model.get('connected')) {
+                    converse.chatboxviews.get("controlbox").onConnected();
+                } else {
+                    view.model.set({connected:true});
+                }
+            };
+            converse.on('reconnected', afterReconnected);
+
         }
     });
 }));

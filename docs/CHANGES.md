@@ -3,6 +3,8 @@
 ## 2.0.4 (Unreleased)
 - Bugfix. Switching from bookmarks form to config form shows only the spinner. [jcbrand]
 - Bugfix. Other room occupants sometimes not shown when reloading the page. [jcbrand]
+- Bugfix. Due to changes in `converse-core` the controlbox wasn't aware anymore of
+  disconnection or reconnection events. [jcbrand]
 - Optimize fetching of MAM messages (in some cases happened on each page load). [jcbrand]
 
 ## 2.0.3 (2016-11-30)

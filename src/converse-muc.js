@@ -1403,7 +1403,7 @@
                     // Unfortunately this doesn't work (returns empty list)
                     // var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
                     var elements = _.chain(stanza.querySelectorAll('x')).filter(function (x) {
-                        return x.getAttribute('xmlns') == Strophe.NS.MUC_USER;
+                        return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
                     }).value();
 
                     var notifications = _.map(

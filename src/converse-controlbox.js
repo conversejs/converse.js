@@ -265,14 +265,6 @@
                     return this;
                 },
 
-                giveFeedback: function (message, klass) {
-                    var $el = this.$('.conn-feedback');
-                    $el.addClass('conn-feedback').text(message);
-                    if (klass) {
-                        $el.addClass(klass);
-                    }
-                },
-
                 onConnected: function () {
                     if (this.model.get('connected')) {
                         this.render().insertRoster();
@@ -287,15 +279,11 @@
                 },
 
                 renderLoginPanel: function () {
-                    var $feedback = this.$('.conn-feedback'); // we want to still show any existing feedback.
                     this.loginpanel = new converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
                     });
                     this.loginpanel.render();
-                    if ($feedback.length && $feedback.text() !== __('Connecting')) {
-                        this.$('.conn-feedback').replaceWith($feedback);
-                    }
                     return this;
                 },
 
@@ -339,11 +327,7 @@
                     if (!converse.connection.connected) {
                         converse.controlboxtoggle.render();
                     }
-                    converse.controlboxtoggle.show(function () {
-                        if (typeof callback === "function") {
-                            callback();
-                        }
-                    });
+                    converse.controlboxtoggle.show(callback);
                     return this;
                 },
 
@@ -717,12 +701,13 @@
                 initialize: function () {
                     converse.chatboxviews.$el.prepend(this.render());
                     this.updateOnlineCount();
+                    var that = this;
                     converse.on('initialized', function () {
-                        converse.roster.on("add", this.updateOnlineCount, this);
-                        converse.roster.on('change', this.updateOnlineCount, this);
-                        converse.roster.on("destroy", this.updateOnlineCount, this);
-                        converse.roster.on("remove", this.updateOnlineCount, this);
-                    }.bind(this));
+                        converse.roster.on("add", that.updateOnlineCount, that);
+                        converse.roster.on('change', that.updateOnlineCount, that);
+                        converse.roster.on("destroy", that.updateOnlineCount, that);
+                        converse.roster.on("remove", that.updateOnlineCount, that);
+                    });
                 },
 
                 render: function () {

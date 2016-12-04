@@ -6,6 +6,7 @@
 - Bugfix. Due to changes in `converse-core` the controlbox wasn't aware anymore of
   disconnection or reconnection events. [jcbrand]
 - Optimize fetching of MAM messages (in some cases happened on each page load). [jcbrand]
+- Fix empty controlbox toggle after disconnect. [jcbrand]
 
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]

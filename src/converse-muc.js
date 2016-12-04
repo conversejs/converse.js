@@ -304,7 +304,7 @@
                 return converse.chatboxviews.showChat(
                     _.extend(settings, {
                         'type': 'chatroom',
-                        'affiliation': undefined
+                        'affiliation': null
                     })
                 );
             };
@@ -338,14 +338,8 @@
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
 
-                    this.occupantsview = new converse.ChatRoomOccupantsView({
-                        model: new converse.ChatRoomOccupants({nick: this.model.get('nick')})
-                    });
-                    var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('id')+this.model.get('nick'));
-                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
-                    this.occupantsview.chatroomview = this;
+                    this.createOccupantsView();
                     this.render();
-                    this.occupantsview.model.fetch({add:true});
                     var nick = this.model.get('nick');
                     if (!nick) {
                         this.checkForReservedNick();
@@ -361,6 +355,19 @@
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
                     converse.emit('chatRoomOpened', this);
+                },
+
+                createOccupantsView: function () {
+                    /* Create the ChatRoomOccupantsView Backbone.View
+                     */
+                    this.occupantsview = new converse.ChatRoomOccupantsView({
+                        model: new converse.ChatRoomOccupants()
+                    });
+                    var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('jid'));
+                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
+                    this.occupantsview.chatroomview = this;
+                    this.occupantsview.render();
+                    this.occupantsview.model.fetch({add:true});
                 },
 
                 insertIntoDOM: function () {
@@ -411,7 +418,7 @@
                                     'show_toolbar': converse.show_toolbar,
                                     'label_message': __('Message')
                                 }))
-                            .append(this.occupantsview.render().$el);
+                            .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.$content = this.$el.find('.chat-content');
                     }
@@ -842,6 +849,10 @@
                      *  (String) exit_msg: Optional message to indicate your
                      *      reason for leaving.
                      */
+                    this.occupantsview.model.reset();
+                    this.occupantsview.model.browserStorage._clear();
+                    delete this.occupantsview;
+
                     if (!converse.connection.connected) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
@@ -1647,8 +1658,6 @@
                             'label_occupants': __('Occupants')
                         })
                     );
-                    // TODO: don't allow the widget if members-only room and
-                    // not room owner.
                     if (converse.allow_muc_invitations) {
                         return this.initInviteWidget();
                     }

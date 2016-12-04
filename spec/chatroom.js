@@ -244,33 +244,215 @@
             }));
 
             it("can be configured if you're its owner", mock.initConverse(function (converse) {
-                converse_api.rooms.open('room@conference.example.org', {'nick': 'some1'});
-                var view = converse.chatboxviews.get('room@conference.example.org');
-                spyOn(view, 'findAndSaveOwnAffiliation').andCallThrough();
+                var view;
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
 
-                /* <presence to="dummy@localhost/converse.js-29092160"
-                 *           from="room@conference.example.org/some1">
-                 *      <x xmlns="http://jabber.org/protocol/muc#user">
-                 *          <item affiliation="owner" jid="dummy@localhost/converse.js-29092160" role="moderator"/>
-                 *          <status code="110"/>
-                 *      </x>
-                 *  </presence></body>
-                 */
-                var presence = $pres({
-                        to: 'dummy@localhost/converse.js-29092160',
-                        from: 'room@conference.example.org/some1'
-                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
-                      .c('item', {
-                        'affiliation': 'owner',
-                        'jid': 'dummy@localhost/converse.js-29092160',
-                        'role': 'moderator'
-                      }).up()
-                      .c('status', {code: '110'});
-                converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.findAndSaveOwnAffiliation).toHaveBeenCalled();
-                expect(view.$('.configure-chatroom-button').is(':visible')).toBeTruthy();
-                expect(view.$('.toggle-chatbox-button').is(':visible')).toBeTruthy();
-                expect(view.$('.toggle-bookmark').is(':visible')).toBeTruthy();
+                runs(function () {
+                    converse_api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+                    view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    spyOn(view, 'findAndSaveOwnAffiliation').andCallThrough();
+
+                    /* <presence to="dummy@localhost/converse.js-29092160"
+                     *           from="coven@chat.shakespeare.lit/some1">
+                     *      <x xmlns="http://jabber.org/protocol/muc#user">
+                     *          <item affiliation="owner" jid="dummy@localhost/converse.js-29092160" role="moderator"/>
+                     *          <status code="110"/>
+                     *      </x>
+                     *  </presence></body>
+                     */
+                    var presence = $pres({
+                            to: 'dummy@localhost/converse.js-29092160',
+                            from: 'coven@chat.shakespeare.lit/some1'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'dummy@localhost/converse.js-29092160',
+                            'role': 'moderator'
+                        }).up()
+                        .c('status', {code: '110'});
+                    converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.findAndSaveOwnAffiliation).toHaveBeenCalled();
+                    expect(view.$('.configure-chatroom-button').is(':visible')).toBeTruthy();
+                    expect(view.$('.toggle-chatbox-button').is(':visible')).toBeTruthy();
+                    expect(view.$('.toggle-bookmark').is(':visible')).toBeTruthy();
+                    view.$('.configure-chatroom-button').click();
+                });
+                waits(50);
+                runs (function () {
+                    /* Check that an IQ is sent out, asking for the
+                     * configuration form.
+                     * See: // http://xmpp.org/extensions/xep-0045.html#example-163
+                     *
+                     *  <iq from='crone1@shakespeare.lit/desktop'
+                     *      id='config1'
+                     *      to='coven@chat.shakespeare.lit'
+                     *      type='get'>
+                     *  <query xmlns='http://jabber.org/protocol/muc#owner'/>
+                     *  </iq>
+                     */
+                    expect(sent_IQ.toLocaleString()).toBe(
+                        "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/muc#owner'/>"+
+                        "</iq>");
+
+                    /* Server responds with the configuration form.
+                     * See: // http://xmpp.org/extensions/xep-0045.html#example-165
+                     */
+                     var config_stanza = $iq({from: 'conven@chat.shakespeare.lit',
+                          'id': IQ_id,
+                          'to': 'dummy@localhost/desktop',
+                          'type': 'result'})
+                        .c('query', { 'xmlns': 'http://jabber.org/protocol/muc#owner'})
+                            .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form'})
+                                .c('title').t('Configuration for "coven" Room').up()
+                                .c('instructions').t('Complete this form to modify the configuration of your room.').up()
+                                .c('field', {'type': 'hidden', 'var': 'FORM_TYPE'}).
+                                    c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up()
+                                .c('field', {
+                                    'label': 'Natural-Language Room Name',
+                                    'type': 'text-single',
+                                    'var': 'muc#roomconfig_roomname'})
+                                    .c('value').t('A Dark Cave').up().up()
+                                .c('field', {
+                                    'label': 'Short Description of Room',
+                                    'type': 'text-single',
+                                    'var': 'muc#roomconfig_roomdesc'})
+                                    .c('value').t('The place for all good witches!').up().up()
+                                .c('field', {
+                                    'label': 'Enable Public Logging?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_enablelogging'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Allow Occupants to Change Subject?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_changesubject'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Allow Occupants to Invite Others?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_allowinvites'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Who Can Send Private Messages?',
+                                    'type': 'list-single',
+                                    'var': 'muc#roomconfig_allowpm'})
+                                    .c('value').t('anyone').up()
+                                    .c('option', {'label': 'Anyone'})
+                                        .c('value').t('anyone').up().up()
+                                    .c('option', {'label': 'Anyone with Voice'})
+                                        .c('value').t('participants').up().up()
+                                    .c('option', {'label': 'Moderators Only'})
+                                        .c('value').t('moderators').up().up()
+                                    .c('option', {'label': 'Nobody'})
+                                        .c('value').t('none').up().up().up()
+                                .c('field', {
+                                    'label': 'Roles for which Presence is Broadcasted',
+                                    'type': 'list-multi',
+                                    'var': 'muc#roomconfig_presencebroadcast'})
+                                    .c('value').t('moderator').up()
+                                    .c('value').t('participant').up()
+                                    .c('value').t('visitor').up()
+                                    .c('option', {'label': 'Moderator'})
+                                        .c('value').t('moderator').up().up()
+                                    .c('option', {'label': 'Participant'})
+                                        .c('value').t('participant').up().up()
+                                    .c('option', {'label': 'Visitor'})
+                                        .c('value').t('visitor').up().up().up()
+                                .c('field', {
+                                    'label': 'Roles and Affiliations that May Retrieve Member List',
+                                    'type': 'list-multi',
+                                    'var': 'muc#roomconfig_getmemberlist'})
+                                    .c('value').t('moderator').up()
+                                    .c('value').t('participant').up()
+                                    .c('value').t('visitor').up()
+                                    .c('option', {'label': 'Moderator'})
+                                        .c('value').t('moderator').up().up()
+                                    .c('option', {'label': 'Participant'})
+                                        .c('value').t('participant').up().up()
+                                    .c('option', {'label': 'Visitor'})
+                                        .c('value').t('visitor').up().up().up()
+                                .c('field', {
+                                    'label': 'Make Room Publicly Searchable?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_publicroom'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Make Room Publicly Searchable?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_publicroom'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Make Room Persistent?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_persistentroom'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Make Room Moderated?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_moderatedroom'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Make Room Members Only?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_membersonly'})
+                                    .c('value').t(0).up().up()
+                                .c('field', {
+                                    'label': 'Password Required for Entry?',
+                                    'type': 'boolean',
+                                    'var': 'muc#roomconfig_passwordprotectedroom'})
+                                    .c('value').t(1).up().up()
+                                .c('field', {'type': 'fixed'})
+                                    .c('value').t('If a password is required to enter this room,'+
+                                                'you must specify the password below.').up().up()
+                                .c('field', {
+                                    'label': 'Password',
+                                    'type': 'text-private',
+                                    'var': 'muc#roomconfig_roomsecret'})
+                                    .c('value').t('cauldronburn');
+                     converse.connection._dataRecv(test_utils.createRequest(config_stanza));
+                });
+                waits(50);
+                runs (function () {
+                    expect(view.$('form.chatroom-form').length).toBe(1);
+                    expect(view.$('form.chatroom-form fieldset').length).toBe(2);
+                    var $membersonly = view.$('input[name="muc#roomconfig_membersonly"]');
+                    expect($membersonly.length).toBe(1);
+                    expect($membersonly.attr('type')).toBe('checkbox');
+                    $membersonly.prop('checked', true);
+
+                    var $moderated = view.$('input[name="muc#roomconfig_moderatedroom"]');
+                    expect($moderated.length).toBe(1);
+                    expect($moderated.attr('type')).toBe('checkbox');
+                    $moderated.prop('checked', true);
+
+                    var $password = view.$('input[name="muc#roomconfig_roomsecret"]');
+                    expect($password.length).toBe(1);
+                    expect($password.attr('type')).toBe('password');
+
+                    var $allowpm = view.$('select[name="muc#roomconfig_allowpm"]');
+                    expect($allowpm.length).toBe(1);
+                    $allowpm.val('moderators');
+
+                    var $presencebroadcast = view.$('select[name="muc#roomconfig_presencebroadcast"]');
+                    expect($presencebroadcast.length).toBe(1);
+                    $presencebroadcast.val(['moderator']);
+
+                    view.$('input[type="submit"]').click();
+                });
+                waits(50);
+                runs (function () {
+                    var $sent_stanza = $(sent_IQ.toLocaleString());
+                    expect($sent_stanza.find('field[var="muc#roomconfig_membersonly"] value').text()).toBe('1');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_moderatedroom"] value').text()).toBe('1');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_allowpm"] value').text()).toBe('moderators');
+                    expect($sent_stanza.find('field[var="muc#roomconfig_presencebroadcast"] value').text()).toBe('moderator');
+                });
             }));
 
             it("shows users currently present in the room", mock.initConverse(function (converse) {

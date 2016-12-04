@@ -1115,6 +1115,7 @@
                         if (typeof ev !== 'undefined' && ev.preventDefault) {
                             ev.preventDefault();
                         }
+                        this.showSpinner();
                         this.fetchRoomConfiguration().then(that.renderConfigurationForm.bind(that));
                     }
                 },

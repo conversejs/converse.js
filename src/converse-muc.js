@@ -875,7 +875,6 @@
                      *  (XMLElement) stanza: The IQ stanza containing the room config.
                      */
                     var that = this,
-                        deferred = new $.Deferred(),
                         $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
                     $body.append(converse.templates.chatroom_form());
@@ -901,15 +900,11 @@
                     $fieldset.find('input[type=button]').on('click', function (ev) {
                         ev.preventDefault();
                         that.cancelConfiguration();
-                        deferred.reject(stanza);
                     });
                     $form.on('submit', function (ev) {
                         ev.preventDefault();
-                        that.saveConfiguration(ev.target)
-                            .done(deferred.resolve)
-                            .fail(_.partial(deferred, stanza));
+                        that.saveConfiguration(ev.target);
                     });
-                    return deferred.promise();
                 },
 
                 sendConfiguration: function(config, onSuccess, onError) {
@@ -945,25 +940,19 @@
                      * Parameters:
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
-                    var deferred = new $.Deferred();
                     var that = this;
                     var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                         configArray = [];
                     $inputs.each(function () {
                         configArray.push(utils.webForm2xForm(this));
                     });
-                    this.sendConfiguration(
-                        configArray,
-                        deferred.resolve,
-                        deferred.reject
-                    );
+                    this.sendConfiguration(configArray);
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
                             that.$el.find('.chat-area').removeClass('hidden');
                             that.$el.find('.occupants').removeClass('hidden');
                         });
-                    return deferred.promise();
                 },
 
                 autoConfigureChatRoom: function (stanza) {
@@ -977,7 +966,6 @@
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var deferred = new $.Deferred();
                     var that = this, configArray = [],
                         $fields = $(stanza).find('field'),
                         count = $fields.length,
@@ -1003,14 +991,9 @@
                         }
                         configArray.push(this);
                         if (!--count) {
-                            that.sendConfiguration(
-                                configArray,
-                                deferred.resolve,
-                                _.partial(deferred.reject, stanza)
-                            );
+                            that.sendConfiguration(configArray);
                         }
                     });
-                    return deferred.promise();
                 },
 
                 cancelConfiguration: function () {
@@ -1664,6 +1647,8 @@
                             'label_occupants': __('Occupants')
                         })
                     );
+                    // TODO: don't allow the widget if members-only room and
+                    // not room owner.
                     if (converse.allow_muc_invitations) {
                         return this.initInviteWidget();
                     }

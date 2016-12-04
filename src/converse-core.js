@@ -466,8 +466,9 @@
                 converse.giveFeedback(__('Authentication failed.'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-            } else if (status === Strophe.Status.CONNFAIL ||
-                       status === Strophe.Status.DISCONNECTING) {
+            } else if (status === Strophe.Status.CONNFAIL) {
+                converse.setDisconnectionCause(status);
+            } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.setDisconnectionCause(status);
             }
         };
@@ -1863,6 +1864,8 @@
                     // Probably ANONYMOUS login
                     this.autoLogin();
                 }
+            } else if (reconnecting) {
+                this.autoLogin();
             }
         };
 

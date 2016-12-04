@@ -109,7 +109,7 @@
             100: __('This room is not anonymous'),
             102: __('This room now shows unavailable members'),
             103: __('This room does not show unavailable members'),
-            104: __('Non-privacy-related room configuration has changed'),
+            104: __('The room configuration has changed'),
             170: __('Room logging is now enabled'),
             171: __('Room logging is now disabled'),
             172: __('This room is now no longer anonymous'),
@@ -742,6 +742,16 @@
                     if (is_mam) {
                         return true;
                     }
+                    var configuration_changed = stanza.querySelector("status[code='104']");
+                    var logging_enabled = stanza.querySelector("status[code='170']");
+                    var logging_disabled = stanza.querySelector("status[code='171']");
+                    var room_no_longer_anon = stanza.querySelector("status[code='172']");
+                    var room_now_semi_anon = stanza.querySelector("status[code='173']");
+                    var room_now_fully_anon = stanza.querySelector("status[code='173']");
+                    if (configuration_changed || logging_enabled || logging_disabled ||
+                            room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
+                        this.cacheRoomFeatures();
+                    }
                     _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
                     return true;
                 },
@@ -1042,29 +1052,45 @@
                     return deferred.promise();
                 },
 
-                cacheRoomConfiguration: function () {
-                    /* Fetch the room configuration, parse it and then
+                cacheRoomFeatures: function () {
+                    /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
+                     *
+                     * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
                      */
                     var that = this;
-                    this.fetchRoomConfiguration().then(function (iq) {
-                        var roomconfig = {};
-                        _.each(iq.querySelectorAll('field'), function (field) {
-                            var type = field.getAttribute('type');
-                            if (type === 'hidden' && type === 'fixed') { return; }
-                            var fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
-                            var value = _.propertyOf(field.querySelector('value') || {})('textContent');
-                            /* Unfortunately we don't have enough information
-                             * to determine which values are actually integers, only
-                             * booleans.
+                    converse.connection.disco.info(this.model.get('jid'), null,
+                        function (iq) {
+                            /* <iq from='coven@chat.shakespeare.lit'
+                             *      id='ik3vs715'
+                             *      to='hag66@shakespeare.lit/pda'
+                             *      type='result'>
+                             *  <query xmlns='http://jabber.org/protocol/disco#info'>
+                             *      <identity
+                             *          category='conference'
+                             *          name='A Dark Cave'
+                             *          type='text'/>
+                             *      <feature var='http://jabber.org/protocol/muc'/>
+                             *      <feature var='muc_passwordprotected'/>
+                             *      <feature var='muc_hidden'/>
+                             *      <feature var='muc_temporary'/>
+                             *      <feature var='muc_open'/>
+                             *      <feature var='muc_unmoderated'/>
+                             *      <feature var='muc_nonanonymous'/>
+                             *  </query>
+                             *  </iq>
                              */
-                            if (type === "boolean") {
-                                value = parseInt(value, 10);
-                            }
-                            roomconfig[fieldname] = value;
-                        });
-                        that.model.save(roomconfig);
-                    });
+                            var features = [];
+                            _.each(iq.querySelectorAll('feature'), function (field) {
+                                var fieldname = field.getAttribute('var');
+                                if (!fieldname.startsWith('muc_')) {
+                                    return;
+                                }
+                                features.push(fieldname.replace('muc_', ''));
+                            });
+                            that.model.save({'features': features});
+                        }
+                    );
                 },
 
                 configureChatRoom: function (ev) {
@@ -1084,16 +1110,12 @@
                      */
                     var that = this;
                     if (_.isUndefined(ev) && this.model.get('auto_configure')) {
-                        this.fetchRoomConfiguration().then(function (iq) {
-                            that.autoConfigureChatRoom(iq).then(that.cacheRoomConfiguration.bind(that));
-                        });
+                        this.fetchRoomConfiguration().then(that.autoConfigureChatRoom.bind(that));
                     } else {
                         if (typeof ev !== 'undefined' && ev.preventDefault) {
                             ev.preventDefault();
                         }
-                        this.fetchRoomConfiguration().then(function (iq) {
-                            that.renderConfigurationForm(iq).then(that.cacheRoomConfiguration.bind(that));
-                        });
+                        this.fetchRoomConfiguration().then(that.renderConfigurationForm.bind(that));
                     }
                 },
 
@@ -1449,9 +1471,9 @@
                     /* Sends an empty IQ config stanza to inform the server that the
                      * room should be created with its default configuration.
                      *
-                     * See * http://xmpp.org/extensions/xep-0045.html#createroom-instant
+                     * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
                      */
-                    this.sendConfiguration().then(this.cacheRoomConfiguration.bind(this));
+                    this.sendConfiguration().then(this.cacheRoomFeatures.bind(this));
                 },
 
                 onChatRoomPresence: function (pres) {
@@ -1460,44 +1482,43 @@
                      * Parameters:
                      *  (XMLElement) pres: The stanza
                      */
-                    var $presence = $(pres), is_self, new_room;
-                    var show_status_messages = true;
-                    if ($presence.attr('type') === 'error') {
+                    if (pres.getAttribute('type') === 'error') {
                         this.model.set('connection_status', Strophe.Status.DISCONNECTED);
                         this.showErrorMessage(pres);
-                    } else {
-                        is_self = $presence.find("status[code='110']").length;
-                        new_room = $presence.find("status[code='201']").length;
-                        if (is_self) {
-                            this.findAndSaveOwnAffiliation(pres);
-                        }
-                        if (is_self && new_room) {
-                            // This is a new room. It will now be configured
-                            // and the configuration cached on the
-                            // Backbone.Model.
-                            if (converse.muc_instant_rooms) {
-                                this.createInstantRoom(); // Accept default configuration
-                            } else {
-                                this.configureChatRoom();
-                                if (!this.model.get('auto_configure')) {
-                                    // We don't show status messages if the
-                                    // configuration form is being shown.
-                                    show_status_messages = false;
-                                }
-                            }
-                        } else if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
-                            // This is not a new room, and this is the first
-                            // presence received for this room (hence the
-                            // "connection_status" check), so we now cache the
-                            // room configuration.
-                            this.cacheRoomConfiguration();
-                        }
-                        if (show_status_messages) {
-                            this.hideSpinner().showStatusMessages(pres);
-                        }
-                        this.occupantsview.updateOccupantsOnPresence(pres);
-                        this.model.set('connection_status', Strophe.Status.CONNECTED);
+                        return true;
+                    } 
+                    var show_status_messages = true;
+                    var is_self = pres.querySelector("status[code='110']");
+                    var new_room = pres.querySelector("status[code='201']");
+
+                    if (is_self) {
+                        this.findAndSaveOwnAffiliation(pres);
                     }
+                    if (is_self && new_room) {
+                        // This is a new room. It will now be configured
+                        // and the configuration cached on the
+                        // Backbone.Model.
+                        if (converse.muc_instant_rooms) {
+                            this.createInstantRoom(); // Accept default configuration
+                        } else {
+                            this.configureChatRoom();
+                            if (!this.model.get('auto_configure')) {
+                                // We don't show status messages if the
+                                // configuration form is being shown.
+                                show_status_messages = false;
+                            }
+                        }
+                    } else if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                        // This is not a new room, and this is the first
+                        // presence received or the room config has
+                        // changed.
+                        this.cacheRoomFeatures();
+                    }
+                    if (show_status_messages) {
+                        this.hideSpinner().showStatusMessages(pres);
+                    }
+                    this.occupantsview.updateOccupantsOnPresence(pres);
+                    this.model.set('connection_status', Strophe.Status.CONNECTED);
                     return true;
                 },
 
@@ -1512,16 +1533,22 @@
                     this.scrollDown();
                 },
 
-                onChatRoomMessage: function (message) {
-                    var $message = $(message),
+                onChatRoomMessage: function (msg) {
+                    /* Given a <message> stanza, create a message
+                     * Backbone.Model if appropriate.
+                     *
+                     * Parameters:
+                     *  (XMLElement) msg: The received message stanza
+                     */
+                    var $message = $(msg),
                         $forwarded = $message.find('forwarded'),
                         $delay;
                     if ($forwarded.length) {
                         $message = $forwarded.children('message');
                         $delay = $forwarded.children('delay');
                     }
-                    var jid = $message.attr('from'),
-                        msgid = $message.attr('id'),
+                    var jid = msg.getAttribute('from'),
+                        msgid = msg.getAttribute('id'),
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = $message.children('subject').text(),
@@ -1541,10 +1568,10 @@
                     if (sender === '') {
                         return true;
                     }
-                    this.model.createMessage($message, $delay, message);
+                    this.model.createMessage($message, $delay, msg);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
-                        converse.emit('message', message);
+                        converse.emit('message', msg);
                     }
                     return true;
                 },
@@ -1903,12 +1930,18 @@
                     this.updateRoomsList();
                 },
 
-                insertRoomInfo: function ($parent, stanza) {
+                insertRoomInfo: function (el, stanza) {
                     /* Insert room info (based on returned #disco IQ stanza)
+                     *
+                     * Parameters:
+                     *  (HTMLElement) el: The HTML DOM element that should
+                     *      contain the info.
+                     *  (XMLElement) stanza: The IQ stanza containing the room
+                     *      info.
                      */
                     var $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    $parent.find('span.spinner').replaceWith(
+                    $(el).find('span.spinner').replaceWith(
                         converse.templates.room_description({
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
@@ -1953,7 +1986,7 @@
                         $parent.find('span.spinner').remove();
                         $parent.append('<span class="spinner hor_centered"/>');
                         converse.connection.disco.info(
-                            $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent)
+                            $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
                         );
                     }
                 },

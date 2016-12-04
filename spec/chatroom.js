@@ -424,7 +424,6 @@
                 var $input;
                 var view = converse.chatboxviews.get('lounge@localhost');
                 view.$el.find('.chat-area').remove();
-                view.renderChatArea(); // Will init the widget
                 test_utils.createContacts(converse, 'current'); // We need roster contacts, so that we have someone to invite
                 $input = view.$el.find('input.invited-contact.tt-input');
                 var $hint = view.$el.find('input.invited-contact.tt-hint');

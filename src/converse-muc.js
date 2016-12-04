@@ -856,7 +856,6 @@
                      */
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
-                    delete this.occupantsview;
 
                     if (!converse.connection.connected) {
                         // Don't send out a stanza if we're not connected.

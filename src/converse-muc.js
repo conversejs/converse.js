@@ -1583,6 +1583,7 @@
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
+                    var that = this;
                     if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
@@ -1590,15 +1591,15 @@
                     this.addSpinner();
                     converse_api.archive.query(_.extend(options, {'groupchat': true}),
                         function (messages) {
-                            this.clearSpinner();
+                            that.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, this.onChatRoomMessage.bind(this));
+                                _.map(messages, that.onChatRoomMessage.bind(that));
                             }
-                        }.bind(this),
+                        },
                         function () {
-                            this.clearSpinner();
+                            that.clearSpinner();
                             converse.log("Error while trying to fetch archived messages", "error");
-                        }.bind(this)
+                        }
                     );
                 }
             });

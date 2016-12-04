@@ -3,6 +3,7 @@
 ## 2.0.4 (Unreleased)
 - Bugfix. Switching from bookmarks form to config form shows only the spinner. [jcbrand]
 - Bugfix. Other room occupants sometimes not shown when reloading the page. [jcbrand]
+- Optimize fetching of MAM messages (in some cases happened on each page load). [jcbrand]
 
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]

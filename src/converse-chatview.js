@@ -662,7 +662,6 @@
                         // model is going to be destroyed afterwards.
                         this.model.set('chat_state', converse.INACTIVE);
                         this.sendChatState();
-
                         this.model.destroy();
                     }
                     this.remove();

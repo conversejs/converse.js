@@ -104,7 +104,7 @@
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(this.model.get('nick'));
                     } else {
-                        this.__super__.checkForReservedNick.apply(this, arguments);
+                        return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                 },
 

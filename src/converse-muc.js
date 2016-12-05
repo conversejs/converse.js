@@ -310,7 +310,21 @@
                 return converse.chatboxviews.showChat(
                     _.extend(settings, {
                         'type': 'chatroom',
-                        'affiliation': null
+                        'affiliation': null,
+                        'features_fetched': false,
+                        'hidden': false,
+                        'membersonly': false,
+                        'moderated': false,
+                        'nonanonymous': false,
+                        'open': false,
+                        'passwordprotected': false,
+                        'persistent': false,
+                        'public': false,
+                        'semianonymous': false,
+                        'temporary': false,
+                        'unmoderated': false,
+                        'unsecured': false,
+                        'connection_status': Strophe.Status.DISCONNECTED
                     })
                 );
             };
@@ -337,6 +351,7 @@
                 },
 
                 initialize: function () {
+                    var that = this;
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -345,22 +360,18 @@
                     this.model.on('change:name', this.renderHeading, this);
 
                     this.createOccupantsView();
-                    this.render();
-                    var nick = this.model.get('nick');
-                    if (!nick) {
-                        this.checkForReservedNick();
-                    } else {
-                        this.join(nick);
-                    }
-
-                    this.fetchMessages().insertIntoDOM();
-                    // XXX: adding the event below to the events map above doesn't work.
+                    this.render().insertIntoDOM(); // TODO: hide chat area until messages received.
+                    // XXX: adding the event below to the declarative events map doesn't work.
                     // The code that gets executed because of that looks like this:
                     //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
                     // Which for some reason doesn't work.
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
-                    converse.emit('chatRoomOpened', this);
+
+                    this.getRoomFeatures().always(function () {
+                        that.join().fetchMessages();
+                        converse.emit('chatRoomOpened', that);
+                    });
                 },
 
                 createOccupantsView: function () {
@@ -447,7 +458,6 @@
                      * well.
                      */
                     this.leave();
-                    converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 toggleOccupants: function (ev, preserve_state) {
@@ -763,7 +773,7 @@
                     var room_now_fully_anon = stanza.querySelector("status[code='173']");
                     if (configuration_changed || logging_enabled || logging_disabled ||
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-                        this.cacheRoomFeatures();
+                        this.getRoomFeatures();
                     }
                     _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
                     return true;
@@ -830,6 +840,10 @@
                      *  (String) password: Optional password, if required by
                      *      the room.
                      */
+                    nick = nick ? nick : this.model.get('nick');
+                    if (!nick) {
+                        return this.checkForReservedNick();
+                    }
                     this.registerHandlers();
                     if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
                         // We have restored a chat room from session storage,
@@ -845,12 +859,14 @@
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
                     this.model.save('connection_status', Strophe.Status.CONNECTING);
-                    return converse.connection.send(stanza);
+                    converse.connection.send(stanza);
+                    return this;
                 },
 
                 cleanup: function () {
                     this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                     this.removeHandlers();
+                    converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 leave: function(exit_msg) {
@@ -863,7 +879,8 @@
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
 
-                    if (!converse.connection.connected) {
+                    if (!converse.connection.connected ||
+                            this.model.get('connection_status') === Strophe.Status.DISCONNECTED) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
                         return;
@@ -1058,45 +1075,45 @@
                     return deferred.promise();
                 },
 
-                cacheRoomFeatures: function () {
+                getRoomFeatures: function () {
                     /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
-                     *
-                     * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
                      */
+                    var deferred = new $.Deferred();
                     var that = this;
                     converse.connection.disco.info(this.model.get('jid'), null,
                         function (iq) {
-                            /* <iq from='coven@chat.shakespeare.lit'
-                             *      id='ik3vs715'
-                             *      to='hag66@shakespeare.lit/pda'
-                             *      type='result'>
-                             *  <query xmlns='http://jabber.org/protocol/disco#info'>
-                             *      <identity
-                             *          category='conference'
-                             *          name='A Dark Cave'
-                             *          type='text'/>
-                             *      <feature var='http://jabber.org/protocol/muc'/>
-                             *      <feature var='muc_passwordprotected'/>
-                             *      <feature var='muc_hidden'/>
-                             *      <feature var='muc_temporary'/>
-                             *      <feature var='muc_open'/>
-                             *      <feature var='muc_unmoderated'/>
-                             *      <feature var='muc_nonanonymous'/>
-                             *  </query>
-                             *  </iq>
+                            /* 
+                             * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
+                             *
+                             *  <identity
+                             *      category='conference'
+                             *      name='A Dark Cave'
+                             *      type='text'/>
+                             *  <feature var='http://jabber.org/protocol/muc'/>
+                             *  <feature var='muc_passwordprotected'/>
+                             *  <feature var='muc_hidden'/>
+                             *  <feature var='muc_temporary'/>
+                             *  <feature var='muc_open'/>
+                             *  <feature var='muc_unmoderated'/>
+                             *  <feature var='muc_nonanonymous'/>
                              */
-                            var features = [];
+                            var features = {
+                                'features_fetched': true
+                            };
                             _.each(iq.querySelectorAll('feature'), function (field) {
                                 var fieldname = field.getAttribute('var');
                                 if (!fieldname.startsWith('muc_')) {
                                     return;
                                 }
-                                features.push(fieldname.replace('muc_', ''));
+                                features[fieldname.replace('muc_', '')] = true;
                             });
-                            that.model.save({'features': features});
-                        }
+                            that.model.save(features);
+                            return deferred.resolve();
+                        },
+                        deferred.reject
                     );
+                    return deferred.promise();
                 },
 
                 configureChatRoom: function (ev) {
@@ -1163,6 +1180,7 @@
                         this.onNickNameFound.bind(this),
                         this.onNickNameNotFound.bind(this)
                     );
+                    return this;
                 },
 
                 onNickNameFound: function (iq) {
@@ -1305,7 +1323,7 @@
                     return;
                 },
 
-                findAndSaveOwnAffiliation: function (pres) {
+                saveAffiliationAndRole: function (pres) {
                     /* Parse the presence stanza for the current user's
                      * affiliation.
                      *
@@ -1320,13 +1338,17 @@
                     // then the Sizzle selector library might still be needed
                     // here.
                     var item = $(pres).find('x[xmlns="'+Strophe.NS.MUC_USER+'"] item').get(0);
-                    if (_.isUndefined(item)) {
-                        return;
-                    }
+                    if (_.isUndefined(item)) { return; }
                     var jid = item.getAttribute('jid');
-                    var affiliation = item.getAttribute('affiliation');
-                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid && affiliation) {
-                        this.model.save({'affiliation': affiliation});
+                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid) {
+                        var affiliation = item.getAttribute('affiliation');
+                        var role = item.getAttribute('role');
+                        if (affiliation) {
+                            this.model.save({'affiliation': affiliation});
+                        }
+                        if (role) {
+                            this.model.save({'role': role});
+                        }
                     }
                 },
 
@@ -1480,7 +1502,7 @@
                      *
                      * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
                      */
-                    this.sendConfiguration().then(this.cacheRoomFeatures.bind(this));
+                    this.sendConfiguration().then(this.getRoomFeatures.bind(this));
                 },
 
                 onChatRoomPresence: function (pres) {
@@ -1499,7 +1521,7 @@
                     var new_room = pres.querySelector("status[code='201']");
 
                     if (is_self) {
-                        this.findAndSaveOwnAffiliation(pres);
+                        this.saveAffiliationAndRole(pres);
                     }
                     if (is_self && new_room) {
                         // This is a new room. It will now be configured
@@ -1515,17 +1537,22 @@
                                 show_status_messages = false;
                             }
                         }
-                    } else if (this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
-                        // This is not a new room, and this is the first
-                        // presence received or the room config has
-                        // changed.
-                        this.cacheRoomFeatures();
+                    } else if (!this.model.get('features_fetched') &&
+                                    this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                        // The features for this room weren't fetched yet, perhaps
+                        // because it's a new room without locking (in which
+                        // case Prosody doesn't send a 201 status).
+                        // This is the first presence received for the room, so
+                        // a good time to fetch the features.
+                        this.getRoomFeatures();
                     }
                     if (show_status_messages) {
                         this.hideSpinner().showStatusMessages(pres);
                     }
                     this.occupantsview.updateOccupantsOnPresence(pres);
-                    this.model.save('connection_status', Strophe.Status.CONNECTED);
+                    if (this.model.get('role') !== 'none') {
+                        this.model.save('connection_status', Strophe.Status.CONNECTED);
+                    }
                     return true;
                 },
 
@@ -2211,7 +2238,7 @@
                 converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === 'chatroom') {
                         view.model.save('connection_status', Strophe.Status.DISCONNECTED);
-                        view.join(view.model.get('nick'));
+                        view.join();
                     }
                 });
             };

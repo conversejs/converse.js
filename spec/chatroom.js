@@ -964,6 +964,7 @@
                 converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 var view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                expect(view.model.get('features_fetched')).toBe(true);
                 expect(view.model.get('passwordprotected')).toBe(true);
                 expect(view.model.get('hidden')).toBe(true);
                 expect(view.model.get('temporary')).toBe(true);

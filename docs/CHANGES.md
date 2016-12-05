@@ -10,6 +10,8 @@
   disconnection or reconnection events. [jcbrand]
 - Optimize fetching of MAM messages (in some cases happened on each page load). [jcbrand]
 - Fix empty controlbox toggle after disconnect. [jcbrand]
+- When inviting someone to a members-only room, first add them to the member
+  list. [jcbrand]
 
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]

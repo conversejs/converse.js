@@ -1182,6 +1182,7 @@
                     chat_status = $presence.find('show').text() || 'online',
                     status_message = $presence.find('status'),
                     contact = this.get(bare_jid);
+
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&

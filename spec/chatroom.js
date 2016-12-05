@@ -907,7 +907,7 @@
                 expect($occupants.children().first(0).text()).toBe("newnick");
             }));
 
-            if("queries for the room information before attempting to join the user",  mock.initConverse(function (converse) {
+            it("queries for the room information before attempting to join the user",  mock.initConverse(function (converse) {
                 var sent_IQ, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
@@ -955,21 +955,21 @@
                             'type': 'text'
                         }).up()
                         .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                        .c('feature', {'var': 'passwordprotected'}).up()
-                        .c('feature', {'var': 'hidden'}).up()
-                        .c('feature', {'var': 'temporary'}).up()
-                        .c('feature', {'var': 'open'}).up()
-                        .c('feature', {'var': 'unmoderated'}).up()
-                        .c('feature', {'var': 'nonanonymous'});
+                        .c('feature', {'var': 'muc_passwordprotected'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_open'}).up()
+                        .c('feature', {'var': 'muc_unmoderated'}).up()
+                        .c('feature', {'var': 'muc_nonanonymous'});
                 converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 var view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                expect(view.model.get('passwordprotected')).toBe('true');
-                expect(view.model.get('hidden')).toBe('true');
-                expect(view.model.get('temporary')).toBe('true');
-                expect(view.model.get('open')).toBe('true');
-                expect(view.model.get('unmoderated')).toBe('true');
-                expect(view.model.get('nonanonymous')).toBe('true');
+                expect(view.model.get('passwordprotected')).toBe(true);
+                expect(view.model.get('hidden')).toBe(true);
+                expect(view.model.get('temporary')).toBe(true);
+                expect(view.model.get('open')).toBe(true);
+                expect(view.model.get('unmoderated')).toBe(true);
+                expect(view.model.get('nonanonymous')).toBe(true);
             }));
 
             it("indicates when a room is no longer anonymous", mock.initConverse(function (converse) {
@@ -1398,5 +1398,73 @@
                 expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants");
             }));
         });
+
+        describe("Someone being invited to a chat room", function () {
+
+            it("will first be added to the member list if the chat room is members only", mock.initConverse(function (converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
+                test_utils.openChatRoom(converse, 'coven', 'chat.shakespeare.lit', 'dummy');
+
+                // State that the chat is members-only via the features IQ
+                var features_stanza = $iq({
+                        from: 'coven@chat.shakespeare.lit',
+                        'id': IQ_id,
+                        'to': 'dummy@localhost/desktop',
+                        'type': 'result'
+                    })
+                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {
+                            'category': 'conference',
+                            'name': 'A Dark Cave',
+                            'type': 'text'
+                        }).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_membersonly'}).up();
+                converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+                var view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                expect(view.model.get('membersonly')).toBeTruthy();
+
+                spyOn(view, 'setMemberList').andCallThrough();
+
+                test_utils.createContacts(converse, 'current');
+
+                var sent_stanza,
+                    sent_id;
+                spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                    if (stanza.nodeTree && stanza.nodeTree.nodeName === 'message') {
+                        sent_id = stanza.nodeTree.getAttribute('id');
+                        sent_stanza = stanza;
+                    }
+                });
+
+                var name = mock.cur_names[0];
+                var invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                var reason = "Please join this chat room";
+                view.directInvite(invitee_jid, reason);
+
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='member' jid='"+invitee_jid+"'/>"+
+                        "</query>"+
+                    "</iq>");
+
+                expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
+                    "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
+                        "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
+                    "</message>"
+                );
+            }));
+        });
+
     });
 }));

@@ -494,6 +494,29 @@
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
+                setMemberList: function (members, onSuccess, onError) {
+                    /* Send an IQ stanza to the server to modify the
+                     * member-list of this room.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * Parameters:
+                     *  (Array) members: An array of member objects, containing
+                     *      the JID and affiliation of each.
+                     *  (Function) onSuccess: callback for a succesful response
+                     *  (Function) onError: callback for an error response
+                     */
+                    var iq = $iq({to: this.model.get('jid'), type: "set"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
+                    _.each(members, function (member) {
+                        iq.c("item", {
+                            'affiliation': member.affiliation,
+                            'jid': member.jid
+                        });
+                    });
+                    return converse.connection.sendIQ(iq, onSuccess, onError);
+                },
+
                 directInvite: function (recipient, reason) {
                     /* Send a direct invitation as per XEP-0249
                      *
@@ -501,6 +524,15 @@
                      *    (String) recipient - JID of the person being invited
                      *    (String) reason - Optional reason for the invitation
                      */
+                    if (this.model.get('membersonly')) {
+                        // When inviting to a members-only room, we first add
+                        // the person to the member list, otherwise they won't
+                        // be able to join.
+                        this.setMemberList([{
+                            'jid': recipient,
+                            'affiliation': 'member'
+                        }]);
+                    }
                     var attrs = {
                         'xmlns': 'jabber:x:conference',
                         'jid': this.model.get('jid')
@@ -1082,7 +1114,7 @@
                     var that = this;
                     converse.connection.disco.info(this.model.get('jid'), null,
                         function (iq) {
-                            /* 
+                            /*
                              * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
                              *
                              *  <identity
@@ -1514,7 +1546,7 @@
                         this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                         this.showErrorMessage(pres);
                         return true;
-                    } 
+                    }
                     var show_status_messages = true;
                     var is_self = pres.querySelector("status[code='110']");
                     var new_room = pres.querySelector("status[code='201']");

@@ -413,7 +413,8 @@
                 if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
                     converse.reconnect(condition);
                     converse.log('RECONNECTING');
-                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
+                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
                     window.setTimeout(_.partial(converse.reconnect, condition), 3000);
                     converse.log('RECONNECTING IN 3 SECONDS');
                 }

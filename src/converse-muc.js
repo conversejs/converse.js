@@ -2182,7 +2182,7 @@
             };
             converse.on('chatBoxesFetched', autoJoinRooms);
 
-            var getWrappedChatBox = function (jid, attrs, fetcher) {
+            converse.getWrappedChatRoom = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();
                 return converse.wrappedChatBox(fetcher(_.extend({
                     'id': jid,
@@ -2231,9 +2231,9 @@
                         if (typeof jids === "undefined") {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (typeof jids === "string") {
-                            return getWrappedChatBox(jids, attrs, converse.createChatRoom);
+                            return converse.getWrappedChatRoom(jids, attrs, converse.createChatRoom);
                         }
-                        return _.map(jids, _.partial(getWrappedChatBox, _, attrs, converse.createChatRoom));
+                        return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, converse.createChatRoom));
                     },
                     'get': function (jids, attrs, create) {
                         if (typeof attrs === "string") {
@@ -2255,9 +2255,9 @@
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
                         if (typeof jids === "string") {
-                            return getWrappedChatBox(jids, attrs, fetcher);
+                            return converse.getWrappedChatRoom(jids, attrs, fetcher);
                         }
-                        return _.map(jids, _.partial(getWrappedChatBox, _, attrs, fetcher));
+                        return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, fetcher));
                     }
                 }
             });

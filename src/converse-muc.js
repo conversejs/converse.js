@@ -876,30 +876,29 @@
                      *  (String) exit_msg: Optional message to indicate your
                      *      reason for leaving.
                      */
+                    this.hide();
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
-
                     if (!converse.connection.connected ||
                             this.model.get('connection_status') === Strophe.Status.DISCONNECTED) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
                         return;
                     }
-                    var presenceid = converse.connection.getUniqueId();
                     var presence = $pres({
                         type: "unavailable",
-                        id: presenceid,
                         from: converse.connection.jid,
                         to: this.getRoomJIDAndNick()
                     });
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
                     }
-                    converse.connection.addHandler(
+                    converse.connection.sendPresence(
+                        presence,
                         this.cleanup.bind(this),
-                        null, "presence", null, presenceid
+                        this.cleanup.bind(this),
+                        2000
                     );
-                    converse.connection.send(presence);
                 },
 
                 renderConfigurationForm: function (stanza) {

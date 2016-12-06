@@ -1434,8 +1434,6 @@
                 var view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 expect(view.model.get('membersonly')).toBeTruthy();
 
-                spyOn(view, 'setMemberList').andCallThrough();
-
                 test_utils.createContacts(converse, 'current');
 
                 var sent_stanza,
@@ -1452,6 +1450,43 @@
                 var reason = "Please join this chat room";
                 view.directInvite(invitee_jid, reason);
 
+                // Check that we first requested the member list
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='member'/>"+
+                        "</query>"+
+                    "</iq>");
+
+                /* Now the service sends the member list to the user
+                 *
+                 *  <iq from='coven@chat.shakespeare.lit'
+                 *      id='member3'
+                 *      to='crone1@shakespeare.lit/desktop'
+                 *      type='result'>
+                 *  <query xmlns='http://jabber.org/protocol/muc#admin'>
+                 *      <item affiliation='member'
+                 *          jid='hag66@shakespeare.lit'
+                 *          nick='thirdwitch'
+                 *          role='participant'/>
+                 *  </query>
+                 *  </iq>
+                 */
+                var member_list_stanza = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': IQ_id,
+                        'to': 'dummy@localhost/resource',
+                        'type': 'result'
+                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                        .c('item', {
+                            'affiliation': 'member',
+                            'jid': 'hag66@shakespeare.lit',
+                            'nick': 'thirdwitch',
+                            'role': 'participant'
+                        });
+                converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
+
+                // Check that the member list now gets updated
                 expect(sent_IQ.toLocaleString()).toBe(
                     "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
@@ -1459,6 +1494,7 @@
                         "</query>"+
                     "</iq>");
 
+                // Finally check that the user gets invited.
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                     "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
                         "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+

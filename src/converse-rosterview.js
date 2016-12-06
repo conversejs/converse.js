@@ -52,6 +52,16 @@
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
+            _tearDown: function () {
+                /* Remove the rosterview when tearing down. It gets created
+                 * anew when reconnecting or logging in.
+                 */
+                this.__super__._tearDown.apply(this, arguments);
+                if (!_.isUndefined(this.rosterview)) {
+                    this.rosterview.remove();
+                }
+            },
+
             RosterGroups: {
                 comparator: function () {
                     // RosterGroupsComparator only gets set later (once i18n is

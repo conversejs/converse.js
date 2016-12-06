@@ -532,7 +532,7 @@
                     );
                 },
 
-                computeAffiliationsDelta: function (new_map, old_map, remove_absentees) {
+                computeAffiliationsDelta: function (exclude_existing, remove_absentees, new_map, old_map) {
                     /* Given two affiliation maps (JIDs mapped to
                      * affiliations), return a new map containing
                      * those JIDs that are new, changed or removed
@@ -542,28 +542,36 @@
                      * same, for removed members, the affiliation is set to 'none'.
                      *
                      * Parameters:
-                     *  (Object) new_map: Map containing the new affiliations
-                     *  (Object) old_map: Map containing the old affiliations
+                     *  (Boolean) exclude_existing: Indicates whether JIDs from
+                     *      the new map which are also in the old map
+                     *      (regardless of affiliation) should be excluded
+                     *      from the delta. One reason to do this
+                     *      would be when you want to add a JID only if it
+                     *      doesn't have *any* existing affiliation at all.
                      *  (Boolean) remove_absentees: Indicates whether JIDs
                      *      from the old map which are not in the new map 
                      *      should be considered removed and therefore be
                      *      included in the delta with affiliation set
                      *      to 'none'.
+                     *  (Object) new_map: Map containing the new affiliations
+                     *  (Object) old_map: Map containing the old affiliations
                      */
                     var delta = {};
                     var new_jids = _.keys(new_map);
                     var old_jids = _.keys(old_map);
                     var same_jids = _.intersection(new_jids, old_jids);
-                    // Get the changed affiliations
-                    _.each(same_jids, function (jid) {
-                        if (new_map[jid] !== old_map[jid]) {
-                            delta[jid] = new_map[jid];
-                        }
-                    });
                     // Get the new affiliations
                     _.each(_.difference(new_jids, old_jids), function (jid) {
                         delta[jid] = new_map[jid];
                     });
+                    if (!exclude_existing) {
+                        // Get the changed affiliations
+                        _.each(same_jids, function (jid) {
+                            if (new_map[jid] !== old_map[jid]) {
+                                delta[jid] = new_map[jid];
+                            }
+                        });
+                    }
                     if (remove_absentees) {
                         // Get the removed affiliations
                         _.each(_.difference(old_jids, new_jids), function (jid) {
@@ -600,31 +608,15 @@
                     return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
-                updateMemberLists: function (members, affiliations, remove_absentees) {
-                    /* Fetch the lists of users with the given affiliations.
-                     * Then compute the delta between those users and
-                     * the passed in members, and if it exists, send the delta
-                     * to the XMPP server to update the member list.
-                     *
-                     * Parameters:
-                     *  (Object) members: Map of member jids and affiliations.
-                     *  (String|Array) affiliation: An array of affiliations or
-                     *      a string if only one affiliation.
-                     *  (Boolean) remove_absentees: When computing the list
-                     *      delta, consider members from the old list that
-                     *      are not in the new list as removed (therefore their
-                     *      affiliation will get set to 'none').
-                     *
-                     * Returns:
-                     *  A promise which is resolved once the list has been
-                     *  updated or once it's been established there's no need
-                     *  to update the list.
+                getJidsWithAffiliations: function (affiliations) {
+                    /* Returns a map of JIDs that have the affiliations
+                     * as provided.
                      */
-                    var that = this;
-                    var deferred = new $.Deferred();
                     if (typeof affiliations === "string") {
                         affiliations = [affiliations];
                     }
+                    var that = this;
+                    var deferred = new $.Deferred();
                     var promises = [];
                     _.each(affiliations, function (affiliation) {
                         promises.push(that.requestMemberList(affiliation));
@@ -635,8 +627,37 @@
                             memo[member.jid] = member.affiliation;
                             return memo;
                         }, {});
-                        var delta = that.computeAffiliationsDelta(members, old_members, remove_absentees);
-                        that.setAffiliations(delta, deferred.resolve, deferred.reject);
+                        deferred.resolve(old_members);
+                    });
+                    return deferred.promise();
+                },
+
+                updateMemberLists: function (members, affiliations, deltaFunc) {
+                    /* Fetch the lists of users with the given affiliations.
+                     * Then compute the delta between those users and
+                     * the passed in members, and if it exists, send the delta
+                     * to the XMPP server to update the member list.
+                     *
+                     * Parameters:
+                     *  (Object) members: Map of member jids and affiliations.
+                     *  (String|Array) affiliation: An array of affiliations or
+                     *      a string if only one affiliation.
+                     *  (Function) deltaFunc: The function to compute the delta
+                     *      between old and new member lists.
+                     *
+                     * Returns:
+                     *  A promise which is resolved once the list has been
+                     *  updated or once it's been established there's no need
+                     *  to update the list.
+                     */
+                    var that = this;
+                    var deferred = new $.Deferred();
+                    this.getJidsWithAffiliations(affiliations).then(function (old_members) {
+                        that.setAffiliations(
+                            deltaFunc(members, old_members),
+                            deferred.resolve,
+                            deferred.reject
+                        );
                     });
                     return deferred.promise();
                 },
@@ -650,11 +671,12 @@
                      */
                     if (this.model.get('membersonly')) {
                         // When inviting to a members-only room, we first add
-                        // the person to the member list, otherwise they won't
-                        // be able to join.
-                        var map = {};
-                        map[recipient] = 'member';
-                        this.updateMemberLists(map, ['member', 'owner', 'admin'], false);
+                        // the person to the member list by giving them an
+                        // affiliation of 'member' (if they're not affiliated
+                        // already), otherwise they won't be able to join.
+                        var map = {}; map[recipient] = 'member';
+                        var deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
+                        this.updateMemberLists(map, ['member', 'owner', 'admin'], deltaFunc);
                     }
                     var attrs = {
                         'xmlns': 'jabber:x:conference',

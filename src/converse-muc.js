@@ -532,45 +532,45 @@
                     );
                 },
 
-                computeMemberListDelta: function (new_list, old_list, remove_absentees) {
-                    /* Given two members lists (arrays of objects with jid and
-                     * affiliation properties), return a new list containing
-                     * those objects that are new, changed or removed
+                computeAffiliationsDelta: function (new_map, old_map, remove_absentees) {
+                    /* Given two affiliation maps (JIDs mapped to
+                     * affiliations), return a new map containing
+                     * those JIDs that are new, changed or removed
                      * (depending on the 'remove_absentees' boolean).
                      *
-                     * The objects for new and changed members stay the same,
-                     * for removed members, the affiliation is set to 'none'.
+                     * The affiliations for new and changed members stay the
+                     * same, for removed members, the affiliation is set to 'none'.
                      *
                      * Parameters:
-                     *  (Array) new_list: List of new objects with properties
-                     *      'jid' and 'affiliation'.
-                     *  (Array) new_list: List of old objects with properties
-                     *      'jid' and 'affiliation'.
-                     *  (Boolean) remove_absentees: Indicates whether members
-                     *      from the old list which are not in the new list
-                     *      should be considered removed (e.g. affiliation set
-                     *      to 'none').
+                     *  (Object) new_map: Map containing the new affiliations
+                     *  (Object) old_map: Map containing the old affiliations
+                     *  (Boolean) remove_absentees: Indicates whether JIDs
+                     *      from the old map which are not in the new map 
+                     *      should be considered removed and therefore be
+                     *      included in the delta with affiliation set
+                     *      to 'none'.
                      */
-                    var new_jids = _.pluck(new_list, 'jid');
-                    var old_jids = _.pluck(old_list, 'jid');
-                    var added_jids = _.without(new_jids, old_jids);
-                    var changed_jids = _.intersection(new_jids, old_jids);
-
-                    var list_delta = _.filter(new_list, function (item) {
-                            return _.contains(added_jids, item.jid) ||
-                                    _.contains(changed_jids, item.jid);
-                        });
+                    var delta = {};
+                    var new_jids = _.keys(new_map);
+                    var old_jids = _.keys(old_map);
+                    var same_jids = _.intersection(new_jids, old_jids);
+                    // Get the changed affiliations
+                    _.each(same_jids, function (jid) {
+                        if (new_map[jid] !== old_map[jid]) {
+                            delta[jid] = new_map[jid];
+                        }
+                    });
+                    // Get the new affiliations
+                    _.each(_.difference(new_jids, old_jids), function (jid) {
+                        delta[jid] = new_map[jid];
+                    });
                     if (remove_absentees) {
-                        list_delta = list_delta.concat(
-                            _.map(_.without(old_jids, new_jids), function (jid) {
-                                    return {
-                                        'jid': jid,
-                                        'affiliation': 'none'
-                                    };
-                                })
-                            );
+                        // Get the removed affiliations
+                        _.each(_.difference(old_jids, new_jids), function (jid) {
+                            delta[jid] = 'none';
+                        });
                     }
-                    return list_delta;
+                    return delta;
                 },
 
                 setAffiliations: function (members, onSuccess, onError) {
@@ -580,36 +580,34 @@
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
                      * Parameters:
-                     *  (Array) members: An array of member objects, containing
-                     *      the JID and affiliation of each.
+                     *  (Object) members: A map of jids and affiliations
                      *  (Function) onSuccess: callback for a succesful response
                      *  (Function) onError: callback for an error response
                      */
-                    if (!members.length) {
+                    if (_.isEmpty(members)) {
                         // Succesfully updated with zero affilations :)
                         onSuccess(null);
                         return;
                     }
                     var iq = $iq({to: this.model.get('jid'), type: "set"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
-                    _.each(members, function (member) {
+                    _.each(_.keys(members), function (jid) {
                         iq.c("item", {
-                            'affiliation': member.affiliation,
-                            'jid': member.jid
+                            'affiliation': members[jid],
+                            'jid': jid 
                         });
                     });
                     return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 updateMemberLists: function (members, affiliations, remove_absentees) {
-                    /* Fetch the member list (optionally including admins and
-                     * owners), then compute the delta between that list and
+                    /* Fetch the lists of users with the given affiliations.
+                     * Then compute the delta between those users and
                      * the passed in members, and if it exists, send the delta
                      * to the XMPP server to update the member list.
                      *
                      * Parameters:
-                     *  (Array) members: Array of objects with properties 'jid'
-                     *      and 'affiliation'.
+                     *  (Object) members: Map of member jids and affiliations.
                      *  (String|Array) affiliation: An array of affiliations or
                      *      a string if only one affiliation.
                      *  (Boolean) remove_absentees: When computing the list
@@ -633,7 +631,11 @@
                     });
                     $.when.apply($, promises).always(function () {
                         var old_members = _.flatten(_.map(arguments, that.parseMemberListIQ));
-                        var delta = that.computeMemberListDelta(members, old_members, remove_absentees);
+                        old_members = _.reduce(old_members, function (memo, member) {
+                            memo[member.jid] = member.affiliation;
+                            return memo;
+                        }, {});
+                        var delta = that.computeAffiliationsDelta(members, old_members, remove_absentees);
                         that.setAffiliations(delta, deferred.resolve, deferred.reject);
                     });
                     return deferred.promise();
@@ -650,10 +652,9 @@
                         // When inviting to a members-only room, we first add
                         // the person to the member list, otherwise they won't
                         // be able to join.
-                        this.updateMemberLists([{
-                            'jid': recipient,
-                            'affiliation': 'member'
-                        }], ['member', 'owner', 'admin'], false);
+                        var map = {};
+                        map[recipient] = 'member';
+                        this.updateMemberLists(map, ['member', 'owner', 'admin'], false);
                     }
                     var attrs = {
                         'xmlns': 'jabber:x:conference',

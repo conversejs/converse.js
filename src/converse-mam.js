@@ -69,12 +69,15 @@
                     if (this.disable_mam || !converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
-                    if (this.model.messages.length < converse.archived_messages_page_size) {
+                    if (!this.model.get('mam_initialized') &&
+                            this.model.messages.length < converse.archived_messages_page_size) {
+
                         this.fetchArchivedMessages({
                             'before': '', // Page backwards from the most recent message
                             'with': this.model.get('jid'),
                             'max': converse.archived_messages_page_size
                         });
+                        this.model.save({'mam_initialized': true});
                     }
                     return this.__super__.afterMessagesFetched.apply(this, arguments);
                 },

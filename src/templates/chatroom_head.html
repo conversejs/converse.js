@@ -1,0 +1,8 @@
+<a class="chatbox-btn close-chatbox-button icon-close" title="{{info_close}}"></a>
+{[ if (affiliation == 'owner') { ]}
+    <a class="chatbox-btn configure-chatroom-button icon-wrench" title="{{info_configure}} "></a>
+{[ } ]}
+<div class="chat-title">
+    {{ _.escape(name) }}
+    <p class="chatroom-topic"><p/>
+</div>

@@ -122,6 +122,16 @@
         utils.openChatRoom(converse, room, server);
         var view = converse.chatboxviews.get(room+'@'+server);
 
+        // We pretend this is a new room, so no disco info is returned.
+        var features_stanza = $iq({
+                from: 'lounge@localhost',
+                'id': IQ_id,
+                'to': 'dummy@localhost/desktop',
+                'type': 'error'
+            }).c('error', {'type': 'cancel'})
+                .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+        converse.connection._dataRecv(utils.createRequest(features_stanza));
+
         // The XMPP server returns the reserved nick for this user.
         var stanza = $iq({
             'type': 'result',

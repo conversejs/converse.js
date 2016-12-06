@@ -20,6 +20,7 @@
             "converse-api",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
+            "tpl!chatroom_bookmark_toggle",
             "tpl!bookmark",
             "tpl!bookmarks_list"
         ],
@@ -28,6 +29,7 @@
         $, _, moment, strophe, utils,
         converse, converse_api, muc,
         tpl_chatroom_bookmark_form,
+        tpl_chatroom_bookmark_toggle,
         tpl_bookmark,
         tpl_bookmarks_list
     ) {
@@ -40,6 +42,7 @@
 
     // Add new HTML templates.
     converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
+    converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
     converse.templates.bookmark = tpl_bookmark;
     converse.templates.bookmarks_list = tpl_bookmarks_list;
 
@@ -69,16 +72,24 @@
                     this.setBookmarkState();
                 },
 
-                render: function (options) {
-                    this.__super__.render.apply(this, arguments);
+                generateHeadingHTML: function () {
+                    var html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     if (converse.allow_bookmarks) {
-                        var label_bookmark = _('Bookmark this room');
-                        var button = '<a class="chatbox-btn toggle-bookmark icon-pushpin '+
-                                (this.model.get('bookmarked') ? 'button-on"' : '"') +
-                                'title="'+label_bookmark+'"></a>';
-                        this.$el.find('.chat-head-chatroom .icon-wrench').before(button);
+                        var div = document.createElement('div');
+                        div.innerHTML = html;
+                        var bookmark_button = converse.templates.chatroom_bookmark_toggle(
+                            _.extend(
+                                this.model.toJSON(),
+                                {
+                                    info_toggle_bookmark: __('Bookmark this room'),
+                                    bookmarked: this.model.get('bookmarked')
+                                }
+                            ));
+                        var close_button = div.querySelector('.close-chatbox-button');
+                        close_button.insertAdjacentHTML('afterend', bookmark_button);
+                        return div.innerHTML;
                     }
-                    return this;
+                    return html;
                 },
 
                 checkForReservedNick: function () {
@@ -93,7 +104,7 @@
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(this.model.get('nick'));
                     } else {
-                        this.__super__.checkForReservedNick.apply(this, arguments);
+                        return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                 },
 
@@ -121,6 +132,8 @@
                 renderBookmarkForm: function () {
                     var $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
+                    // Remove any existing forms
+                    $body.find('form.chatroom-form').remove();
                     $body.append(
                         converse.templates.chatroom_bookmark_form({
                             heading: __('Bookmark this room'),

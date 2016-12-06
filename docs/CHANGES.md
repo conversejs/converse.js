@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.4 (Unreleased)
+- #737: Bugfix. Translations weren't being applied. [jcbrand]
+- Fetch room info and store it on the room model.
+  For context, see: http://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
+- Bugfix. Switching from bookmarks form to config form shows only the spinner. [jcbrand]
+- Bugfix. Other room occupants sometimes not shown when reloading the page. [jcbrand]
+- Bugfix. Due to changes in `converse-core` the controlbox wasn't aware anymore of
+  disconnection or reconnection events. [jcbrand]
+- Optimize fetching of MAM messages (in some cases happened on each page load). [jcbrand]
+- Fix empty controlbox toggle after disconnect. [jcbrand]
+- When inviting someone to a members-only room, first add them to the member
+  list. [jcbrand]
+
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]
 - CSS fix for fadeIn animation. [jcbrand]

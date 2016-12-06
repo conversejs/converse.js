@@ -214,12 +214,16 @@
         fadeIn: function (el, callback) {
             if ($.fx.off) {
                 el.classList.remove('hidden');
-                callback();
+                if (_.isFunction(callback)) {
+                    callback();
+                }
                 return;
             }
             el.addEventListener("animationend", function () {
                 el.classList.remove('visible');
-                callback();
+                if (_.isFunction(callback)) {
+                    callback();
+                }
             }, false);
             el.classList.add('visible');
             el.classList.remove('hidden');

@@ -399,6 +399,15 @@
             converse.logIn(null, true);
         }, 1000);
 
+        this.disconnect = function () {
+            delete converse.connection.reconnecting;
+            converse._tearDown();
+            converse.chatboxviews.closeAllChatBoxes();
+            converse.emit('disconnected');
+            converse.log('DISCONNECTED');
+            return 'disconnected';
+        };
+
         this.onDisconnected = function (condition) {
             if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
                 if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
@@ -412,12 +421,7 @@
                 converse.emit('reconnecting');
                 return 'reconnecting';
             }
-            delete converse.connection.reconnecting;
-            converse._tearDown();
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.emit('disconnected');
-            converse.log('DISCONNECTED');
-            return 'disconnected';
+            return this.disconnect();
         };
 
         this.setDisconnectionCause = function (connection_status) {
@@ -447,12 +451,6 @@
             } else if (status === Strophe.Status.DISCONNECTED) {
                 converse.setDisconnectionCause(status);
                 converse.onDisconnected(condition);
-                if (status === Strophe.Status.DISCONNECTING && condition) {
-                    converse.giveFeedback(
-                        __("Disconnected"), 'warn',
-                        __("The connection to the chat server has dropped")
-                    );
-                }
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(
                     __('Connection error'), 'error',
@@ -466,9 +464,16 @@
                 converse.giveFeedback(__('Authentication failed.'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-            } else if (status === Strophe.Status.CONNFAIL ||
-                       status === Strophe.Status.DISCONNECTING) {
+            } else if (status === Strophe.Status.CONNFAIL) {
                 converse.setDisconnectionCause(status);
+            } else if (status === Strophe.Status.DISCONNECTING) {
+                converse.setDisconnectionCause(status);
+                if (condition) {
+                    converse.giveFeedback(
+                        __("Disconnected"), 'warn',
+                        __("The connection to the chat server has dropped")
+                    );
+                }
             }
         };
 
@@ -1178,6 +1183,7 @@
                     chat_status = $presence.find('show').text() || 'online',
                     status_message = $presence.find('status'),
                     contact = this.get(bare_jid);
+
                 if (this.isSelf(bare_jid)) {
                     if ((converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
@@ -1816,8 +1822,7 @@
                             "authentication='login' then you also need to provide a password.");
                     }
                     converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-                    converse.onDisconnected();
-                    converse.giveFeedback(''); // Wipe the feedback
+                    converse.disconnect();
                     return;
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
@@ -1863,6 +1868,8 @@
                     // Probably ANONYMOUS login
                     this.autoLogin();
                 }
+            } else if (reconnecting) {
+                this.autoLogin();
             }
         };
 

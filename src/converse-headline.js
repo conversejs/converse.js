@@ -98,7 +98,6 @@
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this box'),
-                                        info_minimize: __('Minimize this box'),
                                         label_personal_message: ''
                                     }
                                 )

@@ -494,32 +494,25 @@
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
-                requestMemberList: function (onSuccess, onError, include_admins, include_owners) {
+                requestMemberList: function (affiliation) {
                     /* Send an IQ stanza to the server, asking it for the
                      * member-list of this room.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
                      * Parameters:
-                     *  (Boolean) include_admins: Whether the admin list should
-                     *      be included.
-                     *  (Boolean) include_owners: Whether the owner list should
-                     *      be included.
+                     *  (String) affiliation: The specific member list to
+                     *      fetch. 'admin', 'owner' or 'member'.
                      *
                      * Returns:
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
                     var deferred = new $.Deferred();
+                    affiliation = affiliation || 'member';
                     var iq = $iq({to: this.model.get('jid'), type: "get"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                            .c("item", {'affiliation': 'member'}).up();
-                        if (include_admins) {
-                            iq.c("item", {'affiliation': 'admin'}).up();
-                        }
-                        if (include_owners) {
-                            iq.c("item", {'affiliation': 'owner'});
-                        }
+                            .c("item", {'affiliation': affiliation});
                     converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
                     return deferred.promise();
                 },
@@ -580,9 +573,9 @@
                     return list_delta;
                 },
 
-                sendMemberListStanza: function (onSuccess, onError, members) {
+                setAffiliations: function (members, onSuccess, onError) {
                     /* Send an IQ stanza to the server to modify the
-                     * member-list of this room.
+                     * affiliations in this room.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
@@ -593,8 +586,7 @@
                      *  (Function) onError: callback for an error response
                      */
                     if (!members.length) {
-                        // Succesfully updated the list with zero new or
-                        // changed members :)
+                        // Succesfully updated with zero affilations :)
                         onSuccess(null);
                         return;
                     }
@@ -609,8 +601,7 @@
                     return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
-                updateMemberList: function (members, remove_absentees,
-                                            include_admins, include_owners) {
+                updateMemberLists: function (members, affiliations, remove_absentees) {
                     /* Fetch the member list (optionally including admins and
                      * owners), then compute the delta between that list and
                      * the passed in members, and if it exists, send the delta
@@ -619,38 +610,32 @@
                      * Parameters:
                      *  (Array) members: Array of objects with properties 'jid'
                      *      and 'affiliation'.
+                     *  (String|Array) affiliation: An array of affiliations or
+                     *      a string if only one affiliation.
                      *  (Boolean) remove_absentees: When computing the list
                      *      delta, consider members from the old list that
                      *      are not in the new list as removed (therefore their
                      *      affiliation will get set to 'none').
-                     *  (Boolean) include_admins: Whether room admins are also
-                     *      considered.
-                     *  (Boolean) include_owners: Whether room owners are also
-                     *      considered.
-                     *
-                     * The include_admins and include_owners options have
-                     * access-control implications. Usually only room owners
-                     * can change those lists.
                      *
                      * Returns:
                      *  A promise which is resolved once the list has been
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
+                    var that = this;
                     var deferred = new $.Deferred();
-                    var computeDelta = _.partial(
-                        this.computeMemberListDelta, members, _, remove_absentees
-                    );
-                    this.requestMemberList(include_admins, include_owners).then(
-                        _.compose(
-                            _.partial(
-                                this.sendMemberListStanza.bind(this),
-                                deferred.resolve,
-                                deferred.reject
-                            ),
-                            _.compose(computeDelta, this.parseMemberListIQ)
-                        )
-                    );
+                    if (typeof affiliations === "string") {
+                        affiliations = [affiliations];
+                    }
+                    var promises = [];
+                    _.each(affiliations, function (affiliation) {
+                        promises.push(that.requestMemberList(affiliation));
+                    });
+                    $.when.apply($, promises).always(function () {
+                        var old_members = _.flatten(_.map(arguments, that.parseMemberListIQ));
+                        var delta = that.computeMemberListDelta(members, old_members, remove_absentees);
+                        that.setAffiliations(delta, deferred.resolve, deferred.reject);
+                    });
                     return deferred.promise();
                 },
 
@@ -665,10 +650,10 @@
                         // When inviting to a members-only room, we first add
                         // the person to the member list, otherwise they won't
                         // be able to join.
-                        this.updateMemberList([{
+                        this.updateMemberLists([{
                             'jid': recipient,
                             'affiliation': 'member'
-                        }]);
+                        }], ['member', 'owner', 'admin'], false);
                     }
                     var attrs = {
                         'xmlns': 'jabber:x:conference',

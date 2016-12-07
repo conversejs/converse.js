@@ -780,31 +780,11 @@
                     });
                 },
 
-                setAffiliation: function(room, jid, affiliation, reason, onSuccess, onError) {
-                    var item = $build("item", {jid: jid, affiliation: affiliation});
-                    var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
-                    if (reason !== null) { iq.c("reason", reason); }
-                    return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
-                },
-
                 modifyRole: function(room, nick, role, reason, onSuccess, onError) {
                     var item = $build("item", {nick: nick, role: role});
                     var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
-                },
-
-                member: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'member', reason, handler_cb, error_cb);
-                },
-                revoke: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'none', reason, handler_cb, error_cb);
-                },
-                owner: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'owner', reason, handler_cb, error_cb);
-                },
-                admin: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
                 },
 
                 validateRoleChangeCommand: function (command, args) {
@@ -849,15 +829,21 @@
                     switch (match[1]) {
                         case 'admin':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'admin', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliations(
+                                [{'jid': args[0],
+                                'affiliation': 'admin',
+                                'reason': args[1]
+                                }], undefined, this.onCommandError.bind(this)
+                            );
                             break;
                         case 'ban':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'outcast', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliations(
+                                [{'jid': args[0],
+                                'affiliation': 'outcast',
+                                'reason': args[1]
+                                }], undefined, this.onCommandError.bind(this)
+                            );
                             break;
                         case 'clear':
                             this.clearChatRoomMessages();
@@ -901,9 +887,12 @@
                             break;
                         case 'member':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'member', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliations(
+                                [{'jid': args[0],
+                                'affiliation': 'member',
+                                'reason': args[1]
+                                }], undefined, this.onCommandError.bind(this)
+                            );
                             break;
                         case 'nick':
                             converse.connection.send($pres({
@@ -914,9 +903,12 @@
                             break;
                         case 'owner':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'owner', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliations(
+                                [{'jid': args[0],
+                                'affiliation': 'owner',
+                                'reason': args[1]
+                                }], undefined, this.onCommandError.bind(this)
+                            );
                             break;
                         case 'op':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
@@ -926,9 +918,12 @@
                             break;
                         case 'revoke':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'none', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliations(
+                                [{'jid': args[0],
+                                'affiliation': 'none',
+                                'reason': args[1]
+                                }], undefined, this.onCommandError.bind(this)
+                            );
                             break;
                         case 'topic':
                             converse.connection.send(

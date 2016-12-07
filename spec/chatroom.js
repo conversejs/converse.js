@@ -1167,7 +1167,7 @@
                 test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'onMessageSubmitted').andCallThrough();
-                spyOn(view, 'setAffiliation').andCallThrough();
+                spyOn(view, 'setAffiliations').andCallThrough();
                 spyOn(view, 'showStatusNotification').andCallThrough();
                 spyOn(view, 'validateRoleChangeCommand').andCallThrough();
                 view.$el.find('.chat-textarea').text('/ban');
@@ -1178,7 +1178,7 @@
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
                     true
                 );
-                expect(view.setAffiliation).not.toHaveBeenCalled();
+                expect(view.setAffiliations).not.toHaveBeenCalled();
 
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onMessageSubmitted directly, trying
@@ -1187,7 +1187,7 @@
                 view.onMessageSubmitted('/ban jid This is the reason');
                 expect(view.validateRoleChangeCommand.callCount).toBe(2);
                 expect(view.showStatusNotification.callCount).toBe(1);
-                expect(view.setAffiliation).toHaveBeenCalled();
+                expect(view.setAffiliations).toHaveBeenCalled();
             }));
         });
 

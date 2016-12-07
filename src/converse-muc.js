@@ -608,6 +608,17 @@
                     return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
+                marshallAffiliationIQs: function (iqs) {
+                    /* Marshall a list of IQ stanzas into a map of JIDs and
+                     * affiliations.
+                     */
+                    var affiliations = _.flatten(_.map(iqs, this.parseMemberListIQ));
+                    return _.reduce(affiliations, function (memo, member) {
+                            memo[member.jid] = member.affiliation;
+                            return memo;
+                        }, {});
+                },
+
                 getJidsWithAffiliations: function (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
@@ -621,14 +632,9 @@
                     _.each(affiliations, function (affiliation) {
                         promises.push(that.requestMemberList(affiliation));
                     });
-                    $.when.apply($, promises).always(function () {
-                        var old_members = _.flatten(_.map(arguments, that.parseMemberListIQ));
-                        old_members = _.reduce(old_members, function (memo, member) {
-                            memo[member.jid] = member.affiliation;
-                            return memo;
-                        }, {});
-                        deferred.resolve(old_members);
-                    });
+                    $.when.apply($, promises).always(
+                        _.compose(deferred.resolve, this.marshallAffiliationIQs.bind(this))
+                    );
                     return deferred.promise();
                 },
 

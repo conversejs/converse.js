@@ -17,10 +17,12 @@ require.config({
     paths: {
         "almond":                   "node_modules/almond/almond",
         "awesomplete":              "node_modules/awesomplete/awesomplete",
+        "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "es6":                      "node_modules/requirejs-babel/es6",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise",
         "jquery":                   "node_modules/jquery/dist/jquery",

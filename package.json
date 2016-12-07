@@ -34,6 +34,9 @@
   "devDependencies": {
     "almond": "~0.3.3",
     "awesomplete": "^1.1.1",
+    "babel-cli": "^6.18.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-latest": "^6.16.0",
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.3",
@@ -64,6 +67,7 @@
     "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#8f8c8235816f44cda0f855d6ca879445aaa486a1",
     "po2json": "^0.4.4",
     "requirejs": "2.3.3",
+    "requirejs-babel": "0.0.9",
     "run-headless-chromium": "^0.1.1",
     "sinon": "^2.1.0",
     "snyk": "^1.21.2",

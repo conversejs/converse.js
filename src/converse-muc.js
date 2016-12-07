@@ -293,6 +293,7 @@
                 auto_join_rooms: [],
                 auto_list_rooms: false,
                 hide_muc_server: false,
+                muc_disable_moderator_commands: false,
                 muc_domain: undefined,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
@@ -827,6 +828,9 @@
                      * Parameters:
                      *    (String) text - The message text.
                      */
+                    if (converse.muc_disable_moderator_commands) {
+                        return this.sendChatRoomMessage(text);
+                    }
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [];
                     switch (match[1]) {

@@ -709,6 +709,13 @@ See also the `storage`_ option, which applies to other cached data, such as
 which chats you have open, what features the XMPP server supports and what
 your online status is.
 
+muc_disable_moderator_commands
+------------------------------
+
+* Default: ``false``
+
+Allows you to disable the moderator commands such as ``/kick`` or ``/ban``.
+
 muc_domain
 ----------
 

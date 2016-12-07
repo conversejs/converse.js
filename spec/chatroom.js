@@ -1531,7 +1531,9 @@
                 expect(sent_IQs.pop().toLocaleString()).toBe(
                     "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
                         "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='member' jid='"+invitee_jid+"'/>"+
+                            "<item affiliation='member' jid='"+invitee_jid+"'>"+
+                                "<reason>Please join this chat room</reason>"+
+                            "</item>"+
                         "</query>"+
                     "</iq>");
 

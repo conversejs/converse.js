@@ -8,6 +8,7 @@
 
 (function (root, factory) {
     define("converse-core", [
+        "sizzle",
         "jquery",
         "lodash",
         "polyfill",
@@ -19,7 +20,7 @@
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -1094,7 +1095,7 @@
                 }
                 converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
 
-                var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 converse.emit('rosterPush', iq);
                 return true;
@@ -1114,7 +1115,7 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 converse.emit('roster', iq);
             },
@@ -1228,7 +1229,7 @@
                         }
                     }
                     return;
-                } else if (presence.querySelectorAll('x[xmlns="'+Strophe.NS.MUC+'"]').length) {
+                } else if (sizzle('query[xmlns="'+Strophe.NS.MUC+'"]', presence).length) {
                     return; // Ignore MUC
                 }
                 if (contact && (status_message !== contact.get('status'))) {

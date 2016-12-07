@@ -568,23 +568,19 @@
                     });
                     if (!exclude_existing) {
                         // Get the changed affiliations
-                        var same_list = _.intersection(new_jids, old_jids);
-                        delta = delta.concat(_.filter(same_list, function (item) {
-                            var old_item;
-                            var idx = _.indexOf(old_jids, item);
+                        delta = delta.concat(_.filter(new_list, function (item) {
+                            var idx = _.indexOf(old_jids, item.jid);
                             if (idx >= 0) {
-                                old_item = old_list[idx];
-                                return item.jid !== old_item.jid &&
-                                        item.affiliation !== old_item.affiliation;
+                                return item.affiliation !== old_list[idx].affiliation;
                             }
                             return false;
                         }));
                     }
                     if (remove_absentees) {
                         // Get the removed affiliations
-                        delta = _.map(_.difference(old_jids, new_jids), function (jid) {
+                        delta = delta.concat(_.map(_.difference(old_jids, new_jids), function (jid) {
                             return {'jid': jid, 'affiliation': 'none'};
-                        });
+                        }));
                     }
                     return delta;
                 },

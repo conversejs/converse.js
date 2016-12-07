@@ -27,6 +27,7 @@ require.config({
         "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/pluggable",
         "polyfill":                 "src/polyfill",
+        "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
         "strophe":                  "node_modules/strophe.js/src/wrapper",
         "strophe-base64":           "node_modules/strophe.js/src/base64",
         "strophe-bosh":             "node_modules/strophe.js/src/bosh",

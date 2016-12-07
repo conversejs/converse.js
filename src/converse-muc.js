@@ -605,19 +605,26 @@
                         onSuccess(null);
                         return;
                     }
-                    var iq = $iq({to: this.model.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
-                    _.each(members, function (member) {
-                        iq.c("item", {
-                            'affiliation': member.affiliation,
-                            'jid': member.jid
+                    var room_jid = this.model.get('jid');
+                    var affiliations = _.uniq(_.pluck(members, 'affiliation'));
+                    _.each(affiliations, function (affiliation) {
+                        var iq = $iq({to: room_jid, type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
+                        _.each(members, function (member) {
+                            if (member.affiliation !== affiliation) {
+                                return;
+                            }
+                            iq.c("item", {
+                                'affiliation': member.affiliation,
+                                'jid': member.jid
+                            });
+                            if (!_.isUndefined(member.reason)) {
+                                iq.c("reason", member.reason).up();
+                            }
+                            iq.up();
                         });
-                        if (!_.isUndefined(member.reason)) {
-                            iq.c("reason", member.reason).up();
-                        }
-                        iq.up();
+                        converse.connection.sendIQ(iq, onSuccess, onError);
                     });
-                    return converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 marshallAffiliationIQs: function () {

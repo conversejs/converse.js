@@ -1163,11 +1163,59 @@
 
             }));
 
-            it("to ban a user", mock.initConverse(function (converse) {
+            it("to make a user an owner", mock.initConverse(function (converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
                 test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'onMessageSubmitted').andCallThrough();
-                spyOn(view, 'setAffiliations').andCallThrough();
+                spyOn(view, 'setAffiliation').andCallThrough();
+                spyOn(view, 'showStatusNotification').andCallThrough();
+                spyOn(view, 'validateRoleChangeCommand').andCallThrough();
+                view.$el.find('.chat-textarea').text('/owner');
+                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
+                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.showStatusNotification).toHaveBeenCalledWith(
+                    "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.",
+                    true
+                );
+                expect(view.setAffiliation).not.toHaveBeenCalled();
+
+                // Call now with the correct amount of arguments.
+                // XXX: Calling onMessageSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                view.onMessageSubmitted('/owner annoyingGuy@localhost You\'re annoying');
+                expect(view.validateRoleChangeCommand.callCount).toBe(2);
+                expect(view.showStatusNotification.callCount).toBe(1);
+                expect(view.setAffiliation).toHaveBeenCalled();
+                // Check that the member list now gets updated
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='owner' jid='annoyingGuy@localhost'>"+
+                                "<reason>You&apos;re annoying</reason>"+
+                            "</item>"+
+                        "</query>"+
+                    "</iq>");
+            }));
+
+            it("to ban a user", mock.initConverse(function (converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
+                spyOn(view, 'setAffiliation').andCallThrough();
                 spyOn(view, 'showStatusNotification').andCallThrough();
                 spyOn(view, 'validateRoleChangeCommand').andCallThrough();
                 view.$el.find('.chat-textarea').text('/ban');
@@ -1178,16 +1226,24 @@
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
                     true
                 );
-                expect(view.setAffiliations).not.toHaveBeenCalled();
-
+                expect(view.setAffiliation).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onMessageSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/ban jid This is the reason');
+                view.onMessageSubmitted('/ban annoyingGuy@localhost You\'re annoying');
                 expect(view.validateRoleChangeCommand.callCount).toBe(2);
                 expect(view.showStatusNotification.callCount).toBe(1);
-                expect(view.setAffiliations).toHaveBeenCalled();
+                expect(view.setAffiliation).toHaveBeenCalled();
+                // Check that the member list now gets updated
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='outcast' jid='annoyingGuy@localhost'>"+
+                                "<reason>You&apos;re annoying</reason>"+
+                            "</item>"+
+                        "</query>"+
+                    "</iq>");
             }));
         });
 

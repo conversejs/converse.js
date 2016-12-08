@@ -1601,5 +1601,65 @@
                 );
             }));
         });
+
+        describe("The affiliations delta", function () {
+
+            it("can be computed in various ways", mock.initConverse(function (converse) {
+                test_utils.openChatRoom(converse, 'coven', 'chat.shakespeare.lit', 'dummy');
+                var roomview = converse.chatboxviews.get('coven@chat.shakespeare.lit');
+
+                var exclude_existing = false;
+                var remove_absentees = false;
+                var new_list = [];
+                var old_list = [];
+                var delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                new_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                // When remove_absentees is false, then affiliations in the old
+                // list which are not in the new one won't be removed.
+                old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
+                            {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                // With exclude_existing set to false, any changed affiliations
+                // will be included in the delta (i.e. existing affiliations
+                // are included in the comparison).
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(1);
+                expect(delta[0].jid).toBe('wiccarocks@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('member');
+
+                // To also remove affiliations from the old list which are not
+                // in the new list, we set remove_absentees to true
+                remove_absentees = true;
+                old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
+                            {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(1);
+                expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('none');
+
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, [], old_list);
+                expect(delta.length).toBe(2);
+                expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('none');
+                expect(delta[1].jid).toBe('wiccarocks@shakespeare.lit');
+                expect(delta[1].affiliation).toBe('none');
+
+                // To only add a user if they don't already have an
+                // affiliation, we set 'exclude_existing' to true
+                exclude_existing = true;
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+            }));
+        });
     });
 }));

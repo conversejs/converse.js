@@ -1060,7 +1060,7 @@
                     if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
                         // We have restored a chat room from session storage,
                         // so we don't send out a presence stanza again.
-                        return;
+                        return this;
                     }
                     var stanza = $pres({
                         'from': converse.connection.jid,

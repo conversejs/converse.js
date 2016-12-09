@@ -370,7 +370,8 @@
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
 
                     this.getRoomFeatures().always(function () {
-                        that.join().fetchMessages();
+                        that.join();
+                        that.fetchMessages();
                         converse.emit('chatRoomOpened', that);
                     });
                 },

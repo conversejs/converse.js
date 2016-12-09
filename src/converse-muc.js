@@ -587,10 +587,15 @@
                 },
 
                 setAffiliation: function (affiliation, members) {
-                    /* Send an IQ stanzas to the server to modify one particular
-                     * affiliation for certain members
+                    /* Send IQ stanzas to the server to set an affiliation for
+                     * the provided JIDs.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * XXX: Prosody doesn't accept multiple JIDs' affiliations
+                     * being set in one IQ stanza, so as a workaround we send
+                     * a separate stanza for each JID.
+                     * Related ticket: https://prosody.im/issues/issue/795
                      *
                      * Parameters:
                      *  (Object) members: A map of jids, affiliations and
@@ -602,26 +607,28 @@
                      *  A promise which resolves and fails depending on the
                      *  XMPP server response.
                      */
-                    var deferred = new $.Deferred();
-                    var iq = $iq({to: this.model.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
-
-                    _.each(members, function (member) {
-                        if (!_.isUndefined(member.affiliation) &&
-                                member.affiliation !== affiliation) {
-                            return;
-                        }
-                        iq.c("item", {
-                            'affiliation': member.affiliation || affiliation,
-                            'jid': member.jid
-                        });
-                        if (!_.isUndefined(member.reason)) {
-                            iq.c("reason", member.reason).up();
-                        }
-                        iq.up();
+                    members = _.filter(members, function (member) {
+                        // We only want those members who have the right
+                        // affiliation (or none, which implies the provided
+                        // one).
+                        return _.isUndefined(member.affiliation) ||
+                                member.affiliation === affiliation;
                     });
-                    converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
-                    return deferred;
+                    var promises = _.map(members, function (member) {
+                        var deferred = new $.Deferred();
+                        var iq = $iq({to: this.model.get('jid'), type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {
+                                'affiliation': member.affiliation || affiliation,
+                                'jid': member.jid
+                            });
+                        if (!_.isUndefined(member.reason)) {
+                            iq.c("reason", member.reason);
+                        }
+                        converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                        return deferred;
+                    }, this);
+                    return $.when.apply($, promises);
                 },
 
                 setAffiliations: function (members, onSuccess, onError) {

@@ -99,10 +99,6 @@
             null,
             "Contactos"
          ],
-         "Connecting": [
-            null,
-            "Conectando"
-         ],
          "Password:": [
             null,
             "Contraseña:"
@@ -211,13 +207,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Desconectado"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Conectando"
          ],
          "Authenticating": [
             null,
@@ -227,11 +219,23 @@
             null,
             "La autenticación falló"
          ],
+         "Disconnected": [
+            null,
+            "Desconectado"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
          ],
          "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -242,10 +246,6 @@
          "Minimized": [
             null,
             "Minimizado"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
          ],
          "This room is not anonymous": [
             null,
@@ -259,10 +259,6 @@
             null,
             "Esta sala no muestra los miembros no disponibles"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Una configuración de la sala no relacionada con la privacidad ha sido cambiada"
-         ],
          "Room logging is now enabled": [
             null,
             "El registro de la sala ahora está habilitado"
@@ -270,10 +266,6 @@
          "Room logging is now disabled": [
             null,
             "El registro de la sala ahora está deshabilitado"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Esta sala ahora es pública"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -331,10 +323,6 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
-            null,
-            ""
-         ],
          "Error: the \"": [
             null,
             ""
@@ -342,6 +330,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "¿Está seguro de querer limpiar los mensajes de esta sala?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            ""
          ],
          "Change user's affiliation to admin": [
             null,
@@ -374,10 +366,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Un error ocurrío mientras se guardaba el formulario."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

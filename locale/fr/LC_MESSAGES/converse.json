@@ -115,10 +115,6 @@
             null,
             "Contacts"
          ],
-         "Connecting": [
-            null,
-            "Connexion"
-         ],
          "XMPP Username:": [
             null,
             "Nom d'utilisateur XMPP/Jabber"
@@ -243,13 +239,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Déconnecté"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Connexion"
          ],
          "Authenticating": [
             null,
@@ -259,11 +251,23 @@
             null,
             "L'authentification a échoué"
          ],
+         "Disconnected": [
+            null,
+            "Déconnecté"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
          ],
          "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -274,10 +278,6 @@
          "Minimized": [
             null,
             "Réduit(s)"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
          ],
          "This room is not anonymous": [
             null,
@@ -291,10 +291,6 @@
             null,
             "Ce salon n'affiche pas les membres indisponibles"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Les paramètres du salon non liés à la confidentialité ont été modifiés"
-         ],
          "Room logging is now enabled": [
             null,
             "Le logging du salon est activé"
@@ -302,10 +298,6 @@
          "Room logging is now disabled": [
             null,
             "Le logging du salon est désactivé"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ce salon est maintenant non-anonyme"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -367,10 +359,6 @@
             null,
             "Message"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Erreur: la commande ne peut pas être exécutée"
-         ],
          "Error: the \"": [
             null,
             ""
@@ -378,6 +366,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Erreur: la commande ne peut pas être exécutée"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -426,10 +418,6 @@
          "Allow muted user to post messages": [
             null,
             "Autoriser les utilisateurs muets à poster des messages"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Une erreur est survenue lors de l'enregistrement du formulaire."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

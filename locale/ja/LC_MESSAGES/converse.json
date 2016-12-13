@@ -99,10 +99,6 @@
             null,
             "相手先"
          ],
-         "Connecting": [
-            null,
-            "接続中です"
-         ],
          "Password:": [
             null,
             "パスワード:"
@@ -207,13 +203,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "切断中"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "接続中です"
          ],
          "Authenticating": [
             null,
@@ -223,6 +215,14 @@
             null,
             "認証に失敗"
          ],
+         "Disconnected": [
+            null,
+            "切断中"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -231,15 +231,11 @@
             null,
             ""
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
             ""
          ],
          "Minimized": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
             null,
             ""
          ],
@@ -255,10 +251,6 @@
             null,
             "この談話室はメンバー以外には見えません"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "談話室の設定(プライバシーに無関係)が変更されました"
-         ],
          "Room logging is now enabled": [
             null,
             "談話室の記録を取りはじめます"
@@ -266,10 +258,6 @@
          "Room logging is now disabled": [
             null,
             "談話室の記録を止めます"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "この談話室はただいま非匿名です"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -327,11 +315,11 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
+         "Error: the \"": [
             null,
             ""
          ],
-         "Error: the \"": [
+         "Error: could not execute the command": [
             null,
             ""
          ],
@@ -366,10 +354,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "フォームを保存する際にエラーが発生しました。"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

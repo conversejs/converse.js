@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.4 (Unreleased)
+## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]
 - Fetch room info and store it on the room model.
   For context, see: http://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
@@ -12,9 +12,7 @@
 - Fix empty controlbox toggle after disconnect. [jcbrand]
 - When inviting someone to a members-only room, first add them to the member
   list. [jcbrand]
-- New configuration setting
-  [muc_disable_moderator_commands](https://conversejs.org/docs/html/configuration.html#muc_disable_moderator_commands)
-  [jcbrand]
+- New configuration setting [muc_disable_moderator_commands](https://conversejs.org/docs/html/configuration.html#muc_disable_moderator_commands) [jcbrand]
 
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]

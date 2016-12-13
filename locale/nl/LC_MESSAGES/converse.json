@@ -91,10 +91,6 @@
             null,
             "Contacten"
          ],
-         "Connecting": [
-            null,
-            "Verbinden"
-         ],
          "Password:": [
             null,
             "Wachtwoord:"
@@ -199,13 +195,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Verbinding verbroken."
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Verbinden"
          ],
          "Authenticating": [
             null,
@@ -215,6 +207,14 @@
             null,
             "Authenticeren mislukt"
          ],
+         "Disconnected": [
+            null,
+            "Verbinding verbroken."
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -223,15 +223,11 @@
             null,
             ""
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
             ""
          ],
          "Minimized": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
             null,
             ""
          ],
@@ -247,7 +243,7 @@
             null,
             ""
          ],
-         "Non-privacy-related room configuration has changed": [
+         "The room configuration has changed": [
             null,
             ""
          ],
@@ -258,10 +254,6 @@
          "Room logging is now disabled": [
             null,
             ""
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Deze room is nu niet annoniem"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -319,11 +311,11 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
+         "Error: the \"": [
             null,
             ""
          ],
-         "Error: the \"": [
+         "Error: could not execute the command": [
             null,
             ""
          ],
@@ -358,10 +350,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Een error tijdens het opslaan van het formulier."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

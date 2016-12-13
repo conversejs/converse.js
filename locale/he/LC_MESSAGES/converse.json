@@ -111,10 +111,6 @@
             null,
             "אנשי קשר"
          ],
-         "Connecting": [
-            null,
-            "כעת מתחבר"
-         ],
          "XMPP Username:": [
             null,
             "שם משתמש XMPP:"
@@ -243,13 +239,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "מנותק"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "כעת מתחבר"
          ],
          "Authenticating": [
             null,
@@ -259,6 +251,14 @@
             null,
             "אימות נכשל"
          ],
+         "Disconnected": [
+            null,
+            "מנותק"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
@@ -267,6 +267,10 @@
             null,
             "לקוח זה לא מתיר הרשמות נוכחות"
          ],
+         "Minimize this chat box": [
+            null,
+            ""
+         ],
          "Click to restore this chat": [
             null,
             "לחץ כדי לשחזר את שיחה זו"
@@ -274,10 +278,6 @@
          "Minimized": [
             null,
             "ממוזער"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
          ],
          "This room is not anonymous": [
             null,
@@ -291,10 +291,6 @@
             null,
             "חדר זה לא מציג חברים לא זמינים"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "תצורת חדר אשר לא-קשורה-בפרטיות שונתה"
-         ],
          "Room logging is now enabled": [
             null,
             "יומן חדר הינו מופעל כעת"
@@ -302,10 +298,6 @@
          "Room logging is now disabled": [
             null,
             "יומן חדר הינו מנוטרל כעת"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "חדר זה אינו אנונימי כעת"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -367,10 +359,6 @@
             null,
             "הודעה"
          ],
-         "Error: could not execute the command": [
-            null,
-            "שגיאה: לא היתה אפשרות לבצע פקודה"
-         ],
          "Error: the \"": [
             null,
             ""
@@ -378,6 +366,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "שגיאה: לא היתה אפשרות לבצע פקודה"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -426,10 +418,6 @@
          "Allow muted user to post messages": [
             null,
             "התר למשתמש מושתק לפרסם הודעות"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "אירעה שגיאה במהלך ניסיון שמירת הטופס."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

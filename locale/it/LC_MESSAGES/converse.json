@@ -119,10 +119,6 @@
             null,
             "Contatti"
          ],
-         "Connecting": [
-            null,
-            "Connessione in corso"
-         ],
          "XMPP Username:": [
             null,
             "XMPP Username:"
@@ -259,14 +255,6 @@
             null,
             ""
          ],
-         "Disconnected": [
-            null,
-            "Disconnesso"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Connection error": [
             null,
             "Errore di connessione"
@@ -274,6 +262,10 @@
          "An error occurred while connecting to the chat server.": [
             null,
             "Si è verificato un errore durante la connessione al server."
+         ],
+         "Connecting": [
+            null,
+            "Connessione in corso"
          ],
          "Authenticating": [
             null,
@@ -287,6 +279,14 @@
             null,
             "Autenticazione fallita"
          ],
+         "Disconnected": [
+            null,
+            "Disconnesso"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "Si è verificato un errore durante il tentativo di aggiunta"
@@ -299,9 +299,9 @@
             null,
             "Chiudi questo box"
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
-            "Riduci questo box"
+            "Riduci questo chat box"
          ],
          "Click to restore this chat": [
             null,
@@ -310,10 +310,6 @@
          "Minimized": [
             null,
             "Ridotto"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Riduci questo chat box"
          ],
          "This room is not anonymous": [
             null,
@@ -327,10 +323,6 @@
             null,
             "Questa stanza non mostra i membri non disponibili"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Una configurazione della stanza non legata alla privacy è stata modificata"
-         ],
          "Room logging is now enabled": [
             null,
             "La registrazione è abilitata nella stanza"
@@ -338,10 +330,6 @@
          "Room logging is now disabled": [
             null,
             "La registrazione è disabilitata nella stanza"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Questa stanza è non-anonima"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -407,10 +395,6 @@
             null,
             "Nascondi la lista degli occupanti"
          ],
-         "Error: could not execute the command": [
-            null,
-            ""
-         ],
          "Error: the \"": [
             null,
             ""
@@ -418,6 +402,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Sei sicuro di voler pulire i messaggi da questa stanza?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            ""
          ],
          "Change user's affiliation to admin": [
             null,
@@ -470,10 +458,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Errore durante il salvataggio del modulo"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

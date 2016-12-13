@@ -103,10 +103,6 @@
             null,
             "Kontakter"
          ],
-         "Connecting": [
-            null,
-            "Kobler til"
-         ],
          "XMPP Username:": [
             null,
             "XMPP Brukernavn:"
@@ -227,13 +223,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Kobler til"
          ],
          "Authenticating": [
             null,
@@ -243,11 +235,23 @@
             null,
             "Godkjenning mislyktes"
          ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
          ],
          "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -258,10 +262,6 @@
          "Minimized": [
             null,
             "Minimert"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
          ],
          "This room is not anonymous": [
             null,
@@ -275,10 +275,6 @@
             null,
             "Dette rommet viser ikke utilgjengelige medlemmer"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Ikke-personvernsrelatert romkonfigurasjon har blitt endret"
-         ],
          "Room logging is now enabled": [
             null,
             "Romlogging er nå aktivert"
@@ -286,10 +282,6 @@
          "Room logging is now disabled": [
             null,
             "Romlogging er nå deaktivert"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Dette rommet er nå ikke-anonymt"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -351,10 +343,6 @@
             null,
             "Melding"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Feil: kunne ikke utføre kommandoen"
-         ],
          "Error: the \"": [
             null,
             ""
@@ -362,6 +350,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Er du sikker på at du vil fjerne meldingene fra dette rommet?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Feil: kunne ikke utføre kommandoen"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -406,10 +398,6 @@
          "Allow muted user to post messages": [
             null,
             "Tillat stumme brukere å skrive meldinger"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "En feil skjedde under lagring av skjemaet."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

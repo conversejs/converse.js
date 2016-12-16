@@ -293,6 +293,7 @@
                 auto_join_rooms: [],
                 auto_list_rooms: false,
                 hide_muc_server: false,
+                muc_disable_moderator_commands: false,
                 muc_domain: undefined,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
@@ -369,7 +370,8 @@
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
 
                     this.getRoomFeatures().always(function () {
-                        that.join().fetchMessages();
+                        that.join();
+                        that.fetchMessages();
                         converse.emit('chatRoomOpened', that);
                     });
                 },
@@ -494,27 +496,221 @@
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
-                setMemberList: function (members, onSuccess, onError) {
-                    /* Send an IQ stanza to the server to modify the
+                requestMemberList: function (affiliation) {
+                    /* Send an IQ stanza to the server, asking it for the
                      * member-list of this room.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
                      * Parameters:
-                     *  (Array) members: An array of member objects, containing
-                     *      the JID and affiliation of each.
+                     *  (String) affiliation: The specific member list to
+                     *      fetch. 'admin', 'owner' or 'member'.
+                     *
+                     * Returns:
+                     *  A promise which resolves once the list has been
+                     *  retrieved.
+                     */
+                    var deferred = new $.Deferred();
+                    affiliation = affiliation || 'member';
+                    var iq = $iq({to: this.model.get('jid'), type: "get"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {'affiliation': affiliation});
+                    converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                    return deferred.promise();
+                },
+
+                parseMemberListIQ: function (iq) {
+                    /* Given an IQ stanza with a member list, create an array of member
+                     * objects.
+                     */
+                    return _.map(
+                        $(iq).find('query[xmlns="'+Strophe.NS.MUC_ADMIN+'"] item'),
+                        function (item) {
+                            return {
+                                'jid': item.getAttribute('jid'),
+                                'affiliation': item.getAttribute('affiliation'),
+                            };
+                        }
+                    );
+                },
+
+                computeAffiliationsDelta: function (exclude_existing, remove_absentees, new_list, old_list) {
+                    /* Given two lists of objects with 'jid', 'affiliation' and
+                     * 'reason' properties, return a new list containing
+                     * those objects that are new, changed or removed
+                     * (depending on the 'remove_absentees' boolean).
+                     *
+                     * The affiliations for new and changed members stay the
+                     * same, for removed members, the affiliation is set to 'none'.
+                     *
+                     * The 'reason' property is not taken into account when
+                     * comparing whether affiliations have been changed.
+                     *
+                     * Parameters:
+                     *  (Boolean) exclude_existing: Indicates whether JIDs from
+                     *      the new list which are also in the old list
+                     *      (regardless of affiliation) should be excluded
+                     *      from the delta. One reason to do this
+                     *      would be when you want to add a JID only if it
+                     *      doesn't have *any* existing affiliation at all.
+                     *  (Boolean) remove_absentees: Indicates whether JIDs
+                     *      from the old list which are not in the new list
+                     *      should be considered removed and therefore be
+                     *      included in the delta with affiliation set
+                     *      to 'none'.
+                     *  (Array) new_list: Array containing the new affiliations
+                     *  (Array) old_list: Array containing the old affiliations
+                     */
+                    var new_jids = _.pluck(new_list, 'jid');
+                    var old_jids = _.pluck(old_list, 'jid');
+
+                    // Get the new affiliations
+                    var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
+                        return new_list[_.indexOf(new_jids, jid)];
+                    });
+                    if (!exclude_existing) {
+                        // Get the changed affiliations
+                        delta = delta.concat(_.filter(new_list, function (item) {
+                            var idx = _.indexOf(old_jids, item.jid);
+                            if (idx >= 0) {
+                                return item.affiliation !== old_list[idx].affiliation;
+                            }
+                            return false;
+                        }));
+                    }
+                    if (remove_absentees) {
+                        // Get the removed affiliations
+                        delta = delta.concat(_.map(_.difference(old_jids, new_jids), function (jid) {
+                            return {'jid': jid, 'affiliation': 'none'};
+                        }));
+                    }
+                    return delta;
+                },
+
+                setAffiliation: function (affiliation, members) {
+                    /* Send IQ stanzas to the server to set an affiliation for
+                     * the provided JIDs.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * XXX: Prosody doesn't accept multiple JIDs' affiliations
+                     * being set in one IQ stanza, so as a workaround we send
+                     * a separate stanza for each JID.
+                     * Related ticket: https://prosody.im/issues/issue/795
+                     *
+                     * Parameters:
+                     *  (Object) members: A map of jids, affiliations and
+                     *      optionally reasons. Only those entries with the
+                     *      same affiliation as being currently set will be
+                     *      considered.
+                     *
+                     * Returns:
+                     *  A promise which resolves and fails depending on the
+                     *  XMPP server response.
+                     */
+                    members = _.filter(members, function (member) {
+                        // We only want those members who have the right
+                        // affiliation (or none, which implies the provided
+                        // one).
+                        return _.isUndefined(member.affiliation) ||
+                                member.affiliation === affiliation;
+                    });
+                    var promises = _.map(members, function (member) {
+                        var deferred = new $.Deferred();
+                        var iq = $iq({to: this.model.get('jid'), type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {
+                                'affiliation': member.affiliation || affiliation,
+                                'jid': member.jid
+                            });
+                        if (!_.isUndefined(member.reason)) {
+                            iq.c("reason", member.reason);
+                        }
+                        converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                        return deferred;
+                    }, this);
+                    return $.when.apply($, promises);
+                },
+
+                setAffiliations: function (members, onSuccess, onError) {
+                    /* Send IQ stanzas to the server to modify the
+                     * affiliations in this room.
+                     *
+                     * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                     *
+                     * Parameters:
+                     *  (Object) members: A map of jids, affiliations and optionally reasons
                      *  (Function) onSuccess: callback for a succesful response
                      *  (Function) onError: callback for an error response
                      */
-                    var iq = $iq({to: this.model.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN});
-                    _.each(members, function (member) {
-                        iq.c("item", {
-                            'affiliation': member.affiliation,
-                            'jid': member.jid
-                        });
+                    if (_.isEmpty(members)) {
+                        // Succesfully updated with zero affilations :)
+                        onSuccess(null);
+                        return;
+                    }
+                    var affiliations = _.uniq(_.pluck(members, 'affiliation'));
+                    var promises = _.map(affiliations, _.partial(this.setAffiliation, _, members), this);
+                    $.when.apply($, promises).done(onSuccess).fail(onError);
+                },
+
+                marshallAffiliationIQs: function () {
+                    /* Marshall a list of IQ stanzas into a map of JIDs and
+                     * affiliations.
+                     *
+                     * Parameters:
+                     *  Any amount of XMLElement objects, representing the IQ
+                     *  stanzas.
+                     */
+                    return _.flatten(_.map(arguments, this.parseMemberListIQ));
+                },
+
+                getJidsWithAffiliations: function (affiliations) {
+                    /* Returns a map of JIDs that have the affiliations
+                     * as provided.
+                     */
+                    if (typeof affiliations === "string") {
+                        affiliations = [affiliations];
+                    }
+                    var that = this;
+                    var deferred = new $.Deferred();
+                    var promises = [];
+                    _.each(affiliations, function (affiliation) {
+                        promises.push(that.requestMemberList(affiliation));
                     });
-                    return converse.connection.sendIQ(iq, onSuccess, onError);
+                    $.when.apply($, promises).always(
+                        _.compose(deferred.resolve, this.marshallAffiliationIQs.bind(this))
+                    );
+                    return deferred.promise();
+                },
+
+                updateMemberLists: function (members, affiliations, deltaFunc) {
+                    /* Fetch the lists of users with the given affiliations.
+                     * Then compute the delta between those users and
+                     * the passed in members, and if it exists, send the delta
+                     * to the XMPP server to update the member list.
+                     *
+                     * Parameters:
+                     *  (Object) members: Map of member jids and affiliations.
+                     *  (String|Array) affiliation: An array of affiliations or
+                     *      a string if only one affiliation.
+                     *  (Function) deltaFunc: The function to compute the delta
+                     *      between old and new member lists.
+                     *
+                     * Returns:
+                     *  A promise which is resolved once the list has been
+                     *  updated or once it's been established there's no need
+                     *  to update the list.
+                     */
+                    var that = this;
+                    var deferred = new $.Deferred();
+                    this.getJidsWithAffiliations(affiliations).then(function (old_members) {
+                        that.setAffiliations(
+                            deltaFunc(members, old_members),
+                            deferred.resolve,
+                            deferred.reject
+                        );
+                    });
+                    return deferred.promise();
                 },
 
                 directInvite: function (recipient, reason) {
@@ -526,12 +722,16 @@
                      */
                     if (this.model.get('membersonly')) {
                         // When inviting to a members-only room, we first add
-                        // the person to the member list, otherwise they won't
-                        // be able to join.
-                        this.setMemberList([{
-                            'jid': recipient,
-                            'affiliation': 'member'
-                        }]);
+                        // the person to the member list by giving them an
+                        // affiliation of 'member' (if they're not affiliated
+                        // already), otherwise they won't be able to join.
+                        var map = {}; map[recipient] = 'member';
+                        var deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
+                        this.updateMemberLists(
+                            [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
+                            ['member', 'owner', 'admin'],
+                            deltaFunc
+                        );
                     }
                     var attrs = {
                         'xmlns': 'jabber:x:conference',
@@ -613,31 +813,11 @@
                     });
                 },
 
-                setAffiliation: function(room, jid, affiliation, reason, onSuccess, onError) {
-                    var item = $build("item", {jid: jid, affiliation: affiliation});
-                    var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
-                    if (reason !== null) { iq.c("reason", reason); }
-                    return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
-                },
-
                 modifyRole: function(room, nick, role, reason, onSuccess, onError) {
                     var item = $build("item", {nick: nick, role: role});
                     var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
-                },
-
-                member: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'member', reason, handler_cb, error_cb);
-                },
-                revoke: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'none', reason, handler_cb, error_cb);
-                },
-                owner: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'owner', reason, handler_cb, error_cb);
-                },
-                admin: function(room, jid, reason, handler_cb, error_cb) {
-                    return this.setAffiliation(room, jid, 'admin', reason, handler_cb, error_cb);
                 },
 
                 validateRoleChangeCommand: function (command, args) {
@@ -677,20 +857,25 @@
                      * Parameters:
                      *    (String) text - The message text.
                      */
+                    if (converse.muc_disable_moderator_commands) {
+                        return this.sendChatRoomMessage(text);
+                    }
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [];
                     switch (match[1]) {
                         case 'admin':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'admin', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliation('admin',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'ban':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'outcast', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliation('outcast',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'clear':
                             this.clearChatRoomMessages();
@@ -734,9 +919,10 @@
                             break;
                         case 'member':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'member', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliation('member',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'nick':
                             converse.connection.send($pres({
@@ -747,9 +933,10 @@
                             break;
                         case 'owner':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'owner', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliation('owner',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'op':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
@@ -759,9 +946,10 @@
                             break;
                         case 'revoke':
                             if (!this.validateRoleChangeCommand(match[1], args)) { break; }
-                            this.setAffiliation(
-                                    this.model.get('jid'), args[0], 'none', args[1],
-                                    undefined, this.onCommandError.bind(this));
+                            this.setAffiliation('none',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'topic':
                             converse.connection.send(
@@ -880,7 +1068,7 @@
                     if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
                         // We have restored a chat room from session storage,
                         // so we don't send out a presence stanza again.
-                        return;
+                        return this;
                     }
                     var stanza = $pres({
                         'from': converse.connection.jid,

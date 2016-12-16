@@ -1163,7 +1163,55 @@
 
             }));
 
+            it("to make a user an owner", mock.initConverse(function (converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
+                spyOn(view, 'setAffiliation').andCallThrough();
+                spyOn(view, 'showStatusNotification').andCallThrough();
+                spyOn(view, 'validateRoleChangeCommand').andCallThrough();
+                view.$el.find('.chat-textarea').text('/owner');
+                view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
+                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.showStatusNotification).toHaveBeenCalledWith(
+                    "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.",
+                    true
+                );
+                expect(view.setAffiliation).not.toHaveBeenCalled();
+
+                // Call now with the correct amount of arguments.
+                // XXX: Calling onMessageSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                view.onMessageSubmitted('/owner annoyingGuy@localhost You\'re annoying');
+                expect(view.validateRoleChangeCommand.callCount).toBe(2);
+                expect(view.showStatusNotification.callCount).toBe(1);
+                expect(view.setAffiliation).toHaveBeenCalled();
+                // Check that the member list now gets updated
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='owner' jid='annoyingGuy@localhost'>"+
+                                "<reason>You&apos;re annoying</reason>"+
+                            "</item>"+
+                        "</query>"+
+                    "</iq>");
+            }));
+
             it("to ban a user", mock.initConverse(function (converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = converse.connection.sendIQ;
+                spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
                 test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'onMessageSubmitted').andCallThrough();
@@ -1179,15 +1227,23 @@
                     true
                 );
                 expect(view.setAffiliation).not.toHaveBeenCalled();
-
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onMessageSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/ban jid This is the reason');
+                view.onMessageSubmitted('/ban annoyingGuy@localhost You\'re annoying');
                 expect(view.validateRoleChangeCommand.callCount).toBe(2);
                 expect(view.showStatusNotification.callCount).toBe(1);
                 expect(view.setAffiliation).toHaveBeenCalled();
+                // Check that the member list now gets updated
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='outcast' jid='annoyingGuy@localhost'>"+
+                                "<reason>You&apos;re annoying</reason>"+
+                            "</item>"+
+                        "</query>"+
+                    "</iq>");
             }));
         });
 
@@ -1403,11 +1459,11 @@
         describe("Someone being invited to a chat room", function () {
 
             it("will first be added to the member list if the chat room is members only", mock.initConverse(function (converse) {
-                var sent_IQ, IQ_id;
+                var sent_IQs = [], IQ_ids = [];
                 var sendIQ = converse.connection.sendIQ;
                 spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    sent_IQs.push(iq);
+                    IQ_ids.push(sendIQ.bind(this)(iq, callback, errback));
                 });
 
                 test_utils.openChatRoom(converse, 'coven', 'chat.shakespeare.lit', 'dummy');
@@ -1415,7 +1471,7 @@
                 // State that the chat is members-only via the features IQ
                 var features_stanza = $iq({
                         from: 'coven@chat.shakespeare.lit',
-                        'id': IQ_id,
+                        'id': IQ_ids.pop(),
                         'to': 'dummy@localhost/desktop',
                         'type': 'result'
                     })
@@ -1434,8 +1490,6 @@
                 var view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 expect(view.model.get('membersonly')).toBeTruthy();
 
-                spyOn(view, 'setMemberList').andCallThrough();
-
                 test_utils.createContacts(converse, 'current');
 
                 var sent_stanza,
@@ -1452,13 +1506,94 @@
                 var reason = "Please join this chat room";
                 view.directInvite(invitee_jid, reason);
 
-                expect(sent_IQ.toLocaleString()).toBe(
-                    "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                var admin_iq_id = IQ_ids.pop();
+                var owner_iq_id = IQ_ids.pop();
+                var member_iq_id = IQ_ids.pop();
+                // Check in reverse order that we requested all three lists
+                // (member, owner and admin).
+                expect(sent_IQs.pop().toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+admin_iq_id+"'>"+
                         "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                            "<item affiliation='member' jid='"+invitee_jid+"'/>"+
+                            "<item affiliation='admin'/>"+
+                        "</query>"+
+                    "</iq>");
+                expect(sent_IQs.pop().toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+owner_iq_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='owner'/>"+
+                        "</query>"+
+                    "</iq>");
+                expect(sent_IQs.pop().toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+member_iq_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='member'/>"+
                         "</query>"+
                     "</iq>");
 
+                /* Now the service sends the member list to the user
+                 *
+                 *  <iq from='coven@chat.shakespeare.lit'
+                 *      id='member3'
+                 *      to='crone1@shakespeare.lit/desktop'
+                 *      type='result'>
+                 *  <query xmlns='http://jabber.org/protocol/muc#admin'>
+                 *      <item affiliation='member'
+                 *          jid='hag66@shakespeare.lit'
+                 *          nick='thirdwitch'
+                 *          role='participant'/>
+                 *  </query>
+                 *  </iq>
+                 */
+                var member_list_stanza = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': member_iq_id,
+                        'to': 'dummy@localhost/resource',
+                        'type': 'result'
+                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                        .c('item', {
+                            'affiliation': 'member',
+                            'jid': 'hag66@shakespeare.lit',
+                            'nick': 'thirdwitch',
+                            'role': 'participant'
+                        });
+                converse.connection._dataRecv(test_utils.createRequest(member_list_stanza));
+
+                var admin_list_stanza = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': admin_iq_id,
+                        'to': 'dummy@localhost/resource',
+                        'type': 'result'
+                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                        .c('item', {
+                            'affiliation': 'admin',
+                            'jid': 'wiccarocks@shakespeare.lit',
+                            'nick': 'secondwitch'
+                        });
+                converse.connection._dataRecv(test_utils.createRequest(admin_list_stanza));
+
+                var owner_list_stanza = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': owner_iq_id,
+                        'to': 'dummy@localhost/resource',
+                        'type': 'result'
+                    }).c('query', {'xmlns': Strophe.NS.MUC_ADMIN})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'crone1@shakespeare.lit',
+                        });
+                converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
+
+                // Check that the member list now gets updated
+                expect(sent_IQs.pop().toLocaleString()).toBe(
+                    "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
+                            "<item affiliation='member' jid='"+invitee_jid+"'>"+
+                                "<reason>Please join this chat room</reason>"+
+                            "</item>"+
+                        "</query>"+
+                    "</iq>");
+
+                // Finally check that the user gets invited.
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                     "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
                         "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
@@ -1467,5 +1602,64 @@
             }));
         });
 
+        describe("The affiliations delta", function () {
+
+            it("can be computed in various ways", mock.initConverse(function (converse) {
+                test_utils.openChatRoom(converse, 'coven', 'chat.shakespeare.lit', 'dummy');
+                var roomview = converse.chatboxviews.get('coven@chat.shakespeare.lit');
+
+                var exclude_existing = false;
+                var remove_absentees = false;
+                var new_list = [];
+                var old_list = [];
+                var delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                new_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                // When remove_absentees is false, then affiliations in the old
+                // list which are not in the new one won't be removed.
+                old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
+                            {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+
+                // With exclude_existing set to false, any changed affiliations
+                // will be included in the delta (i.e. existing affiliations
+                // are included in the comparison).
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(1);
+                expect(delta[0].jid).toBe('wiccarocks@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('member');
+
+                // To also remove affiliations from the old list which are not
+                // in the new list, we set remove_absentees to true
+                remove_absentees = true;
+                old_list = [{'jid': 'oldhag666@shakespeare.lit', 'affiliation': 'owner'},
+                            {'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'member'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(1);
+                expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('none');
+
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, [], old_list);
+                expect(delta.length).toBe(2);
+                expect(delta[0].jid).toBe('oldhag666@shakespeare.lit');
+                expect(delta[0].affiliation).toBe('none');
+                expect(delta[1].jid).toBe('wiccarocks@shakespeare.lit');
+                expect(delta[1].affiliation).toBe('none');
+
+                // To only add a user if they don't already have an
+                // affiliation, we set 'exclude_existing' to true
+                exclude_existing = true;
+                old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
+                delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
+                expect(delta.length).toBe(0);
+            }));
+        });
     });
 }));

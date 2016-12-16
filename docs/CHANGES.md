@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.4 (Unreleased)
+## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]
 - Fetch room info and store it on the room model.
   For context, see: http://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
@@ -12,6 +12,7 @@
 - Fix empty controlbox toggle after disconnect. [jcbrand]
 - When inviting someone to a members-only room, first add them to the member
   list. [jcbrand]
+- New configuration setting [muc_disable_moderator_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-moderator-commands) [jcbrand]
 
 ## 2.0.3 (2016-11-30)
 - #735 Room configuration button not visible. [jcbrand]
@@ -34,11 +35,11 @@
   Instead, `converse.initialize` returns a promise which will resolve once
   initialization is complete. [jcbrand]
 - New event ['reconnecting'](https://conversejs.org/docs/html/development.html#reconnecting) [jcbrand]
-- New configuration setting [allow_bookmarks](https://conversejs.org/docs/html/configuration.html#allow_bookmarks) [jcbrand]
+- New configuration setting [allow_bookmarks](https://conversejs.org/docs/html/configuration.html#allow-bookmarks) [jcbrand]
 - The `rooms.open` API method will no longer maximize rooms that are minimized (unless `maximize: true` is passed in). [jcbrand]
 
 ## 2.0.1 (2016-11-07)
-- #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc_domain) [jcbrand]
+- #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) [jcbrand]
 - #705 White content after submitting password on chatrooms [jcbrand]
 - #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
 - Removed shared state between tests. All tests are now isolated. [jcbrand]
@@ -57,7 +58,7 @@
 - Backwards incompatible change: the `_super` attribute in plugins is now named `__super__`. [jcbrand]
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
-- New configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message_storage) [jcbrand]
+- New configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message-storage) [jcbrand]
 - Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
 - Fixed wrong chat state value, should be `chat`, not `chatty`.
   See [RFC 3921](https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.1.2.2). [jcbrand]
@@ -73,8 +74,8 @@
 - Typing (i.e. chat state) notifications are now also sent out from MUC rooms. [jcbrand]
 - `ChatRoomView.onChatRoomMessageSubmitted` has been renamed to
   `onMessageSubmitted`, to make it the same as the method on `ChatBoxView`. [jcbrand]
-- New configuration setting [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc_nickname_from_jid) [jcbrand]
-- New configuration setting [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc_instant_rooms) [jcbrand]
+- New configuration setting [muc_nickname_from_jid](https://conversejs.org/docs/html/configuration.html#muc-nickname-from-jid) [jcbrand]
+- New configuration setting [muc_instant_rooms](https://conversejs.org/docs/html/configuration.html#muc-instant-rooms) [jcbrand]
 
 ## 1.0.5 (2016-07-28)
 - In case of nickname conflict when joining a room, allow the user to choose a new one.
@@ -142,9 +143,9 @@
   `converse.stanza.on('message');` instead. [jcbrand]
 - Emit an event `chatBoxInitialized` once a chat box's initialize method has been called. [jcbrand]
 - Emit an event `statusInitialized` once the user's own status has been initialized upon startup. [jcbrand]
-- New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate_notification_blacklist) [jcbrand]
-- New config option [sticky_controlbox](https://conversejs.org/docs/html/configuration.html#sticky_controlbox) [jcbrand]
-- New config option [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials_url) [jcbrand]
+- New config option [chatstate_notification_blacklist](https://conversejs.org/docs/html/configuration.html#chatstate-notification-blacklist) [jcbrand]
+- New config option [sticky_controlbox](https://conversejs.org/docs/html/configuration.html#sticky-controlbox) [jcbrand]
+- New config option [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url) [jcbrand]
 - Don't play sound notifications for OTR messages which are setting up an
   encrypted session. [jcbrand]
 - Bugfix: RID, SID and JID tokens ignored when `keepalive` set to `true`. [jcbrand]
@@ -159,7 +160,7 @@
 - #534 Updated Russian translation [badfiles]
 - #566 Do not steal the focus when the chatbox opens automatically [rlanvin]
 - #573 xgettext build error: `'javascript' unknown` [jcbrand]
-- #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message_archiving_timeout) [jcbrand]
+- #577 New config variable [message_archiving_timeout](https://conversejs.org/docs/html/configuration.html#message-archiving-timeout) [jcbrand]
 - #587 Fix issue when logging out with `auto_logout=true` [davec82]
 - #589 Save scroll position on minimize and restore it on maximize [rlanvin]
 - #592 Add random resource for `auto_login`, add method generateResource to
@@ -182,7 +183,7 @@
 - #536 Presence not sent out (in cases where it should) after page refresh. [jcbrand]
 - #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
 - #547 By default the `offline` state is no longer choosable.
-  See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include_offline_state) for details. [jcbrand]
+  See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include-offline-state) for details. [jcbrand]
 - A chatroom invite might come from someone not in your roster list. [ben]
 - #487 Empty the resources array when the resource is null [rlanvin]
 - #534 Updated Russian translation [LaconicTranslator]
@@ -223,7 +224,7 @@
 - #439 auto_login and keepalive not working [jcbrand]
 - #440 null added as resource to contact [jcbrand]
 - Add new event serviceDiscovered [jcbrand]
-- Add a new configuration setting [muc_history_max_stanzas](https://conversejs.org/docs/html/configuration.html#muc_history_max_stanzas>). [jcbrand]
+- Add a new configuration setting [muc_history_max_stanzas](https://conversejs.org/docs/html/configuration.html#muc-history-max-stanzas>). [jcbrand]
 
 ## 0.9.4 (2015-07-04)
 

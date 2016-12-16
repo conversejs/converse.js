@@ -119,10 +119,6 @@
             null,
             "Kontakty"
          ],
-         "Connecting": [
-            null,
-            "Łączę się"
-         ],
          "XMPP Username:": [
             null,
             "Nazwa użytkownika XMPP:"
@@ -259,13 +255,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Łączę się"
          ],
          "Authenticating": [
             null,
@@ -274,6 +266,14 @@
          "Authentication Failed": [
             null,
             "Autoryzacja nie powiodła się"
+         ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
          ],
          "Sorry, there was an error while trying to add ": [
             null,
@@ -287,9 +287,9 @@
             null,
             "Zamknij okno"
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
-            "Zminimalizuj to okno"
+            "Zminimalizuj okno czatu"
          ],
          "Click to restore this chat": [
             null,
@@ -298,10 +298,6 @@
          "Minimized": [
             null,
             "Zminimalizowany"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Zminimalizuj okno czatu"
          ],
          "This room is not anonymous": [
             null,
@@ -315,10 +311,6 @@
             null,
             "Ten pokój nie wyświetla niedostępnych członków"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Ustawienia pokoju nie związane z prywatnością zostały zmienione"
-         ],
          "Room logging is now enabled": [
             null,
             "Zostało włączone zapisywanie rozmów w pokoju"
@@ -326,10 +318,6 @@
          "Room logging is now disabled": [
             null,
             "Zostało wyłączone zapisywanie rozmów w pokoju"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Pokój stał się nieanonimowy"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -399,10 +387,6 @@
             null,
             "Ukryj listę rozmówców"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Błąd: nie potrafię uruchomić polecenia"
-         ],
          "Error: the \"": [
             null,
             "Błąd: \""
@@ -410,6 +394,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Potwierdź czy rzeczywiście chcesz wyczyścić wiadomości z tego pokoju?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Błąd: nie potrafię uruchomić polecenia"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -462,10 +450,6 @@
          "Allow muted user to post messages": [
             null,
             "Pozwól uciszonemu człowiekowi na rozmowę"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Wystąpił błąd w czasie próby zachowania formularza."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

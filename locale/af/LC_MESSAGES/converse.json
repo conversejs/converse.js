@@ -114,10 +114,6 @@
             null,
             "Kontakte"
          ],
-         "Connecting": [
-            null,
-            "Verbind tans"
-         ],
          "XMPP Username:": [
             null,
             "XMPP Gebruikersnaam:"
@@ -250,13 +246,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Ontkoppel"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Verbind tans"
          ],
          "Authenticating": [
             null,
@@ -265,6 +257,14 @@
          "Authentication Failed": [
             null,
             "Bekragtiging het gefaal"
+         ],
+         "Disconnected": [
+            null,
+            "Ontkoppel"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
          ],
          "Sorry, there was an error while trying to add ": [
             null,
@@ -278,7 +278,7 @@
             null,
             "Maak hierdie kletskas toe"
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
             "Minimeer hierdie kletskas"
          ],
@@ -289,10 +289,6 @@
          "Minimized": [
             null,
             "Geminimaliseer"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Minimeer hierdie kletskas"
          ],
          "This room is not anonymous": [
             null,
@@ -306,10 +302,6 @@
             null,
             "Hierdie vertrek wys nie onbeskikbare lede nie"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Nie-privaatheidverwante kamer instellings het verander"
-         ],
          "Room logging is now enabled": [
             null,
             "Kamer log is nou aangeskakel"
@@ -317,10 +309,6 @@
          "Room logging is now disabled": [
             null,
             "Kamer log is nou afgeskakel"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Hiedie kamer is nou nie anoniem nie"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -386,10 +374,6 @@
             null,
             "Verskuil die lys van deelnemers"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Fout: kon nie die opdrag uitvoer nie"
-         ],
          "Error: the \"": [
             null,
             ""
@@ -397,6 +381,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Fout: kon nie die opdrag uitvoer nie"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -449,10 +437,6 @@
          "Allow muted user to post messages": [
             null,
             "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "A fout het voorgekom terwyl probeer is om die vorm te stoor."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

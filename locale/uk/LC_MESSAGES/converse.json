@@ -115,10 +115,6 @@
             null,
             "Контакти"
          ],
-         "Connecting": [
-            null,
-            "Під'єднуюсь"
-         ],
          "XMPP Username:": [
             null,
             "XMPP адреса:"
@@ -239,13 +235,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Під'єднуюсь"
          ],
          "Authenticating": [
             null,
@@ -255,11 +247,23 @@
             null,
             "Автентикація невдала"
          ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
          ],
          "This client does not allow presence subscriptions": [
+            null,
+            ""
+         ],
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -270,10 +274,6 @@
          "Minimized": [
             null,
             "Мінімізовано"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
          ],
          "This room is not anonymous": [
             null,
@@ -287,10 +287,6 @@
             null,
             "Ця кімната не показує недоступних учасників"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Змінено конфігурацію кімнати, не повязану з приватністю"
-         ],
          "Room logging is now enabled": [
             null,
             "Журналювання кімнати тепер ввімкнено"
@@ -298,10 +294,6 @@
          "Room logging is now disabled": [
             null,
             "Журналювання кімнати тепер вимкнено"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ця кімната тепер не-анонімна"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -363,10 +355,6 @@
             null,
             "Повідомлення"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Помилка: Не можу виконати команду"
-         ],
          "Error: the \"": [
             null,
             ""
@@ -374,6 +362,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Ви впевнені, що хочете очистити повідомлення з цієї кімнати?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Помилка: Не можу виконати команду"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -422,10 +414,6 @@
          "Allow muted user to post messages": [
             null,
             "Дозволити безголосому користувачу слати повідомлення"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Трапилася помилка при спробі зберегти форму."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

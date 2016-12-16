@@ -114,10 +114,6 @@
             null,
             "Kapcsolatok"
          ],
-         "Connecting": [
-            null,
-            "Kapcsolódás"
-         ],
          "XMPP Username:": [
             null,
             "XMPP/Jabber azonosító:"
@@ -246,13 +242,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Szétkapcsolva"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Kapcsolódás"
          ],
          "Authenticating": [
             null,
@@ -262,6 +254,14 @@
             null,
             "Azonosítási hiba"
          ],
+         "Disconnected": [
+            null,
+            "Szétkapcsolva"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "Sajnáljuk, hiba történt a hozzáadás során"
@@ -270,6 +270,10 @@
             null,
             "Ez a kliens nem engedélyezi a jelenlét követését"
          ],
+         "Minimize this chat box": [
+            null,
+            "A csevegés minimalizálása"
+         ],
          "Click to restore this chat": [
             null,
             "A csevegés visszaállítása"
@@ -277,10 +281,6 @@
          "Minimized": [
             null,
             "Minimalizálva"
-         ],
-         "Minimize this chat box": [
-            null,
-            "A csevegés minimalizálása"
          ],
          "This room is not anonymous": [
             null,
@@ -294,10 +294,6 @@
             null,
             "Ez a szoba nem mutatja az elérhetetlen tagokat"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "A szoba általános konfigurációja módosult"
-         ],
          "Room logging is now enabled": [
             null,
             "A szobába a belépés lehetséges"
@@ -305,10 +301,6 @@
          "Room logging is now disabled": [
             null,
             "A szobába a belépés szünetel"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Ez a szoba most NEM névtelen"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -374,10 +366,6 @@
             null,
             "A résztvevők listájának elrejtése"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Hiba: A parancs nem értelmezett"
-         ],
          "Error: the \"": [
             null,
             "Hiba: a \""
@@ -385,6 +373,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Törölni szeretné az üzeneteket ebből a szobából?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Hiba: A parancs nem értelmezett"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -437,10 +429,6 @@
          "Allow muted user to post messages": [
             null,
             "Elnémított felhasználók is küldhetnek üzeneteket"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Hiba történt az adatok mentése közben."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

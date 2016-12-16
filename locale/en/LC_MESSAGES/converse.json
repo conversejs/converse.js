@@ -123,10 +123,6 @@
             null,
             ""
          ],
-         "Connecting": [
-            null,
-            ""
-         ],
          "XMPP Username:": [
             null,
             ""
@@ -255,15 +251,11 @@
             null,
             ""
          ],
-         "Disconnected": [
-            null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Connection error": [
+            null,
+            ""
+         ],
+         "Connecting": [
             null,
             ""
          ],
@@ -279,6 +271,14 @@
             null,
             ""
          ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -291,7 +291,7 @@
             null,
             ""
          ],
-         "Minimize this box": [
+         "Minimize this chat box": [
             null,
             ""
          ],
@@ -300,10 +300,6 @@
             ""
          ],
          "Minimized": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
             null,
             ""
          ],
@@ -319,10 +315,6 @@
             null,
             "This room does not show unavailable members"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Non-privacy-related room configuration has changed"
-         ],
          "Room logging is now enabled": [
             null,
             "Room logging is now enabled"
@@ -330,10 +322,6 @@
          "Room logging is now disabled": [
             null,
             "Room logging is now disabled"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "This room is now non-anonymous"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -403,15 +391,15 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
-            null,
-            ""
-         ],
          "Error: the \"": [
             null,
             ""
          ],
          "Are you sure you want to clear the messages from this room?": [
+            null,
+            ""
+         ],
+         "Error: could not execute the command": [
             null,
             ""
          ],
@@ -466,10 +454,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "An error occurred while trying to save the form."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

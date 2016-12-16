@@ -91,10 +91,6 @@
             null,
             "Contatos"
          ],
-         "Connecting": [
-            null,
-            "Conectando"
-         ],
          "Password:": [
             null,
             "Senha:"
@@ -199,13 +195,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Desconectado"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Conectando"
          ],
          "Authenticating": [
             null,
@@ -215,6 +207,14 @@
             null,
             "Falha de autenticação"
          ],
+         "Disconnected": [
+            null,
+            "Desconectado"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -223,13 +223,13 @@
             null,
             ""
          ],
-         "Minimized": [
-            null,
-            "Minimizado"
-         ],
          "Minimize this chat box": [
             null,
             ""
+         ],
+         "Minimized": [
+            null,
+            "Minimizado"
          ],
          "This room is not anonymous": [
             null,
@@ -243,10 +243,6 @@
             null,
             "Essa sala não mostra membros indisponíveis"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Configuraçõs não relacionadas à privacidade mudaram"
-         ],
          "Room logging is now enabled": [
             null,
             "O log da sala está ativado"
@@ -254,10 +250,6 @@
          "Room logging is now disabled": [
             null,
             "O log da sala está desativado"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Esse sala é não anônima"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -315,11 +307,11 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
+         "Error: the \"": [
             null,
             ""
          ],
-         "Error: the \"": [
+         "Error: could not execute the command": [
             null,
             ""
          ],
@@ -354,10 +346,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "Ocorreu um erro enquanto tentava salvar o formulário"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

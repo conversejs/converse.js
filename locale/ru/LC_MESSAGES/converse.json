@@ -114,10 +114,6 @@
             null,
             "Контакты"
          ],
-         "Connecting": [
-            null,
-            "Соединение"
-         ],
          "XMPP Username:": [
             null,
             "XMPP Username:"
@@ -238,13 +234,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "Отключено"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "Соединение"
          ],
          "Authenticating": [
             null,
@@ -254,6 +246,14 @@
             null,
             "Не удалось авторизоваться"
          ],
+         "Disconnected": [
+            null,
+            "Отключено"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "Возникла ошибка при добавлении "
@@ -262,6 +262,10 @@
             null,
             "Программа не поддерживает уведомления о статусе"
          ],
+         "Minimize this chat box": [
+            null,
+            "Свернуть окно чата"
+         ],
          "Click to restore this chat": [
             null,
             "Кликните, чтобы развернуть чат"
@@ -269,10 +273,6 @@
          "Minimized": [
             null,
             "Свёрнуто"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Свернуть окно чата"
          ],
          "This room is not anonymous": [
             null,
@@ -286,10 +286,6 @@
             null,
             "Этот чат не показывает недоступных собеседников"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "Изменились настройки чата, не относящиеся к приватности"
-         ],
          "Room logging is now enabled": [
             null,
             "Протокол чата включен"
@@ -297,10 +293,6 @@
          "Room logging is now disabled": [
             null,
             "Протокол чата выключен"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Этот чат больше не анонимный"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -362,10 +354,6 @@
             null,
             "Спрятать список участников"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Ошибка: невозможно выполнить команду"
-         ],
          "Error: the \"": [
             null,
             "Ошибка:  \""
@@ -373,6 +361,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Вы уверены, что хотите очистить сообщения из этого чата?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Ошибка: невозможно выполнить команду"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -417,10 +409,6 @@
          "Allow muted user to post messages": [
             null,
             "Разрешить заглушенным пользователям отправлять сообщения"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "При сохранение формы произошла ошибка."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

@@ -115,10 +115,6 @@
             null,
             "Contactes"
          ],
-         "Connecting": [
-            null,
-            "S'està establint la connexió"
-         ],
          "XMPP Username:": [
             null,
             "Nom d'usuari XMPP:"
@@ -243,13 +239,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "S'està establint la connexió"
          ],
          "Authenticating": [
             null,
@@ -259,6 +251,14 @@
             null,
             "Error d'autenticació"
          ],
+         "Disconnected": [
+            null,
+            ""
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "S'ha produït un error en intentar afegir "
@@ -267,6 +267,10 @@
             null,
             "Aquest client no admet les subscripcions de presència"
          ],
+         "Minimize this chat box": [
+            null,
+            "Minimitza aquest quadre del xat"
+         ],
          "Click to restore this chat": [
             null,
             "Feu clic per restaurar aquest xat"
@@ -274,10 +278,6 @@
          "Minimized": [
             null,
             "Minimitzat"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Minimitza aquest quadre del xat"
          ],
          "This room is not anonymous": [
             null,
@@ -291,10 +291,6 @@
             null,
             "Aquesta sala no mostra membres no disponibles"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "S'ha canviat la configuració de la sala no relacionada amb la privadesa"
-         ],
          "Room logging is now enabled": [
             null,
             "El registre de la sala està habilitat"
@@ -302,10 +298,6 @@
          "Room logging is now disabled": [
             null,
             "El registre de la sala està deshabilitat"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "Aquesta sala ara no és anònima"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -371,10 +363,6 @@
             null,
             "Amaga la llista d'ocupants"
          ],
-         "Error: could not execute the command": [
-            null,
-            "Error: no s'ha pogut executar l'ordre"
-         ],
          "Error: the \"": [
             null,
             "Error: el \""
@@ -382,6 +370,10 @@
          "Are you sure you want to clear the messages from this room?": [
             null,
             "Segur que voleu esborrar els missatges d'aquesta sala?"
+         ],
+         "Error: could not execute the command": [
+            null,
+            "Error: no s'ha pogut executar l'ordre"
          ],
          "Change user's affiliation to admin": [
             null,
@@ -434,10 +426,6 @@
          "Allow muted user to post messages": [
             null,
             "Permet que un usuari silenciat publiqui missatges"
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "S'ha produït un error en intentar desar el formulari."
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

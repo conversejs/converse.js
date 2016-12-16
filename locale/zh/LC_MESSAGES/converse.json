@@ -98,10 +98,6 @@
             null,
             "联系人"
          ],
-         "Connecting": [
-            null,
-            "连接中"
-         ],
          "Password:": [
             null,
             "密码:"
@@ -206,13 +202,9 @@
             null,
             ""
          ],
-         "Disconnected": [
+         "Connecting": [
             null,
-            "连接已断开"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
+            "连接中"
          ],
          "Authenticating": [
             null,
@@ -222,6 +214,14 @@
             null,
             "验证失败"
          ],
+         "Disconnected": [
+            null,
+            "连接已断开"
+         ],
+         "The connection to the chat server has dropped": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -230,13 +230,13 @@
             null,
             ""
          ],
-         "Minimized": [
-            null,
-            "最小化的"
-         ],
          "Minimize this chat box": [
             null,
             ""
+         ],
+         "Minimized": [
+            null,
+            "最小化的"
          ],
          "This room is not anonymous": [
             null,
@@ -250,10 +250,6 @@
             null,
             "此聊天室不显示不可用用户"
          ],
-         "Non-privacy-related room configuration has changed": [
-            null,
-            "此聊天室设置(非私密性)已改变"
-         ],
          "Room logging is now enabled": [
             null,
             "聊天室聊天记录已启用"
@@ -261,10 +257,6 @@
          "Room logging is now disabled": [
             null,
             "聊天室聊天记录已禁用"
-         ],
-         "This room is now non-anonymous": [
-            null,
-            "此聊天室非匿名"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -322,11 +314,11 @@
             null,
             ""
          ],
-         "Error: could not execute the command": [
+         "Error: the \"": [
             null,
             ""
          ],
-         "Error: the \"": [
+         "Error: could not execute the command": [
             null,
             ""
          ],
@@ -361,10 +353,6 @@
          "Allow muted user to post messages": [
             null,
             ""
-         ],
-         "An error occurred while trying to save the form.": [
-            null,
-            "保存表单是出错。"
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,

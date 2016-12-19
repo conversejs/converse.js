@@ -14,23 +14,21 @@
     ], factory);
 }(this, function (converse, converse_api) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
+    var _ = converse_api.env._,
         utils = converse_api.env.utils,
         __ = utils.__.bind(converse);
 
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
          */
-        var $message = $(message),
-            from_jid = $message.attr('from');
+        var from_jid = message.getAttribute('from');
         if (utils.isHeadlineMessage(message)) {
             converse.chatboxes.create({
                 'id': from_jid,
                 'jid': from_jid,
                 'fullname':  from_jid,
                 'type': 'headline'
-            }).createMessage($message, undefined, message);
+            }).createMessage(message, undefined, message);
             converse.emit('message', message);
         }
         return true;
@@ -78,7 +76,7 @@
                 initialize: function () {
                     if (typeof this.setDimensions !== "undefined") {
                         // setDimensions is defined for dragresize
-                        $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                        window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
                     }
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
@@ -105,7 +103,7 @@
                         );
                     if (typeof this.setWidth !== "undefined") {
                         // setWidth is defined for dragresize
-                        $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
+                        window.addEventListener('resize', _.debounce(this.setWidth.bind(this), 100));
                     }
                     this.$content = this.$el.find('.chat-content');
                     converse.emit('chatBoxOpened', this);

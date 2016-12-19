@@ -2,6 +2,8 @@
 
 ## 2.0.5
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
+- Bugfix. Cancel button shown while registration form is being fetched wasn't working
+  properly. [jcbrand]
 
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]

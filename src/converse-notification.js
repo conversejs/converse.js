@@ -205,7 +205,7 @@
                 }
             };
 
-            converse.handleChatStateNotification = function (evt, contact) {
+            converse.handleChatStateNotification = function (contact) {
                 /* Event handler for on('contactStatusChanged').
                  * Will show an HTML5 notification to indicate that the chat
                  * status has changed.
@@ -215,7 +215,7 @@
                 }
             };
 
-            converse.handleMessageNotification = function (evt, message) {
+            converse.handleMessageNotification = function (message) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
@@ -229,19 +229,19 @@
                 }
             };
 
-            converse.handleContactRequestNotification = function (evt, contact) {
+            converse.handleContactRequestNotification = function (contact) {
                 if (converse.areDesktopNotificationsEnabled(true)) {
                     converse.showContactRequestNotification(contact);
                 }
             };
 
-            converse.handleFeedback = function (evt, data) {
+            converse.handleFeedback = function (data) {
                 if (converse.areDesktopNotificationsEnabled(true)) {
                     converse.showFeedbackNotification(data);
                 }
             };
 
-            converse.requestPermission = function (evt) {
+            converse.requestPermission = function () {
                 if (converse.supports_html5_notification &&
                     ! _.contains(['denied', 'granted'], Notification.permission)) {
                     // Ask user to enable HTML5 notifications

@@ -132,7 +132,7 @@
                 }
             };
 
-            var updateVCardForChatBox = function (evt, chatbox) {
+            var updateVCardForChatBox = function (chatbox) {
                 if (!converse.use_vcards) { return; }
                 var jid = chatbox.model.get('jid'),
                     contact = converse.roster.get(jid);

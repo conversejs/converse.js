@@ -160,15 +160,9 @@
             }
         },
         'listen': {
-            'once': function (evt, handler, context) {
-                converse.once(evt, handler, context);
-            },
-            'on': function (evt, handler, context) {
-                converse.on(evt, handler, context);
-            },
-            'not': function (evt, handler) {
-                converse.off(evt, handler);
-            },
+            'once': converse.once,
+            'on': converse.on,
+            'not': converse.off,
             'stanza': function (name, options, handler) {
                 if (typeof options === 'function') {
                     handler = options;

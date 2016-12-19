@@ -43,41 +43,10 @@
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
-    // We create an object to act as the "this" context for event handlers (as
-    // defined below and accessible via converse_api.listen).
-    // We don't want the inner converse object to be the context, since it
-    // contains sensitive information, and we don't want it to be something in
-    // the DOM or window, because then anyone can trigger converse events.
-    var event_context = {};
-
-    var converse = {
-        templates: {},
-
-        emit: function (evt, data) {
-            $(event_context).trigger(evt, data);
-        },
-
-        once: function (evt, handler, context) {
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).one(evt, handler);
-        },
-
-        on: function (evt, handler, context) {
-            if (_.contains(['ready', 'initialized'], evt)) {
-                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
-            }
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).bind(evt, handler);
-        },
-
-        off: function (evt, handler) {
-            $(event_context).unbind(evt, handler);
-        }
-    };
+    var converse = {};
+    converse.templates = {};
+    _.extend(converse, Backbone.Events);
+    converse.emit = converse.trigger;
 
     // Make converse pluggable
     pluggable.enable(converse, 'converse', 'pluggable');
@@ -141,6 +110,8 @@
             // out or disconnecting in the previous session.
             // This happens in tests.
             // We therefore first clean up.
+            converse.off();
+            converse.stopListening();
             converse._tearDown();
         }
 

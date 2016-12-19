@@ -246,6 +246,9 @@ For example:
                 }
             });
 
+    converse.listen.on('serviceDiscovered', function (feature) {
+        if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+            converse.archive.query()
         }
     });
 
@@ -954,7 +957,11 @@ grouping:
 
 .. code-block:: javascript
 
+<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.on('message', function (messageXML) { ... });
+=======
+        converse.listen.on('message', function (messageXML) { ... });
+>>>>>>> Replace jQuery-based event emitter with Backbone.Events
 
 * **once(eventName, callback, [context])**:
 
@@ -971,7 +978,11 @@ grouping:
 
 .. code-block:: javascript
 
+<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.once('message', function (messageXML) { ... });
+=======
+        converse.listen.once('message', function (messageXML) { ... });
+>>>>>>> Replace jQuery-based event emitter with Backbone.Events
 
 * **not(eventName, callback)**
 
@@ -986,5 +997,9 @@ grouping:
 
 .. code-block:: javascript
 
+<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.not('message', function (messageXML) { ... });
+=======
+        converse.listen.not('message', function (messageXML) { ... });
+>>>>>>> Replace jQuery-based event emitter with Backbone.Events
 

@@ -670,9 +670,7 @@ To open a single chat box, provide the JID of the contact:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-
             this._converse.chats.open('buddy@example.com')
-
         }
     });
 
@@ -682,9 +680,7 @@ To return an array of chat boxes, provide an array of JIDs:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-
             this._converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
-
         }
     });
 
@@ -743,7 +739,6 @@ It takes 3 parameters:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-
             var nick = 'dread-pirate-roberts';
             var create_if_not_found = true;
             this._converse.rooms.open(
@@ -751,7 +746,6 @@ It takes 3 parameters:
                 {'nick': nick},
                 create_if_not_found
             )
-
         }
     });
 
@@ -957,11 +951,7 @@ grouping:
 
 .. code-block:: javascript
 
-<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.on('message', function (messageXML) { ... });
-=======
-        converse.listen.on('message', function (messageXML) { ... });
->>>>>>> Replace jQuery-based event emitter with Backbone.Events
 
 * **once(eventName, callback, [context])**:
 
@@ -978,11 +968,7 @@ grouping:
 
 .. code-block:: javascript
 
-<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.once('message', function (messageXML) { ... });
-=======
-        converse.listen.once('message', function (messageXML) { ... });
->>>>>>> Replace jQuery-based event emitter with Backbone.Events
 
 * **not(eventName, callback)**
 
@@ -997,9 +983,4 @@ grouping:
 
 .. code-block:: javascript
 
-<<<<<<< 3699a0af5c53a1ba4f8fd030421e4f976368b404
         _converse.listen.not('message', function (messageXML) { ... });
-=======
-        converse.listen.not('message', function (messageXML) { ... });
->>>>>>> Replace jQuery-based event emitter with Backbone.Events
-

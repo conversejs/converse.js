@@ -239,11 +239,9 @@
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-
                 // Test on chat that's not open
                 var box = _converse.api.chats.get(jid);
                 expect(typeof box === 'undefined').toBeTruthy();
-
                 var chatboxview = _converse.chatboxviews.get(jid);
                 // Test for single JID
                 test_utils.openChatBoxFor(_converse, jid);

@@ -9,9 +9,7 @@
     var Strophe = converse.env.Strophe;
 
     describe("Service Discovery", function () {
-
-        describe("Whenever _converse.js discovers a new server feature", function () {
-
+        describe("Whenever converse.js discovers a new server feature", function () {
            it("emits the serviceDiscovered event", mock.initConverse(function (_converse) {
                 spyOn(_converse, 'emit');
                 _converse.features.create({'var': Strophe.NS.MAM});

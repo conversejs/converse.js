@@ -7,6 +7,8 @@
 - `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
 - Breaking change: Callbacks for `converse.on` now no longer receive an event
   object as first parameter. [jcbrand]
+- Cancel button shown while the registration form is being fetched wasn't working
+  properly. [jcbrand]
 
 ## 2.0.5 (Unreleased)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't

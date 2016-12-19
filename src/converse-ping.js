@@ -19,8 +19,6 @@
     "use strict";
     // Strophe methods for building stanzas
     var Strophe = converse_api.env.Strophe;
-    // Other necessary globals
-    var _ = converse_api.env._;
     
     converse_api.plugins.add('converse-ping', {
 
@@ -88,15 +86,6 @@
                     });
                 }
             };
-
-            _.extend(converse_api, {
-                /* We extend the default converse.js API to add a method specific
-                 * to this plugin.
-                 */
-                'ping': function (jid) {
-                    converse.ping(jid);
-                }
-            });
 
             var onConnected = function () {
                 // Wrapper so that we can spy on registerPingHandler in tests

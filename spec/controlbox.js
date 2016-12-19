@@ -23,11 +23,6 @@
     };
 
     describe("The Control Box", function () {
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
 
         it("can be opened by clicking a DOM element with class 'toggle-controlbox'", mock.initConverse(function (converse) {
             runs(function () {
@@ -51,11 +46,6 @@
         }));
 
         describe("The Status Widget", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("shows the user's chat status, which is online by default", mock.initConverse(function (converse) {
                 test_utils.openControlBox();
@@ -123,11 +113,6 @@
     describe("The Contacts Roster", function () {
 
         describe("The live filter", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("will only appear when roster contacts flow over the visible area", mock.initConverse(function (converse) {
                 var $filter = converse.rosterview.$('.roster-filter');
@@ -332,11 +317,6 @@
         });
 
         describe("A Roster Group", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("can be used to organize existing contacts", mock.initConverse(function (converse) {
                 runs(function () {
@@ -432,11 +412,6 @@
         });
 
         describe("Pending Contacts", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             function _addContacts (converse) {
                 // Must be initialized, so that render is called and documentFragment set up.
@@ -599,12 +574,6 @@
             var _addContacts = function (converse) {
                 test_utils.createContacts(converse, 'current').openControlBox().openContactsPanel(converse);
             };
-
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("can be collapsed under their own header", mock.initConverse(function (converse) {
                 runs(function () {
@@ -897,11 +866,6 @@
         });
 
         describe("Requesting Contacts", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("can be added to the roster and they will be sorted alphabetically", mock.initConverse(function (converse) {
                 var i, children;
@@ -1062,11 +1026,6 @@
         });
 
         describe("All Contacts", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("are saved to, and can be retrieved from browserStorage", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'all').openControlBox();
@@ -1117,11 +1076,6 @@
     });
 
     describe("The 'Add Contact' widget", function () {
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
 
         it("opens up an add form when you click on it", mock.initConverse(function (converse) {
             var panel = converse.chatboxviews.get('controlbox').contactspanel;
@@ -1135,11 +1089,6 @@
     });
 
     describe("The Controlbox Tabs", function () {
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
 
         it("contains two tabs, 'Contacts' and 'ChatRooms'", mock.initConverse(function (converse) {
             test_utils.openControlBox();
@@ -1164,11 +1113,6 @@
         }));
 
         describe("chatrooms panel", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("is opened by clicking the 'Chatrooms' tab", mock.initConverse(function (converse) {
                 test_utils.openControlBox();

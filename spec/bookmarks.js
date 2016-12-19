@@ -14,12 +14,6 @@
 
     describe("A chat room", function () {
 
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
-
         it("can be bookmarked", mock.initConverse(function (converse) {
             var sent_stanza, IQ_id;
             var sendIQ = converse.connection.sendIQ;
@@ -151,12 +145,6 @@
 
         describe("when bookmarked", function () {
 
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
-
             it("displays that it's bookmarked through its bookmark icon", mock.initConverse(function (converse) {
                 runs(function () {
                     test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
@@ -241,14 +229,9 @@
         });
 
         describe("and when autojoin is set", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("will be be opened and joined automatically upon login", mock.initConverse(function (converse) {
-                spyOn(converse_api.rooms, 'open');
+                spyOn(converse.api.rooms, 'open');
                 var jid = 'theplay@conference.shakespeare.lit';
                 var model = converse.bookmarks.create({
                     'jid': jid,
@@ -256,7 +239,7 @@
                     'name':  'The Play',
                     'nick': ''
                 });
-                expect(converse_api.rooms.open).not.toHaveBeenCalled();
+                expect(converse.api.rooms.open).not.toHaveBeenCalled();
                 converse.bookmarks.remove(model);
 
                 converse.bookmarks.create({
@@ -265,18 +248,12 @@
                     'name':  'Hamlet',
                     'nick': ''
                 });
-                expect(converse_api.rooms.open).toHaveBeenCalled();
+                expect(converse.api.rooms.open).toHaveBeenCalled();
             }));
         });
     });
 
     describe("Bookmarks", function () {
-
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
 
         it("can be pushed from the XMPP server", mock.initConverse(function (converse) {
             // TODO
@@ -395,11 +372,6 @@
         }));
 
         describe("The rooms panel", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("shows a list of bookmarks", mock.initConverse(function (converse) {
                 var IQ_id;

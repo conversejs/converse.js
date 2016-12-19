@@ -6,10 +6,6 @@
     var b64_sha1 = converse_api.env.b64_sha1;
 
     return describe("The OTR module", function() {
-        afterEach(function () {
-            converse_api.user.logout();
-            test_utils.clearBrowserStorage();
-        });
 
         it("can store a session passphrase in session storage", mock.initConverse(function (converse) {
             // With no prebind, the user's XMPP password is used and nothing is
@@ -65,7 +61,7 @@
 
                 var msgtext = "?OTR,1,3,?OTR:AAIDAAAAAAEAAAABAAAAwCQ8HKsag0y0DGKsneo0kzKu1ua5L93M4UKTkCf1I2kbm2RgS5kIxDTxrTj3wVRB+H5Si86E1fKtuBgsDf/bKkGTM0h/49vh5lOD9HkE8cnSrFEn5GN,";
                 var sender_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
-                converse_api.chats.open(sender_jid);
+                converse.api.chats.open(sender_jid);
                 var chatbox = converse.chatboxes.get(sender_jid);
                 spyOn(converse.connection, 'send');
                 chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session

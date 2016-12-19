@@ -220,7 +220,7 @@
 
                 openBookmarkedRoom: function (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        converse_api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
+                        converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
                     }
                     return bookmark;
                 },

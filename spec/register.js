@@ -6,11 +6,6 @@
     var $iq = converse_api.env.$iq;
 
     describe("The Registration Panel", function () {
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
 
         it("is not available unless allow_registration=true",  mock.initConverse(function (converse) {
             runs(test_utils.openControlBox);

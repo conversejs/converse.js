@@ -18,12 +18,6 @@
             // Stub the trimChat method. It causes havoc when running with
             // phantomJS.
 
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
-
             /* Some level of integration between roster items and presence
              * subscriptions is normally expected by an instant messaging user
              * regarding the user's subscriptions to and from other contacts. This

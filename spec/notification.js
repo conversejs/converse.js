@@ -10,10 +10,6 @@
         describe("When show_desktop_notifications is set to true", function () {
             describe("And the desktop is not focused", function () {
                 describe("an HTML5 Notification", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("is shown when a new private message is received", mock.initConverse(function (converse) {
                         // TODO: not yet testing show_desktop_notifications setting
@@ -94,11 +90,6 @@
 
         describe("When play_sounds is set to true", function () {
             describe("A notification sound", function () {
-
-                afterEach(function () {
-                    converse_api.user.logout();
-                    test_utils.clearBrowserStorage();
-                });
 
                 it("is played when the current user is mentioned in a chat room", mock.initConverse(function (converse) {
                     test_utils.createContacts(converse, 'current');

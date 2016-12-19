@@ -15,12 +15,6 @@
 
         describe("The archive.query API", function () {
 
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
-
            it("can be used to query for all archived messages", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = converse.connection.sendIQ;
@@ -31,7 +25,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                converse_api.archive.query();
+                converse.api.archive.query();
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'><query xmlns='urn:xmpp:mam:0' queryid='"+queryid+"'/></iq>");
@@ -47,7 +41,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                converse_api.archive.query({'with':'juliet@capulet.lit'});
+                converse.api.archive.query({'with':'juliet@capulet.lit'});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -77,7 +71,7 @@
                 }
                 var start = '2010-06-07T00:00:00Z';
                 var end = '2010-07-07T13:23:54Z';
-                converse_api.archive.query({
+                converse.api.archive.query({
                     'start': start,
                     'end': end
 
@@ -106,7 +100,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                expect(_.partial(converse_api.archive.query, {'start': 'not a real date'})).toThrow(
+                expect(_.partial(converse.api.archive.query, {'start': 'not a real date'})).toThrow(
                     new TypeError('archive.query: invalid date provided for: start')
                 );
            }));
@@ -122,7 +116,7 @@
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
-                converse_api.archive.query({'start': start});
+                converse.api.archive.query({'start': start});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -151,7 +145,7 @@
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
-                converse_api.archive.query({'start': start, 'max':10});
+                converse.api.archive.query({'start': start, 'max':10});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -183,7 +177,7 @@
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
-                converse_api.archive.query({
+                converse.api.archive.query({
                     'start': start,
                     'after': '09af3-cc343-b409f',
                     'max':10
@@ -219,7 +213,7 @@
                 if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
                     converse.features.create({'var': Strophe.NS.MAM});
                 }
-                converse_api.archive.query({'before': '', 'max':10});
+                converse.api.archive.query({'before': '', 'max':10});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -255,7 +249,7 @@
                 var rsm =  new Strophe.RSM({'max': '10'});
                 rsm['with'] = 'romeo@montague.lit';
                 rsm.start = '2010-06-07T00:00:00Z';
-                converse_api.archive.query(rsm);
+                converse.api.archive.query(rsm);
 
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
@@ -292,7 +286,7 @@
                 });
                 var callback = jasmine.createSpy('callback');
 
-                converse_api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
+                converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
 
                 // Send the result stanza, so that the callback is called.
@@ -372,12 +366,6 @@
         });
 
         describe("The default preference", function () {
-
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("is set once server support for MAM has been confirmed", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;

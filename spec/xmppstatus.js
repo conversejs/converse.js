@@ -4,10 +4,6 @@
     var $ = converse_api.env.jQuery;
 
     return describe("The XMPPStatus model", function() {
-        afterEach(function () {
-            converse_api.user.logout();
-            test_utils.clearBrowserStorage();
-        });
 
         it("won't send <show>online when setting a custom status message", mock.initConverse(function (converse) {
             converse.xmppstatus.save({'status': 'online'});

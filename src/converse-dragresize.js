@@ -223,6 +223,24 @@
                 }
             },
 
+            HeadlinesBoxView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize: function () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                render: function () {
+                    $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
+                    return this.__super__.render.apply(this, arguments);
+                }
+            },
+
             ControlBoxView: {
                 events: {
                     'mousedown .dragresize-top': 'onStartVerticalResize',

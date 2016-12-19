@@ -1,14 +1,10 @@
 (function (root, factory) {
     define(["mock", "converse-api", "test_utils", "converse-ping"], factory);
-} (this, function (mock, converse_api, test_utils) {
+} (this, function (mock, test_utils) {
     "use strict";
 
     describe("XMPP Ping", function () {
         describe("Ping and pong handlers", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                test_utils.clearBrowserStorage();
-            });
 
             it("are registered when converse.js is connected", mock.initConverse(function (converse) {
                 spyOn(converse, 'registerPingHandler').andCallThrough();
@@ -28,10 +24,6 @@
         });
 
         describe("An IQ stanza", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                test_utils.clearBrowserStorage();
-            });
 
             it("is sent out when converse.js pings a server", mock.initConverse(function (converse) {
                 var sent_stanza, IQ_id;

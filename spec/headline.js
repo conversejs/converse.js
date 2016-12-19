@@ -13,11 +13,6 @@
 
     describe("A headlines box", function () {
 
-        afterEach(function () {
-            converse_api.user.logout();
-            test_utils.clearBrowserStorage();
-        });
-
         it("will not open nor display non-headline messages", mock.initConverse(function (converse) {
             /* XMPP spam message:
              *

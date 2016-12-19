@@ -12,17 +12,27 @@ The converse.js developer API
 .. note:: The API documented here is available in Converse.js 0.8.4 and higher.
         Earlier versions of Converse.js might have different API methods or none at all.
 
-In the Converse.js API, you traverse towards a logical grouping, from
-which you can then call certain standardised accessors and mutators, such as::
+.. note:: From version 3.0.0 and onwards many API methods have been made
+        private and available to plugins only. This means that if you want to
+        use the API, you'll first need to create a plugin from which you can
+        access it. This change is done to avoid leakage of sensitive data to
+        malicious or non-whitelisted scripts.
+
+The Converse.js API is broken up into different logical "groupings" (for
+example ``converse.plugins`` or ``converse.contacts``).
+
+The one exception, is ``converse.initialize``, which is not a grouping, but a
+single method.
+
+The groupings logically group methods, such as standardised accessors and
+mutators::
 
     .get
     .set
     .add
     .remove
 
-This is done to increase readability and to allow intuitive method chaining.
-
-For example, to get a contact, you would do the following::
+So for example, to get a contact, you would do the following::
 
     converse.contacts.get('jid@example.com');
 
@@ -41,8 +51,7 @@ To get all contacts, simply call ``get`` without any jids::
 initialize
 ----------
 
-.. note:: This method is the one exception of a method which is not logically grouped
-    as explained above.
+.. note:: This method is the one exception of a method which is not logically grouped as explained above.
 
 Initializes converse.js. This method must always be called when using
 converse.js.

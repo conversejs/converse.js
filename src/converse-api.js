@@ -17,11 +17,9 @@
         factory);
 }(this, function ($, _, moment, strophe, utils, converse) {
     var Strophe = strophe.Strophe;
-    return {
-        'initialize': function (settings, callback) {
-            return converse.initialize(settings, callback);
-        },
-        'log': converse.log,
+
+    // API methods only available to plugins
+    converse.api = {
         'connection': {
             'connected': function () {
                 return converse.connection && converse.connection.connected || false;
@@ -184,38 +182,21 @@
         'send': function (stanza) {
             converse.connection.send(stanza);
         },
+    };
+
+    // The public API
+    return {
+        'initialize': function (settings, callback) {
+            return converse.initialize(settings, callback);
+        },
         'plugins': {
             'add': function (name, plugin) {
                 plugin.__name__ = name;
                 converse.pluggable.plugins[name] = plugin;
             },
             'remove': function (name) {
-                delete converse.plugins[name];
+                delete converse.pluggable.plugins[name];
             },
-            'override': function (name, value) {
-                /* Helper method for overriding methods and attributes directly on the
-                 * converse object. For Backbone objects, use instead the 'extend'
-                 * method.
-                 *
-                 * If a method is overridden, then the original method will still be
-                 * available via the __super__ attribute.
-                 *
-                 * name: The attribute being overridden.
-                 * value: The value of the attribute being overridden.
-                 */
-                converse._overrideAttribute(name, value);
-            },
-            'extend': function (obj, attributes) {
-                /* Helper method for overriding or extending Converse's Backbone Views or Models
-                 *
-                 * When a method is overriden, the original will still be available
-                 * on the __super__ attribute of the object being overridden.
-                 *
-                 * obj: The Backbone View or Model
-                 * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-                 */
-                converse._extendObject(obj, attributes);
-            }
         },
         'env': {
             '$build': strophe.$build,

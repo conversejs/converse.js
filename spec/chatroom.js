@@ -10,11 +10,6 @@
 
     return describe("ChatRooms", function () {
         describe("The \"rooms\" API", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
@@ -28,11 +23,11 @@
                 });
                 waits('100');
                 runs(function () {
-                    converse_api.rooms.close('lounge@localhost');
+                    converse.api.rooms.close('lounge@localhost');
                     expect(converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
                     expect(converse.chatboxviews.get('news@localhost').$el.is(':visible')).toBeTruthy();
-                    converse_api.rooms.close(['leisure@localhost', 'news@localhost']);
+                    converse.api.rooms.close(['leisure@localhost', 'news@localhost']);
                     expect(converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(converse.chatboxviews.get('news@localhost')).toBeUndefined();
@@ -44,7 +39,7 @@
                 });
                 waits('100');
                 runs(function () {
-                    converse_api.rooms.close();
+                    converse.api.rooms.close();
                     expect(converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                 });
@@ -56,7 +51,7 @@
                 runs(function () {
                     test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                     var jid = 'lounge@localhost';
-                    var room = converse_api.rooms.get(jid);
+                    var room = converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
                     expect(room.is_chatroom).toBeTruthy();
                     var chatroomview = converse.chatboxviews.get(jid);
@@ -68,7 +63,7 @@
                     // Test with mixed case
                     test_utils.openChatRoom(converse, 'Leisure', 'localhost', 'dummy');
                     var jid = 'Leisure@localhost';
-                    var room = converse_api.rooms.get(jid);
+                    var room = converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
                     var chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
@@ -76,13 +71,13 @@
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
                     var jid = 'leisure@localhost';
-                    var room = converse_api.rooms.get(jid);
+                    var room = converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
                     var chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
 
                     jid = 'leiSure@localhost';
-                    room = converse_api.rooms.get(jid);
+                    room = converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
                     chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
@@ -90,7 +85,7 @@
 
                     // Non-existing room
                     jid = 'lounge2@localhost';
-                    room = converse_api.rooms.get(jid);
+                    room = converse.api.rooms.get(jid);
                     expect(typeof room === 'undefined').toBeTruthy();
                 });
             }));
@@ -99,7 +94,7 @@
                 test_utils.createContacts(converse, 'current');
                 var chatroomview;
                 var jid = 'lounge@localhost';
-                var room = converse_api.rooms.open(jid);
+                var room = converse.api.rooms.open(jid);
                 runs(function () {
                     // Test on chat room that doesn't exist.
                     expect(room instanceof Object).toBeTruthy();
@@ -110,7 +105,7 @@
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
                     // Test again, now that the room exists.
-                    room = converse_api.rooms.open(jid);
+                    room = converse.api.rooms.open(jid);
                     expect(room instanceof Object).toBeTruthy();
                     expect(room.is_chatroom).toBeTruthy();
                     chatroomview = converse.chatboxviews.get(jid);
@@ -120,19 +115,19 @@
                 runs(function () {
                     // Test with mixed case in JID
                     jid = 'Leisure@localhost';
-                    room = converse_api.rooms.open(jid);
+                    room = converse.api.rooms.open(jid);
                     expect(room instanceof Object).toBeTruthy();
                     chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
 
                     jid = 'leisure@localhost';
-                    room = converse_api.rooms.open(jid);
+                    room = converse.api.rooms.open(jid);
                     expect(room instanceof Object).toBeTruthy();
                     chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
 
                     jid = 'leiSure@localhost';
-                    room = converse_api.rooms.open(jid);
+                    room = converse.api.rooms.open(jid);
                     expect(room instanceof Object).toBeTruthy();
                     chatroomview = converse.chatboxviews.get(jid.toLowerCase());
                     expect(chatroomview.$el.is(':visible')).toBeTruthy();
@@ -148,7 +143,7 @@
                         IQ_id = sendIQ.bind(this)(iq, callback, errback);
                     });
                     // Test with configuration
-                    converse_api.rooms.open('room@conference.example.org', {
+                    converse.api.rooms.open('room@conference.example.org', {
                         'nick': 'some1',
                         'auto_configure': true,
                         'roomconfig': {
@@ -241,11 +236,6 @@
         });
 
         describe("A Chat Room", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("can have spaces and special characters in its name", mock.initConverse(function (converse) {
                 test_utils.openChatRoom(converse, 'lounge & leisure', 'localhost', 'dummy');
@@ -263,7 +253,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 runs(function () {
-                    converse_api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+                    converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
                     view = converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     spyOn(view, 'saveAffiliationAndRole').andCallThrough();
 
@@ -915,7 +905,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
 
-                converse_api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+                converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
 
                 // Check that the room queried for the feautures.
                 expect(sent_IQ.toLocaleString()).toBe(
@@ -980,7 +970,7 @@
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                converse_api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+                converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
 
                 // We pretend this is a new room, so no disco info is returned.
                 var features_stanza = $iq({
@@ -1145,11 +1135,6 @@
 
 
         describe("Each chat room can take special commands", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("to clear messages", mock.initConverse(function (converse) {
                 test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
@@ -1248,11 +1233,6 @@
         });
 
         describe("When attempting to enter a chatroom", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             var submitRoomForm = function (converse) {
                 var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;

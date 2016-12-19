@@ -228,7 +228,7 @@
                 converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
             };
 
-            _.extend(converse_api, {
+            _.extend(converse.api, {
                 /* Extend default converse.js API to add methods specific to MAM
                  */
                 'archive': {

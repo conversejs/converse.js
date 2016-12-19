@@ -18,40 +18,34 @@
             // Stub the trimChat method. It causes havoc when running with
             // phantomJS.
 
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
-
             /* Some level of integration between roster items and presence
-            * subscriptions is normally expected by an instant messaging user
-            * regarding the user's subscriptions to and from other contacts. This
-            * section describes the level of integration that MUST be supported
-            * within an XMPP instant messaging applications.
-            *
-            * There are four primary subscription states:
-            *
-            * None -- the user does not have a subscription to the contact's
-            *      presence information, and the contact does not have a subscription
-            *      to the user's presence information
-            * To -- the user has a subscription to the contact's presence
-            *      information, but the contact does not have a subscription to the
-            *      user's presence information
-            * From -- the contact has a subscription to the user's presence
-            *      information, but the user does not have a subscription to the
-            *      contact's presence information
-            * Both -- both the user and the contact have subscriptions to each
-            *      other's presence information (i.e., the union of 'from' and 'to')
-            *
-            * Each of these states is reflected in the roster of both the user and
-            * the contact, thus resulting in durable subscription states.
-            *
-            * The 'from' and 'to' addresses are OPTIONAL in roster pushes; if
-            * included, their values SHOULD be the full JID of the resource for
-            * that session. A client MUST acknowledge each roster push with an IQ
-            * stanza of type "result".
-            */
+             * subscriptions is normally expected by an instant messaging user
+             * regarding the user's subscriptions to and from other contacts. This
+             * section describes the level of integration that MUST be supported
+             * within an XMPP instant messaging applications.
+             *
+             * There are four primary subscription states:
+             *
+             * None -- the user does not have a subscription to the contact's
+             *      presence information, and the contact does not have a subscription
+             *      to the user's presence information
+             * To -- the user has a subscription to the contact's presence
+             *      information, but the contact does not have a subscription to the
+             *      user's presence information
+             * From -- the contact has a subscription to the user's presence
+             *      information, but the user does not have a subscription to the
+             *      contact's presence information
+             * Both -- both the user and the contact have subscriptions to each
+             *      other's presence information (i.e., the union of 'from' and 'to')
+             *
+             * Each of these states is reflected in the roster of both the user and
+             * the contact, thus resulting in durable subscription states.
+             *
+             * The 'from' and 'to' addresses are OPTIONAL in roster pushes; if
+             * included, their values SHOULD be the full JID of the resource for
+             * that session. A client MUST acknowledge each roster push with an IQ
+             * stanza of type "result".
+             */
             it("Subscribe to contact, contact accepts and subscribes back", mock.initConverse(function (converse) {
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.

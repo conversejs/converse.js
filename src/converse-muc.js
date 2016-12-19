@@ -1841,7 +1841,7 @@
                         return;
                     }
                     this.addSpinner();
-                    converse_api.archive.query(_.extend(options, {'groupchat': true}),
+                    converse.api.archive.query(_.extend(options, {'groupchat': true}),
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
@@ -2360,9 +2360,9 @@
                  */
                 _.each(converse.auto_join_rooms, function (room) {
                     if (typeof room === 'string') {
-                        converse_api.rooms.open(room);
+                        converse.api.rooms.open(room);
                     } else if (typeof room === 'object') {
-                        converse_api.rooms.open(room.jid, room.nick);
+                        converse.api.rooms.open(room.jid, room.nick);
                     } else {
                         converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
                     }
@@ -2385,7 +2385,7 @@
             /* We extend the default converse.js API to add methods specific to MUC
              * chat rooms.
              */
-            _.extend(converse_api, {
+            _.extend(converse.api, {
                 'rooms': {
                     'close': function (jids) {
                         if (typeof jids === "undefined") {

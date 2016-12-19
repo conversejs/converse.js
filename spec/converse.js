@@ -10,12 +10,6 @@
 
     describe("Converse", function() {
         
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
-
         describe("Authentication", function () {
             it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(function (converse) {
                 var url = converse.bosh_service_url;
@@ -133,41 +127,41 @@
 
                 it("has a method for getting the user's availability", mock.initConverse(function (converse) {
                     converse.xmppstatus.set('status', 'online');
-                    expect(converse_api.user.status.get()).toBe('online');
+                    expect(converse.api.user.status.get()).toBe('online');
                     converse.xmppstatus.set('status', 'dnd');
-                    expect(converse_api.user.status.get()).toBe('dnd');
+                    expect(converse.api.user.status.get()).toBe('dnd');
                 }));
 
                 it("has a method for setting the user's availability", mock.initConverse(function (converse) {
-                    converse_api.user.status.set('away');
+                    converse.api.user.status.set('away');
                     expect(converse.xmppstatus.get('status')).toBe('away');
-                    converse_api.user.status.set('dnd');
+                    converse.api.user.status.set('dnd');
                     expect(converse.xmppstatus.get('status')).toBe('dnd');
-                    converse_api.user.status.set('xa');
+                    converse.api.user.status.set('xa');
                     expect(converse.xmppstatus.get('status')).toBe('xa');
-                    converse_api.user.status.set('chat');
+                    converse.api.user.status.set('chat');
                     expect(converse.xmppstatus.get('status')).toBe('chat');
-                    expect(_.partial(converse_api.user.status.set, 'invalid')).toThrow(
+                    expect(_.partial(converse.api.user.status.set, 'invalid')).toThrow(
                         new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1')
                     );
                 }));
 
                 it("allows setting the status message as well", mock.initConverse(function (converse) {
-                    converse_api.user.status.set('away', "I'm in a meeting");
+                    converse.api.user.status.set('away', "I'm in a meeting");
                     expect(converse.xmppstatus.get('status')).toBe('away');
                     expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 }));
 
                 it("has a method for getting the user's status message", mock.initConverse(function (converse) {
                     converse.xmppstatus.set('status_message', undefined);
-                    expect(converse_api.user.status.message.get()).toBe(undefined);
+                    expect(converse.api.user.status.message.get()).toBe(undefined);
                     converse.xmppstatus.set('status_message', "I'm in a meeting");
-                    expect(converse_api.user.status.message.get()).toBe("I'm in a meeting");
+                    expect(converse.api.user.status.message.get()).toBe("I'm in a meeting");
                 }));
 
                 it("has a method for setting the user's status message", mock.initConverse(function (converse) {
                     converse.xmppstatus.set('status_message', undefined);
-                    converse_api.user.status.message.set("I'm in a meeting");
+                    converse.api.user.status.message.set("I'm in a meeting");
                     expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 }));
             });
@@ -180,11 +174,11 @@
                 var old_connection = converse.connection;
                 converse.connection._proto.rid = '1234';
                 converse.expose_rid_and_sid = false;
-                expect(converse_api.tokens.get('rid')).toBe(null);
+                expect(converse.api.tokens.get('rid')).toBe(null);
                 converse.expose_rid_and_sid = true;
-                expect(converse_api.tokens.get('rid')).toBe('1234');
+                expect(converse.api.tokens.get('rid')).toBe('1234');
                 converse.connection = undefined;
-                expect(converse_api.tokens.get('rid')).toBe(null);
+                expect(converse.api.tokens.get('rid')).toBe(null);
                 // Restore the connection
                 converse.connection = old_connection;
             }));
@@ -194,11 +188,11 @@
                 var old_connection = converse.connection;
                 converse.connection._proto.sid = '1234';
                 converse.expose_rid_and_sid = false;
-                expect(converse_api.tokens.get('sid')).toBe(null);
+                expect(converse.api.tokens.get('sid')).toBe(null);
                 converse.expose_rid_and_sid = true;
-                expect(converse_api.tokens.get('sid')).toBe('1234');
+                expect(converse.api.tokens.get('sid')).toBe('1234');
                 converse.connection = undefined;
-                expect(converse_api.tokens.get('sid')).toBe(null);
+                expect(converse.api.tokens.get('sid')).toBe(null);
                 // Restore the connection
                 converse.connection = old_connection;
             }));
@@ -209,31 +203,31 @@
             it("has a method 'get' which returns wrapped contacts", mock.initConverse(function (converse) {
                 // Check that it returns nothing if a non-existing JID is given
                 test_utils.createContacts(converse, 'current');
-                expect(converse_api.contacts.get('non-existing@jabber.org')).toBeFalsy();
+                expect(converse.api.contacts.get('non-existing@jabber.org')).toBeFalsy();
                 // Check when a single jid is given
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var attrs = converse_api.contacts.get(jid);
+                var attrs = converse.api.contacts.get(jid);
                 expect(typeof attrs).toBe('object');
                 expect(attrs.fullname).toBe(mock.cur_names[0]);
                 expect(attrs.jid).toBe(jid);
                 // You can retrieve multiple contacts by passing in an array
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var list = converse_api.contacts.get([jid, jid2]);
+                var list = converse.api.contacts.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].fullname).toBe(mock.cur_names[0]);
                 expect(list[1].fullname).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
-                list = converse_api.contacts.get();
+                list = converse.api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);
             }));
 
             it("has a method 'add' with which contacts can be added", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
                 var error = new TypeError('contacts.add: invalid jid');
-                expect(converse_api.contacts.add).toThrow(error);
-                expect(converse_api.contacts.add.bind(converse_api, "invalid jid")).toThrow(error);
+                expect(converse.api.contacts.add).toThrow(error);
+                expect(converse.api.contacts.add.bind(converse.api, "invalid jid")).toThrow(error);
                 spyOn(converse.roster, 'addAndSubscribe');
-                converse_api.contacts.add("newcontact@example.org");
+                converse.api.contacts.add("newcontact@example.org");
                 expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
             }));
         });
@@ -243,17 +237,17 @@
             it("has a method 'get' which returns a wrapped chat box", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
                 // Test on chat that doesn't exist.
-                expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                expect(converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 // Test on chat that's not open
-                var box = converse_api.chats.get(jid);
+                var box = converse.api.chats.get(jid);
                 expect(typeof box === 'undefined').toBeTruthy();
 
                 var chatboxview = converse.chatboxviews.get(jid);
                 // Test for single JID
                 test_utils.openChatBoxFor(converse, jid);
-                box = converse_api.chats.get(jid);
+                box = converse.api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
                 chatboxview = converse.chatboxviews.get(jid);
@@ -261,7 +255,7 @@
                 // Test for multiple JIDs
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(converse, jid2);
-                var list = converse_api.chats.get([jid, jid2]);
+                var list = converse.api.chats.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                 expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
@@ -274,8 +268,8 @@
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
                     // Test on chat that doesn't exist.
-                    expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                    var box = converse_api.chats.open(jid);
+                    expect(converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                    var box = converse.api.chats.open(jid);
                     expect(box instanceof Object).toBeTruthy();
                     expect(box.get('box_id')).toBe(b64_sha1(jid));
                     expect(
@@ -286,7 +280,7 @@
                     expect(chatboxview.$el.is(':visible')).toBeTruthy();
                     // Test for multiple JIDs
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var list = converse_api.chats.open([jid, jid2]);
+                    var list = converse.api.chats.open([jid, jid2]);
                     expect(Array.isArray(list)).toBeTruthy();
                     expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                     expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
@@ -296,16 +290,16 @@
 
         describe("The \"settings\" API", function() {
             it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (converse) {
-                expect(Object.keys(converse_api.settings)).toEqual(["get", "set"]);
-                expect(converse_api.settings.get("play_sounds")).toBe(false);
-                converse_api.settings.set("play_sounds", true);
-                expect(converse_api.settings.get("play_sounds")).toBe(true);
-                converse_api.settings.set({"play_sounds": false});
-                expect(converse_api.settings.get("play_sounds")).toBe(false);
+                expect(Object.keys(converse.api.settings)).toEqual(["get", "set"]);
+                expect(converse.api.settings.get("play_sounds")).toBe(false);
+                converse.api.settings.set("play_sounds", true);
+                expect(converse.api.settings.get("play_sounds")).toBe(true);
+                converse.api.settings.set({"play_sounds": false});
+                expect(converse.api.settings.get("play_sounds")).toBe(false);
                 // Only whitelisted settings allowed.
-                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
-                converse_api.settings.set("non_existing", true);
-                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
+                expect(typeof converse.api.settings.get("non_existing")).toBe("undefined");
+                converse.api.settings.set("non_existing", true);
+                expect(typeof converse.api.settings.get("non_existing")).toBe("undefined");
             }));
         });
     });

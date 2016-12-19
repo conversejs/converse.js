@@ -5,12 +5,6 @@
     var $msg = converse_api.env.$msg;
 
     describe("The Minimized Chats Widget", function () {
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
-
 
         it("shows chats that have been minimized",  mock.initConverse(function (converse) {
             test_utils.createContacts(converse, 'current');

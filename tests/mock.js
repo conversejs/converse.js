@@ -77,6 +77,9 @@
 
     mock.initConverse = function (func, settings) {
         return function () {
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+
             var converse = converse_api.initialize(_.extend({
                 i18n: window.locales.en,
                 auto_subscribe: false,

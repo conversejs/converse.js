@@ -15,11 +15,6 @@
 
     return describe("Chatboxes", function() {
         describe("A Chatbox", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("is created when you click on a roster item", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
@@ -277,11 +272,6 @@
             }));
 
             describe("A chat toolbar", function () {
-                afterEach(function () {
-                    converse_api.user.logout();
-                    converse_api.listen.not();
-                    test_utils.clearBrowserStorage();
-                });
 
                 it("can be found on each chat box", mock.initConverse(function (converse) {
                     test_utils.createContacts(converse, 'current');
@@ -452,11 +442,6 @@
             });
 
             describe("A Chat Message", function () {
-                afterEach(function () {
-                    converse_api.user.logout();
-                    converse_api.listen.not();
-                    test_utils.clearBrowserStorage();
-                });
 
                 describe("when received from someone else", function () {
                     it("can be received which will open a chatbox and be displayed inside it", mock.initConverse(function (converse) {
@@ -507,11 +492,6 @@
                     }));
 
                     describe("and for which then an error message is received from the server", function () {
-                        afterEach(function () {
-                            converse_api.user.logout();
-                            converse_api.listen.not();
-                            test_utils.clearBrowserStorage();
-                        });
 
                         it("will have the error message displayed after itself", mock.initConverse(function (converse) {
                             test_utils.createContacts(converse, 'current');
@@ -536,7 +516,7 @@
                             var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                             var fullname = converse.xmppstatus.get('fullname');
                             fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
-                            converse_api.chats.open(sender_jid);
+                            converse.api.chats.open(sender_jid);
                             var msg_text = 'This message will not be sent, due to an error';
                             var view = converse.chatboxviews.get(sender_jid);
                             var message = view.model.messages.create({
@@ -1143,11 +1123,6 @@
             });
 
             describe("A Chat Status Notification", function () {
-                afterEach(function () {
-                    converse_api.user.logout();
-                    converse_api.listen.not();
-                    test_utils.clearBrowserStorage();
-                });
 
                 it("does not open automatically if a chat state notification is received", mock.initConverse(function (converse) {
                     test_utils.createContacts(converse, 'current');
@@ -1168,11 +1143,6 @@
                 }));
 
                 describe("An active notification", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        converse_api.listen.not();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("is sent when the user opens a chat box", mock.initConverse(function (converse) {
                         test_utils.createContacts(converse, 'current');
@@ -1225,11 +1195,6 @@
                 });
 
                 describe("A composing notification", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        converse_api.listen.not();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("is sent as soon as the user starts typing a message which is not a command", mock.initConverse(function (converse) {
                         test_utils.createContacts(converse, 'current');
@@ -1292,11 +1257,6 @@
                 });
 
                 describe("A paused notification", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        converse_api.listen.not();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("is sent if the user has stopped typing since 30 seconds", mock.initConverse(function (converse) {
                         test_utils.createContacts(converse, 'current');
@@ -1381,11 +1341,6 @@
                 });
 
                 describe("An inactive notifciation", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        converse_api.listen.not();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("is sent if the user has stopped typing since 2 minutes", mock.initConverse(function (converse) {
                         test_utils.createContacts(converse, 'current');
@@ -1493,11 +1448,6 @@
                 });
 
                 describe("A gone notifciation", function () {
-                    afterEach(function () {
-                        converse_api.user.logout();
-                        converse_api.listen.not();
-                        test_utils.clearBrowserStorage();
-                    });
 
                     it("will be shown if received", mock.initConverse(function (converse) {
                         test_utils.createContacts(converse, 'current');
@@ -1524,11 +1474,6 @@
         });
 
         describe("Special Messages", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("'/clear' can be used to clear messages in a conversation", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');
@@ -1565,11 +1510,6 @@
         });
 
         describe("A Message Counter", function () {
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
 
             it("is incremented when the message is received and the window is not focused", mock.initConverse(function (converse) {
                 test_utils.createContacts(converse, 'current');

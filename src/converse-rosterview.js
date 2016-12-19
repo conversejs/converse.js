@@ -436,7 +436,7 @@
                     return this;
                 },
 
-                positionFetchedGroups: function (model, resp, options) {
+                positionFetchedGroups: function () {
                     /* Instead of throwing an add event for each group
                      * fetched, we wait until they're all fetched and then
                      * we position them.
@@ -445,19 +445,20 @@
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
+                    var that = this;
                     this.model.sort();
                     this.model.each(function (group, idx) {
-                        var view = this.get(group.get('name'));
+                        var view = that.get(group.get('name'));
                         if (!view) {
                             view = new converse.RosterGroupView({model: group});
-                            this.add(group.get('name'), view.render());
+                            that.add(group.get('name'), view.render());
                         }
                         if (idx === 0) {
-                            this.$roster.append(view.$el);
+                            that.$roster.append(view.$el);
                         } else {
-                            this.appendGroup(view);
+                            that.appendGroup(view);
                         }
-                    }.bind(this));
+                    });
                 },
 
                 positionGroup: function (view) {

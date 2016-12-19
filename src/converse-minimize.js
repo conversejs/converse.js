@@ -504,7 +504,7 @@
                 }
             });
 
-            var renderMinimizeButton = function (evt, view) {
+            var renderMinimizeButton = function (view) {
                 // Inserts a "minimize" button in the chatview's header
                 var $el = view.$el.find('.toggle-chatbox-button');
                 var $new_el = converse.templates.chatbox_minimize(
@@ -518,7 +518,7 @@
             };
             converse.on('chatBoxOpened', renderMinimizeButton);
 
-            converse.on('controlBoxOpened', function (evt, chatbox) {
+            converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.
                 if (converse.connection.connected) {

@@ -151,7 +151,7 @@ For example:
 
 .. code-block:: javascript
 
-    converse.listen.on('serviceDiscovered', function (event, feature) {
+    converse.listen.on('serviceDiscovered', function (feature) {
         if (feature.get('var') === converse.env.Strophe.NS.MAM) {
             converse.archive.query()
         }
@@ -687,7 +687,7 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.on('message', function (event, messageXML) { ... });
+        converse.listen.on('message', function (messageXML) { ... });
 
 * **once(eventName, callback, [context])**:
 
@@ -704,7 +704,7 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.once('message', function (event, messageXML) { ... });
+        converse.listen.once('message', function (messageXML) { ... });
 
 * **not(eventName, callback)**
 
@@ -719,5 +719,5 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.not('message', function (event, messageXML) { ... });
+        converse.listen.not('message', function (messageXML) { ... });
 

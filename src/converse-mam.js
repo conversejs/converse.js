@@ -278,7 +278,7 @@
             };
 
 
-            var onFeatureAdded = function (evt, feature) {
+            var onFeatureAdded = function (feature) {
                 var prefs = feature.get('preferences') || {};
                 if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
                     // Ask the server for archiving preferences

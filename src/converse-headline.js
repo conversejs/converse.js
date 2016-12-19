@@ -14,10 +14,26 @@
 }(this, function (converse) {
     "use strict";
     var _ = converse.env._,
-        utils = converse.env.utils;
+        utils = converse.env.utils,
+        __ = utils.__.bind(converse);
+
+    var onHeadlineMessage = function (message) {
+        /* Handler method for all incoming messages of type "headline".
+         */
+        var from_jid = message.getAttribute('from');
+        if (utils.isHeadlineMessage(message)) {
+            converse.chatboxes.create({
+                'id': from_jid,
+                'jid': from_jid,
+                'fullname':  from_jid,
+                'type': 'headline'
+            }).createMessage(message, undefined, message);
+            converse.emit('message', message);
+        }
+        return true;
+    };
 
     converse.plugins.add('converse-headline', {
-
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

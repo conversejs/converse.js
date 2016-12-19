@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, window */
+/*global define */
 
 (function (root, factory) {
     define("converse-headline", [
@@ -67,17 +67,10 @@
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .toggle-chatbox-button': 'minimize',
-                    'keypress textarea.chat-textarea': 'keyPressed',
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                    'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
                 initialize: function () {
-                    if (typeof this.setDimensions !== "undefined") {
-                        // setDimensions is defined for dragresize
-                        window.addEventListener('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    }
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -101,10 +94,6 @@
                                 )
                             )
                         );
-                    if (typeof this.setWidth !== "undefined") {
-                        // setWidth is defined for dragresize
-                        window.addEventListener('resize', _.debounce(this.setWidth.bind(this), 100));
-                    }
                     this.$content = this.$el.find('.chat-content');
                     converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();

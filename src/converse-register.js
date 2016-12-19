@@ -268,9 +268,9 @@
                             this.giveFeedback(error, 'error');
                         } else {
                             this.giveFeedback(__(
-                                    'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
-                                    this.domain
-                                ), 'error');
+                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
                         }
                     } else if (status === Strophe.Status.REGISTERED) {
                         converse.log("Registered successfully.");
@@ -286,12 +286,11 @@
                                     converse.onConnectStatusChanged
                                 );
                                 converse.chatboxviews.get('controlbox')
-                                    .switchTab({target: that.$tabs.find('.current')})
-                                    .giveFeedback(__('Now logging you in'));
+                                    .switchTab({'target': that.$tabs.find('.current')});
+                                converse.giveFeedback(__('Now logging you in'));
                             } else {
-                                converse.chatboxviews.get('controlbox')
-                                    .renderLoginPanel()
-                                    .giveFeedback(__('Registered successfully'));
+                                converse.chatboxviews.get('controlbox').renderLoginPanel();
+                                converse.giveFeedback(__('Registered successfully'));
                             }
                             that.reset();
                         });

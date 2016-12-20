@@ -15,11 +15,11 @@
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function (converse, converse_api, tpl_dragresize) {
+}(this, function (_converse, converse_api, tpl_dragresize) {
     "use strict";
     var $ = converse_api.env.jQuery,
         _ = converse_api.env._;
-    converse.templates.dragresize = tpl_dragresize;
+    _converse.templates.dragresize = tpl_dragresize;
 
     converse_api.plugins.add('converse-dragresize', {
 
@@ -67,8 +67,8 @@
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
                     save({
-                        'height': converse.applyDragResistance(height, this.get('default_height')),
-                        'width': converse.applyDragResistance(width, this.get('default_width')),
+                        'height': _converse.applyDragResistance(height, this.get('default_height')),
+                        'width': _converse.applyDragResistance(width, this.get('default_width')),
                     });
                     return result;
                 }
@@ -125,7 +125,7 @@
                     // Initialize last known mouse position
                     this.prev_pageY = 0;
                     this.prev_pageX = 0;
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         this.height = this.model.get('height');
                         this.width = this.model.get('width');
                     }
@@ -141,7 +141,7 @@
 
                 setChatBoxHeight: function (height) {
                     if (height) {
-                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                        height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
                     } else {
                         height = "";
                     }
@@ -150,7 +150,7 @@
 
                 setChatBoxWidth: function (width) {
                     if (width) {
-                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                        width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
                     } else {
                         width = "";
                     }
@@ -176,10 +176,10 @@
                 },
 
                 onStartVerticalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
+                    if (!_converse.allow_dragresize) { return true; }
                     // Record element attributes for mouseMove().
                     this.height = this.$el.children('.box-flyout').height();
-                    converse.resizing = {
+                    _converse.resizing = {
                         'chatbox': this,
                         'direction': 'top'
                     };
@@ -187,9 +187,9 @@
                 },
 
                 onStartHorizontalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
+                    if (!_converse.allow_dragresize) { return true; }
                     this.width = this.$el.children('.box-flyout').width();
-                    converse.resizing = {
+                    _converse.resizing = {
                         'chatbox': this,
                         'direction': 'left'
                     };
@@ -199,12 +199,12 @@
                 onStartDiagonalResize: function (ev) {
                     this.onStartHorizontalResize(ev);
                     this.onStartVerticalResize(ev);
-                    converse.resizing.direction = 'topleft';
+                    _converse.resizing.direction = 'topleft';
                 },
 
                 resizeChatBox: function (ev) {
                     var diff;
-                    if (converse.resizing.direction.indexOf('top') === 0) {
+                    if (_converse.resizing.direction.indexOf('top') === 0) {
                         diff = ev.pageY - this.prev_pageY;
                         if (diff) {
                             this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
@@ -212,7 +212,7 @@
                             this.setChatBoxHeight(this.height);
                         }
                     }
-                    if (converse.resizing.direction.indexOf('left') !== -1) {
+                    if (_converse.resizing.direction.indexOf('left') !== -1) {
                         diff = this.prev_pageX - ev.pageX;
                         if (diff) {
                             this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
@@ -288,7 +288,7 @@
                 renderDragResizeHandles: function () {
                     var flyout = this.el.querySelector('.box-flyout');
                     var div = document.createElement('div');
-                    div.innerHTML = converse.templates.dragresize();
+                    div.innerHTML = _converse.templates.dragresize();
                     flyout.insertBefore(
                         div.firstChild,
                         flyout.firstChild
@@ -301,11 +301,11 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this.converse;
             this.updateSettings({
                 allow_dragresize: true,
             });
-            converse.applyDragResistance = function (value, default_value) {
+            _converse.applyDragResistance = function (value, default_value) {
                 /* This method applies some resistance around the
                 * default_value. If value is close enough to
                 * default_value, then default_value is returned instead.

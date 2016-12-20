@@ -1,17 +1,17 @@
 (function (root, factory) {
     define(["mock", "converse-api", "test_utils"], factory);
-} (this, function (mock, converse_api, test_utils) {
-    var _ = converse_api.env._;
-    var $iq = converse_api.env.$iq;
+} (this, function (mock, converse, test_utils) {
+    var _ = converse.env._;
+    var $iq = converse.env.$iq;
 
     describe("Profiling", function() {
         afterEach(function () {
-            converse_api.user.logout();
+            converse.user.logout();
             test_utils.clearBrowserStorage();
         });
 
-        xit("adds hundreds of contacts to the roster", mock.initConverse(function(converse) {
-            converse.roster_groups = false;
+        xit("adds hundreds of contacts to the roster", mock.initConverse(function(_converse) {
+            _converse.roster_groups = false;
             expect(this.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
                 to: this.connection.jid,
@@ -33,9 +33,9 @@
             // expect(this.roster.pluck('jid').length).toBe(400);
         }));
 
-        xit("adds hundreds of contacts to the roster, with roster groups", mock.initConverse(function(converse) {
-            // converse.show_only_online_users = true;
-            converse.roster_groups = true;
+        xit("adds hundreds of contacts to the roster, with roster groups", mock.initConverse(function(_converse) {
+            // _converse.show_only_online_users = true;
+            _converse.roster_groups = true;
             expect(this.roster.pluck('jid').length).toBe(0);
             var stanza = $iq({
                 to: this.connection.jid,

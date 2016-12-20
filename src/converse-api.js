@@ -15,82 +15,82 @@
             "converse-core"
         ],
         factory);
-}(this, function ($, _, moment, strophe, utils, converse) {
+}(this, function ($, _, moment, strophe, utils, _converse) {
     var Strophe = strophe.Strophe;
 
     // API methods only available to plugins
-    converse.api = {
+    _converse.api = {
         'connection': {
             'connected': function () {
-                return converse.connection && converse.connection.connected || false;
+                return _converse.connection && _converse.connection.connected || false;
             },
             'disconnect': function () {
-                converse.connection.disconnect();
+                _converse.connection.disconnect();
             },
         },
         'user': {
             'jid': function () {
-                return converse.connection.jid;
+                return _converse.connection.jid;
             },
             'login': function (credentials) {
-                converse.initConnection();
-                converse.logIn(credentials);
+                _converse.initConnection();
+                _converse.logIn(credentials);
             },
             'logout': function () {
-                converse.logOut();
+                _converse.logOut();
             },
             'status': {
                 'get': function () {
-                    return converse.xmppstatus.get('status');
+                    return _converse.xmppstatus.get('status');
                 },
                 'set': function (value, message) {
                     var data = {'status': value};
-                    if (!_.contains(_.keys(converse.STATUS_WEIGHTS), value)) {
+                    if (!_.contains(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
                     if (typeof message === "string") {
                         data.status_message = message;
                     }
-                    converse.xmppstatus.sendPresence(value);
-                    converse.xmppstatus.save(data);
+                    _converse.xmppstatus.sendPresence(value);
+                    _converse.xmppstatus.save(data);
                 },
                 'message': {
                     'get': function () {
-                        return converse.xmppstatus.get('status_message');
+                        return _converse.xmppstatus.get('status_message');
                     },
                     'set': function (stat) {
-                        converse.xmppstatus.save({'status_message': stat});
+                        _converse.xmppstatus.save({'status_message': stat});
                     }
                 }
             },
         },
         'settings': {
             'get': function (key) {
-                if (_.contains(Object.keys(converse.default_settings), key)) {
-                    return converse[key];
+                if (_.contains(Object.keys(_converse.default_settings), key)) {
+                    return _converse[key];
                 }
             },
             'set': function (key, val) {
                 var o = {};
                 if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
+                    _.extend(_converse, _.pick(key, Object.keys(_converse.default_settings)));
                 } else if (typeof key === "string") {
                     o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.extend(_converse, _.pick(o, Object.keys(_converse.default_settings)));
                 }
             }
         },
         'contacts': {
             'get': function (jids) {
                 var _transform = function (jid) {
-                    var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
                         return contact.attributes;
                     }
                     return null;
                 };
                 if (typeof jids === "undefined") {
-                    jids = converse.roster.pluck('jid');
+                    jids = _converse.roster.pluck('jid');
                 } else if (typeof jids === "string") {
                     return _transform(jids);
                 }
@@ -100,24 +100,24 @@
                 if (typeof jid !== "string" || jid.indexOf('@') < 0) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
-                converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
+                _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
         'chats': {
             'open': function (jids) {
                 var chatbox;
                 if (typeof jids === "undefined") {
-                    converse.log("chats.open: You need to provide at least one JID", "error");
+                    _converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jids, true).trigger('show')
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jids, true).trigger('show')
                     );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jid, true).trigger('show')
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jid, true).trigger('show')
                     );
                     return chatbox;
                 });
@@ -125,21 +125,21 @@
             'get': function (jids) {
                 if (typeof jids === "undefined") {
                     var result = [];
-                    converse.chatboxes.each(function (chatbox) {
+                    _converse.chatboxes.each(function (chatbox) {
                         // FIXME: Leaky abstraction from MUC. We need to add a
                         // base type for chat boxes, and check for that.
                         if (chatbox.get('type') !== 'chatroom') {
-                            result.push(converse.wrappedChatBox(chatbox));
+                            result.push(_converse.wrappedChatBox(chatbox));
                         }
                     });
                     return result;
                 } else if (typeof jids === "string") {
-                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids));
+                    return _converse.wrappedChatBox(_converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(
                         _.compose(
-                            converse.wrappedChatBox.bind(converse), converse.chatboxes.getChatBox.bind(converse.chatboxes)
+                            _converse.wrappedChatBox.bind(_converse), _converse.chatboxes.getChatBox.bind(_converse.chatboxes)
                         ), _, true
                     )
                 );
@@ -147,20 +147,20 @@
         },
         'tokens': {
             'get': function (id) {
-                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
+                if (!_converse.expose_rid_and_sid || typeof _converse.connection === "undefined") {
                     return null;
                 }
                 if (id.toLowerCase() === 'rid') {
-                    return converse.connection.rid || converse.connection._proto.rid;
+                    return _converse.connection.rid || _converse.connection._proto.rid;
                 } else if (id.toLowerCase() === 'sid') {
-                    return converse.connection.sid || converse.connection._proto.sid;
+                    return _converse.connection.sid || _converse.connection._proto.sid;
                 }
             }
         },
         'listen': {
-            'once': converse.once,
-            'on': converse.on,
-            'not': converse.off,
+            'once': _converse.once,
+            'on': _converse.on,
+            'not': _converse.off,
             'stanza': function (name, options, handler) {
                 if (typeof options === 'function') {
                     handler = options;
@@ -168,7 +168,7 @@
                 } else {
                     options = options || {};
                 }
-                converse.connection.addHandler(
+                _converse.connection.addHandler(
                     handler,
                     options.ns,
                     name,
@@ -180,22 +180,22 @@
             },
         },
         'send': function (stanza) {
-            converse.connection.send(stanza);
+            _converse.connection.send(stanza);
         },
     };
 
     // The public API
     return {
         'initialize': function (settings, callback) {
-            return converse.initialize(settings, callback);
+            return _converse.initialize(settings, callback);
         },
         'plugins': {
             'add': function (name, plugin) {
                 plugin.__name__ = name;
-                converse.pluggable.plugins[name] = plugin;
+                _converse.pluggable.plugins[name] = plugin;
             },
             'remove': function (name) {
-                delete converse.pluggable.plugins[name];
+                delete _converse.pluggable.plugins[name];
             },
         },
         'env': {

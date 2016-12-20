@@ -1,16 +1,17 @@
-/*global converse */
+/*global _converse */
 (function (root, factory) {
     define([
         "jquery",
         "underscore",
         "mock",
+        "converse_api",
         "test_utils",
         "utils",
         "transcripts"
         ], factory
     );
-} (this, function ($, _, mock, test_utils, utils, transcripts) {
-    var Strophe = converse_api.env.Strophe;
+} (this, function ($, _, mock, converse, test_utils, utils, transcripts) {
+    var Strophe = converse.env.Strophe;
     var IGNORED_TAGS = [
         'stream:features',
         'auth',
@@ -54,7 +55,7 @@
         });
 
         it("can be used to replay conversations", function () {
-            spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
+            spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
             _.each(transcripts, function (transcript) {
                 var text = transcript();
                 var xml = Strophe.xmlHtmlNode(text);
@@ -67,7 +68,7 @@
                             return;
                         }
                         var _stanza = traverseElement(el);
-                        converse.connection._dataRecv(test_utils.createRequest(_stanza));
+                        _converse.connection._dataRecv(test_utils.createRequest(_stanza));
                     });
                 });
             });

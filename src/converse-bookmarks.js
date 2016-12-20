@@ -27,24 +27,24 @@
         factory);
 }(this, function (
         $, _, moment, strophe, utils,
-        converse, converse_api, muc,
+        _converse, converse_api, muc,
         tpl_chatroom_bookmark_form,
         tpl_chatroom_bookmark_toggle,
         tpl_bookmark,
         tpl_bookmarks_list
     ) {
 
-    var __ = utils.__.bind(converse),
+    var __ = utils.__.bind(_converse),
         ___ = utils.___,
         Strophe = converse_api.env.Strophe,
         $iq = converse_api.env.$iq,
         b64_sha1 = converse_api.env.b64_sha1;
 
     // Add new HTML templates.
-    converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
-    converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
-    converse.templates.bookmark = tpl_bookmark;
-    converse.templates.bookmarks_list = tpl_bookmarks_list;
+    _converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
+    _converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
+    _converse.templates.bookmark = tpl_bookmark;
+    _converse.templates.bookmarks_list = tpl_bookmarks_list;
 
     converse_api.plugins.add('converse-bookmarks', {
         overrides: {
@@ -74,10 +74,10 @@
 
                 generateHeadingHTML: function () {
                     var html = this.__super__.generateHeadingHTML.apply(this, arguments);
-                    if (converse.allow_bookmarks) {
+                    if (_converse.allow_bookmarks) {
                         var div = document.createElement('div');
                         div.innerHTML = html;
-                        var bookmark_button = converse.templates.chatroom_bookmark_toggle(
+                        var bookmark_button = _converse.templates.chatroom_bookmark_toggle(
                             _.extend(
                                 this.model.toJSON(),
                                 {
@@ -97,10 +97,10 @@
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    if (_.isUndefined(converse.bookmarks) || !converse.allow_bookmarks) {
+                    if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
-                    var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    var model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(this.model.get('nick'));
                     } else {
@@ -119,8 +119,8 @@
                 setBookmarkState: function () {
                     /* Set whether the room is bookmarked or not.
                      */
-                    if (!_.isUndefined(converse.bookmarks)) {
-                        var models = converse.bookmarks.where({'jid': this.model.get('jid')});
+                    if (!_.isUndefined(_converse.bookmarks)) {
+                        var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                         if (!models.length) {
                             this.model.save('bookmarked', false);
                         } else {
@@ -135,7 +135,7 @@
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
                     $body.append(
-                        converse.templates.chatroom_bookmark_form({
+                        _converse.templates.chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
                             label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
@@ -151,7 +151,7 @@
                 onBookmarkFormSubmitted: function (ev) {
                     ev.preventDefault();
                     var $form = $(ev.target), that = this;
-                    converse.bookmarks.createBookmark({
+                    _converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
                         'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
                         'name':  $form.find('input[name=name]').val(),
@@ -169,7 +169,7 @@
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
-                    var models = converse.bookmarks.where({'jid': this.model.get('jid')});
+                    var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
@@ -186,7 +186,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this.converse;
             // Configuration values for this plugin
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these
@@ -195,32 +195,32 @@
                 allow_bookmarks: true
             });
 
-            converse.Bookmark = Backbone.Model;
+            _converse.Bookmark = Backbone.Model;
 
-            converse.BookmarksList = Backbone.Model.extend({
+            _converse.BookmarksList = Backbone.Model.extend({
                 defaults: {
-                    "toggle-state":  converse.OPENED
+                    "toggle-state":  _converse.OPENED
                 }
             });
 
-            converse.Bookmarks = Backbone.Collection.extend({
-                model: converse.Bookmark,
+            _converse.Bookmarks = Backbone.Collection.extend({
+                model: _converse.Bookmark,
 
                 initialize: function () {
                     this.on('add', _.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
-                    var cache_key = 'converse.room-bookmarks'+converse.bare_jid;
+                    var cache_key = 'converse.room-bookmarks'+_converse.bare_jid;
                     this.cached_flag = b64_sha1(cache_key+'fetched');
-                    this.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(cache_key)
                     );
                 },
 
                 openBookmarkedRoom: function (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
+                        _converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
                     }
                     return bookmark;
                 },
@@ -250,14 +250,14 @@
                 },
 
                 createBookmark: function (options) {
-                    converse.bookmarks.create(options);
-                    converse.bookmarks.sendBookmarkStanza();
+                    _converse.bookmarks.create(options);
+                    _converse.bookmarks.sendBookmarkStanza();
                 },
 
                 sendBookmarkStanza: function () {
                     var stanza = $iq({
                             'type': 'set',
-                            'from': converse.connection.jid,
+                            'from': _converse.connection.jid,
                         })
                         .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                             .c('publish', {'node': 'storage:bookmarks'})
@@ -279,12 +279,12 @@
                                 .c('value').t('true').up().up()
                             .c('field', {'var':'pubsub#access_model'})
                                 .c('value').t('whitelist');
-                    converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+                    _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
                 },
 
                 onBookmarkError: function (iq) {
-                    converse.log("Error while trying to add bookmark", "error");
-                    converse.log(iq);
+                    _converse.log("Error while trying to add bookmark", "error");
+                    _converse.log(iq);
                     // We remove all locally cached bookmarks and fetch them
                     // again from the server.
                     this.reset();
@@ -294,11 +294,11 @@
 
                 fetchBookmarksFromServer: function (deferred) {
                     var stanza = $iq({
-                        'from': converse.connection.jid,
+                        'from': _converse.connection.jid,
                         'type': 'get',
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'});
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         stanza,
                         _.bind(this.onBookmarksReceived, this, deferred),
                         _.bind(this.onBookmarksReceivedError, this, deferred)
@@ -306,14 +306,14 @@
                 },
 
                 markRoomAsBookmarked: function (bookmark) {
-                    var room = converse.chatboxes.get(bookmark.get('jid'));
+                    var room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', true);
                     }
                 },
 
                 markRoomAsUnbookmarked: function (bookmark) {
-                    var room = converse.chatboxes.get(bookmark.get('jid'));
+                    var room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', false);
                     }
@@ -339,15 +339,15 @@
 
                 onBookmarksReceivedError: function (deferred, iq) {
                     window.sessionStorage.setItem(this.cached_flag, true);
-                    converse.log('Error while fetching bookmarks');
-                    converse.log(iq);
+                    _converse.log('Error while fetching bookmarks');
+                    _converse.log(iq);
                     if (!_.isUndefined(deferred)) {
                         return deferred.reject();
                     }
                 }
             });
 
-            converse.BookmarksView = Backbone.View.extend({
+            _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
                 className: 'bookmarks-list',
                 events: {
@@ -359,10 +359,10 @@
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
 
-                    var cachekey = 'converse.room-bookmarks'+converse.bare_jid+'-list-model';
-                    this.list_model = new converse.BookmarksList();
+                    var cachekey = 'converse.room-bookmarks'+_converse.bare_jid+'-list-model';
+                    this.list_model = new _converse.BookmarksList();
                     this.list_model.id = cachekey;
-                    this.list_model.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(cachekey)
                     );
                     this.list_model.fetch();
@@ -370,16 +370,16 @@
                 },
 
                 render: function (cfg) {
-                    this.$el.html(converse.templates.bookmarks_list({
+                    this.$el.html(_converse.templates.bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
                     })).hide();
-                    if (this.list_model.get('toggle-state') !== converse.OPENED) {
+                    if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.$('.bookmarks').hide();
                     }
                     this.model.each(this.renderBookmarkListElement, this);
-                    var controlboxview = converse.chatboxviews.get('controlbox');
+                    var controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         this.$el.prependTo(controlboxview.$('#chatrooms'));
                     }
@@ -391,12 +391,12 @@
                     var name = $(ev.target).data('bookmarkName');
                     var jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.each(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
+                        _.each(_converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
                     }
                 },
 
                 renderBookmarkListElement: function (item) {
-                    var $bookmark = $(converse.templates.bookmark({
+                    var $bookmark = $(_converse.templates.bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
                             'open_title': __('Click to open this room'),
@@ -421,40 +421,40 @@
                     var $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
                         this.$('.bookmarks').slideUp('fast');
-                        this.list_model.save({'toggle-state': converse.CLOSED});
+                        this.list_model.save({'toggle-state': _converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
                         this.$('.bookmarks').slideDown('fast');
-                        this.list_model.save({'toggle-state': converse.OPENED});
+                        this.list_model.save({'toggle-state': _converse.OPENED});
                     }
                 }
             });
 
             var initBookmarks = function () {
-                if (!converse.allow_bookmarks) {
+                if (!_converse.allow_bookmarks) {
                     return;
                 }
-                converse.bookmarks = new converse.Bookmarks();
-                converse.bookmarks.fetchBookmarks().always(function () {
-                    converse.bookmarksview = new converse.BookmarksView(
-                        {'model': converse.bookmarks}
+                _converse.bookmarks = new _converse.Bookmarks();
+                _converse.bookmarks.fetchBookmarks().always(function () {
+                    _converse.bookmarksview = new _converse.BookmarksView(
+                        {'model': _converse.bookmarks}
                     );
                 });
             };
-            converse.on('chatBoxesFetched', initBookmarks);
+            _converse.on('chatBoxesFetched', initBookmarks);
 
             var afterReconnection = function () {
-                if (!converse.allow_bookmarks) {
+                if (!_converse.allow_bookmarks) {
                     return;
                 }
-                if (_.isUndefined(converse.bookmarksview)) {
+                if (_.isUndefined(_converse.bookmarksview)) {
                     initBookmarks();
                 } else {
-                    converse.bookmarksview.render();
+                    _converse.bookmarksview.render();
                 }
             };
-            converse.on('reconnected', afterReconnection);
+            _converse.on('reconnected', afterReconnection);
         }
     });
 }));

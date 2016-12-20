@@ -514,11 +514,9 @@ retrieving the user's custom status message.
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-
             this._converse.user.status.message.set('In a meeting');
             // Returns "In a meeting"
             return this._converse.user.status.message.get();
-
         }
     });
 

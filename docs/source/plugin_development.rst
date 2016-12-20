@@ -134,7 +134,7 @@ An example plugin
                     sendPresence: function (type, status_message, jid) {
                         // The "_converse" object is available via the __super__
                         // attribute.
-                        var _converse = this.__super__.converse;
+                        var _converse = this.__super__._converse;
 
                         // Custom code can come here
                         // ...

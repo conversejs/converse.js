@@ -132,7 +132,7 @@
 
             ControlBoxView: {
                 renderContactsPanel: function () {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.roomspanel = new _converse.RoomsPanel({
@@ -153,7 +153,7 @@
                 },
 
                 onConnected: function () {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.onConnected.apply(this, arguments);
                     if (!this.model.get('connected')) {
                         return;
@@ -183,7 +183,7 @@
                 },
 
                 featureAdded: function (feature) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
                         this.setMUCDomain(feature.get('from'));
                     }

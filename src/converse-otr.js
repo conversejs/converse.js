@@ -108,7 +108,7 @@
                 },
 
                 createMessage: function (message, delay, original_stanza) {
-                    var _converse = this.__super__.converse,
+                    var _converse = this.__super__._converse,
                         text = _.propertyOf(message.querySelector('body'))('textContent');
 
                     if ((!text) || (!_converse.allow_otr)) {
@@ -135,7 +135,7 @@
                 },
                 
                 getSession: function (callback) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
                     var pass, instance_tag, saved_key, pass_check;
                     if (_converse.cache_otr_key) {
@@ -226,7 +226,7 @@
                     // send the query message to them.
                     this.save({'otr_status': UNENCRYPTED});
                     this.getSession(function (session) {
-                        var _converse = this.__super__.converse;
+                        var _converse = this.__super__._converse;
                         this.otr = new otr.OTR({
                             fragment_size: 140,
                             send_interval: 200,
@@ -273,7 +273,7 @@
                 },
 
                 initialize: function () {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                     this.model.on('showOTRError', this.showOTRError, this);
@@ -301,7 +301,7 @@
                 },
 
                 onMessageSubmitted: function (text) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     if (!_converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
@@ -346,7 +346,7 @@
                 },
 
                 showOTRError: function (msg) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     if (msg === 'Message cannot be sent at this time.') {
                         this.showHelpMessages(
                             [__('Your message could not be sent')], 'error');
@@ -378,7 +378,7 @@
                 },
 
                 authOTR: function (ev) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     var scheme = $(ev.target).data().scheme;
                     var result, question, answer;
                     if (scheme === 'fingerprint') {
@@ -425,7 +425,7 @@
                 },
 
                 renderToolbar: function (toolbar, options) {
-                    var _converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     if (!_converse.show_toolbar) {
                         return;
                     }
@@ -461,7 +461,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this.converse;
+            var _converse = this._converse;
             // Translation aware constants
             // ---------------------------
             // We can only call the __ translation method *after* converse.js

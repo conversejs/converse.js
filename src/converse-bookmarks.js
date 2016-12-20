@@ -186,7 +186,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this.converse;
+            var _converse = this._converse;
             // Configuration values for this plugin
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these

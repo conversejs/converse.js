@@ -28,6 +28,7 @@
     var HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
         ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
     ));
+
     var HAS_CRYPTO = HAS_CSPRNG && (
         (!_.isUndefined(CryptoJS)) &&
         (!_.isUndefined(otr.OTR)) &&

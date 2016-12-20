@@ -31,7 +31,6 @@
         moment = converse.env.moment;
 
     converse.plugins.add('converse-minimize', {
-
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

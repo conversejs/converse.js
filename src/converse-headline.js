@@ -22,13 +22,13 @@
          */
         var from_jid = message.getAttribute('from');
         if (utils.isHeadlineMessage(message)) {
-            converse.chatboxes.create({
+            _converse.chatboxes.create({
                 'id': from_jid,
                 'jid': from_jid,
                 'fullname':  from_jid,
                 'type': 'headline'
             }).createMessage(message, undefined, message);
-            converse.emit('message', message);
+            _converse.emit('message', message);
         }
         return true;
     };

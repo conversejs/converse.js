@@ -32,6 +32,7 @@
         $msg = converse.env.$msg,
         _ = converse.env._,
         moment = converse.env.moment;
+
     var KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47

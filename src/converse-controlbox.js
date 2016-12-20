@@ -44,7 +44,6 @@
     "use strict";
 
     var USERS_PANEL_ID = 'users';
-
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
         utils = converse.env.utils;

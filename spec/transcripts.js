@@ -3,6 +3,7 @@
     define([
         "converse_api",
         "mock",
+        "converse_api",
         "test_utils",
         "utils",
         "transcripts"

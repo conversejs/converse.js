@@ -31,7 +31,6 @@
             "converse-chatview"
     ], factory);
 }(this, function (
-            _converse,
             converse,
             tpl_chatarea,
             tpl_chatroom,

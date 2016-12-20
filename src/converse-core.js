@@ -394,7 +394,6 @@
             _converse._tearDown();
             _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
-            return 'disconnected';
         };
 
         this.onDisconnected = function () {

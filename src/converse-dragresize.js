@@ -311,7 +311,6 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-
             // Add new HTML template
             _converse.templates.dragresize = tpl_dragresize;
 

@@ -8,20 +8,18 @@
 
 (function (root, factory) {
     define("converse-dragresize", [
-            "converse-core",
             "converse-api",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function (_converse, converse_api, tpl_dragresize) {
+}(this, function (converse, tpl_dragresize) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-    _converse.templates.dragresize = tpl_dragresize;
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
 
-    converse_api.plugins.add('converse-dragresize', {
+    converse.plugins.add('converse-dragresize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -31,38 +29,41 @@
             // New functions which don't exist yet can also be added.
 
             registerGlobalEventHandlers: function () {
+                var that = this;
+                
                 $(document).on('mousemove', function (ev) {
-                    if (!this.resizing || !this.allow_dragresize) { return true; }
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
-                    this.resizing.chatbox.resizeChatBox(ev);
-                }.bind(this));
+                    that.resizing.chatbox.resizeChatBox(ev);
+                });
 
                 $(document).on('mouseup', function (ev) {
-                    if (!this.resizing || !this.allow_dragresize) { return true; }
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
-                    var height = this.applyDragResistance(
-                            this.resizing.chatbox.height,
-                            this.resizing.chatbox.model.get('default_height')
+                    var height = that.applyDragResistance(
+                            that.resizing.chatbox.height,
+                            that.resizing.chatbox.model.get('default_height')
                     );
-                    var width = this.applyDragResistance(
-                            this.resizing.chatbox.width,
-                            this.resizing.chatbox.model.get('default_width')
+                    var width = that.applyDragResistance(
+                            that.resizing.chatbox.width,
+                            that.resizing.chatbox.model.get('default_width')
                     );
-                    if (this.connection.connected) {
-                        this.resizing.chatbox.model.save({'height': height});
-                        this.resizing.chatbox.model.save({'width': width});
+                    if (that.connection.connected) {
+                        that.resizing.chatbox.model.save({'height': height});
+                        that.resizing.chatbox.model.save({'width': width});
                     } else {
-                        this.resizing.chatbox.model.set({'height': height});
-                        this.resizing.chatbox.model.set({'width': width});
+                        that.resizing.chatbox.model.set({'height': height});
+                        that.resizing.chatbox.model.set({'width': width});
                     }
-                    this.resizing = null;
-                }.bind(this));
+                    that.resizing = null;
+                });
 
                 return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
             },
 
             ChatBox: {
                 initialize: function () {
+                    var _converse = this.__super__._converse;
                     var result = this.__super__.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
@@ -109,6 +110,7 @@
                     /* Determine and store the default box size.
                      * We need this information for the drag-resizing feature.
                      */
+                    var _converse = this.__super__._converse;
                     var $flyout = this.$el.find('.box-flyout');
                     if (typeof this.model.get('height') === 'undefined') {
                         var height = $flyout.height();
@@ -140,6 +142,7 @@
                 },
 
                 setChatBoxHeight: function (height) {
+                    var _converse = this.__super__._converse;
                     if (height) {
                         height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
                     } else {
@@ -149,6 +152,7 @@
                 },
 
                 setChatBoxWidth: function (width) {
+                    var _converse = this.__super__._converse;
                     if (width) {
                         width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
                     } else {
@@ -176,6 +180,7 @@
                 },
 
                 onStartVerticalResize: function (ev) {
+                    var _converse = this.__super__._converse;
                     if (!_converse.allow_dragresize) { return true; }
                     // Record element attributes for mouseMove().
                     this.height = this.$el.children('.box-flyout').height();
@@ -187,6 +192,7 @@
                 },
 
                 onStartHorizontalResize: function (ev) {
+                    var _converse = this.__super__._converse;
                     if (!_converse.allow_dragresize) { return true; }
                     this.width = this.$el.children('.box-flyout').width();
                     _converse.resizing = {
@@ -197,6 +203,7 @@
                 },
 
                 onStartDiagonalResize: function (ev) {
+                    var _converse = this.__super__._converse;
                     this.onStartHorizontalResize(ev);
                     this.onStartVerticalResize(ev);
                     _converse.resizing.direction = 'topleft';
@@ -204,6 +211,7 @@
 
                 resizeChatBox: function (ev) {
                     var diff;
+                    var _converse = this.__super__._converse;
                     if (_converse.resizing.direction.indexOf('top') === 0) {
                         diff = ev.pageY - this.prev_pageY;
                         if (diff) {
@@ -286,6 +294,7 @@
                 },
 
                 renderDragResizeHandles: function () {
+                    var _converse = this.__super__._converse;
                     var flyout = this.el.querySelector('.box-flyout');
                     var div = document.createElement('div');
                     div.innerHTML = _converse.templates.dragresize();
@@ -302,9 +311,14 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
+
+            // Add new HTML template
+            _converse.templates.dragresize = tpl_dragresize;
+
             this.updateSettings({
                 allow_dragresize: true,
             });
+
             _converse.applyDragResistance = function (value, default_value) {
                 /* This method applies some resistance around the
                 * default_value. If value is close enough to

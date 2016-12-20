@@ -78,8 +78,8 @@ Below is an example code that wraps converse.js as an angular.js service.
             "converse-headline",     // Support for headline messages
             // END: Removable components
 
-        ], function(converse_api) {
-            service.api = converse_api;
+        ], function(converse) {
+            service.api = converse;
             return deferred.resolve();
         });
         require(["converse"]);

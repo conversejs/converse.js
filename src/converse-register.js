@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define("converse-register", [
-            "converse-core",
             "converse-api",
             "tpl!form_username",
             "tpl!register_panel",
@@ -21,8 +20,7 @@
             "converse-controlbox"
     ], factory);
 }(this, function (
-            _converse,
-            converse_api,
+            converse,
             tpl_form_username,
             tpl_register_panel,
             tpl_register_tab,
@@ -30,21 +28,14 @@
             tpl_registration_request) {
 
     "use strict";
-    _converse.templates.form_username = tpl_form_username;
-    _converse.templates.register_panel = tpl_register_panel;
-    _converse.templates.register_tab = tpl_register_tab;
-    _converse.templates.registration_form = tpl_registration_form;
-    _converse.templates.registration_request = tpl_registration_request;
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils,
-        $iq = converse_api.env.$iq;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils,
+        $iq = converse.env.$iq;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(_converse);
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
     
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -59,7 +50,7 @@
     Strophe.Status.CONFLICT        = i + 3;
     Strophe.Status.NOTACCEPTABLE   = i + 5;
 
-    converse_api.plugins.add('converse-register', {
+    converse.plugins.add('converse-register', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -92,14 +83,21 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new templates
+            _converse.templates.form_username = tpl_form_username;
+            _converse.templates.register_panel = tpl_register_panel;
+            _converse.templates.register_tab = tpl_register_tab;
+            _converse.templates.registration_form = tpl_registration_form;
+            _converse.templates.registration_request = tpl_registration_request;
 
             this.updateSettings({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
-
 
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',

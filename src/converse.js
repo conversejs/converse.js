@@ -33,9 +33,9 @@ if (typeof define !== 'undefined') {
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 
-    ], function(converse_api) {
-        converse_api.env.jQuery(window).trigger('converse-loaded', converse_api);
-        window.converse = converse_api;
-        return converse_api;
+    ], function(converse) {
+        converse.env.jQuery(window).trigger('converse-loaded', converse);
+        window.converse = converse;
+        return converse;
     });
 }

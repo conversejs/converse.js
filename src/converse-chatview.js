@@ -8,7 +8,6 @@
 
 (function (root, factory) {
     define("converse-chatview", [
-            "converse-core",
             "converse-api",
             "tpl!chatbox",
             "tpl!new_day",
@@ -18,8 +17,7 @@
             "tpl!avatar"
     ], factory);
 }(this, function (
-            _converse,
-            converse_api,
+            converse,
             tpl_chatbox,
             tpl_new_day,
             tpl_action,
@@ -28,28 +26,19 @@
             tpl_avatar
     ) {
     "use strict";
-    _converse.templates.chatbox = tpl_chatbox;
-    _converse.templates.new_day = tpl_new_day;
-    _converse.templates.action = tpl_action;
-    _converse.templates.message = tpl_message;
-    _converse.templates.toolbar = tpl_toolbar;
-    _converse.templates.avatar = tpl_avatar;
-
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        $msg = converse_api.env.$msg,
-        _ = converse_api.env._,
-        __ = utils.__.bind(_converse),
-        moment = converse_api.env.moment;
-
+    var $ = converse.env.jQuery,
+        utils = converse.env.utils,
+        Strophe = converse.env.Strophe,
+        $msg = converse.env.$msg,
+        _ = converse.env._,
+        moment = converse.env.moment;
     var KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47
     };
 
 
-    converse_api.plugins.add('converse-chatview', {
+    converse.plugins.add('converse-chatview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -60,6 +49,7 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view) {
                         view = new _converse.ChatBoxView({model: item});
@@ -77,6 +67,17 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.chatbox = tpl_chatbox;
+            _converse.templates.new_day = tpl_new_day;
+            _converse.templates.action = tpl_action;
+            _converse.templates.message = tpl_message;
+            _converse.templates.toolbar = tpl_toolbar;
+            _converse.templates.avatar = tpl_avatar;
+
             this.updateSettings({
                 show_toolbar: true,
                 chatview_avatar_width: 32,

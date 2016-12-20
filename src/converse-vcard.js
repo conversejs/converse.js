@@ -8,18 +8,17 @@
 
 (function (root, factory) {
     define("converse-vcard", [
-            "converse-core",
             "converse-api",
             "strophe.vcard",
     ], factory);
-}(this, function (_converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var Strophe = converse_api.env.Strophe,
-        $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
+    var Strophe = converse.env.Strophe,
+        $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
-    converse_api.plugins.add('converse-vcard', {
+    converse.plugins.add('converse-vcard', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -30,6 +29,7 @@
 
             Features: {
                 addClientFeatures: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
                     if (_converse.use_vcards) {
                         _converse.connection.disco.addFeature(Strophe.NS.VCARD);
@@ -39,6 +39,7 @@
 
             RosterContacts: {
                 createRequestingContact: function (presence) {
+                    var _converse = this.__super__._converse;
                     var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                     _converse.getVCard(
                         bare_jid,
@@ -57,6 +58,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse;
             this.updateSettings({
                 use_vcards: true,
             });

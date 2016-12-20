@@ -7,25 +7,26 @@
 /*global define */
 
 (function (root, factory) {
-    define("converse-notification", ["converse-core", "converse-api"], factory);
-}(this, function (_converse, converse_api) {
+    define("converse-notification", ["converse-api"], factory);
+}(this, function (converse) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(_converse);
-    var ___ = utils.___;
+    var $ = converse.env.jQuery,
+        utils = converse.env.utils,
+        Strophe = converse.env.Strophe,
+        _ = converse.env._;
 
-
-    converse_api.plugins.add('converse-notification', {
+    converse.plugins.add('converse-notification', {
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
+
+            // For translations
+            var __ = _converse.__;
+            var ___ = _converse.___;
+
             _converse.supports_html5_notification = "Notification" in window;
 
             this.updateSettings({

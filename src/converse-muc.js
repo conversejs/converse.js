@@ -32,7 +32,7 @@
     ], factory);
 }(this, function (
             _converse,
-            converse_api,
+            converse,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_form,
@@ -66,17 +66,17 @@
     var ROOMS_PANEL_ID = 'chatrooms';
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        $build = converse_api.env.$build,
-        $msg = converse_api.env.$msg,
-        $pres = converse_api.env.$pres,
-        b64_sha1 = converse_api.env.b64_sha1,
-        utils = converse_api.env.utils;
+    var Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        $build = converse.env.$build,
+        $msg = converse.env.$msg,
+        $pres = converse.env.$pres,
+        b64_sha1 = converse.env.b64_sha1,
+        utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
     // For translations
     var __ = utils.__.bind(_converse);
@@ -89,7 +89,7 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    converse_api.plugins.add('converse-muc', {
+    converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
          * overridden or relied upon, if they exist, otherwise they're ignored.
          *

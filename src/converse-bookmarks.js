@@ -16,7 +16,6 @@
             "moment_with_locales",
             "strophe",
             "utils",
-            "converse-core",
             "converse-api",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -27,26 +26,18 @@
         factory);
 }(this, function (
         $, _, moment, strophe, utils,
-        _converse, converse_api, muc,
+        converse, muc,
         tpl_chatroom_bookmark_form,
         tpl_chatroom_bookmark_toggle,
         tpl_bookmark,
         tpl_bookmarks_list
     ) {
 
-    var __ = utils.__.bind(_converse),
-        ___ = utils.___,
-        Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        b64_sha1 = converse_api.env.b64_sha1;
+    var Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        b64_sha1 = converse.env.b64_sha1;
 
-    // Add new HTML templates.
-    _converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
-    _converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
-    _converse.templates.bookmark = tpl_bookmark;
-    _converse.templates.bookmarks_list = tpl_bookmarks_list;
-
-    converse_api.plugins.add('converse-bookmarks', {
+    converse.plugins.add('converse-bookmarks', {
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -73,7 +64,9 @@
                 },
 
                 generateHeadingHTML: function () {
-                    var html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     if (_converse.allow_bookmarks) {
                         var div = document.createElement('div');
                         div.innerHTML = html;
@@ -97,6 +90,7 @@
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
+                    var _converse = this.__super__._converse;
                     if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
@@ -119,6 +113,7 @@
                 setBookmarkState: function () {
                     /* Set whether the room is bookmarked or not.
                      */
+                    var _converse = this.__super__._converse;
                     if (!_.isUndefined(_converse.bookmarks)) {
                         var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                         if (!models.length) {
@@ -130,7 +125,9 @@
                 },
 
                 renderBookmarkForm: function () {
-                    var $body = this.$('.chatroom-body');
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
@@ -150,6 +147,7 @@
 
                 onBookmarkFormSubmitted: function (ev) {
                     ev.preventDefault();
+                    var _converse = this.__super__._converse;
                     var $form = $(ev.target), that = this;
                     _converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
@@ -169,6 +167,7 @@
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
+                    var _converse = this.__super__._converse;
                     var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
                         this.renderBookmarkForm();
@@ -186,7 +185,16 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            var _converse = this._converse,
+                __ = _converse.__,
+                ___ = _converse.___;
+
+            // Add new HTML templates.
+            _converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
+            _converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
+            _converse.templates.bookmark = tpl_bookmark;
+            _converse.templates.bookmarks_list = tpl_bookmarks_list;
+
             // Configuration values for this plugin
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these

@@ -8,7 +8,6 @@
 
 (function (root, factory) {
     define("converse-controlbox", [
-            "converse-core",
             "converse-api",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
@@ -27,8 +26,7 @@
             "converse-rosterview"
     ], factory);
 }(this, function (
-            _converse,
-            converse_api,
+            converse,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_change_status_message,
@@ -44,33 +42,19 @@
             tpl_status_option
         ) {
     "use strict";
-    _converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
-    _converse.templates.add_contact_form = tpl_add_contact_form;
-    _converse.templates.change_status_message = tpl_change_status_message;
-    _converse.templates.chat_status = tpl_chat_status;
-    _converse.templates.choose_status = tpl_choose_status;
-    _converse.templates.contacts_panel = tpl_contacts_panel;
-    _converse.templates.contacts_tab = tpl_contacts_tab;
-    _converse.templates.controlbox = tpl_controlbox;
-    _converse.templates.controlbox_toggle = tpl_controlbox_toggle;
-    _converse.templates.login_panel = tpl_login_panel;
-    _converse.templates.login_tab = tpl_login_tab;
-    _converse.templates.search_contact = tpl_search_contact;
-    _converse.templates.status_option = tpl_status_option;
 
     var USERS_PANEL_ID = 'users';
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        __ = utils.__.bind(_converse),
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
 
-    converse_api.plugins.add('converse-controlbox', {
+    converse.plugins.add('converse-controlbox', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -132,6 +116,7 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     if (item.get('box_id') === 'controlbox') {
                         var view = this.get(item.get('id'));
                         if (view) {
@@ -148,6 +133,7 @@
                 },
 
                 closeAllChatBoxes: function () {
+                    var _converse = this.__super__._converse;
                     this.each(function (view) {
                         if (_converse.disconnection_cause === _converse.LOGOUT ||
                             view.model.get('id') !== 'controlbox') {
@@ -158,6 +144,7 @@
                 },
 
                 getChatBoxWidth: function (view) {
+                    var _converse = this.__super__._converse;
                     var controlbox = this.get('controlbox');
                     if (view.model.get('id') === 'controlbox') {
                         /* We return the width of the controlbox or its toggle,
@@ -191,6 +178,7 @@
 
             ChatBoxView: {
                 insertIntoDOM: function () {
+                    var _converse = this.__super__._converse;
                     this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
                     return this;
                 }
@@ -201,7 +189,24 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
+            _converse.templates.add_contact_form = tpl_add_contact_form;
+            _converse.templates.change_status_message = tpl_change_status_message;
+            _converse.templates.chat_status = tpl_chat_status;
+            _converse.templates.choose_status = tpl_choose_status;
+            _converse.templates.contacts_panel = tpl_contacts_panel;
+            _converse.templates.contacts_tab = tpl_contacts_tab;
+            _converse.templates.controlbox = tpl_controlbox;
+            _converse.templates.controlbox_toggle = tpl_controlbox_toggle;
+            _converse.templates.login_panel = tpl_login_panel;
+            _converse.templates.login_tab = tpl_login_tab;
+            _converse.templates.search_contact = tpl_search_contact;
+            _converse.templates.status_option = tpl_status_option;
+
             this.updateSettings({
                 allow_logout: true,
                 default_domain: undefined,

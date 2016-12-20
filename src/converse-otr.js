@@ -12,23 +12,18 @@
 (function (root, factory) {
     define("converse-otr", [
             "otr",
-            "converse-core",
             "converse-api",
             "tpl!toolbar_otr"
     ], factory);
-}(this, function (otr, _converse, converse_api, tpl_toolbar_otr) {
+}(this, function (otr, converse, tpl_toolbar_otr) {
     "use strict";
-    _converse.templates.toolbar_otr = tpl_toolbar_otr;
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils,
-        b64_sha1 = converse_api.env.b64_sha1;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils,
+        b64_sha1 = converse.env.b64_sha1;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-
-    // For translations
-    var __ = utils.__.bind(_converse);
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
 
     var HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
         ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
@@ -51,7 +46,7 @@
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
 
-    converse_api.plugins.add('converse-otr', {
+    converse.plugins.add('converse-otr', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -135,7 +130,8 @@
                 },
                 
                 getSession: function (callback) {
-                    var _converse = this.__super__._converse;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
                     var pass, instance_tag, saved_key, pass_check;
                     if (_converse.cache_otr_key) {
@@ -195,6 +191,8 @@
                 onSMP: function (type, data) {
                     // Event handler for SMP (Socialist's Millionaire Protocol)
                     // used by OTR (off-the-record).
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     switch (type) {
                         case 'question':
                             this.otr.smpSecret(prompt(__(
@@ -224,6 +222,8 @@
                     // If 'query_msg' is passed in, it means there is an alread incoming
                     // query message from our contact. Otherwise, it is us who will
                     // send the query message to them.
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     this.save({'otr_status': UNENCRYPTED});
                     this.getSession(function (session) {
                         var _converse = this.__super__._converse;
@@ -331,8 +331,10 @@
                 },
 
                 informOTRChange: function () {
-                    var data = this.model.toJSON();
-                    var msgs = [];
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        data = this.model.toJSON(),
+                        msgs = [];
                     if (data.otr_status === UNENCRYPTED) {
                         msgs.push(__("Your messages are not encrypted anymore"));
                     } else if (data.otr_status === UNVERIFIED) {
@@ -346,7 +348,8 @@
                 },
 
                 showOTRError: function (msg) {
-                    var _converse = this.__super__._converse;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     if (msg === 'Message cannot be sent at this time.') {
                         this.showHelpMessages(
                             [__('Your message could not be sent')], 'error');
@@ -378,9 +381,10 @@
                 },
 
                 authOTR: function (ev) {
-                    var _converse = this.__super__._converse;
-                    var scheme = $(ev.target).data().scheme;
-                    var result, question, answer;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        scheme = $(ev.target).data().scheme,
+                        result, question, answer;
                     if (scheme === 'fingerprint') {
                         result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
                                 this.model.get('fullname'),
@@ -412,7 +416,9 @@
                 },
                 
                 getOTRTooltip: function () {
-                    var data = this.model.toJSON();
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        data = this.model.toJSON();
                     if (data.otr_status === UNENCRYPTED) {
                         return __('Your messages are not encrypted. Click here to enable OTR encryption.');
                     } else if (data.otr_status === UNVERIFIED) {
@@ -425,7 +431,8 @@
                 },
 
                 renderToolbar: function (toolbar, options) {
-                    var _converse = this.__super__._converse;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     if (!_converse.show_toolbar) {
                         return;
                     }
@@ -461,7 +468,12 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML template
+            _converse.templates.toolbar_otr = tpl_toolbar_otr;
+
             // Translation aware constants
             // ---------------------------
             // We can only call the __ translation method *after* converse.js

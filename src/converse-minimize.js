@@ -8,7 +8,6 @@
 
 (function (root, factory) {
     define("converse-minimize", [
-            "converse-core",
             "converse-api",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
@@ -19,27 +18,19 @@
             "converse-muc"
     ], factory);
 }(this, function (
-        _converse,
-        converse_api,
+        converse,
         tpl_chatbox_minimize,
         tpl_toggle_chats,
         tpl_trimmed_chat,
         tpl_chats_panel
     ) {
     "use strict";
-    _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
-    _converse.templates.toggle_chats = tpl_toggle_chats;
-    _converse.templates.trimmed_chat = tpl_trimmed_chat;
-    _converse.templates.chats_panel = tpl_chats_panel;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        b64_sha1 = converse.env.b64_sha1,
+        moment = converse.env.moment;
 
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        b64_sha1 = converse_api.env.b64_sha1,
-        moment = converse_api.env.moment,
-        utils = converse_api.env.utils,
-        __ = utils.__.bind(_converse);
-
-    converse_api.plugins.add('converse-minimize', {
+    converse.plugins.add('converse-minimize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -49,6 +40,7 @@
             // New functions which don't exist yet can also be added.
 
             initChatBoxes: function () {
+                var _converse = this.__super__._converse;
                 var result = this.__super__.initChatBoxes.apply(this, arguments);
                 _converse.minimized_chats = new _converse.MinimizedChats({
                     model: _converse.chatboxes
@@ -57,6 +49,7 @@
             },
 
             registerGlobalEventHandlers: function () {
+                var _converse = this.__super__._converse;
                 $(window).on("resize", _.debounce(function (ev) {
                     if (_converse.connection.connected) {
                         _converse.chatboxviews.trimChats();
@@ -114,6 +107,7 @@
                 },
 
                 _show: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
                         _converse.chatboxviews.trimChats(this);
@@ -147,6 +141,7 @@
 
                 maximize: function () {
                     // Restores a minimized chat box
+                    var _converse = this.__super__._converse;
                     this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
                     this.show();
                     _converse.emit('chatBoxMaximized', this);
@@ -154,6 +149,7 @@
                 },
 
                 minimize: function (ev) {
+                    var _converse = this.__super__._converse;
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     // save the scroll position to restore it on maximize
                     this.model.save({'scroll': this.$content.scrollTop()});
@@ -184,6 +180,8 @@
                 },
 
                 generateHeadingHTML: function () {
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     var html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     var div = document.createElement('div');
                     div.innerHTML = html;
@@ -243,6 +241,7 @@
                      * another chat box. Otherwise it minimizes the oldest chat box
                      * to create space.
                      */
+                    var _converse = this.__super__._converse;
                     var shown_chats = this.getShownChats();
                     if (_converse.no_trimming || shown_chats.length <= 1) {
                         return;
@@ -301,6 +300,15 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by Converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
+            _converse.templates.toggle_chats = tpl_toggle_chats;
+            _converse.templates.trimmed_chat = tpl_trimmed_chat;
+            _converse.templates.chats_panel = tpl_chats_panel;
+
             this.updateSettings({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });

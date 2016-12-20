@@ -8,33 +8,15 @@
 
 (function (root, factory) {
     define("converse-headline", [
-            "converse-core",
             "converse-api",
             "converse-chatview"
     ], factory);
-}(this, function (_converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var _ = converse_api.env._,
-        utils = converse_api.env.utils,
-        __ = utils.__.bind(_converse);
+    var _ = converse.env._,
+        utils = converse.env.utils;
 
-    var onHeadlineMessage = function (message) {
-        /* Handler method for all incoming messages of type "headline".
-         */
-        var from_jid = message.getAttribute('from');
-        if (utils.isHeadlineMessage(message)) {
-            _converse.chatboxes.create({
-                'id': from_jid,
-                'jid': from_jid,
-                'fullname':  from_jid,
-                'type': 'headline'
-            }).createMessage(message, undefined, message);
-            _converse.emit('message', message);
-        }
-        return true;
-    };
-
-    converse_api.plugins.add('converse-headline', {
+    converse.plugins.add('converse-headline', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -45,6 +27,7 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
                         view = new _converse.HeadlinesBoxView({model: item});
@@ -61,6 +44,9 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
 
@@ -100,6 +86,22 @@
                     return this;
                 }
             });
+
+            var onHeadlineMessage = function (message) {
+                /* Handler method for all incoming messages of type "headline".
+                */
+                var from_jid = message.getAttribute('from');
+                if (utils.isHeadlineMessage(message)) {
+                    _converse.chatboxes.create({
+                        'id': from_jid,
+                        'jid': from_jid,
+                        'fullname':  from_jid,
+                        'type': 'headline'
+                    }).createMessage(message, undefined, message);
+                    _converse.emit('message', message);
+                }
+                return true;
+            };
 
             var registerHeadlineHandler = function () {
                 _converse.connection.addHandler(

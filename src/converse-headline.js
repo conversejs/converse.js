@@ -14,8 +14,7 @@
 }(this, function (converse) {
     "use strict";
     var _ = converse.env._,
-        utils = converse.env.utils,
-        __ = utils.__.bind(converse);
+        utils = converse.env.utils;
 
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
@@ -33,7 +32,9 @@
         return true;
     };
 
+
     converse.plugins.add('converse-headline', {
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

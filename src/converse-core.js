@@ -1134,7 +1134,7 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick_el = presence.querySelector('nick[xmlns='+Strophe.NS.NICK+']');
+                var nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',

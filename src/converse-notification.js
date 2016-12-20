@@ -22,6 +22,7 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
+
             // For translations
             var __ = _converse.__;
             var ___ = _converse.___;

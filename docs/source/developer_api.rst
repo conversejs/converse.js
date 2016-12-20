@@ -1,7 +1,8 @@
 .. raw:: html
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
-
+ 
+=============================
 The converse.js developer API
 =============================
 
@@ -21,8 +22,8 @@ The converse.js developer API
 The Converse.js API is broken up into different logical "groupings" (for
 example ``converse.plugins`` or ``converse.contacts``).
 
-The one exception, is ``converse.initialize``, which is not a grouping, but a
-single method.
+There are some exceptions to this, like ``converse.initialize``, which aren't
+groupings but single methods.
 
 The groupings logically group methods, such as standardised accessors and
 mutators::
@@ -34,29 +35,35 @@ mutators::
 
 So for example, to get a contact, you would do the following::
 
-    converse.contacts.get('jid@example.com');
+    _converse.contacts.get('jid@example.com');
 
 To get multiple contacts, just pass in an array of jids::
 
-    converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+    _converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
 
 To get all contacts, simply call ``get`` without any jids::
 
-    converse.contacts.get();
+    _converse.contacts.get();
 
 
-**Here follows now a breakdown of all API groupings and methods**:
+Public API methods
+==================
 
+Publich API methods are those methods that are accessible on the global
+``window.converse`` object. They are public, because any Javascript in the page
+can call them. Public methods therefore don't expose any sensitive or closured
+data. To do that, you'll need to create a plugin, which has access to the
+private API method.
 
 initialize
 ----------
 
 .. note:: This method is the one exception of a method which is not logically grouped as explained above.
 
-Initializes converse.js. This method must always be called when using
-converse.js.
+Publich API method which initializes converse.js.
+This method must always be called when using converse.js.
 
-The `initialize` method takes a map (also called a hash or dictionary) of :ref:`configuration-variables`.
+The `initialize` method takes a map of :ref:`configuration-variables`.
 
 Example:
 
@@ -77,6 +84,63 @@ Example:
             roster_groups: true
         });
 
+The **plugin** grouping
+------------------------
+
+Exposes methods for adding and removing plugins. You'll need to write a plugin
+if you want to have access to the private API methods defined further down below.
+
+For more information on plugins, read the section :ref:`writing-a-plugin`.
+
+add
+~~~
+
+Registers a new plugin.
+
+.. code-block:: javascript
+
+    var plugin = {
+        initialize: function () {
+            // method on any plugin (if it exists) as soon as the plugin has
+            // been loaded.
+
+            // Inside this method, you have access to the closured
+            // _converse object, which contains the core logic and data
+            // structures of converse.js
+        }
+    }
+    converse.plugins.add('myplugin', plugin);
+
+remove
+~~~~~~
+
+Removes a plugin from the registry.
+
+.. code-block:: javascript
+
+    converse.plugins.remove('myplugin');
+
+
+Private API methods
+===================
+
+The private API methods are only accessible via the closured ``_converse``
+object, which is only available to plugins.
+
+These methods are kept private (i.e. not global) because they may return
+sensitive data which should be kept off-limits to other 3rd-party scripts
+that might be running in the page.
+
+.. note:: The example code snippets shown below are a bit contrived. I've added
+    the minimum plugin boilerplace around the actual example, to show that
+    these API methods can only be called inside a plugin where the
+    ``_converse`` object is available. However, sometimes other considerations
+    need to be made as well. For example, for certain API methods it is
+    necessary to first wait until the data has been received from the XMPP
+    server (or from the browser's sessionStorage cache). Due to
+    time-constriaints these limitations are ignored in the examples below. For
+    a fuller picture, refer to the section :ref:`events-API` as well.
+
 send
 ----
 
@@ -86,12 +150,18 @@ For example, to send a message stanza:
 
 .. code-block:: javascript
 
-    var msg = converse.env.$msg({
-        from: 'juliet@example.com/balcony',
-        to:'romeo@example.net',
-        type:'chat'
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var msg = converse.env.$msg({
+                from: 'juliet@example.com/balcony',
+                to:'romeo@example.net',
+                type:'chat'
+            });
+            this._converse.send(msg);
+
+        }
     });
-    converse.send(msg);
 
 
 The **archive** grouping
@@ -131,15 +201,21 @@ the returned messages.
 
 .. code-block:: javascript
 
-    var errback = function (iq) {
-        // The query was not successful, perhaps inform the user?
-        // The IQ stanza returned by the XMPP server is passed in, so that you
-        // may inspect it and determine what the problem was.
-    }
-    var callback = function (messages) {
-        // Do something with the messages, like showing them in your webpage.
-    }
-    converse.archive.query(callback, errback))
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var errback = function (iq) {
+                // The query was not successful, perhaps inform the user?
+                // The IQ stanza returned by the XMPP server is passed in, so that you
+                // may inspect it and determine what the problem was.
+            }
+            var callback = function (messages) {
+                // Do something with the messages, like showing them in your webpage.
+            }
+            this._converse.archive.query(callback, errback))
+
+        }
+    });
 
 
 **Waiting until server support has been determined**
@@ -160,9 +236,16 @@ For example:
 
 .. code-block:: javascript
 
-    converse.listen.on('serviceDiscovered', function (feature) {
-        if (feature.get('var') === converse.env.Strophe.NS.MAM) {
-            converse.archive.query()
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var _converse = this._converse;
+            _converse.listen.on('serviceDiscovered', function (feature) {
+                if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+                    _converse.archive.query()
+                }
+            });
+
         }
     });
 
@@ -174,11 +257,18 @@ room under the  ``with`` key.
 
 .. code-block:: javascript
 
-    // For a particular user
-    converse.archive.query({'with': 'john@doe.net'}, callback, errback);)
 
-    // For a particular room
-    converse.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            // For a particular user
+            this._converse.archive.query({'with': 'john@doe.net'}, callback, errback);)
+
+            // For a particular room
+            this._converse.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+
+        }
+    });
 
 
 **Requesting all archived messages before or after a certain date**
@@ -189,12 +279,18 @@ formatted date strings, or Javascript Date objects.
 
 .. code-block:: javascript
 
-    var options = {
-        'with': 'john@doe.net',
-        'start': '2010-06-07T00:00:00Z',
-        'end': '2010-07-07T13:23:54Z'
-    };
-    converse.archive.query(options, callback, errback);
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var options = {
+                'with': 'john@doe.net',
+                'start': '2010-06-07T00:00:00Z',
+                'end': '2010-07-07T13:23:54Z'
+            };
+            this._converse.archive.query(options, callback, errback);
+
+        }
+    });
 
 
 **Limiting the amount of messages returned**
@@ -204,9 +300,14 @@ By default, the messages are returned from oldest to newest.
 
 .. code-block:: javascript
 
-    // Return maximum 10 archived messages
-    converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
+            // Return maximum 10 archived messages
+            this._converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+
+        }
+    });
 
 **Paging forwards through a set of archived messages**
 
@@ -225,14 +326,21 @@ to limit your results.
 
 .. code-block:: javascript
 
-    var callback = function (messages, rsm) {
-        // Do something with the messages, like showing them in your webpage.
-        // ...
-        // You can now use the returned "rsm" object, to fetch the next batch of messages:
-        converse.archive.query(rsm.next(10), callback, errback))
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
-    }
-    converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+            var _converse = this._converse;
+            var callback = function (messages, rsm) {
+                // Do something with the messages, like showing them in your webpage.
+                // ...
+                // You can now use the returned "rsm" object, to fetch the next batch of messages:
+                _converse.archive.query(rsm.next(10), callback, errback))
+
+            }
+            _converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+
+        }
+    });
 
 **Paging backwards through a set of archived messages**
 
@@ -243,15 +351,22 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
 
 .. code-block:: javascript
 
-    converse.archive.query({'before': '', 'max':5}, function (message, rsm) {
-        // Do something with the messages, like showing them in your webpage.
-        // ...
-        // You can now use the returned "rsm" object, to fetch the previous batch of messages:
-        rsm.previous(5); // Call previous method, to update the object's parameters,
-                         // passing in a limit value of 5.
-        // Now we query again, to get the previous batch.
-        converse.archive.query(rsm, callback, errback);
-    }
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var _converse = this._converse;
+            _converse.archive.query({'before': '', 'max':5}, function (message, rsm) {
+                // Do something with the messages, like showing them in your webpage.
+                // ...
+                // You can now use the returned "rsm" object, to fetch the previous batch of messages:
+                rsm.previous(5); // Call previous method, to update the object's parameters,
+                                // passing in a limit value of 5.
+                // Now we query again, to get the previous batch.
+                _converse.archive.query(rsm, callback, errback);
+            }
+
+        }
+    });
 
 The **connection** grouping
 ---------------------------
@@ -282,8 +397,13 @@ Return's the current user's full JID (Jabber ID).
 
 .. code-block:: javascript
 
-    converse.user.jid()
-    // Returns for example jc@opkode.com/conversejs-351236
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            alert(this._converse.user.jid());
+
+        }
+    });
 
 login
 ~~~~~
@@ -292,9 +412,15 @@ Logs the user in. This method can accept a map with the credentials, like this:
 
 .. code-block:: javascript
 
-    converse.user.login({
-        'jid': 'dummy@example.com',
-        'password': 'secret'
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.user.login({
+                'jid': 'dummy@example.com',
+                'password': 'secret'
+            });
+
+        }
     });
 
 or it can be called without any parameters, in which case converse.js will try
@@ -308,7 +434,13 @@ Log the user out of the current XMPP session.
 
 .. code-block:: javascript
 
-    converse.user.logout();
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.user.logout();
+
+        }
+    });
 
 
 The **status** sub-grouping
@@ -323,7 +455,13 @@ Return the current user's availability status:
 
 .. code-block:: javascript
 
-    converse.user.status.get(); // Returns for example "dnd"
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            alert(this._converse.user.status.get()); // For example "dnd"
+
+        }
+    });
 
 set
 ^^^
@@ -341,7 +479,13 @@ For example:
 
 .. code-block:: javascript
 
-    converse.user.status.set('dnd');
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.user.status.set('dnd');
+
+        }
+    });
 
 Because the user's availability is often set together with a custom status
 message, this method also allows you to pass in a status message as a
@@ -349,7 +493,13 @@ second parameter:
 
 .. code-block:: javascript
 
-    converse.user.status.set('dnd', 'In a meeting');
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.user.status.set('dnd', 'In a meeting');
+
+        }
+    });
 
 The **message** sub-grouping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -359,9 +509,15 @@ retrieving the user's custom status message.
 
 .. code-block:: javascript
 
-    converse.user.status.message.set('In a meeting');
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
-    converse.user.status.message.get(); // Returns "In a meeting"
+            this._converse.user.status.message.set('In a meeting');
+            // Returns "In a meeting"
+            return this._converse.user.status.message.get();
+
+        }
+    });
 
 
 The **contacts** grouping
@@ -376,19 +532,48 @@ To get a single roster contact, call the method with the contact's JID (Jabber I
 
 .. code-block:: javascript
 
-    converse.contacts.get('buddy@example.com')
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var _converse = this._converse;
+            _converse.on('rosterContactsFetched', function () {
+                var contact = _converse.contacts.get('buddy@example.com')
+            });
+
+        }
+    });
 
 To get multiple contacts, pass in an array of JIDs:
 
 .. code-block:: javascript
 
-    converse.contacts.get(['buddy1@example.com', 'buddy2@example.com'])
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var _converse = this._converse;
+            _converse.on('rosterContactsFetched', function () {
+                var contacts = _converse.contacts.get(
+                    ['buddy1@example.com', 'buddy2@example.com']
+                )
+            });
+
+        }
+    });
 
 To return all contacts, simply call ``get`` without any parameters:
 
 .. code-block:: javascript
 
-    converse.contacts.get()
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var _converse = this._converse;
+            _converse.on('rosterContactsFetched', function () {
+                var contacts = _converse.contacts.get();
+            });
+
+        }
+    });
 
 
 The returned roster contact objects have these attributes:
@@ -436,13 +621,13 @@ Provide the JID of the contact you want to add:
 
 .. code-block:: javascript
 
-    converse.contacts.add('buddy@example.com')
+    _converse.contacts.add('buddy@example.com')
 
 You may also provide the fullname. If not present, we use the jid as fullname:
 
 .. code-block:: javascript
 
-    converse.contacts.add('buddy@example.com', 'Buddy')
+    _converse.contacts.add('buddy@example.com', 'Buddy')
 
 The **chats** grouping
 ----------------------
@@ -459,17 +644,17 @@ with in that chat box:
 
 .. code-block:: javascript
 
-    converse.chats.get('buddy@example.com')
+    _converse.chats.get('buddy@example.com')
 
 To return an array of chat boxes, provide an array of JIDs:
 
 .. code-block:: javascript
 
-    converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+    _converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
 To return all open chat boxes, call the method without any JIDs::
 
-    converse.chats.get()
+    _converse.chats.get()
 
 open
 ~~~~
@@ -480,13 +665,25 @@ To open a single chat box, provide the JID of the contact:
 
 .. code-block:: javascript
 
-    converse.chats.open('buddy@example.com')
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.chats.open('buddy@example.com')
+
+        }
+    });
 
 To return an array of chat boxes, provide an array of JIDs:
 
 .. code-block:: javascript
 
-    converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+
+        }
+    });
 
 
 *The returned chat box object contains the following methods:*
@@ -541,9 +738,20 @@ It takes 3 parameters:
 
 .. code-block:: javascript
 
-    var nick = 'dread-pirate-roberts';
-    var create_if_not_found = true;
-    converse.rooms.open('group@muc.example.com', {'nick': nick}, create_if_not_found)
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            var nick = 'dread-pirate-roberts';
+            var create_if_not_found = true;
+            this._converse.rooms.open(
+                'group@muc.example.com',
+                {'nick': nick},
+                create_if_not_found
+            )
+
+        }
+    });
+
 
 open
 ~~~~
@@ -561,19 +769,37 @@ To open a single multi user chat box, provide the JID of the room:
 
 .. code-block:: javascript
 
-    converse.rooms.open('group@muc.example.com')
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.rooms.open('group@muc.example.com')
+
+        }
+    });
 
 To return an array of rooms, provide an array of room JIDs:
 
 .. code-block:: javascript
 
-    converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
+
+        }
+    });
 
 To setup a custom nickname when joining the room, provide the optional nick argument:
 
 .. code-block:: javascript
 
-    converse.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+
+        }
+    });
 
 Room attributes that may be passed in:
 
@@ -594,21 +820,28 @@ For example, opening a room with a specific default configuration:
 
 .. code-block:: javascript
 
-    converse.rooms.open(
-        'myroom@conference.example.org',
-        { 'nick': 'coolguy69',
-          'auto_configure': true,
-          'roomconfig': {
-            'changesubject': false,
-            'membersonly': true,
-            'persistentroom': true,
-            'publicroom': true,
-            'roomdesc': 'Comfy room for hanging out',
-            'whois': 'anyone'
-          }
-        },
-        true
-    );
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.rooms.open(
+                'myroom@conference.example.org',
+                { 'nick': 'coolguy69',
+                  'auto_configure': true,
+                  'roomconfig': {
+                      'changesubject': false,
+                      'membersonly': true,
+                      'persistentroom': true,
+                      'publicroom': true,
+                      'roomdesc': 'Comfy room for hanging out',
+                      'whois': 'anyone'
+                  }
+                },
+                true
+            );
+
+        }
+    });
+
 
 .. note:: `multi-list` configuration values are not yet supported.
 
@@ -631,7 +864,14 @@ Returns the value of a configuration settings. For example:
 
 .. code-block:: javascript
 
-    converse.settings.get("play_sounds"); // default value returned would be false;
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            // default value would be false;
+            alert(this._converse.settings.get("play_sounds"));
+
+        }
+    });
 
 set(key, value) or set(object)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -640,15 +880,27 @@ Set one or many configuration settings. For example:
 
 .. code-block:: javascript
 
-    converse.settings.set("play_sounds", true);
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.settings.set("play_sounds", true);
+
+        }
+    });
 
 or :
 
 .. code-block:: javascript
 
-    converse.settings.set({
-        "play_sounds", true,
-        "hide_offline_users" true
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            this._converse.settings.set({
+                "play_sounds", true,
+                "hide_offline_users" true
+            });
+
+        }
     });
 
 Note, this is not an alternative to calling ``converse.initialize``, which still needs
@@ -667,7 +919,13 @@ Example:
 
 .. code-block:: javascript
 
-    converse.tokens.get('rid')
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            alert(this._converse.tokens.get('rid'));
+
+        }
+    });
 
 
 .. _`listen-grouping`:
@@ -696,7 +954,7 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.on('message', function (messageXML) { ... });
+        _converse.listen.on('message', function (messageXML) { ... });
 
 * **once(eventName, callback, [context])**:
 
@@ -713,7 +971,7 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.once('message', function (messageXML) { ... });
+        _converse.listen.once('message', function (messageXML) { ... });
 
 * **not(eventName, callback)**
 
@@ -728,5 +986,5 @@ grouping:
 
 .. code-block:: javascript
 
-        converse.listen.not('message', function (messageXML) { ... });
+        _converse.listen.not('message', function (messageXML) { ... });
 

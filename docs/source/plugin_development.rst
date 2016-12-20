@@ -2,6 +2,8 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
 
+.. _`writing-a-plugin`:
+
 Writing a converse.js plugin
 ============================
 
@@ -36,17 +38,18 @@ Security and access to the inner workings
 
 The globally available ``converse`` object, which exposes the API methods, such
 as ``initialize`` and ``plugins.add``, is a wrapper that encloses and protects
-a sensitive inner object.
+a sensitive inner object, named ``_converse`` (not the underscore prefix).
 
-This inner object contains all the Backbone models and views, as well as
-various other attributes and functions.
+This inner ``_converse`` object contains all the Backbone models and views,
+as well as various other attributes and functions.
 
 Within a plugin, you will have access to this internal
 `"closured" <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_
-converse object, which is normally not exposed in the global variable scope. The
-hiding of this inner object is due to the fact that it contains sensitive information,
-such as the user's JID and password (if they logged in manually). You should
-therefore make sure NOT to expose this object globally.
+``_converse`` object, which is normally not exposed in the global variable scope.
+
+We inner ``_converse`` object is made private in order to safely hide and
+encapsulate sensitive information and methods which should not be exposed
+to any 3rd-party scripts that might be running in the same page.
 
 An example plugin
 -----------------
@@ -63,70 +66,57 @@ An example plugin
             // appears after the one from converse.js.
             factory(converse);
         }
-    }(this, function (converse_api) {
+    }(this, function (converse) {
 
         // Commonly used utilities and variables can be found under the "env"
-        // namespace of converse_api
-
-        // Strophe methods for building stanzas
-        var Strophe = converse_api.env.Strophe,
-            $iq = converse_api.env.$iq,
-            $msg = converse_api.env.$msg,
-            $pres = converse_api.env.$pres,
-            $build = converse_api.env.$build,
-            b64_sha1 = converse_api.env.b64_sha1;
-
-        // Other frequently used utilities
-        var $ = converse_api.env.jQuery,
-            _ = converse_api.env._,
-            moment = converse_api.env.moment;
-
+        // namespace of the "converse" global.
+        var Strophe = converse.env.Strophe,
+            $iq = converse.env.$iq,
+            $msg = converse.env.$msg,
+            $pres = converse.env.$pres,
+            $build = converse.env.$build,
+            b64_sha1 = converse.env.b64_sha1;
+            $ = converse.env.jQuery,
+            _ = converse.env._,
+            moment = converse.env.moment;
 
         // The following line registers your plugin.
-        converse_api.plugins.add('myplugin', {
+        converse.plugins.add('myplugin', {
 
             initialize: function () {
                 // Converse.js's plugin mechanism will call the initialize
                 // method on any plugin (if it exists) as soon as the plugin has
                 // been loaded.
 
-                // Inside this method, you have access to the protected "inner"
-                // converse object, from which you can get any configuration
+                // Inside this method, you have access to the closured
+                // _converse object, from which you can get any configuration
                 // options that the user might have passed in via
                 // converse.initialize. These values are stored in the
                 // "user_settings" attribute.
 
-                // Let's assume the user might in a custom setting, like so:
+                // Let's assume the user might pass in a custom setting, like so:
+                //
                 // converse.initialize({
                 //      "initialize_message": "My plugin has been initialized"
                 // });
                 //
                 // Then we can alert that message, like so:
-                alert(this.converse.user_settings.initialize_message);
-            },
-
-            myFunction: function () {
-                // This is a function which does not override anything in
-                // converse.js itself, but in which you still have access to
-                // the protected "inner" converse object.
-                var converse = this.converse;
-                // Custom code comes here
-                // ...
+                alert(this._converse.user_settings.initialize_message);
             },
 
             overrides: {
                 // If you want to override some function or a Backbone model or
-                // view defined inside converse, then you do that under this
-                // "overrides" namespace.
+                // view defined elsewhere in converse.js, then you do that under
+                // this "overrides" namespace.
 
-                // For example, the inner protected *converse* object has a
+                // For example, the inner protected *_converse* object has a
                 // method "onConnected". You can override that method as follows:
                 onConnected: function () {
                     // Overrides the onConnected method in converse.js
 
                     // Top-level functions in "overrides" are bound to the
-                    // inner "converse" object.
-                    var converse = this;
+                    // inner "_converse" object.
+                    var _converse = this;
 
                     // Your custom code comes here.
                     // ...
@@ -135,16 +125,16 @@ An example plugin
                     // via the __super__ attribute.
                     // Make sure to pass on the arguments supplied to this
                     // function and also to apply the proper "this" object.
-                    this.__super__.onConnected.apply(this, arguments);
+                    _converse.__super__.onConnected.apply(this, arguments);
                 },
 
                 XMPPStatus: {
                     // Override converse.js's XMPPStatus Backbone model so that we can override the
                     // function that sends out the presence stanza.
                     sendPresence: function (type, status_message, jid) {
-                        // The "converse" object is available via the __super__
+                        // The "_converse" object is available via the __super__
                         // attribute.
-                        var converse = this.__super__.converse;
+                        var _converse = this.__super__.converse;
 
                         // Custom code can come here
                         // ...
@@ -155,7 +145,7 @@ An example plugin
                         // context as reference by the "this" variable.
                         this.__super__.sendPresence.apply(this, arguments);
                     }
-                },
+                }
             }
         });
     }));

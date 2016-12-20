@@ -6,14 +6,14 @@
         "mock",
         "test_utils"
         ], factory);
-} (this, function ($, converse_api, utils, mock, test_utils) {
+} (this, function ($, converse, utils, mock, test_utils) {
     "use strict";
-    var $msg = converse_api.env.$msg,
-        _ = converse_api.env._;
+    var $msg = converse.env.$msg,
+        _ = converse.env._;
 
     describe("A headlines box", function () {
 
-        it("will not open nor display non-headline messages", mock.initConverse(function (converse) {
+        it("will not open nor display non-headline messages", mock.initConverse(function (_converse) {
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -25,7 +25,7 @@
              *  </message
              */
             test_utils.openControlBox();
-            test_utils.openContactsPanel(converse);
+            test_utils.openContactsPanel(_converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -36,7 +36,7 @@
                     })
                     .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
                     .c('body').t('SORRY FOR THIS ADVERT');
-                converse.connection._dataRecv(test_utils.createRequest(stanza));
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
             });
             waits(250);
             runs(function () {
@@ -47,7 +47,7 @@
         }));
 
 
-        it("will open and display headline messages", mock.initConverse(function (converse) {
+        it("will open and display headline messages", mock.initConverse(function (_converse) {
             /*
              *  <message from='notify.example.com'
              *          to='romeo@im.example.com'
@@ -63,7 +63,7 @@
              *  </message>
              */
             test_utils.openControlBox();
-            test_utils.openContactsPanel(converse);
+            test_utils.openContactsPanel(_converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -76,13 +76,13 @@
                     .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
                     .c('x', {'xmlns': 'jabber:x:oob'})
                     .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
-                converse.connection._dataRecv(test_utils.createRequest(stanza));
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
             });
             waits(250);
             runs(function () {
                 expect(
                     _.includes(
-                        converse.chatboxviews.keys(),
+                        _converse.chatboxviews.keys(),
                         'notify.example.com')
                     ).toBeTruthy();
                 expect(utils.isHeadlineMessage.called).toBeTruthy();

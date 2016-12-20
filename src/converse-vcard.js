@@ -12,7 +12,7 @@
             "converse-api",
             "strophe.vcard",
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (_converse, converse_api) {
     "use strict";
     var Strophe = converse_api.env.Strophe,
         $ = converse_api.env.jQuery,
@@ -31,8 +31,8 @@
             Features: {
                 addClientFeatures: function () {
                     this.__super__.addClientFeatures.apply(this, arguments);
-                    if (converse.use_vcards) {
-                        converse.connection.disco.addFeature(Strophe.NS.VCARD);
+                    if (_converse.use_vcards) {
+                        _converse.connection.disco.addFeature(Strophe.NS.VCARD);
                     }
                 }
             },
@@ -40,12 +40,12 @@
             RosterContacts: {
                 createRequestingContact: function (presence) {
                     var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                    converse.getVCard(
+                    _converse.getVCard(
                         bare_jid,
-                        _.partial(converse.createRequestingContactFromVCard, presence),
+                        _.partial(_converse.createRequestingContactFromVCard, presence),
                         function (iq, jid) {
-                            converse.log("Error while retrieving vcard for "+jid);
-                            converse.createRequestingContactFromVCard(presence, iq, jid);
+                            _converse.log("Error while retrieving vcard for "+jid);
+                            _converse.createRequestingContactFromVCard(presence, iq, jid);
                         }
                     );
                 }
@@ -61,7 +61,7 @@
                 use_vcards: true,
             });
 
-            converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
+            _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var nick = $(presence).children('nick[xmlns="'+Strophe.NS.NICK+'"]').text();
                 var user_data = {
@@ -75,26 +75,26 @@
                     url: url,
                     vcard_updated: moment().format()
                 };
-                converse.roster.create(user_data);
-                converse.emit('contactRequest', user_data);
+                _converse.roster.create(user_data);
+                _converse.emit('contactRequest', user_data);
             };
 
-            converse.onVCardError = function (jid, iq, errback) {
-                var contact = converse.roster.get(jid);
+            _converse.onVCardError = function (jid, iq, errback) {
+                var contact = _converse.roster.get(jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
                 if (errback) { errback(iq, jid); }
             };
 
-            converse.onVCardData = function (jid, iq, callback) {
+            _converse.onVCardData = function (jid, iq, callback) {
                 var $vcard = $(iq).find('vCard'),
                     fullname = $vcard.find('FN').text(),
                     img = $vcard.find('BINVAL').text(),
                     img_type = $vcard.find('TYPE').text(),
                     url = $vcard.find('URL').text();
                 if (jid) {
-                    var contact = converse.roster.get(jid);
+                    var contact = _converse.roster.get(jid);
                     if (contact) {
                         fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
                         contact.save({
@@ -111,7 +111,7 @@
                 }
             };
 
-            converse.getVCard = function (jid, callback, errback) {
+            _converse.getVCard = function (jid, callback, errback) {
                 /* Request the VCard of another user.
                  *
                  * Parameters:
@@ -122,22 +122,22 @@
                  *    (Function) errback - A function to call if an error occured
                  *      while trying to fetch the VCard.
                  */
-                if (!converse.use_vcards) {
+                if (!_converse.use_vcards) {
                     if (callback) { callback(null, jid); }
                 } else {
-                    converse.connection.vcard.get(
-                        _.partial(converse.onVCardData, jid, _, callback),
+                    _converse.connection.vcard.get(
+                        _.partial(_converse.onVCardData, jid, _, callback),
                         jid,
-                        _.partial(converse.onVCardError, jid, _, errback));
+                        _.partial(_converse.onVCardError, jid, _, errback));
                 }
             };
 
             var updateVCardForChatBox = function (chatbox) {
-                if (!converse.use_vcards) { return; }
+                if (!_converse.use_vcards) { return; }
                 var jid = chatbox.model.get('jid'),
-                    contact = converse.roster.get(jid);
+                    contact = _converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
-                    converse.getVCard(
+                    _converse.getVCard(
                         jid,
                         function (iq, jid, fullname, image, image_type, url) {
                             chatbox.model.save({
@@ -148,38 +148,38 @@
                             });
                         },
                         function () {
-                            converse.log(
+                            _converse.log(
                                 "updateVCardForChatBox: Error occured while fetching vcard"
                             );
                         }
                     );
                 }
             };
-            converse.on('chatBoxInitialized', updateVCardForChatBox);
+            _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
 
             var onContactAdd = function (contact) {
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
                     // request which will rerender the roster contact.
-                    converse.getVCard(contact.get('jid'));
+                    _converse.getVCard(contact.get('jid'));
                 }
             };
-            converse.on('initialized', function () {
-                converse.roster.on("add", onContactAdd);
+            _converse.on('initialized', function () {
+                _converse.roster.on("add", onContactAdd);
             });
 
             var fetchOwnVCard = function () {
-                if (converse.xmppstatus.get('fullname') === undefined) {
-                    converse.getVCard(
+                if (_converse.xmppstatus.get('fullname') === undefined) {
+                    _converse.getVCard(
                         null, // No 'to' attr when getting one's own vCard
                         function (iq, jid, fullname) {
-                            converse.xmppstatus.save({'fullname': fullname});
+                            _converse.xmppstatus.save({'fullname': fullname});
                         }
                     );
                 }
             };
-            converse.on('statusInitialized', fetchOwnVCard);
+            _converse.on('statusInitialized', fetchOwnVCard);
         }
     });
 }));

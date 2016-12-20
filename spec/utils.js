@@ -1,8 +1,8 @@
 (function (root, factory) {
     define(["converse-api"], factory);
-} (this, function (converse_api) {
-    var utils = converse_api.env.utils,
-        _ = converse_api.env._;
+} (this, function (converse) {
+    var utils = converse.env.utils,
+        _ = converse.env._;
 
     return describe("Converse.js Utilities", function() {
 

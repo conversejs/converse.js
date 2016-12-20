@@ -1,8 +1,8 @@
 (function (root, factory) {
     define(["mock", "converse-api", "test_utils"], factory);
-} (this, function (mock, converse_api, test_utils) {
+} (this, function (mock, converse, test_utils) {
     "use strict";
-    var $msg = converse_api.env.$msg;
+    var $msg = converse.env.$msg;
 
     describe("Notifications", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
@@ -11,30 +11,30 @@
             describe("And the desktop is not focused", function () {
                 describe("an HTML5 Notification", function () {
 
-                    it("is shown when a new private message is received", mock.initConverse(function (converse) {
+                    it("is shown when a new private message is received", mock.initConverse(function (_converse) {
                         // TODO: not yet testing show_desktop_notifications setting
-                        test_utils.createContacts(converse, 'current');
-                        spyOn(converse, 'showMessageNotification');
-                        spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        test_utils.createContacts(_converse, 'current');
+                        spyOn(_converse, 'showMessageNotification');
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
                         
                         var message = 'This message will show a desktop notification';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                             msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                        converse.chatboxes.onMessage(msg); // This will emit 'message'
-                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                        expect(converse.showMessageNotification).toHaveBeenCalled();
+                        _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(_converse.showMessageNotification).toHaveBeenCalled();
                     }));
 
-                    it("is shown when you are mentioned in a chat room", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
-                        test_utils.openAndEnterChatRoom(converse, 'lounge', 'localhost', 'dummy');
-                        var view = converse.chatboxviews.get('lounge@localhost');
+                    it("is shown when you are mentioned in a chat room", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
+                        test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                        var view = _converse.chatboxviews.get('lounge@localhost');
                         if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                         var no_notification = false;
                         if (typeof window.Notification === 'undefined') {
@@ -45,8 +45,8 @@
                                 };
                             };
                         }
-                        spyOn(converse, 'showMessageNotification').andCallThrough();
-                        spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        spyOn(_converse, 'showMessageNotification').andCallThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
                         
                         var message = 'dummy: This message will show a desktop notification';
                         var nick = mock.chatroom_names[0],
@@ -56,34 +56,34 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
-                        converse.chatboxes.onMessage(msg); // This will emit 'message'
-                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                        expect(converse.showMessageNotification).toHaveBeenCalled();
+                        _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(_converse.showMessageNotification).toHaveBeenCalled();
                         if (no_notification) {
                             delete window.Notification;
                         }
                     }));
 
-                    it("is shown when a user changes their chat state", mock.initConverse(function (converse) {
+                    it("is shown when a user changes their chat state", mock.initConverse(function (_converse) {
                         // TODO: not yet testing show_desktop_notifications setting
-                        test_utils.createContacts(converse, 'current');
-                        spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
-                        spyOn(converse, 'showChatStateNotification');
+                        test_utils.createContacts(_converse, 'current');
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        spyOn(_converse, 'showChatStateNotification');
                         var jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        converse.roster.get(jid).set('chat_status', 'busy'); // This will emit 'contactStatusChanged'
-                        expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                        expect(converse.showChatStateNotification).toHaveBeenCalled();
+                        _converse.roster.get(jid).set('chat_status', 'busy'); // This will emit 'contactStatusChanged'
+                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(_converse.showChatStateNotification).toHaveBeenCalled();
                     }));
                 });
             });
 
             describe("When a new contact request is received", function () {
-                it("an HTML5 Notification is received", mock.initConverse(function (converse) {
-                    spyOn(converse, 'areDesktopNotificationsEnabled').andReturn(true);
-                    spyOn(converse, 'showContactRequestNotification');
-                    converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
-                    expect(converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                    expect(converse.showContactRequestNotification).toHaveBeenCalled();
+                it("an HTML5 Notification is received", mock.initConverse(function (_converse) {
+                    spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                    spyOn(_converse, 'showContactRequestNotification');
+                    _converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
+                    expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                    expect(_converse.showContactRequestNotification).toHaveBeenCalled();
                 }));
             });
         });
@@ -91,12 +91,12 @@
         describe("When play_sounds is set to true", function () {
             describe("A notification sound", function () {
 
-                it("is played when the current user is mentioned in a chat room", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
-                    test_utils.openAndEnterChatRoom(converse, 'lounge', 'localhost', 'dummy');
-                    converse.play_sounds = true;
-                    spyOn(converse, 'playSoundNotification');
-                    var view = converse.chatboxviews.get('lounge@localhost');
+                it("is played when the current user is mentioned in a chat room", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    _converse.play_sounds = true;
+                    spyOn(_converse, 'playSoundNotification');
+                    var view = _converse.chatboxviews.get('lounge@localhost');
                     if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
                     var text = 'This message will play a sound because it mentions dummy';
                     var message = $msg({
@@ -106,7 +106,7 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     view.onChatRoomMessage(message.nodeTree);
-                    expect(converse.playSoundNotification).toHaveBeenCalled();
+                    expect(_converse.playSoundNotification).toHaveBeenCalled();
 
                     text = "This message won't play a sound";
                     message = $msg({
@@ -116,8 +116,8 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     view.onChatRoomMessage(message.nodeTree);
-                    expect(converse.playSoundNotification, 1);
-                    converse.play_sounds = false;
+                    expect(_converse.playSoundNotification, 1);
+                    _converse.play_sounds = false;
 
                     text = "This message won't play a sound because it is sent by dummy";
                     message = $msg({
@@ -127,8 +127,8 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     view.onChatRoomMessage(message.nodeTree);
-                    expect(converse.playSoundNotification, 1);
-                    converse.play_sounds = false;
+                    expect(_converse.playSoundNotification, 1);
+                    _converse.play_sounds = false;
                 }));
             });
         });

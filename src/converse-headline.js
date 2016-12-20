@@ -12,24 +12,24 @@
             "converse-api",
             "converse-chatview"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (_converse, converse_api) {
     "use strict";
     var _ = converse_api.env._,
         utils = converse_api.env.utils,
-        __ = utils.__.bind(converse);
+        __ = utils.__.bind(_converse);
 
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
          */
         var from_jid = message.getAttribute('from');
         if (utils.isHeadlineMessage(message)) {
-            converse.chatboxes.create({
+            _converse.chatboxes.create({
                 'id': from_jid,
                 'jid': from_jid,
                 'fullname':  from_jid,
                 'type': 'headline'
             }).createMessage(message, undefined, message);
-            converse.emit('message', message);
+            _converse.emit('message', message);
         }
         return true;
     };
@@ -47,7 +47,7 @@
                 onChatBoxAdded: function (item) {
                     var view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
-                        view = new converse.HeadlinesBoxView({model: item});
+                        view = new _converse.HeadlinesBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
                     } else {
@@ -61,7 +61,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            converse.HeadlinesBoxView = converse.ChatBoxView.extend({
+            _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
 
                 events: {
@@ -77,14 +77,14 @@
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
                     this.render().fetchMessages().insertIntoDOM().hide();
-                    converse.emit('chatBoxInitialized', this);
+                    _converse.emit('chatBoxInitialized', this);
                 },
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(converse.templates.chatbox(
+                        .html(_converse.templates.chatbox(
                                 _.extend(this.model.toJSON(), {
-                                        show_toolbar: converse.show_toolbar,
+                                        show_toolbar: _converse.show_toolbar,
                                         show_textarea: false,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
@@ -95,18 +95,18 @@
                             )
                         );
                     this.$content = this.$el.find('.chat-content');
-                    converse.emit('chatBoxOpened', this);
+                    _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this;
                 }
             });
 
             var registerHeadlineHandler = function () {
-                converse.connection.addHandler(
+                _converse.connection.addHandler(
                         onHeadlineMessage, null, 'message');
             };
-            converse.on('connected', registerHeadlineHandler);
-            converse.on('reconnected', registerHeadlineHandler);
+            _converse.on('connected', registerHeadlineHandler);
+            _converse.on('reconnected', registerHeadlineHandler);
         }
     });
 }));

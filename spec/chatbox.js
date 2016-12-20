@@ -5,37 +5,37 @@
         "mock",
         "test_utils"
         ], factory);
-} (this, function (utils, converse_api, mock, test_utils) {
+} (this, function (utils, converse, mock, test_utils) {
     "use strict";
-    var _ = converse_api.env._;
-    var $ = converse_api.env.jQuery;
-    var $msg = converse_api.env.$msg;
-    var Strophe = converse_api.env.Strophe;
-    var moment = converse_api.env.moment;
+    var _ = converse.env._;
+    var $ = converse.env.jQuery;
+    var $msg = converse.env.$msg;
+    var Strophe = converse.env.Strophe;
+    var moment = converse.env.moment;
 
     return describe("Chatboxes", function() {
         describe("A Chatbox", function () {
 
-            it("is created when you click on a roster item", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("is created when you click on a roster item", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
                 var i, $el, jid, chatboxview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
-                expect(converse.chatboxes.length).toEqual(1);
-                spyOn(converse.chatboxviews, 'trimChats');
+                expect(_converse.chatboxes.length).toEqual(1);
+                spyOn(_converse.chatboxviews, 'trimChats');
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                var online_contacts = converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                 for (i=0; i<online_contacts.length; i++) {
                     $el = $(online_contacts[i]);
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     $el.click();
-                    chatboxview = converse.chatboxviews.get(jid);
-                    expect(converse.chatboxes.length).toEqual(i+2);
-                    expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    chatboxview = _converse.chatboxviews.get(jid);
+                    expect(_converse.chatboxes.length).toEqual(i+2);
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                     // Check that new chat boxes are created to the left of the
                     // controlbox (but to the right of all existing chat boxes)
                     expect($("#conversejs .chatbox").length).toBe(i+2);
@@ -43,43 +43,43 @@
                 }
             }));
 
-            it("can be trimmed to conserve space", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("can be trimmed to conserve space", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
                 var i, $el, jid, chatbox, chatboxview, trimmedview;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
-                var trimmed_chatboxes = converse.minimized_chats;
-                expect(converse.chatboxes.length).toEqual(1);
-                spyOn(converse.chatboxviews, 'trimChats');
+                var trimmed_chatboxes = _converse.minimized_chats;
+                expect(_converse.chatboxes.length).toEqual(1);
+                spyOn(_converse.chatboxviews, 'trimChats');
                 spyOn(trimmed_chatboxes, 'addChat').andCallThrough();
                 spyOn(trimmed_chatboxes, 'removeChat').andCallThrough();
                 expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
                 // Test that they can be trimmed
                 runs(function () {
-                    converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                    _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 });
                 waits(50);
                 runs(function () {
                     // Test that they can be maximized again
-                    var online_contacts = converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
+                    var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
                         jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                         $el.click();
-                        expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
+                        expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
 
-                        chatboxview = converse.chatboxviews.get(jid);
+                        chatboxview = _converse.chatboxviews.get(jid);
                         spyOn(chatboxview, 'minimize').andCallThrough();
                         chatboxview.model.set({'minimized': true});
                         expect(trimmed_chatboxes.addChat).toHaveBeenCalled();
                         expect(chatboxview.minimize).toHaveBeenCalled();
                         trimmedview = trimmed_chatboxes.get(jid);
                     }
-                    var key = converse.chatboxviews.keys()[1];
+                    var key = _converse.chatboxviews.keys()[1];
                     trimmedview = trimmed_chatboxes.get(key);
                     chatbox = trimmedview.model;
                     spyOn(chatbox, 'maximize').andCallThrough();
@@ -91,54 +91,54 @@
                 runs(function () {
                     expect(trimmedview.restore).toHaveBeenCalled();
                     expect(chatbox.maximize).toHaveBeenCalled();
-                    expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 });
             }));
 
-            it("is focused if its already open and you click on its corresponding roster item", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("is focused if its already open and you click on its corresponding roster item", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
                 var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var $el, jid, chatboxview, chatbox;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
-                expect(converse.chatboxes.length).toEqual(1);
-                chatbox = test_utils.openChatBoxFor(converse, contact_jid);
-                chatboxview = converse.chatboxviews.get(contact_jid);
+                expect(_converse.chatboxes.length).toEqual(1);
+                chatbox = test_utils.openChatBoxFor(_converse, contact_jid);
+                chatboxview = _converse.chatboxviews.get(contact_jid);
                 spyOn(chatboxview, 'focus');
                 // Test that they can be trimmed
                 runs(function () {
-                    converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                    _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 });
                 waits(300); // ChatBox.show() is debounced for 250ms
                 runs(function () {
-                    $el = converse.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
+                    $el = _converse.rosterview.$el.find('a.open-chat:contains("'+chatbox.get('fullname')+'")');
                     jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
                     $el.click();
-                    expect(converse.chatboxes.length).toEqual(2);
+                    expect(_converse.chatboxes.length).toEqual(2);
                     expect(chatboxview.focus).toHaveBeenCalled();
                 });
             }));
 
-            it("can be saved to, and retrieved from, browserStorage", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("can be saved to, and retrieved from, browserStorage", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                spyOn(converse, 'emit');
-                spyOn(converse.chatboxviews, 'trimChats');
+                spyOn(_converse, 'emit');
+                spyOn(_converse.chatboxviews, 'trimChats');
                 runs(function () {
                     test_utils.openControlBox();
                 });
                 waits(250);
                 runs(function () {
-                    test_utils.openChatBoxes(converse, 6);
-                    expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    test_utils.openChatBoxes(_converse, 6);
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                     // We instantiate a new ChatBoxes collection, which by default
                     // will be empty.
-                    var newchatboxes = new converse.ChatBoxes();
+                    var newchatboxes = new _converse.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
                     // The chatboxes will then be fetched from browserStorage inside the
                     // onConnected method
@@ -150,24 +150,24 @@
                     var new_attrs, old_attrs;
                     for (var i=0; i<attrs.length; i++) {
                         new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
-                        old_attrs = _.map(_.map(converse.chatboxes.models, 'attributes'), attrs[i]);
+                        old_attrs = _.map(_.map(_converse.chatboxes.models, 'attributes'), attrs[i]);
                         expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
                     }
-                    converse.rosterview.render();
+                    _converse.rosterview.render();
                 });
             }));
 
-            it("can be closed by clicking a DOM element with class 'close-chatbox-button'", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("can be closed by clicking a DOM element with class 'close-chatbox-button'", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                var chatbox = test_utils.openChatBoxes(converse, 1)[0],
-                    controlview = converse.chatboxviews.get('controlbox'), // The controlbox is currently open
-                    chatview = converse.chatboxviews.get(chatbox.get('jid'));
+                var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
+                    controlview = _converse.chatboxviews.get('controlbox'), // The controlbox is currently open
+                    chatview = _converse.chatboxviews.get(chatbox.get('jid'));
                 spyOn(chatview, 'close').andCallThrough();
                 spyOn(controlview, 'close').andCallThrough();
-                spyOn(converse, 'emit');
+                spyOn(_converse, 'emit');
 
                 // We need to rebind all events otherwise our spy won't be called
                 controlview.delegateEvents();
@@ -179,29 +179,29 @@
                 waits(250);
                 runs(function () {
                     expect(controlview.close).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                    expect(converse.emit.callCount, 1);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                    expect(_converse.emit.callCount, 1);
                     chatview.$el.find('.close-chatbox-button').click();
                 });
                 waits(250);
                 runs(function () {
                     expect(chatview.close).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                    expect(converse.emit.callCount, 2);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                    expect(_converse.emit.callCount, 2);
                 });
             }));
 
-            it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                var chatbox = test_utils.openChatBoxes(converse, 1)[0],
-                    chatview = converse.chatboxviews.get(chatbox.get('jid')),
-                    trimmed_chatboxes = converse.minimized_chats,
+                var chatbox = test_utils.openChatBoxes(_converse, 1)[0],
+                    chatview = _converse.chatboxviews.get(chatbox.get('jid')),
+                    trimmed_chatboxes = _converse.minimized_chats,
                     trimmedview;
                 spyOn(chatview, 'minimize').andCallThrough();
-                spyOn(converse, 'emit');
+                spyOn(_converse, 'emit');
                 // We need to rebind all events otherwise our spy won't be called
                 chatview.delegateEvents();
 
@@ -211,8 +211,8 @@
                 waits(250);
                 runs(function () {
                     expect(chatview.minimize).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-                    expect(converse.emit.callCount, 2);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
+                    expect(_converse.emit.callCount, 2);
                     expect(chatview.$el.is(':visible')).toBeFalsy();
                     expect(chatview.model.get('minimized')).toBeTruthy();
                     chatview.$el.find('.toggle-chatbox-button').click();
@@ -224,7 +224,7 @@
                 waits(250);
                 runs(function () {
                     expect(trimmedview.restore).toHaveBeenCalled();
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                     expect(chatview.$el.find('.chat-body').is(':visible')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
@@ -232,36 +232,36 @@
                 });
             }));
 
-            it("will be removed from browserStorage when closed", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("will be removed from browserStorage when closed", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                spyOn(converse, 'emit');
-                spyOn(converse.chatboxviews, 'trimChats');
-                converse.chatboxes.browserStorage._clear();
+                spyOn(_converse, 'emit');
+                spyOn(_converse.chatboxviews, 'trimChats');
+                _converse.chatboxes.browserStorage._clear();
                 runs(function () {
                     test_utils.closeControlBox();
                 });
                 waits(50);
                 runs(function () {
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                    expect(converse.chatboxes.length).toEqual(1);
-                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
-                    test_utils.openChatBoxes(converse, 6);
-                    expect(converse.chatboxviews.trimChats).toHaveBeenCalled();
-                    expect(converse.chatboxes.length).toEqual(7);
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
-                    test_utils.closeAllChatBoxes(converse);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                    expect(_converse.chatboxes.length).toEqual(1);
+                    expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
+                    test_utils.openChatBoxes(_converse, 6);
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    expect(_converse.chatboxes.length).toEqual(7);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
+                    test_utils.closeAllChatBoxes(_converse);
                 });
                 waits(50);
                 runs(function () {
-                    expect(converse.chatboxes.length).toEqual(1);
-                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                    var newchatboxes = new converse.ChatBoxes();
+                    expect(_converse.chatboxes.length).toEqual(1);
+                    expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                    var newchatboxes = new _converse.ChatBoxes();
                     expect(newchatboxes.length).toEqual(0);
-                    expect(converse.chatboxes.pluck('id')).toEqual(['controlbox']);
+                    expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                     // onConnected will fetch chatboxes in browserStorage, but
                     // because there aren't any open chatboxes, there won't be any
                     // in browserStorage either. XXX except for the controlbox
@@ -273,15 +273,15 @@
 
             describe("A chat toolbar", function () {
 
-                it("can be found on each chat box", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can be found on each chat box", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var chatbox = converse.chatboxes.get(contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var chatbox = _converse.chatboxes.get(contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     expect(chatbox).toBeDefined();
                     expect(view).toBeDefined();
                     var $toolbar = view.$el.find('ul.chat-toolbar');
@@ -289,17 +289,17 @@
                     expect($toolbar.children('li').length).toBe(3);
                 }));
 
-                it("contains a button for inserting emoticons", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("contains a button for inserting emoticons", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
                         view, $toolbar, $textarea;
                     waits(300); // ChatBox.show() is debounced for 250ms
                     runs(function () {
-                        test_utils.openChatBoxFor(converse, contact_jid);
-                        view = converse.chatboxviews.get(contact_jid);
+                        test_utils.openChatBoxFor(_converse, contact_jid);
+                        view = _converse.chatboxviews.get(contact_jid);
                         $toolbar = view.$el.find('ul.chat-toolbar');
                         $textarea = view.$el.find('textarea.chat-textarea');
                         expect($toolbar.children('li.toggle-smiley').length).toBe(1);
@@ -352,15 +352,15 @@
                     });
                 }));
 
-                it("contains a button for starting an encrypted chat session", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("contains a button for starting an encrypted chat session", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     // TODO: More tests can be added here...
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     var $toolbar = view.$el.find('ul.chat-toolbar');
                     expect($toolbar.children('li.toggle-otr').length).toBe(1);
                     // Register spies
@@ -380,57 +380,57 @@
 
                 }));
 
-                it("can contain a button for starting a call", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can contain a button for starting a call", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var view, callButton, $toolbar;
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(converse, 'emit');
+                    spyOn(_converse, 'emit');
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
-                    converse.visible_toolbar_buttons.call = false;
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    view = converse.chatboxviews.get(contact_jid);
+                    _converse.visible_toolbar_buttons.call = false;
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     callButton = $toolbar.find('.toggle-call');
                     expect(callButton.length).toBe(0);
                     view.close();
                     // Now check that it's shown if enabled and that it emits
                     // callButtonClicked
-                    converse.visible_toolbar_buttons.call = true; // enable the button
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    view = converse.chatboxviews.get(contact_jid);
+                    _converse.visible_toolbar_buttons.call = true; // enable the button
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     callButton = $toolbar.find('.toggle-call');
                     expect(callButton.length).toBe(1);
                     callButton.click();
-                    expect(converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
+                    expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                 }));
 
-                it("can contain a button for clearing messages", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can contain a button for clearing messages", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var view, clearButton, $toolbar;
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
-                    converse.visible_toolbar_buttons.clear = false;
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    view = converse.chatboxviews.get(contact_jid);
-                    view = converse.chatboxviews.get(contact_jid);
+                    _converse.visible_toolbar_buttons.clear = false;
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     clearButton = $toolbar.find('.toggle-clear');
                     expect(clearButton.length).toBe(0);
                     view.close();
                     // Now check that it's shown if enabled and that it calls
                     // clearMessages
-                    converse.visible_toolbar_buttons.clear = true; // enable the button
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    view = converse.chatboxviews.get(contact_jid);
+                    _converse.visible_toolbar_buttons.clear = true; // enable the button
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
                     $toolbar = view.$el.find('ul.chat-toolbar');
                     clearButton = $toolbar.find('.toggle-clear');
                     expect(clearButton.length).toBe(1);
@@ -444,35 +444,35 @@
             describe("A Chat Message", function () {
 
                 describe("when received from someone else", function () {
-                    it("can be received which will open a chatbox and be displayed inside it", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("can be received which will open a chatbox and be displayed inside it", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
-                        spyOn(converse, 'emit');
+                        spyOn(_converse, 'emit');
                         var message = 'This is a received message';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         var msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
                         // We don't already have an open chatbox for this user
-                        expect(converse.chatboxes.get(sender_jid)).not.toBeDefined();
+                        expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                         runs(function () {
                             // onMessage is a handler for received XMPP messages
-                            converse.chatboxes.onMessage(msg);
-                            expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                            _converse.chatboxes.onMessage(msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', msg);
                         });
                         waits(50);
                         runs(function () {
                             // Check that the chatbox and its view now exist
-                            var chatbox = converse.chatboxes.get(sender_jid);
-                            var chatboxview = converse.chatboxviews.get(sender_jid);
+                            var chatbox = _converse.chatboxes.get(sender_jid);
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
                             expect(chatbox).toBeDefined();
                             expect(chatboxview).toBeDefined();
                             // Check that the message was received and check the message parameters
@@ -550,10 +550,10 @@
 
                     describe("and for which then an error message is received from the server", function () {
 
-                        it("will have the error message displayed after itself", mock.initConverse(function (converse) {
-                            test_utils.createContacts(converse, 'current');
+                        it("will have the error message displayed after itself", mock.initConverse(function (_converse) {
+                            test_utils.createContacts(_converse, 'current');
                             test_utils.openControlBox();
-                            test_utils.openContactsPanel(converse);
+                            test_utils.openContactsPanel(_converse);
 
                             // TODO: what could still be done for error
                             // messages... if the <error> element has type
@@ -561,7 +561,7 @@
                             // and can give the user a nicer indication of
                             // that.
 
-                            /* <message from="scotty@enterprise.com/converse.js-84843526"
+                            /* <message from="scotty@enterprise.com/_converse.js-84843526"
                              *          to="kirk@enterprise.com.com"
                              *          type="chat"
                              *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
@@ -571,11 +571,11 @@
                              *  </message>
                              */
                             var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            var fullname = converse.xmppstatus.get('fullname');
-                            fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
-                            converse.api.chats.open(sender_jid);
+                            var fullname = _converse.xmppstatus.get('fullname');
+                            fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
+                            _converse.api.chats.open(sender_jid);
                             var msg_text = 'This message will not be sent, due to an error';
-                            var view = converse.chatboxviews.get(sender_jid);
+                            var view = _converse.chatboxviews.get(sender_jid);
                             var message = view.model.messages.create({
                                 'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                                 'fullname': fullname,
@@ -604,7 +604,7 @@
                             expect(msg_txt).toEqual(msg_text);
 
                             /* <message xmlns="jabber:client"
-                             *          to="scotty@enterprise.com/converse.js-84843526"
+                             *          to="scotty@enterprise.com/_converse.js-84843526"
                              *          type="error"
                              *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
                              *          from="kirk@enterprise.com.com">
@@ -616,7 +616,7 @@
                              */
                             var error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
                             var stanza = $msg({
-                                    'to': converse.connection.jid,
+                                    'to': _converse.connection.jid,
                                     'type':'error',
                                     'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
                                     'from': sender_jid
@@ -625,7 +625,7 @@
                                 .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
                                 .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                     .t('Server-to-server connection failed: Connecting failed: connection timeout');
-                            converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
                             expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
 
                             /* Incoming error messages that are not tied to a
@@ -635,7 +635,7 @@
                              * notifications as well.
                              */
                             stanza = $msg({
-                                    'to': converse.connection.jid,
+                                    'to': _converse.connection.jid,
                                     'type':'error',
                                     'id':'some-other-unused-id',
                                     'from': sender_jid
@@ -644,29 +644,29 @@
                                 .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
                                 .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                     .t('Server-to-server connection failed: Connecting failed: connection timeout');
-                            converse.connection._dataRecv(test_utils.createRequest(stanza));
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
                             expect($chat_content.find('.chat-error').length).toEqual(1);
                         }));
                     });
 
-                    it("will cause the chat area to be scrolled down only if it was at the bottom already", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("will cause the chat area to be scrolled down only if it was at the bottom already", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         var message = 'This message is received while the chat area is scrolled up';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(converse, sender_jid);
-                        var chatboxview = converse.chatboxviews.get(sender_jid);
+                        test_utils.openChatBoxFor(_converse, sender_jid);
+                        var chatboxview = _converse.chatboxviews.get(sender_jid);
                         spyOn(chatboxview, 'scrollDown').andCallThrough();
                         runs(function () {
                             /* Create enough messages so that there's a
                              * scrollbar.
                              */
                             for (var i=0; i<20; i++) {
-                                converse.chatboxes.onMessage($msg({
+                                _converse.chatboxes.onMessage($msg({
                                         from: sender_jid,
-                                        to: converse.connection.jid,
+                                        to: _converse.connection.jid,
                                         type: 'chat',
                                         id: (new Date()).getTime()
                                     }).c('body').t('Message: '+i).up()
@@ -679,9 +679,9 @@
                         });
                         waits(250);
                         runs(function () {
-                            converse.chatboxes.onMessage($msg({
+                            _converse.chatboxes.onMessage($msg({
                                     from: sender_jid,
-                                    to: converse.connection.jid,
+                                    to: _converse.connection.jid,
                                     type: 'chat',
                                     id: (new Date()).getTime()
                                 }).c('body').t(message).up()
@@ -705,50 +705,50 @@
                         });
                     }));
 
-                    it("is ignored if it's intended for a different resource and filter_by_resource is set to true", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is ignored if it's intended for a different resource and filter_by_resource is set to true", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         // Send a message from a different resource
                         var message, sender_jid, msg;
-                        spyOn(converse, 'log');
-                        spyOn(converse.chatboxes, 'getChatBox').andCallThrough();
+                        spyOn(_converse, 'log');
+                        spyOn(_converse.chatboxes, 'getChatBox').andCallThrough();
                         runs(function () {
-                            converse.filter_by_resource = true;
+                            _converse.filter_by_resource = true;
                             sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             msg = $msg({
                                     from: sender_jid,
-                                    to: converse.bare_jid+"/some-other-resource",
+                                    to: _converse.bare_jid+"/some-other-resource",
                                     type: 'chat',
                                     id: (new Date()).getTime()
                                 }).c('body').t("This message will not be shown").up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                            converse.chatboxes.onMessage(msg);
+                            _converse.chatboxes.onMessage(msg);
                         });
                         waits(50);
                         runs(function () {
-                            expect(converse.log).toHaveBeenCalledWith(
+                            expect(_converse.log).toHaveBeenCalledWith(
                                     "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
-                            expect(converse.chatboxes.getChatBox).not.toHaveBeenCalled();
-                            converse.filter_by_resource = false;
+                            expect(_converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                            _converse.filter_by_resource = false;
                         });
                         waits(50);
                         runs(function () {
                             message = "This message sent to a different resource will be shown";
                             msg = $msg({
                                     from: sender_jid,
-                                    to: converse.bare_jid+"/some-other-resource",
+                                    to: _converse.bare_jid+"/some-other-resource",
                                     type: 'chat',
                                     id: '134234623462346'
                                 }).c('body').t(message).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                            converse.chatboxes.onMessage(msg);
+                            _converse.chatboxes.onMessage(msg);
                         });
                         waits(50);
                         runs(function () {
-                            expect(converse.chatboxes.getChatBox).toHaveBeenCalled();
-                            var chatboxview = converse.chatboxviews.get(sender_jid);
+                            expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
                             var $chat_content = chatboxview.$el.find('.chat-content:last');
                             var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
@@ -756,50 +756,50 @@
                     }));
                 });
 
-                it("is ignored if it's a malformed headline message", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("is ignored if it's a malformed headline message", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     /* Ideally we wouldn't have to filter out headline
                      * messages, but Prosody gives them the wrong 'type' :(
                      */
-                    sinon.spy(converse, 'log');
-                    sinon.spy(converse.chatboxes, 'getChatBox');
+                    sinon.spy(_converse, 'log');
+                    sinon.spy(_converse.chatboxes, 'getChatBox');
                     sinon.spy(utils, 'isHeadlineMessage');
                     var msg = $msg({
                             from: 'localhost',
-                            to: converse.bare_jid,
+                            to: _converse.bare_jid,
                             type: 'chat',
                             id: (new Date()).getTime()
                         }).c('body').t("This headline message will not be shown").tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.log.calledWith(
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.log.calledWith(
                         "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: localhost",
                         "info"
                     )).toBeTruthy();
                     expect(utils.isHeadlineMessage.called).toBeTruthy();
                     expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
-                    expect(converse.chatboxes.getChatBox.called).toBeFalsy();
+                    expect(_converse.chatboxes.getChatBox.called).toBeFalsy();
                     // Remove sinon spies
-                    converse.log.restore();
-                    converse.chatboxes.getChatBox.restore();
+                    _converse.log.restore();
+                    _converse.chatboxes.getChatBox.restore();
                     utils.isHeadlineMessage.restore();
                 }));
 
-                it("can be a carbon message, as defined in XEP-0280", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can be a carbon message, as defined in XEP-0280", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     // Send a message from a different resource
-                    spyOn(converse, 'log');
+                    spyOn(_converse, 'log');
                     var msgtext = 'This is a carbon message';
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
                             'from': sender_jid,
                             'id': (new Date()).getTime(),
-                            'to': converse.connection.jid,
+                            'to': _converse.connection.jid,
                             'type': 'chat',
                             'xmlns': 'jabber:client'
                         }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
@@ -807,14 +807,14 @@
                           .c('message', {
                                 'xmlns': 'jabber:client',
                                 'from': sender_jid,
-                                'to': converse.bare_jid+'/another-resource',
+                                'to': _converse.bare_jid+'/another-resource',
                                 'type': 'chat'
                         }).c('body').t(msgtext).tree();
-                    converse.chatboxes.onMessage(msg);
+                    _converse.chatboxes.onMessage(msg);
 
                     // Check that the chatbox and its view now exist
-                    var chatbox = converse.chatboxes.get(sender_jid);
-                    var chatboxview = converse.chatboxviews.get(sender_jid);
+                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    var chatboxview = _converse.chatboxviews.get(sender_jid);
                     expect(chatbox).toBeDefined();
                     expect(chatboxview).toBeDefined();
                     // Check that the message was received and check the message parameters
@@ -832,34 +832,34 @@
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                 }));
 
-                it("can be a carbon message that this user sent from a different client, as defined in XEP-0280", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can be a carbon message that this user sent from a different client, as defined in XEP-0280", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     // Send a message from a different resource
-                    spyOn(converse, 'log');
+                    spyOn(_converse, 'log');
                     var msgtext = 'This is a sent carbon message';
                     var recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
-                            'from': converse.bare_jid,
+                            'from': _converse.bare_jid,
                             'id': (new Date()).getTime(),
-                            'to': converse.connection.jid,
+                            'to': _converse.connection.jid,
                             'type': 'chat',
                             'xmlns': 'jabber:client'
                         }).c('sent', {'xmlns': 'urn:xmpp:carbons:2'})
                           .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                           .c('message', {
                                 'xmlns': 'jabber:client',
-                                'from': converse.bare_jid+'/another-resource',
+                                'from': _converse.bare_jid+'/another-resource',
                                 'to': recipient_jid,
                                 'type': 'chat'
                         }).c('body').t(msgtext).tree();
-                    converse.chatboxes.onMessage(msg);
+                    _converse.chatboxes.onMessage(msg);
 
                     // Check that the chatbox and its view now exist
-                    var chatbox = converse.chatboxes.get(recipient_jid);
-                    var chatboxview = converse.chatboxviews.get(recipient_jid);
+                    var chatbox = _converse.chatboxes.get(recipient_jid);
+                    var chatboxview = _converse.chatboxviews.get(recipient_jid);
                     expect(chatbox).toBeDefined();
                     expect(chatboxview).toBeDefined();
                     // Check that the message was received and check the message parameters
@@ -918,16 +918,16 @@
                     expect(chatbox).not.toBeDefined();
                 }));
 
-                it("received for a minimized chat box will increment a counter on its header", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("received for a minimized chat box will increment a counter on its header", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
                     var contact_name = mock.cur_names[0];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     runs(function () {
-                        spyOn(converse, 'emit').andCallThrough();
-                        test_utils.openChatBoxFor(converse, contact_jid);
-                        var chatview = converse.chatboxviews.get(contact_jid);
+                        spyOn(_converse, 'emit').andCallThrough();
+                        test_utils.openChatBoxFor(_converse, contact_jid);
+                        var chatview = _converse.chatboxviews.get(contact_jid);
                         expect(chatview.$el.is(':visible')).toBeTruthy();
                         expect(chatview.model.get('minimized')).toBeFalsy();
                         chatview.$el.find('.toggle-chatbox-button').click();
@@ -936,24 +936,24 @@
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         var msg = $msg({
                             from: sender_jid,
-                            to: converse.connection.jid,
+                            to: _converse.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                        converse.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                        var trimmed_chatboxes = converse.minimized_chats;
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        var trimmed_chatboxes = _converse.minimized_chats;
                         var trimmedview = trimmed_chatboxes.get(contact_jid);
                         var $count = trimmedview.$el.find('.chat-head-message-count');
                         expect(chatview.$el.is(':visible')).toBeFalsy();
                         expect(trimmedview.model.get('minimized')).toBeTruthy();
                         expect($count.is(':visible')).toBeTruthy();
                         expect($count.html()).toBe('1');
-                        converse.chatboxes.onMessage(
+                        _converse.chatboxes.onMessage(
                             $msg({
                                 from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').t('This message is also sent to a minimized chatbox').up()
@@ -969,21 +969,21 @@
                     });
                 }));
 
-                it("will indicate when it has a time difference of more than a day between it and its predecessor", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("will indicate when it has a time difference of more than a day between it and its predecessor", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
-                    spyOn(converse, 'emit');
+                    spyOn(_converse, 'emit');
                     var contact_name = mock.cur_names[1];
                     var contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    test_utils.clearChatBoxMessages(converse, contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    test_utils.clearChatBoxMessages(_converse, contact_jid);
                     var one_day_ago = moment();
                     one_day_ago.subtract('days', 1);
                     var message = 'This is a day old message';
-                    var chatbox = converse.chatboxes.get(contact_jid);
-                    var chatboxview = converse.chatboxviews.get(contact_jid);
+                    var chatbox = _converse.chatboxes.get(contact_jid);
+                    var chatboxview = _converse.chatboxviews.get(contact_jid);
                     var $chat_content = chatboxview.$el.find('.chat-content');
                     var msg_obj;
                     var msg_txt;
@@ -991,14 +991,14 @@
 
                     var msg = $msg({
                         from: contact_jid,
-                        to: converse.connection.jid,
+                        to: _converse.connection.jid,
                         type: 'chat',
                         id: one_day_ago.unix()
                     }).c('body').t(message).up()
                       .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', msg);
                     expect(chatbox.messages.length).toEqual(1);
                     msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(message);
@@ -1019,13 +1019,13 @@
                     message = 'This is a current message';
                     msg = $msg({
                         from: contact_jid,
-                        to: converse.connection.jid,
+                        to: _converse.connection.jid,
                         type: 'chat',
                         id: new Date().getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', msg);
                     // Check that there is a <time> element, with the required
                     // props.
                     $time = $chat_content.find('time');
@@ -1049,33 +1049,33 @@
                     expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                 }));
 
-                it("can be sent from a chatbox, and will appear inside it", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can be sent from a chatbox, and will appear inside it", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
-                    spyOn(converse, 'emit');
+                    spyOn(_converse, 'emit');
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    expect(converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                    var view = _converse.chatboxviews.get(contact_jid);
                     var message = 'This message is sent from this chatbox';
                     spyOn(view, 'sendMessage').andCallThrough();
                     test_utils.sendMessage(view, message);
                     expect(view.sendMessage).toHaveBeenCalled();
                     expect(view.model.messages.length, 2);
-                    expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
+                    expect(_converse.emit.mostRecentCall.args, ['messageSend', message]);
                     expect(view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content').text()).toEqual(message);
                 }));
 
-                it("is sanitized to prevent Javascript injection attacks", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("is sanitized to prevent Javascript injection attacks", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     var message = '<p>This message contains <em>some</em> <b>markup</b></p>';
                     spyOn(view, 'sendMessage').andCallThrough();
                     test_utils.sendMessage(view, message);
@@ -1085,14 +1085,14 @@
                     expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
                 }));
 
-                it("should display emoticons correctly", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("should display emoticons correctly", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     var messages = [':)', ';)', ':D', ':P', '8)', '>:)', ':S', ':\\', '>:(', ':(', ':O', '(^.^)b', '<3'];
                     var emoticons = [
                         '<span class="emoticon icon-smiley"></span>', '<span class="emoticon icon-wink"></span>',
@@ -1113,14 +1113,14 @@
                     }
                 }));
 
-                it("can contain hyperlinks, which will be clickable", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("can contain hyperlinks, which will be clickable", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     var message = 'This message contains a hyperlink: www.opkode.com';
                     spyOn(view, 'sendMessage').andCallThrough();
                     runs(function () {
@@ -1135,15 +1135,15 @@
                     });
                 }));
 
-                it("will have properly escaped URLs", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("will have properly escaped URLs", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     var message, msg;
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     spyOn(view, 'sendMessage').andCallThrough();
                     runs(function () {
                         message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
@@ -1188,10 +1188,10 @@
                     });
                 }));
 
-                it("will render images from their URLs", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("will render images from their URLs", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
                     if (/PhantomJS/.test(window.navigator.userAgent)) {
                         // Doesn't work when running tests in PhantomJS, since
@@ -1200,8 +1200,8 @@
                     }
                     var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg";
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(converse, contact_jid);
-                    var view = converse.chatboxviews.get(contact_jid);
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
                     spyOn(view, 'sendMessage').andCallThrough();
                     runs(function () {
                         test_utils.sendMessage(view, message);
@@ -1218,40 +1218,40 @@
 
             describe("A Chat Status Notification", function () {
 
-                it("does not open automatically if a chat state notification is received", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("does not open automatically if a chat state notification is received", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
 
-                    spyOn(converse, 'emit');
+                    spyOn(_converse, 'emit');
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // <composing> state
                     var msg = $msg({
                             from: sender_jid,
-                            to: converse.connection.jid,
+                            to: _converse.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    converse.chatboxes.onMessage(msg);
-                    expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', msg);
                 }));
 
                 describe("An active notification", function () {
 
-                    it("is sent when the user opens a chat box", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent when the user opens a chat box", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
-                            spyOn(converse.connection, 'send');
+                            spyOn(_converse.connection, 'send');
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            test_utils.openChatBoxFor(converse, contact_jid);
-                            var view = converse.chatboxviews.get(contact_jid);
+                            test_utils.openChatBoxFor(_converse, contact_jid);
+                            var view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('active');
@@ -1260,25 +1260,25 @@
                         });
                     }));
 
-                    it("is sent when the user maximizes a minimized a chat box", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent when the user maximizes a minimized a chat box", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         runs(function () {
-                            test_utils.openChatBoxFor(converse, contact_jid);
+                            test_utils.openChatBoxFor(_converse, contact_jid);
                         });
                         waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
-                            var view = converse.chatboxviews.get(contact_jid);
+                            var view = _converse.chatboxviews.get(contact_jid);
                             view.model.minimize();
                             expect(view.model.get('chat_state')).toBe('inactive');
-                            spyOn(converse.connection, 'send');
+                            spyOn(_converse.connection, 'send');
                             view.model.maximize();
                             expect(view.model.get('chat_state')).toBe('active');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('active');
@@ -1290,25 +1290,25 @@
 
                 describe("A composing notification", function () {
 
-                    it("is sent as soon as the user starts typing a message which is not a command", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent as soon as the user starts typing a message which is not a command", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            test_utils.openChatBoxFor(converse, contact_jid);
-                            var view = converse.chatboxviews.get(contact_jid);
+                            test_utils.openChatBoxFor(_converse, contact_jid);
+                            var view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
-                            spyOn(converse.connection, 'send');
+                            spyOn(_converse.connection, 'send');
                             view.keyPressed({
                                 target: view.$el.find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().get(0).tagName).toBe('composing');
                             expect($stanza.children().get(1).tagName).toBe('no-store');
@@ -1320,29 +1320,29 @@
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
-                            expect(converse.emit.callCount, 1);
+                            expect(_converse.emit.callCount, 1);
                         });
                     }));
 
-                    it("will be shown if received", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("will be shown if received", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(converse, 'emit');
+                        spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                         // <composing> state
                         var msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        converse.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                        var chatboxview = converse.chatboxviews.get(sender_jid);
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        var chatboxview = _converse.chatboxviews.get(sender_jid);
                         expect(chatboxview).toBeDefined();
                         // Check that the notification appears inside the chatbox in the DOM
                         var $events = chatboxview.$el.find('.chat-event');
@@ -1352,19 +1352,19 @@
 
                 describe("A paused notification", function () {
 
-                    it("is sent if the user has stopped typing since 30 seconds", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent if the user has stopped typing since 30 seconds", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         var view, contact_jid;
-                        converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
+                        _converse.TIMEOUTS.PAUSED = 200; // Make the timeout shorter so that we can test
                         waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            test_utils.openChatBoxFor(converse, contact_jid);
-                            view = converse.chatboxviews.get(contact_jid);
-                            spyOn(converse.connection, 'send');
+                            test_utils.openChatBoxFor(_converse, contact_jid);
+                            view = _converse.chatboxviews.get(contact_jid);
+                            spyOn(_converse.connection, 'send');
                             spyOn(view, 'setChatState').andCallThrough();
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
@@ -1372,15 +1372,15 @@
                                 keyCode: 1
                             });
                             expect(view.model.get('chat_state')).toBe('composing');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.children().get(0).tagName).toBe('composing');
                         });
                         waits(250);
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('paused');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[1][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[1][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('paused');
@@ -1410,25 +1410,25 @@
                         });
                     }));
 
-                    it("will be shown if received", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("will be shown if received", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         // TODO: only show paused state if the previous state was composing
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(converse, 'emit');
+                        spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
                         var msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        converse.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                        var chatboxview = converse.chatboxviews.get(sender_jid);
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        var chatboxview = _converse.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
                     }));
@@ -1436,17 +1436,17 @@
 
                 describe("An inactive notifciation", function () {
 
-                    it("is sent if the user has stopped typing since 2 minutes", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent if the user has stopped typing since 2 minutes", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         // Make the timeouts shorter so that we can test
-                        converse.TIMEOUTS.PAUSED = 200;
-                        converse.TIMEOUTS.INACTIVE = 200;
+                        _converse.TIMEOUTS.PAUSED = 200;
+                        _converse.TIMEOUTS.INACTIVE = 200;
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(converse, contact_jid);
-                        var view = converse.chatboxviews.get(contact_jid);
+                        test_utils.openChatBoxFor(_converse, contact_jid);
+                        var view = _converse.chatboxviews.get(contact_jid);
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
@@ -1458,13 +1458,13 @@
                         waits(250);
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('paused');
-                            spyOn(converse.connection, 'send');
+                            spyOn(_converse.connection, 'send');
                         });
                         waits(250);
                         runs(function () {
                             expect(view.model.get('chat_state')).toBe('inactive');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('inactive');
@@ -1474,39 +1474,39 @@
                         });
                     }));
 
-                    it("is sent when the user a minimizes a chat box", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent when the user a minimizes a chat box", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(converse, contact_jid);
-                        var view = converse.chatboxviews.get(contact_jid);
-                        spyOn(converse.connection, 'send');
+                        test_utils.openChatBoxFor(_converse, contact_jid);
+                        var view = _converse.chatboxviews.get(contact_jid);
+                        spyOn(_converse.connection, 'send');
                         view.minimize();
                         expect(view.model.get('chat_state')).toBe('inactive');
-                        expect(converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                        expect(_converse.connection.send).toHaveBeenCalled();
+                        var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                         expect($stanza.attr('to')).toBe(contact_jid);
                         expect($stanza.children().get(0).tagName).toBe('inactive');
                     }));
 
-                    it("is sent if the user closes a chat box", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("is sent if the user closes a chat box", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         waits(300); // ChatBox.show() is debounced for 250ms
                         runs(function () {
                             var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            test_utils.openChatBoxFor(converse, contact_jid);
-                            var view = converse.chatboxviews.get(contact_jid);
+                            test_utils.openChatBoxFor(_converse, contact_jid);
+                            var view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
-                            spyOn(converse.connection, 'send');
+                            spyOn(_converse.connection, 'send');
                             view.close();
                             expect(view.model.get('chat_state')).toBe('inactive');
-                            expect(converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(converse.connection.send.argsForCall[0][0].tree());
+                            expect(_converse.connection.send).toHaveBeenCalled();
+                            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('inactive');
@@ -1515,27 +1515,27 @@
                         });
                     }));
 
-                    it("will clear any other chat status notifications if its received", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("will clear any other chat status notifications if its received", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(converse, 'emit');
+                        spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(converse, sender_jid);
-                        var view = converse.chatboxviews.get(sender_jid);
+                        test_utils.openChatBoxFor(_converse, sender_jid);
+                        var view = _converse.chatboxviews.get(sender_jid);
                         expect(view.$el.find('.chat-event').length).toBe(0);
                         view.showStatusNotification(sender_jid+' is typing');
                         expect(view.$el.find('.chat-event').length).toBe(1);
                         var msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        converse.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
                         expect(view.$el.find('.chat-event').length).toBe(0);
                     }));
 
@@ -1543,23 +1543,23 @@
 
                 describe("A gone notifciation", function () {
 
-                    it("will be shown if received", mock.initConverse(function (converse) {
-                        test_utils.createContacts(converse, 'current');
+                    it("will be shown if received", mock.initConverse(function (_converse) {
+                        test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.openContactsPanel(converse);
+                        test_utils.openContactsPanel(_converse);
 
-                        spyOn(converse, 'emit');
+                        spyOn(_converse, 'emit');
                         var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
                         var msg = $msg({
                                 from: sender_jid,
-                                to: converse.connection.jid,
+                                to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        converse.chatboxes.onMessage(msg);
-                        expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                        var chatboxview = converse.chatboxviews.get(sender_jid);
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        var chatboxview = _converse.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
                     }));
@@ -1569,22 +1569,22 @@
 
         describe("Special Messages", function () {
 
-            it("'/clear' can be used to clear messages in a conversation", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("'/clear' can be used to clear messages in a conversation", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                spyOn(converse, 'emit');
+                spyOn(_converse, 'emit');
                 var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(converse, contact_jid);
-                var view = converse.chatboxviews.get(contact_jid);
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                var view = _converse.chatboxviews.get(contact_jid);
                 var message = 'This message is another sent from this chatbox';
                 // Lets make sure there is at least one message already
                 // (e.g for when this test is run on its own).
                 test_utils.sendMessage(view, message);
                 expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.browserStorage.records.length > 0).toBeTruthy();
-                expect(converse.emit).toHaveBeenCalledWith('messageSend', message);
+                expect(_converse.emit).toHaveBeenCalledWith('messageSend', message);
 
                 message = '/clear';
                 spyOn(view, 'onMessageSubmitted').andCallThrough();
@@ -1598,76 +1598,76 @@
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
                 expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
-                expect(converse.emit.callCount, 1);
-                expect(converse.emit.mostRecentCall.args, ['messageSend', message]);
+                expect(_converse.emit.callCount, 1);
+                expect(_converse.emit.mostRecentCall.args, ['messageSend', message]);
             }));
         });
 
         describe("A Message Counter", function () {
 
-            it("is incremented when the message is received and the window is not focused", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("is incremented when the message is received and the window is not focused", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                spyOn(converse, 'emit');
-                expect(converse.msg_counter).toBe(0);
-                spyOn(converse, 'incrementMsgCounter').andCallThrough();
-                var previous_state = converse.windowState;
+                spyOn(_converse, 'emit');
+                expect(_converse.msg_counter).toBe(0);
+                spyOn(_converse, 'incrementMsgCounter').andCallThrough();
+                var previous_state = _converse.windowState;
                 var message = 'This message will increment the message counter';
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
                         from: sender_jid,
-                        to: converse.connection.jid,
+                        to: _converse.connection.jid,
                         type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                converse.windowState = 'hidden';
-                converse.chatboxes.onMessage(msg);
-                expect(converse.incrementMsgCounter).toHaveBeenCalled();
-                expect(converse.msg_counter).toBe(1);
-                expect(converse.emit).toHaveBeenCalledWith('message', msg);
-                converse.windowSate = previous_state;
+                _converse.windowState = 'hidden';
+                _converse.chatboxes.onMessage(msg);
+                expect(_converse.incrementMsgCounter).toHaveBeenCalled();
+                expect(_converse.msg_counter).toBe(1);
+                expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                _converse.windowSate = previous_state;
             }));
 
-            it("is cleared when the window is focused", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("is cleared when the window is focused", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                converse.windowState = 'hidden';
-                spyOn(converse, 'clearMsgCounter').andCallThrough();
+                _converse.windowState = 'hidden';
+                spyOn(_converse, 'clearMsgCounter').andCallThrough();
                 runs(function () {
-                    converse.saveWindowState(null, 'focus');
-                    converse.saveWindowState(null, 'blur');
+                    _converse.saveWindowState(null, 'focus');
+                    _converse.saveWindowState(null, 'blur');
                 });
                 waits(50);
                 runs(function () {
-                    expect(converse.clearMsgCounter).toHaveBeenCalled();
+                    expect(_converse.clearMsgCounter).toHaveBeenCalled();
                 });
             }));
 
-            it("is not incremented when the message is received and the window is focused", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("is not incremented when the message is received and the window is focused", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
-                test_utils.openContactsPanel(converse);
+                test_utils.openContactsPanel(_converse);
 
-                expect(converse.msg_counter).toBe(0);
-                spyOn(converse, 'incrementMsgCounter').andCallThrough();
-                converse.saveWindowState(null, 'focus');
+                expect(_converse.msg_counter).toBe(0);
+                spyOn(_converse, 'incrementMsgCounter').andCallThrough();
+                _converse.saveWindowState(null, 'focus');
                 var message = 'This message will not increment the message counter';
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
                         from: sender_jid,
-                        to: converse.connection.jid,
+                        to: _converse.connection.jid,
                         type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                converse.chatboxes.onMessage(msg);
-                expect(converse.incrementMsgCounter).not.toHaveBeenCalled();
-                expect(converse.msg_counter).toBe(0);
+                _converse.chatboxes.onMessage(msg);
+                expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
+                expect(_converse.msg_counter).toBe(0);
             }));
         });
     });

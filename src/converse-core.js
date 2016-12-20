@@ -49,7 +49,7 @@
     _converse.emit = _converse.trigger;
 
     // Make converse pluggable
-    pluggable.enable(_converse, 'converse', 'pluggable');
+    pluggable.enable(_converse, '_converse', 'pluggable');
 
     // Module-level constants
     _converse.STATUS_WEIGHTS = {
@@ -1937,8 +1937,7 @@
 
         _converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
-            // TODO: rename
-            'converse': _converse
+            '_converse': _converse
         });
         _converse.emit('pluginsInitialized');
         _converse._initialize();

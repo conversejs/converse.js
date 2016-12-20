@@ -201,7 +201,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this.converse;
+            var _converse = this._converse;
             this.updateSettings({
                 allow_logout: true,
                 default_domain: undefined,

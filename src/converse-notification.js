@@ -25,7 +25,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this.converse;
+            var _converse = this._converse;
             _converse.supports_html5_notification = "Notification" in window;
 
             this.updateSettings({

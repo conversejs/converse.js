@@ -995,7 +995,7 @@ This allows plugins to have "soft" dependencies which aren't declared as
 as dependencies.
 
 synchronize_availability
---------------------
+------------------------
 
 * Default: ``true``
 

@@ -48,6 +48,7 @@ Table of Contents
    setup
    configuration
    development
+   security
    theming
    translations
    troubleshooting

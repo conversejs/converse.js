@@ -16,9 +16,6 @@ Converse.js itself composed of plugins, and exposes an API with which you can
 create and register your own plugins. This is the recommended way to customize
 or add new functionality to converse.js.
 
-Table of Contents
-=================
-
 .. toctree::
    :maxdepth: 2
 

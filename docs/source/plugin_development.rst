@@ -22,7 +22,7 @@ its plugin architecture.
 
 To understand how this plugin architecture works, please read the
 `pluggable.js documentation <https://jcbrand.github.io/pluggable.js/>`_
-and to grok its inner workins, please refer to the `annotated source code
+and to understand its inner workins, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
 You register a converse.js plugin as follows:
@@ -30,7 +30,15 @@ You register a converse.js plugin as follows:
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
-        // Your plugin code goes in here
+
+        initialize: function () {
+            // This method gets called once converse.initialize has been called
+            // and the plugin itself has been loaded.
+
+            // Inside this method, you have access to the closured
+            // _converse object as an attribute on "this".
+            // E.g. this._converse
+        },
     });
 
 Security and access to the inner workings
@@ -47,12 +55,28 @@ Within a plugin, you will have access to this internal
 `"closured" <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_
 ``_converse`` object, which is normally not exposed in the global variable scope.
 
-We inner ``_converse`` object is made private in order to safely hide and
+The inner ``_converse`` object is made private in order to safely hide and
 encapsulate sensitive information and methods which should not be exposed
 to any 3rd-party scripts that might be running in the same page.
 
 An example plugin
 -----------------
+
+In the example below, you can see how to access 3rd party libraries (such
+moment, underscore and jQuery) via the ``converse.env`` map.
+
+There is an ``initialize`` method as you've seen in the example above, and then
+also an ``overrides`` map, which can be used to override functions, objects or
+Backbone views and models of Converse.js.
+
+Use the ``overrides`` functionality with caution. It basically resorts to
+monkey patching which pollutes the call stack and can make your code fragile
+and prone to bugs when Converse.js gets updated. Too much use of ``overrides``
+is therefore a "code smell" which should ideally be avoided.
+
+A better approach is to listen to the events emitted by Converse.js, and to add
+your code in event handlers. This is however not always possible, in which case
+the overrides are a powerful tool.
 
 .. code-block:: javascript
 

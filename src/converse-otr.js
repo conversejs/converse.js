@@ -283,7 +283,7 @@
                     this.model.on('showReceivedOTRMessage', function (text) {
                         this.showMessage({'message': text, 'sender': 'them'});
                     }, this);
-                    if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
+                    if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
                 },

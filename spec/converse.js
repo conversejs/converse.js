@@ -4,9 +4,9 @@
         "mock",
         "test_utils"], factory);
 } (this, function (converse, mock, test_utils) {
-    var b64_sha1 = _converse.env.b64_sha1;
-    var _ = _converse.env._;
-    var $ = _converse.env.jQuery;
+    var b64_sha1 = converse.env.b64_sha1;
+    var _ = converse.env._;
+    var $ = converse.env.jQuery;
 
     describe("Converse", function() {
         
@@ -280,7 +280,7 @@
                     expect(chatboxview.$el.is(':visible')).toBeTruthy();
                     // Test for multiple JIDs
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var list = converse.chats.open([jid, jid2]);
+                    var list = _converse.api.chats.open([jid, jid2]);
                     expect(_.isArray(list)).toBeTruthy();
                     expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                     expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
@@ -290,17 +290,39 @@
 
         describe("The \"settings\" API", function() {
             it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (_converse) {
-                expect(_.keys(converse.settings)).toEqual(["get", "set"]);
-                expect(converse.settings.get("play_sounds")).toBe(false);
-                converse.settings.set("play_sounds", true);
-                expect(converse.settings.get("play_sounds")).toBe(true);
-                converse.settings.set({"play_sounds": false});
-                expect(converse.settings.get("play_sounds")).toBe(false);
+                expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
+                expect(_converse.api.settings.get("play_sounds")).toBe(false);
+                _converse.api.settings.set("play_sounds", true);
+                expect(_converse.api.settings.get("play_sounds")).toBe(true);
+                _converse.api.settings.set({"play_sounds": false});
+                expect(_converse.api.settings.get("play_sounds")).toBe(false);
                 // Only whitelisted settings allowed.
                 expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
                 _converse.api.settings.set("non_existing", true);
                 expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
             }));
+        });
+
+        describe("The \"plugins\" API", function() {
+            it("only has a method 'add' for registering plugins", mock.initConverse(function (_converse) {
+                expect(_.keys(converse.plugins)).toEqual(["add"]);
+                // Cheating a little bit. We clear the plugins to test more easily.
+                var _old_plugins = _converse.pluggable.plugins;
+                _converse.pluggable.plugins = [];
+                converse.plugins.add('plugin1', {});
+                expect(_.keys(_converse.pluggable.plugins)).toEqual(['plugin1']);
+                converse.plugins.add('plugin2', {});
+                expect(_.keys(_converse.pluggable.plugins)).toEqual(['plugin1', 'plugin2']);
+                _converse.pluggable.plugins = _old_plugins;
+            }));
+
+            describe("The \"plugins.add\" method", function() {
+                it("throws an error when multiple plugins attempt to register with the same name", mock.initConverse(function (_converse) {
+                    converse.plugins.add('myplugin', {});
+                    var error = new TypeError('Error: plugin with name "myplugin" has already been registered!');
+                    expect(_.partial(converse.plugins.add, 'myplugin', {})).toThrow(error);
+                }));
+            });
         });
     });
 }));

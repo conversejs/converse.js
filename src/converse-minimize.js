@@ -536,9 +536,9 @@
             });
 
             var logOut = function () {
-                converse.minimized_chats.remove();
+                _converse.minimized_chats.remove();
             };
-            converse.on('logout', logOut);
+            _converse.on('logout', logOut);
         }
     });
 }));

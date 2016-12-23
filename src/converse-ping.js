@@ -17,7 +17,8 @@
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe;
+    var Strophe = converse.env.Strophe,
+        _ = converse.env._;
     
     converse.plugins.add('converse-ping', {
 

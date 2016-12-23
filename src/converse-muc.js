@@ -607,7 +607,7 @@
                     if (!_.isUndefined(member.reason)) {
                         iq.c("reason", member.reason);
                     }
-                    converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                    _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
                     return deferred;
                 },
 
@@ -2377,9 +2377,9 @@
                  */
                 _.each(_converse.auto_join_rooms, function (room) {
                     if (_.isString(room)) {
-                        _converse.api.rooms.open(room);
+                        converse.api.rooms.open(room);
                     } else if (_.isObject(room)) {
-                        _converse_api.rooms.open(room.jid, room.nick);
+                        converse.api.rooms.open(room.jid, room.nick);
                     } else {
                         _converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
                     }

@@ -43,9 +43,9 @@ Restrict access to private code/data
 
 3. Only plugins are allowed to access the private API and the closured ``_converse`` object.
 4. TODO: Whitelist plugins that have access to the private API and closured ``_converse`` object.
-5. TODO: Prevent the removal of registered plugins (otherwise the whitelist could be circumvented).
-6. TODO: Throw an unrecoverable error when multiple plugins try to register under the
-   same name (otherwise the whitelist could be circumvented).
+5. Prevent the removal of registered plugins (otherwise the whitelist could be circumvented).
+6. Throw an error when multiple plugins try to register under the same name
+   (otherwise the whitelist could be circumvented).
 
 .. note::
     Care should be taken when using a custom build of Converse.js where some

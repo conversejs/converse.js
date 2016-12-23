@@ -302,5 +302,27 @@
                 expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
             }));
         });
+
+        describe("The \"plugins\" API", function() {
+            it("only has a method 'add' for registering plugins", mock.initConverse(function (_converse) {
+                expect(Object.keys(converse.plugins)).toEqual(["add"]);
+                // Cheating a little bit. We clear the plugins to test more easily.
+                var _old_plugins = _converse.pluggable.plugins;
+                _converse.pluggable.plugins = [];
+                converse.plugins.add('plugin1', {});
+                expect(Object.keys(_converse.pluggable.plugins)).toEqual(['plugin1']);
+                converse.plugins.add('plugin2', {});
+                expect(Object.keys(_converse.pluggable.plugins)).toEqual(['plugin1', 'plugin2']);
+                _converse.pluggable.plugins = _old_plugins;
+            }));
+
+            describe("The \"plugins.add\" method", function() {
+                it("throws an error when multiple plugins attempt to register with the same name", mock.initConverse(function (_converse) {
+                    converse.plugins.add('myplugin', {});
+                    var error = new TypeError('Error: plugin with name "myplugin" has already been registered!');
+                    expect(_.partial(converse.plugins.add, 'myplugin', {})).toThrow(error);
+                }));
+            });
+        });
     });
 }));

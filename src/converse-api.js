@@ -192,11 +192,14 @@
         'plugins': {
             'add': function (name, plugin) {
                 plugin.__name__ = name;
-                _converse.pluggable.plugins[name] = plugin;
-            },
-            'remove': function (name) {
-                delete _converse.pluggable.plugins[name];
-            },
+                if (!_.isUndefined(_converse.pluggable.plugins[name])) {
+                    throw new TypeError(
+                        'Error: plugin with name "'+name+'" has already been '+
+                        'registered!');
+                } else {
+                    _converse.pluggable.plugins[name] = plugin;
+                }
+            }
         },
         'env': {
             '$build': strophe.$build,

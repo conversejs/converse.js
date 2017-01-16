@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, locales */
+/*global Backbone, define, window, document */
 
 (function (root, factory) {
     define("converse-core", [
@@ -186,6 +186,7 @@
 
         // Detect support for the user's locale
         // ------------------------------------
+        var locales = typeof locales === "undefined" ? {} : locales;
         this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead

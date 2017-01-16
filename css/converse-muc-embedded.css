@@ -1,0 +1,41 @@
+/* 
+    Color scheme helpers:
+    https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
+    http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
+ */
+/* $font-path: "../fonticons/fonts/" !default; */
+#converse-embedded-chat {
+  bottom: auto;
+  right: auto;
+  position: relative;
+  width: 100%; }
+  #converse-embedded-chat .chatroom {
+    width: auto; }
+  #converse-embedded-chat .flyout {
+    bottom: auto;
+    display: block;
+    position: relative; }
+  #converse-embedded-chat .chatbox {
+    float: none; }
+    #converse-embedded-chat .chatbox .box-flyout {
+      box-shadow: none; }
+    #converse-embedded-chat .chatbox .chat-title {
+      padding: 0.3em;
+      font-size: 110%; }
+  #converse-embedded-chat .chatbox-btn {
+    display: none; }
+  #converse-embedded-chat .chatroom .box-flyout {
+    min-width: auto;
+    width: 100%; }
+    #converse-embedded-chat .chatroom .box-flyout .chat-body {
+      height: -webkit-calc(100% - 55px);
+      height: calc(100% - 55px); }
+    #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+      height: auto;
+      position: relative; }
+    #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list {
+      padding-left: 0.3em; }
+      #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list li.occupant {
+        font-size: 14px; }
+
+/*# sourceMappingURL=converse-muc-embedded.css.map */

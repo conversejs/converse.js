@@ -1,3 +1,4 @@
+#converse-embedded-chat,
 #conversejs {
     .flyout {
         border-radius: $chatbox-border-radius;
@@ -78,6 +79,7 @@
     }
     .chatbox {
         display: block;
+        text-align: left;
         float: right;
         height: $bottom-gutter-height;
         margin: 0 $chat-gutter;

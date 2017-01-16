@@ -1,4 +1,5 @@
 *~
+.sw?
 *.mo
 *.kpf
 .*.sw?
@@ -57,11 +58,7 @@ dist/converse.nojquery.js
 dist/converse.nojquery.min.js
 dist/converse-mobile.min.js
 
-css/converse.css.map
-css/converse.min.css
-css/theme.min.css
-css/mobile.min.css
-
+css/*.map
+css/*.min.css
 .sv?
-
 /vendor/

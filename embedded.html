@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Converse.js</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="author" content="JC Brand" />
+    <meta name="keywords" content="xmpp chat webchat converse.js" />
+    <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="../components/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../components/fontawesome/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/theme.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/converse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/converse-muc-embedded.css" />
+    <script type="text/javascript" src="../analytics.js"></script>
+    <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+    <![if gte IE 9]>
+    <script src="node_modules/requirejs/require.js"></script>
+    <script src="config.js"></script>
+	<script src="/src/converse-muc-embedded.js"></script>
+    <![endif]>
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav"><li> <a href="/docs/html/index.html">Documentation</a> </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading brand-heading-embedded"><i class="icon-conversejs"></i>Converse.js</h1>
+                        <p class="intro-text">Embedded MUC chat demo</p>
+
+                        <div id="converse-embedded-chat"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+<script>
+    require(['converse-api', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            allow_logout: false, // No point in logging out when we have auto_login as true.
+            allow_muc_invitations: false, // Doesn't make sense to allow because only
+                                          // roster contacts can be invited
+            allow_contact_requests: false, // Contacts from other servers cannot,
+                                           // be added and anonymous users don't
+                                           // know one another's JIDs, so disabling.
+            authentication: 'anonymous',
+            auto_login: true,
+            auto_join_rooms: [
+                'anonymous@conference.nomnom.im',
+            ],
+            notify_all_room_messages: [
+                'anonymous@conference.nomnom.im',
+            ],
+            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            jid: 'nomnom.im', // XMPP server which allows anonymous login (doesn't
+                              // allow chatting with other XMPP servers).
+            keepalive: true,
+            hide_muc_server: true, // Federation is disabled, so no use in
+                                   // showing the MUC server.
+            play_sounds: true,
+            show_controlbox_by_default: true,
+            strict_plugin_dependencies: false,
+            debug: true
+        });
+    });
+</script>
+</html>

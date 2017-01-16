@@ -1,3 +1,4 @@
+#converse-embedded-chat,
 #conversejs {
     bottom: 0;
     color: $text-color;
@@ -191,6 +192,9 @@
                     color: $text-color;
                 }
             }
+        }
+        &.pure-form.converse-centered-form {
+            text-align: center;
         }
     }
 

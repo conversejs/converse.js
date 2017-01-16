@@ -1,0 +1,54 @@
+@import "bourbon";
+@import "variables";
+#converse-embedded-chat {
+    bottom: auto;
+    right: auto;
+    position: relative;
+    width: 100%;
+
+    .chatroom {
+        width: auto;
+    }
+    .flyout {
+        bottom: auto;
+        display: block;
+        position: relative;
+    }
+    .chatbox {
+        float: none;
+
+        .box-flyout {
+            box-shadow: none;
+        }
+        .chat-title {
+            padding: 0.3em;
+            font-size: 110%;
+        }
+    }
+    .chatbox-btn {
+        display: none;
+    }
+    .chatroom {
+        .box-flyout {
+            min-width: auto;
+            width: 100%;
+            .chat-body {
+                @include calc(height, '100% - #{$chat-head-height}');
+            }
+            .chatroom-body {
+                .chatroom-form-container {
+                    height: auto;
+                    position: relative;
+                }
+            }
+            .occupants {
+                .occupant-list {
+                    padding-left: 0.3em;
+                    li.occupant {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}

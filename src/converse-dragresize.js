@@ -272,7 +272,7 @@
                     var div = document.createElement('div');
                     div.innerHTML = converse.templates.dragresize();
                     flyout.insertBefore(
-                        div.firstChild,
+                        div,
                         flyout.firstChild
                     );
                 }

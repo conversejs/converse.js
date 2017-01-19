@@ -1,0 +1,10 @@
+{
+    "name": "jcbrand/converse.js",
+    "description": "Browser based XMPP instant messaging client",
+    "type": "library",
+    "license": "MPL-2.0",
+    "minimum-stability": "stable",
+    "homepage": "http://conversejs.org/",
+    "keywords": ["xmpp", "messaging", "chat", "presence"],
+    "require": {}
+}

@@ -235,7 +235,7 @@
                             cancel: __('Cancel'),
                             info_message: __('Requesting a registration form from the XMPP server')
                         }));
-                    $form.find('button.cancel').on('click', this.cancelRegistration.bind(this));
+                    $form.find('button.button-cancel').on('click', this.cancelRegistration.bind(this));
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain),
                         _registering: true

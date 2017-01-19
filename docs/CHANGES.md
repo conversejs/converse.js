@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.5
+- #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
+  be prioritized above other auth mechanisms. [jcbrand]
+- #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
+- Bugfix. Cancel button shown while registration form is being fetched wasn't working
+  properly. [jcbrand]
+
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]
 - Fetch room info and store it on the room model.

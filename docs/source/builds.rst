@@ -28,14 +28,13 @@ to define modules and their dependencies.
 
 Dependencies can then be loaded on-the-fly with `require.js <http://requirejs.org>`_.
 This is very useful during development, but when it comes to
-deployement, it's usually desired to create a single, minified distribution build.
+deployement you'll usually want to create a single, minified distribution build.
 
 For this, the `r.js optimizer <http://requirejs.org/docs/optimization.html>`_
 is used together with `almond.js <https://github.com/requirejs/almond>`_, which
-is a minimal AMD API implementation that replaces require.js in builds (in
-order to keep the build smaller).
+is a smaller and minimal AMD API implementation that replaces require.js in builds.
 
-To create the distribution build, simply run::
+To create the distribution builds, simply run::
 
     make dist
 
@@ -60,6 +59,37 @@ The Javascript build files are contained in the ``./dist`` directory:
     converse.js
 
 .. _`minification`:
+
+Creating custom builds
+----------------------
+
+One reason you might want to create your own builds, is because you want to
+remove some of the core plugins of converse.js, or perhaps you want to include
+your own.
+
+To add or remove plugins from the build, you need to modify the
+``src/converse.js`` file.
+
+You'll find a section marked ``/* START: Removable components`` and
+``/* END: Removable components */``.
+
+In this section is listed all the converse.js plugins that will make up a
+build.
+
+You could for example decide to disable the ControlBox altogether by removing
+the ``converse-controlbox`` plugin.
+
+After doing so, you need to run ``make dist`` again in the root or your
+converse.js repository, in order to generate the new build.
+
+Be aware that some plugins might have dependencies on other plugins, so if you
+remove a certain plugin but other included plugins still depend on it, then it
+will still be included in your build.
+
+To see which other plugins a particular plugin depends on, open it up in your
+text editor and look at the list specified as the second parameter to the
+``define`` call, near the top of the file. This list specifies the dependencies
+of that plugin.
 
 Minifying the CSS
 -----------------

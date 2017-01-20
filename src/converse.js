@@ -10,9 +10,9 @@ if (typeof define !== 'undefined') {
         "converse-api",
 
         /* START: Removable components
-        * --------------------
-        * Any of the following components may be removed if they're not needed.
-        */
+         * --------------------
+         * Any of the following components may be removed if they're not needed.
+         */
         "locales",              // Translations for converse.js. This line can be removed
                                 // to remove *all* translations, or you can modify the
                                 // file src/locales.js to include only those

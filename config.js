@@ -65,8 +65,8 @@ require.config({
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
-        "bigint":               "src/bigint",
-        "crypto":               "src/crypto",
+        "bigint":               "3rdparty/bigint",
+        "crypto":               "3rdparty/crypto",
         "crypto.aes":           "node_modules/otr/vendor/cryptojs/aes",
         "crypto.cipher-core":   "node_modules/otr/vendor/cryptojs/cipher-core",
         "crypto.core":          "node_modules/otr/vendor/cryptojs/core",
@@ -79,7 +79,7 @@ require.config({
         "crypto.sha1":          "node_modules/otr/vendor/cryptojs/sha1",
         "crypto.sha256":        "node_modules/otr/vendor/cryptojs/sha256",
         "salsa20":              "node_modules/otr/build/dep/salsa20",
-        "otr":                  "src/otr",
+        "otr":                  "3rdparty/otr",
 
         // Locales paths
         "locales":   "src/locales",
@@ -103,7 +103,7 @@ require.config({
         "uk":        "locale/uk/LC_MESSAGES/converse.json",
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
-        "moment_with_locales": "src/moment_locales",
+        "moment_with_locales": "3rdparty/moment_locales",
         'moment_af':        "node_modules/moment/locale/af",
         'moment_de':        "node_modules/moment/locale/de",
         'moment_es':        "node_modules/moment/locale/es",

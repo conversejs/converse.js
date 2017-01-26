@@ -1104,7 +1104,7 @@ return __p;
     define('utils',[
         "jquery",
         "jquery.browser",
-        "underscore",
+        "lodash",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -1179,7 +1179,7 @@ return __p;
                     }
                 }
                 $obj.html(x);
-                _.each(list, function (url) {
+                _.forEach(list, function (url) {
                     isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
@@ -1426,7 +1426,7 @@ return __p;
             return function (item) {
                 if (typeof attr === 'object') {
                     var value = false;
-                    _.each(attr, function (a) {
+                    _.forEach(attr, function (a) {
                         value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
                     });
                     return value;
@@ -1809,12 +1809,12 @@ define("polyfill", function(){});
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, locales */
+/*global Backbone, define, window, document */
 
 (function (root, factory) {
     define("converse-core", [
         "jquery",
-        "underscore",
+        "lodash",
         "polyfill",
         "utils",
         "moment_with_locales",
@@ -1839,7 +1839,7 @@ define("polyfill", function(){});
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
-    /* Configuration of underscore templates (this config is distinct to the
+    /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
@@ -1869,7 +1869,7 @@ define("polyfill", function(){});
         },
 
         on: function (evt, handler, context) {
-            if (_.contains(['ready', 'initialized'], evt)) {
+            if (_.includes(['ready', 'initialized'], evt)) {
                 converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
             }
             if (context) {
@@ -1991,6 +1991,7 @@ define("polyfill", function(){});
 
         // Detect support for the user's locale
         // ------------------------------------
+        var locales = typeof locales === "undefined" ? {} : locales;
         this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
@@ -2045,9 +2046,9 @@ define("polyfill", function(){});
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
-        _.extend(this, this.default_settings);
+        _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+        _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
 
         // BBB
         if (this.prebind === true) { this.authentication = converse.PREBIND; }
@@ -2551,7 +2552,7 @@ define("polyfill", function(){});
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
-                this.set(_.extend({
+                this.set(_.assignIn({
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
@@ -2783,7 +2784,7 @@ define("polyfill", function(){});
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
                     function (iq) {
-                        var contact = this.create(_.extend({
+                        var contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
                             groups: groups,
@@ -3044,7 +3045,7 @@ define("polyfill", function(){});
 
         this.RosterGroup = Backbone.Model.extend({
             initialize: function (attributes, options) {
-                this.set(_.extend({
+                this.set(_.assignIn({
                     description: DESC_GROUP_TOGGLE,
                     state: converse.OPENED
                 }, attributes));
@@ -3296,7 +3297,7 @@ define("polyfill", function(){});
                         converse.log('Could not get roster item for JID '+bare_jid, 'error');
                         return;
                     }
-                    chatbox = this.create(_.extend({
+                    chatbox = this.create(_.assignIn({
                         'id': bare_jid,
                         'jid': bare_jid,
                         'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
@@ -3709,7 +3710,7 @@ define("polyfill", function(){});
             } else if (this.bosh_service_url) {
                 this.connection = new Strophe.Connection(
                     this.bosh_service_url,
-                    _.extend(this.connection_options, {'keepalive': this.keepalive})
+                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
                 );
             } else {
                 throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
@@ -3798,7 +3799,7 @@ define("polyfill", function(){});
 (function (root, factory) {
     define("converse-api", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
@@ -3865,10 +3866,10 @@ define("polyfill", function(){});
             'set': function (key, val) {
                 var o = {};
                 if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
+                    _.assignIn(converse, _.pick(key, Object.keys(converse.default_settings)));
                 } else if (typeof key === "string") {
                     o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.assignIn(converse, _.pick(o, Object.keys(converse.default_settings)));
                 }
             }
         },
@@ -11000,7 +11001,7 @@ return __p;
 (function (root, factory) {
     define("converse-bookmarks", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
@@ -11066,7 +11067,7 @@ return __p;
                         var div = document.createElement('div');
                         div.innerHTML = html;
                         var bookmark_button = converse.templates.chatroom_bookmark_toggle(
-                            _.extend(
+                            _.assignIn(
                                 this.model.toJSON(),
                                 {
                                     info_toggle_bookmark: __('Bookmark this room'),
@@ -11161,7 +11162,7 @@ return __p;
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
-                        _.each(models, function (model) {
+                        _.forEach(models, function (model) {
                             model.destroy();
                         });
                         this.$('.icon-pushpin').removeClass('button-on');
@@ -11312,7 +11313,7 @@ return __p;
                         'items[node="storage:bookmarks"] item[id="current"] storage conference'
                     );
                     var that = this;
-                    _.each(bookmarks, function (bookmark) {
+                    _.forEach(bookmarks, function (bookmark) {
                         that.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
@@ -11379,7 +11380,7 @@ return __p;
                     var name = $(ev.target).data('bookmarkName');
                     var jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.each(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
+                        _.forEach(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
                     }
                 },
 
@@ -12823,7 +12824,7 @@ return __p;
                             cancel: __('Cancel'),
                             info_message: __('Requesting a registration form from the XMPP server')
                         }));
-                    $form.find('button.cancel').on('click', this.cancelRegistration.bind(this));
+                    $form.find('button.button-cancel').on('click', this.cancelRegistration.bind(this));
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain),
                         _registering: true
@@ -14361,7 +14362,7 @@ return __p;
                     var div = document.createElement('div');
                     div.innerHTML = converse.templates.dragresize();
                     flyout.insertBefore(
-                        div.firstChild,
+                        div,
                         flyout.firstChild
                     );
                 }
@@ -14535,9 +14536,9 @@ if (typeof define !== 'undefined') {
         "converse-api",
 
         /* START: Removable components
-        * --------------------
-        * Any of the following components may be removed if they're not needed.
-        */
+         * --------------------
+         * Any of the following components may be removed if they're not needed.
+         */
         "locales",              // Translations for converse.js. This line can be removed
                                 // to remove *all* translations, or you can modify the
                                 // file src/locales.js to include only those
@@ -14573,7 +14574,7 @@ define('jquery-private', [], function () { return jQuery; });
 /*global jQuery, _, moment, Strophe, $build, $iq, $msg, $pres, SHA1, Base64, MD5, DSA, OTR */
 define('jquery.browser', [], function () { return jQuery; });
 define('typeahead', [], function () { return jQuery; });
-define('underscore', [], function () { return _; });
+define('lodash', [], function () { return _; });
 define('moment_with_locales', [], function () { return moment; });
 define('strophe', [], function () {
     return {

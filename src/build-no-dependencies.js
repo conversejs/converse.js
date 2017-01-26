@@ -36,7 +36,7 @@
         "strophe.ping",
         "typeahead",
         "otr",
-        "underscore"
+        "lodash"
     ],
     wrap: {
         endFile: ["wrapper-no-jquery.js", "wrapper-no-deps.js"]

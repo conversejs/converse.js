@@ -43,9 +43,10 @@ require.config({
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/requirejs-undertemplate/tpl",
         "typeahead":                "components/typeahead.js/index",
+        "lodash":                   "node_modules/lodash/lodash",
         "underscore":               "node_modules/underscore/underscore",
         "utils":                    "src/utils",
-        
+
         // Converse
         "converse-api":             "src/converse-api",
         "converse-bookmarks":       "src/converse-bookmarks",

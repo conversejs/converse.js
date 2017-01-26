@@ -9,7 +9,7 @@
 (function (root, factory) {
     define("converse-core", [
         "jquery",
-        "underscore",
+        "lodash",
         "polyfill",
         "utils",
         "moment_with_locales",
@@ -34,7 +34,7 @@
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
-    /* Configuration of underscore templates (this config is distinct to the
+    /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
@@ -64,7 +64,7 @@
         },
 
         on: function (evt, handler, context) {
-            if (_.contains(['ready', 'initialized'], evt)) {
+            if (_.includes(['ready', 'initialized'], evt)) {
                 converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
             }
             if (context) {
@@ -241,9 +241,9 @@
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
-        _.extend(this, this.default_settings);
+        _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+        _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
 
         // BBB
         if (this.prebind === true) { this.authentication = converse.PREBIND; }
@@ -747,7 +747,7 @@
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
-                this.set(_.extend({
+                this.set(_.assignIn({
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
@@ -979,7 +979,7 @@
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
                     function (iq) {
-                        var contact = this.create(_.extend({
+                        var contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
                             groups: groups,
@@ -1240,7 +1240,7 @@
 
         this.RosterGroup = Backbone.Model.extend({
             initialize: function (attributes, options) {
-                this.set(_.extend({
+                this.set(_.assignIn({
                     description: DESC_GROUP_TOGGLE,
                     state: converse.OPENED
                 }, attributes));
@@ -1492,7 +1492,7 @@
                         converse.log('Could not get roster item for JID '+bare_jid, 'error');
                         return;
                     }
-                    chatbox = this.create(_.extend({
+                    chatbox = this.create(_.assignIn({
                         'id': bare_jid,
                         'jid': bare_jid,
                         'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
@@ -1905,7 +1905,7 @@
             } else if (this.bosh_service_url) {
                 this.connection = new Strophe.Connection(
                     this.bosh_service_url,
-                    _.extend(this.connection_options, {'keepalive': this.keepalive})
+                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
                 );
             } else {
                 throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");

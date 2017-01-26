@@ -2,15 +2,15 @@
     define([
         "jquery",
         "converse-api",
-        "underscore",
         "utils",
         "mock",
         "test_utils"
         ], factory);
-} (this, function ($, converse_api, _, utils, mock, test_utils) {
+} (this, function ($, converse_api, utils, mock, test_utils) {
     "use strict";
     var $iq = converse_api.env.$iq,
-        Strophe = converse_api.env.Strophe;
+        Strophe = converse_api.env.Strophe,
+        _ = converse_api.env._;
 
     describe("A chat room", function () {
 

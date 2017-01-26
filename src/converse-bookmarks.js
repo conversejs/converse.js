@@ -12,7 +12,7 @@
 (function (root, factory) {
     define("converse-bookmarks", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
@@ -78,7 +78,7 @@
                         var div = document.createElement('div');
                         div.innerHTML = html;
                         var bookmark_button = converse.templates.chatroom_bookmark_toggle(
-                            _.extend(
+                            _.assignIn(
                                 this.model.toJSON(),
                                 {
                                     info_toggle_bookmark: __('Bookmark this room'),
@@ -173,7 +173,7 @@
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
-                        _.each(models, function (model) {
+                        _.forEach(models, function (model) {
                             model.destroy();
                         });
                         this.$('.icon-pushpin').removeClass('button-on');
@@ -324,7 +324,7 @@
                         'items[node="storage:bookmarks"] item[id="current"] storage conference'
                     );
                     var that = this;
-                    _.each(bookmarks, function (bookmark) {
+                    _.forEach(bookmarks, function (bookmark) {
                         that.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
@@ -391,7 +391,7 @@
                     var name = $(ev.target).data('bookmarkName');
                     var jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.each(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
+                        _.forEach(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
                     }
                 },
 

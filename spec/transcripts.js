@@ -2,14 +2,14 @@
 (function (root, factory) {
     define([
         "jquery",
-        "underscore",
         "mock",
         "test_utils",
         "utils",
         "transcripts"
         ], factory
     );
-} (this, function ($, _, mock, test_utils, utils, transcripts) {
+} (this, function ($, mock, test_utils, utils, transcripts) {
+    var _ = converse_api.env._;
     var Strophe = converse_api.env.Strophe;
     var IGNORED_TAGS = [
         'stream:features',

@@ -1,6 +1,7 @@
 (function (root, factory) {
     define("mock", ['converse'], factory);
 }(this, function (converse_api) {
+    var _ = converse_api.env._;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var mock = {};

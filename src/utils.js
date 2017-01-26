@@ -3,7 +3,7 @@
     define([
         "jquery",
         "jquery.browser",
-        "underscore",
+        "lodash",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -78,7 +78,7 @@
                     }
                 }
                 $obj.html(x);
-                _.each(list, function (url) {
+                _.forEach(list, function (url) {
                     isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
@@ -325,7 +325,7 @@
             return function (item) {
                 if (typeof attr === 'object') {
                     var value = false;
-                    _.each(attr, function (a) {
+                    _.forEach(attr, function (a) {
                         value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
                     });
                     return value;

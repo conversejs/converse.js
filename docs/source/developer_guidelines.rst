@@ -112,7 +112,7 @@ Converse.js relies on the following dependencies:
 * `moment.js <http://momentjs.com/>`_ provides a better API for handling dates and times.
 * `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
   build XMPP stanzas, to send them, and to register handlers for received stanzas.
-* `Underscore <http://underscorejs.org/>`_ provides very useful utility functions.
+* `lodash <https://lodash.com/>`_ provides very useful utility functions.
 * `Backbone <http://backbonejs.org/>`_ is used to model the data as Models and
   Collections and to create Views that render the UI.
 * `backbone.overview <http://github.com/jcbrand/backbone.overview>`_ provides

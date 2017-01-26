@@ -58,7 +58,7 @@ Solution:
 
 First, find out which object is referred to by ``Object [object Object]``.
 
-It will probably be the jQuery object ``$`` or perhaps the underscore.js object ``_``.
+It will probably be the jQuery object ``$`` or perhaps the lodash/underscore object ``_``.
 
 For the purpose of demonstration, I'm going to assume its ``$``, but the same
 rules apply if its something else.

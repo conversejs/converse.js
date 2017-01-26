@@ -2,11 +2,11 @@
     define([
         "jquery",
         "converse-api",
-        "underscore",
         "mock",
         "test_utils"], factory);
-} (this, function ($, converse_api, _, mock, test_utils) {
+} (this, function ($, converse_api, mock, test_utils) {
     var b64_sha1 = converse_api.env.b64_sha1;
+    var _ = converse_api.env._;
 
     describe("Converse", function() {
         

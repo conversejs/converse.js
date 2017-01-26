@@ -8,7 +8,7 @@
 (function (root, factory) {
     define("converse-api", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
@@ -75,10 +75,10 @@
             'set': function (key, val) {
                 var o = {};
                 if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
+                    _.assignIn(converse, _.pick(key, Object.keys(converse.default_settings)));
                 } else if (typeof key === "string") {
                     o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.assignIn(converse, _.pick(o, Object.keys(converse.default_settings)));
                 }
             }
         },

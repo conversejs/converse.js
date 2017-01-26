@@ -49,6 +49,8 @@
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
     "jshint": "^2.9.4",
+    "lodash": "^4.17.4",
+    "lodash-cli": "^4.17.4",
     "moment": "~2.13.0",
     "otr": "0.2.16",
     "phantom-jasmine": "0.1.8",
@@ -57,11 +59,10 @@
     "po2json": "^0.4.4",
     "requirejs": "2.3.2",
     "requirejs-undertemplate": "~0.0.4",
-    "strophe.js": "1.2.12",
     "snyk": "^1.21.2",
+    "strophe.js": "1.2.12",
     "strophejs-plugins": "0.0.7",
-    "text": "requirejs/text#2.0.15",
-    "underscore": "~1.8.3"
+    "text": "requirejs/text#2.0.15"
   },
   "dependencies": {}
 }

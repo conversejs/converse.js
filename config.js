@@ -23,7 +23,7 @@ require.config({
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
-        "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd",          // XXX: Only required for https://conversejs.org website
+        "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
         "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/pluggable",
         "polyfill":                 "src/polyfill",
@@ -41,10 +41,9 @@ require.config({
         "strophe.rsm":              "node_modules/strophejs-plugins/rsm/strophe.rsm",
         "strophe.vcard":            "node_modules/strophejs-plugins/vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
-        "tpl":                      "node_modules/requirejs-undertemplate/tpl",
+        "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
-        "underscore":               "node_modules/underscore/underscore",
         "utils":                    "src/utils",
 
         // Converse
@@ -188,14 +187,17 @@ require.config({
     map: {
         // '*' means all modules will get 'jquery-private'
         // for their 'jquery' dependency.
-        '*': { 'jquery': 'jquery-private' },
+        '*': {
+            'jquery': 'jquery-private',
+            "underscore": "lodash"
+         },
         // 'jquery-private' wants the real jQuery module
         // though. If this line was not here, there would
         // be an unresolvable cyclic dependency.
         'jquery-private': { 'jquery': 'jquery' }
     },
 
-    tpl: {
+    lodashLoader: {
         // Configuration for requirejs-tpl
         // Use Mustache style syntax for variable interpolation
         templateSettings: {

@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.0 (Unreleased)
+- Use lodash instead of underscore.js [jcbrand]
+
 ## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]

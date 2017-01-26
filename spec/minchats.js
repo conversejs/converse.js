@@ -39,7 +39,7 @@
             expect(chatview.model.get('minimized')).toBeTruthy();
             expect(converse.minimized_chats.$el.is(':visible')).toBeTruthy();
             expect(converse.minimized_chats.keys().length).toBe(2);
-            expect(_.contains(converse.minimized_chats.keys(), contact_jid)).toBeTruthy();
+            expect(_.includes(converse.minimized_chats.keys(), contact_jid)).toBeTruthy();
         }));
 
         it("can be toggled to hide or show minimized chats", mock.initConverse(function (converse) {

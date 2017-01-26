@@ -1031,7 +1031,7 @@
                 var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(converse.roster.pluck('jid').length).toBe(1);
-                expect(_.contains(converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                expect(_.includes(converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
 
                 // Taken from the spec
                 // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
@@ -1057,7 +1057,7 @@
                     subscription:'both'
                 }).c('group').t('Friends');
                 converse.roster.onReceivedFromServer(stanza.tree());
-                expect(_.contains(converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                expect(_.includes(converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
             }));
         });
 
@@ -1083,8 +1083,8 @@
                 // have the same attributes values as the original ones.
                 attrs = ['jid', 'fullname', 'subscription', 'ask'];
                 for (var i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(new_roster.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(converse.roster.models, 'attributes'), attrs[i]);
+                    new_attrs = _.map(_.map(new_roster.models, 'attributes'), attrs[i]);
+                    old_attrs = _.map(_.map(converse.roster.models, 'attributes'), attrs[i]);
                     // Roster items in storage are not necessarily sorted,
                     // so we have to sort them here to do a proper
                     // comparison

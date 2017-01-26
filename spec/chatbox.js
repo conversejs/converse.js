@@ -154,8 +154,8 @@
                     var attrs = ['id', 'box_id', 'visible'];
                     var new_attrs, old_attrs;
                     for (var i=0; i<attrs.length; i++) {
-                        new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
-                        old_attrs = _.pluck(_.pluck(converse.chatboxes.models, 'attributes'), attrs[i]);
+                        new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
+                        old_attrs = _.map(_.map(converse.chatboxes.models, 'attributes'), attrs[i]);
                         expect(_.isEqual(new_attrs, old_attrs)).toEqual(true);
                     }
                     converse.rosterview.render();
@@ -739,7 +739,7 @@
                             sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             msg = $msg({
                                     from: sender_jid,
-                                    to: converse.bare_jid+'/'+"some-other-resource",
+                                    to: converse.bare_jid+"/some-other-resource",
                                     type: 'chat',
                                     id: (new Date()).getTime()
                                 }).c('body').t("This message will not be shown").up()
@@ -758,7 +758,7 @@
                             message = "This message sent to a different resource will be shown";
                             msg = $msg({
                                     from: sender_jid,
-                                    to: converse.bare_jid+'/'+"some-other-resource",
+                                    to: converse.bare_jid+"/some-other-resource",
                                     type: 'chat',
                                     id: '134234623462346'
                                 }).c('body').t(message).up()
@@ -1571,7 +1571,7 @@
                         test_utils.openChatBoxFor(converse, sender_jid);
                         var view = converse.chatboxviews.get(sender_jid);
                         expect(view.$el.find('.chat-event').length).toBe(0);
-                        view.showStatusNotification(sender_jid+' '+'is typing');
+                        view.showStatusNotification(sender_jid+' is typing');
                         expect(view.$el.find('.chat-event').length).toBe(1);
                         var msg = $msg({
                                 from: sender_jid,

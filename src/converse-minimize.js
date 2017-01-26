@@ -255,7 +255,7 @@
                     }
                     var oldest_chat, boxes_width, view,
                         $minimized = converse.minimized_chats.$el,
-                        minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                         new_id = newchat ? newchat.model.get('id') : null;
 
                     boxes_width = _.reduce(this.xget(new_id), function (memo, view) {
@@ -283,7 +283,7 @@
                     exclude_ids.push('controlbox');
                     var i = 0;
                     var model = this.model.sort().at(i);
-                    while (_.contains(exclude_ids, model.get('id')) ||
+                    while (_.includes(exclude_ids, model.get('id')) ||
                         model.get('minimized') === true) {
                         i++;
                         model = this.model.at(i);
@@ -370,7 +370,7 @@
                     this.model.messages.off('add',null,this);
                     this.remove();
                     this.model.maximize();
-                }, 200, true)
+                }, 200, {'leading': true})
             });
 
             converse.MinimizedChats = Backbone.Overview.extend({

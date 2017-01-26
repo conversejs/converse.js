@@ -447,7 +447,7 @@
                     .c('never').up();
                 converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(feature.save).toHaveBeenCalled();
-                expect(feature.get('preferences').default).toBe('never');
+                expect(feature.get('preferences')['default']).toBe('never');
 
                 // Restore
                 converse.message_archiving = 'never';

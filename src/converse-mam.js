@@ -99,7 +99,7 @@
                     converse.queryForArchivedMessages(options, function (messages) {
                             this.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                                _.each(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
                             }
                         }.bind(this),
                         function () {
@@ -163,7 +163,7 @@
                  * get the next or previous page in the result set.
                  */
                 var date, messages = [];
-                if (typeof options === "function") {
+                if (_.isFunction(options)) {
                     callback = options;
                     errback = callback;
                 }
@@ -176,14 +176,14 @@
                 */
                 var queryid = converse.connection.getUniqueId();
                 var attrs = {'type':'set'};
-                if (typeof options !== "undefined" && options.groupchat) {
+                if (!_.isUndefined(options) && options.groupchat) {
                     if (!options['with']) {
                         throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
                     }
                     attrs.to = options['with'];
                 }
                 var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-                if (typeof options !== "undefined") {
+                if (!_.isUndefined(options)) {
                     stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                             .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                             .c('value').t(Strophe.NS.MAM).up().up();
@@ -209,7 +209,7 @@
                     }
                 }
 
-                if (typeof callback === "function") {
+                if (_.isFunction(callback)) {
                     converse.connection.addHandler(function (message) {
                         var $msg = $(message), rsm,
                             $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');

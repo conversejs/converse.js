@@ -110,8 +110,8 @@
                 a = a.get('name');
                 b = b.get('name');
                 var special_groups = _.keys(HEADER_WEIGHTS);
-                var a_is_special = _.contains(special_groups, a);
-                var b_is_special = _.contains(special_groups, b);
+                var a_is_special = _.includes(special_groups, a);
+                var b_is_special = _.includes(special_groups, b);
                 if (!a_is_special && !b_is_special ) {
                     return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
                 } else if (a_is_special && b_is_special) {
@@ -345,7 +345,7 @@
                     query = query.toLowerCase();
                     if (type === 'groups') {
                         _.each(this.getAll(), function (view, idx) {
-                            if (view.model.get('name').toLowerCase().indexOf(query.toLowerCase()) === -1) {
+                            if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
                                 view.hide();
                             } else if (view.model.contacts.length > 0) {
                                 view.show();
@@ -407,7 +407,7 @@
                     if (_.has(contact.changed, 'subscription')) {
                         if (contact.changed.subscription === 'from') {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                        } else if (_.contains(['both', 'to'], contact.get('subscription'))) {
+                        } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
                             this.addExistingContact(contact);
                         }
                     }
@@ -550,6 +550,7 @@
                 },
 
                 render: function () {
+                    var that = this;
                     if (!this.mayBeShown()) {
                         this.$el.hide();
                         return this;
@@ -568,10 +569,10 @@
 
                     _.each(classes_to_remove,
                         function (cls) {
-                            if (this.el.className.indexOf(cls) !== -1) {
-                                this.$el.removeClass(cls);
+                            if (_.includes(that.el.className, cls)) {
+                                that.$el.removeClass(cls);
                             }
-                        }, this);
+                        });
                     this.$el.addClass(chat_status).data('status', chat_status);
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
@@ -861,7 +862,7 @@
                 },
 
                 onContactGroupChange: function (contact) {
-                    var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
+                    var in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
                     var cid = contact.get('id');
                     var in_this_overview = !this.get(cid);
                     if (in_this_group && !in_this_overview) {

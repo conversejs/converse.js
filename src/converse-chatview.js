@@ -221,12 +221,12 @@
                      */
                     var that = this;
                     var insert = prepend ? this.$content.prepend : this.$content.append;
-                    _.compose(
-                        this.scrollDownMessageHeight.bind(this),
+                    _.flow(
                         function ($el) {
                             insert.call(that.$content, $el);
                             return $el;
-                        }
+                        },
+                        this.scrollDownMessageHeight.bind(this)
                     )(this.renderMessage(attrs));
                 },
 
@@ -282,18 +282,22 @@
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
                     idx = msg_dates.indexOf(current_msg_date)-1;
-                    _.compose(
-                            this.scrollDownMessageHeight.bind(this),
-                            function ($el) {
-                                $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                                return $el;
-                            }.bind(this)
-                        )(this.renderMessage(attrs));
+                    _.flow(
+                        function ($el) {
+                            $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                            return $el;
+                        }.bind(this),
+                        this.scrollDownMessageHeight.bind(this)
+                    )(this.renderMessage(attrs));
                 },
 
-                getExtraMessageTemplateAttributes: function (attrs) {
-                    // Provides a hook for sending more attributes to the
-                    // message template.
+                getExtraMessageTemplateAttributes: function () {
+                    /* Provides a hook for sending more attributes to the
+                     * message template.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing message attributes.
+                     */
                     return {};
                 },
 
@@ -373,7 +377,7 @@
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
                     } else if (message.get('chat_state') === converse.PAUSED) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                    } else if (_.contains([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {
+                    } else if (_.includes([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {
                         this.$content.find('div.chat-event').remove();
                     } else if (message.get('chat_state') === converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
@@ -435,7 +439,7 @@
                      * Parameters:
                      *    (Object) message - The message Backbone object that was added.
                      */
-                    if (typeof this.clear_status_timeout !== 'undefined') {
+                    if (!_.isUndefined(this.clear_status_timeout)) {
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
                     }
@@ -544,7 +548,7 @@
                      *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
                      *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
                      */
-                    if (typeof this.chat_state_timeout !== 'undefined') {
+                    if (!_.isUndefined(this.chat_state_timeout)) {
                         window.clearTimeout(this.chat_state_timeout);
                         delete this.chat_state_timeout;
                     }
@@ -649,7 +653,7 @@
 
                 showStatusMessage: function (msg) {
                     msg = msg || this.model.get('status');
-                    if (typeof msg === "string") {
+                    if (_.isString(msg)) {
                         this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
                     }
                     return this;
@@ -757,12 +761,12 @@
                 },
 
                 show: function (focus) {
-                    if (typeof this.debouncedShow === 'undefined') {
+                    if (_.isUndefined(this.debouncedShow)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedShow = _.debounce(this._show, 250, true);
+                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
                     }
                     this.debouncedShow.apply(this, arguments);
                     return this;

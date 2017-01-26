@@ -51,7 +51,7 @@
 
     // Add Strophe Statuses
     var i = 0;
-    Object.keys(Strophe.Status).forEach(function (key) {
+    _.each(_.keys(Strophe.Status), function (key) {
         i = Math.max(i, Strophe.Status[key]);
     });
     Strophe.Status.REGIFAIL        = i + 1;
@@ -211,7 +211,7 @@
                     };
                     _.extend(this, defaults);
                     if (settings) {
-                        _.extend(this, _.pick(settings, Object.keys(defaults)));
+                        _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
 
@@ -254,7 +254,7 @@
                 onRegistering: function (status, error) {
                     var that;
                     converse.log('onRegistering');
-                    if (_.contains([
+                    if (_.includes([
                                 Strophe.Status.DISCONNECTED,
                                 Strophe.Status.CONNFAIL,
                                 Strophe.Status.REGIFAIL,
@@ -320,7 +320,7 @@
                         }.bind(this));
                     } else {
                         // Show fields
-                        _.each(Object.keys(this.fields), function (key) {
+                        _.each(_.keys(this.fields), function (key) {
                             if (key === "username") {
                                 $input = converse.templates.form_username({
                                     domain: ' @'+this.domain,

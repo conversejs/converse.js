@@ -47,10 +47,10 @@
                 },
                 'set': function (value, message) {
                     var data = {'status': value};
-                    if (!_.contains(_.keys(converse.STATUS_WEIGHTS), value)) {
+                    if (!_.includes(_.keys(converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
-                    if (typeof message === "string") {
+                    if (_.isString(message)) {
                         data.status_message = message;
                     }
                     converse.xmppstatus.sendPresence(value);
@@ -68,17 +68,17 @@
         },
         'settings': {
             'get': function (key) {
-                if (_.contains(Object.keys(converse.default_settings), key)) {
+                if (_.includes(_.keys(converse.default_settings), key)) {
                     return converse[key];
                 }
             },
             'set': function (key, val) {
                 var o = {};
-                if (typeof key === "object") {
-                    _.assignIn(converse, _.pick(key, Object.keys(converse.default_settings)));
-                } else if (typeof key === "string") {
+                if (_.isObject(key)) {
+                    _.assignIn(converse, _.pick(key, _.keys(converse.default_settings)));
+                } else if (_.isString("string")) {
                     o[key] = val;
-                    _.assignIn(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.assignIn(converse, _.pick(o, _.keys(converse.default_settings)));
                 }
             }
         },
@@ -91,15 +91,15 @@
                     }
                     return null;
                 };
-                if (typeof jids === "undefined") {
+                if (_.isUndefined(jids)) {
                     jids = converse.roster.pluck('jid');
-                } else if (typeof jids === "string") {
+                } else if (_.isString(jids)) {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
             },
             'add': function (jid, name) {
-                if (typeof jid !== "string" || jid.indexOf('@') < 0) {
+                if (!_.isString(jid) || !_.includes(jid, '@')) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
                 converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
@@ -108,10 +108,10 @@
         'chats': {
             'open': function (jids) {
                 var chatbox;
-                if (typeof jids === "undefined") {
+                if (_.isUndefined(jids)) {
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
-                } else if (typeof jids === "string") {
+                } else if (_.isString(jids)) {
                     chatbox = converse.wrappedChatBox(
                         converse.chatboxes.getChatBox(jids, true).trigger('show')
                     );
@@ -125,7 +125,7 @@
                 });
             },
             'get': function (jids) {
-                if (typeof jids === "undefined") {
+                if (_.isUndefined(jids)) {
                     var result = [];
                     converse.chatboxes.each(function (chatbox) {
                         // FIXME: Leaky abstraction from MUC. We need to add a
@@ -135,13 +135,14 @@
                         }
                     });
                     return result;
-                } else if (typeof jids === "string") {
+                } else if (_.isString(jids)) {
                     return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(
-                        _.compose(
-                            converse.wrappedChatBox.bind(converse), converse.chatboxes.getChatBox.bind(converse.chatboxes)
+                        _.flow(
+                            converse.chatboxes.getChatBox.bind(converse.chatboxes),
+                            converse.wrappedChatBox.bind(converse)
                         ), _, true
                     )
                 );
@@ -149,7 +150,7 @@
         },
         'tokens': {
             'get': function (id) {
-                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
+                if (!converse.expose_rid_and_sid || _.isUndefined(converse.connection)) {
                     return null;
                 }
                 if (id.toLowerCase() === 'rid') {
@@ -170,7 +171,7 @@
                 converse.off(evt, handler);
             },
             'stanza': function (name, options, handler) {
-                if (typeof options === 'function') {
+                if (_.isFunction(options)) {
                     handler = options;
                     options = {};
                 } else {

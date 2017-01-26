@@ -86,7 +86,7 @@
             waits(250);
             runs(function () {
                 expect(
-                    _.contains(
+                    _.includes(
                         converse.chatboxviews.keys(),
                         'notify.example.com')
                     ).toBeTruthy();

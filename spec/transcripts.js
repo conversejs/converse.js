@@ -1,15 +1,16 @@
 /*global converse */
 (function (root, factory) {
     define([
-        "jquery",
+        "converse-api",
         "mock",
         "test_utils",
         "utils",
         "transcripts"
         ], factory
     );
-} (this, function ($, mock, test_utils, utils, transcripts) {
+} (this, function (converse_api, mock, test_utils, utils, transcripts) {
     var _ = converse_api.env._;
+    var $ = converse_api.env.jQuery;
     var Strophe = converse_api.env.Strophe;
     var IGNORED_TAGS = [
         'stream:features',
@@ -63,7 +64,7 @@
                         if (el.nodeType === 3) {
                             return;  // Ignore text
                         }
-                        if (_.contains(IGNORED_TAGS, el.nodeName.toLowerCase())) {
+                        if (_.includes(IGNORED_TAGS, el.nodeName.toLowerCase())) {
                             return;
                         }
                         var _stanza = traverseElement(el);

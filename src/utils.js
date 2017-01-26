@@ -1,4 +1,4 @@
-/*global escape, locales, Jed */
+/*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
         "jquery",
@@ -244,8 +244,8 @@
                 // check if an @ signal is included, and if not, we assume it's
                 // a headline message.
                 (   $message.attr('type') !== 'error' &&
-                    typeof from_jid !== 'undefined' &&
-                    from_jid.indexOf('@') === -1
+                    !_.isUndefined(from_jid) &&
+                    !_.includes(from_jid, '@')
                 )) {
                 return true;
             }
@@ -326,11 +326,11 @@
                 if (typeof attr === 'object') {
                     var value = false;
                     _.forEach(attr, function (a) {
-                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
                     });
                     return value;
                 } else if (typeof attr === 'string') {
-                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
                 } else {
                     throw new TypeError('contains: wrong attribute type. Must be string or array.');
                 }
@@ -360,7 +360,7 @@
                     options.push(tpl_select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
-                        selected: (values.indexOf(value) >= 0),
+                        selected: _.startsWith(values, value),
                         required: $field.find('required').length
                     }));
                 }

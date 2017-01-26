@@ -110,7 +110,7 @@
                      * We need this information for the drag-resizing feature.
                      */
                     var $flyout = this.$el.find('.box-flyout');
-                    if (typeof this.model.get('height') === 'undefined') {
+                    if (_.isUndefined(this.model.get('height'))) {
                         var height = $flyout.height();
                         var width = $flyout.width();
                         this.model.set('height', height);
@@ -212,7 +212,7 @@
                             this.setChatBoxHeight(this.height);
                         }
                     }
-                    if (converse.resizing.direction.indexOf('left') !== -1) {
+                    if (_.includes(converse.resizing.direction, 'left')) {
                         diff = this.prev_pageX - ev.pageX;
                         if (diff) {
                             this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
@@ -292,9 +292,9 @@
                 * default_value. If value is close enough to
                 * default_value, then default_value is returned instead.
                 */
-                if (typeof value === 'undefined') {
+                if (_.isUndefined(value)) {
                     return undefined;
-                } else if (typeof default_value === 'undefined') {
+                } else if (_.isUndefined(default_value)) {
                     return value;
                 }
                 var resistance = 10;

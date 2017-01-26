@@ -76,7 +76,7 @@
                 },
 
                 initialize: function () {
-                    if (typeof this.setDimensions !== "undefined") {
+                    if (!_.isUndefined(this.setDimensions)) {
                         // setDimensions is defined for dragresize
                         $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     }
@@ -103,7 +103,7 @@
                                 )
                             )
                         );
-                    if (typeof this.setWidth !== "undefined") {
+                    if (!_.isUndefined(this.setWidth)) {
                         // setWidth is defined for dragresize
                         $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
                     }

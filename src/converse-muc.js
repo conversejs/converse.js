@@ -496,13 +496,15 @@
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
-                requestMemberList: function (affiliation) {
+                requestMemberList: function (chatroom_jid, affiliation) {
                     /* Send an IQ stanza to the server, asking it for the
                      * member-list of this room.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
                      * Parameters:
+                     *  (String) chatroom_jid: The JID of the chatroom for
+                     *      which the member-list is being requested
                      *  (String) affiliation: The specific member list to
                      *      fetch. 'admin', 'owner' or 'member'.
                      *
@@ -512,7 +514,7 @@
                      */
                     var deferred = new $.Deferred();
                     affiliation = affiliation || 'member';
-                    var iq = $iq({to: this.model.get('jid'), type: "get"})
+                    var iq = $iq({to: chatroom_jid, type: "get"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                             .c("item", {'affiliation': affiliation});
                     converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
@@ -561,8 +563,8 @@
                      *  (Array) new_list: Array containing the new affiliations
                      *  (Array) old_list: Array containing the old affiliations
                      */
-                    var new_jids = _.pluck(new_list, 'jid');
-                    var old_jids = _.pluck(old_list, 'jid');
+                    var new_jids = _.map(new_list, 'jid');
+                    var old_jids = _.map(old_list, 'jid');
 
                     // Get the new affiliations
                     var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
@@ -587,6 +589,30 @@
                     return delta;
                 },
 
+                sendAffiliationIQ: function (chatroom_jid, affiliation, member) {
+                    /* Send an IQ stanza specifying an affiliation change.
+                     *
+                     * Paremeters:
+                     *  (String) chatroom_jid: JID of the relevant room
+                     *  (String) affiliation: affiliation (could also be stored
+                     *      on the member object).
+                     *  (Object) member: Map containing the member's jid and
+                     *      optionally a reason and affiliation.
+                     */
+                    var deferred = new $.Deferred();
+                    var iq = $iq({to: chatroom_jid, type: "set"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                        .c("item", {
+                            'affiliation': member.affiliation || affiliation,
+                            'jid': member.jid
+                        });
+                    if (!_.isUndefined(member.reason)) {
+                        iq.c("reason", member.reason);
+                    }
+                    converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                    return deferred;
+                },
+
                 setAffiliation: function (affiliation, members) {
                     /* Send IQ stanzas to the server to set an affiliation for
                      * the provided JIDs.
@@ -599,6 +625,7 @@
                      * Related ticket: https://prosody.im/issues/issue/795
                      *
                      * Parameters:
+                     *  (String) affiliation: The affiliation
                      *  (Object) members: A map of jids, affiliations and
                      *      optionally reasons. Only those entries with the
                      *      same affiliation as being currently set will be
@@ -615,21 +642,11 @@
                         return _.isUndefined(member.affiliation) ||
                                 member.affiliation === affiliation;
                     });
-                    var promises = _.map(members, function (member) {
-                        var deferred = new $.Deferred();
-                        var iq = $iq({to: this.model.get('jid'), type: "set"})
-                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                            .c("item", {
-                                'affiliation': member.affiliation || affiliation,
-                                'jid': member.jid
-                            });
-                        if (!_.isUndefined(member.reason)) {
-                            iq.c("reason", member.reason);
-                        }
-                        converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
-                        return deferred;
-                    }, this);
-                    return $.when.apply($, promises);
+                    var promises = _.map(
+                        members,
+                        _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
+                    );
+                    return $.when.apply($, promises); 
                 },
 
                 setAffiliations: function (members, onSuccess, onError) {
@@ -648,8 +665,8 @@
                         onSuccess(null);
                         return;
                     }
-                    var affiliations = _.uniq(_.pluck(members, 'affiliation'));
-                    var promises = _.map(affiliations, _.partial(this.setAffiliation, _, members), this);
+                    var affiliations = _.uniq(_.map(members, 'affiliation'));
+                    var promises = _.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
                     $.when.apply($, promises).done(onSuccess).fail(onError);
                 },
 
@@ -661,24 +678,20 @@
                      *  Any amount of XMLElement objects, representing the IQ
                      *  stanzas.
                      */
-                    return _.flatten(_.map(arguments, this.parseMemberListIQ));
+                    return _.flatMap(arguments, this.parseMemberListIQ);
                 },
 
                 getJidsWithAffiliations: function (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
                      */
-                    if (typeof affiliations === "string") {
+                    if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    var that = this;
                     var deferred = new $.Deferred();
-                    var promises = [];
-                    _.each(affiliations, function (affiliation) {
-                        promises.push(that.requestMemberList(affiliation));
-                    });
+                    var promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
                     $.when.apply($, promises).always(
-                        _.compose(deferred.resolve, this.marshallAffiliationIQs.bind(this))
+                        _.flow(this.marshallAffiliationIQs.bind(this), deferred.resolve)
                     );
                     return deferred.promise();
                 },
@@ -838,7 +851,7 @@
                 clearChatRoomMessages: function (ev) {
                     /* Remove all messages from the chat room UI.
                      */
-                    if (typeof ev !== "undefined") { ev.stopPropagation(); }
+                    if (!_.isUndefined(ev)) { ev.stopPropagation(); }
                     var result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
                         this.$content.empty();
@@ -995,7 +1008,7 @@
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
                         this.getRoomFeatures();
                     }
-                    _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
+                    _.flow(this.showStatusMessages.bind(this), this.onChatRoomMessage.bind(this))(stanza);
                     return true;
                 },
 
@@ -1354,7 +1367,7 @@
                     if (_.isUndefined(ev) && this.model.get('auto_configure')) {
                         this.fetchRoomConfiguration().then(that.autoConfigureChatRoom.bind(that));
                     } else {
-                        if (typeof ev !== 'undefined' && ev.preventDefault) {
+                        if (!_.isUndefined(ev) && ev.preventDefault) {
                             ev.preventDefault();
                         }
                         this.showSpinner();
@@ -1472,7 +1485,7 @@
                      */
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    if (typeof message !== "string") {
+                    if (!_.isString(message)) {
                         message = '';
                     }
                     this.$('.chatroom-body').append(
@@ -1583,7 +1596,7 @@
                         'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
                     };
                     // 2. Get disconnection messages based on the <status> elements
-                    var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
+                    var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
                     var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnect_messages));
                     var disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
@@ -1649,10 +1662,12 @@
 
                     // Unfortunately this doesn't work (returns empty list)
                     // var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
-                    var elements = _.chain(stanza.querySelectorAll('x')).filter(function (x) {
-                        return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
-                    }).value();
-
+                    var elements = _.filter(
+                        stanza.querySelectorAll('x'),
+                        function (x) {
+                            return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
+                        }
+                    );
                     var notifications = _.map(
                         elements,
                         _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
@@ -1845,7 +1860,7 @@
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, that.onChatRoomMessage.bind(that));
+                                _.each(messages, that.onChatRoomMessage.bind(that));
                             }
                         },
                         function () {
@@ -2027,11 +2042,12 @@
                     }, {
                         name: 'contacts-dataset',
                         source: function (q, cb) {
-                            var results = [];
-                            _.each(converse.roster.filter(utils.contains(['fullname', 'jid'], q)), function (n) {
-                                results.push({value: n.get('fullname'), jid: n.get('jid')});
-                            });
-                            cb(results);
+                            cb(_.map(
+                                converse.roster.filter(utils.contains(['fullname', 'jid'], q)),
+                                function (n) {
+                                    return {value: n.get('fullname'), jid: n.get('jid')};
+                                }
+                            ));
                         },
                         templates: {
                             suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
@@ -2331,7 +2347,7 @@
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (!_.contains(
+                    if (!_.includes(
                                 [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
                                 chatroom.get('connection_status'))
                             ) {
@@ -2359,9 +2375,9 @@
                  * settings).
                  */
                 _.each(converse.auto_join_rooms, function (room) {
-                    if (typeof room === 'string') {
+                    if (_.isString(room)) {
                         converse_api.rooms.open(room);
-                    } else if (typeof room === 'object') {
+                    } else if (_.isObject(room)) {
                         converse_api.rooms.open(room.jid, room.nick);
                     } else {
                         converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
@@ -2388,26 +2404,26 @@
             _.extend(converse_api, {
                 'rooms': {
                     'close': function (jids) {
-                        if (typeof jids === "undefined") {
+                        if (_.isUndefined(jids)) {
                             converse.chatboxviews.each(function (view) {
                                 if (view.is_chatroom && view.model) {
                                     view.close();
                                 }
                             });
-                        } else if (typeof jids === "string") {
+                        } else if (_.isString(jids)) {
                             var view = converse.chatboxviews.get(jids);
                             if (view) { view.close(); }
                         } else {
-                            _.map(jids, function (jid) {
+                            _.each(jids, function (jid) {
                                 var view = converse.chatboxviews.get(jid);
                                 if (view) { view.close(); }
                             });
                         }
                     },
                     'open': function (jids, attrs) {
-                        if (typeof attrs === "string") {
+                        if (_.isString(attrs)) {
                             attrs = {'nick': attrs};
-                        } else if (typeof attrs === "undefined") {
+                        } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
                         if (_.isUndefined(attrs.maximize)) {
@@ -2416,20 +2432,20 @@
                         if (!attrs.nick && converse.muc_nickname_from_jid) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
-                        if (typeof jids === "undefined") {
+                        if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
-                        } else if (typeof jids === "string") {
+                        } else if (_.isString(jids)) {
                             return converse.getWrappedChatRoom(jids, attrs, converse.createChatRoom);
                         }
                         return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, converse.createChatRoom));
                     },
                     'get': function (jids, attrs, create) {
-                        if (typeof attrs === "string") {
+                        if (_.isString(attrs)) {
                             attrs = {'nick': attrs};
-                        } else if (typeof attrs === "undefined") {
+                        } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
-                        if (typeof jids === "undefined") {
+                        if (_.isUndefined(jids)) {
                             var result = [];
                             converse.chatboxes.each(function (chatbox) {
                                 if (chatbox.get('type') === 'chatroom') {
@@ -2442,7 +2458,7 @@
                         if (!attrs.nick) {
                             attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
                         }
-                        if (typeof jids === "string") {
+                        if (_.isString(jids)) {
                             return converse.getWrappedChatRoom(jids, attrs, fetcher);
                         }
                         return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, fetcher));

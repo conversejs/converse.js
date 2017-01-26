@@ -219,7 +219,7 @@
                 // You can retrieve multiple contacts by passing in an array
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var list = converse_api.contacts.get([jid, jid2]);
-                expect(Array.isArray(list)).toBeTruthy();
+                expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].fullname).toBe(mock.cur_names[0]);
                 expect(list[1].fullname).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
@@ -262,7 +262,7 @@
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(converse, jid2);
                 var list = converse_api.chats.get([jid, jid2]);
-                expect(Array.isArray(list)).toBeTruthy();
+                expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                 expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
             }));
@@ -279,7 +279,7 @@
                     expect(box instanceof Object).toBeTruthy();
                     expect(box.get('box_id')).toBe(b64_sha1(jid));
                     expect(
-                        Object.keys(box),
+                        _.keys(box),
                         ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                     );
                     chatboxview = converse.chatboxviews.get(jid);
@@ -287,7 +287,7 @@
                     // Test for multiple JIDs
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var list = converse_api.chats.open([jid, jid2]);
-                    expect(Array.isArray(list)).toBeTruthy();
+                    expect(_.isArray(list)).toBeTruthy();
                     expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                     expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
                 });
@@ -296,7 +296,7 @@
 
         describe("The \"settings\" API", function() {
             it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (converse) {
-                expect(Object.keys(converse_api.settings)).toEqual(["get", "set"]);
+                expect(_.keys(converse_api.settings)).toEqual(["get", "set"]);
                 expect(converse_api.settings.get("play_sounds")).toBe(false);
                 converse_api.settings.set("play_sounds", true);
                 expect(converse_api.settings.get("play_sounds")).toBe(true);

@@ -331,8 +331,8 @@
                             .c('x', { 'xmlns': 'jabber:x:data', 'type': 'form'})
                                 .c('title').t('Configuration for "coven" Room').up()
                                 .c('instructions').t('Complete this form to modify the configuration of your room.').up()
-                                .c('field', {'type': 'hidden', 'var': 'FORM_TYPE'}).
-                                    c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up()
+                                .c('field', {'type': 'hidden', 'var': 'FORM_TYPE'})
+                                    .c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up()
                                 .c('field', {
                                     'label': 'Natural-Language Room Name',
                                     'type': 'text-single',
@@ -1078,8 +1078,8 @@
                 var attrs = ['id', 'box_id', 'visible'];
                 var new_attrs, old_attrs;
                 for (var i=0; i<attrs.length; i++) {
-                    new_attrs = _.pluck(_.pluck(newchatboxes.models, 'attributes'), attrs[i]);
-                    old_attrs = _.pluck(_.pluck(converse.chatboxes.models, 'attributes'), attrs[i]);
+                    new_attrs = _.map(_.map(newchatboxes.models, 'attributes'), attrs[i]);
+                    old_attrs = _.map(_.map(converse.chatboxes.models, 'attributes'), attrs[i]);
                     // FIXME: should have have to sort here? Order must
                     // probably be the same...
                     // This should be fixed once the controlbox always opens

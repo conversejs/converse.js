@@ -42,12 +42,12 @@
                 //
                 // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
                 converse.lastStanzaDate = new Date();
-                if (typeof jid === 'undefined' || jid === null) {
+                if (_.isNil(jid)) {
                     jid = Strophe.getDomainFromJid(converse.bare_jid);
                 }
-                if (typeof timeout === 'undefined' ) { timeout = null; }
-                if (typeof success === 'undefined' ) { success = null; }
-                if (typeof error === 'undefined' ) { error = null; }
+                if (_.isUndefined(timeout) ) { timeout = null; }
+                if (_.isUndefined(success) ) { success = null; }
+                if (_.isUndefined(error) ) { error = null; }
                 if (converse.connection) {
                     converse.connection.ping.ping(jid, success, error, timeout);
                     return true;

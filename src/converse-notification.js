@@ -68,7 +68,7 @@
                     return false;
                 }
                 var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test($body.text());
-                notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, room_jid));
+                notify_all = notify_all === true || (_.isArray(notify_all) && _.includes(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }
@@ -102,7 +102,7 @@
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
                 var audio;
-                if (converse.play_sounds && typeof Audio !== "undefined") {
+                if (converse.play_sounds && !_.isUndefined(Audio)) {
                     audio = new Audio(converse.sounds_path+"msg_received.ogg");
                     if (audio.canPlayType('/audio/ogg')) {
                         audio.play();
@@ -130,7 +130,7 @@
                  */
                 var n, title, contact_jid, roster_item,
                     from_jid = $message.attr('from');
-                if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
+                if ($message.attr('type') === 'headline' || !_.includes(from_jid, '@')) {
                     // XXX: 2nd check is workaround for Prosody which doesn't
                     // give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
@@ -138,7 +138,7 @@
                     if ($message.attr('type') === 'groupchat') {
                         title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
                     } else {
-                        if (typeof converse.roster === 'undefined') {
+                        if (_.isUndefined(converse.roster)) {
                             converse.log("Could not send notification, because roster is undefined", "error");
                             return;
                         }
@@ -159,7 +159,7 @@
                 /* Creates an HTML5 Notification to inform of a change in a
                  * contact's chat state.
                  */
-                if (_.contains(converse.chatstate_notification_blacklist, contact.jid)) {
+                if (_.includes(converse.chatstate_notification_blacklist, contact.jid)) {
                     // Don't notify if the user is being ignored.
                     return;
                 }
@@ -243,7 +243,7 @@
 
             converse.requestPermission = function (evt) {
                 if (converse.supports_html5_notification &&
-                    ! _.contains(['denied', 'granted'], Notification.permission)) {
+                    ! _.includes(['denied', 'granted'], Notification.permission)) {
                     // Ask user to enable HTML5 notifications
                     Notification.requestPermission();
                 }

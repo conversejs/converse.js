@@ -30,14 +30,13 @@
     // For translations
     var __ = utils.__.bind(converse);
 
-    var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
-        ((typeof crypto.randomBytes === 'function') ||
-            (typeof crypto.getRandomValues === 'function')
+    var HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
+        ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
     ));
     var HAS_CRYPTO = HAS_CSPRNG && (
-        (typeof CryptoJS !== "undefined") &&
-        (typeof otr.OTR !== "undefined") &&
-        (typeof otr.DSA !== "undefined")
+        (!_.isUndefined(CryptoJS)) &&
+        (!_.isUndefined(otr.OTR)) &&
+        (!_.isUndefined(otr.DSA))
     );
 
     var UNENCRYPTED = 0;
@@ -105,7 +104,7 @@
                      * "visible" OTR messages being exchanged.
                      */
                     return this.__super__.shouldPlayNotification.apply(this, arguments) &&
-                        !(utils.isOTRMessage($message[0]) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
+                        !(utils.isOTRMessage($message[0]) && !_.includes([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
                 createMessage: function ($message, $delay, original_stanza) {
@@ -119,7 +118,7 @@
                     if (text.match(/^\?OTRv23?/)) {
                         this.initiateOTR(text);
                     } else {
-                        if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                        if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
                             this.otr.receiveMsg(text);
                         } else {
                             if (text.match(/^\?OTR/)) {
@@ -142,11 +141,11 @@
                     var pass, instance_tag, saved_key, pass_check;
                     if (converse.cache_otr_key) {
                         pass = converse.otr.getSessionPassphrase();
-                        if (typeof pass !== "undefined") {
+                        if (!_.isUndefined(pass)) {
                             instance_tag = window.sessionStorage[b64_sha1(this.id+'instance_tag')];
                             saved_key = window.sessionStorage[b64_sha1(this.id+'priv_key')];
                             pass_check = window.sessionStorage[b64_sha1(this.connection.jid+'pass_check')];
-                            if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
+                            if (saved_key && instance_tag && !_.isUndefined(pass_check)) {
                                 var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
                                 var key = otr.DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
                                 if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
@@ -285,7 +284,7 @@
                     this.model.on('showReceivedOTRMessage', function (text) {
                         this.showMessage({'message': text, 'sender': 'them'});
                     }, this);
-                    if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
+                    if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
                 },
@@ -319,7 +318,7 @@
                             return this.model.initiateOTR();
                         }
                     }
-                    if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
+                    if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
                         // Off-the-record encryption is active
                         this.model.otr.sendMsg(text);
                         this.model.trigger('showSentOTRMessage', text);
@@ -372,7 +371,7 @@
                 },
 
                 endOTR: function (ev) {
-                    if (typeof ev !== "undefined") {
+                    if (!_.isUndefined(ev)) {
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
@@ -485,7 +484,7 @@
             };
             _.extend(converse.default_settings, settings);
             _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            _.extend(converse, _.pick(converse.user_settings, _.keys(settings)));
 
             // Only allow OTR if we have the capability
             converse.allow_otr = converse.allow_otr && HAS_CRYPTO;
@@ -500,7 +499,7 @@
                     if (converse.authentication === 'prebind') {
                         var key = b64_sha1(converse.connection.jid),
                             pass = window.sessionStorage[key];
-                        if (typeof pass === 'undefined') {
+                        if (_.isUndefined(pass)) {
                             pass = Math.floor(Math.random()*4294967295).toString();
                             window.sessionStorage[key] = pass;
                         }
@@ -516,7 +515,7 @@
                     if (converse.cache_otr_key) {
                         var cipher = CryptoJS.lib.PasswordBasedCipher;
                         var pass = this.getSessionPassphrase();
-                        if (typeof pass !== "undefined") {
+                        if (!_.isUndefined(pass)) {
                             // Encrypt the key and set in sessionStorage. Also store instance tag.
                             window.sessionStorage[b64_sha1(jid+'priv_key')] =
                                 cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();

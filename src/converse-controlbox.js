@@ -120,7 +120,7 @@
 
                 onChatBoxesFetched: function (collection, resp) {
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                    if (!_.includes(_.map(resp, 'id'), 'controlbox')) {
                         this.add({
                             id: 'controlbox',
                             box_id: 'controlbox'
@@ -363,8 +363,12 @@
                     return this;
                 },
 
-                showHelpMessages: function (msgs) {
-                    // Override showHelpMessages in ChatBoxView, for now do nothing.
+                showHelpMessages: function () {
+                    /* Override showHelpMessages in ChatBoxView, for now do nothing.
+                     *
+                     * Parameters:
+                     *  (Array) msgs: Array of messages
+                     */
                     return;
                 }
             });
@@ -431,7 +435,7 @@
                     if (errors) { return; }
                     if (converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
-                    } else if (converse.default_domain && jid.indexOf('@') === -1) {
+                    } else if (converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + converse.default_domain;
                     }
                     this.connect($form, jid, password);
@@ -723,7 +727,7 @@
                 },
 
                 updateOnlineCount: _.debounce(function () {
-                    if (typeof converse.roster === 'undefined') {
+                    if (_.isUndefined(converse.roster)) {
                         return;
                     }
                     var $count = this.$('#online-count');

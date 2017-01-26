@@ -207,7 +207,7 @@
                 model: converse.Bookmark,
 
                 initialize: function () {
-                    this.on('add', _.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
+                    this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
@@ -369,7 +369,7 @@
                     this.render();
                 },
 
-                render: function (cfg) {
+                render: function () {
                     this.$el.html(converse.templates.bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
@@ -378,7 +378,7 @@
                     if (this.list_model.get('toggle-state') !== converse.OPENED) {
                         this.$('.bookmarks').hide();
                     }
-                    this.model.each(this.renderBookmarkListElement, this);
+                    this.model.each(this.renderBookmarkListElement.bind(this));
                     var controlboxview = converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         this.$el.prependTo(controlboxview.$('#chatrooms'));

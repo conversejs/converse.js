@@ -694,7 +694,7 @@
                     var msgtext = 'This is a carbon message';
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
-                            'from': converse.bare_jid,
+                            'from': sender_jid,
                             'id': (new Date()).getTime(),
                             'to': converse.connection.jid,
                             'type': 'chat',

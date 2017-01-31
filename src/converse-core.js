@@ -1350,7 +1350,14 @@
                 }
                 $forwarded = $message.find('forwarded');
                 if ($forwarded.length) {
-                    $message = $forwarded.children('message');
+                    var $forwarded_message = $forwarded.children('message');
+                    if (Strophe.getBareJidFromJid($forwarded_message.attr('from')) !== from_jid) {
+                        // Prevent message forging via carbons
+                        //
+                        // https://xmpp.org/extensions/xep-0280.html#security
+                        return true;
+                    }
+                    $message = $forwarded_message;
                     $delay = $forwarded.children('delay');
                     from_jid = $message.attr('from');
                     to_jid = $message.attr('to');

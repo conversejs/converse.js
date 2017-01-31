@@ -420,6 +420,7 @@
 
         this.onDisconnected = function (condition) {
             if (_.includes([converse.LOGOUT, Strophe.Status.AUTHFAIL], converse.disconnection_cause) ||
+                    converse.disconnection_reason === "host-unknown" ||
                     !converse.auto_reconnect) {
                 return this.disconnect();
             }
@@ -435,9 +436,10 @@
             return 'reconnecting';
         };
 
-        this.setDisconnectionCause = function (connection_status) {
-            if (typeof converse.disconnection_cause === "undefined") {
-                converse.disconnection_cause = connection_status;
+        this.setDisconnectionCause = function (cause, reason, override) {
+            if (_.isUndefined(converse.disconnection_cause) || override) {
+                converse.disconnection_cause = cause;
+                converse.disconnection_reason = reason;
             }
         };
 
@@ -447,6 +449,7 @@
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
                 delete converse.disconnection_cause;
+                delete converse.disconnection_reason;
                 if (converse.connection.reconnecting) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onConnected(true);
@@ -460,7 +463,7 @@
                     converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                converse.setDisconnectionCause(status);
+                converse.setDisconnectionCause(status, condition);
                 converse.onDisconnected(condition);
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(
@@ -474,11 +477,11 @@
             } else if (status === Strophe.Status.AUTHFAIL) {
                 converse.giveFeedback(__('Authentication failed.'), 'error');
                 converse.connection.disconnect(__('Authentication Failed'));
-                converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+                converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.setDisconnectionCause(status);
+                converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                converse.setDisconnectionCause(status);
+                converse.setDisconnectionCause(status, condition);
                 if (condition) {
                     converse.giveFeedback(
                         __("Disconnected"), 'warn',
@@ -541,7 +544,7 @@
 
         this.logOut = function () {
             converse.chatboxviews.closeAllChatBoxes();
-            converse.disconnection_cause = converse.LOGOUT;
+            converse.setDisconnectionCause(converse.LOGOUT, undefined, true);
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
             }
@@ -1831,7 +1834,7 @@
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
-                    converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+                    converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
                     converse.disconnect();
                     return;
                 }

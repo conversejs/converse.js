@@ -140,6 +140,7 @@
             // out or disconnecting in the previous session.
             // This happens in tests.
             // We therefore first clean up.
+            converse.connection.reset();
             converse._tearDown();
         }
 
@@ -541,11 +542,11 @@
         };
 
         this.logOut = function () {
-            converse.chatboxviews.closeAllChatBoxes();
             converse.setDisconnectionCause(converse.LOGOUT, undefined, true);
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
             }
+            converse.chatboxviews.closeAllChatBoxes();
             converse.clearSession();
             converse._tearDown();
             converse.emit('logout');

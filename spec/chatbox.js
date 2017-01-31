@@ -766,7 +766,7 @@
                     var msgtext = 'This is a carbon message';
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
-                            'from': converse.bare_jid,
+                            'from': sender_jid,
                             'id': (new Date()).getTime(),
                             'to': converse.connection.jid,
                             'type': 'chat',
@@ -842,6 +842,49 @@
                     var $chat_content = chatboxview.$el.find('.chat-content');
                     var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                     expect(msg_txt).toEqual(msgtext);
+                }));
+
+                it("will be discarded if it's a malicious message meant to look like a carbon copy", mock.initConverse(function (converse) {
+                    test_utils.createContacts(converse, 'current');
+                    test_utils.openControlBox();
+                    test_utils.openContactsPanel(converse);
+                    /* <message from="mallory@evil.example" to="b@xmpp.example">
+                     *    <received xmlns='urn:xmpp:carbons:2'>
+                     *      <forwarded xmlns='urn:xmpp:forward:0'>
+                     *          <message from="alice@xmpp.example" to="bob@xmpp.example/client1">
+                     *              <body>Please come to Creepy Valley tonight, alone!</body>
+                     *          </message>
+                     *      </forwarded>
+                     *    </received>
+                     * </message>
+                     */
+                    spyOn(converse, 'log');
+                    var msgtext = 'Please come to Creepy Valley tonight, alone!';
+                    var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var msg = $msg({
+                            'from': sender_jid,
+                            'id': (new Date()).getTime(),
+                            'to': converse.connection.jid,
+                            'type': 'chat',
+                            'xmlns': 'jabber:client'
+                        }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
+                          .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                          .c('message', {
+                                'xmlns': 'jabber:client',
+                                'from': impersonated_jid,
+                                'to': converse.connection.jid,
+                                'type': 'chat'
+                        }).c('body').t(msgtext).tree();
+                    converse.chatboxes.onMessage(msg);
+
+                    // Check that chatbox for impersonated user is not created.
+                    var chatbox = converse.chatboxes.get(impersonated_jid);
+                    expect(chatbox).not.toBeDefined();
+
+                    // Check that the chatbox for the malicous user is not created
+                    chatbox = converse.chatboxes.get(sender_jid);
+                    expect(chatbox).not.toBeDefined();
                 }));
 
                 it("received for a minimized chat box will increment a counter on its header", mock.initConverse(function (converse) {

@@ -10,6 +10,7 @@
 - Bugfix. Login form wasn't rendered after logging out (when `auto_reconnect` is `true`). [jcbrand]
 - Bugfix. Properly disconnect upon "host-unknown" error. [jcbrand]
 - Bugfix. Minimized chats weren't removed when logging out. [jcbrand]
+- Security fix: Prevent message forging via carbons. (Thanks to ge0rg) [jcbrand]
 
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]

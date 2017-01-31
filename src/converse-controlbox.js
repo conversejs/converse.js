@@ -303,7 +303,7 @@
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (converse.connection.connected) {
+                    if (converse.connection.connected && !converse.connection.disconnecting) {
                         this.model.save({'closed': true});
                     } else {
                         this.model.trigger('hide');

@@ -8,6 +8,7 @@
 - Bugfix. Cancel button shown while registration form is being fetched wasn't working
   properly. [jcbrand]
 - Bugfix. Login form wasn't rendered after logging out (when `auto_reconnect` is `true`). [jcbrand]
+- Properly disconnect upon "host-unknown" error. [jcbrand]
 
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]

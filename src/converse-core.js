@@ -407,7 +407,7 @@
             converse.connection.reset();
             converse._tearDown();
             converse.logIn(null, true);
-        }, 1000);
+        }, 1000, {'leading': true});
 
         this.disconnect = function () {
             delete converse.connection.reconnecting;
@@ -419,19 +419,20 @@
         };
 
         this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
-                    converse.reconnect(condition);
-                    converse.log('RECONNECTING');
-                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
-                    window.setTimeout(_.partial(converse.reconnect, condition), 3000);
-                    converse.log('RECONNECTING IN 3 SECONDS');
-                }
-                converse.emit('reconnecting');
-                return 'reconnecting';
+            if (_.includes([converse.LOGOUT, Strophe.Status.AUTHFAIL], converse.disconnection_cause) ||
+                    !converse.auto_reconnect) {
+                return this.disconnect();
             }
-            return this.disconnect();
+            if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
+                converse.reconnect(condition);
+                converse.log('RECONNECTING');
+            } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
+                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
+                window.setTimeout(_.partial(converse.reconnect, condition), 3000);
+                converse.log('RECONNECTING IN 3 SECONDS');
+            }
+            converse.emit('reconnecting');
+            return 'reconnecting';
         };
 
         this.setDisconnectionCause = function (connection_status) {

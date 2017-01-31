@@ -1,12 +1,13 @@
 # Changelog
 
-## 2.0.5
+## 2.0.5 (Unreleased)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
 - #758: Bugfix. Render all resize drag handles for ChatRoomView. [LeoYReyes]
 - Bugfix. Cancel button shown while registration form is being fetched wasn't working
   properly. [jcbrand]
+- Bugfix. Login form wasn't rendered after logging out (when `auto_reconnect` is `true`). [jcbrand]
 
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]

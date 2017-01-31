@@ -373,7 +373,6 @@
                 }, 200, true)
             });
 
-
             converse.MinimizedChats = Backbone.Overview.extend({
                 tagName: 'div',
                 id: "minimized-chats",
@@ -526,6 +525,11 @@
                     converse.chatboxviews.trimChats(chatbox);
                 }
             });
+
+            var logOut = function () {
+                converse.minimized_chats.remove();
+            };
+            converse.on('logout', logOut);
         }
     });
 }));

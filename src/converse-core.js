@@ -479,6 +479,10 @@
                 converse.connection.disconnect(__('Authentication Failed'));
                 converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
+                converse.giveFeedback(
+                    __('Connection failed'), 'error',
+                    __('An error occurred while connecting to the chat server: '+condition)
+                );
                 converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.setDisconnectionCause(status, condition);

@@ -149,7 +149,7 @@
 
                 closeAllChatBoxes: function () {
                     this.each(function (view) {
-                        if (!converse.connection.connected ||
+                        if (converse.disconnection_cause === converse.LOGOUT ||
                             view.model.get('id') !== 'controlbox') {
                                 view.close();
                         }
@@ -241,7 +241,7 @@
                     if (this.model.get('connected')) {
                         this.insertRoster();
                     }
-                    if (typeof this.model.get('closed')==='undefined') {
+                    if (_.isUndefined(this.model.get('closed'))) {
                         this.model.set('closed', !converse.show_controlbox_by_default);
                     }
                     if (!this.model.get('closed')) {

@@ -475,8 +475,8 @@
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.giveFeedback(__('Authentication failed.'), 'error');
-                converse.connection.disconnect(__('Authentication Failed'));
+                converse.giveFeedback(__('Authentication Failed'), 'error');
+                converse.connection.disconnect();
                 converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
                 converse.giveFeedback(
@@ -486,12 +486,6 @@
                 converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 converse.setDisconnectionCause(status, condition);
-                if (condition) {
-                    converse.giveFeedback(
-                        __("Disconnected"), 'warn',
-                        __("The connection to the chat server has dropped")
-                    );
-                }
             }
         };
 

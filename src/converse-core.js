@@ -404,13 +404,13 @@
             );
             converse.connection.reconnecting = true;
             converse.connection.disconnect('re-connecting');
-            converse.connection.reset();
             converse._tearDown();
             converse.logIn(null, true);
         }, 1000, {'leading': true});
 
         this.disconnect = function () {
             delete converse.connection.reconnecting;
+            converse.connection.reset();
             converse._tearDown();
             converse.chatboxviews.closeAllChatBoxes();
             converse.emit('disconnected');
@@ -544,7 +544,6 @@
             converse.disconnection_cause = converse.LOGOUT;
             if (typeof converse.connection !== 'undefined') {
                 converse.connection.disconnect();
-                converse.connection.reset();
             }
             converse.clearSession();
             converse._tearDown();

@@ -392,6 +392,7 @@
 
         this.rejectPresenceSubscription = function (jid, message) {
             /* Reject or cancel another user's subscription to our presence updates.
+             *
              *  Parameters:
              *    (String) jid - The Jabber ID of the user whose subscription
              *      is being canceled.
@@ -402,8 +403,8 @@
             converse.connection.send(pres);
         };
 
-
         this.reconnect = _.debounce(function () {
+            converse.log('RECONNECTING');
             converse.log('The connection has dropped, attempting to reconnect.');
             converse.giveFeedback(
                 __("Reconnecting"),
@@ -414,50 +415,54 @@
             converse.connection.disconnect('re-connecting');
             converse._tearDown();
             converse.logIn(null, true);
-        }, 1000);
+        }, 3000, {'leading': true});
 
         this.disconnect = function () {
+            converse.log('DISCONNECTED');
             delete converse.connection.reconnecting;
             converse.connection.reset();
             converse._tearDown();
             converse.chatboxviews.closeAllChatBoxes();
             converse.emit('disconnected');
-            converse.log('DISCONNECTED');
             return 'disconnected';
         };
 
-        this.onDisconnected = function (condition) {
+        this.onDisconnected = function () {
+            /* Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
+             * Will either start a teardown process for converse.js or attempt
+             * to reconnect.
+             */
             if (_.includes([converse.LOGOUT, Strophe.Status.AUTHFAIL], converse.disconnection_cause) ||
                     converse.disconnection_reason === "host-unknown" ||
                     !converse.auto_reconnect) {
-                return this.disconnect();
+                return converse.disconnect();
             }
-            if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
-                converse.reconnect(condition);
-                converse.log('RECONNECTING');
-            } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                        converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
-                window.setTimeout(_.partial(converse.reconnect, condition), 3000);
-                converse.log('RECONNECTING IN 3 SECONDS');
-            }
-            converse.emit('reconnecting');
-            return 'reconnecting';
+            converse.reconnect();
         };
 
         this.setDisconnectionCause = function (cause, reason, override) {
-            if (_.isUndefined(converse.disconnection_cause) || override) {
+            /* Used to keep track of why we got disconnected, so that we can
+             * decide on what the next appropriate action is (in onDisconnected)
+             */
+            if (_.isUndefined(cause)) {
+                delete converse.disconnection_cause;
+                delete converse.disconnection_reason;
+            } else if (_.isUndefined(converse.disconnection_cause) || override) {
                 converse.disconnection_cause = cause;
                 converse.disconnection_reason = reason;
             }
         };
 
         this.onConnectStatusChanged = function (status, condition) {
+            /* Callback method called by Strophe as the Strophe.Connection goes
+             * through various states while establishing or tearing down a
+             * connection.
+             */
             converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
                 converse.send_initial_presence = true;
-                delete converse.disconnection_cause;
-                delete converse.disconnection_reason;
+                converse.setDisconnectionCause();
                 if (converse.connection.reconnecting) {
                     converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
                     converse.onConnected(true);
@@ -472,7 +477,7 @@
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
                 converse.setDisconnectionCause(status, condition);
-                converse.onDisconnected(condition);
+                converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
                 converse.giveFeedback(
                     __('Connection error'), 'error',

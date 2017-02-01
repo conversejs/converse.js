@@ -465,7 +465,7 @@
                         test_utils.openContactsPanel(converse);
 
                         spyOn(converse, 'emit');
-                        var message = 'converse is a received message';
+                        var message = 'This is a received message';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         var msg = $msg({
                                 from: sender_jid,
@@ -505,6 +505,63 @@
                             expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
                         });
                     }));
+
+                    describe("who is not on the roster", function () {
+                        it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true", mock.initConverse(function (converse) {
+                            converse.allow_non_roster_messaging = false;
+
+                            spyOn(converse, 'emit');
+                            var message = 'This is a received message from someone not on the roster';
+                            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            var msg = $msg({
+                                    from: sender_jid,
+                                    to: converse.connection.jid,
+                                    type: 'chat',
+                                    id: (new Date()).getTime()
+                                }).c('body').t(message).up()
+                                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                            // We don't already have an open chatbox for this user
+                            expect(converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                            runs(function () {
+                                // onMessage is a handler for received XMPP messages
+                                converse.chatboxes.onMessage(msg);
+                                expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                            });
+                            waits(50);
+                            runs(function () {
+                                var chatbox = converse.chatboxes.get(sender_jid);
+                                expect(chatbox).not.toBeDefined();
+
+                                // onMessage is a handler for received XMPP messages
+                                converse.allow_non_roster_messaging =true;
+                                converse.chatboxes.onMessage(msg);
+                                expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                            });
+                            waits(50);
+                            runs(function () {
+                                // Check that the chatbox and its view now exist
+                                var chatbox = converse.chatboxes.get(sender_jid);
+                                var chatboxview = converse.chatboxviews.get(sender_jid);
+                                expect(chatbox).toBeDefined();
+                                expect(chatboxview).toBeDefined();
+                                // Check that the message was received and check the message parameters
+                                expect(chatbox.messages.length).toEqual(1);
+                                var msg_obj = chatbox.messages.models[0];
+                                expect(msg_obj.get('message')).toEqual(message);
+                                expect(msg_obj.get('fullname')).toEqual(sender_jid);
+                                expect(msg_obj.get('sender')).toEqual('them');
+                                expect(msg_obj.get('delayed')).toEqual(false);
+                                // Now check that the message appears inside the chatbox in the DOM
+                                var $chat_content = chatboxview.$el.find('.chat-content');
+                                var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
+                                expect(msg_txt).toEqual(message);
+                                var sender_txt = $chat_content.find('span.chat-msg-them').text();
+                                expect(sender_txt.match(/^[0-9][0-9]:[0-9][0-9] /)).toBeTruthy();
+                            });
+                        }));
+                    });
 
                     describe("and for which then an error message is received from the server", function () {
                         afterEach(function () {
@@ -716,12 +773,6 @@
                             var msg_txt = $chat_content.find('.chat-message').find('.chat-msg-content').text();
                             expect(msg_txt).toEqual(message);
                         });
-                    }));
-                });
-
-                describe("when sent by the current user", function () {
-                    it("will always cause the chat area to be scrolled down", mock.initConverse(function (converse) {
-                        // TODO
                     }));
                 });
 

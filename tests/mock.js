@@ -87,7 +87,7 @@
                 auto_login: true,
                 jid: 'dummy@localhost',
                 password: 'secret',
-                debug: true
+                debug: false
             }, settings || {}));
             converse.ChatBoxViews.prototype.trimChat = function () {};
             return func(converse);

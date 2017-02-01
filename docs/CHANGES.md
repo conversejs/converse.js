@@ -5,6 +5,7 @@
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
 - #758: Bugfix. Render all resize drag handles for ChatRoomView. [LeoYReyes]
+- #762 Allow chatting with users not in your roster. [Ape, jcbrand]
 - Bugfix. Cancel button shown while registration form is being fetched wasn't working
   properly. [jcbrand]
 - Bugfix. Login form wasn't rendered after logging out (when `auto_reconnect` is `true`). [jcbrand]

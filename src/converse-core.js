@@ -208,6 +208,7 @@
         // ----------------------------
         this.default_settings = {
             allow_contact_requests: true,
+            allow_non_roster_messaging: false,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
@@ -230,6 +231,7 @@
             keepalive: false,
             locked_domain: undefined,
             message_carbons: false, // Support for XEP-280
+            message_storage: 'session',
             password: undefined,
             prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
@@ -238,7 +240,6 @@
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
-            message_storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
             websocket_url: undefined,
@@ -1494,20 +1495,25 @@
                  * Parameters:
                  *    (String) jid - The JID of the user whose chat box we want
                  *    (Boolean) create - Should a new chat box be created if none exists?
+                 *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var chatbox = this.get(bare_jid);
                 if (!chatbox && create) {
-                    var roster_info;
+                    var roster_info = {};
                     var roster_item = converse.roster.get(bare_jid);
-                    if (roster_item !== undefined) {
-                      roster_info = {
-                          'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                          'image_type': roster_item.get('image_type'),
-                          'image': roster_item.get('image'),
-                          'url': roster_item.get('url'),
-                      };
+                    if (! _.isUndefined(roster_item)) {
+                        roster_info = {
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url'),
+                        };
+                    } else if (!converse.allow_non_roster_messaging) {
+                        converse.log('Could not get roster item for JID '+bare_jid+
+                                    ' and allow_non_roster_messaging is set to false', 'error');
+                        return;
                     }
                     chatbox = this.create(_.extend({
                         'id': bare_jid,
@@ -1516,7 +1522,7 @@
                         'image_type': DEFAULT_IMAGE_TYPE,
                         'image': DEFAULT_IMAGE,
                         'url': '',
-                    }, roster_info || {}, attrs || {}));
+                    }, roster_info, attrs || {}));
                 }
                 return chatbox;
             }

@@ -106,20 +106,20 @@
             }
         },
         'chats': {
-            'open': function (jids, attrs) {
+            'open': function (jids) {
                 var chatbox;
                 if (typeof jids === "undefined") {
                     converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (typeof jids === "string") {
                     chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
+                        converse.chatboxes.getChatBox(jids, true).trigger('show')
                     );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
                     chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
+                        converse.chatboxes.getChatBox(jid, true).trigger('show')
                     );
                     return chatbox;
                 });

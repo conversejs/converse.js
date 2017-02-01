@@ -173,6 +173,18 @@ Allows users to be invited to join MUC chat rooms. An "Invite" widget will
 appear in the sidebar of the chat room where you can type in the JID of a user
 to invite into the chat room.
 
+allow_non_roster_messaging
+--------------------------
+
+* Default:  ``false``
+
+Determines whether you'll receive messages from users that are not in your
+roster. The XMPP specification allows for this (similar to email).
+Setting this to `true` increases your chances of receiving spam (when using a
+federated server), while setting it to `false` means that people not on your
+roster can't contact you unless one (or both) of you subscribe to one another's
+presence (i.e. adding as a roster contact).
+
 allow_otr
 ---------
 

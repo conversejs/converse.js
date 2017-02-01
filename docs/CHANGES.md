@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.7 (Unreleased)
+## 1.0.7 (2017-02-01)
 - Security fix: Prevent message forging via carbons. (Thanks to ge0rg) [jcbrand]
 
 ## 1.0.6 (2016-08-12)

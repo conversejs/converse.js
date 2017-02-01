@@ -1151,6 +1151,43 @@
                 test_utils.clearBrowserStorage();
             });
 
+            it("to set the room subject", mock.initConverse(function (converse) {
+                var sent_stanza;
+                test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
+                var view = converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'onMessageSubmitted').andCallThrough();
+                spyOn(view, 'clearChatRoomMessages');
+                spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                    sent_stanza = stanza;
+                });
+                // Check the alias /topic
+                var $textarea = view.$el.find('.chat-textarea');
+                $textarea.val('/topic This is the room subject');
+                $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
+                expect(converse.connection.send).toHaveBeenCalled();
+                expect(sent_stanza.outerHTML).toBe(
+                    '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client">This is the room subject</subject>'+
+                    '</message>');
+
+                // Check /subject
+                $textarea.val('/subject This is a new subject');
+                $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                expect(sent_stanza.outerHTML).toBe(
+                    '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client">This is a new subject</subject>'+
+                    '</message>');
+
+                // Check case insensitivity
+                $textarea.val('/Subject This is yet another subject');
+                $textarea.trigger($.Event('keypress', {keyCode: 13}));
+                expect(sent_stanza.outerHTML).toBe(
+                    '<message to="lounge@localhost" from="dummy@localhost/resource" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client">This is yet another subject</subject>'+
+                    '</message>');
+            }));
+
             it("to clear messages", mock.initConverse(function (converse) {
                 test_utils.openChatRoom(converse, 'lounge', 'localhost', 'dummy');
                 var view = converse.chatboxviews.get('lounge@localhost');
@@ -1160,7 +1197,6 @@
                 view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
                 expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.clearChatRoomMessages).toHaveBeenCalled();
-
             }));
 
             it("to make a user an owner", mock.initConverse(function (converse) {

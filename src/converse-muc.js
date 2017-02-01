@@ -874,17 +874,18 @@
                         return this.sendChatRoomMessage(text);
                     }
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                        args = match[2] && match[2].splitOnce(' ') || [];
-                    switch (match[1]) {
+                        args = match[2] && match[2].splitOnce(' ') || [],
+                        command = match[1].toLowerCase();
+                    switch (command) {
                         case 'admin':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'ban':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -894,44 +895,45 @@
                             this.clearChatRoomMessages();
                             break;
                         case 'deop':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'occupant', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'help':
                             this.showHelpMessages([
-                                '<strong>/admin</strong>: ' +__("Change user's affiliation to admin"),
-                                '<strong>/ban</strong>: '   +__('Ban user from room'),
-                                '<strong>/clear</strong>: ' +__('Remove messages'),
-                                '<strong>/deop</strong>: '  +__('Change user role to occupant'),
-                                '<strong>/help</strong>: '  +__('Show this menu'),
-                                '<strong>/kick</strong>: '  +__('Kick user from room'),
-                                '<strong>/me</strong>: '    +__('Write in 3rd person'),
-                                '<strong>/member</strong>: '+__('Grant membership to a user'),
-                                '<strong>/mute</strong>: '  +__("Remove user's ability to post messages"),
-                                '<strong>/nick</strong>: '  +__('Change your nickname'),
-                                '<strong>/op</strong>: '    +__('Grant moderator role to user'),
-                                '<strong>/owner</strong>: ' +__('Grant ownership of this room'),
-                                '<strong>/revoke</strong>: '+__("Revoke user's membership"),
-                                '<strong>/topic</strong>: ' +__('Set room topic'),
-                                '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
+                                '<strong>/admin</strong>: '   +__("Change user's affiliation to admin"),
+                                '<strong>/ban</strong>: '     +__('Ban user from room'),
+                                '<strong>/clear</strong>: '   +__('Remove messages'),
+                                '<strong>/deop</strong>: '    +__('Change user role to occupant'),
+                                '<strong>/help</strong>: '    +__('Show this menu'),
+                                '<strong>/kick</strong>: '    +__('Kick user from room'),
+                                '<strong>/me</strong>: '      +__('Write in 3rd person'),
+                                '<strong>/member</strong>: '  +__('Grant membership to a user'),
+                                '<strong>/mute</strong>: '    +__("Remove user's ability to post messages"),
+                                '<strong>/nick</strong>: '    +__('Change your nickname'),
+                                '<strong>/op</strong>: '      +__('Grant moderator role to user'),
+                                '<strong>/owner</strong>: '   +__('Grant ownership of this room'),
+                                '<strong>/revoke</strong>: '  +__("Revoke user's membership"),
+                                '<strong>/subject</strong>: ' +__('Set room subject'),
+                                '<strong>/topic</strong>: '   +__('Set room subject (alias for /subject)'),
+                                '<strong>/voice</strong>: '   +__('Allow muted user to post messages')
                             ]);
                             break;
                         case 'kick':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'none', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'mute':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'visitor', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'member':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('member',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -945,26 +947,27 @@
                             }).tree());
                             break;
                         case 'owner':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'op':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'revoke':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'topic':
+                        case 'subject':
                             converse.connection.send(
                                 $msg({
                                     to: this.model.get('jid'),
@@ -974,7 +977,7 @@
                             );
                             break;
                         case 'voice':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'occupant', args[1],
                                     undefined, this.onCommandError.bind(this));

@@ -568,11 +568,12 @@
                 keyPressed: function (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    var $textarea = $(ev.target), message;
+                    var textarea = ev.target, message;
                     if (ev.keyCode === KEY.ENTER) {
                         ev.preventDefault();
-                        message = $textarea.val();
-                        $textarea.val('').focus();
+                        message = textarea.value;
+                        textarea.value = '';
+                        textarea.focus();
                         if (message !== '') {
                             this.onMessageSubmitted(message);
                             converse.emit('messageSend', message);

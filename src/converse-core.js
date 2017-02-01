@@ -412,7 +412,6 @@
                 __('The connection has dropped, attempting to reconnect.')
             );
             converse.connection.reconnecting = true;
-            converse.connection.disconnect('re-connecting');
             converse._tearDown();
             converse.logIn(null, true);
         }, 3000, {'leading': true});
@@ -498,7 +497,6 @@
                 converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
                 converse.giveFeedback(__('Authentication Failed'), 'error');
-                converse.connection.disconnect();
                 converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
                 converse.giveFeedback(

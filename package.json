@@ -38,7 +38,7 @@
     "backbone.overview": "0.0.3",
     "bower": "latest",
     "clean-css": "^4.0.3",
-    "crypto-js": "3.1.2-5",
+    "crypto-js": "3.1.9",
     "greenkeeper": "^4.0.0",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.1.0",

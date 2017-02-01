@@ -436,6 +436,7 @@
                     /* In this case, we reconnect, because we might be receiving
                      * expirable tokens from the credentials_url.
                      */
+                    converse.emit('will-reconnect');
                     return converse.reconnect();
                 } else {
                     return converse.disconnect();
@@ -445,6 +446,7 @@
                     !converse.auto_reconnect) {
                 return converse.disconnect();
             }
+            converse.emit('will-reconnect');
             converse.reconnect();
         };
 

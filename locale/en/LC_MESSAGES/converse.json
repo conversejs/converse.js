@@ -263,19 +263,11 @@
             null,
             ""
          ],
-         "Authentication failed.": [
-            null,
-            ""
-         ],
          "Authentication Failed": [
             null,
             ""
          ],
-         "Disconnected": [
-            null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
+         "Connection failed": [
             null,
             ""
          ],

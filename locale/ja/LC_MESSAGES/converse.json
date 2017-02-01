@@ -215,14 +215,6 @@
             null,
             "認証に失敗"
          ],
-         "Disconnected": [
-            null,
-            "切断中"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""

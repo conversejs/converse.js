@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.5 (Unreleased)
+## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]

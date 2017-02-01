@@ -432,7 +432,16 @@
              * Will either start a teardown process for converse.js or attempt
              * to reconnect.
              */
-            if (_.includes([converse.LOGOUT, Strophe.Status.AUTHFAIL], converse.disconnection_cause) ||
+            if (converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+                if (converse.credentials_url && converse.auto_reconnect) {
+                    /* In this case, we reconnect, because we might be receiving
+                     * expirable tokens from the credentials_url.
+                     */
+                    return converse.reconnect();
+                } else {
+                    return converse.disconnect();
+                }
+            } else if (converse.disconnection_cause === converse.LOGOUT ||
                     converse.disconnection_reason === "host-unknown" ||
                     !converse.auto_reconnect) {
                 return converse.disconnect();

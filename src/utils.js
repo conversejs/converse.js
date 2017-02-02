@@ -37,6 +37,13 @@
         'list-multi': 'dropdown'
     };
 
+    var afterAnimationEnd = function (el, callback) {
+        el.classList.remove('visible');
+        if (_.isFunction(callback)) {
+            callback();
+        }
+    };
+
     var isImage = function (url) {
         var deferred = new $.Deferred();
         $("<img>", {
@@ -219,14 +226,17 @@
                 }
                 return;
             }
-            el.addEventListener("animationend", function () {
-                el.classList.remove('visible');
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-            }, false);
-            el.classList.add('visible');
-            el.classList.remove('hidden');
+            if (_.includes(el.classList, 'hidden')) {
+                /* XXX: This doesn't appear to be working...
+                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
+                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
+                */
+                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
+                el.classList.add('visible');
+                el.classList.remove('hidden');
+            } else {
+                afterAnimationEnd(el, callback);
+            }
         },
 
         isOTRMessage: function (message) {

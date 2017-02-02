@@ -527,7 +527,7 @@
                     });
 
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
-                        .siblings('.remove-xmpp-contact').click();
+                        .parent().siblings('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
@@ -556,7 +556,7 @@
                     });
                     expect(converse.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(true);
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
-                        .siblings('.remove-xmpp-contact').click();
+                        .parent().siblings('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
                     expect(converse.rosterview.get('Pending contacts').$el.is(':visible')).toEqual(false);
@@ -570,7 +570,7 @@
                 for (var i=0; i<mock.pend_names.length; i++) {
                     name = mock.pend_names[i];
                     converse.rosterview.$el.find(".pending-contact-name:contains('"+name+"')")
-                        .siblings('.remove-xmpp-contact').click();
+                        .parent().siblings('.remove-xmpp-contact').click();
                 }
                 expect(converse.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
             }));
@@ -670,7 +670,7 @@
                     });
 
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
-                        .siblings('.remove-xmpp-contact').click();
+                        .parent().find('.remove-xmpp-contact').click();
 
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
@@ -701,7 +701,7 @@
 
                     expect(converse.rosterview.$el.find('dt.roster-group').css('display')).toEqual('block');
                     converse.rosterview.$el.find(".open-chat:contains('"+name+"')")
-                        .siblings('.remove-xmpp-contact').click();
+                        .parent().find('.remove-xmpp-contact').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.connection.sendIQ).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
@@ -933,7 +933,7 @@
                 runs(function () {
                     expect(converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
-                    children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').children('span');
+                    children = converse.rosterview.get('Contact requests').$el.siblings('dd.requesting-xmpp-contact').find('span');
                     names = [];
                     children.each(addName);
                     expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
@@ -959,7 +959,7 @@
                 runs(function () {
                     expect(converse.rosterview.get('Contact requests').$el.is(':visible')).toEqual(true);
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
-                        .siblings('.request-actions')
+                        .parent().siblings('.request-actions')
                         .find('.decline-xmpp-request').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(converse.rosterview.get('Contact requests').$el.is(':visible')).toEqual(false);
@@ -993,7 +993,7 @@
                     });
                     spyOn(contact, 'authorize').andCallFake(function () { return contact; });
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
-                        .siblings('.request-actions')
+                        .parent().siblings('.request-actions')
                         .find('.accept-xmpp-request').click();
                     expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
                     expect(contact.authorize).toHaveBeenCalled();
@@ -1013,7 +1013,7 @@
                     spyOn(window, 'confirm').andReturn(true);
                     spyOn(contact, 'unauthorize').andCallFake(function () { return contact; });
                     converse.rosterview.$el.find(".req-contact-name:contains('"+name+"')")
-                        .siblings('.request-actions')
+                        .parent().siblings('.request-actions')
                         .find('.decline-xmpp-request').click();
                     expect(window.confirm).toHaveBeenCalled();
                     expect(contact.unauthorize).toHaveBeenCalled();

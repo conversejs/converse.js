@@ -805,11 +805,23 @@
                     return this;
                 },
 
-                scrollDown: function () {
+                _scrollDown: function () {
+                    /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
                         this.$el.find('.new-msgs-indicator').addClass('hidden');
                     }
+                },
+
+                scrollDown: function () {
+                    if (_.isUndefined(this.debouncedScrollDown)) {
+                        /* We wrap the method in a debouncer and set it on the
+                         * instance, so that we have it debounced per instance.
+                         * Debouncing it on the class-level is too broad.
+                         */
+                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250, {'leading': true});
+                    }
+                    this.debouncedScrollDown.apply(this, arguments);
                     return this;
                 }
             });

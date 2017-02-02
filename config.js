@@ -45,6 +45,7 @@ require.config({
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
+        "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
 
         // Converse
@@ -190,6 +191,8 @@ require.config({
         // for their 'jquery' dependency.
         '*': {
             'jquery': 'jquery-private',
+         },
+        'backbone': {
             "underscore": "lodash"
          },
         // 'jquery-private' wants the real jQuery module
@@ -222,6 +225,7 @@ require.config({
         'bigint':               { deps: ['crypto'] },
         'strophe.ping':         { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] }
+        'strophe.vcard':        { deps: ['strophe'] },
+        'backbone':             { deps: ['underscore'] }
     }
 });

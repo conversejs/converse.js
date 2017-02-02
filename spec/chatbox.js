@@ -756,12 +756,6 @@
                     }));
                 });
 
-                describe("when sent by the current user", function () {
-                    it("will always cause the chat area to be scrolled down", mock.initConverse(function (_converse) {
-                        // TODO
-                    }));
-                });
-
                 it("is ignored if it's a malformed headline message", mock.initConverse(function (_converse) {
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();

@@ -1,3 +1,10 @@
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global Backbone */
 (function (root, factory) {
     define("converse-muc-embedded", [
             "converse-api",

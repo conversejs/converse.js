@@ -20,6 +20,7 @@
         /* Handler method for all incoming messages of type "headline".
          */
         var from_jid = message.getAttribute('from');
+        var _converse = this.__super__._converse;
         if (utils.isHeadlineMessage(message)) {
             _converse.chatboxes.create({
                 'id': from_jid,

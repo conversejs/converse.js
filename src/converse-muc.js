@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define("converse-muc", [
-            "converse-core",
             "converse-api",
             "tpl!chatarea",
             "tpl!chatroom",
@@ -48,20 +47,6 @@
             tpl_room_panel
     ) {
     "use strict";
-    _converse.templates.chatarea = tpl_chatarea;
-    _converse.templates.chatroom = tpl_chatroom;
-    _converse.templates.chatroom_form = tpl_chatroom_form;
-    _converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
-    _converse.templates.chatroom_password_form = tpl_chatroom_password_form;
-    _converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
-    _converse.templates.chatroom_head = tpl_chatroom_head;
-    _converse.templates.chatrooms_tab = tpl_chatrooms_tab;
-    _converse.templates.info = tpl_info;
-    _converse.templates.occupant = tpl_occupant;
-    _converse.templates.room_description = tpl_room_description;
-    _converse.templates.room_item = tpl_room_item;
-    _converse.templates.room_panel = tpl_room_panel;
-
     var ROOMS_PANEL_ID = 'chatrooms';
 
     // Strophe methods for building stanzas
@@ -76,10 +61,6 @@
     var $ = converse.env.jQuery,
         _ = converse.env._,
         moment = converse.env.moment;
-
-    // For translations
-    var __ = utils.__.bind(_converse);
-    var ___ = utils.___;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -111,6 +92,7 @@
                 * returned via the API.
                 */
                 if (!chatbox) { return; }
+                var _converse = this.__super__._converse;
                 var view = _converse.chatboxviews.get(chatbox.get('id'));
                 var box = this.__super__.wrappedChatBox.apply(this, arguments);
                 box.is_chatroom = view.is_chatroom;
@@ -119,6 +101,7 @@
 
             Features: {
                 addClientFeatures: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
                     if (_converse.allow_muc_invitations) {
                         _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
@@ -191,6 +174,7 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'chatroom') {
                         view = new _converse.ChatRoomView({'model': item});
@@ -206,6 +190,24 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__,
+                ___ = _converse.___;
+
+            _converse.templates.chatarea = tpl_chatarea;
+            _converse.templates.chatroom = tpl_chatroom;
+            _converse.templates.chatroom_form = tpl_chatroom_form;
+            _converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
+            _converse.templates.chatroom_password_form = tpl_chatroom_password_form;
+            _converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
+            _converse.templates.chatroom_head = tpl_chatroom_head;
+            _converse.templates.chatrooms_tab = tpl_chatrooms_tab;
+            _converse.templates.info = tpl_info;
+            _converse.templates.occupant = tpl_occupant;
+            _converse.templates.room_description = tpl_room_description;
+            _converse.templates.room_item = tpl_room_item;
+            _converse.templates.room_panel = tpl_room_panel;
+
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -2376,9 +2378,9 @@
                  */
                 _.each(_converse.auto_join_rooms, function (room) {
                     if (_.isString(room)) {
-                        converse.api.rooms.open(room);
+                        _converse.api.rooms.open(room);
                     } else if (_.isObject(room)) {
-                        converse.api.rooms.open(room.jid, room.nick);
+                        _converse.api.rooms.open(room.jid, room.nick);
                     } else {
                         _converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
                     }

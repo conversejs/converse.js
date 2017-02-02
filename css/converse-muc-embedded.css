@@ -5,10 +5,17 @@
  */
 /* $font-path: "../fonticons/fonts/" !default; */
 #converse-embedded-chat {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   bottom: auto;
   right: auto;
   position: relative;
   width: 100%; }
+  #converse-embedded-chat *, #converse-embedded-chat *:before, #converse-embedded-chat *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
   #converse-embedded-chat .chatroom {
     width: auto; }
   #converse-embedded-chat .flyout {
@@ -26,10 +33,13 @@
     display: none; }
   #converse-embedded-chat .chatroom .box-flyout {
     min-width: auto;
-    width: 100%; }
+    width: 100%;
+    height: 90vh; }
     #converse-embedded-chat .chatroom .box-flyout .chat-body {
       height: -webkit-calc(100% - 55px);
       height: calc(100% - 55px); }
+    #converse-embedded-chat .chatroom .box-flyout .chat-content {
+      height: calc(100% - 97px); }
     #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container {
       height: auto;
       position: relative; }

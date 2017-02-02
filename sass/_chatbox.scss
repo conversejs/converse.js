@@ -256,6 +256,7 @@
                 resize: none;
             }
             .chat-toolbar {
+                box-sizing: border-box;
                 font-size: $font-size;
                 margin: 0;
                 padding: 5px;
@@ -263,7 +264,10 @@
                 display: block;
                 background-color: $toolbar-color;
                 a {
+                    font-size: $font-size;
                     color: $link-color;
+                    text-decoration: none;
+                    text-shadow: none;
                 }
                 .chat-toolbar-text {
                     font-size: 12px;
@@ -314,6 +318,9 @@
                             color: #8f2831;
                         }
                     }
+                }
+                li {
+                    margin-left: 0;
                 }
                 .toggle-smiley {
                     color: $link-color;

@@ -101,7 +101,7 @@
             display: block;
             height: 24px;
             overflow-y: hidden;
-            padding: 0.3em 0 0.3em 1em;
+            padding: 0.3em 1em;
             text-shadow: 0 1px 0 $text-shadow-color;
             line-height: $font-size;
             width: 100%;
@@ -113,15 +113,17 @@
                 .remove-xmpp-contact {
                     display: inline-block;
                 }
-                .open-chat {
-                    width: 80%;
-                }
             }
             &.requesting-xmpp-contact {
-                &.request-actions {
+                .request-actions {
                     margin-left: 0.5em;
                     margin-bottom: 0.3em;
                     float: right;
+                }
+                .open-chat {
+                    .req-contact-name {
+                        width: 100%;
+                    }
                 }
                 .req-contact-name {
                     width: 69%;

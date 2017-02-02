@@ -1940,7 +1940,7 @@
       display: block;
       height: 24px;
       overflow-y: hidden;
-      padding: 0.3em 0 0.3em 1em;
+      padding: 0.3em 1em;
       text-shadow: 0 1px 0 #FAFAFA;
       line-height: 14px;
       width: 100%; }
@@ -1950,12 +1950,12 @@
         background-color: #DCF9F6; }
         #conversejs #converse-roster .roster-contacts dd:hover .remove-xmpp-contact {
           display: inline-block; }
-        #conversejs #converse-roster .roster-contacts dd:hover .open-chat {
-          width: 80%; }
-      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact.request-actions {
+      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .request-actions {
         margin-left: 0.5em;
         margin-bottom: 0.3em;
         float: right; }
+      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .open-chat .req-contact-name {
+        width: 100%; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .req-contact-name {
         width: 69%;
         padding: 0; }

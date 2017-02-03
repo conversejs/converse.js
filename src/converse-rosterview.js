@@ -30,7 +30,7 @@
         b64_sha1 = converse.env.b64_sha1,
         _ = converse.env._;
 
-    converse.plugins.add('rosterview', {
+    converse.plugins.add('converse-rosterview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

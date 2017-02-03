@@ -48,6 +48,25 @@
     _.extend(_converse, Backbone.Events);
     _converse.emit = _converse.trigger;
 
+    _converse.core_plugins = [
+        'converse-bookmarks',
+        'converse-chatview',
+        'converse-controlbox',
+        'converse-core',
+        'converse-dragresize',
+        'converse-headline',
+        'converse-mam',
+        'converse-minimize',
+        'converse-muc',
+        'converse-muc-embedded',
+        'converse-notification',
+        'converse-otr',
+        'converse-ping',
+        'converse-register',
+        'converse-rosterview',
+        'converse-vcard'
+    ];
+
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
 
@@ -187,7 +206,8 @@
             auto_reconnect: false,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
-            bosh_service_url: undefined, // The BOSH connection manager URL.
+            blacklisted_plugins: [],
+            bosh_service_url: undefined,
             connection_options: {},
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -201,10 +221,9 @@
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
-            message_carbons: false, // Support for XEP-280
+            message_carbons: false,
             message_storage: 'session',
             password: undefined,
-            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
             roster_groups: false,
@@ -212,8 +231,9 @@
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
-            synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
+            synchronize_availability: true,
             websocket_url: undefined,
+            whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
@@ -1973,10 +1993,13 @@
         // in any case.
         _converse.pluggable.initialized_plugins = [];
 
+        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+
         _converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
             '_converse': _converse
-        });
+        }, whitelist, _converse.blacklisted_plugins);
+
         _converse.emit('pluginsInitialized');
         _converse._initialize();
         _converse.registerGlobalEventHandlers();

@@ -3450,7 +3450,7 @@ define("polyfill", function(){});
     // then the name by which the pluggable object may be referenced on the
     // __super__ object (inside overrides).
     function PluginSocket (plugged, name) {
-        this.name = name; 
+        this.name = name;
         this.plugged = plugged;
         if (typeof this.plugged.__super__ === 'undefined') {
             this.plugged.__super__ = {};
@@ -3598,6 +3598,10 @@ define("polyfill", function(){});
         // `initializePlugin` applies the overrides (if any) defined on all
         // the registered plugins and then calls the initialize method for each plugin.
         initializePlugin: function (plugin) {
+            if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
+                /* Don't initialize disallowed plugins. */
+                return;
+            }
             if (_.includes(this.initialized_plugins, plugin.__name__)) {
                 /* Don't initialize plugins twice, otherwise we get
                  * infinite recursion in overridden methods.
@@ -3627,12 +3631,18 @@ define("polyfill", function(){});
         // `initializePlugin` for each.
         // The passed in  properties variable is an object with attributes and methods
         // which will be attached to the plugins.
-        initializePlugins: function (properties) {
+        initializePlugins: function (properties, whitelist, blacklist) {
             if (!_.size(this.plugins)) {
                 return;
             }
             this.properties = properties;
-            _.each(_.values(this.plugins), this.initializePlugin.bind(this));
+            this.allowed_plugins  = _.pickBy(this.plugins,
+                function (plugin, key) {
+                    return (whitelist.length && _.includes(whitelist, key)) &&
+                                !_.includes(blacklist, key);
+                }
+            );
+            _.each(_.values(this.allowed_plugins), this.initializePlugin.bind(this));
         }
     });
     return {
@@ -3709,6 +3719,25 @@ define("polyfill", function(){});
     _converse.templates = {};
     _.extend(_converse, Backbone.Events);
     _converse.emit = _converse.trigger;
+
+    _converse.core_plugins = [
+        'converse-bookmarks',
+        'converse-chatview',
+        'converse-controlbox',
+        'converse-core',
+        'converse-dragresize',
+        'converse-headline',
+        'converse-mam',
+        'converse-minimize',
+        'converse-muc',
+        'converse-muc-embedded',
+        'converse-notification',
+        'converse-otr',
+        'converse-ping',
+        'converse-register',
+        'converse-rosterview',
+        'converse-vcard'
+    ];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
@@ -3849,7 +3878,8 @@ define("polyfill", function(){});
             auto_reconnect: false,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
-            bosh_service_url: undefined, // The BOSH connection manager URL.
+            blacklisted_plugins: [],
+            bosh_service_url: undefined,
             connection_options: {},
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -3863,10 +3893,9 @@ define("polyfill", function(){});
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
-            message_carbons: false, // Support for XEP-280
+            message_carbons: false,
             message_storage: 'session',
             password: undefined,
-            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
             roster_groups: false,
@@ -3874,8 +3903,9 @@ define("polyfill", function(){});
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
-            synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
+            synchronize_availability: true,
             websocket_url: undefined,
+            whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
@@ -5635,10 +5665,13 @@ define("polyfill", function(){});
         // in any case.
         _converse.pluggable.initialized_plugins = [];
 
+        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+
         _converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
             '_converse': _converse
-        });
+        }, whitelist, _converse.blacklisted_plugins);
+
         _converse.emit('pluginsInitialized');
         _converse._initialize();
         _converse.registerGlobalEventHandlers();
@@ -8736,7 +8769,7 @@ return __p
         b64_sha1 = converse.env.b64_sha1,
         _ = converse.env._;
 
-    converse.plugins.add('rosterview', {
+    converse.plugins.add('converse-rosterview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

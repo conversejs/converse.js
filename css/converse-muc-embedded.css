@@ -28,24 +28,37 @@
       box-shadow: none; }
     #converse-embedded-chat .chatbox .chat-title {
       padding: 0.3em;
-      font-size: 110%; }
+      font-size: 150%; }
   #converse-embedded-chat .chatbox-btn {
     display: none; }
   #converse-embedded-chat .chatroom .box-flyout {
     min-width: auto;
     width: 100%;
-    height: 90vh; }
+    height: 55vh; }
     #converse-embedded-chat .chatroom .box-flyout .chat-body {
       height: -webkit-calc(100% - 55px);
       height: calc(100% - 55px); }
+    #converse-embedded-chat .chatroom .box-flyout .occupants-heading {
+      font-size: 150%; }
     #converse-embedded-chat .chatroom .box-flyout .chat-content {
       height: calc(100% - 97px); }
+      #converse-embedded-chat .chatroom .box-flyout .chat-content .chat-message {
+        margin: 0.5em;
+        font-size: 120%; }
+    #converse-embedded-chat .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
+      padding: 0.5em;
+      font-size: 110%; }
     #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container {
-      height: auto;
+      font-size: 180%;
+      float: left;
+      height: 100%;
+      width: 100%;
       position: relative; }
+      #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input {
+        font-size: 60%; }
     #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list {
       padding-left: 0.3em; }
       #converse-embedded-chat .chatroom .box-flyout .occupants .occupant-list li.occupant {
-        font-size: 14px; }
+        font-size: 120%; }
 
 /*# sourceMappingURL=converse-muc-embedded.css.map */

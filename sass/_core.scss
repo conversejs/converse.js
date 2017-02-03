@@ -160,7 +160,7 @@
     form {
         &.pure-form.converse-form {
             background: white;
-            margin: 1em;
+            padding: 1em;
             legend {
                 color: $text-color;
             }
@@ -173,6 +173,7 @@
             input[type=button],
             input[type=submit] {
                 height: 2.2em;
+                padding: 0.5em;
             }
             input[type=button],
             input[type=submit] {
@@ -194,7 +195,11 @@
             }
         }
         &.pure-form.converse-centered-form {
+            position: absolute;
+            top: 30%;
+            transform: translateY(-50%);
             text-align: center;
+            width: 100%;
         }
     }
 

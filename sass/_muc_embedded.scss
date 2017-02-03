@@ -28,7 +28,7 @@
         }
         .chat-title {
             padding: 0.3em;
-            font-size: 110%;
+            font-size: 150%;
         }
     }
     .chatbox-btn {
@@ -38,24 +38,43 @@
         .box-flyout {
             min-width: auto;
             width: 100%;
-            height: 90vh;
+            height: 55vh;
             .chat-body {
                 @include calc(height, '100% - #{$chat-head-height}');
             }
+            .occupants-heading {
+                font-size: 150%;
+            }
             .chat-content {
                 height: calc(100% - #{$toolbar-height + $chat-textarea-height +2px});
+                .chat-message {
+                    margin: 0.5em;
+                    font-size: 120%;
+                }
+            }
+            .sendXMPPMessage {
+                .chat-textarea {
+                    padding: 0.5em;
+                    font-size: 110%;
+                }
             }
             .chatroom-body {
                 .chatroom-form-container {
-                    height: auto;
+                    font-size: 180%;
+                    float: left;
+                    height: 100%;
+                    width: 100%;
                     position: relative;
+                    input {
+                        font-size: 60%;
+                    }
                 }
             }
             .occupants {
                 .occupant-list {
                     padding-left: 0.3em;
                     li.occupant {
-                        font-size: 14px;
+                        font-size: 120%;
                     }
                 }
             }

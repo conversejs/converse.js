@@ -180,7 +180,7 @@
                 }
                 var n = new Notification(contact.fullname, {
                         body: message,
-                        lang: _converse.i18n.locale_data._converse[""].lang,
+                        lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });
                 setTimeout(n.close.bind(n), 5000);
@@ -189,7 +189,7 @@
             _converse.showContactRequestNotification = function (contact) {
                 var n = new Notification(contact.fullname, {
                         body: __('wants to be your contact'),
-                        lang: _converse.i18n.locale_data._converse[""].lang,
+                        lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });
                 setTimeout(n.close.bind(n), 5000);
@@ -199,7 +199,7 @@
                 if (data.klass === 'error' || data.klass === 'warn') {
                     var n = new Notification(data.subject, {
                             body: data.message,
-                            lang: _converse.i18n.locale_data._converse[""].lang,
+                            lang: _converse.i18n.locale_data.converse[""].lang,
                             icon: 'logo/conversejs.png'
                         });
                     setTimeout(n.close.bind(n), 5000);

@@ -58,7 +58,6 @@
         'converse-mam',
         'converse-minimize',
         'converse-muc',
-        'converse-muc-embedded',
         'converse-notification',
         'converse-otr',
         'converse-ping',

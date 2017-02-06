@@ -173,6 +173,18 @@ Allows users to be invited to join MUC chat rooms. An "Invite" widget will
 appear in the sidebar of the chat room where you can type in the JID of a user
 to invite into the chat room.
 
+allow_non_roster_messaging
+--------------------------
+
+* Default:  ``false``
+
+Determines whether you'll receive messages from users that are not in your
+roster. The XMPP specification allows for this (similar to email).
+Setting this to `true` increases your chances of receiving spam (when using a
+federated server), while setting it to `false` means that people not on your
+roster can't contact you unless one (or both) of you subscribe to one another's
+presence (i.e. adding as a roster contact).
+
 allow_otr
 ---------
 
@@ -995,7 +1007,7 @@ This allows plugins to have "soft" dependencies which aren't declared as
 as dependencies.
 
 synchronize_availability
---------------------
+------------------------
 
 * Default: ``true``
 
@@ -1047,7 +1059,7 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
     Provides a button with a picture of a telephone on it.
     When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
 
-        converse.listen.on('callButtonClicked', function(event, data) {
+        converse.listen.on('callButtonClicked', function(data) {
             console.log('Strophe connection is', data.connection);
             console.log('Bare buddy JID is', data.model.get('jid'));
             // ... Third-party library code ...

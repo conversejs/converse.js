@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Andreas Lorentsen <andreas.lorentsen@gmail.com>\n"
 "Language-Team: \n"
@@ -151,7 +151,7 @@ msgstr ""
 msgid "Start a call"
 msgstr "Start en samtale"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Kontakter"
@@ -286,58 +286,55 @@ msgstr "Klikk for å legge til som meldingskontakt"
 msgid "Toggle chat"
 msgstr "Endre chatten"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 msgid "Click to hide these contacts"
 msgstr "Klikk for å skjule disse kontaktene"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 msgid "Reconnecting"
 msgstr "Kobler til igjen"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "Kobler til"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "En feil skjedde under lagring av skjemaet."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Kobler til"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Godkjenner"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "Godkjenning mislyktes"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "Godkjenning mislyktes"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr ""
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "Kobler til"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "En feil skjedde under lagring av skjemaet."
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -346,7 +343,7 @@ msgstr ""
 msgid "Close this box"
 msgstr "Klikk for å gjenopprette denne samtalen"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr ""
 
@@ -354,7 +351,7 @@ msgstr ""
 msgid "Click to restore this chat"
 msgstr "Klikk for å gjenopprette denne samtalen"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "Minimert"
 
@@ -1130,6 +1127,10 @@ msgstr ""
 #: src/converse-rosterview.js:698
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Er du sikker på at du vil avslå denne kontaktforespørselen?"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "Godkjenning mislyktes"
 
 #, fuzzy
 #~ msgid "Minimize this box"

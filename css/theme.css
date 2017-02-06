@@ -139,6 +139,9 @@ a:focus {
   text-align: center;
   margin-top: 3em;
 }
+.brand-heading-embedded {
+    margin-top: 1.5em;
+}
 .intro-text {
   font-size: 18px;
 }

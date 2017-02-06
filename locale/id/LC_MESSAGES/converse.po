@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2014-01-25 21:30+0700\n"
 "Last-Translator: Priyadi Iman Nurcahyo <priyadi@priyadi.net>\n"
 "Language-Team: Bahasa Indonesia\n"
@@ -151,7 +151,7 @@ msgstr ""
 msgid "Start a call"
 msgstr ""
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Teman"
@@ -288,60 +288,57 @@ msgstr "Klik untuk menambahkan sebagai teman"
 msgid "Toggle chat"
 msgstr ""
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 #, fuzzy
 msgid "Click to hide these contacts"
 msgstr "Klik untuk menghapus teman ini"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 #, fuzzy
 msgid "Reconnecting"
 msgstr "Menyambung"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "Gagal Menyambung"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "Kesalahan terjadi saat menyimpan formulir ini."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Menyambung"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Melakukan otentikasi"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "Otentikasi gagal"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "Otentikasi gagal"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr "Terputus"
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "Gagal Menyambung"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "Kesalahan terjadi saat menyimpan formulir ini."
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -350,7 +347,7 @@ msgstr ""
 msgid "Close this box"
 msgstr "Klik untuk menghapus teman ini"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr ""
 
@@ -359,7 +356,7 @@ msgstr ""
 msgid "Click to restore this chat"
 msgstr "Klik untuk menghapus teman ini"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr ""
 
@@ -1143,6 +1140,13 @@ msgstr ""
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Klik untuk menghapus teman ini"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "Otentikasi gagal"
+
+#~ msgid "Disconnected"
+#~ msgstr "Terputus"
 
 #~ msgid "An error occurred while trying to save the form."
 #~ msgstr "Kesalahan terjadi saat menyimpan formulir ini."

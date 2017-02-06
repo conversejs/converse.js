@@ -4,11 +4,11 @@
         "converse-api",
         "mock",
         "test_utils"], factory);
-} (this, function ($, converse_api, mock, test_utils) {
+} (this, function ($, converse, mock, test_utils) {
     "use strict";
-    var Strophe = converse_api.env.Strophe;
-    var $iq = converse_api.env.$iq;
-    var $pres = converse_api.env.$pres;
+    var Strophe = converse.env.Strophe;
+    var $iq = converse.env.$iq;
+    var $pres = converse.env.$pres;
     // See:
     // https://xmpp.org/rfcs/rfc3921.html
 
@@ -18,58 +18,52 @@
             // Stub the trimChat method. It causes havoc when running with
             // phantomJS.
 
-            afterEach(function () {
-                converse_api.user.logout();
-                converse_api.listen.not();
-                test_utils.clearBrowserStorage();
-            });
-
             /* Some level of integration between roster items and presence
-            * subscriptions is normally expected by an instant messaging user
-            * regarding the user's subscriptions to and from other contacts. This
-            * section describes the level of integration that MUST be supported
-            * within an XMPP instant messaging applications.
-            *
-            * There are four primary subscription states:
-            *
-            * None -- the user does not have a subscription to the contact's
-            *      presence information, and the contact does not have a subscription
-            *      to the user's presence information
-            * To -- the user has a subscription to the contact's presence
-            *      information, but the contact does not have a subscription to the
-            *      user's presence information
-            * From -- the contact has a subscription to the user's presence
-            *      information, but the user does not have a subscription to the
-            *      contact's presence information
-            * Both -- both the user and the contact have subscriptions to each
-            *      other's presence information (i.e., the union of 'from' and 'to')
-            *
-            * Each of these states is reflected in the roster of both the user and
-            * the contact, thus resulting in durable subscription states.
-            *
-            * The 'from' and 'to' addresses are OPTIONAL in roster pushes; if
-            * included, their values SHOULD be the full JID of the resource for
-            * that session. A client MUST acknowledge each roster push with an IQ
-            * stanza of type "result".
-            */
-            it("Subscribe to contact, contact accepts and subscribes back", mock.initConverse(function (converse) {
+             * subscriptions is normally expected by an instant messaging user
+             * regarding the user's subscriptions to and from other contacts. This
+             * section describes the level of integration that MUST be supported
+             * within an XMPP instant messaging applications.
+             *
+             * There are four primary subscription states:
+             *
+             * None -- the user does not have a subscription to the contact's
+             *      presence information, and the contact does not have a subscription
+             *      to the user's presence information
+             * To -- the user has a subscription to the contact's presence
+             *      information, but the contact does not have a subscription to the
+             *      user's presence information
+             * From -- the contact has a subscription to the user's presence
+             *      information, but the user does not have a subscription to the
+             *      contact's presence information
+             * Both -- both the user and the contact have subscriptions to each
+             *      other's presence information (i.e., the union of 'from' and 'to')
+             *
+             * Each of these states is reflected in the roster of both the user and
+             * the contact, thus resulting in durable subscription states.
+             *
+             * The 'from' and 'to' addresses are OPTIONAL in roster pushes; if
+             * included, their values SHOULD be the full JID of the resource for
+             * that session. A client MUST acknowledge each roster push with an IQ
+             * stanza of type "result".
+             */
+            it("Subscribe to contact, contact accepts and subscribes back", mock.initConverse(function (_converse) {
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
                 var contact, stanza, sent_stanza, IQ_id;
                 runs(function () {
-                    test_utils.openControlBox(converse);
+                    test_utils.openControlBox(_converse);
                 });
                 waits(100);
                 runs(function () {
-                    var panel = converse.chatboxviews.get('controlbox').contactspanel;
+                    var panel = _converse.chatboxviews.get('controlbox').contactspanel;
                     spyOn(panel, "addContactFromForm").andCallThrough();
-                    spyOn(converse.roster, "addAndSubscribe").andCallThrough();
-                    spyOn(converse.roster, "addContact").andCallThrough();
-                    spyOn(converse.roster, "sendContactAddIQ").andCallThrough();
-                    spyOn(converse, "getVCard").andCallThrough();
-                    var sendIQ = converse.connection.sendIQ;
-                    spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    spyOn(_converse.roster, "addAndSubscribe").andCallThrough();
+                    spyOn(_converse.roster, "addContact").andCallThrough();
+                    spyOn(_converse.roster, "sendContactAddIQ").andCallThrough();
+                    spyOn(_converse, "getVCard").andCallThrough();
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                         sent_stanza = iq;
                         IQ_id = sendIQ.bind(this)(iq, callback, errback);
                     });
@@ -92,12 +86,12 @@
                     * for the new roster item.
                     */
                     expect(panel.addContactFromForm).toHaveBeenCalled();
-                    expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
-                    expect(converse.roster.addContact).toHaveBeenCalled();
+                    expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
+                    expect(_converse.roster.addContact).toHaveBeenCalled();
                     // The form should not be visible anymore.
                     expect($form.is(":visible")).toBeFalsy();
 
-                    /* converse request consists of sending an IQ
+                    /* _converse request consists of sending an IQ
                     * stanza of type='set' containing a <query/> element qualified by
                     * the 'jabber:iq:roster' namespace, which in turn contains an
                     * <item/> element that defines the new roster item; the <item/>
@@ -115,7 +109,7 @@
                     *   </query>
                     *   </iq>
                     */
-                    expect(converse.roster.sendContactAddIQ).toHaveBeenCalled();
+                    expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe(
                         "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<query xmlns='jabber:iq:roster'>"+
@@ -125,7 +119,7 @@
                     );
                     /* As a result, the user's server (1) MUST initiate a roster push
                     * for the new roster item to all available resources associated
-                    * with converse user that have requested the roster, setting the
+                    * with _converse user that have requested the roster, setting the
                     * 'subscription' attribute to a value of "none"; and (2) MUST
                     * reply to the sending resource with an IQ result indicating the
                     * success of the roster set:
@@ -141,12 +135,12 @@
                     *     </query>
                     * </iq>
                     */
-                    var create = converse.roster.create;
-                    spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                    var create = _converse.roster.create;
+                    spyOn(_converse.connection, 'send').andCallFake(function (stanza) {
                         sent_stanza = stanza;
                     });
-                    spyOn(converse.roster, 'create').andCallFake(function () {
-                        contact = create.apply(converse.roster, arguments);
+                    spyOn(_converse.roster, 'create').andCallFake(function () {
+                        contact = create.apply(_converse.roster, arguments);
                         spyOn(contact, 'subscribe').andCallThrough();
                         return contact;
                     });
@@ -155,17 +149,17 @@
                             'jid': 'contact@example.org',
                             'subscription': 'none',
                             'name': 'contact@example.org'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     /*
                     * <iq type='result' id='set1'/>
                     */
                     stanza = $iq({'type': 'result', 'id':IQ_id});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     // A contact should now have been created
-                    expect(converse.roster.get('contact@example.org') instanceof converse.RosterContact).toBeTruthy();
+                    expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
                     expect(contact.get('jid')).toBe('contact@example.org');
-                    expect(converse.getVCard).toHaveBeenCalled();
+                    expect(_converse.getVCard).toHaveBeenCalled();
 
                     /* To subscribe to the contact's presence information,
                     * the user's client MUST send a presence stanza of
@@ -182,7 +176,7 @@
                     /* As a result, the user's server MUST initiate a second roster
                     * push to all of the user's available resources that have
                     * requested the roster, setting the contact to the pending
-                    * sub-state of the 'none' subscription state; converse pending
+                    * sub-state of the 'none' subscription state; _converse pending
                     * sub-state is denoted by the inclusion of the ask='subscribe'
                     * attribute in the roster item:
                     *
@@ -198,7 +192,7 @@
                     *    </query>
                     *  </iq>
                     */
-                    spyOn(converse.roster, "updateContact").andCallThrough();
+                    spyOn(_converse.roster, "updateContact").andCallThrough();
                     stanza = $iq({'type': 'set', 'from': 'dummy@localhost'})
                         .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
@@ -206,8 +200,8 @@
                             'subscription': 'none',
                             'ask': 'subscribe',
                             'name': 'contact@example.org'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    expect(converse.roster.updateContact).toHaveBeenCalled();
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(_converse.roster.updateContact).toHaveBeenCalled();
                 });
                 waits(50);
                 runs(function () {
@@ -229,12 +223,12 @@
                     *      type='subscribed'/>
                     */
                     stanza = $pres({
-                        'to': converse.bare_jid,
+                        'to': _converse.bare_jid,
                         'from': 'contact@example.org',
                         'type': 'subscribed'
                     });
                     sent_stanza = ""; // Reset
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     /* Upon receiving the presence stanza of type "subscribed",
                     * the user SHOULD acknowledge receipt of that
                     * subscription state notification by sending a presence
@@ -261,19 +255,19 @@
                     *    </query>
                     *  </iq>
                     */
-                    IQ_id = converse.connection.getUniqueId('roster');
+                    IQ_id = _converse.connection.getUniqueId('roster');
                     stanza = $iq({'type': 'set', 'id': IQ_id})
                         .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
                             'jid': 'contact@example.org',
                             'subscription': 'to',
                             'name': 'contact@example.org'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     // Check that the IQ set was acknowledged.
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                         "<iq type='result' id='"+IQ_id+"' from='dummy@localhost/resource' xmlns='jabber:client'/>"
                     );
-                    expect(converse.roster.updateContact).toHaveBeenCalled();
+                    expect(_converse.roster.updateContact).toHaveBeenCalled();
 
                     // The contact should now be visible as an existing
                     // contact (but still offline).
@@ -293,8 +287,8 @@
                     *      from='contact@example.org/resource'
                     *      to='user@example.com/resource'/>
                     */
-                    stanza = $pres({'to': converse.bare_jid, 'from': 'contact@example.org/resource'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    stanza = $pres({'to': _converse.bare_jid, 'from': 'contact@example.org/resource'});
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     // Now the contact should also be online.
                     expect(contact.get('chat_status')).toBe('online');
 
@@ -307,13 +301,13 @@
                     * <presence from='contact@example.org' to='user@example.com' type='subscribe'/>
                     */
                     spyOn(contact, 'authorize').andCallThrough();
-                    spyOn(converse.roster, 'handleIncomingSubscription').andCallThrough();
+                    spyOn(_converse.roster, 'handleIncomingSubscription').andCallThrough();
                     stanza = $pres({
-                        'to': converse.bare_jid,
+                        'to': _converse.bare_jid,
                         'from': 'contact@example.org/resource',
                         'type': 'subscribe'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    expect(converse.roster.handleIncomingSubscription).toHaveBeenCalled();
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(_converse.roster.handleIncomingSubscription).toHaveBeenCalled();
 
                     /* The user's client MUST send a presence stanza of type
                     * "subscribed" to the contact in order to approve the
@@ -347,8 +341,8 @@
                             'jid': 'contact@example.org',
                             'subscription': 'both',
                             'name': 'contact@example.org'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    expect(converse.roster.updateContact).toHaveBeenCalled();
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(_converse.roster.updateContact).toHaveBeenCalled();
 
                     // The class on the contact will now have switched.
                     expect($contacts.hasClass('to')).toBeFalsy();
@@ -356,13 +350,13 @@
                 });
             }));
 
-            it("Alternate Flow: Contact Declines Subscription Request", mock.initConverse(function (converse) {
+            it("Alternate Flow: Contact Declines Subscription Request", mock.initConverse(function (_converse) {
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
                 var contact, stanza, sent_stanza, sent_IQ;
                 runs(function () {
-                    test_utils.openControlBox(converse);
+                    test_utils.openControlBox(_converse);
                 });
                 waits(100);
                 runs(function () {
@@ -373,19 +367,19 @@
                             'subscription': 'none',
                             'ask': 'subscribe',
                             'name': 'contact@example.org'});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 });
                 waits(50);
                 runs(function () {
                     // A pending contact should now exist.
-                    contact = converse.roster.get('contact@example.org');
-                    expect(converse.roster.get('contact@example.org') instanceof converse.RosterContact).toBeTruthy();
+                    contact = _converse.roster.get('contact@example.org');
+                    expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
                     spyOn(contact, "ackUnsubscribe").andCallThrough();
 
-                    spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                    spyOn(_converse.connection, 'send').andCallFake(function (stanza) {
                         sent_stanza = stanza;
                     });
-                    spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                         sent_IQ = iq;
                     });
                     /* We now assume the contact declines the subscription
@@ -417,11 +411,11 @@
                     */
                     // FIXME: also add the <iq>
                     stanza = $pres({
-                        'to': converse.bare_jid,
+                        'to': _converse.bare_jid,
                         'from': 'contact@example.org',
                         'type': 'unsubscribed'
                     });
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                     /* Upon receiving the presence stanza of type "unsubscribed",
                     * the user SHOULD acknowledge receipt of that subscription
@@ -433,7 +427,7 @@
                         "<presence type='unsubscribe' to='contact@example.org' xmlns='jabber:client'/>"
                     );
 
-                    /* Converse.js will then also automatically remove the
+                    /* _converse.js will then also automatically remove the
                     * contact from the user's roster.
                     */
                     expect(sent_IQ.toLocaleString()).toBe(
@@ -446,20 +440,20 @@
                 });
             }));
 
-            it("Unsubscribe to a contact when subscription is mutual", mock.initConverse(function (converse) {
+            it("Unsubscribe to a contact when subscription is mutual", mock.initConverse(function (_converse) {
                 var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
                 runs(function () {
-                    test_utils.openControlBox(converse);
-                    test_utils.createContacts(converse, 'current');
+                    test_utils.openControlBox(_converse);
+                    test_utils.createContacts(_converse, 'current');
                 });
                 waits(50);
                 runs(function () {
                     spyOn(window, 'confirm').andReturn(true);
                     // We now have a contact we want to remove
-                    expect(converse.roster.get(jid) instanceof converse.RosterContact).toBeTruthy();
+                    expect(_converse.roster.get(jid) instanceof _converse.RosterContact).toBeTruthy();
 
-                    var sendIQ = converse.connection.sendIQ;
-                    spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    var sendIQ = _converse.connection.sendIQ;
+                    spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
                         sent_IQ = iq;
                         IQ_id = sendIQ.bind(this)(iq, callback, errback);
                     });
@@ -498,34 +492,34 @@
                     // Receive confirmation from the contact's server
                     // <iq type='result' id='remove1'/>
                     var stanza = $iq({'type': 'result', 'id':IQ_id});
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     // Our contact has now been removed
-                    expect(typeof converse.roster.get(jid) === "undefined").toBeTruthy();
+                    expect(typeof _converse.roster.get(jid) === "undefined").toBeTruthy();
                 });
             }));
 
-            it("Receiving a subscription request", mock.initConverse(function (converse) {
+            it("Receiving a subscription request", mock.initConverse(function (_converse) {
                 runs(function () {
-                    test_utils.openControlBox(converse);
-                    test_utils.createContacts(converse, 'current'); // Create some contacts so that we can test positioning
+                    test_utils.openControlBox(_converse);
+                    test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
                 });
                 waits(50);
                 runs(function () {
-                    spyOn(converse, "emit");
+                    spyOn(_converse, "emit");
                     /* <presence
                      *     from='user@example.com'
                      *     to='contact@example.org'
                      *     type='subscribe'/>
                      */
                     var stanza = $pres({
-                        'to': converse.bare_jid,
+                        'to': _converse.bare_jid,
                         'from': 'contact@example.org',
                         'type': 'subscribe'
                     }).c('nick', {
                         'xmlns': Strophe.NS.NICK,
                     }).t('Clint Contact');
-                    converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    expect(converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();

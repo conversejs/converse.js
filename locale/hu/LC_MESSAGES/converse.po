@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
 "Language-Team: Hungarian\n"
@@ -150,7 +150,7 @@ msgstr "Hangulatjel beszúrása"
 msgid "Start a call"
 msgstr "Hívás indítása"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Kapcsolatok"
@@ -283,58 +283,55 @@ msgstr "Felvétel a csevegőpartnerek közé"
 msgid "Toggle chat"
 msgstr "Csevegőablak"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 msgid "Click to hide these contacts"
 msgstr "A csevegő partnerek elrejtése"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 msgid "Reconnecting"
 msgstr "Kapcsolódás"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "Kapcsolódási hiba"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "Hiba történt az adatok mentése közben."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Kapcsolódás"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Azonosítás"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "Azonosítási hiba"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "Azonosítási hiba"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr "Szétkapcsolva"
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "Kapcsolódási hiba"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "Hiba történt az adatok mentése közben."
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr "Sajnáljuk, hiba történt a hozzáadás során"
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr "Ez a kliens nem engedélyezi a jelenlét követését"
 
@@ -343,7 +340,7 @@ msgstr "Ez a kliens nem engedélyezi a jelenlét követését"
 msgid "Close this box"
 msgstr "A csevegés bezárása"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr "A csevegés minimalizálása"
 
@@ -351,7 +348,7 @@ msgstr "A csevegés minimalizálása"
 msgid "Click to restore this chat"
 msgstr "A csevegés visszaállítása"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "Minimalizálva"
 
@@ -1113,6 +1110,13 @@ msgstr "Sajnáljuk, hiba történt a törlés során"
 #: src/converse-rosterview.js:698
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Valóban elutasítja ezt a partnerkérelmet?"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "Azonosítási hiba"
+
+#~ msgid "Disconnected"
+#~ msgstr "Szétkapcsolva"
 
 #, fuzzy
 #~ msgid "Minimize this box"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Huxisuz Hu <huxisuz@gmail.com>\n"
 "Language-Team: Language zh\n"
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Start a call"
 msgstr ""
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "联系人"
@@ -290,60 +290,57 @@ msgstr "点击添加为好友"
 msgid "Toggle chat"
 msgstr "折叠聊天窗口"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 #, fuzzy
 msgid "Click to hide these contacts"
 msgstr "点击移除联系人"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 #, fuzzy
 msgid "Reconnecting"
 msgstr "连接中"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "连接失败"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "保存表单是出错。"
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "连接中"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "验证中"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "验证失败"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "验证失败"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr "连接已断开"
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "连接失败"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "保存表单是出错。"
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
@@ -352,7 +349,7 @@ msgstr ""
 msgid "Close this box"
 msgstr "点击恢复聊天窗口"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr ""
 
@@ -361,7 +358,7 @@ msgstr ""
 msgid "Click to restore this chat"
 msgstr "点击恢复聊天窗口"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "最小化的"
 
@@ -1129,6 +1126,13 @@ msgstr ""
 #, fuzzy
 msgid "Are you sure you want to decline this contact request?"
 msgstr "确定移除联系人吗？"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "验证失败"
+
+#~ msgid "Disconnected"
+#~ msgstr "连接已断开"
 
 #, fuzzy
 #~ msgid "Minimize this box"

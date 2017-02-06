@@ -1,9 +1,9 @@
-/*global escape, locales, Jed */
+/*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
         "jquery",
         "jquery.browser",
-        "underscore",
+        "lodash",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -35,6 +35,13 @@
         'jid-multi': 'textarea',
         'list-single': 'dropdown',
         'list-multi': 'dropdown'
+    };
+
+    var afterAnimationEnd = function (el, callback) {
+        el.classList.remove('visible');
+        if (_.isFunction(callback)) {
+            callback();
+        }
     };
 
     var isImage = function (url) {
@@ -78,7 +85,7 @@
                     }
                 }
                 $obj.html(x);
-                _.each(list, function (url) {
+                _.forEach(list, function (url) {
                     isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
@@ -219,14 +226,17 @@
                 }
                 return;
             }
-            el.addEventListener("animationend", function () {
-                el.classList.remove('visible');
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-            }, false);
-            el.classList.add('visible');
-            el.classList.remove('hidden');
+            if (_.includes(el.classList, 'hidden')) {
+                /* XXX: This doesn't appear to be working...
+                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
+                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
+                */
+                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
+                el.classList.add('visible');
+                el.classList.remove('hidden');
+            } else {
+                afterAnimationEnd(el, callback);
+            }
         },
 
         isOTRMessage: function (message) {
@@ -244,8 +254,8 @@
                 // check if an @ signal is included, and if not, we assume it's
                 // a headline message.
                 (   $message.attr('type') !== 'error' &&
-                    typeof from_jid !== 'undefined' &&
-                    from_jid.indexOf('@') === -1
+                    !_.isUndefined(from_jid) &&
+                    !_.includes(from_jid, '@')
                 )) {
                 return true;
             }
@@ -325,12 +335,12 @@
             return function (item) {
                 if (typeof attr === 'object') {
                     var value = false;
-                    _.each(attr, function (a) {
-                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    _.forEach(attr, function (a) {
+                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
                     });
                     return value;
                 } else if (typeof attr === 'string') {
-                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
                 } else {
                     throw new TypeError('contains: wrong attribute type. Must be string or array.');
                 }
@@ -360,7 +370,7 @@
                     options.push(tpl_select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
-                        selected: (values.indexOf(value) >= 0),
+                        selected: _.startsWith(values, value),
                         required: $field.find('required').length
                     }));
                 }

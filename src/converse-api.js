@@ -1,147 +1,146 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
 (function (root, factory) {
     define("converse-api", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
             "converse-core"
         ],
         factory);
-}(this, function ($, _, moment, strophe, utils, converse) {
+}(this, function ($, _, moment, strophe, utils, _converse) {
     var Strophe = strophe.Strophe;
-    return {
-        'initialize': function (settings, callback) {
-            return converse.initialize(settings, callback);
-        },
-        'log': converse.log,
+
+    // API methods only available to plugins
+    _converse.api = {
         'connection': {
             'connected': function () {
-                return converse.connection && converse.connection.connected || false;
+                return _converse.connection && _converse.connection.connected || false;
             },
             'disconnect': function () {
-                converse.connection.disconnect();
+                _converse.connection.disconnect();
             },
         },
         'user': {
             'jid': function () {
-                return converse.connection.jid;
+                return _converse.connection.jid;
             },
             'login': function (credentials) {
-                converse.initConnection();
-                converse.logIn(credentials);
+                _converse.initConnection();
+                _converse.logIn(credentials);
             },
             'logout': function () {
-                converse.logOut();
+                _converse.logOut();
             },
             'status': {
                 'get': function () {
-                    return converse.xmppstatus.get('status');
+                    return _converse.xmppstatus.get('status');
                 },
                 'set': function (value, message) {
                     var data = {'status': value};
-                    if (!_.contains(_.keys(converse.STATUS_WEIGHTS), value)) {
+                    if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
-                    if (typeof message === "string") {
+                    if (_.isString(message)) {
                         data.status_message = message;
                     }
-                    converse.xmppstatus.sendPresence(value);
-                    converse.xmppstatus.save(data);
+                    _converse.xmppstatus.sendPresence(value);
+                    _converse.xmppstatus.save(data);
                 },
                 'message': {
                     'get': function () {
-                        return converse.xmppstatus.get('status_message');
+                        return _converse.xmppstatus.get('status_message');
                     },
                     'set': function (stat) {
-                        converse.xmppstatus.save({'status_message': stat});
+                        _converse.xmppstatus.save({'status_message': stat});
                     }
                 }
             },
         },
         'settings': {
             'get': function (key) {
-                if (_.contains(Object.keys(converse.default_settings), key)) {
-                    return converse[key];
+                if (_.includes(_.keys(_converse.default_settings), key)) {
+                    return _converse[key];
                 }
             },
             'set': function (key, val) {
                 var o = {};
-                if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
-                } else if (typeof key === "string") {
+                if (_.isObject(key)) {
+                    _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
+                } else if (_.isString("string")) {
                     o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.assignIn(_converse, _.pick(o, _.keys(_converse.default_settings)));
                 }
             }
         },
         'contacts': {
             'get': function (jids) {
                 var _transform = function (jid) {
-                    var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
                         return contact.attributes;
                     }
                     return null;
                 };
-                if (typeof jids === "undefined") {
-                    jids = converse.roster.pluck('jid');
-                } else if (typeof jids === "string") {
+                if (_.isUndefined(jids)) {
+                    jids = _converse.roster.pluck('jid');
+                } else if (_.isString(jids)) {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
             },
             'add': function (jid, name) {
-                if (typeof jid !== "string" || jid.indexOf('@') < 0) {
+                if (!_.isString(jid) || !_.includes(jid, '@')) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
-                converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
+                _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
         'chats': {
             'open': function (jids) {
                 var chatbox;
-                if (typeof jids === "undefined") {
-                    converse.log("chats.open: You need to provide at least one JID", "error");
+                if (_.isUndefined(jids)) {
+                    _converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
-                } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jids, true).trigger('show')
+                } else if (_.isString(jids)) {
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jids, true).trigger('show')
                     );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jid, true).trigger('show')
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jid, true).trigger('show')
                     );
                     return chatbox;
                 });
             },
             'get': function (jids) {
-                if (typeof jids === "undefined") {
+                if (_.isUndefined(jids)) {
                     var result = [];
-                    converse.chatboxes.each(function (chatbox) {
+                    _converse.chatboxes.each(function (chatbox) {
                         // FIXME: Leaky abstraction from MUC. We need to add a
                         // base type for chat boxes, and check for that.
                         if (chatbox.get('type') !== 'chatroom') {
-                            result.push(converse.wrappedChatBox(chatbox));
+                            result.push(_converse.wrappedChatBox(chatbox));
                         }
                     });
                     return result;
-                } else if (typeof jids === "string") {
-                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids));
+                } else if (_.isString(jids)) {
+                    return _converse.wrappedChatBox(_converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(
-                        _.compose(
-                            converse.wrappedChatBox.bind(converse), converse.chatboxes.getChatBox.bind(converse.chatboxes)
+                        _.flow(
+                            _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
+                            _converse.wrappedChatBox.bind(_converse)
                         ), _, true
                     )
                 );
@@ -149,34 +148,28 @@
         },
         'tokens': {
             'get': function (id) {
-                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
+                if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                     return null;
                 }
                 if (id.toLowerCase() === 'rid') {
-                    return converse.connection.rid || converse.connection._proto.rid;
+                    return _converse.connection.rid || _converse.connection._proto.rid;
                 } else if (id.toLowerCase() === 'sid') {
-                    return converse.connection.sid || converse.connection._proto.sid;
+                    return _converse.connection.sid || _converse.connection._proto.sid;
                 }
             }
         },
         'listen': {
-            'once': function (evt, handler, context) {
-                converse.once(evt, handler, context);
-            },
-            'on': function (evt, handler, context) {
-                converse.on(evt, handler, context);
-            },
-            'not': function (evt, handler) {
-                converse.off(evt, handler);
-            },
+            'once': _converse.once,
+            'on': _converse.on,
+            'not': _converse.off,
             'stanza': function (name, options, handler) {
-                if (typeof options === 'function') {
+                if (_.isFunction(options)) {
                     handler = options;
                     options = {};
                 } else {
                     options = options || {};
                 }
-                converse.connection.addHandler(
+                _converse.connection.addHandler(
                     handler,
                     options.ns,
                     name,
@@ -188,39 +181,25 @@
             },
         },
         'send': function (stanza) {
-            converse.connection.send(stanza);
+            _converse.connection.send(stanza);
+        },
+    };
+
+    // The public API
+    return {
+        'initialize': function (settings, callback) {
+            return _converse.initialize(settings, callback);
         },
         'plugins': {
             'add': function (name, plugin) {
                 plugin.__name__ = name;
-                converse.pluggable.plugins[name] = plugin;
-            },
-            'remove': function (name) {
-                delete converse.plugins[name];
-            },
-            'override': function (name, value) {
-                /* Helper method for overriding methods and attributes directly on the
-                 * converse object. For Backbone objects, use instead the 'extend'
-                 * method.
-                 *
-                 * If a method is overridden, then the original method will still be
-                 * available via the __super__ attribute.
-                 *
-                 * name: The attribute being overridden.
-                 * value: The value of the attribute being overridden.
-                 */
-                converse._overrideAttribute(name, value);
-            },
-            'extend': function (obj, attributes) {
-                /* Helper method for overriding or extending Converse's Backbone Views or Models
-                 *
-                 * When a method is overriden, the original will still be available
-                 * on the __super__ attribute of the object being overridden.
-                 *
-                 * obj: The Backbone View or Model
-                 * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-                 */
-                converse._extendObject(obj, attributes);
+                if (!_.isUndefined(_converse.pluggable.plugins[name])) {
+                    throw new TypeError(
+                        'Error: plugin with name "'+name+'" has already been '+
+                        'registered!');
+                } else {
+                    _converse.pluggable.plugins[name] = plugin;
+                }
             }
         },
         'env': {

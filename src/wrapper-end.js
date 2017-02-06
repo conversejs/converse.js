@@ -2,6 +2,7 @@
 define('jquery', [], function () { return jQuery; });
 define('jquery.browser', [], function () { return jQuery; });
 define('typeahead', [], function () { return jQuery; });
+define('lodash', [], function () { return _; });
 define('underscore', [], function () { return _; });
 define('moment_with_locales', [], function () { return moment; });
 define('strophe', [], function () {

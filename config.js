@@ -23,10 +23,11 @@ require.config({
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
-        "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd",          // XXX: Only required for https://conversejs.org website
+        "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
         "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/pluggable",
         "polyfill":                 "src/polyfill",
+        "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
         "strophe":                  "node_modules/strophe.js/src/wrapper",
         "strophe-base64":           "node_modules/strophe.js/src/base64",
         "strophe-bosh":             "node_modules/strophe.js/src/bosh",
@@ -41,11 +42,12 @@ require.config({
         "strophe.rsm":              "node_modules/strophejs-plugins/rsm/strophe.rsm",
         "strophe.vcard":            "node_modules/strophejs-plugins/vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
-        "tpl":                      "node_modules/requirejs-undertemplate/tpl",
+        "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
-        "underscore":               "node_modules/underscore/underscore",
+        "lodash":                   "node_modules/lodash/lodash",
+        "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
-        
+
         // Converse
         "converse-api":             "src/converse-api",
         "converse-bookmarks":       "src/converse-bookmarks",
@@ -65,8 +67,8 @@ require.config({
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
-        "bigint":               "src/bigint",
-        "crypto":               "src/crypto",
+        "bigint":               "3rdparty/bigint",
+        "crypto":               "3rdparty/crypto",
         "crypto.aes":           "node_modules/otr/vendor/cryptojs/aes",
         "crypto.cipher-core":   "node_modules/otr/vendor/cryptojs/cipher-core",
         "crypto.core":          "node_modules/otr/vendor/cryptojs/core",
@@ -79,7 +81,7 @@ require.config({
         "crypto.sha1":          "node_modules/otr/vendor/cryptojs/sha1",
         "crypto.sha256":        "node_modules/otr/vendor/cryptojs/sha256",
         "salsa20":              "node_modules/otr/build/dep/salsa20",
-        "otr":                  "src/otr",
+        "otr":                  "3rdparty/otr",
 
         // Locales paths
         "locales":   "src/locales",
@@ -103,7 +105,7 @@ require.config({
         "uk":        "locale/uk/LC_MESSAGES/converse.json",
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
-        "moment_with_locales": "src/moment_locales",
+        "moment_with_locales": "3rdparty/moment_locales",
         'moment_af':        "node_modules/moment/locale/af",
         'moment_de':        "node_modules/moment/locale/de",
         'moment_es':        "node_modules/moment/locale/es",
@@ -187,14 +189,19 @@ require.config({
     map: {
         // '*' means all modules will get 'jquery-private'
         // for their 'jquery' dependency.
-        '*': { 'jquery': 'jquery-private' },
+        '*': {
+            'jquery': 'jquery-private',
+         },
+        'backbone': {
+            "underscore": "lodash"
+         },
         // 'jquery-private' wants the real jQuery module
         // though. If this line was not here, there would
         // be an unresolvable cyclic dependency.
         'jquery-private': { 'jquery': 'jquery' }
     },
 
-    tpl: {
+    lodashLoader: {
         // Configuration for requirejs-tpl
         // Use Mustache style syntax for variable interpolation
         templateSettings: {
@@ -218,6 +225,7 @@ require.config({
         'bigint':               { deps: ['crypto'] },
         'strophe.ping':         { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] }
+        'strophe.vcard':        { deps: ['strophe'] },
+        'backbone':             { deps: ['underscore'] }
     }
 });

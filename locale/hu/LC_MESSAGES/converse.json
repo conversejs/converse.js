@@ -254,14 +254,6 @@
             null,
             "Azonosítási hiba"
          ],
-         "Disconnected": [
-            null,
-            "Szétkapcsolva"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "Sajnáljuk, hiba történt a hozzáadás során"

@@ -10,19 +10,18 @@
 
 (function (root, factory) {
     define("converse-mam", [
-            "converse-core",
             "converse-api",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
@@ -32,7 +31,7 @@
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
 
-    converse_api.plugins.add('converse-mam', {
+    converse.plugins.add('converse-mam', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -43,7 +42,8 @@
 
             Features: {
                 addClientFeatures: function () {
-                    converse.connection.disco.addFeature(Strophe.NS.MAM);
+                    var _converse = this.__super__._converse;
+                    _converse.connection.disco.addFeature(Strophe.NS.MAM);
                     return this.__super__.addClientFeatures.apply(this, arguments);
                 }
             },
@@ -66,16 +66,17 @@
                 },
 
                 afterMessagesFetched: function () {
-                    if (this.disable_mam || !converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    var _converse = this.__super__._converse;
+                    if (this.disable_mam || !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
                     if (!this.model.get('mam_initialized') &&
-                            this.model.messages.length < converse.archived_messages_page_size) {
+                            this.model.messages.length < _converse.archived_messages_page_size) {
 
                         this.fetchArchivedMessages({
                             'before': '', // Page backwards from the most recent message
                             'with': this.model.get('jid'),
-                            'max': converse.archived_messages_page_size
+                            'max': _converse.archived_messages_page_size
                         });
                         this.model.save({'mam_initialized': true});
                     }
@@ -88,33 +89,35 @@
                      * Then, upon receiving them, call onMessage on the chat box,
                      * so that they are displayed inside it.
                      */
-                    if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                    var _converse = this.__super__._converse;
+                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        _converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
                     }
                     if (this.disable_mam) {
                         return;
                     }
                     this.addSpinner();
-                    converse.queryForArchivedMessages(options, function (messages) {
+                    _converse.queryForArchivedMessages(options, function (messages) {
                             this.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                                _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
                             }
                         }.bind(this),
                         function () {
                             this.clearSpinner();
-                            converse.log("Error or timeout while trying to fetch archived messages", "error");
+                            _converse.log("Error or timeout while trying to fetch archived messages", "error");
                         }.bind(this)
                     );
                 },
 
                 onScroll: function (ev) {
+                    var _converse = this.__super__._converse;
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id'),
                             'with': this.model.get('jid'),
-                            'max': converse.archived_messages_page_size
+                            'max': _converse.archived_messages_page_size
                         });
                     }
                 },
@@ -136,15 +139,17 @@
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
+             * loaded by Converse.js's plugin machinery.
              */
+            var _converse = this._converse;
+
             this.updateSettings({
                 archived_messages_page_size: '20',
                 message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
 
-            converse.queryForArchivedMessages = function (options, callback, errback) {
+            _converse.queryForArchivedMessages = function (options, callback, errback) {
                 /* Do a MAM (XEP-0313) query for archived messages.
                  *
                  * Parameters:
@@ -163,27 +168,27 @@
                  * get the next or previous page in the result set.
                  */
                 var date, messages = [];
-                if (typeof options === "function") {
+                if (_.isFunction(options)) {
                     callback = options;
                     errback = callback;
                 }
                 /*
-                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    converse.log('This server does not support XEP-0313, Message Archive Management');
+                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.log('This server does not support XEP-0313, Message Archive Management');
                     errback(null);
                     return;
                 }
                 */
-                var queryid = converse.connection.getUniqueId();
+                var queryid = _converse.connection.getUniqueId();
                 var attrs = {'type':'set'};
-                if (typeof options !== "undefined" && options.groupchat) {
+                if (!_.isUndefined(options) && options.groupchat) {
                     if (!options['with']) {
                         throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
                     }
                     attrs.to = options['with'];
                 }
                 var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-                if (typeof options !== "undefined") {
+                if (!_.isUndefined(options)) {
                     stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                             .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                             .c('value').t(Strophe.NS.MAM).up().up();
@@ -209,8 +214,8 @@
                     }
                 }
 
-                if (typeof callback === "function") {
-                    converse.connection.addHandler(function (message) {
+                if (_.isFunction(callback)) {
+                    _converse.connection.addHandler(function (message) {
                         var $msg = $(message), rsm,
                             $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                         if ($fin.length && $fin.attr('queryid') === queryid) {
@@ -225,27 +230,27 @@
                         return true;
                     }, Strophe.NS.MAM);
                 }
-                converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
+                _converse.connection.sendIQ(stanza, null, errback, _converse.message_archiving_timeout);
             };
 
-            _.extend(converse_api, {
+            _.extend(_converse.api, {
                 /* Extend default converse.js API to add methods specific to MAM
                  */
                 'archive': {
-                    'query': converse.queryForArchivedMessages.bind(converse)
+                    'query': _converse.queryForArchivedMessages.bind(_converse)
                 }
             });
 
-            converse.onMAMError = function (iq) {
+            _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
-                    converse.log("Message Archive Management (XEP-0313) not supported by this browser");
+                    _converse.log("Message Archive Management (XEP-0313) not supported by this browser");
                 } else {
-                    converse.log("An error occured while trying to set archiving preferences.");
-                    converse.log(iq);
+                    _converse.log("An error occured while trying to set archiving preferences.");
+                    _converse.log(iq);
                 }
             };
 
-            converse.onMAMPreferences = function (feature, iq) {
+            _converse.onMAMPreferences = function (feature, iq) {
                 /* Handle returned IQ stanza containing Message Archive
                  * Management (XEP-0313) preferences.
                  *
@@ -259,37 +264,37 @@
                 var $prefs = $(iq).find('prefs[xmlns="'+Strophe.NS.MAM+'"]');
                 var default_pref = $prefs.attr('default');
                 var stanza;
-                if (default_pref !== converse.message_archiving) {
-                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':converse.message_archiving});
+                if (default_pref !== _converse.message_archiving) {
+                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
                     $prefs.children().each(function (idx, child) {
                         stanza.cnode(child).up();
                     });
-                    converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
+                    _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
                             // XXX: Strictly speaking, the server should respond with the updated prefs
                             // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
                             // but Prosody doesn't do this, so we don't rely on it.
-                            feature.save({'preferences': {'default':converse.message_archiving}});
+                            feature.save({'preferences': {'default':_converse.message_archiving}});
                         }, feature),
-                        converse.onMAMError
+                        _converse.onMAMError
                     );
                 } else {
-                    feature.save({'preferences': {'default':converse.message_archiving}});
+                    feature.save({'preferences': {'default':_converse.message_archiving}});
                 }
             };
 
 
-            var onFeatureAdded = function (evt, feature) {
+            var onFeatureAdded = function (feature) {
                 var prefs = feature.get('preferences') || {};
-                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
+                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving) {
                     // Ask the server for archiving preferences
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
-                        _.partial(converse.onMAMPreferences, feature),
-                        _.partial(converse.onMAMError, feature)
+                        _.partial(_converse.onMAMPreferences, feature),
+                        _.partial(_converse.onMAMError, feature)
                     );
                 }
             };
-            converse.on('serviceDiscovered', onFeatureAdded.bind(converse.features));
+            _converse.on('serviceDiscovered', onFeatureAdded.bind(_converse.features));
         }
     });
 }));

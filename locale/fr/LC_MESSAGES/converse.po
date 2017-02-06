@@ -1,13 +1,14 @@
 # Spanish translations for Converse.js package.
 # Copyright (C) 2013 Jan-Carel Brand
 # This file is distributed under the same license as the Converse.js package.
+# Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
-"PO-Revision-Date: 2016-04-07 10:22+0000\n"
-"Language-Team: FR <LL@li.org>\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
+"PO-Revision-Date: 2017-02-04 11:09+0100\n"
+"Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,22 +20,24 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: converse\n"
 "domain: converse\n"
+"Last-Translator: Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: src/converse-bookmarks.js:84 src/converse-bookmarks.js:139
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Marquer ce salon"
 
 #: src/converse-bookmarks.js:140
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Nom de ce marque-page :"
 
 #: src/converse-bookmarks.js:141
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
 
 #: src/converse-bookmarks.js:142
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Quel alias devrait être utilisé pour ce salon ?"
 
 #: src/converse-bookmarks.js:144 src/converse-controlbox.js:519
 #: src/converse-muc.js:1157
@@ -49,20 +52,19 @@ msgstr "Annuler"
 #: src/converse-bookmarks.js:292
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr ""
+"Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."
 
 #: src/converse-bookmarks.js:375
-#, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Cliquer pour ouvrir ce salon"
+msgstr "Cliquer pour ouvrir la liste des salons"
 
 #: src/converse-bookmarks.js:376
 msgid "Bookmarked Rooms"
-msgstr ""
+msgstr "Salons en marques-page"
 
 #: src/converse-bookmarks.js:393
-#, fuzzy
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce contact?"
+msgstr "Voulez-vous vraiment supprimer ce marque-page ?"
 
 #: src/converse-bookmarks.js:402 src/converse-muc.js:2144
 msgid "Click to open this room"
@@ -70,22 +72,20 @@ msgstr "Cliquer pour ouvrir ce salon"
 
 #: src/converse-bookmarks.js:403 src/converse-muc.js:2145
 msgid "Show more information on this room"
-msgstr "Afficher davantage d'informations sur ce salon"
+msgstr "Afficher davantage d’informations sur ce salon"
 
 #: src/converse-bookmarks.js:404
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Supprimer ce marque-page"
 
 #: src/converse-chatview.js:135 src/converse-headline.js:99
 #: src/converse-muc.js:436
-#, fuzzy
 msgid "You have unread messages"
-msgstr "Effacer les messages"
+msgstr "Vous avez de nouveaux messages"
 
 #: src/converse-chatview.js:136
-#, fuzzy
 msgid "Close this chat box"
-msgstr "Cliquez pour afficher cette discussion"
+msgstr "Fermer cette fenêtre de discussion"
 
 #: src/converse-chatview.js:137
 msgid "Personal message"
@@ -100,6 +100,8 @@ msgid ""
 "A very large message has been received.This might be due to an attack meant "
 "to degrade the chat performance.Output has been shortened."
 msgstr ""
+"Un message très long a été reçu. Cela pourrait être lié à une attaque visant "
+"à dégrader la performance de la conversation. La sortie a été tronquée."
 
 #: src/converse-chatview.js:372
 msgid "is typing"
@@ -107,7 +109,7 @@ msgstr "écrit"
 
 #: src/converse-chatview.js:375
 msgid "has stopped typing"
-msgstr "a arrêté d'écrire"
+msgstr "a arrêté d’écrire"
 
 #: src/converse-chatview.js:379 src/converse-chatview.js:633
 #: src/converse-notification.js:171
@@ -128,11 +130,11 @@ msgstr "Effacer les messages"
 
 #: src/converse-chatview.js:586
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr "Êtes-vous sûr de vouloir supprimer les messages de cette conversation?"
+msgstr "Voulez-vous vraiment supprimer les messages de cette conversation ?"
 
 #: src/converse-chatview.js:631 src/converse-notification.js:169
 msgid "has gone offline"
-msgstr "s'est déconnecté"
+msgstr "s’est déconnecté"
 
 #: src/converse-chatview.js:635 src/converse-notification.js:173
 msgid "is busy"
@@ -144,24 +146,24 @@ msgstr "Supprimer tous les messages"
 
 #: src/converse-chatview.js:675
 msgid "Insert a smiley"
-msgstr ""
+msgstr "Insérer une émoticône"
 
 #: src/converse-chatview.js:676
 msgid "Start a call"
 msgstr "Démarrer un appel"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Contacts"
 
 #: src/converse-controlbox.js:390
 msgid "XMPP Username:"
-msgstr "Nom d'utilisateur XMPP/Jabber"
+msgstr "Nom d’utilisateur XMPP/Jabber"
 
 #: src/converse-controlbox.js:391
 msgid "Password:"
-msgstr "Mot de passe:"
+msgstr "Mot de passe :"
 
 #: src/converse-controlbox.js:392
 msgid "Click here to log in anonymously"
@@ -172,22 +174,20 @@ msgid "Log In"
 msgstr "Se connecter"
 
 #: src/converse-controlbox.js:394
-#, fuzzy
 msgid "Username"
-msgstr "Nom d'utilisateur XMPP/Jabber"
+msgstr "Nom"
 
 #: src/converse-controlbox.js:394
 msgid "user@server"
-msgstr ""
+msgstr "utilisateur@serveur"
 
 #: src/converse-controlbox.js:395
-#, fuzzy
 msgid "password"
-msgstr "Mot de passe:"
+msgstr "Mot de passe"
 
 #: src/converse-controlbox.js:402
 msgid "Sign in"
-msgstr "S'inscrire"
+msgstr "S’inscrire"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -224,7 +224,6 @@ msgid "away"
 msgstr "absent"
 
 #: src/converse-controlbox.js:555
-#, fuzzy
 msgid "offline"
 msgstr "Déconnecté"
 
@@ -258,7 +257,7 @@ msgstr "Rechercher"
 
 #: src/converse-controlbox.js:616
 msgid "e.g. user@example.org"
-msgstr ""
+msgstr "e.g. utilisateur@exemple.org"
 
 #: src/converse-controlbox.js:617
 msgid "Add"
@@ -284,81 +283,74 @@ msgstr "Cliquer pour ajouter aux contacts"
 msgid "Toggle chat"
 msgstr "Ouvrir IM"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 msgid "Click to hide these contacts"
 msgstr "Cliquez pour cacher ces contacts"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 msgid "Reconnecting"
 msgstr "Reconnexion"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "La connexion a été perdue, tentative de reconnexion en cours."
 
-#: src/converse-core.js:465
-#, fuzzy
+#: src/converse-core.js:475
 msgid "Connection error"
-msgstr "La connection a échoué"
+msgstr "Erreur de connexion"
 
-#: src/converse-core.js:466
-#, fuzzy
+#: src/converse-core.js:476
 msgid "An error occurred while connecting to the chat server."
-msgstr "Une erreur est survenue lors de l'enregistrement du formulaire."
+msgstr "Une erreur est survenue lors de la connexion au serveur de discussion."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Connexion"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Authentification"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "L'authentification a échoué"
-
-#: src/converse-core.js:474
-msgid "Authentication Failed"
-msgstr "L'authentification a échoué"
-
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr "Déconnecté"
-
 #: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+msgid "Authentication Failed"
+msgstr "L’authentification a échoué"
 
-#: src/converse-core.js:992
+#: src/converse-core.js:488
+msgid "Connection failed"
+msgstr "La connexion a échoué"
+
+#: src/converse-core.js:489
+msgid "An error occurred while connecting to the chat server: "
+msgstr ""
+"Une erreur est survenue lors de la connexion au serveur de discussion : "
+
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
-msgstr ""
+msgstr "Désolé, il y a eu une erreur lors de la tentative d’ajout "
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr ""
 
 #: src/converse-headline.js:100
-#, fuzzy
 msgid "Close this box"
-msgstr "Cliquez pour afficher cette discussion"
+msgstr "Fermer cette fenêtre"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Réduire cette fenêtre de discussion"
 
 #: src/converse-minimize.js:331
 msgid "Click to restore this chat"
 msgstr "Cliquez pour afficher cette discussion"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "Réduit(s)"
 
 #: src/converse-muc.js:241
 msgid "This room is not anonymous"
-msgstr "Ce salon n'est pas anonyme"
+msgstr "Ce salon n’est pas anonyme"
 
 #: src/converse-muc.js:242
 msgid "This room now shows unavailable members"
@@ -366,12 +358,11 @@ msgstr "Ce salon affiche maintenant les membres indisponibles"
 
 #: src/converse-muc.js:243
 msgid "This room does not show unavailable members"
-msgstr "Ce salon n'affiche pas les membres indisponibles"
+msgstr "Ce salon n’affiche pas les membres indisponibles"
 
 #: src/converse-muc.js:244
-#, fuzzy
 msgid "The room configuration has changed"
-msgstr "Les paramètres du salon non liés à la confidentialité ont été modifiés"
+msgstr "Les paramètres de ce salon ont été modifiés"
 
 #: src/converse-muc.js:245
 msgid "Room logging is now enabled"
@@ -382,9 +373,8 @@ msgid "Room logging is now disabled"
 msgstr "Le logging du salon est désactivé"
 
 #: src/converse-muc.js:247
-#, fuzzy
 msgid "This room is now no longer anonymous"
-msgstr "Ce salon est maintenant non-anonyme"
+msgstr "Ce salon n’est plus anonyme"
 
 #: src/converse-muc.js:248
 msgid "This room is now semi-anonymous"
@@ -408,15 +398,15 @@ msgstr "Vous avez été expulsé de ce salon"
 
 #: src/converse-muc.js:256
 msgid "You have been removed from this room because of an affiliation change"
-msgstr "Vous avez été retiré de ce salon du fait d'un changement d'affiliation"
+msgstr "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"
 
 #: src/converse-muc.js:257
 msgid ""
 "You have been removed from this room because the room has changed to members-"
-"only and you're not a member"
+"only and you’re not a member"
 msgstr ""
 "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux "
-"membres et vous n'êtes pas membre"
+"membres et vous n’êtes pas membre"
 
 #: src/converse-muc.js:258
 msgid ""
@@ -442,7 +432,7 @@ msgstr "<strong>%1$s</strong> a été banni"
 
 #: src/converse-muc.js:273
 msgid "<strong>%1$s</strong>'s nickname has changed"
-msgstr "<strong>%1$s</strong> a changé son nom"
+msgstr "L’alias de <strong>%1$s</strong> a changé"
 
 #: src/converse-muc.js:274
 msgid "<strong>%1$s</strong> has been kicked out"
@@ -451,68 +441,63 @@ msgstr "<strong>%1$s</strong> a été expulsé"
 #: src/converse-muc.js:275
 msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
 msgstr ""
-"<strong>%1$s</strong> a été supprimé à cause d'un changement d'affiliation"
+"<strong>%1$s</strong> a été supprimé à cause d’un changement d’affiliation"
 
 #: src/converse-muc.js:276
 msgid "<strong>%1$s</strong> has been removed for not being a member"
-msgstr "<strong>%1$s</strong> a été supprimé car il n'est pas membre"
+msgstr "<strong>%1$s</strong> a été supprimé car il n’est pas membre"
 
 #: src/converse-muc.js:280
-#, fuzzy
 msgid "Your nickname has been automatically set to: <strong>%1$s</strong>"
-msgstr "Votre alias a été modifié automatiquement en: <strong>%1$s</strong>"
+msgstr "Votre alias a été automatiquement déterminé en : <strong>%1$s</strong>"
 
 #: src/converse-muc.js:281
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
-msgstr "Votre alias a été modifié en: <strong>%1$s</strong>"
+msgstr "Votre alias a été modifié en : <strong>%1$s</strong>"
 
 #: src/converse-muc.js:417
-#, fuzzy
 msgid "Close and leave this room"
-msgstr "Cliquer pour ouvrir ce salon"
+msgstr "Fermer et quitter ce salon"
 
 #: src/converse-muc.js:418
-#, fuzzy
 msgid "Configure this room"
-msgstr "Cliquer pour ouvrir ce salon"
+msgstr "Configurer ce salon"
 
 #: src/converse-muc.js:438
 msgid "Message"
 msgstr "Message"
 
 #: src/converse-muc.js:452
-#, fuzzy
 msgid "Hide the list of occupants"
 msgstr "Cacher la liste des participants"
 
 #: src/converse-muc.js:830
 msgid "Error: the \""
-msgstr ""
+msgstr "Erreur : \""
 
 #: src/converse-muc.js:842
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Etes-vous sûr de vouloir supprimer les messages de ce salon ?"
+msgstr "Voulez-vous vraiment supprimer les messages de ce salon ?"
 
 #: src/converse-muc.js:850
 msgid "Error: could not execute the command"
-msgstr "Erreur: la commande ne peut pas être exécutée"
+msgstr "Erreur : la commande ne peut pas être exécutée"
 
 #: src/converse-muc.js:891
 msgid "Change user's affiliation to admin"
-msgstr "Changer le rôle  de l'utilisateur en administrateur"
+msgstr "Changer le rôle  de l’utilisateur en administrateur"
 
 #: src/converse-muc.js:892
 msgid "Ban user from room"
-msgstr "Bannir l'utilisateur du salon"
+msgstr "Bannir l’utilisateur du salon"
 
 #: src/converse-muc.js:894
-#, fuzzy
 msgid "Change user role to occupant"
-msgstr "Changer le rôle  de l'utilisateur en participant"
+msgstr "Changer le rôle de l’utilisateur en participant"
 
 #: src/converse-muc.js:896
 msgid "Kick user from room"
-msgstr "Expulser l'utilisateur du salon"
+msgstr "Expulser l’utilisateur du salon"
 
 #: src/converse-muc.js:897
 msgid "Write in 3rd person"
@@ -520,11 +505,11 @@ msgstr "Écrire à la troisième personne"
 
 #: src/converse-muc.js:898
 msgid "Grant membership to a user"
-msgstr "Autoriser l'utilisateur à être membre"
+msgstr "Autoriser l’utilisateur à être membre"
 
 #: src/converse-muc.js:899
 msgid "Remove user's ability to post messages"
-msgstr "Retirer le droit d'envoyer des messages"
+msgstr "Retirer le droit d’envoyer des messages"
 
 #: src/converse-muc.js:900
 msgid "Change your nickname"
@@ -532,7 +517,7 @@ msgstr "Changer votre alias"
 
 #: src/converse-muc.js:901
 msgid "Grant moderator role to user"
-msgstr "Changer le rôle de l'utilisateur en modérateur"
+msgstr "Changer le rôle de l’utilisateur en modérateur"
 
 #: src/converse-muc.js:902
 msgid "Grant ownership of this room"
@@ -540,7 +525,7 @@ msgstr "Accorder la propriété à ce salon"
 
 #: src/converse-muc.js:903
 msgid "Revoke user's membership"
-msgstr "Révoquer l'utilisateur des membres"
+msgstr "Révoquer l’utilisateur des membres"
 
 #: src/converse-muc.js:904
 msgid "Set room topic"
@@ -555,20 +540,20 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir "
+"un différent."
 
 #: src/converse-muc.js:1480
-#, fuzzy
 msgid "Please choose your nickname"
-msgstr "Changer votre alias"
+msgstr "Veuillez choisir votre alias"
 
 #: src/converse-muc.js:1481 src/converse-muc.js:2086
 msgid "Nickname"
 msgstr "Alias"
 
 #: src/converse-muc.js:1482
-#, fuzzy
 msgid "Enter room"
-msgstr "Ouvrir un salon"
+msgstr "Entrer dans le salon"
 
 #: src/converse-muc.js:1500
 msgid "This chatroom requires a password"
@@ -576,74 +561,67 @@ msgstr "Ce salon nécessite un mot de passe."
 
 #: src/converse-muc.js:1501
 msgid "Password: "
-msgstr "Mot de passe: "
+msgstr "Mot de passe :  "
 
 #: src/converse-muc.js:1502
 msgid "Submit"
 msgstr "Soumettre"
 
 #: src/converse-muc.js:1621
-#, fuzzy
 msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Votre alias a été modifié en: <strong>%1$s</strong>"
+msgstr "L’action a été réalisée par : <strong>%1$s</strong>"
 
 #: src/converse-muc.js:1624
-#, fuzzy
 msgid "The reason given is: <em>\"%1$s\"</em>."
-msgstr "La raison indiquée est: \""
+msgstr "La raison indiquée est : <em>\"%1$s\"</em>."
 
 #: src/converse-muc.js:1633
 msgid "The reason given is: \""
-msgstr "La raison indiquée est: \""
+msgstr "La raison indiquée est : \""
 
 #: src/converse-muc.js:1672
 msgid "You are not on the member list of this room"
-msgstr "Vous n'êtes pas dans la liste des membres de ce salon"
+msgstr "Vous n’êtes pas dans la liste des membres de ce salon"
 
 #: src/converse-muc.js:1678
 msgid "No nickname was specified"
-msgstr "Aucun alias n'a été indiqué"
+msgstr "Aucun alias n’a été indiqué"
 
 #: src/converse-muc.js:1682
 msgid "You are not allowed to create new rooms"
-msgstr "Vous n'êtes pas autorisé à créer des salons"
+msgstr "Vous n’êtes pas autorisé à créer des salons"
 
 #: src/converse-muc.js:1684
 msgid "Your nickname doesn't conform to this room's policies"
-msgstr "Votre alias n'est pas conforme à la politique de ce salon"
+msgstr "Votre alias n’est pas conforme à la politique de ce salon"
 
 #: src/converse-muc.js:1688
 msgid "This room does not (yet) exist"
-msgstr "Ce salon n'existe pas encore"
+msgstr "Ce salon n’existe pas encore"
 
 #: src/converse-muc.js:1690
-#, fuzzy
 msgid "This room has reached its maximum number of occupants"
-msgstr "Ce salon a atteint la limite maximale d'occupants"
+msgstr "Ce salon a atteint la limite maximale d’occupants"
 
 #: src/converse-muc.js:1784
 msgid "Topic set by %1$s to: %2$s"
-msgstr "Le sujet '%2$s' a été défini par %1$s"
+msgstr "Le sujet « %2$s » a été défini par %1$s"
 
 #: src/converse-muc.js:1878
-#, fuzzy
 msgid "Click to mention this user in your message."
-msgstr "Cliquer pour ouvrir ce salon"
+msgstr "Cliquer pour citer cet utilisateur dans votre message."
 
 #: src/converse-muc.js:1879
-#, fuzzy
 msgid "This user is a moderator."
-msgstr "Cet utilisateur est modérateur"
+msgstr "Cet utilisateur est un modérateur."
 
 #: src/converse-muc.js:1880
-#, fuzzy
 msgid "This user can send messages in this room."
-msgstr "Cet utilisateur peut envoyer des messages dans ce salon"
+msgstr "Cet utilisateur peut envoyer des messages dans ce salon."
 
 #: src/converse-muc.js:1881
-#, fuzzy
 msgid "This user can NOT send messages in this room."
-msgstr "Cet utilisateur ne peut PAS envoyer de messages dans ce salon"
+msgstr "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."
 
 #: src/converse-muc.js:1917
 msgid "Invite"
@@ -651,7 +629,7 @@ msgstr "Inviter"
 
 #: src/converse-muc.js:1918
 msgid "Occupants"
-msgstr "Participants:"
+msgstr "Participants :"
 
 #: src/converse-muc.js:2042
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
@@ -698,15 +676,15 @@ msgstr "Salons dans %1$s"
 
 #: src/converse-muc.js:2213
 msgid "Description:"
-msgstr "Description:"
+msgstr "Description :"
 
 #: src/converse-muc.js:2214
 msgid "Occupants:"
-msgstr "Participants:"
+msgstr "Participants :"
 
 #: src/converse-muc.js:2215
 msgid "Features:"
-msgstr "Caractéristiques:"
+msgstr "Caractéristiques :"
 
 #: src/converse-muc.js:2216
 msgid "Requires authentication"
@@ -754,33 +732,32 @@ msgstr "Non modéré"
 
 #: src/converse-muc.js:2314
 msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr "%1$s vous invite à rejoindre le salon: %2$s"
+msgstr "%1$s vous invite à rejoindre le salon : %2$s"
 
 #: src/converse-muc.js:2319
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
-"%1$s vous invite à rejoindre le salon: %2$s, avec le message suivant:\"%3$s\""
+"%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\"%3$s\""
 
 #. XXX: 2nd check is workaround for Prosody which doesn't
 #. give type "headline"
 #: src/converse-notification.js:136
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Notification depuis %1$s"
 
 #: src/converse-notification.js:139 src/converse-notification.js:147
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s dit"
 
 #: src/converse-notification.js:175
-#, fuzzy
 msgid "has come online"
-msgstr "s'est déconnecté"
+msgstr "s’est déconnecté"
 
 #: src/converse-notification.js:190
 msgid "wants to be your contact"
-msgstr ""
+msgstr "veut être votre contact"
 
 #. Verified that the passphrase is still the same
 #: src/converse-otr.js:154
@@ -804,7 +781,7 @@ msgid ""
 "\n"
 "%2$s"
 msgstr ""
-"Demande d'authentification de %1$s\n"
+"Demande d’authentification de %1$s\n"
 "\n"
 "Votre contact tente de vérifier votre identité, en vous posant la question "
 "ci-dessous.\n"
@@ -813,7 +790,7 @@ msgstr ""
 
 #: src/converse-otr.js:212
 msgid "Could not verify this user's identify."
-msgstr "L'identité de cet utilisateur ne peut pas être vérifiée"
+msgstr "L’identité de cet utilisateur ne peut pas être vérifiée"
 
 #: src/converse-otr.js:252
 msgid "Exchanging private key with contact."
@@ -828,12 +805,12 @@ msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
-"Vos messages sont maintenant cryptés mais l'identité de votre contact n'a "
+"Vos messages sont maintenant cryptés mais l’identité de votre contact n’a "
 "pas econre été véfifiée"
 
 #: src/converse-otr.js:343
 msgid "Your contact's identify has been verified."
-msgstr "L'identité de votre contact a été vérifiée"
+msgstr "L’identité de votre contact a été vérifiée"
 
 #: src/converse-otr.js:345
 msgid "Your contact has ended encryption on their end, you should do the same."
@@ -867,9 +844,9 @@ msgstr ""
 "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en "
 "dehors de ce chat.\n"
 "\n"
-"Empreinte pour vous, %2$s: %3$s\n"
+"Empreinte pour vous, %2$s : %3$s\n"
 "\n"
-"Empreinte pour %1$s: %4$s\n"
+"Empreinte pour %1$s : %4$s\n"
 "\n"
 "Si vous avez confirmé que les empreintes correspondent, cliquez OK, sinon "
 "cliquez Annuler."
@@ -885,7 +862,7 @@ msgstr ""
 "Vous allez être invité à fournir une question de sécurité et une réponse à "
 "cette question.\n"
 "\n"
-"Votre contact devra répondre à la même question et s'il fournit la même "
+"Votre contact devra répondre à la même question et s’il fournit la même "
 "réponse (sensible à la casse), son identité sera vérifiée."
 
 #: src/converse-otr.js:401
@@ -898,7 +875,7 @@ msgstr "Quelle est la réponse à la question de sécurité?"
 
 #: src/converse-otr.js:407
 msgid "Invalid authentication scheme provided"
-msgstr "Schéma d'authentification fourni non valide"
+msgstr "Schéma d’authentification fourni non valide"
 
 #: src/converse-otr.js:419
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
@@ -907,7 +884,7 @@ msgstr ""
 
 #: src/converse-otr.js:421
 msgid "Your messages are encrypted, but your contact has not been verified."
-msgstr "Vos messges sont cryptés, mais votre contact n'a pas été vérifié"
+msgstr "Vos messges sont cryptés, mais votre contact n’a pas été vérifié"
 
 #: src/converse-otr.js:423
 msgid "Your messages are encrypted and your contact verified."
@@ -943,7 +920,7 @@ msgstr "Vérifier par Question/Réponse"
 
 #: src/converse-otr.js:447
 msgid "What's this?"
-msgstr "Qu'est-ce qu'une conversation cryptée?"
+msgstr "Qu’est-ce qu’une conversation cryptée?"
 
 #. Translation aware constants
 #. ---------------------------
@@ -969,19 +946,19 @@ msgstr "terminé"
 
 #: src/converse-register.js:99
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr "e.g. conversejs.org"
 
 #: src/converse-register.js:122
 msgid "Your XMPP provider's domain name:"
-msgstr "Votre domaine XMPP:"
+msgstr "Votre domaine XMPP :"
 
 #: src/converse-register.js:123
 msgid "Fetch registration form"
-msgstr "Récupération du formulaire d'enregistrement"
+msgstr "Récupération du formulaire d’enregistrement"
 
 #: src/converse-register.js:124
 msgid "Tip: A list of public XMPP providers is available"
-msgstr "Astuce: Une liste publique de fournisseurs XMPP est disponible"
+msgstr "Astuce : une liste publique de fournisseurs XMPP est disponible"
 
 #: src/converse-register.js:125
 msgid "here"
@@ -989,15 +966,15 @@ msgstr "ici"
 
 #: src/converse-register.js:130 src/converse-register.js:348
 msgid "Register"
-msgstr "S'enregistrer"
+msgstr "S’enregistrer"
 
 #: src/converse-register.js:176
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Désolé, le fournisseur indiqué ne supporte pas l'enregistrement de compte en "
-"ligne. Merci d'essayer avec un autre fournisseur."
+"Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en "
+"ligne. Merci d’essayer avec un autre fournisseur."
 
 #: src/converse-register.js:236
 msgid "Requesting a registration form from the XMPP server"
@@ -1008,8 +985,8 @@ msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
-"Quelque chose a échoué lors de l'établissement de la connexion avec \"%1$s"
-"\". Êtes-vous sure qu'il existe ?"
+"Quelque chose a échoué lors de l’établissement de la connexion avec \"%1$s\"."
+" Existe-t-il vraiment ?"
 
 #: src/converse-register.js:290
 msgid "Now logging you in"
@@ -1024,11 +1001,10 @@ msgid "Return"
 msgstr "Retourner"
 
 #: src/converse-register.js:385
-#, fuzzy
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
-msgstr "Le fournisseur a rejeté votre demande d'enregistrement. "
+msgstr "Le fournisseur a rejeté votre demande d’enregistrement."
 
 #: src/converse-rosterview.js:86
 msgid "This contact is busy"
@@ -1076,15 +1052,15 @@ msgstr "Sans groupe"
 
 #: src/converse-rosterview.js:154
 msgid "Filter"
-msgstr ""
+msgstr "Filtrer"
 
 #: src/converse-rosterview.js:157
 msgid "State"
-msgstr ""
+msgstr "Status"
 
 #: src/converse-rosterview.js:158
 msgid "Any"
-msgstr ""
+msgstr "Aucun"
 
 #: src/converse-rosterview.js:160
 msgid "Chatty"
@@ -1112,19 +1088,26 @@ msgstr "Cliquez pour discuter avec ce contact"
 
 #: src/converse-rosterview.js:613
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: src/converse-rosterview.js:668
 msgid "Are you sure you want to remove this contact?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce contact?"
+msgstr "Voulez-vous vraiment supprimer ce contact ?"
 
 #: src/converse-rosterview.js:679
 msgid "Sorry, there was an error while trying to remove "
-msgstr ""
+msgstr "Désolé, il y a eu une erreur lors de la tentative de retrait "
 
 #: src/converse-rosterview.js:698
 msgid "Are you sure you want to decline this contact request?"
-msgstr "Êtes-vous sûr de vouloir refuser la demande de ce contact?"
+msgstr "Voulez-vous vraiment refuser cette demande de contact ?"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "L'authentification a échoué"
+
+#~ msgid "Disconnected"
+#~ msgstr "Déconnecté"
 
 #, fuzzy
 #~ msgid "Minimize this box"

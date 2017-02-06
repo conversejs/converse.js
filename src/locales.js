@@ -6,6 +6,7 @@
  *
  * See also src/moment_locales.js
  */
+/*global define */
 (function (root, factory) {
     define("locales", ['jed',
         'text!af',

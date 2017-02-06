@@ -11,7 +11,6 @@
  */
 (function (root, factory) {
     define("converse-register", [
-            "converse-core",
             "converse-api",
             "tpl!form_username",
             "tpl!register_panel",
@@ -22,7 +21,6 @@
     ], factory);
 }(this, function (
             converse,
-            converse_api,
             tpl_form_username,
             tpl_register_panel,
             tpl_register_tab,
@@ -30,28 +28,21 @@
             tpl_registration_request) {
 
     "use strict";
-    converse.templates.form_username = tpl_form_username;
-    converse.templates.register_panel = tpl_register_panel;
-    converse.templates.register_tab = tpl_register_tab;
-    converse.templates.registration_form = tpl_registration_form;
-    converse.templates.registration_request = tpl_registration_request;
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils,
-        $iq = converse_api.env.$iq;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils,
+        $iq = converse.env.$iq;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(converse);
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
     
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
     // Add Strophe Statuses
     var i = 0;
-    Object.keys(Strophe.Status).forEach(function (key) {
+    _.each(_.keys(Strophe.Status), function (key) {
         i = Math.max(i, Strophe.Status[key]);
     });
     Strophe.Status.REGIFAIL        = i + 1;
@@ -59,7 +50,7 @@
     Strophe.Status.CONFLICT        = i + 3;
     Strophe.Status.NOTACCEPTABLE   = i + 5;
 
-    converse_api.plugins.add('converse-register', {
+    converse.plugins.add('converse-register', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -75,9 +66,9 @@
                      * login panel.
                      */
                     this.__super__.renderLoginPanel.apply(this, arguments);
-                    var converse = this.__super__.converse;
-                    if (converse.allow_registration) {
-                        this.registerpanel = new converse.RegisterPanel({
+                    var _converse = this.__super__._converse;
+                    if (_converse.allow_registration) {
+                        this.registerpanel = new _converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': this
                         });
@@ -92,7 +83,15 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new templates
+            _converse.templates.form_username = tpl_form_username;
+            _converse.templates.register_panel = tpl_register_panel;
+            _converse.templates.register_tab = tpl_register_tab;
+            _converse.templates.registration_form = tpl_registration_form;
+            _converse.templates.registration_request = tpl_registration_request;
 
             this.updateSettings({
                 allow_registration: true,
@@ -100,8 +99,7 @@
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
-
-            converse.RegisterPanel = Backbone.View.extend({
+            _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "register",
                 className: 'controlbox-pane',
@@ -118,16 +116,16 @@
 
                 render: function () {
                     this.$parent.append(this.$el.html(
-                        converse.templates.register_panel({
+                        _converse.templates.register_panel({
                             'label_domain': __("Your XMPP provider's domain name:"),
                             'label_register': __('Fetch registration form'),
                             'help_providers': __('Tip: A list of public XMPP providers is available'),
                             'help_providers_link': __('here'),
-                            'href_providers': converse.providers_link,
-                            'domain_placeholder': converse.domain_placeholder
+                            'href_providers': _converse.providers_link,
+                            'domain_placeholder': _converse.domain_placeholder
                         })
                     ));
-                    this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
+                    this.$tabs.append(_converse.templates.register_tab({label_register: __('Register')}));
                     return this;
                 },
 
@@ -135,7 +133,7 @@
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
                      * requesting the registration fields.
                      */
-                    var conn = converse.connection;
+                    var conn = _converse.connection;
                     var connect_cb = conn._connect_cb.bind(conn);
                     conn._connect_cb = function (req, callback, raw) {
                         if (!this._registering) {
@@ -155,8 +153,8 @@
                      *    (Strophe.Request) req - The current request
                      *    (Function) callback
                      */
-                    converse.log("sendQueryStanza was called");
-                    var conn = converse.connection;
+                    _converse.log("sendQueryStanza was called");
+                    var conn = _converse.connection;
                     conn.connected = true;
 
                     var body = conn._proto._reqToData(req);
@@ -190,7 +188,7 @@
                      *    (XMLElement) elem - The query stanza.
                      */
                     if (stanza.getElementsByTagName("query").length !== 1) {
-                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
                     this.setFields(stanza);
@@ -211,7 +209,7 @@
                     };
                     _.extend(this, defaults);
                     if (settings) {
-                        _.extend(this, _.pick(settings, Object.keys(defaults)));
+                        _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
 
@@ -231,7 +229,7 @@
                         return;
                     }
                     $form.find('input[type=submit]').hide()
-                        .after(converse.templates.registration_request({
+                        .after(_converse.templates.registration_request({
                             cancel: __('Cancel'),
                             info_message: __('Requesting a registration form from the XMPP server')
                         }));
@@ -240,7 +238,7 @@
                         domain: Strophe.getDomainFromJid(domain),
                         _registering: true
                     });
-                    converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
+                    _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
                     return false;
                 },
 
@@ -253,8 +251,8 @@
 
                 onRegistering: function (status, error) {
                     var that;
-                    converse.log('onRegistering');
-                    if (_.contains([
+                    _converse.log('onRegistering');
+                    if (_.includes([
                                 Strophe.Status.DISCONNECTED,
                                 Strophe.Status.CONNFAIL,
                                 Strophe.Status.REGIFAIL,
@@ -262,36 +260,35 @@
                                 Strophe.Status.CONFLICT
                             ], status)) {
 
-                        converse.log('Problem during registration: Strophe.Status is: '+status);
+                        _converse.log('Problem during registration: Strophe.Status is: '+status);
                         this.cancelRegistration();
                         if (error) {
                             this.giveFeedback(error, 'error');
                         } else {
                             this.giveFeedback(__(
-                                    'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
-                                    this.domain
-                                ), 'error');
+                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
                         }
                     } else if (status === Strophe.Status.REGISTERED) {
-                        converse.log("Registered successfully.");
-                        converse.connection.reset();
+                        _converse.log("Registered successfully.");
+                        _converse.connection.reset();
                         that = this;
                         this.$('form').hide(function () {
                             $(this).replaceWith('<span class="spinner centered"/>');
                             if (that.fields.password && that.fields.username) {
                                 // automatically log the user in
-                                converse.connection.connect(
+                                _converse.connection.connect(
                                     that.fields.username.toLowerCase()+'@'+that.domain.toLowerCase(),
                                     that.fields.password,
-                                    converse.onConnectStatusChanged
+                                    _converse.onConnectStatusChanged
                                 );
-                                converse.chatboxviews.get('controlbox')
-                                    .switchTab({target: that.$tabs.find('.current')})
-                                    .giveFeedback(__('Now logging you in'));
+                                _converse.chatboxviews.get('controlbox')
+                                    .switchTab({'target': that.$tabs.find('.current')});
+                                _converse.giveFeedback(__('Now logging you in'));
                             } else {
-                                converse.chatboxviews.get('controlbox')
-                                    .renderLoginPanel()
-                                    .giveFeedback(__('Registered successfully'));
+                                _converse.chatboxviews.get('controlbox').renderLoginPanel();
+                                _converse.giveFeedback(__('Registered successfully'));
                             }
                             that.reset();
                         });
@@ -308,7 +305,7 @@
                     var $form= this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
-                    $form.empty().append(converse.templates.registration_form({
+                    $form.empty().append(_converse.templates.registration_form({
                         'domain': this.domain,
                         'title': this.title,
                         'instructions': this.instructions
@@ -320,9 +317,9 @@
                         }.bind(this));
                     } else {
                         // Show fields
-                        _.each(Object.keys(this.fields), function (key) {
+                        _.each(_.keys(this.fields), function (key) {
                             if (key === "username") {
-                                $input = converse.templates.form_username({
+                                $input = _converse.templates.form_username({
                                     domain: ' @'+this.domain,
                                     name: key,
                                     type: "text",
@@ -392,7 +389,7 @@
                     /* Handler, when the user cancels the registration form.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    converse.connection.reset();
+                    _converse.connection.reset();
                     this.render();
                 },
 
@@ -424,8 +421,8 @@
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
-                    converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
-                    converse.connection.send(iq);
+                    _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
+                    _converse.connection.send(iq);
                     this.setFields(iq.tree());
                 },
 
@@ -475,7 +472,7 @@
                             this.fields[_var.toLowerCase()] = $(field).children('value').text();
                         } else {
                             // TODO: other option seems to be type="fixed"
-                            converse.log("WARNING: Found field we couldn't parse");
+                            _converse.log("WARNING: Found field we couldn't parse");
                         }
                     }.bind(this));
                     this.form_type = 'xform';
@@ -495,23 +492,23 @@
                         query = query[0];
                     }
                     if (stanza.getAttribute("type") === "error") {
-                        converse.log("Registration failed.");
+                        _converse.log("Registration failed.");
                         error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
-                            converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                            _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                             return false;
                         }
                         error = error[0].firstChild.tagName.toLowerCase();
                         if (error === 'conflict') {
-                            converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
                         } else if (error === 'not-acceptable') {
-                            converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
                         } else {
-                            converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                         }
                         this.reportErrors(stanza);
                     } else {
-                        converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                     }
                     return false;
                 },

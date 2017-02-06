@@ -214,14 +214,6 @@
             null,
             "验证失败"
          ],
-         "Disconnected": [
-            null,
-            "连接已断开"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""

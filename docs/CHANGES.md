@@ -1,11 +1,25 @@
 # Changelog
 
-## 2.0.5
+## 3.0.0 (Unreleased)
+- Case insensitive matching of moderation commands. [jcbrand]
+- Add `/subject` as alias to `/topic` [jcbrand]
+- `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
+- *Breaking change*: Callbacks for `converse.on` now no longer receive an event
+  object as first parameter. [jcbrand]
+- Use lodash instead of underscore.js [jcbrand]
+
+## 2.0.5 (Unreleased)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
+- #758: Bugfix. Render all resize drag handles for ChatRoomView. [LeoYReyes]
+- #762 Allow chatting with users not in your roster. [Ape, jcbrand]
 - Bugfix. Cancel button shown while registration form is being fetched wasn't working
   properly. [jcbrand]
+- Bugfix. Login form wasn't rendered after logging out (when `auto_reconnect` is `true`). [jcbrand]
+- Bugfix. Properly disconnect upon "host-unknown" error. [jcbrand]
+- Bugfix. Minimized chats weren't removed when logging out. [jcbrand]
+- Security fix: Prevent message forging via carbons. (Thanks to ge0rg) [jcbrand]
 
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]

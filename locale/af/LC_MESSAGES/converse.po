@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2016-04-07 10:34+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans\n"
@@ -150,7 +150,7 @@ msgstr "Voeg 'n emotikon by"
 msgid "Start a call"
 msgstr "Begin 'n oproep"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Kontakte"
@@ -282,58 +282,55 @@ msgstr "Klik om as kletskontak by te voeg"
 msgid "Toggle chat"
 msgstr "Klets"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 msgid "Click to hide these contacts"
 msgstr "Klik om hierdie kontakte te verskuil"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 msgid "Reconnecting"
 msgstr "Herkonnekteer"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "Verbind tans"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Verbind tans"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Besig om te bekragtig"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "Bekragtiging het gefaal"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "Bekragtiging het gefaal"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr "Ontkoppel"
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "Verbind tans"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
 
@@ -341,7 +338,7 @@ msgstr "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
 msgid "Close this box"
 msgstr "Maak hierdie kletskas toe"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr "Minimeer hierdie kletskas"
 
@@ -349,7 +346,7 @@ msgstr "Minimeer hierdie kletskas"
 msgid "Click to restore this chat"
 msgstr "Klik om hierdie klets te herstel"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "Geminimaliseer"
 
@@ -1120,6 +1117,13 @@ msgstr "Jammer, 'n fout het voorgekom tydens die verwydering van "
 #: src/converse-rosterview.js:698
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "Bekragtiging het gefaal"
+
+#~ msgid "Disconnected"
+#~ msgstr "Ontkoppel"
 
 #~ msgid "Minimize this box"
 #~ msgstr "Minimeer hierdie kletskas"

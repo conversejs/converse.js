@@ -271,21 +271,9 @@
             null,
             "Autenticazione in corso"
          ],
-         "Authentication failed.": [
-            null,
-            "Autenticazione fallita."
-         ],
          "Authentication Failed": [
             null,
             "Autenticazione fallita"
-         ],
-         "Disconnected": [
-            null,
-            "Disconnesso"
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
          ],
          "Sorry, there was an error while trying to add ": [
             null,

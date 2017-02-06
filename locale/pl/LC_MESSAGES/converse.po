@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-13 19:42+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
 "PO-Revision-Date: 2016-08-01 10:22+0000\n"
 "Last-Translator: Serge Victor <converse.js@random.re>\n"
 "Language-Team: Polish\n"
@@ -149,7 +149,7 @@ msgstr "Wstaw uśmieszek"
 msgid "Start a call"
 msgstr "Zadzwoń"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:697
+#: src/converse-controlbox.js:214 src/converse-core.js:704
 #: src/converse-rosterview.js:93
 msgid "Contacts"
 msgstr "Kontakty"
@@ -280,58 +280,55 @@ msgstr "Kliknij aby dodać jako kontakt"
 msgid "Toggle chat"
 msgstr "Przełącz rozmowę"
 
-#: src/converse-core.js:200
+#: src/converse-core.js:205
 msgid "Click to hide these contacts"
 msgstr "Kliknij aby schować te kontakty"
 
-#: src/converse-core.js:400
+#: src/converse-core.js:406
 msgid "Reconnecting"
 msgstr "Przywracam połączenie"
 
-#: src/converse-core.js:402
+#: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:465
+#: src/converse-core.js:475
 #, fuzzy
 msgid "Connection error"
 msgstr "Łączę się"
 
-#: src/converse-core.js:466
+#: src/converse-core.js:476
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "Wystąpił błąd w czasie próby zachowania formularza."
 
-#: src/converse-core.js:469
+#: src/converse-core.js:479
 msgid "Connecting"
 msgstr "Łączę się"
 
-#: src/converse-core.js:471
+#: src/converse-core.js:481
 msgid "Authenticating"
 msgstr "Autoryzuję"
 
-#: src/converse-core.js:473
-#, fuzzy
-msgid "Authentication failed."
-msgstr "Autoryzacja nie powiodła się"
-
-#: src/converse-core.js:474
+#: src/converse-core.js:483
 msgid "Authentication Failed"
 msgstr "Autoryzacja nie powiodła się"
 
-#: src/converse-core.js:482
-msgid "Disconnected"
-msgstr ""
+#: src/converse-core.js:488
+#, fuzzy
+msgid "Connection failed"
+msgstr "Łączę się"
 
-#: src/converse-core.js:483
-msgid "The connection to the chat server has dropped"
-msgstr ""
+#: src/converse-core.js:489
+#, fuzzy
+msgid "An error occurred while connecting to the chat server: "
+msgstr "Wystąpił błąd w czasie próby zachowania formularza."
 
-#: src/converse-core.js:992
+#: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
 msgstr "Wystąpił błąd w czasie próby dodania "
 
-#: src/converse-core.js:1163
+#: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
 msgstr "Klient nie umożliwia subskrybcji obecności"
 
@@ -339,7 +336,7 @@ msgstr "Klient nie umożliwia subskrybcji obecności"
 msgid "Close this box"
 msgstr "Zamknij okno"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:512
+#: src/converse-minimize.js:191 src/converse-minimize.js:511
 msgid "Minimize this chat box"
 msgstr "Zminimalizuj okno czatu"
 
@@ -347,7 +344,7 @@ msgstr "Zminimalizuj okno czatu"
 msgid "Click to restore this chat"
 msgstr "Kliknij aby powrócić do rozmowy"
 
-#: src/converse-minimize.js:496
+#: src/converse-minimize.js:495
 msgid "Minimized"
 msgstr "Zminimalizowany"
 
@@ -1107,6 +1104,10 @@ msgstr "Wystąpił błąd w trakcie próby usunięcia "
 #: src/converse-rosterview.js:698
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Czy potwierdzasz odrzucenie chęci nawiązania kontaktu?"
+
+#, fuzzy
+#~ msgid "Authentication failed."
+#~ msgstr "Autoryzacja nie powiodła się"
 
 #~ msgid "Minimize this box"
 #~ msgstr "Zminimalizuj to okno"

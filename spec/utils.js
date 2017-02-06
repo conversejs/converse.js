@@ -1,8 +1,8 @@
 (function (root, factory) {
     define(["converse-api"], factory);
-} (this, function (converse_api) {
-    var utils = converse_api.env.utils,
-        _ = converse_api.env._;
+} (this, function (converse) {
+    var utils = converse.env.utils,
+        _ = converse.env._;
 
     return describe("Converse.js Utilities", function() {
 
@@ -43,7 +43,7 @@
             expect(context.show_toolbar).toBeFalsy();
             expect(context.chatview_avatar_width).toBe(32);
             expect(context.chatview_avatar_height).toBe(48);
-            expect(Object.keys(context.visible_toolbar_buttons)).toEqual(Object.keys(settings.visible_toolbar_buttons));
+            expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
             expect(context.visible_toolbar_buttons.emoticons).toBeFalsy();
             expect(context.visible_toolbar_buttons.call).toBeFalsy();
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeFalsy();
@@ -57,7 +57,7 @@
                 }
             };
             utils.applyUserSettings(context, settings, user_settings);
-            expect(Object.keys(context.visible_toolbar_buttons)).toEqual(Object.keys(settings.visible_toolbar_buttons));
+            expect(_.keys(context.visible_toolbar_buttons)).toEqual(_.keys(settings.visible_toolbar_buttons));
             expect(context.visible_toolbar_buttons.toggle_occupants).toBeTruthy();
         });
     });

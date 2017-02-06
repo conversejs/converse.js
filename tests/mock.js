@@ -1,6 +1,7 @@
 (function (root, factory) {
     define("mock", ['converse'], factory);
 }(this, function (converse_api) {
+    var _ = converse_api.env._;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var mock = {};
@@ -77,6 +78,9 @@
 
     mock.initConverse = function (func, settings) {
         return function () {
+            window.localStorage.clear();
+            window.sessionStorage.clear();
+
             var converse = converse_api.initialize(_.extend({
                 i18n: window.locales.en,
                 auto_subscribe: false,
@@ -87,7 +91,7 @@
                 auto_login: true,
                 jid: 'dummy@localhost',
                 password: 'secret',
-                debug: true
+                debug: false
             }, settings || {}));
             converse.ChatBoxViews.prototype.trimChat = function () {};
             return func(converse);

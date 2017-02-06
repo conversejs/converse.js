@@ -435,676 +435,373 @@ var requirejs, require, define;
 
 define("almond", function(){});
 
-/**
- * @license text 2.0.15 Copyright jQuery Foundation and other contributors.
- * Released under MIT license, http://github.com/requirejs/text/LICENSE
+/* Lo-Dash Template Loader v1.0.1
+ * Copyright 2015, Tim Branyen (@tbranyen).
+ * loader.js may be freely distributed under the MIT license.
  */
-/*jslint regexp: true */
-/*global require, XMLHttpRequest, ActiveXObject,
-  define, window, process, Packages,
-  java, location, Components, FileUtils */
+(function(global) {
+"use strict";
 
-define('text',['module'], function (module) {
-    'use strict';
+// Cache used to map configuration options between load and write.
+var buildMap = {};
 
-    var text, fs, Cc, Ci, xpcIsWindows,
-        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
-        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
-        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
-        hasLocation = typeof location !== 'undefined' && location.href,
-        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
-        defaultHostName = hasLocation && location.hostname,
-        defaultPort = hasLocation && (location.port || undefined),
-        buildMap = {},
-        masterConfig = (module.config && module.config()) || {};
+// Alias the correct `nodeRequire` method.
+var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
 
-    function useDefault(value, defaultValue) {
-        return value === undefined || value === '' ? defaultValue : value;
+// Strips trailing `/` from url fragments.
+var stripTrailing = function(prop) {
+  return prop.replace(/(\/$)/, '');
+};
+
+// Define the plugin using the CommonJS syntax.
+define('tpl',['require','exports','module','lodash'],function(require, exports) {
+  var _ = require("lodash");
+
+  exports.version = "1.0.1";
+
+  // Invoked by the AMD builder, passed the path to resolve, the require
+  // function, done callback, and the configuration options.
+  exports.load = function(name, req, load, config) {
+    var isDojo;
+
+    // Dojo provides access to the config object through the req function.
+    if (!config) {
+      config = require.rawConfig;
+      isDojo = true;
     }
 
-    //Allow for default ports for http and https.
-    function isSamePort(protocol1, port1, protocol2, port2) {
-        if (port1 === port2) {
-            return true;
-        } else if (protocol1 === protocol2) {
-            if (protocol1 === 'http') {
-                return useDefault(port1, '80') === useDefault(port2, '80');
-            } else if (protocol1 === 'https') {
-                return useDefault(port1, '443') === useDefault(port2, '443');
-            }
-        }
-        return false;
+    var contents = "";
+    var settings = configure(config);
+
+    // If the baseUrl and root are the same, just null out the root.
+    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
+      settings.root = '';
     }
 
-    text = {
-        version: '2.0.15',
+    var url = require.toUrl(settings.root + name + settings.ext);
 
-        strip: function (content) {
-            //Strips <?xml ...?> declarations so that external SVG and XML
-            //documents can be added to a document without worry. Also, if the string
-            //is an HTML document, only the part inside the body tag is returned.
-            if (content) {
-                content = content.replace(xmlRegExp, "");
-                var matches = content.match(bodyRegExp);
-                if (matches) {
-                    content = matches[1];
-                }
-            } else {
-                content = "";
-            }
-            return content;
-        },
+    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
+      url = stripTrailing(config.baseUrl) + url;
+    }
 
-        jsEscape: function (content) {
-            return content.replace(/(['\\])/g, '\\$1')
-                .replace(/[\f]/g, "\\f")
-                .replace(/[\b]/g, "\\b")
-                .replace(/[\n]/g, "\\n")
-                .replace(/[\t]/g, "\\t")
-                .replace(/[\r]/g, "\\r")
-                .replace(/[\u2028]/g, "\\u2028")
-                .replace(/[\u2029]/g, "\\u2029");
-        },
+    // Builds with r.js require Node.js to be installed.
+    if (config.isBuild) {
+      // If in Node, get access to the filesystem.
+      var fs = nodeRequire("fs");
 
-        createXhr: masterConfig.createXhr || function () {
-            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-            var xhr, i, progId;
-            if (typeof XMLHttpRequest !== "undefined") {
-                return new XMLHttpRequest();
-            } else if (typeof ActiveXObject !== "undefined") {
-                for (i = 0; i < 3; i += 1) {
-                    progId = progIds[i];
-                    try {
-                        xhr = new ActiveXObject(progId);
-                    } catch (e) {}
-
-                    if (xhr) {
-                        progIds = [progId];  // so faster next time
-                        break;
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        /**
-         * Parses a resource name into its component parts. Resource names
-         * look like: module/name.ext!strip, where the !strip part is
-         * optional.
-         * @param {String} name the resource name
-         * @returns {Object} with properties "moduleName", "ext" and "strip"
-         * where strip is a boolean.
-         */
-        parseName: function (name) {
-            var modName, ext, temp,
-                strip = false,
-                index = name.lastIndexOf("."),
-                isRelative = name.indexOf('./') === 0 ||
-                             name.indexOf('../') === 0;
-
-            if (index !== -1 && (!isRelative || index > 1)) {
-                modName = name.substring(0, index);
-                ext = name.substring(index + 1);
-            } else {
-                modName = name;
-            }
-
-            temp = ext || modName;
-            index = temp.indexOf("!");
-            if (index !== -1) {
-                //Pull off the strip arg.
-                strip = temp.substring(index + 1) === "strip";
-                temp = temp.substring(0, index);
-                if (ext) {
-                    ext = temp;
-                } else {
-                    modName = temp;
-                }
-            }
-
-            return {
-                moduleName: modName,
-                ext: ext,
-                strip: strip
-            };
-        },
-
-        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
-
-        /**
-         * Is an URL on another domain. Only works for browser use, returns
-         * false in non-browser environments. Only used to know if an
-         * optimized .js version of a text resource should be loaded
-         * instead.
-         * @param {String} url
-         * @returns Boolean
-         */
-        useXhr: function (url, protocol, hostname, port) {
-            var uProtocol, uHostName, uPort,
-                match = text.xdRegExp.exec(url);
-            if (!match) {
-                return true;
-            }
-            uProtocol = match[2];
-            uHostName = match[3];
-
-            uHostName = uHostName.split(':');
-            uPort = uHostName[1];
-            uHostName = uHostName[0];
-
-            return (!uProtocol || uProtocol === protocol) &&
-                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || isSamePort(uProtocol, uPort, protocol, port));
-        },
-
-        finishLoad: function (name, strip, content, onLoad) {
-            content = strip ? text.strip(content) : content;
-            if (masterConfig.isBuild) {
-                buildMap[name] = content;
-            }
-            onLoad(content);
-        },
-
-        load: function (name, req, onLoad, config) {
-            //Name has format: some.module.filext!strip
-            //The strip part is optional.
-            //if strip is present, then that means only get the string contents
-            //inside a body tag in an HTML string. For XML/SVG content it means
-            //removing the <?xml ...?> declarations so the content can be inserted
-            //into the current doc without problems.
-
-            // Do not bother with the work if a build and text will
-            // not be inlined.
-            if (config && config.isBuild && !config.inlineText) {
-                onLoad();
-                return;
-            }
-
-            masterConfig.isBuild = config && config.isBuild;
-
-            var parsed = text.parseName(name),
-                nonStripName = parsed.moduleName +
-                    (parsed.ext ? '.' + parsed.ext : ''),
-                url = req.toUrl(nonStripName),
-                useXhr = (masterConfig.useXhr) ||
-                         text.useXhr;
-
-            // Do not load if it is an empty: url
-            if (url.indexOf('empty:') === 0) {
-                onLoad();
-                return;
-            }
-
-            //Load the text. Use XHR if possible and in a browser.
-            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
-                text.get(url, function (content) {
-                    text.finishLoad(name, parsed.strip, content, onLoad);
-                }, function (err) {
-                    if (onLoad.error) {
-                        onLoad.error(err);
-                    }
-                });
-            } else {
-                //Need to fetch the resource across domains. Assume
-                //the resource has been optimized into a JS module. Fetch
-                //by the module name + extension, but do not include the
-                //!strip part to avoid file system issues.
-                req([nonStripName], function (content) {
-                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
-                                    parsed.strip, content, onLoad);
-                });
-            }
-        },
-
-        write: function (pluginName, moduleName, write, config) {
-            if (buildMap.hasOwnProperty(moduleName)) {
-                var content = text.jsEscape(buildMap[moduleName]);
-                write.asModule(pluginName + "!" + moduleName,
-                               "define(function () { return '" +
-                                   content +
-                               "';});\n");
-            }
-        },
-
-        writeFile: function (pluginName, moduleName, req, write, config) {
-            var parsed = text.parseName(moduleName),
-                extPart = parsed.ext ? '.' + parsed.ext : '',
-                nonStripName = parsed.moduleName + extPart,
-                //Use a '.js' file name so that it indicates it is a
-                //script that can be loaded across domains.
-                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
-
-            //Leverage own load() method to load plugin value, but only
-            //write out values that do not have the strip argument,
-            //to avoid any potential issues with ! in file names.
-            text.load(nonStripName, req, function (value) {
-                //Use own write() method to construct full module value.
-                //But need to create shell that translates writeFile's
-                //write() to the right interface.
-                var textWrite = function (contents) {
-                    return write(fileName, contents);
-                };
-                textWrite.asModule = function (moduleName, contents) {
-                    return write.asModule(moduleName, fileName, contents);
-                };
-
-                text.write(pluginName, nonStripName, textWrite, config);
-            }, config);
+      try {
+        // First try reading the filepath as-is.
+        contents = String(fs.readFileSync(url));
+      } catch(ex) {
+        // If it failed, it's most likely because of a leading `/` and not an
+        // absolute path.  Remove the leading slash and try again.
+        if (url.slice(0, 1) === "/") {
+          url = url.slice(1);
         }
+
+        // Try reading again with the leading `/`.
+        contents = String(fs.readFileSync(url));
+      }
+
+      // Read in the file synchronously, as RequireJS expects, and return the
+      // contents.  Process as a Lo-Dash template.
+      buildMap[name] = _.template(contents);
+
+      return load();
+    }
+
+    // Create a basic XHR.
+    var xhr = new XMLHttpRequest();
+
+    // Wait for it to load.
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var templateSettings = _.clone(settings.templateSettings);
+
+        // Attach the sourceURL.
+        templateSettings.sourceURL = url;
+
+        // Process as a Lo-Dash template and cache.
+        buildMap[name] = _.template(xhr.responseText, templateSettings);
+
+        // Return the compiled template.
+        load(buildMap[name]);
+      }
     };
 
-    if (masterConfig.env === 'node' || (!masterConfig.env &&
-            typeof process !== "undefined" &&
-            process.versions &&
-            !!process.versions.node &&
-            !process.versions['node-webkit'] &&
-            !process.versions['atom-shell'])) {
-        //Using special require.nodeRequire, something added by r.js.
-        fs = require.nodeRequire('fs');
+    // Initiate the fetch.
+    xhr.open("GET", url, true);
+    xhr.send(null);
+  };
 
-        text.get = function (url, callback, errback) {
-            try {
-                var file = fs.readFileSync(url, 'utf8');
-                //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-                if (file[0] === '\uFEFF') {
-                    file = file.substring(1);
-                }
-                callback(file);
-            } catch (e) {
-                if (errback) {
-                    errback(e);
-                }
-            }
-        };
-    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
-            text.createXhr())) {
-        text.get = function (url, callback, errback, headers) {
-            var xhr = text.createXhr(), header;
-            xhr.open('GET', url, true);
+  // Also invoked by the AMD builder, this writes out a compatible define
+  // call that will work with loaders such as almond.js that cannot read
+  // the configuration data.
+  exports.write = function(pluginName, moduleName, write) {
+    var template = buildMap[moduleName].source;
 
-            //Allow plugins direct access to xhr headers
-            if (headers) {
-                for (header in headers) {
-                    if (headers.hasOwnProperty(header)) {
-                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
-                    }
-                }
-            }
+    // Write out the actual definition
+    write(strDefine(pluginName, moduleName, template));
+  };
 
-            //Allow overrides specified in config
-            if (masterConfig.onXhr) {
-                masterConfig.onXhr(xhr, url);
-            }
+  // This is for curl.js/cram.js build-time support.
+  exports.compile = function(pluginName, moduleName, req, io, config) {
+    configure(config);
 
-            xhr.onreadystatechange = function (evt) {
-                var status, err;
-                //Do not explicitly handle errors, those should be
-                //visible via console output in the browser.
-                if (xhr.readyState === 4) {
-                    status = xhr.status || 0;
-                    if (status > 399 && status < 600) {
-                        //An http 4xx or 5xx error. Signal an error.
-                        err = new Error(url + ' HTTP status: ' + status);
-                        err.xhr = xhr;
-                        if (errback) {
-                            errback(err);
-                        }
-                    } else {
-                        callback(xhr.responseText);
-                    }
+    // Ask cram to fetch the template file (resId) and pass it to `write`.
+    io.read(moduleName, write, io.error);
 
-                    if (masterConfig.onXhrComplete) {
-                        masterConfig.onXhrComplete(xhr, url);
-                    }
-                }
-            };
-            xhr.send(null);
-        };
-    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
-            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
-        //Why Java, why is this so awkward?
-        text.get = function (url, callback) {
-            var stringBuffer, line,
-                encoding = "utf-8",
-                file = new java.io.File(url),
-                lineSeparator = java.lang.System.getProperty("line.separator"),
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                content = '';
-            try {
-                stringBuffer = new java.lang.StringBuffer();
-                line = input.readLine();
-
-                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // http://www.unicode.org/faq/utf_bom.html
-
-                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
-                if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
-                    // and we plan to concatenating this buffer with others; the BOM should
-                    // only appear at the top of a file.
-                    line = line.substring(1);
-                }
-
-                if (line !== null) {
-                    stringBuffer.append(line);
-                }
-
-                while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
-                }
-                //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
-            } finally {
-                input.close();
-            }
-            callback(content);
-        };
-    } else if (masterConfig.env === 'xpconnect' || (!masterConfig.env &&
-            typeof Components !== 'undefined' && Components.classes &&
-            Components.interfaces)) {
-        //Avert your gaze!
-        Cc = Components.classes;
-        Ci = Components.interfaces;
-        Components.utils['import']('resource://gre/modules/FileUtils.jsm');
-        xpcIsWindows = ('@mozilla.org/windows-registry-key;1' in Cc);
-
-        text.get = function (url, callback) {
-            var inStream, convertStream, fileObj,
-                readData = {};
-
-            if (xpcIsWindows) {
-                url = url.replace(/\//g, '\\');
-            }
-
-            fileObj = new FileUtils.File(url);
-
-            //XPCOM, you so crazy
-            try {
-                inStream = Cc['@mozilla.org/network/file-input-stream;1']
-                           .createInstance(Ci.nsIFileInputStream);
-                inStream.init(fileObj, 1, 0, false);
-
-                convertStream = Cc['@mozilla.org/intl/converter-input-stream;1']
-                                .createInstance(Ci.nsIConverterInputStream);
-                convertStream.init(inStream, "utf-8", inStream.available(),
-                Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-
-                convertStream.readString(inStream.available(), readData);
-                convertStream.close();
-                inStream.close();
-                callback(readData.value);
-            } catch (e) {
-                throw new Error((fileObj && fileObj.path || '') + ': ' + e);
-            }
-        };
+    function write(template) {
+      // Write-out define(id,function(){return{/* template */}});
+      io.write(strDefine(pluginName, moduleName, template));
     }
-    return text;
+  };
+
+  // Crafts the written definition form of the module during a build.
+  function strDefine(pluginName, moduleName, template) {
+    return [
+      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
+        [
+          "function(_) {",
+            "return ", template, ";",
+          "}"
+        ].join(""),
+      ");\n"
+    ].join("");
+  }
+
+  function configure(config) {
+    // Default settings point to the project root and using html files.
+    var settings = _.extend({
+      ext: ".html",
+      root: config.baseUrl,
+      templateSettings: {}
+    }, config.lodashLoader);
+
+    // Ensure the root has been properly configured with a trailing slash,
+    // unless it's an empty string or undefined, in which case work off the
+    // baseUrl.
+    if (settings.root && settings.root.slice(-1) !== "/") {
+      settings.root += "/";
+    }
+
+    // Set the custom passed in template settings.
+    _.extend(_.templateSettings, settings.templateSettings);
+
+    return settings;
+  }
 });
 
-// RequireJS UnderscoreJS template plugin
-// http://github.com/jfparadis/requirejs-tpl
-//
-// An alternative to http://github.com/ZeeAgency/requirejs-tpl
-//
-// Using UnderscoreJS micro-templates at http://underscorejs.org/#template
-// Using and RequireJS text.js at http://requirejs.org/docs/api.html#text
-// @author JF Paradis
-// @version 0.0.2
-//
-// Released under the MIT license
-//
-// Usage:
-//   require(['backbone', 'tpl!mytemplate'], function (Backbone, mytemplate) {
-//     return Backbone.View.extend({
-//       initialize: function(){
-//         this.render();
-//       },
-//       render: function(){
-//         this.$el.html(mytemplate({message: 'hello'}));
-//     });
-//   });
-//
-// Configuration: (optional)
-//   require.config({
-//     tpl: {
-//       extension: '.tpl' // default = '.html'
-//     }
-//   });
-
-/*jslint nomen: true */
-/*global define: false */
-
-define('tpl',['text', 'underscore'], function (text, _) {
-    'use strict';
-
-    var buildMap = {},
-        buildTemplateSource = "define('{pluginName}!{moduleName}', function () { return {source}; });\n";
-
-    return {
-        version: '0.0.2',
-
-        load: function (moduleName, parentRequire, onload, config) {
-
-            if (config.tpl && config.tpl.templateSettings) {
-                _.templateSettings = config.tpl.templateSettings;
-            }
-
-            if (buildMap[moduleName]) {
-                onload(buildMap[moduleName]);
-
-            } else {
-                var ext = config.tpl && !_.isUndefined(config.tpl.extension) ? config.tpl.extension : '.html';
-                var path = (config.tpl && config.tpl.path) || '';
-                text.load(path + moduleName + ext, parentRequire, function (source) {
-                    buildMap[moduleName] = _.template(source);
-                    onload(buildMap[moduleName]);
-                }, config);
-            }
-        },
-
-        write: function (pluginName, moduleName, write) {
-            var build = buildMap[moduleName],
-                source = build && build.source;
-            if (source) {
-                write.asModule(pluginName + '!' + moduleName,
-                    buildTemplateSource
-                    .replace('{pluginName}', pluginName)
-                    .replace('{moduleName}', moduleName)
-                    .replace('{source}', source));
-            }
-        }
-    };
-});
+})(typeof global === "object" ? global : this);
 
 
-define('tpl!field', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<field var="'+
-((__t=(name))==null?'':__t)+
+define('tpl!field', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<field var="' +
+((__t = (name)) == null ? '' : __t) +
 '">';
- if (_.isArray(value)) { 
-__p+='\n    ';
- _.each(value,function(arrayValue) { 
-__p+='<value>'+
-((__t=(arrayValue))==null?'':__t)+
+ if (_.isArray(value)) { ;
+__p += '\n    ';
+ _.each(value,function(arrayValue) { ;
+__p += '<value>' +
+((__t = (arrayValue)) == null ? '' : __t) +
 '</value>';
- }); 
-__p+='\n';
- } else { 
-__p+='\n    <value>'+
-((__t=(value))==null?'':__t)+
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
+((__t = (value)) == null ? '' : __t) +
 '</value>\n';
- } 
-__p+='</field>\n';
+ } ;
+__p += '</field>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!select_option', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<option value="'+
-((__t=(value))==null?'':__t)+
+define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<option value="' +
+((__t = (value)) == null ? '' : __t) +
 '" ';
- if (selected) { 
-__p+=' selected="selected" ';
- } 
-__p+=' >'+
-((__t=(label))==null?'':__t)+
+ if (selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
+((__t = (label)) == null ? '' : __t) +
 '</option>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_select', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<label>'+
-((__t=(label))==null?'':__t)+
-'</label>\n<select name="'+
-((__t=(name))==null?'':__t)+
+define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>' +
+((__t = (label)) == null ? '' : __t) +
+'</label>\n<select name="' +
+((__t = (name)) == null ? '' : __t) +
 '"  ';
- if (multiple) { 
-__p+=' multiple="multiple" ';
- } 
-__p+='>'+
-((__t=(options))==null?'':__t)+
+ if (multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
+((__t = (options)) == null ? '' : __t) +
 '</select>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_textarea', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<label class="label-ta">'+
-((__t=(label))==null?'':__t)+
-'</label>\n<textarea name="'+
-((__t=(name))==null?'':__t)+
-'">'+
-((__t=(value))==null?'':__t)+
+define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<label class="label-ta">' +
+((__t = (label)) == null ? '' : __t) +
+'</label>\n<textarea name="' +
+((__t = (name)) == null ? '' : __t) +
+'">' +
+((__t = (value)) == null ? '' : __t) +
 '</textarea>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_checkbox', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<label>'+
-((__t=(label))==null?'':__t)+
-'</label>\n<input name="'+
-((__t=(name))==null?'':__t)+
-'" type="'+
-((__t=(type))==null?'':__t)+
-'" '+
-((__t=(checked))==null?'':__t)+
+define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<label>' +
+((__t = (label)) == null ? '' : __t) +
+'</label>\n<input name="' +
+((__t = (name)) == null ? '' : __t) +
+'" type="' +
+((__t = (type)) == null ? '' : __t) +
+'" ' +
+((__t = (checked)) == null ? '' : __t) +
 '>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_username', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (label) { 
-__p+='\n<label>\n    '+
-((__t=(label))==null?'':__t)+
+define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+((__t = (label)) == null ? '' : __t) +
 '\n</label>\n';
- } 
-__p+='\n<div class="input-group">\n    <input name="'+
-((__t=(name))==null?'':__t)+
-'" type="'+
-((__t=(type))==null?'':__t)+
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+((__t = (name)) == null ? '' : __t) +
+'" type="' +
+((__t = (type)) == null ? '' : __t) +
 '"\n        ';
- if (value) { 
-__p+=' value="'+
-((__t=(value))==null?'':__t)+
+ if (value) { ;
+__p += ' value="' +
+((__t = (value)) == null ? '' : __t) +
 '" ';
- } 
-__p+='\n        ';
- if (required) { 
-__p+=' class="required" ';
- } 
-__p+=' />\n    <span title="'+
-((__t=(domain))==null?'':__t)+
-'">'+
-((__t=(domain))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span title="' +
+((__t = (domain)) == null ? '' : __t) +
+'">' +
+((__t = (domain)) == null ? '' : __t) +
 '</span>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_input', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (label) { 
-__p+='\n<label>\n    '+
-((__t=(label))==null?'':__t)+
+define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+((__t = (label)) == null ? '' : __t) +
 '\n</label>\n';
- } 
-__p+='\n<input name="'+
-((__t=(name))==null?'':__t)+
-'" type="'+
-((__t=(type))==null?'':__t)+
+ } ;
+__p += '\n<input name="' +
+((__t = (name)) == null ? '' : __t) +
+'" type="' +
+((__t = (type)) == null ? '' : __t) +
 '" \n    ';
- if (value) { 
-__p+=' value="'+
-((__t=(value))==null?'':__t)+
+ if (value) { ;
+__p += ' value="' +
+((__t = (value)) == null ? '' : __t) +
 '" ';
- } 
-__p+='\n    ';
- if (required) { 
-__p+=' class="required" ';
- } 
-__p+=' >\n';
+ } ;
+__p += '\n    ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!form_captcha', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (label) { 
-__p+='\n<label>\n    '+
-((__t=(label))==null?'':__t)+
+define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+((__t = (label)) == null ? '' : __t) +
 '\n</label>\n';
- } 
-__p+='\n<img src="data:'+
-((__t=(type))==null?'':__t)+
-';base64,'+
-((__t=(data))==null?'':__t)+
-'">\n<input name="'+
-((__t=(name))==null?'':__t)+
+ } ;
+__p += '\n<img src="data:' +
+((__t = (type)) == null ? '' : __t) +
+';base64,' +
+((__t = (data)) == null ? '' : __t) +
+'">\n<input name="' +
+((__t = (name)) == null ? '' : __t) +
 '" type="text" ';
- if (required) { 
-__p+=' class="required" ';
- } 
-__p+=' >\n\n\n';
-}
-return __p;
-}; });
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
 
-/*global escape, locales, Jed */
+}
+return __p
+};});
+
+/*global define, escape, locales, Jed */
 (function (root, factory) {
     define('utils',[
         "jquery",
         "jquery.browser",
-        "underscore",
+        "lodash",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -1136,6 +833,13 @@ return __p;
         'jid-multi': 'textarea',
         'list-single': 'dropdown',
         'list-multi': 'dropdown'
+    };
+
+    var afterAnimationEnd = function (el, callback) {
+        el.classList.remove('visible');
+        if (_.isFunction(callback)) {
+            callback();
+        }
     };
 
     var isImage = function (url) {
@@ -1179,7 +883,7 @@ return __p;
                     }
                 }
                 $obj.html(x);
-                _.each(list, function (url) {
+                _.forEach(list, function (url) {
                     isImage(url).then(function (ev) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
@@ -1320,14 +1024,17 @@ return __p;
                 }
                 return;
             }
-            el.addEventListener("animationend", function () {
-                el.classList.remove('visible');
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-            }, false);
-            el.classList.add('visible');
-            el.classList.remove('hidden');
+            if (_.includes(el.classList, 'hidden')) {
+                /* XXX: This doesn't appear to be working...
+                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
+                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
+                */
+                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
+                el.classList.add('visible');
+                el.classList.remove('hidden');
+            } else {
+                afterAnimationEnd(el, callback);
+            }
         },
 
         isOTRMessage: function (message) {
@@ -1345,8 +1052,8 @@ return __p;
                 // check if an @ signal is included, and if not, we assume it's
                 // a headline message.
                 (   $message.attr('type') !== 'error' &&
-                    typeof from_jid !== 'undefined' &&
-                    from_jid.indexOf('@') === -1
+                    !_.isUndefined(from_jid) &&
+                    !_.includes(from_jid, '@')
                 )) {
                 return true;
             }
@@ -1426,12 +1133,12 @@ return __p;
             return function (item) {
                 if (typeof attr === 'object') {
                     var value = false;
-                    _.each(attr, function (a) {
-                        value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    _.forEach(attr, function (a) {
+                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
                     });
                     return value;
                 } else if (typeof attr === 'string') {
-                    return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
                 } else {
                     throw new TypeError('contains: wrong attribute type. Must be string or array.');
                 }
@@ -1461,7 +1168,7 @@ return __p;
                     options.push(tpl_select_option({
                         value: value,
                         label: $($options[j]).attr('label'),
-                        selected: (values.indexOf(value) >= 0),
+                        selected: _.startsWith(values, value),
                         required: $field.find('required').length
                     }));
                 }
@@ -1534,6 +1241,2150 @@ return __p;
     return utils;
 }));
 
+/*!
+ * Sizzle CSS Selector Engine v2.2.1
+ * http://sizzlejs.com/
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: 2015-10-17
+ */
+(function( window ) {
+
+var i,
+	support,
+	Expr,
+	getText,
+	isXML,
+	tokenize,
+	compile,
+	select,
+	outermostContext,
+	sortInput,
+	hasDuplicate,
+
+	// Local document vars
+	setDocument,
+	document,
+	docElem,
+	documentIsHTML,
+	rbuggyQSA,
+	rbuggyMatches,
+	matches,
+	contains,
+
+	// Instance-specific data
+	expando = "sizzle" + 1 * new Date(),
+	preferredDoc = window.document,
+	dirruns = 0,
+	done = 0,
+	classCache = createCache(),
+	tokenCache = createCache(),
+	compilerCache = createCache(),
+	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+		}
+		return 0;
+	},
+
+	// General-purpose constants
+	MAX_NEGATIVE = 1 << 31,
+
+	// Instance methods
+	hasOwn = ({}).hasOwnProperty,
+	arr = [],
+	pop = arr.pop,
+	push_native = arr.push,
+	push = arr.push,
+	slice = arr.slice,
+	// Use a stripped-down indexOf as it's faster than native
+	// http://jsperf.com/thor-indexof-vs-for/5
+	indexOf = function( list, elem ) {
+		var i = 0,
+			len = list.length;
+		for ( ; i < len; i++ ) {
+			if ( list[i] === elem ) {
+				return i;
+			}
+		}
+		return -1;
+	},
+
+	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+
+	// Regular expressions
+
+	// http://www.w3.org/TR/css3-selectors/#whitespace
+	whitespace = "[\\x20\\t\\r\\n\\f]",
+
+	// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+	identifier = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
+
+	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
+	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
+		// Operator (capture 2)
+		"*([*^$|!~]?=)" + whitespace +
+		// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
+		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace +
+		"*\\]",
+
+	pseudos = ":(" + identifier + ")(?:\\((" +
+		// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
+		// 1. quoted (capture 3; capture 4 or capture 5)
+		"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
+		// 2. simple (capture 6)
+		"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
+		// 3. anything else (capture 2)
+		".*" +
+		")\\)|)",
+
+	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
+	rwhitespace = new RegExp( whitespace + "+", "g" ),
+	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
+
+	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
+
+	rpseudo = new RegExp( pseudos ),
+	ridentifier = new RegExp( "^" + identifier + "$" ),
+
+	matchExpr = {
+		"ID": new RegExp( "^#(" + identifier + ")" ),
+		"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
+		"TAG": new RegExp( "^(" + identifier + "|[*])" ),
+		"ATTR": new RegExp( "^" + attributes ),
+		"PSEUDO": new RegExp( "^" + pseudos ),
+		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
+			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
+			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
+		// For use in libraries implementing .is()
+		// We use this for POS matching in `select`
+		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
+			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
+	},
+
+	rinputs = /^(?:input|select|textarea|button)$/i,
+	rheader = /^h\d$/i,
+
+	rnative = /^[^{]+\{\s*\[native \w/,
+
+	// Easily-parseable/retrievable ID or TAG or CLASS selectors
+	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+
+	rsibling = /[+~]/,
+	rescape = /'|\\/g,
+
+	// CSS escapes http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
+	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
+	funescape = function( _, escaped, escapedWhitespace ) {
+		var high = "0x" + escaped - 0x10000;
+		// NaN means non-codepoint
+		// Support: Firefox<24
+		// Workaround erroneous numeric interpretation of +"0x"
+		return high !== high || escapedWhitespace ?
+			escaped :
+			high < 0 ?
+				// BMP codepoint
+				String.fromCharCode( high + 0x10000 ) :
+				// Supplemental Plane codepoint (surrogate pair)
+				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+	},
+
+	// Used for iframes
+	// See setDocument()
+	// Removing the function wrapper causes a "Permission Denied"
+	// error in IE
+	unloadHandler = function() {
+		setDocument();
+	};
+
+// Optimize for push.apply( _, NodeList )
+try {
+	push.apply(
+		(arr = slice.call( preferredDoc.childNodes )),
+		preferredDoc.childNodes
+	);
+	// Support: Android<4.0
+	// Detect silently failing push.apply
+	arr[ preferredDoc.childNodes.length ].nodeType;
+} catch ( e ) {
+	push = { apply: arr.length ?
+
+		// Leverage slice if possible
+		function( target, els ) {
+			push_native.apply( target, slice.call(els) );
+		} :
+
+		// Support: IE<9
+		// Otherwise append directly
+		function( target, els ) {
+			var j = target.length,
+				i = 0;
+			// Can't trust NodeList.length
+			while ( (target[j++] = els[i++]) ) {}
+			target.length = j - 1;
+		}
+	};
+}
+
+function Sizzle( selector, context, results, seed ) {
+	var m, i, elem, nid, nidselect, match, groups, newSelector,
+		newContext = context && context.ownerDocument,
+
+		// nodeType defaults to 9, since context defaults to document
+		nodeType = context ? context.nodeType : 9;
+
+	results = results || [];
+
+	// Return early from calls with invalid selector or context
+	if ( typeof selector !== "string" || !selector ||
+		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
+
+		return results;
+	}
+
+	// Try to shortcut find operations (as opposed to filters) in HTML documents
+	if ( !seed ) {
+
+		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+			setDocument( context );
+		}
+		context = context || document;
+
+		if ( documentIsHTML ) {
+
+			// If the selector is sufficiently simple, try using a "get*By*" DOM method
+			// (excepting DocumentFragment context, where the methods don't exist)
+			if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
+
+				// ID selector
+				if ( (m = match[1]) ) {
+
+					// Document context
+					if ( nodeType === 9 ) {
+						if ( (elem = context.getElementById( m )) ) {
+
+							// Support: IE, Opera, Webkit
+							// TODO: identify versions
+							// getElementById can match elements by name instead of ID
+							if ( elem.id === m ) {
+								results.push( elem );
+								return results;
+							}
+						} else {
+							return results;
+						}
+
+					// Element context
+					} else {
+
+						// Support: IE, Opera, Webkit
+						// TODO: identify versions
+						// getElementById can match elements by name instead of ID
+						if ( newContext && (elem = newContext.getElementById( m )) &&
+							contains( context, elem ) &&
+							elem.id === m ) {
+
+							results.push( elem );
+							return results;
+						}
+					}
+
+				// Type selector
+				} else if ( match[2] ) {
+					push.apply( results, context.getElementsByTagName( selector ) );
+					return results;
+
+				// Class selector
+				} else if ( (m = match[3]) && support.getElementsByClassName &&
+					context.getElementsByClassName ) {
+
+					push.apply( results, context.getElementsByClassName( m ) );
+					return results;
+				}
+			}
+
+			// Take advantage of querySelectorAll
+			if ( support.qsa &&
+				!compilerCache[ selector + " " ] &&
+				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+
+				if ( nodeType !== 1 ) {
+					newContext = context;
+					newSelector = selector;
+
+				// qSA looks outside Element context, which is not what we want
+				// Thanks to Andrew Dupont for this workaround technique
+				// Support: IE <=8
+				// Exclude object elements
+				} else if ( context.nodeName.toLowerCase() !== "object" ) {
+
+					// Capture the context ID, setting it first if necessary
+					if ( (nid = context.getAttribute( "id" )) ) {
+						nid = nid.replace( rescape, "\\$&" );
+					} else {
+						context.setAttribute( "id", (nid = expando) );
+					}
+
+					// Prefix every selector in the list
+					groups = tokenize( selector );
+					i = groups.length;
+					nidselect = ridentifier.test( nid ) ? "#" + nid : "[id='" + nid + "']";
+					while ( i-- ) {
+						groups[i] = nidselect + " " + toSelector( groups[i] );
+					}
+					newSelector = groups.join( "," );
+
+					// Expand context for sibling selectors
+					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+						context;
+				}
+
+				if ( newSelector ) {
+					try {
+						push.apply( results,
+							newContext.querySelectorAll( newSelector )
+						);
+						return results;
+					} catch ( qsaError ) {
+					} finally {
+						if ( nid === expando ) {
+							context.removeAttribute( "id" );
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// All others
+	return select( selector.replace( rtrim, "$1" ), context, results, seed );
+}
+
+/**
+ * Create key-value caches of limited size
+ * @returns {function(string, object)} Returns the Object data after storing it on itself with
+ *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+ *	deleting the oldest entry
+ */
+function createCache() {
+	var keys = [];
+
+	function cache( key, value ) {
+		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
+		if ( keys.push( key + " " ) > Expr.cacheLength ) {
+			// Only keep the most recent entries
+			delete cache[ keys.shift() ];
+		}
+		return (cache[ key + " " ] = value);
+	}
+	return cache;
+}
+
+/**
+ * Mark a function for special use by Sizzle
+ * @param {Function} fn The function to mark
+ */
+function markFunction( fn ) {
+	fn[ expando ] = true;
+	return fn;
+}
+
+/**
+ * Support testing using an element
+ * @param {Function} fn Passed the created div and expects a boolean result
+ */
+function assert( fn ) {
+	var div = document.createElement("div");
+
+	try {
+		return !!fn( div );
+	} catch (e) {
+		return false;
+	} finally {
+		// Remove from its parent by default
+		if ( div.parentNode ) {
+			div.parentNode.removeChild( div );
+		}
+		// release memory in IE
+		div = null;
+	}
+}
+
+/**
+ * Adds the same handler for all of the specified attrs
+ * @param {String} attrs Pipe-separated list of attributes
+ * @param {Function} handler The method that will be applied
+ */
+function addHandle( attrs, handler ) {
+	var arr = attrs.split("|"),
+		i = arr.length;
+
+	while ( i-- ) {
+		Expr.attrHandle[ arr[i] ] = handler;
+	}
+}
+
+/**
+ * Checks document order of two siblings
+ * @param {Element} a
+ * @param {Element} b
+ * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
+ */
+function siblingCheck( a, b ) {
+	var cur = b && a,
+		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
+			( ~b.sourceIndex || MAX_NEGATIVE ) -
+			( ~a.sourceIndex || MAX_NEGATIVE );
+
+	// Use IE sourceIndex if available on both nodes
+	if ( diff ) {
+		return diff;
+	}
+
+	// Check if b follows a
+	if ( cur ) {
+		while ( (cur = cur.nextSibling) ) {
+			if ( cur === b ) {
+				return -1;
+			}
+		}
+	}
+
+	return a ? 1 : -1;
+}
+
+/**
+ * Returns a function to use in pseudos for input types
+ * @param {String} type
+ */
+function createInputPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return name === "input" && elem.type === type;
+	};
+}
+
+/**
+ * Returns a function to use in pseudos for buttons
+ * @param {String} type
+ */
+function createButtonPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return (name === "input" || name === "button") && elem.type === type;
+	};
+}
+
+/**
+ * Returns a function to use in pseudos for positionals
+ * @param {Function} fn
+ */
+function createPositionalPseudo( fn ) {
+	return markFunction(function( argument ) {
+		argument = +argument;
+		return markFunction(function( seed, matches ) {
+			var j,
+				matchIndexes = fn( [], seed.length, argument ),
+				i = matchIndexes.length;
+
+			// Match elements found at the specified indexes
+			while ( i-- ) {
+				if ( seed[ (j = matchIndexes[i]) ] ) {
+					seed[j] = !(matches[j] = seed[j]);
+				}
+			}
+		});
+	});
+}
+
+/**
+ * Checks a node for validity as a Sizzle context
+ * @param {Element|Object=} context
+ * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
+ */
+function testContext( context ) {
+	return context && typeof context.getElementsByTagName !== "undefined" && context;
+}
+
+// Expose support vars for convenience
+support = Sizzle.support = {};
+
+/**
+ * Detects XML nodes
+ * @param {Element|Object} elem An element or a document
+ * @returns {Boolean} True iff elem is a non-HTML XML node
+ */
+isXML = Sizzle.isXML = function( elem ) {
+	// documentElement is verified for cases where it doesn't yet exist
+	// (such as loading iframes in IE - #4833)
+	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+
+/**
+ * Sets document-related variables once based on the current document
+ * @param {Element|Object} [doc] An element or document object to use to set the document
+ * @returns {Object} Returns the current document
+ */
+setDocument = Sizzle.setDocument = function( node ) {
+	var hasCompare, parent,
+		doc = node ? node.ownerDocument || node : preferredDoc;
+
+	// Return early if doc is invalid or already selected
+	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
+		return document;
+	}
+
+	// Update global variables
+	document = doc;
+	docElem = document.documentElement;
+	documentIsHTML = !isXML( document );
+
+	// Support: IE 9-11, Edge
+	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
+	if ( (parent = document.defaultView) && parent.top !== parent ) {
+		// Support: IE 11
+		if ( parent.addEventListener ) {
+			parent.addEventListener( "unload", unloadHandler, false );
+
+		// Support: IE 9 - 10 only
+		} else if ( parent.attachEvent ) {
+			parent.attachEvent( "onunload", unloadHandler );
+		}
+	}
+
+	/* Attributes
+	---------------------------------------------------------------------- */
+
+	// Support: IE<8
+	// Verify that getAttribute really returns attributes and not properties
+	// (excepting IE8 booleans)
+	support.attributes = assert(function( div ) {
+		div.className = "i";
+		return !div.getAttribute("className");
+	});
+
+	/* getElement(s)By*
+	---------------------------------------------------------------------- */
+
+	// Check if getElementsByTagName("*") returns only elements
+	support.getElementsByTagName = assert(function( div ) {
+		div.appendChild( document.createComment("") );
+		return !div.getElementsByTagName("*").length;
+	});
+
+	// Support: IE<9
+	support.getElementsByClassName = rnative.test( document.getElementsByClassName );
+
+	// Support: IE<10
+	// Check if getElementById returns elements by name
+	// The broken getElementById methods don't pick up programatically-set names,
+	// so use a roundabout getElementsByName test
+	support.getById = assert(function( div ) {
+		docElem.appendChild( div ).id = expando;
+		return !document.getElementsByName || !document.getElementsByName( expando ).length;
+	});
+
+	// ID find and filter
+	if ( support.getById ) {
+		Expr.find["ID"] = function( id, context ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
+				var m = context.getElementById( id );
+				return m ? [ m ] : [];
+			}
+		};
+		Expr.filter["ID"] = function( id ) {
+			var attrId = id.replace( runescape, funescape );
+			return function( elem ) {
+				return elem.getAttribute("id") === attrId;
+			};
+		};
+	} else {
+		// Support: IE6/7
+		// getElementById is not reliable as a find shortcut
+		delete Expr.find["ID"];
+
+		Expr.filter["ID"] =  function( id ) {
+			var attrId = id.replace( runescape, funescape );
+			return function( elem ) {
+				var node = typeof elem.getAttributeNode !== "undefined" &&
+					elem.getAttributeNode("id");
+				return node && node.value === attrId;
+			};
+		};
+	}
+
+	// Tag
+	Expr.find["TAG"] = support.getElementsByTagName ?
+		function( tag, context ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
+				return context.getElementsByTagName( tag );
+
+			// DocumentFragment nodes don't have gEBTN
+			} else if ( support.qsa ) {
+				return context.querySelectorAll( tag );
+			}
+		} :
+
+		function( tag, context ) {
+			var elem,
+				tmp = [],
+				i = 0,
+				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
+				results = context.getElementsByTagName( tag );
+
+			// Filter out possible comments
+			if ( tag === "*" ) {
+				while ( (elem = results[i++]) ) {
+					if ( elem.nodeType === 1 ) {
+						tmp.push( elem );
+					}
+				}
+
+				return tmp;
+			}
+			return results;
+		};
+
+	// Class
+	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
+		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
+			return context.getElementsByClassName( className );
+		}
+	};
+
+	/* QSA/matchesSelector
+	---------------------------------------------------------------------- */
+
+	// QSA and matchesSelector support
+
+	// matchesSelector(:active) reports false when true (IE9/Opera 11.5)
+	rbuggyMatches = [];
+
+	// qSa(:focus) reports false when true (Chrome 21)
+	// We allow this because of a bug in IE8/9 that throws an error
+	// whenever `document.activeElement` is accessed on an iframe
+	// So, we allow :focus to pass through QSA all the time to avoid the IE error
+	// See http://bugs.jquery.com/ticket/13378
+	rbuggyQSA = [];
+
+	if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
+		// Build QSA regex
+		// Regex strategy adopted from Diego Perini
+		assert(function( div ) {
+			// Select is set to empty string on purpose
+			// This is to test IE's treatment of not explicitly
+			// setting a boolean content attribute,
+			// since its presence should be enough
+			// http://bugs.jquery.com/ticket/12359
+			docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
+				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
+				"<option selected=''></option></select>";
+
+			// Support: IE8, Opera 11-12.16
+			// Nothing should be selected when empty strings follow ^= or $= or *=
+			// The test attribute must be unknown in Opera but "safe" for WinRT
+			// http://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
+			if ( div.querySelectorAll("[msallowcapture^='']").length ) {
+				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+			}
+
+			// Support: IE8
+			// Boolean attributes and "value" are not treated correctly
+			if ( !div.querySelectorAll("[selected]").length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
+			}
+
+			// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
+			if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+				rbuggyQSA.push("~=");
+			}
+
+			// Webkit/Opera - :checked should return selected option elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			// IE8 throws error here and will not see later tests
+			if ( !div.querySelectorAll(":checked").length ) {
+				rbuggyQSA.push(":checked");
+			}
+
+			// Support: Safari 8+, iOS 8+
+			// https://bugs.webkit.org/show_bug.cgi?id=136851
+			// In-page `selector#id sibing-combinator selector` fails
+			if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
+				rbuggyQSA.push(".#.+[+~]");
+			}
+		});
+
+		assert(function( div ) {
+			// Support: Windows 8 Native Apps
+			// The type and name attributes are restricted during .innerHTML assignment
+			var input = document.createElement("input");
+			input.setAttribute( "type", "hidden" );
+			div.appendChild( input ).setAttribute( "name", "D" );
+
+			// Support: IE8
+			// Enforce case-sensitivity of name attribute
+			if ( div.querySelectorAll("[name=d]").length ) {
+				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
+			}
+
+			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
+			// IE8 throws error here and will not see later tests
+			if ( !div.querySelectorAll(":enabled").length ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+
+			// Opera 10-11 does not throw on post-comma invalid pseudos
+			div.querySelectorAll("*,:x");
+			rbuggyQSA.push(",.*:");
+		});
+	}
+
+	if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
+		docElem.webkitMatchesSelector ||
+		docElem.mozMatchesSelector ||
+		docElem.oMatchesSelector ||
+		docElem.msMatchesSelector) )) ) {
+
+		assert(function( div ) {
+			// Check to see if it's possible to do matchesSelector
+			// on a disconnected node (IE 9)
+			support.disconnectedMatch = matches.call( div, "div" );
+
+			// This should fail with an exception
+			// Gecko does not error, returns false instead
+			matches.call( div, "[s!='']:x" );
+			rbuggyMatches.push( "!=", pseudos );
+		});
+	}
+
+	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
+	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
+
+	/* Contains
+	---------------------------------------------------------------------- */
+	hasCompare = rnative.test( docElem.compareDocumentPosition );
+
+	// Element contains another
+	// Purposefully self-exclusive
+	// As in, an element does not contain itself
+	contains = hasCompare || rnative.test( docElem.contains ) ?
+		function( a, b ) {
+			var adown = a.nodeType === 9 ? a.documentElement : a,
+				bup = b && b.parentNode;
+			return a === bup || !!( bup && bup.nodeType === 1 && (
+				adown.contains ?
+					adown.contains( bup ) :
+					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+			));
+		} :
+		function( a, b ) {
+			if ( b ) {
+				while ( (b = b.parentNode) ) {
+					if ( b === a ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		};
+
+	/* Sorting
+	---------------------------------------------------------------------- */
+
+	// Document order sorting
+	sortOrder = hasCompare ?
+	function( a, b ) {
+
+		// Flag for duplicate removal
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
+		// Sort on method existence if only one input has compareDocumentPosition
+		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
+		if ( compare ) {
+			return compare;
+		}
+
+		// Calculate position if both inputs belong to the same document
+		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
+			a.compareDocumentPosition( b ) :
+
+			// Otherwise we know they are disconnected
+			1;
+
+		// Disconnected nodes
+		if ( compare & 1 ||
+			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
+
+			// Choose the first element that is related to our preferred document
+			if ( a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
+				return -1;
+			}
+			if ( b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
+				return 1;
+			}
+
+			// Maintain original order
+			return sortInput ?
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+				0;
+		}
+
+		return compare & 4 ? -1 : 1;
+	} :
+	function( a, b ) {
+		// Exit early if the nodes are identical
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
+		var cur,
+			i = 0,
+			aup = a.parentNode,
+			bup = b.parentNode,
+			ap = [ a ],
+			bp = [ b ];
+
+		// Parentless nodes are either documents or disconnected
+		if ( !aup || !bup ) {
+			return a === document ? -1 :
+				b === document ? 1 :
+				aup ? -1 :
+				bup ? 1 :
+				sortInput ?
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+				0;
+
+		// If the nodes are siblings, we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+		}
+
+		// Otherwise we need full lists of their ancestors for comparison
+		cur = a;
+		while ( (cur = cur.parentNode) ) {
+			ap.unshift( cur );
+		}
+		cur = b;
+		while ( (cur = cur.parentNode) ) {
+			bp.unshift( cur );
+		}
+
+		// Walk down the tree looking for a discrepancy
+		while ( ap[i] === bp[i] ) {
+			i++;
+		}
+
+		return i ?
+			// Do a sibling check if the nodes have a common ancestor
+			siblingCheck( ap[i], bp[i] ) :
+
+			// Otherwise nodes in our document sort first
+			ap[i] === preferredDoc ? -1 :
+			bp[i] === preferredDoc ? 1 :
+			0;
+	};
+
+	return document;
+};
+
+Sizzle.matches = function( expr, elements ) {
+	return Sizzle( expr, null, null, elements );
+};
+
+Sizzle.matchesSelector = function( elem, expr ) {
+	// Set document vars if needed
+	if ( ( elem.ownerDocument || elem ) !== document ) {
+		setDocument( elem );
+	}
+
+	// Make sure that attribute selectors are quoted
+	expr = expr.replace( rattributeQuotes, "='$1']" );
+
+	if ( support.matchesSelector && documentIsHTML &&
+		!compilerCache[ expr + " " ] &&
+		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
+
+		try {
+			var ret = matches.call( elem, expr );
+
+			// IE 9's matchesSelector returns false on disconnected nodes
+			if ( ret || support.disconnectedMatch ||
+					// As well, disconnected nodes are said to be in a document
+					// fragment in IE 9
+					elem.document && elem.document.nodeType !== 11 ) {
+				return ret;
+			}
+		} catch (e) {}
+	}
+
+	return Sizzle( expr, document, null, [ elem ] ).length > 0;
+};
+
+Sizzle.contains = function( context, elem ) {
+	// Set document vars if needed
+	if ( ( context.ownerDocument || context ) !== document ) {
+		setDocument( context );
+	}
+	return contains( context, elem );
+};
+
+Sizzle.attr = function( elem, name ) {
+	// Set document vars if needed
+	if ( ( elem.ownerDocument || elem ) !== document ) {
+		setDocument( elem );
+	}
+
+	var fn = Expr.attrHandle[ name.toLowerCase() ],
+		// Don't get fooled by Object.prototype properties (jQuery #13807)
+		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+			fn( elem, name, !documentIsHTML ) :
+			undefined;
+
+	return val !== undefined ?
+		val :
+		support.attributes || !documentIsHTML ?
+			elem.getAttribute( name ) :
+			(val = elem.getAttributeNode(name)) && val.specified ?
+				val.value :
+				null;
+};
+
+Sizzle.error = function( msg ) {
+	throw new Error( "Syntax error, unrecognized expression: " + msg );
+};
+
+/**
+ * Document sorting and removing duplicates
+ * @param {ArrayLike} results
+ */
+Sizzle.uniqueSort = function( results ) {
+	var elem,
+		duplicates = [],
+		j = 0,
+		i = 0;
+
+	// Unless we *know* we can detect duplicates, assume their presence
+	hasDuplicate = !support.detectDuplicates;
+	sortInput = !support.sortStable && results.slice( 0 );
+	results.sort( sortOrder );
+
+	if ( hasDuplicate ) {
+		while ( (elem = results[i++]) ) {
+			if ( elem === results[ i ] ) {
+				j = duplicates.push( i );
+			}
+		}
+		while ( j-- ) {
+			results.splice( duplicates[ j ], 1 );
+		}
+	}
+
+	// Clear input after sorting to release objects
+	// See https://github.com/jquery/sizzle/pull/225
+	sortInput = null;
+
+	return results;
+};
+
+/**
+ * Utility function for retrieving the text value of an array of DOM nodes
+ * @param {Array|Element} elem
+ */
+getText = Sizzle.getText = function( elem ) {
+	var node,
+		ret = "",
+		i = 0,
+		nodeType = elem.nodeType;
+
+	if ( !nodeType ) {
+		// If no nodeType, this is expected to be an array
+		while ( (node = elem[i++]) ) {
+			// Do not traverse comment nodes
+			ret += getText( node );
+		}
+	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+		// Use textContent for elements
+		// innerText usage removed for consistency of new lines (jQuery #11153)
+		if ( typeof elem.textContent === "string" ) {
+			return elem.textContent;
+		} else {
+			// Traverse its children
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				ret += getText( elem );
+			}
+		}
+	} else if ( nodeType === 3 || nodeType === 4 ) {
+		return elem.nodeValue;
+	}
+	// Do not include comment or processing instruction nodes
+
+	return ret;
+};
+
+Expr = Sizzle.selectors = {
+
+	// Can be adjusted by the user
+	cacheLength: 50,
+
+	createPseudo: markFunction,
+
+	match: matchExpr,
+
+	attrHandle: {},
+
+	find: {},
+
+	relative: {
+		">": { dir: "parentNode", first: true },
+		" ": { dir: "parentNode" },
+		"+": { dir: "previousSibling", first: true },
+		"~": { dir: "previousSibling" }
+	},
+
+	preFilter: {
+		"ATTR": function( match ) {
+			match[1] = match[1].replace( runescape, funescape );
+
+			// Move the given value to match[3] whether quoted or unquoted
+			match[3] = ( match[3] || match[4] || match[5] || "" ).replace( runescape, funescape );
+
+			if ( match[2] === "~=" ) {
+				match[3] = " " + match[3] + " ";
+			}
+
+			return match.slice( 0, 4 );
+		},
+
+		"CHILD": function( match ) {
+			/* matches from matchExpr["CHILD"]
+				1 type (only|nth|...)
+				2 what (child|of-type)
+				3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
+				4 xn-component of xn+y argument ([+-]?\d*n|)
+				5 sign of xn-component
+				6 x of xn-component
+				7 sign of y-component
+				8 y of y-component
+			*/
+			match[1] = match[1].toLowerCase();
+
+			if ( match[1].slice( 0, 3 ) === "nth" ) {
+				// nth-* requires argument
+				if ( !match[3] ) {
+					Sizzle.error( match[0] );
+				}
+
+				// numeric x and y parameters for Expr.filter.CHILD
+				// remember that false/true cast respectively to 0/1
+				match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
+				match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
+
+			// other types prohibit arguments
+			} else if ( match[3] ) {
+				Sizzle.error( match[0] );
+			}
+
+			return match;
+		},
+
+		"PSEUDO": function( match ) {
+			var excess,
+				unquoted = !match[6] && match[2];
+
+			if ( matchExpr["CHILD"].test( match[0] ) ) {
+				return null;
+			}
+
+			// Accept quoted arguments as-is
+			if ( match[3] ) {
+				match[2] = match[4] || match[5] || "";
+
+			// Strip excess characters from unquoted arguments
+			} else if ( unquoted && rpseudo.test( unquoted ) &&
+				// Get excess from tokenize (recursively)
+				(excess = tokenize( unquoted, true )) &&
+				// advance to the next closing parenthesis
+				(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
+
+				// excess is a negative index
+				match[0] = match[0].slice( 0, excess );
+				match[2] = unquoted.slice( 0, excess );
+			}
+
+			// Return only captures needed by the pseudo filter method (type and argument)
+			return match.slice( 0, 3 );
+		}
+	},
+
+	filter: {
+
+		"TAG": function( nodeNameSelector ) {
+			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
+			return nodeNameSelector === "*" ?
+				function() { return true; } :
+				function( elem ) {
+					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
+				};
+		},
+
+		"CLASS": function( className ) {
+			var pattern = classCache[ className + " " ];
+
+			return pattern ||
+				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
+				classCache( className, function( elem ) {
+					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
+				});
+		},
+
+		"ATTR": function( name, operator, check ) {
+			return function( elem ) {
+				var result = Sizzle.attr( elem, name );
+
+				if ( result == null ) {
+					return operator === "!=";
+				}
+				if ( !operator ) {
+					return true;
+				}
+
+				result += "";
+
+				return operator === "=" ? result === check :
+					operator === "!=" ? result !== check :
+					operator === "^=" ? check && result.indexOf( check ) === 0 :
+					operator === "*=" ? check && result.indexOf( check ) > -1 :
+					operator === "$=" ? check && result.slice( -check.length ) === check :
+					operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
+					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
+					false;
+			};
+		},
+
+		"CHILD": function( type, what, argument, first, last ) {
+			var simple = type.slice( 0, 3 ) !== "nth",
+				forward = type.slice( -4 ) !== "last",
+				ofType = what === "of-type";
+
+			return first === 1 && last === 0 ?
+
+				// Shortcut for :nth-*(n)
+				function( elem ) {
+					return !!elem.parentNode;
+				} :
+
+				function( elem, context, xml ) {
+					var cache, uniqueCache, outerCache, node, nodeIndex, start,
+						dir = simple !== forward ? "nextSibling" : "previousSibling",
+						parent = elem.parentNode,
+						name = ofType && elem.nodeName.toLowerCase(),
+						useCache = !xml && !ofType,
+						diff = false;
+
+					if ( parent ) {
+
+						// :(first|last|only)-(child|of-type)
+						if ( simple ) {
+							while ( dir ) {
+								node = elem;
+								while ( (node = node[ dir ]) ) {
+									if ( ofType ?
+										node.nodeName.toLowerCase() === name :
+										node.nodeType === 1 ) {
+
+										return false;
+									}
+								}
+								// Reverse direction for :only-* (if we haven't yet done so)
+								start = dir = type === "only" && !start && "nextSibling";
+							}
+							return true;
+						}
+
+						start = [ forward ? parent.firstChild : parent.lastChild ];
+
+						// non-xml :nth-child(...) stores cache data on `parent`
+						if ( forward && useCache ) {
+
+							// Seek `elem` from a previously-cached index
+
+							// ...in a gzip-friendly way
+							node = parent;
+							outerCache = node[ expando ] || (node[ expando ] = {});
+
+							// Support: IE <9 only
+							// Defend against cloned attroperties (jQuery gh-1709)
+							uniqueCache = outerCache[ node.uniqueID ] ||
+								(outerCache[ node.uniqueID ] = {});
+
+							cache = uniqueCache[ type ] || [];
+							nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+							diff = nodeIndex && cache[ 2 ];
+							node = nodeIndex && parent.childNodes[ nodeIndex ];
+
+							while ( (node = ++nodeIndex && node && node[ dir ] ||
+
+								// Fallback to seeking `elem` from the start
+								(diff = nodeIndex = 0) || start.pop()) ) {
+
+								// When found, cache indexes on `parent` and break
+								if ( node.nodeType === 1 && ++diff && node === elem ) {
+									uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
+									break;
+								}
+							}
+
+						} else {
+							// Use previously-cached element index if available
+							if ( useCache ) {
+								// ...in a gzip-friendly way
+								node = elem;
+								outerCache = node[ expando ] || (node[ expando ] = {});
+
+								// Support: IE <9 only
+								// Defend against cloned attroperties (jQuery gh-1709)
+								uniqueCache = outerCache[ node.uniqueID ] ||
+									(outerCache[ node.uniqueID ] = {});
+
+								cache = uniqueCache[ type ] || [];
+								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+								diff = nodeIndex;
+							}
+
+							// xml :nth-child(...)
+							// or :nth-last-child(...) or :nth(-last)?-of-type(...)
+							if ( diff === false ) {
+								// Use the same loop as above to seek `elem` from the start
+								while ( (node = ++nodeIndex && node && node[ dir ] ||
+									(diff = nodeIndex = 0) || start.pop()) ) {
+
+									if ( ( ofType ?
+										node.nodeName.toLowerCase() === name :
+										node.nodeType === 1 ) &&
+										++diff ) {
+
+										// Cache the index of each encountered element
+										if ( useCache ) {
+											outerCache = node[ expando ] || (node[ expando ] = {});
+
+											// Support: IE <9 only
+											// Defend against cloned attroperties (jQuery gh-1709)
+											uniqueCache = outerCache[ node.uniqueID ] ||
+												(outerCache[ node.uniqueID ] = {});
+
+											uniqueCache[ type ] = [ dirruns, diff ];
+										}
+
+										if ( node === elem ) {
+											break;
+										}
+									}
+								}
+							}
+						}
+
+						// Incorporate the offset, then check against cycle size
+						diff -= last;
+						return diff === first || ( diff % first === 0 && diff / first >= 0 );
+					}
+				};
+		},
+
+		"PSEUDO": function( pseudo, argument ) {
+			// pseudo-class names are case-insensitive
+			// http://www.w3.org/TR/selectors/#pseudo-classes
+			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
+			// Remember that setFilters inherits from pseudos
+			var args,
+				fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
+					Sizzle.error( "unsupported pseudo: " + pseudo );
+
+			// The user may use createPseudo to indicate that
+			// arguments are needed to create the filter function
+			// just as Sizzle does
+			if ( fn[ expando ] ) {
+				return fn( argument );
+			}
+
+			// But maintain support for old signatures
+			if ( fn.length > 1 ) {
+				args = [ pseudo, pseudo, "", argument ];
+				return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
+					markFunction(function( seed, matches ) {
+						var idx,
+							matched = fn( seed, argument ),
+							i = matched.length;
+						while ( i-- ) {
+							idx = indexOf( seed, matched[i] );
+							seed[ idx ] = !( matches[ idx ] = matched[i] );
+						}
+					}) :
+					function( elem ) {
+						return fn( elem, 0, args );
+					};
+			}
+
+			return fn;
+		}
+	},
+
+	pseudos: {
+		// Potentially complex pseudos
+		"not": markFunction(function( selector ) {
+			// Trim the selector passed to compile
+			// to avoid treating leading and trailing
+			// spaces as combinators
+			var input = [],
+				results = [],
+				matcher = compile( selector.replace( rtrim, "$1" ) );
+
+			return matcher[ expando ] ?
+				markFunction(function( seed, matches, context, xml ) {
+					var elem,
+						unmatched = matcher( seed, null, xml, [] ),
+						i = seed.length;
+
+					// Match elements unmatched by `matcher`
+					while ( i-- ) {
+						if ( (elem = unmatched[i]) ) {
+							seed[i] = !(matches[i] = elem);
+						}
+					}
+				}) :
+				function( elem, context, xml ) {
+					input[0] = elem;
+					matcher( input, null, xml, results );
+					// Don't keep the element (issue #299)
+					input[0] = null;
+					return !results.pop();
+				};
+		}),
+
+		"has": markFunction(function( selector ) {
+			return function( elem ) {
+				return Sizzle( selector, elem ).length > 0;
+			};
+		}),
+
+		"contains": markFunction(function( text ) {
+			text = text.replace( runescape, funescape );
+			return function( elem ) {
+				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+			};
+		}),
+
+		// "Whether an element is represented by a :lang() selector
+		// is based solely on the element's language value
+		// being equal to the identifier C,
+		// or beginning with the identifier C immediately followed by "-".
+		// The matching of C against the element's language value is performed case-insensitively.
+		// The identifier C does not have to be a valid language name."
+		// http://www.w3.org/TR/selectors/#lang-pseudo
+		"lang": markFunction( function( lang ) {
+			// lang value must be a valid identifier
+			if ( !ridentifier.test(lang || "") ) {
+				Sizzle.error( "unsupported lang: " + lang );
+			}
+			lang = lang.replace( runescape, funescape ).toLowerCase();
+			return function( elem ) {
+				var elemLang;
+				do {
+					if ( (elemLang = documentIsHTML ?
+						elem.lang :
+						elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
+
+						elemLang = elemLang.toLowerCase();
+						return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
+					}
+				} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
+				return false;
+			};
+		}),
+
+		// Miscellaneous
+		"target": function( elem ) {
+			var hash = window.location && window.location.hash;
+			return hash && hash.slice( 1 ) === elem.id;
+		},
+
+		"root": function( elem ) {
+			return elem === docElem;
+		},
+
+		"focus": function( elem ) {
+			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+		},
+
+		// Boolean properties
+		"enabled": function( elem ) {
+			return elem.disabled === false;
+		},
+
+		"disabled": function( elem ) {
+			return elem.disabled === true;
+		},
+
+		"checked": function( elem ) {
+			// In CSS3, :checked should return both checked and selected elements
+			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+			var nodeName = elem.nodeName.toLowerCase();
+			return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
+		},
+
+		"selected": function( elem ) {
+			// Accessing this property makes selected-by-default
+			// options in Safari work properly
+			if ( elem.parentNode ) {
+				elem.parentNode.selectedIndex;
+			}
+
+			return elem.selected === true;
+		},
+
+		// Contents
+		"empty": function( elem ) {
+			// http://www.w3.org/TR/selectors/#empty-pseudo
+			// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
+			//   but not by others (comment: 8; processing instruction: 7; etc.)
+			// nodeType < 6 works because attributes (2) do not appear as children
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				if ( elem.nodeType < 6 ) {
+					return false;
+				}
+			}
+			return true;
+		},
+
+		"parent": function( elem ) {
+			return !Expr.pseudos["empty"]( elem );
+		},
+
+		// Element/input types
+		"header": function( elem ) {
+			return rheader.test( elem.nodeName );
+		},
+
+		"input": function( elem ) {
+			return rinputs.test( elem.nodeName );
+		},
+
+		"button": function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && elem.type === "button" || name === "button";
+		},
+
+		"text": function( elem ) {
+			var attr;
+			return elem.nodeName.toLowerCase() === "input" &&
+				elem.type === "text" &&
+
+				// Support: IE<8
+				// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
+				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
+		},
+
+		// Position-in-collection
+		"first": createPositionalPseudo(function() {
+			return [ 0 ];
+		}),
+
+		"last": createPositionalPseudo(function( matchIndexes, length ) {
+			return [ length - 1 ];
+		}),
+
+		"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			return [ argument < 0 ? argument + length : argument ];
+		}),
+
+		"even": createPositionalPseudo(function( matchIndexes, length ) {
+			var i = 0;
+			for ( ; i < length; i += 2 ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+
+		"odd": createPositionalPseudo(function( matchIndexes, length ) {
+			var i = 1;
+			for ( ; i < length; i += 2 ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+
+		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; --i >= 0; ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+
+		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; ++i < length; ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		})
+	}
+};
+
+Expr.pseudos["nth"] = Expr.pseudos["eq"];
+
+// Add button/input type pseudos
+for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
+	Expr.pseudos[ i ] = createInputPseudo( i );
+}
+for ( i in { submit: true, reset: true } ) {
+	Expr.pseudos[ i ] = createButtonPseudo( i );
+}
+
+// Easy API for creating new setFilters
+function setFilters() {}
+setFilters.prototype = Expr.filters = Expr.pseudos;
+Expr.setFilters = new setFilters();
+
+tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
+	var matched, match, tokens, type,
+		soFar, groups, preFilters,
+		cached = tokenCache[ selector + " " ];
+
+	if ( cached ) {
+		return parseOnly ? 0 : cached.slice( 0 );
+	}
+
+	soFar = selector;
+	groups = [];
+	preFilters = Expr.preFilter;
+
+	while ( soFar ) {
+
+		// Comma and first run
+		if ( !matched || (match = rcomma.exec( soFar )) ) {
+			if ( match ) {
+				// Don't consume trailing commas as valid
+				soFar = soFar.slice( match[0].length ) || soFar;
+			}
+			groups.push( (tokens = []) );
+		}
+
+		matched = false;
+
+		// Combinators
+		if ( (match = rcombinators.exec( soFar )) ) {
+			matched = match.shift();
+			tokens.push({
+				value: matched,
+				// Cast descendant combinators to space
+				type: match[0].replace( rtrim, " " )
+			});
+			soFar = soFar.slice( matched.length );
+		}
+
+		// Filters
+		for ( type in Expr.filter ) {
+			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+				(match = preFilters[ type ]( match ))) ) {
+				matched = match.shift();
+				tokens.push({
+					value: matched,
+					type: type,
+					matches: match
+				});
+				soFar = soFar.slice( matched.length );
+			}
+		}
+
+		if ( !matched ) {
+			break;
+		}
+	}
+
+	// Return the length of the invalid excess
+	// if we're just parsing
+	// Otherwise, throw an error or return tokens
+	return parseOnly ?
+		soFar.length :
+		soFar ?
+			Sizzle.error( selector ) :
+			// Cache the tokens
+			tokenCache( selector, groups ).slice( 0 );
+};
+
+function toSelector( tokens ) {
+	var i = 0,
+		len = tokens.length,
+		selector = "";
+	for ( ; i < len; i++ ) {
+		selector += tokens[i].value;
+	}
+	return selector;
+}
+
+function addCombinator( matcher, combinator, base ) {
+	var dir = combinator.dir,
+		checkNonElements = base && dir === "parentNode",
+		doneName = done++;
+
+	return combinator.first ?
+		// Check against closest ancestor/preceding element
+		function( elem, context, xml ) {
+			while ( (elem = elem[ dir ]) ) {
+				if ( elem.nodeType === 1 || checkNonElements ) {
+					return matcher( elem, context, xml );
+				}
+			}
+		} :
+
+		// Check against all ancestor/preceding elements
+		function( elem, context, xml ) {
+			var oldCache, uniqueCache, outerCache,
+				newCache = [ dirruns, doneName ];
+
+			// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
+			if ( xml ) {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						if ( matcher( elem, context, xml ) ) {
+							return true;
+						}
+					}
+				}
+			} else {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						outerCache = elem[ expando ] || (elem[ expando ] = {});
+
+						// Support: IE <9 only
+						// Defend against cloned attroperties (jQuery gh-1709)
+						uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
+
+						if ( (oldCache = uniqueCache[ dir ]) &&
+							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
+
+							// Assign to newCache so results back-propagate to previous elements
+							return (newCache[ 2 ] = oldCache[ 2 ]);
+						} else {
+							// Reuse newcache so results back-propagate to previous elements
+							uniqueCache[ dir ] = newCache;
+
+							// A match means we're done; a fail means we have to keep checking
+							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		};
+}
+
+function elementMatcher( matchers ) {
+	return matchers.length > 1 ?
+		function( elem, context, xml ) {
+			var i = matchers.length;
+			while ( i-- ) {
+				if ( !matchers[i]( elem, context, xml ) ) {
+					return false;
+				}
+			}
+			return true;
+		} :
+		matchers[0];
+}
+
+function multipleContexts( selector, contexts, results ) {
+	var i = 0,
+		len = contexts.length;
+	for ( ; i < len; i++ ) {
+		Sizzle( selector, contexts[i], results );
+	}
+	return results;
+}
+
+function condense( unmatched, map, filter, context, xml ) {
+	var elem,
+		newUnmatched = [],
+		i = 0,
+		len = unmatched.length,
+		mapped = map != null;
+
+	for ( ; i < len; i++ ) {
+		if ( (elem = unmatched[i]) ) {
+			if ( !filter || filter( elem, context, xml ) ) {
+				newUnmatched.push( elem );
+				if ( mapped ) {
+					map.push( i );
+				}
+			}
+		}
+	}
+
+	return newUnmatched;
+}
+
+function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
+	if ( postFilter && !postFilter[ expando ] ) {
+		postFilter = setMatcher( postFilter );
+	}
+	if ( postFinder && !postFinder[ expando ] ) {
+		postFinder = setMatcher( postFinder, postSelector );
+	}
+	return markFunction(function( seed, results, context, xml ) {
+		var temp, i, elem,
+			preMap = [],
+			postMap = [],
+			preexisting = results.length,
+
+			// Get initial elements from seed or context
+			elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+
+			// Prefilter to get matcher input, preserving a map for seed-results synchronization
+			matcherIn = preFilter && ( seed || !selector ) ?
+				condense( elems, preMap, preFilter, context, xml ) :
+				elems,
+
+			matcherOut = matcher ?
+				// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
+				postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
+
+					// ...intermediate processing is necessary
+					[] :
+
+					// ...otherwise use results directly
+					results :
+				matcherIn;
+
+		// Find primary matches
+		if ( matcher ) {
+			matcher( matcherIn, matcherOut, context, xml );
+		}
+
+		// Apply postFilter
+		if ( postFilter ) {
+			temp = condense( matcherOut, postMap );
+			postFilter( temp, [], context, xml );
+
+			// Un-match failing elements by moving them back to matcherIn
+			i = temp.length;
+			while ( i-- ) {
+				if ( (elem = temp[i]) ) {
+					matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
+				}
+			}
+		}
+
+		if ( seed ) {
+			if ( postFinder || preFilter ) {
+				if ( postFinder ) {
+					// Get the final matcherOut by condensing this intermediate into postFinder contexts
+					temp = [];
+					i = matcherOut.length;
+					while ( i-- ) {
+						if ( (elem = matcherOut[i]) ) {
+							// Restore matcherIn since elem is not yet a final match
+							temp.push( (matcherIn[i] = elem) );
+						}
+					}
+					postFinder( null, (matcherOut = []), temp, xml );
+				}
+
+				// Move matched elements from seed to results to keep them synchronized
+				i = matcherOut.length;
+				while ( i-- ) {
+					if ( (elem = matcherOut[i]) &&
+						(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
+
+						seed[temp] = !(results[temp] = elem);
+					}
+				}
+			}
+
+		// Add elements to results, through postFinder if defined
+		} else {
+			matcherOut = condense(
+				matcherOut === results ?
+					matcherOut.splice( preexisting, matcherOut.length ) :
+					matcherOut
+			);
+			if ( postFinder ) {
+				postFinder( null, results, matcherOut, xml );
+			} else {
+				push.apply( results, matcherOut );
+			}
+		}
+	});
+}
+
+function matcherFromTokens( tokens ) {
+	var checkContext, matcher, j,
+		len = tokens.length,
+		leadingRelative = Expr.relative[ tokens[0].type ],
+		implicitRelative = leadingRelative || Expr.relative[" "],
+		i = leadingRelative ? 1 : 0,
+
+		// The foundational matcher ensures that elements are reachable from top-level context(s)
+		matchContext = addCombinator( function( elem ) {
+			return elem === checkContext;
+		}, implicitRelative, true ),
+		matchAnyContext = addCombinator( function( elem ) {
+			return indexOf( checkContext, elem ) > -1;
+		}, implicitRelative, true ),
+		matchers = [ function( elem, context, xml ) {
+			var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+				(checkContext = context).nodeType ?
+					matchContext( elem, context, xml ) :
+					matchAnyContext( elem, context, xml ) );
+			// Avoid hanging onto element (issue #299)
+			checkContext = null;
+			return ret;
+		} ];
+
+	for ( ; i < len; i++ ) {
+		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
+			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
+		} else {
+			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
+
+			// Return special upon seeing a positional matcher
+			if ( matcher[ expando ] ) {
+				// Find the next relative operator (if any) for proper handling
+				j = ++i;
+				for ( ; j < len; j++ ) {
+					if ( Expr.relative[ tokens[j].type ] ) {
+						break;
+					}
+				}
+				return setMatcher(
+					i > 1 && elementMatcher( matchers ),
+					i > 1 && toSelector(
+						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
+						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
+					).replace( rtrim, "$1" ),
+					matcher,
+					i < j && matcherFromTokens( tokens.slice( i, j ) ),
+					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+					j < len && toSelector( tokens )
+				);
+			}
+			matchers.push( matcher );
+		}
+	}
+
+	return elementMatcher( matchers );
+}
+
+function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
+	var bySet = setMatchers.length > 0,
+		byElement = elementMatchers.length > 0,
+		superMatcher = function( seed, context, xml, results, outermost ) {
+			var elem, j, matcher,
+				matchedCount = 0,
+				i = "0",
+				unmatched = seed && [],
+				setMatched = [],
+				contextBackup = outermostContext,
+				// We must always have either seed elements or outermost context
+				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
+				// Use integer dirruns iff this is the outermost matcher
+				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
+				len = elems.length;
+
+			if ( outermost ) {
+				outermostContext = context === document || context || outermost;
+			}
+
+			// Add elements passing elementMatchers directly to results
+			// Support: IE<9, Safari
+			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
+			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
+				if ( byElement && elem ) {
+					j = 0;
+					if ( !context && elem.ownerDocument !== document ) {
+						setDocument( elem );
+						xml = !documentIsHTML;
+					}
+					while ( (matcher = elementMatchers[j++]) ) {
+						if ( matcher( elem, context || document, xml) ) {
+							results.push( elem );
+							break;
+						}
+					}
+					if ( outermost ) {
+						dirruns = dirrunsUnique;
+					}
+				}
+
+				// Track unmatched elements for set filters
+				if ( bySet ) {
+					// They will have gone through all possible matchers
+					if ( (elem = !matcher && elem) ) {
+						matchedCount--;
+					}
+
+					// Lengthen the array for every element, matched or not
+					if ( seed ) {
+						unmatched.push( elem );
+					}
+				}
+			}
+
+			// `i` is now the count of elements visited above, and adding it to `matchedCount`
+			// makes the latter nonnegative.
+			matchedCount += i;
+
+			// Apply set filters to unmatched elements
+			// NOTE: This can be skipped if there are no unmatched elements (i.e., `matchedCount`
+			// equals `i`), unless we didn't visit _any_ elements in the above loop because we have
+			// no element matchers and no seed.
+			// Incrementing an initially-string "0" `i` allows `i` to remain a string only in that
+			// case, which will result in a "00" `matchedCount` that differs from `i` but is also
+			// numerically zero.
+			if ( bySet && i !== matchedCount ) {
+				j = 0;
+				while ( (matcher = setMatchers[j++]) ) {
+					matcher( unmatched, setMatched, context, xml );
+				}
+
+				if ( seed ) {
+					// Reintegrate element matches to eliminate the need for sorting
+					if ( matchedCount > 0 ) {
+						while ( i-- ) {
+							if ( !(unmatched[i] || setMatched[i]) ) {
+								setMatched[i] = pop.call( results );
+							}
+						}
+					}
+
+					// Discard index placeholder values to get only actual matches
+					setMatched = condense( setMatched );
+				}
+
+				// Add matches to results
+				push.apply( results, setMatched );
+
+				// Seedless set matches succeeding multiple successful matchers stipulate sorting
+				if ( outermost && !seed && setMatched.length > 0 &&
+					( matchedCount + setMatchers.length ) > 1 ) {
+
+					Sizzle.uniqueSort( results );
+				}
+			}
+
+			// Override manipulation of globals by nested matchers
+			if ( outermost ) {
+				dirruns = dirrunsUnique;
+				outermostContext = contextBackup;
+			}
+
+			return unmatched;
+		};
+
+	return bySet ?
+		markFunction( superMatcher ) :
+		superMatcher;
+}
+
+compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
+	var i,
+		setMatchers = [],
+		elementMatchers = [],
+		cached = compilerCache[ selector + " " ];
+
+	if ( !cached ) {
+		// Generate a function of recursive functions that can be used to check each element
+		if ( !match ) {
+			match = tokenize( selector );
+		}
+		i = match.length;
+		while ( i-- ) {
+			cached = matcherFromTokens( match[i] );
+			if ( cached[ expando ] ) {
+				setMatchers.push( cached );
+			} else {
+				elementMatchers.push( cached );
+			}
+		}
+
+		// Cache the compiled function
+		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+
+		// Save selector and tokenization
+		cached.selector = selector;
+	}
+	return cached;
+};
+
+/**
+ * A low-level selection function that works with Sizzle's compiled
+ *  selector functions
+ * @param {String|Function} selector A selector or a pre-compiled
+ *  selector function built with Sizzle.compile
+ * @param {Element} context
+ * @param {Array} [results]
+ * @param {Array} [seed] A set of elements to match against
+ */
+select = Sizzle.select = function( selector, context, results, seed ) {
+	var i, tokens, token, type, find,
+		compiled = typeof selector === "function" && selector,
+		match = !seed && tokenize( (selector = compiled.selector || selector) );
+
+	results = results || [];
+
+	// Try to minimize operations if there is only one selector in the list and no seed
+	// (the latter of which guarantees us context)
+	if ( match.length === 1 ) {
+
+		// Reduce context if the leading compound selector is an ID
+		tokens = match[0] = match[0].slice( 0 );
+		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
+				support.getById && context.nodeType === 9 && documentIsHTML &&
+				Expr.relative[ tokens[1].type ] ) {
+
+			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
+			if ( !context ) {
+				return results;
+
+			// Precompiled matchers will still verify ancestry, so step up a level
+			} else if ( compiled ) {
+				context = context.parentNode;
+			}
+
+			selector = selector.slice( tokens.shift().value.length );
+		}
+
+		// Fetch a seed set for right-to-left matching
+		i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+		while ( i-- ) {
+			token = tokens[i];
+
+			// Abort if we hit a combinator
+			if ( Expr.relative[ (type = token.type) ] ) {
+				break;
+			}
+			if ( (find = Expr.find[ type ]) ) {
+				// Search, expanding context for leading sibling combinators
+				if ( (seed = find(
+					token.matches[0].replace( runescape, funescape ),
+					rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
+				)) ) {
+
+					// If seed is empty or no tokens remain, we can return early
+					tokens.splice( i, 1 );
+					selector = seed.length && toSelector( tokens );
+					if ( !selector ) {
+						push.apply( results, seed );
+						return results;
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
+	// Compile and execute a filtering function if one is not provided
+	// Provide `match` to avoid retokenization if we modified the selector above
+	( compiled || compile( selector, match ) )(
+		seed,
+		context,
+		!documentIsHTML,
+		results,
+		!context || rsibling.test( selector ) && testContext( context.parentNode ) || context
+	);
+	return results;
+};
+
+// One-time assignments
+
+// Sort stability
+support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
+
+// Support: Chrome 14-35+
+// Always assume duplicates if they aren't passed to the comparison function
+support.detectDuplicates = !!hasDuplicate;
+
+// Initialize against the default document
+setDocument();
+
+// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
+// Detached nodes confoundingly follow *each other*
+support.sortDetached = assert(function( div1 ) {
+	// Should return 1, but returns 4 (following)
+	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+});
+
+// Support: IE<8
+// Prevent attribute/property "interpolation"
+// http://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
+if ( !assert(function( div ) {
+	div.innerHTML = "<a href='#'></a>";
+	return div.firstChild.getAttribute("href") === "#" ;
+}) ) {
+	addHandle( "type|href|height|width", function( elem, name, isXML ) {
+		if ( !isXML ) {
+			return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+		}
+	});
+}
+
+// Support: IE<9
+// Use defaultValue in place of getAttribute("value")
+if ( !support.attributes || !assert(function( div ) {
+	div.innerHTML = "<input/>";
+	div.firstChild.setAttribute( "value", "" );
+	return div.firstChild.getAttribute( "value" ) === "";
+}) ) {
+	addHandle( "value", function( elem, name, isXML ) {
+		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+			return elem.defaultValue;
+		}
+	});
+}
+
+// Support: IE<9
+// Use getAttributeNode to fetch booleans when getAttribute lies
+if ( !assert(function( div ) {
+	return div.getAttribute("disabled") == null;
+}) ) {
+	addHandle( booleans, function( elem, name, isXML ) {
+		var val;
+		if ( !isXML ) {
+			return elem[ name ] === true ? name.toLowerCase() :
+					(val = elem.getAttributeNode( name )) && val.specified ?
+					val.value :
+				null;
+		}
+	});
+}
+
+// EXPOSE
+if ( typeof define === "function" && define.amd ) {
+	define('sizzle',[],function() { return Sizzle; });
+// Sizzle requires that there be a global window in Common-JS like environments
+} else if ( typeof module !== "undefined" && module.exports ) {
+	module.exports = Sizzle;
+} else {
+	window.Sizzle = Sizzle;
+}
+// EXPOSE
+
+})( window );
+
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function (searchString, position) {
       var subjectString = this.toString();
@@ -1583,7 +3434,7 @@ define("polyfill", function(){});
 /* Start AMD header */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define("pluggable", ["underscore"], factory);
+        define("pluggable", ["lodash"], factory);
     } else {
         window.pluggable = factory(_);
     }
@@ -1599,9 +3450,14 @@ define("polyfill", function(){});
     // then the name by which the pluggable object may be referenced on the
     // __super__ object (inside overrides).
     function PluginSocket (plugged, name) {
-        this.name = name; 
+        this.name = name;
         this.plugged = plugged;
-        this.plugged.__super__ = {};
+        if (typeof this.plugged.__super__ === 'undefined') {
+            this.plugged.__super__ = {};
+        } else if (typeof this.plugged.__super__ === 'string') {
+            this.plugged.__super__ = { '__string__': this.plugged.__super__ };
+        }
+        this.plugged.__super__[name] = this.plugged;
         this.plugins = {};
         this.initialized_plugins = [];
     }
@@ -1627,7 +3483,7 @@ define("polyfill", function(){});
                 }
                 this.__super__[key] = super_method.bind(this);
             }
-            return value.apply(this, _.rest(arguments, 3));
+            return value.apply(this, _.drop(arguments, 3));
         },
 
         // `_overrideAttribute` overrides an attribute on the original object
@@ -1662,6 +3518,7 @@ define("polyfill", function(){});
                 obj.prototype.__super__ = {};
                 obj.prototype.__super__[this.name] = this.plugged;
             }
+            var that = this;
             _.each(attributes, function (value, key) {
                 if (key === 'events') {
                     obj.prototype[key] = _.extend(value, obj.prototype[key]);
@@ -1672,13 +3529,13 @@ define("polyfill", function(){});
                     // chaining of plugin methods, all the way up to the
                     // original method.
                     var wrapped_function = _.partial(
-                        this.wrappedOverride, key, value, obj.prototype[key]
+                        that.wrappedOverride, key, value, obj.prototype[key]
                     );
                     obj.prototype[key] = wrapped_function;
                 } else {
                     obj.prototype[key] = value;
                 }
-            }.bind(this));
+            });
         },
 
         // Plugins can specify optional dependencies (by means of the
@@ -1694,7 +3551,7 @@ define("polyfill", function(){});
             _.each(plugin.optional_dependencies, function (name) {
                 var dep = this.plugins[name];
                 if (dep) {
-                    if (_.contains(dep.optional_dependencies, plugin.__name__)) {
+                    if (_.includes(dep.optional_dependencies, plugin.__name__)) {
                         /* FIXME: circular dependency checking is only one level deep. */
                         throw "Found a circular dependency between the plugins \""+
                               plugin.__name__+"\" and \""+name+"\"";
@@ -1741,7 +3598,11 @@ define("polyfill", function(){});
         // `initializePlugin` applies the overrides (if any) defined on all
         // the registered plugins and then calls the initialize method for each plugin.
         initializePlugin: function (plugin) {
-            if (_.contains(this.initialized_plugins, plugin.__name__)) {
+            if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
+                /* Don't initialize disallowed plugins. */
+                return;
+            }
+            if (_.includes(this.initialized_plugins, plugin.__name__)) {
                 /* Don't initialize plugins twice, otherwise we get
                  * infinite recursion in overridden methods.
                  */
@@ -1770,12 +3631,18 @@ define("polyfill", function(){});
         // `initializePlugin` for each.
         // The passed in  properties variable is an object with attributes and methods
         // which will be attached to the plugins.
-        initializePlugins: function (properties) {
+        initializePlugins: function (properties, whitelist, blacklist) {
             if (!_.size(this.plugins)) {
                 return;
             }
             this.properties = properties;
-            _.each(_.values(this.plugins), this.initializePlugin.bind(this));
+            this.allowed_plugins  = _.pickBy(this.plugins,
+                function (plugin, key) {
+                    return (whitelist.length && _.includes(whitelist, key)) &&
+                                !_.includes(blacklist, key);
+                }
+            );
+            _.each(_.values(this.allowed_plugins), this.initializePlugin.bind(this));
         }
     });
     return {
@@ -1806,15 +3673,16 @@ define("polyfill", function(){});
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document, locales */
+/*global Backbone, define, window, document */
 
 (function (root, factory) {
     define("converse-core", [
+        "sizzle",
         "jquery",
-        "underscore",
+        "lodash",
         "polyfill",
         "utils",
         "moment_with_locales",
@@ -1824,7 +3692,7 @@ define("polyfill", function(){});
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -1839,7 +3707,7 @@ define("polyfill", function(){});
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
-    /* Configuration of underscore templates (this config is distinct to the
+    /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
@@ -1847,47 +3715,35 @@ define("polyfill", function(){});
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
-    // We create an object to act as the "this" context for event handlers (as
-    // defined below and accessible via converse_api.listen).
-    // We don't want the inner converse object to be the context, since it
-    // contains sensitive information, and we don't want it to be something in
-    // the DOM or window, because then anyone can trigger converse events.
-    var event_context = {};
+    var _converse = {};
+    _converse.templates = {};
+    _.extend(_converse, Backbone.Events);
+    _converse.emit = _converse.trigger;
 
-    var converse = {
-        templates: {},
-
-        emit: function (evt, data) {
-            $(event_context).trigger(evt, data);
-        },
-
-        once: function (evt, handler, context) {
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).one(evt, handler);
-        },
-
-        on: function (evt, handler, context) {
-            if (_.contains(['ready', 'initialized'], evt)) {
-                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
-            }
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).bind(evt, handler);
-        },
-
-        off: function (evt, handler) {
-            $(event_context).unbind(evt, handler);
-        }
-    };
+    _converse.core_plugins = [
+        'converse-bookmarks',
+        'converse-chatview',
+        'converse-controlbox',
+        'converse-core',
+        'converse-dragresize',
+        'converse-headline',
+        'converse-mam',
+        'converse-minimize',
+        'converse-muc',
+        'converse-muc-embedded',
+        'converse-notification',
+        'converse-otr',
+        'converse-ping',
+        'converse-register',
+        'converse-rosterview',
+        'converse-vcard'
+    ];
 
     // Make converse pluggable
-    pluggable.enable(converse, 'converse', 'pluggable');
+    pluggable.enable(_converse, '_converse', 'pluggable');
 
     // Module-level constants
-    converse.STATUS_WEIGHTS = {
+    _converse.STATUS_WEIGHTS = {
         'offline':      6,
         'unavailable':  5,
         'xa':           4,
@@ -1896,13 +3752,13 @@ define("polyfill", function(){});
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
     };
-    converse.ANONYMOUS  = "anonymous";
-    converse.CLOSED = 'closed';
-    converse.EXTERNAL = "external";
-    converse.LOGIN = "login";
-    converse.LOGOUT = "logout";
-    converse.OPENED = 'opened';
-    converse.PREBIND = "prebind";
+    _converse.ANONYMOUS  = "anonymous";
+    _converse.CLOSED = 'closed';
+    _converse.EXTERNAL = "external";
+    _converse.LOGIN = "login";
+    _converse.LOGOUT = "logout";
+    _converse.OPENED = 'opened';
+    _converse.PREBIND = "prebind";
 
     var PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
@@ -1917,14 +3773,17 @@ define("polyfill", function(){});
         9: 'REDIRECT'
     };
 
-    converse.log = function (txt, level) {
+    var DEFAULT_IMAGE_TYPE = 'image/png';
+    var DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
+
+    _converse.log = function (txt, level) {
         var logger;
-        if (typeof console === "undefined" || typeof console.log === "undefined") {
-            logger = { log: function () {}, error: function () {} };
+        if (_.isUndefined(console) || _.isUndefined(console.log)) {
+            logger = { log: _.noop, error: _.noop };
         } else {
             logger = console;
         }
-        if (converse.debug) {
+        if (_converse.debug) {
             if (level === 'error') {
                 logger.log('ERROR: '+txt);
             } else {
@@ -1934,18 +3793,19 @@ define("polyfill", function(){});
     };
 
 
-    converse.initialize = function (settings, callback) {
+    _converse.initialize = function (settings, callback) {
         "use strict";
-        settings = typeof settings !== "undefined" ? settings : {};
+        settings = !_.isUndefined(settings) ? settings : {};
         var init_deferred = new $.Deferred();
-        var converse = this;
 
-        if (typeof converse.chatboxes !== 'undefined') {
-            // Looks like converse.initialized was called again without logging
+        if (!_.isUndefined(_converse.chatboxes)) {
+            // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
-            // This happens in tests.
-            // We therefore first clean up.
-            converse._tearDown();
+            // This happens in tests. We therefore first clean up.
+            _converse.connection.reset();
+            _converse.off();
+            _converse.stopListening();
+            _converse._tearDown();
         }
 
         var unloadevent;
@@ -1962,8 +3822,8 @@ define("polyfill", function(){});
         }
 
         // Logging
-        Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
-        Strophe.error = function (msg) { converse.log(msg, 'error'); };
+        Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { _converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
@@ -1991,7 +3851,8 @@ define("polyfill", function(){});
 
         // Detect support for the user's locale
         // ------------------------------------
-        this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
+        var locales = _.isUndefined(locales) ? {} : locales;
+        this.isConverseLocale = function (locale) { return !_.isUndefined(locales[locale]); };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
@@ -2001,13 +3862,15 @@ define("polyfill", function(){});
 
         // Translation machinery
         // ---------------------
-        var __ = utils.__.bind(this);
+        var __ = _converse.__ = utils.__.bind(_converse);
+        _converse.___ = utils.___;
         var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
         this.default_settings = {
             allow_contact_requests: true,
+            allow_non_roster_messaging: false,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
@@ -2015,7 +3878,8 @@ define("polyfill", function(){});
             auto_reconnect: false,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
-            bosh_service_url: undefined, // The BOSH connection manager URL.
+            blacklisted_plugins: [],
+            bosh_service_url: undefined,
             connection_options: {},
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -2029,30 +3893,30 @@ define("polyfill", function(){});
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
-            message_carbons: false, // Support for XEP-280
+            message_carbons: false,
+            message_storage: 'session',
             password: undefined,
-            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
             roster_groups: false,
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
-            message_storage: 'session',
             strict_plugin_dependencies: false,
-            synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
+            synchronize_availability: true,
             websocket_url: undefined,
+            whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
-        _.extend(this, this.default_settings);
+        _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+        _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
 
         // BBB
-        if (this.prebind === true) { this.authentication = converse.PREBIND; }
+        if (this.prebind === true) { this.authentication = _converse.PREBIND; }
 
-        if (this.authentication === converse.ANONYMOUS) {
+        if (this.authentication === _converse.ANONYMOUS) {
             if (this.auto_login && !this.jid) {
                 throw new Error("Config Error: you need to provide the server's " +
                       "domain via the 'jid' option when using anonymous " +
@@ -2064,7 +3928,7 @@ define("polyfill", function(){});
 
         // Module-level variables
         // ----------------------
-        this.callback = callback || function () {};
+        this.callback = callback || _.noop;
         /* When reloading the page:
          * For new sessions, we need to send out a presence stanza to notify
          * the server/network that we're online.
@@ -2084,7 +3948,7 @@ define("polyfill", function(){});
              * returned via the API.
              */
             if (!chatbox) { return; }
-            var view = converse.chatboxviews.get(chatbox.get('id'));
+            var view = _converse.chatboxviews.get(chatbox.get('id'));
             return {
                 'close': view.close.bind(view),
                 'focus': view.focus.bind(view),
@@ -2099,31 +3963,35 @@ define("polyfill", function(){});
         };
 
         this.sendCSI = function (stat) {
+            /* Send out a Chat Status Notification (XEP-0352)
+             *
+             * Parameters:
+             *  (String) stat: The user's chat status
+             */
             /* Send out a Chat Status Notification (XEP-0352) */
-            if (converse.features[Strophe.NS.CSI] || true) {
-                converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                converse.inactive = (stat === converse.INACTIVE) ? true : false;
-            }
+            // XXX if (converse.features[Strophe.NS.CSI] || true) {
+            _converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
+            _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
         };
 
         this.onUserActivity = function () {
             /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-            if (converse.idle_seconds > 0) {
-                converse.idle_seconds = 0;
+            if (_converse.idle_seconds > 0) {
+                _converse.idle_seconds = 0;
             }
-            if (!converse.connection.authenticated) {
+            if (!_converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // converse can happen when the connection reconnects.
                 return;
             }
-            if (converse.inactive) {
-                converse.sendCSI(converse.ACTIVE);
+            if (_converse.inactive) {
+                _converse.sendCSI(_converse.ACTIVE);
             }
-            if (converse.auto_changed_status === true) {
-                converse.auto_changed_status = false;
+            if (_converse.auto_changed_status === true) {
+                _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                converse.xmppstatus.setStatus(converse.default_state);
+                _converse.xmppstatus.setStatus(_converse.default_state);
             }
         };
 
@@ -2131,27 +3999,27 @@ define("polyfill", function(){});
             /* An interval handler running every second.
              * Used for CSI and the auto_away and auto_xa features.
              */
-            if (!converse.connection.authenticated) {
+            if (!_converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = converse.xmppstatus.getStatus();
-            converse.idle_seconds++;
-            if (converse.csi_waiting_time > 0 &&
-                    converse.idle_seconds > converse.csi_waiting_time &&
-                    !converse.inactive) {
-                converse.sendCSI(converse.INACTIVE);
+            var stat = _converse.xmppstatus.getStatus();
+            _converse.idle_seconds++;
+            if (_converse.csi_waiting_time > 0 &&
+                    _converse.idle_seconds > _converse.csi_waiting_time &&
+                    !_converse.inactive) {
+                _converse.sendCSI(_converse.INACTIVE);
             }
-            if (converse.auto_away > 0 &&
-                    converse.idle_seconds > converse.auto_away &&
+            if (_converse.auto_away > 0 &&
+                    _converse.idle_seconds > _converse.auto_away &&
                     stat !== 'away' && stat !== 'xa') {
-                converse.auto_changed_status = true;
-                converse.xmppstatus.setStatus('away');
-            } else if (converse.auto_xa > 0 &&
-                    converse.idle_seconds > converse.auto_xa && stat !== 'xa') {
-                converse.auto_changed_status = true;
-                converse.xmppstatus.setStatus('xa');
+                _converse.auto_changed_status = true;
+                _converse.xmppstatus.setStatus('away');
+            } else if (_converse.auto_xa > 0 &&
+                    _converse.idle_seconds > _converse.auto_xa && stat !== 'xa') {
+                _converse.auto_changed_status = true;
+                _converse.xmppstatus.setStatus('xa');
             }
         };
 
@@ -2159,27 +4027,27 @@ define("polyfill", function(){});
             /* Set an interval of one second and register a handler for it.
              * Required for the auto_away, auto_xa and csi_waiting_time features.
              */
-            if (converse.auto_away < 1 && converse.auto_xa < 1 && converse.csi_waiting_time < 1) {
+            if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1) {
                 // Waiting time of less then one second means features aren't used.
                 return;
             }
-            converse.idle_seconds = 0;
-            converse.auto_changed_status = false; // Was the user's status changed by converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
-            converse.everySecondTrigger = window.setInterval(converse.onEverySecond, 1000);
+            _converse.idle_seconds = 0;
+            _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
+            $(window).on('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (subject, klass, message) {
             $('.conn-feedback').each(function (idx, el) {
-                var $el = $(el);
-                $el.addClass('conn-feedback').text(subject);
+                el.classList.add('conn-feedback');
+                el.textContent = subject;
                 if (klass) {
-                    $el.addClass(klass);
+                    el.classList.add(klass);
                 } else {
-                    $el.removeClass('error');
+                    el.classList.remove('error');
                 }
             });
-            converse.emit('feedback', {
+            _converse.emit('feedback', {
                 'klass': klass,
                 'message': message,
                 'subject': subject
@@ -2188,6 +4056,7 @@ define("polyfill", function(){});
 
         this.rejectPresenceSubscription = function (jid, message) {
             /* Reject or cancel another user's subscription to our presence updates.
+             *
              *  Parameters:
              *    (String) jid - The Jabber ID of the user whose subscription
              *      is being canceled.
@@ -2195,99 +4064,112 @@ define("polyfill", function(){});
              */
             var pres = $pres({to: jid, type: "unsubscribed"});
             if (message && message !== "") { pres.c("status").t(message); }
-            converse.connection.send(pres);
+            _converse.connection.send(pres);
         };
 
-
-        this.reconnect = _.debounce(function (condition) {
-            converse.log('The connection has dropped, attempting to reconnect.');
-            converse.giveFeedback(
+        this.reconnect = _.debounce(function () {
+            _converse.log('RECONNECTING');
+            _converse.log('The connection has dropped, attempting to reconnect.');
+            _converse.giveFeedback(
                 __("Reconnecting"),
                 'warn',
                 __('The connection has dropped, attempting to reconnect.')
             );
-            converse.connection.reconnecting = true;
-            converse.connection.disconnect('re-connecting');
-            converse.connection.reset();
-            converse._tearDown();
-            converse.logIn(null, true);
-        }, 1000);
+            _converse.connection.reconnecting = true;
+            _converse._tearDown();
+            _converse.logIn(null, true);
+        }, 3000, {'leading': true});
 
         this.disconnect = function () {
-            delete converse.connection.reconnecting;
-            converse._tearDown();
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.emit('disconnected');
-            converse.log('DISCONNECTED');
-            return 'disconnected';
+            _converse.log('DISCONNECTED');
+            delete _converse.connection.reconnecting;
+            _converse._tearDown();
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.emit('disconnected');
         };
 
-        this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
-                    converse.reconnect(condition);
-                    converse.log('RECONNECTING');
-                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
-                    window.setTimeout(_.partial(converse.reconnect, condition), 3000);
-                    converse.log('RECONNECTING IN 3 SECONDS');
+        this.onDisconnected = function () {
+            /* Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
+             * Will either start a teardown process for converse.js or attempt
+             * to reconnect.
+             */
+            if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+                if (_converse.credentials_url && _converse.auto_reconnect) {
+                    /* In this case, we reconnect, because we might be receiving
+                     * expirable tokens from the credentials_url.
+                     */
+                    _converse.emit('will-reconnect');
+                    return _converse.reconnect();
+                } else {
+                    return _converse.disconnect();
                 }
-                converse.emit('reconnecting');
-                return 'reconnecting';
+            } else if (_converse.disconnection_cause === _converse.LOGOUT ||
+                    _converse.disconnection_reason === "host-unknown" ||
+                    !_converse.auto_reconnect) {
+                return _converse.disconnect();
             }
-            return this.disconnect();
+            _converse.emit('will-reconnect');
+            _converse.reconnect();
         };
 
-        this.setDisconnectionCause = function (connection_status) {
-            if (typeof converse.disconnection_cause === "undefined") {
-                converse.disconnection_cause = connection_status;
+        this.setDisconnectionCause = function (cause, reason, override) {
+            /* Used to keep track of why we got disconnected, so that we can
+             * decide on what the next appropriate action is (in onDisconnected)
+             */
+            if (_.isUndefined(cause)) {
+                delete _converse.disconnection_cause;
+                delete _converse.disconnection_reason;
+            } else if (_.isUndefined(_converse.disconnection_cause) || override) {
+                _converse.disconnection_cause = cause;
+                _converse.disconnection_reason = reason;
             }
         };
 
         this.onConnectStatusChanged = function (status, condition) {
-            converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
+            /* Callback method called by Strophe as the Strophe.Connection goes
+             * through various states while establishing or tearing down a
+             * connection.
+             */
+            _converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
-                converse.send_initial_presence = true;
-                delete converse.disconnection_cause;
-                if (converse.connection.reconnecting) {
-                    converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
-                    converse.onConnected(true);
+                _converse.send_initial_presence = true;
+                _converse.setDisconnectionCause();
+                if (_converse.connection.reconnecting) {
+                    _converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
+                    _converse.onConnected(true);
                 } else {
-                    converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
-                    if (converse.connection.restored) {
+                    _converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                    if (_converse.connection.restored) {
                         // No need to send an initial presence stanza when
                         // we're restoring an existing session.
-                        converse.send_initial_presence = false;
+                        _converse.send_initial_presence = false;
                     }
-                    converse.onConnected();
+                    _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                converse.setDisconnectionCause(status);
-                converse.onDisconnected(condition);
+                _converse.setDisconnectionCause(status, condition);
+                _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                converse.giveFeedback(
+                _converse.giveFeedback(
                     __('Connection error'), 'error',
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                converse.giveFeedback(__('Connecting'));
+                _converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                converse.giveFeedback(__('Authenticating'));
+                _converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.giveFeedback(__('Authentication failed.'), 'error');
-                converse.connection.disconnect(__('Authentication Failed'));
-                converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+                _converse.giveFeedback(__('Authentication Failed'), 'error');
+                _converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.setDisconnectionCause(status);
+                _converse.giveFeedback(
+                    __('Connection failed'), 'error',
+                    __('An error occurred while connecting to the chat server: '+condition)
+                );
+                _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                converse.setDisconnectionCause(status);
-                if (condition) {
-                    converse.giveFeedback(
-                        __("Disconnected"), 'warn',
-                        __("The connection to the chat server has dropped")
-                    );
-                }
+                _converse.setDisconnectionCause(status, condition);
             }
         };
 
@@ -2316,14 +4198,14 @@ define("polyfill", function(){});
         this.initStatus = function () {
             var deferred = new $.Deferred();
             this.xmppstatus = new this.XMPPStatus();
-            var id = b64_sha1('converse.xmppstatus-'+converse.bare_jid);
+            var id = b64_sha1('converse.xmppstatus-'+_converse.bare_jid);
             this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.xmppstatus.fetch({
                 success: deferred.resolve,
                 error: deferred.resolve
             });
-            converse.emit('statusInitialized');
+            _converse.emit('statusInitialized');
             return deferred.promise();
         };
 
@@ -2331,7 +4213,7 @@ define("polyfill", function(){});
             this.session = new this.Session();
             var id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.session.fetch();
         };
 
@@ -2343,15 +4225,14 @@ define("polyfill", function(){});
         };
 
         this.logOut = function () {
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.disconnection_cause = converse.LOGOUT;
-            if (typeof converse.connection !== 'undefined') {
-                converse.connection.disconnect();
-                converse.connection.reset();
+            _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
+            if (!_.isUndefined(_converse.connection)) {
+                _converse.connection.disconnect();
             }
-            converse.clearSession();
-            converse._tearDown();
-            converse.emit('logout');
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.clearSession();
+            _converse._tearDown();
+            _converse.emit('logout');
         };
 
         this.saveWindowState = function (ev, hidden) {
@@ -2375,9 +4256,9 @@ define("polyfill", function(){});
                 state = document[hidden] ? "hidden" : "visible";
             }
             if (state  === 'visible') {
-                converse.clearMsgCounter();
+                _converse.clearMsgCounter();
             }
-            converse.windowState = state;
+            _converse.windowState = state;
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -2386,23 +4267,23 @@ define("polyfill", function(){});
             var hidden = "hidden";
             // Standards:
             if (hidden in document) {
-                document.addEventListener("visibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "mozHidden") in document) {
-                document.addEventListener("mozvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("mozvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "webkitHidden") in document) {
-                document.addEventListener("webkitvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("webkitvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "msHidden") in document) {
-                document.addEventListener("msvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("msvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ("onfocusin" in document) {
                 // IE 9 and lower:
-                document.onfocusin = document.onfocusout = _.partial(converse.saveWindowState, _, hidden);
+                document.onfocusin = document.onfocusout = _.partial(_converse.saveWindowState, _, hidden);
             } else {
                 // All others:
-                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(converse.saveWindowState, _, hidden);
+                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(_converse.saveWindowState, _, hidden);
             }
             // set the initial state (but only if browser supports the Page Visibility API)
             if( document[hidden] !== undefined ) {
-                _.partial(converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
+                _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
         };
 
@@ -2420,11 +4301,11 @@ define("polyfill", function(){});
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler(function (iq) {
-                if ($(iq).find('error').length > 0) {
-                    converse.log('ERROR: An error occured while trying to enable message carbons.');
+                if (iq.querySelectorAll('error').length > 0) {
+                    _converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
                     this.session.save({carbons_enabled: true});
-                    converse.log('Message carbons have been enabled.');
+                    _converse.log('Message carbons have been enabled.');
                 }
             }.bind(this), null, "iq", null, "enablecarbons");
             this.connection.send(carbons_iq);
@@ -2434,48 +4315,48 @@ define("polyfill", function(){});
             /* Initialize the Bakcbone collections that represent the contats
              * roster and the roster groups.
              */
-            converse.roster = new converse.RosterContacts();
-            converse.roster.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.contacts-'+converse.bare_jid));
-            converse.rostergroups = new converse.RosterGroups();
-            converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.roster.groups'+converse.bare_jid));
-            converse.emit('rosterInitialized');
+            _converse.roster = new _converse.RosterContacts();
+            _converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.contacts-'+_converse.bare_jid));
+            _converse.rostergroups = new _converse.RosterGroups();
+            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.roster.groups'+_converse.bare_jid));
+            _converse.emit('rosterInitialized');
         };
 
         this.populateRoster = function () {
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
              */
-            converse.rostergroups.fetchRosterGroups().then(function () {
-                converse.emit('rosterGroupsFetched');
-                converse.roster.fetchRosterContacts().then(function () {
-                    converse.emit('rosterContactsFetched');
-                    converse.sendInitialPresence();
+            _converse.rostergroups.fetchRosterGroups().then(function () {
+                _converse.emit('rosterGroupsFetched');
+                _converse.roster.fetchRosterContacts().then(function () {
+                    _converse.emit('rosterContactsFetched');
+                    _converse.sendInitialPresence();
                 });
             });
         };
 
         this.unregisterPresenceHandler = function () {
-            if (typeof converse.presence_ref !== 'undefined') {
-                converse.connection.deleteHandler(converse.presence_ref);
-                delete converse.presence_ref;
+            if (!_.isUndefined(_converse.presence_ref)) {
+                _converse.connection.deleteHandler(_converse.presence_ref);
+                delete _converse.presence_ref;
             }
         };
 
         this.registerPresenceHandler = function () {
-            converse.unregisterPresenceHandler();
-            converse.presence_ref = converse.connection.addHandler(
+            _converse.unregisterPresenceHandler();
+            _converse.presence_ref = _converse.connection.addHandler(
                 function (presence) {
-                    converse.roster.presenceHandler(presence);
+                    _converse.roster.presenceHandler(presence);
                     return true;
                 }, null, 'presence', null);
         };
 
 
         this.sendInitialPresence = function () {
-            if (converse.send_initial_presence) {
-                converse.xmppstatus.sendPresence();
+            if (_converse.send_initial_presence) {
+                _converse.xmppstatus.sendPresence();
             }
         };
 
@@ -2489,30 +4370,30 @@ define("polyfill", function(){});
                 // cached data. However we still emit an event, to give
                 // event handlers a chance to register views for the
                 // roster and its groups, before we start populating.
-                converse.emit('rosterReadyAfterReconnection');
+                _converse.emit('rosterReadyAfterReconnection');
             } else {
-                converse.registerIntervalHandler();
-                converse.initRoster();
+                _converse.registerIntervalHandler();
+                _converse.initRoster();
             }
             // First set up chat boxes, before populating the roster, so that
             // the controlbox is properly set up and ready for the rosterview.
-            converse.chatboxes.onConnected();
-            converse.populateRoster();
-            converse.registerPresenceHandler();
-            converse.giveFeedback(__('Contacts'));
+            _converse.chatboxes.onConnected();
+            _converse.populateRoster();
+            _converse.registerPresenceHandler();
+            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
-                converse.xmppstatus.sendPresence();
+                _converse.xmppstatus.sendPresence();
             } else {
                 init_deferred.resolve();
-                converse.emit('initialized');
+                _converse.emit('initialized');
             }
         };
 
         this.setUserJid = function () {
-            converse.jid = converse.connection.jid;
-            converse.bare_jid = Strophe.getBareJidFromJid(converse.connection.jid);
-            converse.resource = Strophe.getResourceFromJid(converse.connection.jid);
-            converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
+            _converse.jid = _converse.connection.jid;
+            _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
+            _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
+            _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
         };
 
         this.onConnected = function (reconnecting) {
@@ -2521,37 +4402,37 @@ define("polyfill", function(){});
              */
             // Solves problem of returned PubSub BOSH response not received
             // by browser.
-            converse.connection.flush();
+            _converse.connection.flush();
 
-            converse.setUserJid();
-            converse.enableCarbons();
+            _converse.setUserJid();
+            _converse.enableCarbons();
 
             // If there's no xmppstatus obj, then we were never connected to
             // begin with, so we set reconnecting to false.
-            reconnecting = _.isUndefined(converse.xmppstatus) ? false : reconnecting;
+            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
 
             if (reconnecting) {
-                converse.onStatusInitialized(true);
-                converse.emit('reconnected');
+                _converse.onStatusInitialized(true);
+                _converse.emit('reconnected');
             } else {
                 // There might be some open chat boxes. We don't
                 // know whether these boxes are of the same account or not, so we
                 // close them now.
-                converse.chatboxviews.closeAllChatBoxes();
-                converse.features = new converse.Features();
-                converse.initStatus().done(_.partial(converse.onStatusInitialized, false));
-                converse.emit('connected');
+                _converse.chatboxviews.closeAllChatBoxes();
+                _converse.features = new _converse.Features();
+                _converse.initStatus().done(_.partial(_converse.onStatusInitialized, false));
+                _converse.emit('connected');
             }
         };
 
         this.RosterContact = Backbone.Model.extend({
 
-            initialize: function (attributes, options) {
+            initialize: function (attributes) {
                 var jid = attributes.jid;
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
-                this.set(_.extend({
+                this.set(_.assignIn({
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
@@ -2559,14 +4440,14 @@ define("polyfill", function(){});
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': resource ? [resource] : [],
                     'groups': [],
-                    'image_type': 'image/png',
-                    'image': "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==",
+                    'image_type': DEFAULT_IMAGE_TYPE,
+                    'image': DEFAULT_IMAGE,
                     'status': ''
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
                 this.on('change:chat_status', function (item) {
-                    converse.emit('contactStatusChanged', item.attributes);
+                    _converse.emit('contactStatusChanged', item.attributes);
                 });
             },
 
@@ -2582,11 +4463,11 @@ define("polyfill", function(){});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                var nick = converse.xmppstatus.get('fullname');
+                var nick = _converse.xmppstatus.get('fullname');
                 if (nick && nick !== "") {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
-                converse.connection.send(pres);
+                _converse.connection.send(pres);
                 return this;
             },
 
@@ -2596,13 +4477,13 @@ define("polyfill", function(){});
                  * state notification by sending a presence stanza of type
                  * "subscribe" to the contact
                  */
-                converse.connection.send($pres({
+                _converse.connection.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
             },
 
-            ackUnsubscribe: function (jid) {
+            ackUnsubscribe: function () {
                 /* Upon receiving the presence stanza of type "unsubscribed",
                  * the user SHOULD acknowledge receipt of that subscription state
                  * notification by sending a presence stanza of type "unsubscribe"
@@ -2611,7 +4492,7 @@ define("polyfill", function(){});
                  *  Parameters:
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
-                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                _converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
 
@@ -2620,7 +4501,7 @@ define("polyfill", function(){});
                  * Parameters:
                  *   (String) message - Optional message to send to the person being unauthorized
                  */
-                converse.rejectPresenceSubscription(this.get('jid'), message);
+                _converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },
 
@@ -2633,7 +4514,7 @@ define("polyfill", function(){});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
-                converse.connection.send(pres);
+                _converse.connection.send(pres);
                 return this;
             },
 
@@ -2664,25 +4545,25 @@ define("polyfill", function(){});
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                converse.connection.sendIQ(iq, callback, callback);
+                _converse.connection.sendIQ(iq, callback, callback);
                 return this;
             }
         });
 
 
         this.RosterContacts = Backbone.Collection.extend({
-            model: converse.RosterContact,
+            model: _converse.RosterContact,
 
             comparator: function (contact1, contact2) {
                 var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
                 var status2 = contact2.get('chat_status') || 'offline';
-                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
+                if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
                     name1 = contact1.get('fullname').toLowerCase();
                     name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
-                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
+                    return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
             },
 
@@ -2705,10 +4586,10 @@ define("polyfill", function(){});
                              * fetching the roster we are ready to receive presence
                              * updates from our contacts.
                              */
-                            converse.send_initial_presence = true;
-                            converse.roster.fetchFromServer(deferred.resolve);
+                            _converse.send_initial_presence = true;
+                            _converse.roster.fetchFromServer(deferred.resolve);
                         } else {
-                            converse.emit('cachedRoster', collection);
+                            _converse.emit('cachedRoster', collection);
                             deferred.resolve();
                         }
                     }
@@ -2717,17 +4598,20 @@ define("polyfill", function(){});
             },
 
             subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function (i, items) {
-                    if (this.getAttribute('action') === 'add') {
-                        converse.roster.addAndSubscribe(
-                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
+                _.each(msg.querySelectorAll('item'), function (item) {
+                    if (item.getAttribute('action') === 'add') {
+                        _converse.roster.addAndSubscribe(
+                            item.getAttribute('jid'),
+                            null,
+                            _converse.xmppstatus.get('fullname')
+                        );
                     }
                 });
                 return true;
             },
 
             isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
+                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(_converse.connection.jid));
             },
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
@@ -2742,7 +4626,7 @@ define("polyfill", function(){});
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
                 this.addContact(jid, name, groups, attributes).done(function (contact) {
-                    if (contact instanceof converse.RosterContact) {
+                    if (contact instanceof _converse.RosterContact) {
                         contact.subscribe(message);
                     }
                 });
@@ -2762,12 +4646,12 @@ define("polyfill", function(){});
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', { jid: jid, name: name });
-                _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                converse.connection.sendIQ(iq, callback, errback);
+                _.each(groups, function (group) { iq.c('group').t(group).up(); });
+                _converse.connection.sendIQ(iq, callback, errback);
             },
 
             addContact: function (jid, name, groups, attributes) {
-                /* Adds a RosterContact instance to converse.roster and
+                /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
                  * responded.
@@ -2782,8 +4666,8 @@ define("polyfill", function(){});
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
-                    function (iq) {
-                        var contact = this.create(_.extend({
+                    function () {
+                        var contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
                             groups: groups,
@@ -2795,7 +4679,7 @@ define("polyfill", function(){});
                     }.bind(this),
                     function (err) {
                         alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
-                        converse.log(err);
+                        _converse.log(err);
                         deferred.resolve(err);
                     }
                 );
@@ -2808,7 +4692,7 @@ define("polyfill", function(){});
                 if (item) {
                     resources = item.get('resources');
                     if (resources) {
-                        if (_.indexOf(resources, resource) === -1) {
+                        if (!_.includes(resources, resource)) {
                             resources.push(resource);
                             item.set({'resources': resources});
                         }
@@ -2820,12 +4704,12 @@ define("polyfill", function(){});
 
             subscribeBack: function (bare_jid) {
                 var contact = this.get(bare_jid);
-                if (contact instanceof converse.RosterContact) {
+                if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
                     this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
-                        if (contact instanceof converse.RosterContact) {
+                        if (contact instanceof _converse.RosterContact) {
                             contact.authorize().subscribe();
                         }
                     });
@@ -2838,11 +4722,11 @@ define("polyfill", function(){});
                     models = this.models,
                     models_length = models.length,
                     i;
-                if (converse.show_only_online_users) {
+                if (_converse.show_only_online_users) {
                     ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                 }
                 for (i=0; i<models_length; i++) {
-                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
+                    if (!_.includes(ignored, models[i].get('chat_status'))) {
                         count++;
                     }
                 }
@@ -2858,32 +4742,31 @@ define("polyfill", function(){});
                  */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
-                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
+                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     // XXX: Some naughty servers apparently send from a full
                     // JID so we need to explicitly compare bare jids here.
                     // https://github.com/jcbrand/converse.js/issues/493
-                    converse.connection.send(
-                        $iq({type: 'error', id: id, from: converse.connection.jid})
+                    _converse.connection.send(
+                        $iq({type: 'error', id: id, from: _converse.connection.jid})
                             .c('error', {'type': 'cancel'})
                             .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
                     );
                     return true;
                 }
-                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-
-                converse.emit('rosterPush', iq);
+                _converse.connection.send($iq({type: 'result', id: id, from: _converse.connection.jid}));
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                _.each(items, this.updateContact.bind(this));
+                _converse.emit('rosterPush', iq);
                 return true;
             },
 
             fetchFromServer: function (callback) {
                 /* Get the roster from the XMPP server */
-                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
+                var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, function () {
+                return _converse.connection.sendIQ(iq, function () {
                         this.onReceivedFromServer.apply(this, arguments);
                         callback.apply(this, arguments);
                     }.bind(this));
@@ -2893,10 +4776,10 @@ define("polyfill", function(){});
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-                converse.emit('roster', iq);
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                _.each(items, this.updateContact.bind(this));
+                _converse.emit('roster', iq);
             },
 
             updateContact: function (item) {
@@ -2905,13 +4788,10 @@ define("polyfill", function(){});
                  */
                 var jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
-                var groups = [],
+                var groups = _.map(item.getElementsByTagName('group'), Strophe.getText),
                     contact = this.get(jid),
                     ask = item.getAttribute("ask"),
                     subscription = item.getAttribute("subscription");
-                $.map(item.getElementsByTagName('group'), function (group) {
-                    groups.push(Strophe.getText(group));
-                });
                 if (!contact) {
                     if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
@@ -2946,29 +4826,29 @@ define("polyfill", function(){});
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick = $(presence).children('nick[xmlns='+Strophe.NS.NICK+']').text();
+                var nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: nick || bare_jid,
+                    fullname: nick_el && nick_el.textContent || bare_jid,
                 };
                 this.create(user_data);
-                converse.emit('contactRequest', user_data);
+                _converse.emit('contactRequest', user_data);
             },
 
             handleIncomingSubscription: function (presence) {
                 var jid = presence.getAttribute('from');
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var contact = this.get(bare_jid);
-                if (!converse.allow_contact_requests) {
-                    converse.rejectPresenceSubscription(
+                if (!_converse.allow_contact_requests) {
+                    _converse.rejectPresenceSubscription(
                         jid,
                         __("This client does not allow presence subscriptions")
                     );
                 }
-                if (converse.auto_subscribe) {
+                if (_converse.auto_subscribe) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
                         this.subscribeBack(bare_jid);
                     } else {
@@ -2988,37 +4868,34 @@ define("polyfill", function(){});
             },
 
             presenceHandler: function (presence) {
-                var $presence = $(presence),
-                    presence_type = presence.getAttribute('type');
+                var presence_type = presence.getAttribute('type');
                 if (presence_type === 'error') { return true; }
                 var jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
-                    chat_status = $presence.find('show').text() || 'online',
-                    status_message = $presence.find('status'),
+                    chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                    status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
-                    if ((converse.connection.jid !== jid) &&
+                    if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
-                        (converse.synchronize_availability === true ||
-                         converse.synchronize_availability === resource)) {
+                        (_converse.synchronize_availability === true ||
+                         _converse.synchronize_availability === resource)) {
                         // Another resource has changed its status and
                         // synchronize_availability option set to update,
                         // we'll update ours as well.
-                        converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) {
-                            converse.xmppstatus.save({
-                                'status_message': status_message.text()
-                            });
+                        _converse.xmppstatus.save({'status': chat_status});
+                        if (status_message) {
+                            _converse.xmppstatus.save({'status_message': status_message});
                         }
                     }
                     return;
-                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                } else if (sizzle('query[xmlns="'+Strophe.NS.MUC+'"]', presence).length) {
                     return; // Ignore MUC
                 }
-                if (contact && (status_message.text() !== contact.get('status'))) {
-                    contact.save({'status': status_message.text()});
+                if (contact && (status_message !== contact.get('status'))) {
+                    contact.save({'status': status_message});
                 }
                 if (presence_type === 'subscribed' && contact) {
                     contact.ackSubscribe();
@@ -3043,19 +4920,19 @@ define("polyfill", function(){});
 
 
         this.RosterGroup = Backbone.Model.extend({
-            initialize: function (attributes, options) {
-                this.set(_.extend({
+            initialize: function (attributes) {
+                this.set(_.assignIn({
                     description: DESC_GROUP_TOGGLE,
-                    state: converse.OPENED
+                    state: _converse.OPENED
                 }, attributes));
                 // Collection of contacts belonging to this group.
-                this.contacts = new converse.RosterContacts();
+                this.contacts = new _converse.RosterContacts();
             }
         });
 
 
         this.RosterGroups = Backbone.Collection.extend({
-            model: converse.RosterGroup,
+            model: _converse.RosterGroup,
 
             fetchRosterGroups: function () {
                 /* Fetches all the roster groups from sessionStorage.
@@ -3078,14 +4955,14 @@ define("polyfill", function(){});
         this.Message = Backbone.Model.extend({
             defaults: function(){
                 return {
-                    msgid: converse.connection.getUniqueId()
+                    msgid: _converse.connection.getUniqueId()
                 };
             }
         });
 
 
         this.Messages = Backbone.Collection.extend({
-            model: converse.Message,
+            model: _converse.Message,
             comparator: 'time'
         });
 
@@ -3093,9 +4970,9 @@ define("polyfill", function(){});
         this.ChatBox = Backbone.Model.extend({
 
             initialize: function () {
-                this.messages = new converse.Messages();
-                this.messages.browserStorage = new Backbone.BrowserStorage[converse.message_storage](
-                    b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
+                this.messages = new _converse.Messages();
+                this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                    b64_sha1('converse.messages'+this.get('jid')+_converse.bare_jid));
                 this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
@@ -3108,40 +4985,40 @@ define("polyfill", function(){});
                 });
             },
 
-            getMessageAttributes: function ($message, $delay, original_stanza) {
-                $delay = $delay || $message.find('delay');
-                var type = $message.attr('type'),
+            getMessageAttributes: function (message, delay, original_stanza) {
+                delay = delay || message.querySelector('delay');
+                var type = message.getAttribute('type'),
                     body, stamp, time, sender, from;
 
                 if (type === 'error') {
-                    body = $message.find('error').children('text').text();
+                    body = _.propertyOf(message.querySelector('error text'))('textContent');
                 } else {
-                    body = $message.children('body').text();
+                    body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
-                var delayed = $delay.length > 0,
+                var delayed = !_.isNull(delay),
                     fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
-                    chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
-                        $message.find(converse.PAUSED).length && converse.PAUSED ||
-                        $message.find(converse.INACTIVE).length && converse.INACTIVE ||
-                        $message.find(converse.ACTIVE).length && converse.ACTIVE ||
-                        $message.find(converse.GONE).length && converse.GONE;
+                    chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                        message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                        message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                        message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                        message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
                 if (is_groupchat) {
-                    from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
+                    from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
                 } else {
-                    from = Strophe.getBareJidFromJid($message.attr('from'));
+                    from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
                 if (_.isEmpty(fullname)) {
                     fullname = from;
                 }
                 if (delayed) {
-                    stamp = $delay.attr('stamp');
+                    stamp = delay.getAttribute('stamp');
                     time = stamp;
                 } else {
                     time = moment().format();
                 }
-                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === converse.bare_jid)) {
+                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
                 } else {
                     sender = 'them';
@@ -3152,24 +5029,24 @@ define("polyfill", function(){});
                     'delayed': delayed,
                     'fullname': fullname,
                     'message': body || undefined,
-                    'msgid': $message.attr('id'),
+                    'msgid': message.getAttribute('id'),
                     'sender': sender,
                     'time': time
                 };
             },
 
-            createMessage: function ($message, $delay, original_stanza) {
+            createMessage: function (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             }
         });
 
         this.ChatBoxes = Backbone.Collection.extend({
-            model: converse.ChatBox,
+            model: _converse.ChatBox,
             comparator: 'time_opened',
 
             registerMessageHandler: function () {
-                converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+                _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+                _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
             },
 
             chatBoxMayBeShown: function (chatbox) {
@@ -3188,12 +5065,12 @@ define("polyfill", function(){});
                         chatbox.trigger('show');
                     }
                 });
-                converse.emit('chatBoxesFetched');
+                _converse.emit('chatBoxesFetched');
             },
 
             onConnected: function () {
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.chatboxes-'+converse.bare_jid));
+                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1('converse.chatboxes-'+_converse.bare_jid));
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
@@ -3205,9 +5082,8 @@ define("polyfill", function(){});
                 /* Handler method for all incoming error message stanzas
                  */
                 // TODO: we can likely just reuse "onMessage" below
-                var $message = $(message),
-                    from_jid =  Strophe.getBareJidFromJid($message.attr('from'));
-                if (from_jid === converse.bare_jid) {
+                var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
+                if (from_jid === _converse.bare_jid) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.
@@ -3215,7 +5091,7 @@ define("polyfill", function(){});
                 if (!chatbox) {
                     return true;
                 }
-                chatbox.createMessage($message, null, message);
+                chatbox.createMessage(message, null, message);
                 return true;
             },
 
@@ -3223,16 +5099,16 @@ define("polyfill", function(){});
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
-                var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid,
+                var original_stanza = message,
+                    contact_jid, forwarded, delay, from_bare_jid,
                     from_resource, is_me, msgid,
                     chatbox, resource,
-                    from_jid = $message.attr('from'),
-                    to_jid = $message.attr('to'),
+                    from_jid = message.getAttribute('from'),
+                    to_jid = message.getAttribute('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
-                if (converse.filter_by_resource && (to_resource && to_resource !== converse.resource)) {
-                    converse.log(
+                if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+                    _converse.log(
                         'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
                         'info'
                     );
@@ -3241,23 +5117,31 @@ define("polyfill", function(){});
                     // XXX: Ideally we wouldn't have to check for headline
                     // messages, but Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
-                    converse.log(
+                    _converse.log(
                         "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
                         'info'
                     );
                     return true;
                 }
-                $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
-                    $message = $forwarded.children('message');
-                    $delay = $forwarded.children('delay');
-                    from_jid = $message.attr('from');
-                    to_jid = $message.attr('to');
+                forwarded = message.querySelector('forwarded');
+                if (!_.isNull(forwarded)) {
+                    var forwarded_message = forwarded.querySelector('message');
+                    var forwarded_from = forwarded_message.getAttribute('from');
+                    if (Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                        // Prevent message forging via carbons
+                        //
+                        // https://xmpp.org/extensions/xep-0280.html#security
+                        return true;
+                    }
+                    message = forwarded_message;
+                    delay = forwarded.querySelector('delay');
+                    from_jid = message.getAttribute('from');
+                    to_jid = message.getAttribute('to');
                 }
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
-                is_me = from_bare_jid === converse.bare_jid;
-                msgid = $message.attr('id');
+                is_me = from_bare_jid === _converse.bare_jid;
+                msgid = message.getAttribute('id');
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -3266,16 +5150,16 @@ define("polyfill", function(){});
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                converse.emit('message', message);
+                _converse.emit('message', message);
                 // Get chat box, but only create a new one when the message has a body.
-                chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
+                chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 if (!chatbox) {
                     return true;
                 }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                chatbox.createMessage($message, $delay, message);
+                chatbox.createMessage(message, delay, original_stanza);
                 return true;
             },
 
@@ -3286,24 +5170,34 @@ define("polyfill", function(){});
                  * Parameters:
                  *    (String) jid - The JID of the user whose chat box we want
                  *    (Boolean) create - Should a new chat box be created if none exists?
+                 *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var chatbox = this.get(bare_jid);
                 if (!chatbox && create) {
-                    var roster_item = converse.roster.get(bare_jid);
-                    if (roster_item === undefined) {
-                        converse.log('Could not get roster item for JID '+bare_jid, 'error');
+                    var roster_info = {};
+                    var roster_item = _converse.roster.get(bare_jid);
+                    if (! _.isUndefined(roster_item)) {
+                        roster_info = {
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url'),
+                        };
+                    } else if (!_converse.allow_non_roster_messaging) {
+                        _converse.log('Could not get roster item for JID '+bare_jid+
+                                    ' and allow_non_roster_messaging is set to false', 'error');
                         return;
                     }
-                    chatbox = this.create(_.extend({
+                    chatbox = this.create(_.assignIn({
                         'id': bare_jid,
                         'jid': bare_jid,
-                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url')
-                    }, attrs || {}));
+                        'fullname': jid,
+                        'image_type': DEFAULT_IMAGE_TYPE,
+                        'image': DEFAULT_IMAGE,
+                        'url': '',
+                    }, roster_info, attrs || {}));
                 }
                 return chatbox;
             }
@@ -3361,7 +5255,7 @@ define("polyfill", function(){});
                 if (!chatbox && create) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
-                            converse.log(response.responseText);
+                            _converse.log(response.responseText);
                         }
                     });
                 }
@@ -3388,18 +5282,18 @@ define("polyfill", function(){});
                 });
                 this.on('change', function (item) {
                     if (_.has(item.changed, 'status')) {
-                        converse.emit('statusChanged', this.get('status'));
+                        _converse.emit('statusChanged', this.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        converse.emit('statusMessageChanged', this.get('status_message'));
+                        _converse.emit('statusMessageChanged', this.get('status_message'));
                     }
                 }.bind(this));
             },
 
             constructPresence: function (type, status_message) {
                 var presence;
-                type = typeof type === 'string' ? type : (this.get('status') || converse.default_state);
-                status_message = typeof status_message === 'string' ? status_message : undefined;
+                type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
+                status_message = _.isString(status_message) ? status_message : undefined;
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
                 if ((type === 'unavailable') ||
@@ -3424,7 +5318,7 @@ define("polyfill", function(){});
             },
 
             sendPresence: function (type, status_message) {
-                converse.connection.send(this.constructPresence(type, status_message));
+                _converse.connection.send(this.constructPresence(type, status_message));
             },
 
             setStatus: function (value) {
@@ -3433,7 +5327,7 @@ define("polyfill", function(){});
             },
 
             getStatus: function () {
-                return this.get('status') || converse.default_state;
+                return this.get('status') || _converse.default_state;
             },
 
             setStatusMessage: function (status_message) {
@@ -3463,31 +5357,31 @@ define("polyfill", function(){});
              * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
              * All features are shown here: http://xmpp.org/registrar/disco-features.html
              */
-            model: converse.Feature,
+            model: _converse.Feature,
             initialize: function () {
                 this.addClientIdentities().addClientFeatures();
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.features'+converse.bare_jid)
+                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1('converse.features'+_converse.bare_jid)
                 );
                 this.on('add', this.onFeatureAdded, this);
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
-                    converse.connection.disco.info(converse.domain, null, this.onInfo.bind(this));
-                    converse.connection.disco.items(converse.domain, null, this.onItems.bind(this));
+                    _converse.connection.disco.info(_converse.domain, null, this.onInfo.bind(this));
+                    _converse.connection.disco.items(_converse.domain, null, this.onItems.bind(this));
                 } else {
                     this.fetch({add:true});
                 }
             },
 
             onFeatureAdded: function (feature) {
-                converse.emit('serviceDiscovered', feature);
+                _converse.emit('serviceDiscovered', feature);
             },
 
             addClientIdentities: function () {
                 /* See http://xmpp.org/registrar/disco-categories.html
                  */
-                 converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
+                 _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
                  return this;
             },
 
@@ -3497,23 +5391,24 @@ define("polyfill", function(){});
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
                  */
-                converse.connection.disco.addFeature(Strophe.NS.BOSH);
-                converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-                if (converse.message_carbons) {
-                    converse.connection.disco.addFeature(Strophe.NS.CARBONS);
+                _converse.connection.disco.addFeature(Strophe.NS.BOSH);
+                _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+                _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+                _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+                if (_converse.message_carbons) {
+                    _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
                 }
                 return this;
             },
 
             onItems: function (stanza) {
-                $(stanza).find('query item').each(function (idx, item) {
-                    converse.connection.disco.info(
-                        $(item).attr('jid'),
+                var that = this;
+                _.each(stanza.querySelectorAll('query item'), function (item) {
+                    _converse.connection.disco.info(
+                        item.getAttribute('jid'),
                         null,
-                        this.onInfo.bind(this));
-                }.bind(this));
+                        that.onInfo.bind(that));
+                });
             },
 
             onInfo: function (stanza) {
@@ -3524,11 +5419,11 @@ define("polyfill", function(){});
                     return;
                 }
                 $stanza.find('feature').each(function (idx, feature) {
-                    var namespace = $(feature).attr('var');
+                    var namespace = feature.getAttribute('var');
                     this[namespace] = true;
                     this.create({
                         'var': namespace,
-                        'from': $stanza.attr('from')
+                        'from': stanza.getAttribute('from')
                     });
                 }.bind(this));
             }
@@ -3536,18 +5431,18 @@ define("polyfill", function(){});
 
         this.setUpXMLLogging = function () {
             Strophe.log = function (level, msg) {
-                converse.log(msg, level);
+                _converse.log(msg, level);
             };
             if (this.debug) {
-                this.connection.xmlInput = function (body) { converse.log(body.outerHTML); };
-                this.connection.xmlOutput = function (body) { converse.log(body.outerHTML); };
+                this.connection.xmlInput = function (body) { _converse.log(body.outerHTML); };
+                this.connection.xmlOutput = function (body) { _converse.log(body.outerHTML); };
             }
         };
 
         this.fetchLoginCredentials = function () {
             var deferred = new $.Deferred();
             $.ajax({
-                url:  converse.credentials_url,
+                url:  _converse.credentials_url,
                 type: 'GET',
                 dataType: "json",
                 success: function (response) {
@@ -3557,8 +5452,8 @@ define("polyfill", function(){});
                     });
                 },
                 error: function (response) {
-                    delete converse.connection;
-                    converse.emit('noResumeableSession');
+                    delete _converse.connection;
+                    _converse.emit('noResumeableSession');
                     deferred.reject(response);
                 }
             });
@@ -3616,32 +5511,32 @@ define("polyfill", function(){});
         this.autoLogin = function (credentials) {
             if (credentials) {
                 // If passed in, then they come from credentials_url, so we
-                // set them on the converse object.
+                // set them on the _converse object.
                 this.jid = credentials.jid;
                 this.password = credentials.password;
             }
-            if (this.authentication === converse.ANONYMOUS) {
+            if (this.authentication === _converse.ANONYMOUS) {
                 if (!this.jid) {
                     throw new Error("Config Error: when using anonymous login " +
                         "you need to provide the server's domain via the 'jid' option. " +
                         "Either when calling converse.initialize, or when calling " +
-                        "converse.user.login.");
+                        "_converse.api.user.login.");
                 }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
-            } else if (this.authentication === converse.LOGIN) {
-                var password = converse.connection.pass || this.password;
+            } else if (this.authentication === _converse.LOGIN) {
+                var password = _converse.connection.pass || this.password;
                 if (!password) {
                     if (this.auto_login && !this.password) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
-                    converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-                    converse.disconnect();
+                    _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
+                    _converse.disconnect();
                     return;
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {
-                    this.jid = this.jid.toLowerCase() + converse.generateResource();
+                    this.jid = this.jid.toLowerCase() + _converse.generateResource();
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
@@ -3690,7 +5585,7 @@ define("polyfill", function(){});
         this.logIn = function (credentials, reconnecting) {
             // We now try to resume or automatically set up a new session.
             // Otherwise the user will be shown a login form.
-            if (this.authentication === converse.PREBIND) {
+            if (this.authentication === _converse.PREBIND) {
                 this.attemptPreboundSession(reconnecting);
             } else {
                 this.attemptNonPreboundSession(credentials, reconnecting);
@@ -3709,7 +5604,7 @@ define("polyfill", function(){});
             } else if (this.bosh_service_url) {
                 this.connection = new Strophe.Connection(
                     this.bosh_service_url,
-                    _.extend(this.connection_options, {'keepalive': this.keepalive})
+                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
                 );
             } else {
                 throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
@@ -3728,8 +5623,8 @@ define("polyfill", function(){});
             if (this.features) {
                 this.features.reset();
             }
-            $(window).off('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
-            window.clearInterval(converse.everySecondTrigger);
+            $(window).off('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.clearInterval(_converse.everySecondTrigger);
             return this;
         };
 
@@ -3757,9 +5652,9 @@ define("polyfill", function(){});
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
              */
-            utils.merge(converse.default_settings, settings);
-            utils.merge(converse, settings);
-            utils.applyUserSettings(converse, settings, converse.user_settings);
+            utils.merge(_converse.default_settings, settings);
+            utils.merge(_converse, settings);
+            utils.applyUserSettings(_converse, settings, _converse.user_settings);
         };
 
         // If initialize gets called a second time (e.g. during tests), then we
@@ -3768,170 +5663,172 @@ define("polyfill", function(){});
         // initialized twice.
         // If initialize is called for the first time, then this array is empty
         // in any case.
-        converse.pluggable.initialized_plugins = [];
+        _converse.pluggable.initialized_plugins = [];
 
-        converse.pluggable.initializePlugins({
+        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+
+        _converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
-            'converse': converse
-        });
-        converse.emit('pluginsInitialized');
-        converse._initialize();
-        converse.registerGlobalEventHandlers();
+            '_converse': _converse
+        }, whitelist, _converse.blacklisted_plugins);
 
-        if (!_.isUndefined(converse.connection) &&
-            converse.connection.service === 'jasmine tests') {
-            return converse;
+        _converse.emit('pluginsInitialized');
+        _converse._initialize();
+        _converse.registerGlobalEventHandlers();
+
+        if (!_.isUndefined(_converse.connection) &&
+            _converse.connection.service === 'jasmine tests') {
+            return _converse;
         } else {
             return init_deferred.promise();
         }
     };
-    return converse;
+    return _converse;
 }));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
 (function (root, factory) {
     define("converse-api", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
             "converse-core"
         ],
         factory);
-}(this, function ($, _, moment, strophe, utils, converse) {
+}(this, function ($, _, moment, strophe, utils, _converse) {
     var Strophe = strophe.Strophe;
-    return {
-        'initialize': function (settings, callback) {
-            return converse.initialize(settings, callback);
-        },
-        'log': converse.log,
+
+    // API methods only available to plugins
+    _converse.api = {
         'connection': {
             'connected': function () {
-                return converse.connection && converse.connection.connected || false;
+                return _converse.connection && _converse.connection.connected || false;
             },
             'disconnect': function () {
-                converse.connection.disconnect();
+                _converse.connection.disconnect();
             },
         },
         'user': {
             'jid': function () {
-                return converse.connection.jid;
+                return _converse.connection.jid;
             },
             'login': function (credentials) {
-                converse.initConnection();
-                converse.logIn(credentials);
+                _converse.initConnection();
+                _converse.logIn(credentials);
             },
             'logout': function () {
-                converse.logOut();
+                _converse.logOut();
             },
             'status': {
                 'get': function () {
-                    return converse.xmppstatus.get('status');
+                    return _converse.xmppstatus.get('status');
                 },
                 'set': function (value, message) {
                     var data = {'status': value};
-                    if (!_.contains(_.keys(converse.STATUS_WEIGHTS), value)) {
+                    if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
-                    if (typeof message === "string") {
+                    if (_.isString(message)) {
                         data.status_message = message;
                     }
-                    converse.xmppstatus.sendPresence(value);
-                    converse.xmppstatus.save(data);
+                    _converse.xmppstatus.sendPresence(value);
+                    _converse.xmppstatus.save(data);
                 },
                 'message': {
                     'get': function () {
-                        return converse.xmppstatus.get('status_message');
+                        return _converse.xmppstatus.get('status_message');
                     },
                     'set': function (stat) {
-                        converse.xmppstatus.save({'status_message': stat});
+                        _converse.xmppstatus.save({'status_message': stat});
                     }
                 }
             },
         },
         'settings': {
             'get': function (key) {
-                if (_.contains(Object.keys(converse.default_settings), key)) {
-                    return converse[key];
+                if (_.includes(_.keys(_converse.default_settings), key)) {
+                    return _converse[key];
                 }
             },
             'set': function (key, val) {
                 var o = {};
-                if (typeof key === "object") {
-                    _.extend(converse, _.pick(key, Object.keys(converse.default_settings)));
-                } else if (typeof key === "string") {
+                if (_.isObject(key)) {
+                    _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
+                } else if (_.isString("string")) {
                     o[key] = val;
-                    _.extend(converse, _.pick(o, Object.keys(converse.default_settings)));
+                    _.assignIn(_converse, _.pick(o, _.keys(_converse.default_settings)));
                 }
             }
         },
         'contacts': {
             'get': function (jids) {
                 var _transform = function (jid) {
-                    var contact = converse.roster.get(Strophe.getBareJidFromJid(jid));
+                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
                         return contact.attributes;
                     }
                     return null;
                 };
-                if (typeof jids === "undefined") {
-                    jids = converse.roster.pluck('jid');
-                } else if (typeof jids === "string") {
+                if (_.isUndefined(jids)) {
+                    jids = _converse.roster.pluck('jid');
+                } else if (_.isString(jids)) {
                     return _transform(jids);
                 }
                 return _.map(jids, _transform);
             },
             'add': function (jid, name) {
-                if (typeof jid !== "string" || jid.indexOf('@') < 0) {
+                if (!_.isString(jid) || !_.includes(jid, '@')) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
-                converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
+                _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
         'chats': {
             'open': function (jids) {
                 var chatbox;
-                if (typeof jids === "undefined") {
-                    converse.log("chats.open: You need to provide at least one JID", "error");
+                if (_.isUndefined(jids)) {
+                    _converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
-                } else if (typeof jids === "string") {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jids, true).trigger('show')
+                } else if (_.isString(jids)) {
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jids, true).trigger('show')
                     );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = converse.wrappedChatBox(
-                        converse.chatboxes.getChatBox(jid, true).trigger('show')
+                    chatbox = _converse.wrappedChatBox(
+                        _converse.chatboxes.getChatBox(jid, true).trigger('show')
                     );
                     return chatbox;
                 });
             },
             'get': function (jids) {
-                if (typeof jids === "undefined") {
+                if (_.isUndefined(jids)) {
                     var result = [];
-                    converse.chatboxes.each(function (chatbox) {
+                    _converse.chatboxes.each(function (chatbox) {
                         // FIXME: Leaky abstraction from MUC. We need to add a
                         // base type for chat boxes, and check for that.
                         if (chatbox.get('type') !== 'chatroom') {
-                            result.push(converse.wrappedChatBox(chatbox));
+                            result.push(_converse.wrappedChatBox(chatbox));
                         }
                     });
                     return result;
-                } else if (typeof jids === "string") {
-                    return converse.wrappedChatBox(converse.chatboxes.getChatBox(jids));
+                } else if (_.isString(jids)) {
+                    return _converse.wrappedChatBox(_converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(
-                        _.compose(
-                            converse.wrappedChatBox.bind(converse), converse.chatboxes.getChatBox.bind(converse.chatboxes)
+                        _.flow(
+                            _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
+                            _converse.wrappedChatBox.bind(_converse)
                         ), _, true
                     )
                 );
@@ -3939,34 +5836,28 @@ define("polyfill", function(){});
         },
         'tokens': {
             'get': function (id) {
-                if (!converse.expose_rid_and_sid || typeof converse.connection === "undefined") {
+                if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                     return null;
                 }
                 if (id.toLowerCase() === 'rid') {
-                    return converse.connection.rid || converse.connection._proto.rid;
+                    return _converse.connection.rid || _converse.connection._proto.rid;
                 } else if (id.toLowerCase() === 'sid') {
-                    return converse.connection.sid || converse.connection._proto.sid;
+                    return _converse.connection.sid || _converse.connection._proto.sid;
                 }
             }
         },
         'listen': {
-            'once': function (evt, handler, context) {
-                converse.once(evt, handler, context);
-            },
-            'on': function (evt, handler, context) {
-                converse.on(evt, handler, context);
-            },
-            'not': function (evt, handler) {
-                converse.off(evt, handler);
-            },
+            'once': _converse.once,
+            'on': _converse.on,
+            'not': _converse.off,
             'stanza': function (name, options, handler) {
-                if (typeof options === 'function') {
+                if (_.isFunction(options)) {
                     handler = options;
                     options = {};
                 } else {
                     options = options || {};
                 }
-                converse.connection.addHandler(
+                _converse.connection.addHandler(
                     handler,
                     options.ns,
                     name,
@@ -3978,39 +5869,25 @@ define("polyfill", function(){});
             },
         },
         'send': function (stanza) {
-            converse.connection.send(stanza);
+            _converse.connection.send(stanza);
+        },
+    };
+
+    // The public API
+    return {
+        'initialize': function (settings, callback) {
+            return _converse.initialize(settings, callback);
         },
         'plugins': {
             'add': function (name, plugin) {
                 plugin.__name__ = name;
-                converse.pluggable.plugins[name] = plugin;
-            },
-            'remove': function (name) {
-                delete converse.plugins[name];
-            },
-            'override': function (name, value) {
-                /* Helper method for overriding methods and attributes directly on the
-                 * converse object. For Backbone objects, use instead the 'extend'
-                 * method.
-                 *
-                 * If a method is overridden, then the original method will still be
-                 * available via the __super__ attribute.
-                 *
-                 * name: The attribute being overridden.
-                 * value: The value of the attribute being overridden.
-                 */
-                converse._overrideAttribute(name, value);
-            },
-            'extend': function (obj, attributes) {
-                /* Helper method for overriding or extending Converse's Backbone Views or Models
-                 *
-                 * When a method is overriden, the original will still be available
-                 * on the __super__ attribute of the object being overridden.
-                 *
-                 * obj: The Backbone View or Model
-                 * attributes: A hash of attributes, such as you would pass to Backbone.Model.extend or Backbone.View.extend
-                 */
-                converse._extendObject(obj, attributes);
+                if (!_.isUndefined(_converse.pluggable.plugins[name])) {
+                    throw new TypeError(
+                        'Error: plugin with name "'+name+'" has already been '+
+                        'registered!');
+                } else {
+                    _converse.pluggable.plugins[name] = plugin;
+                }
             }
         },
         'env': {
@@ -5037,144 +6914,566 @@ return parser;
 
 })(this);
 
+/**
+ * @license text 2.0.15 Copyright jQuery Foundation and other contributors.
+ * Released under MIT license, http://github.com/requirejs/text/LICENSE
+ */
+/*jslint regexp: true */
+/*global require, XMLHttpRequest, ActiveXObject,
+  define, window, process, Packages,
+  java, location, Components, FileUtils */
 
-define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarked Rooms": [\n            null,\n            ""\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Feu clic per afegir com a contacte del xat"\n         ],\n         "Toggle chat": [\n            null,\n            "Canvia de xat"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "The connection has dropped, attempting to reconnect.": [\n            null,\n            ""\n         ],\n         "Connecting": [\n            null,\n            "S\'està establint la connexió"\n         ],\n         "Authenticating": [\n            null,\n            "S\'està efectuant l\'autenticació"\n         ],\n         "Authentication Failed": [\n            null,\n            "Error d\'autenticació"\n         ],\n         "Disconnected": [\n            null,\n            ""\n         ],\n         "The connection to the chat server has dropped": [\n            null,\n            ""\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "S\'ha produït un error en intentar afegir "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "L\'àlies de <strong>%1$s</strong> ha canviat"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> a causa d\'un canvi d\'afiliació"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> perquè no és membre"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat a: <strong>%1$s</strong>"\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "Error: the \\"": [\n            null,\n            "Error: el \\""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room topic": [\n            null,\n            "Defineix un tema per a la sala"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "El motiu indicat és: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "No sou a la llista de membres d\'aquesta sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "No s\'ha especificat cap àlies"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "No teniu permís per crear sales noves"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "El vostre àlies no s\'ajusta a les polítiques d\'aquesta sala"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Aquesta sala (encara) no existeix"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Sales a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "Return": [\n            null,\n            "Torna"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to remove this contact": [\n            null,\n            "Feu clic per eliminar aquest contacte"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Feu clic per acceptar aquesta sol·licitud de contacte"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Feu clic per rebutjar aquesta sol·licitud de contacte"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "S\'ha produït un error en intentar eliminar "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
+define('text',['module'], function (module) {
+    'use strict';
+
+    var text, fs, Cc, Ci, xpcIsWindows,
+        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
+        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
+        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
+        hasLocation = typeof location !== 'undefined' && location.href,
+        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
+        defaultHostName = hasLocation && location.hostname,
+        defaultPort = hasLocation && (location.port || undefined),
+        buildMap = {},
+        masterConfig = (module.config && module.config()) || {};
+
+    function useDefault(value, defaultValue) {
+        return value === undefined || value === '' ? defaultValue : value;
+    }
+
+    //Allow for default ports for http and https.
+    function isSamePort(protocol1, port1, protocol2, port2) {
+        if (port1 === port2) {
+            return true;
+        } else if (protocol1 === protocol2) {
+            if (protocol1 === 'http') {
+                return useDefault(port1, '80') === useDefault(port2, '80');
+            } else if (protocol1 === 'https') {
+                return useDefault(port1, '443') === useDefault(port2, '443');
+            }
+        }
+        return false;
+    }
+
+    text = {
+        version: '2.0.15',
+
+        strip: function (content) {
+            //Strips <?xml ...?> declarations so that external SVG and XML
+            //documents can be added to a document without worry. Also, if the string
+            //is an HTML document, only the part inside the body tag is returned.
+            if (content) {
+                content = content.replace(xmlRegExp, "");
+                var matches = content.match(bodyRegExp);
+                if (matches) {
+                    content = matches[1];
+                }
+            } else {
+                content = "";
+            }
+            return content;
+        },
+
+        jsEscape: function (content) {
+            return content.replace(/(['\\])/g, '\\$1')
+                .replace(/[\f]/g, "\\f")
+                .replace(/[\b]/g, "\\b")
+                .replace(/[\n]/g, "\\n")
+                .replace(/[\t]/g, "\\t")
+                .replace(/[\r]/g, "\\r")
+                .replace(/[\u2028]/g, "\\u2028")
+                .replace(/[\u2029]/g, "\\u2029");
+        },
+
+        createXhr: masterConfig.createXhr || function () {
+            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
+            var xhr, i, progId;
+            if (typeof XMLHttpRequest !== "undefined") {
+                return new XMLHttpRequest();
+            } else if (typeof ActiveXObject !== "undefined") {
+                for (i = 0; i < 3; i += 1) {
+                    progId = progIds[i];
+                    try {
+                        xhr = new ActiveXObject(progId);
+                    } catch (e) {}
+
+                    if (xhr) {
+                        progIds = [progId];  // so faster next time
+                        break;
+                    }
+                }
+            }
+
+            return xhr;
+        },
+
+        /**
+         * Parses a resource name into its component parts. Resource names
+         * look like: module/name.ext!strip, where the !strip part is
+         * optional.
+         * @param {String} name the resource name
+         * @returns {Object} with properties "moduleName", "ext" and "strip"
+         * where strip is a boolean.
+         */
+        parseName: function (name) {
+            var modName, ext, temp,
+                strip = false,
+                index = name.lastIndexOf("."),
+                isRelative = name.indexOf('./') === 0 ||
+                             name.indexOf('../') === 0;
+
+            if (index !== -1 && (!isRelative || index > 1)) {
+                modName = name.substring(0, index);
+                ext = name.substring(index + 1);
+            } else {
+                modName = name;
+            }
+
+            temp = ext || modName;
+            index = temp.indexOf("!");
+            if (index !== -1) {
+                //Pull off the strip arg.
+                strip = temp.substring(index + 1) === "strip";
+                temp = temp.substring(0, index);
+                if (ext) {
+                    ext = temp;
+                } else {
+                    modName = temp;
+                }
+            }
+
+            return {
+                moduleName: modName,
+                ext: ext,
+                strip: strip
+            };
+        },
+
+        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
+
+        /**
+         * Is an URL on another domain. Only works for browser use, returns
+         * false in non-browser environments. Only used to know if an
+         * optimized .js version of a text resource should be loaded
+         * instead.
+         * @param {String} url
+         * @returns Boolean
+         */
+        useXhr: function (url, protocol, hostname, port) {
+            var uProtocol, uHostName, uPort,
+                match = text.xdRegExp.exec(url);
+            if (!match) {
+                return true;
+            }
+            uProtocol = match[2];
+            uHostName = match[3];
+
+            uHostName = uHostName.split(':');
+            uPort = uHostName[1];
+            uHostName = uHostName[0];
+
+            return (!uProtocol || uProtocol === protocol) &&
+                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
+                   ((!uPort && !uHostName) || isSamePort(uProtocol, uPort, protocol, port));
+        },
+
+        finishLoad: function (name, strip, content, onLoad) {
+            content = strip ? text.strip(content) : content;
+            if (masterConfig.isBuild) {
+                buildMap[name] = content;
+            }
+            onLoad(content);
+        },
+
+        load: function (name, req, onLoad, config) {
+            //Name has format: some.module.filext!strip
+            //The strip part is optional.
+            //if strip is present, then that means only get the string contents
+            //inside a body tag in an HTML string. For XML/SVG content it means
+            //removing the <?xml ...?> declarations so the content can be inserted
+            //into the current doc without problems.
+
+            // Do not bother with the work if a build and text will
+            // not be inlined.
+            if (config && config.isBuild && !config.inlineText) {
+                onLoad();
+                return;
+            }
+
+            masterConfig.isBuild = config && config.isBuild;
+
+            var parsed = text.parseName(name),
+                nonStripName = parsed.moduleName +
+                    (parsed.ext ? '.' + parsed.ext : ''),
+                url = req.toUrl(nonStripName),
+                useXhr = (masterConfig.useXhr) ||
+                         text.useXhr;
+
+            // Do not load if it is an empty: url
+            if (url.indexOf('empty:') === 0) {
+                onLoad();
+                return;
+            }
+
+            //Load the text. Use XHR if possible and in a browser.
+            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
+                text.get(url, function (content) {
+                    text.finishLoad(name, parsed.strip, content, onLoad);
+                }, function (err) {
+                    if (onLoad.error) {
+                        onLoad.error(err);
+                    }
+                });
+            } else {
+                //Need to fetch the resource across domains. Assume
+                //the resource has been optimized into a JS module. Fetch
+                //by the module name + extension, but do not include the
+                //!strip part to avoid file system issues.
+                req([nonStripName], function (content) {
+                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
+                                    parsed.strip, content, onLoad);
+                });
+            }
+        },
+
+        write: function (pluginName, moduleName, write, config) {
+            if (buildMap.hasOwnProperty(moduleName)) {
+                var content = text.jsEscape(buildMap[moduleName]);
+                write.asModule(pluginName + "!" + moduleName,
+                               "define(function () { return '" +
+                                   content +
+                               "';});\n");
+            }
+        },
+
+        writeFile: function (pluginName, moduleName, req, write, config) {
+            var parsed = text.parseName(moduleName),
+                extPart = parsed.ext ? '.' + parsed.ext : '',
+                nonStripName = parsed.moduleName + extPart,
+                //Use a '.js' file name so that it indicates it is a
+                //script that can be loaded across domains.
+                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
+
+            //Leverage own load() method to load plugin value, but only
+            //write out values that do not have the strip argument,
+            //to avoid any potential issues with ! in file names.
+            text.load(nonStripName, req, function (value) {
+                //Use own write() method to construct full module value.
+                //But need to create shell that translates writeFile's
+                //write() to the right interface.
+                var textWrite = function (contents) {
+                    return write(fileName, contents);
+                };
+                textWrite.asModule = function (moduleName, contents) {
+                    return write.asModule(moduleName, fileName, contents);
+                };
+
+                text.write(pluginName, nonStripName, textWrite, config);
+            }, config);
+        }
+    };
+
+    if (masterConfig.env === 'node' || (!masterConfig.env &&
+            typeof process !== "undefined" &&
+            process.versions &&
+            !!process.versions.node &&
+            !process.versions['node-webkit'] &&
+            !process.versions['atom-shell'])) {
+        //Using special require.nodeRequire, something added by r.js.
+        fs = require.nodeRequire('fs');
+
+        text.get = function (url, callback, errback) {
+            try {
+                var file = fs.readFileSync(url, 'utf8');
+                //Remove BOM (Byte Mark Order) from utf8 files if it is there.
+                if (file[0] === '\uFEFF') {
+                    file = file.substring(1);
+                }
+                callback(file);
+            } catch (e) {
+                if (errback) {
+                    errback(e);
+                }
+            }
+        };
+    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
+            text.createXhr())) {
+        text.get = function (url, callback, errback, headers) {
+            var xhr = text.createXhr(), header;
+            xhr.open('GET', url, true);
+
+            //Allow plugins direct access to xhr headers
+            if (headers) {
+                for (header in headers) {
+                    if (headers.hasOwnProperty(header)) {
+                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
+                    }
+                }
+            }
+
+            //Allow overrides specified in config
+            if (masterConfig.onXhr) {
+                masterConfig.onXhr(xhr, url);
+            }
+
+            xhr.onreadystatechange = function (evt) {
+                var status, err;
+                //Do not explicitly handle errors, those should be
+                //visible via console output in the browser.
+                if (xhr.readyState === 4) {
+                    status = xhr.status || 0;
+                    if (status > 399 && status < 600) {
+                        //An http 4xx or 5xx error. Signal an error.
+                        err = new Error(url + ' HTTP status: ' + status);
+                        err.xhr = xhr;
+                        if (errback) {
+                            errback(err);
+                        }
+                    } else {
+                        callback(xhr.responseText);
+                    }
+
+                    if (masterConfig.onXhrComplete) {
+                        masterConfig.onXhrComplete(xhr, url);
+                    }
+                }
+            };
+            xhr.send(null);
+        };
+    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
+            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
+        //Why Java, why is this so awkward?
+        text.get = function (url, callback) {
+            var stringBuffer, line,
+                encoding = "utf-8",
+                file = new java.io.File(url),
+                lineSeparator = java.lang.System.getProperty("line.separator"),
+                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
+                content = '';
+            try {
+                stringBuffer = new java.lang.StringBuffer();
+                line = input.readLine();
+
+                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
+                // http://www.unicode.org/faq/utf_bom.html
+
+                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
+                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
+                if (line && line.length() && line.charAt(0) === 0xfeff) {
+                    // Eat the BOM, since we've already found the encoding on this file,
+                    // and we plan to concatenating this buffer with others; the BOM should
+                    // only appear at the top of a file.
+                    line = line.substring(1);
+                }
+
+                if (line !== null) {
+                    stringBuffer.append(line);
+                }
+
+                while ((line = input.readLine()) !== null) {
+                    stringBuffer.append(lineSeparator);
+                    stringBuffer.append(line);
+                }
+                //Make sure we return a JavaScript string and not a Java string.
+                content = String(stringBuffer.toString()); //String
+            } finally {
+                input.close();
+            }
+            callback(content);
+        };
+    } else if (masterConfig.env === 'xpconnect' || (!masterConfig.env &&
+            typeof Components !== 'undefined' && Components.classes &&
+            Components.interfaces)) {
+        //Avert your gaze!
+        Cc = Components.classes;
+        Ci = Components.interfaces;
+        Components.utils['import']('resource://gre/modules/FileUtils.jsm');
+        xpcIsWindows = ('@mozilla.org/windows-registry-key;1' in Cc);
+
+        text.get = function (url, callback) {
+            var inStream, convertStream, fileObj,
+                readData = {};
+
+            if (xpcIsWindows) {
+                url = url.replace(/\//g, '\\');
+            }
+
+            fileObj = new FileUtils.File(url);
+
+            //XPCOM, you so crazy
+            try {
+                inStream = Cc['@mozilla.org/network/file-input-stream;1']
+                           .createInstance(Ci.nsIFileInputStream);
+                inStream.init(fileObj, 1, 0, false);
+
+                convertStream = Cc['@mozilla.org/intl/converter-input-stream;1']
+                                .createInstance(Ci.nsIConverterInputStream);
+                convertStream.init(inStream, "utf-8", inStream.available(),
+                Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
+
+                convertStream.readString(inStream.available(), readData);
+                convertStream.close();
+                inStream.close();
+                callback(readData.value);
+            } catch (e) {
+                throw new Error((fileObj && fileObj.path || '') + ': ' + e);
+            }
+        };
+    }
+    return text;
+});
 
 
-define('tpl!chatbox', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="chatbox-btn close-chatbox-button icon-close" title="'+
-((__t=(info_close))==null?'':__t)+
+define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarked Rooms": [\n            null,\n            ""\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "Click to add as a chat contact": [\n            null,\n            "Feu clic per afegir com a contacte del xat"\n         ],\n         "Toggle chat": [\n            null,\n            "Canvia de xat"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "The connection has dropped, attempting to reconnect.": [\n            null,\n            ""\n         ],\n         "Connecting": [\n            null,\n            "S\'està establint la connexió"\n         ],\n         "Authenticating": [\n            null,\n            "S\'està efectuant l\'autenticació"\n         ],\n         "Authentication Failed": [\n            null,\n            "Error d\'autenticació"\n         ],\n         "Sorry, there was an error while trying to add ": [\n            null,\n            "S\'ha produït un error en intentar afegir "\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "<strong>%1$s</strong> has been banned": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong>\'s nickname has changed": [\n            null,\n            "L\'àlies de <strong>%1$s</strong> ha canviat"\n         ],\n         "<strong>%1$s</strong> has been kicked out": [\n            null,\n            "S\'ha expulsat <strong>%1$s</strong>"\n         ],\n         "<strong>%1$s</strong> has been removed because of an affiliation change": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> a causa d\'un canvi d\'afiliació"\n         ],\n         "<strong>%1$s</strong> has been removed for not being a member": [\n            null,\n            "S\'ha eliminat <strong>%1$s</strong> perquè no és membre"\n         ],\n         "Your nickname has been changed to: <strong>%1$s</strong>": [\n            null,\n            "El vostre àlies ha canviat a: <strong>%1$s</strong>"\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "Error: the \\"": [\n            null,\n            "Error: el \\""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room topic": [\n            null,\n            "Defineix un tema per a la sala"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "The reason given is: \\"": [\n            null,\n            "El motiu indicat és: \\""\n         ],\n         "You are not on the member list of this room": [\n            null,\n            "No sou a la llista de membres d\'aquesta sala"\n         ],\n         "No nickname was specified": [\n            null,\n            "No s\'ha especificat cap àlies"\n         ],\n         "You are not allowed to create new rooms": [\n            null,\n            "No teniu permís per crear sales noves"\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies": [\n            null,\n            "El vostre àlies no s\'ajusta a les polítiques d\'aquesta sala"\n         ],\n         "This room does not (yet) exist": [\n            null,\n            "Aquesta sala (encara) no existeix"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Rooms on %1$s": [\n            null,\n            "Sales a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "Return": [\n            null,\n            "Torna"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to remove this contact": [\n            null,\n            "Feu clic per eliminar aquest contacte"\n         ],\n         "Click to accept this contact request": [\n            null,\n            "Feu clic per acceptar aquesta sol·licitud de contacte"\n         ],\n         "Click to decline this contact request": [\n            null,\n            "Feu clic per rebutjar aquesta sol·licitud de contacte"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Sorry, there was an error while trying to remove ": [\n            null,\n            "S\'ha produït un error en intentar eliminar "\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
+
+
+define('tpl!chatbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head chat-head-chatbox">\n        <a class="chatbox-btn close-chatbox-button icon-close" title="' +
+((__t = (info_close)) == null ? '' : __t) +
 '"></a>\n        <div class="chat-title">\n            ';
- if (url) { 
-__p+='\n                <a href="'+
-((__t=(url))==null?'':__t)+
+ if (url) { ;
+__p += '\n                <a href="' +
+((__t = (url)) == null ? '' : __t) +
 '" target="_blank" rel="noopener" class="user">\n            ';
- } 
-__p+='\n                    '+
-((__t=( title ))==null?'':__t)+
+ } ;
+__p += '\n                    ' +
+((__t = ( title )) == null ? '' : __t) +
 '\n            ';
- if (url) { 
-__p+='\n                </a>\n            ';
- } 
-__p+='\n            <p class="user-custom-message"><p/>\n        </div>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        <div class="new-msgs-indicator hidden">▼ '+
-((__t=( unread_msgs ))==null?'':__t)+
+ if (url) { ;
+__p += '\n                </a>\n            ';
+ } ;
+__p += '\n            <p class="user-custom-message"><p/>\n        </div>\n    </div>\n    <div class="chat-body">\n        <div class="chat-content"></div>\n        <div class="new-msgs-indicator hidden">▼ ' +
+((__t = ( unread_msgs )) == null ? '' : __t) +
 ' ▼</div>\n        ';
- if (show_textarea) { 
-__p+='\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
- if (show_toolbar) { 
-__p+='\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
- } 
-__p+='\n        <textarea\n            type="text"\n            class="chat-textarea"\n            placeholder="'+
-((__t=(label_personal_message))==null?'':__t)+
+ if (show_textarea) { ;
+__p += '\n        <form class="sendXMPPMessage" action="" method="post">\n            ';
+ if (show_toolbar) { ;
+__p += '\n                <ul class="chat-toolbar no-text-select"></ul>\n            ';
+ } ;
+__p += '\n        <textarea\n            type="text"\n            class="chat-textarea"\n            placeholder="' +
+((__t = (label_personal_message)) == null ? '' : __t) +
 '"/>\n        </form>\n        ';
- } 
-__p+='\n    </div>\n</div>\n';
+ } ;
+__p += '\n    </div>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!new_day', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<time class="chat-info chat-date" data-isodate="'+
-((__t=(isodate))==null?'':__t)+
-'">'+
-((__t=(datestring))==null?'':__t)+
+define('tpl!new_day', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<time class="chat-info chat-date" data-isodate="' +
+((__t = (isodate)) == null ? '' : __t) +
+'">' +
+((__t = (datestring)) == null ? '' : __t) +
 '</time>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!action', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chat-message '+
-((__t=(extra_classes))==null?'':__t)+
-'" data-isodate="'+
-((__t=(isodate))==null?'':__t)+
-'">\n    <span class="chat-msg-author chat-msg-'+
-((__t=(sender))==null?'':__t)+
-'">'+
-((__t=(time))==null?'':__t)+
-' **'+
-((__t=(username))==null?'':__t)+
+define('tpl!action', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chat-message ' +
+((__t = (extra_classes)) == null ? '' : __t) +
+'" data-isodate="' +
+((__t = (isodate)) == null ? '' : __t) +
+'">\n    <span class="chat-msg-author chat-msg-' +
+((__t = (sender)) == null ? '' : __t) +
+'">' +
+((__t = (time)) == null ? '' : __t) +
+' **' +
+((__t = (username)) == null ? '' : __t) +
 ' </span>\n    <span class="chat-msg-content"><!-- message gets added here via renderMessage --></span>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!message', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chat-message '+
-((__t=(extra_classes))==null?'':__t)+
-'" data-isodate="'+
-((__t=(isodate))==null?'':__t)+
-'" data-msgid="'+
-((__t=(msgid))==null?'':__t)+
-'">\n    <span class="chat-msg-author chat-msg-'+
-((__t=(sender))==null?'':__t)+
-'">'+
-((__t=(time))==null?'':__t)+
-' '+
-((__t=(username))==null?'':__t)+
+define('tpl!message', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chat-message ' +
+((__t = (extra_classes)) == null ? '' : __t) +
+'" data-isodate="' +
+((__t = (isodate)) == null ? '' : __t) +
+'" data-msgid="' +
+((__t = (msgid)) == null ? '' : __t) +
+'">\n    <span class="chat-msg-author chat-msg-' +
+((__t = (sender)) == null ? '' : __t) +
+'">' +
+((__t = (time)) == null ? '' : __t) +
+' ' +
+((__t = (username)) == null ? '' : __t) +
 ':&nbsp;</span>\n    <span class="chat-msg-content"><!-- message gets added here via renderMessage --></span>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!toolbar', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (show_emoticons)  { 
-__p+='\n    <li class="toggle-smiley icon-happy" title="'+
-((__t=(label_insert_smiley))==null?'':__t)+
+define('tpl!toolbar', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (show_emoticons)  { ;
+__p += '\n    <li class="toggle-smiley icon-happy" title="' +
+((__t = (label_insert_smiley)) == null ? '' : __t) +
 '">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
- } 
-__p+='\n';
- if (show_call_button)  { 
-__p+='\n<li class="toggle-call"><a class="icon-phone" title="'+
-((__t=(label_start_call))==null?'':__t)+
+ } ;
+__p += '\n';
+ if (show_call_button)  { ;
+__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
+((__t = (label_start_call)) == null ? '' : __t) +
 '"></a></li>\n';
- } 
-__p+='\n';
- if (show_clear_button)  { 
-__p+='\n<li class="toggle-clear"><a class="icon-remove" title="'+
-((__t=(label_clear))==null?'':__t)+
+ } ;
+__p += '\n';
+ if (show_clear_button)  { ;
+__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
+((__t = (label_clear)) == null ? '' : __t) +
 '"></a></li>\n';
- } 
-__p+='\n';
+ } ;
+__p += '\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!avatar', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<canvas height="32px" width="32px" class="avatar"></canvas>\n';
+define('tpl!avatar', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<canvas height="32px" width="32px" class="avatar"></canvas>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define */
 
 (function (root, factory) {
     define("converse-chatview", [
-            "converse-core",
             "converse-api",
             "tpl!chatbox",
             "tpl!new_day",
@@ -5185,7 +7484,6 @@ return __p;
     ], factory);
 }(this, function (
             converse,
-            converse_api,
             tpl_chatbox,
             tpl_new_day,
             tpl_action,
@@ -5194,20 +7492,12 @@ return __p;
             tpl_avatar
     ) {
     "use strict";
-    converse.templates.chatbox = tpl_chatbox;
-    converse.templates.new_day = tpl_new_day;
-    converse.templates.action = tpl_action;
-    converse.templates.message = tpl_message;
-    converse.templates.toolbar = tpl_toolbar;
-    converse.templates.avatar = tpl_avatar;
-
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        $msg = converse_api.env.$msg,
-        _ = converse_api.env._,
-        __ = utils.__.bind(converse),
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        utils = converse.env.utils,
+        Strophe = converse.env.Strophe,
+        $msg = converse.env.$msg,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
     var KEY = {
         ENTER: 13,
@@ -5215,7 +7505,7 @@ return __p;
     };
 
 
-    converse_api.plugins.add('converse-chatview', {
+    converse.plugins.add('converse-chatview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -5226,9 +7516,10 @@ return __p;
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view) {
-                        view = new converse.ChatBoxView({model: item});
+                        view = new _converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
                     } else {
@@ -5243,6 +7534,17 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.chatbox = tpl_chatbox;
+            _converse.templates.new_day = tpl_new_day;
+            _converse.templates.action = tpl_action;
+            _converse.templates.message = tpl_message;
+            _converse.templates.toolbar = tpl_toolbar;
+            _converse.templates.avatar = tpl_avatar;
+
             this.updateSettings({
                 show_toolbar: true,
                 chatview_avatar_width: 32,
@@ -5254,7 +7556,7 @@ return __p;
                 },
             });
 
-            converse.ChatBoxView = Backbone.View.extend({
+            _converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
                 className: 'chatbox hidden',
@@ -5288,14 +7590,14 @@ return __p;
                     // Which for some reason doesn't work.
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
-                    converse.emit('chatBoxInitialized', this);
+                    _converse.emit('chatBoxInitialized', this);
                 },
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(converse.templates.chatbox(
+                        .html(_converse.templates.chatbox(
                                 _.extend(this.model.toJSON(), {
-                                        show_toolbar: converse.show_toolbar,
+                                        show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
@@ -5307,7 +7609,7 @@ return __p;
                         );
                     this.$content = this.$el.find('.chat-content');
                     this.renderToolbar().renderAvatar();
-                    converse.emit('chatBoxOpened', this);
+                    _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this.showStatusMessage();
                 },
@@ -5371,7 +7673,7 @@ return __p;
                      */
                     var day_date = moment(date).startOf('day');
                     var insert = prepend ? this.$content.prepend: this.$content.append;
-                    insert.call(this.$content, converse.templates.new_day({
+                    insert.call(this.$content, _converse.templates.new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
@@ -5387,12 +7689,12 @@ return __p;
                      */
                     var that = this;
                     var insert = prepend ? this.$content.prepend : this.$content.append;
-                    _.compose(
-                        this.scrollDownMessageHeight.bind(this),
+                    _.flow(
                         function ($el) {
                             insert.call(that.$content, $el);
                             return $el;
-                        }
+                        },
+                        this.scrollDownMessageHeight.bind(this)
                     )(this.renderMessage(attrs));
                 },
 
@@ -5448,18 +7750,22 @@ return __p;
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
                     idx = msg_dates.indexOf(current_msg_date)-1;
-                    _.compose(
-                            this.scrollDownMessageHeight.bind(this),
-                            function ($el) {
-                                $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                                return $el;
-                            }.bind(this)
-                        )(this.renderMessage(attrs));
+                    _.flow(
+                        function ($el) {
+                            $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                            return $el;
+                        }.bind(this),
+                        this.scrollDownMessageHeight.bind(this)
+                    )(this.renderMessage(attrs));
                 },
 
-                getExtraMessageTemplateAttributes: function (attrs) {
-                    // Provides a hook for sending more attributes to the
-                    // message template.
+                getExtraMessageTemplateAttributes: function () {
+                    /* Provides a hook for sending more attributes to the
+                     * message template.
+                     *
+                     * Parameters:
+                     *  (Object) attrs: An object containing message attributes.
+                     */
                     return {};
                 },
 
@@ -5481,10 +7787,10 @@ return __p;
 
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
-                        template = converse.templates.action;
+                        template = _converse.templates.action;
                         username = fullname;
                     } else  {
-                        template = converse.templates.message;
+                        template = _converse.templates.message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
                     this.$content.find('div.chat-event').remove();
@@ -5516,7 +7822,7 @@ return __p;
                     $msg.find('.chat-msg-content').first()
                         .text(text)
                         .addHyperlinks()
-                        .addEmoticons(converse.visible_toolbar_buttons.emoticons);
+                        .addEmoticons(_converse.visible_toolbar_buttons.emoticons);
                     return $msg;
                 },
 
@@ -5534,14 +7840,14 @@ return __p;
                 },
 
                 handleChatStateMessage: function (message) {
-                    if (message.get('chat_state') === converse.COMPOSING) {
+                    if (message.get('chat_state') === _converse.COMPOSING) {
                         this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
-                    } else if (message.get('chat_state') === converse.PAUSED) {
+                    } else if (message.get('chat_state') === _converse.PAUSED) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                    } else if (_.contains([converse.INACTIVE, converse.ACTIVE], message.get('chat_state'))) {
+                    } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
                         this.$content.find('div.chat-event').remove();
-                    } else if (message.get('chat_state') === converse.GONE) {
+                    } else if (message.get('chat_state') === _converse.GONE) {
                         this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
                 },
@@ -5563,8 +7869,8 @@ return __p;
                         if (this.model.get('scrolled', true)) {
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
-                        if (converse.windowState === 'hidden' || this.model.get('scrolled', true)) {
-                            converse.incrementMsgCounter();
+                        if (_converse.windowState === 'hidden' || this.model.get('scrolled', true)) {
+                            _converse.incrementMsgCounter();
                         }
                     }
                 },
@@ -5601,7 +7907,7 @@ return __p;
                      * Parameters:
                      *    (Object) message - The message Backbone object that was added.
                      */
-                    if (typeof this.clear_status_timeout !== 'undefined') {
+                    if (!_.isUndefined(this.clear_status_timeout)) {
                         window.clearTimeout(this.clear_status_timeout);
                         delete this.clear_status_timeout;
                     }
@@ -5616,12 +7922,12 @@ return __p;
 
                 createMessageStanza: function (message) {
                     return $msg({
-                                from: converse.connection.jid,
+                                from: _converse.connection.jid,
                                 to: this.model.get('jid'),
                                 type: 'chat',
                                 id: message.get('msgid')
                         }).c('body').t(message.get('message')).up()
-                            .c(converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                            .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
                 },
 
                 sendMessage: function (message) {
@@ -5633,11 +7939,11 @@ return __p;
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
                     var messageStanza = this.createMessageStanza(message);
-                    converse.connection.send(messageStanza);
-                    if (converse.forward_messages) {
+                    _converse.connection.send(messageStanza);
+                    if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
-                        converse.connection.send(
-                            $msg({ to: converse.bare_jid, type: 'chat', id: message.get('msgid') })
+                        _converse.connection.send(
+                            $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
                             .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
                             .c('delay', {xmns:'urn:xmpp:delay',stamp:(new Date()).getTime()}).up()
                             .cnode(messageStanza.tree())
@@ -5652,7 +7958,7 @@ return __p;
                      *  Parameters:
                      *    (string) text - The chat message text.
                      */
-                    if (!converse.connection.authenticated) {
+                    if (!_converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
                                 'and your message could not be sent'],
@@ -5674,8 +7980,8 @@ return __p;
                             return;
                         }
                     }
-                    var fullname = converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname)? converse.bare_jid: fullname;
+                    var fullname = _converse.xmppstatus.get('fullname');
+                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
                     var message = this.model.messages.create({
                         fullname: fullname,
                         sender: 'me',
@@ -5690,7 +7996,7 @@ return __p;
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    converse.connection.send(
+                    _converse.connection.send(
                         $msg({'to':this.model.get('jid'), 'type': 'chat'})
                             .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
@@ -5710,16 +8016,16 @@ return __p;
                      *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
                      *    (Boolean) no_save - Just do the cleanup or setup but don't actually save the state.
                      */
-                    if (typeof this.chat_state_timeout !== 'undefined') {
+                    if (!_.isUndefined(this.chat_state_timeout)) {
                         window.clearTimeout(this.chat_state_timeout);
                         delete this.chat_state_timeout;
                     }
-                    if (state === converse.COMPOSING) {
+                    if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), converse.TIMEOUTS.PAUSED, converse.PAUSED);
-                    } else if (state === converse.PAUSED) {
+                                this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                    } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), converse.TIMEOUTS.INACTIVE, converse.INACTIVE);
+                                this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
@@ -5730,20 +8036,21 @@ return __p;
                 keyPressed: function (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    var $textarea = $(ev.target), message;
+                    var textarea = ev.target, message;
                     if (ev.keyCode === KEY.ENTER) {
                         ev.preventDefault();
-                        message = $textarea.val();
-                        $textarea.val('').focus();
+                        message = textarea.value;
+                        textarea.value = '';
+                        textarea.focus();
                         if (message !== '') {
                             this.onMessageSubmitted(message);
-                            converse.emit('messageSend', message);
+                            _converse.emit('messageSend', message);
                         }
-                        this.setChatState(converse.ACTIVE);
+                        this.setChatState(_converse.ACTIVE);
                     } else {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
-                        this.setChatState(converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
+                        this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                     }
                 },
 
@@ -5782,8 +8089,8 @@ return __p;
 
                 toggleCall: function (ev) {
                     ev.stopPropagation();
-                    converse.emit('callButtonClicked', {
-                        connection: converse.connection,
+                    _converse.emit('callButtonClicked', {
+                        connection: _converse.connection,
                         model: this.model
                     });
                 },
@@ -5807,7 +8114,7 @@ return __p;
 
                 onStatusChanged: function (item) {
                     this.showStatusMessage();
-                    converse.emit('contactStatusMessageChanged', {
+                    _converse.emit('contactStatusMessageChanged', {
                         'contact': item.attributes,
                         'message': item.get('status')
                     });
@@ -5815,7 +8122,7 @@ return __p;
 
                 showStatusMessage: function (msg) {
                     msg = msg || this.model.get('status');
-                    if (typeof msg === "string") {
+                    if (_.isString(msg)) {
                         this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
                     }
                     return this;
@@ -5823,15 +8130,15 @@ return __p;
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
-                        this.model.set('chat_state', converse.INACTIVE);
+                        this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
                         this.model.destroy();
                     }
                     this.remove();
-                    converse.emit('chatBoxClosed', this);
+                    _converse.emit('chatBoxClosed', this);
                     return this;
                 },
 
@@ -5840,15 +8147,15 @@ return __p;
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
-                        'show_call_button': converse.visible_toolbar_buttons.call,
-                        'show_clear_button': converse.visible_toolbar_buttons.clear,
-                        'show_emoticons': converse.visible_toolbar_buttons.emoticons,
+                        'show_call_button': _converse.visible_toolbar_buttons.call,
+                        'show_clear_button': _converse.visible_toolbar_buttons.clear,
+                        'show_emoticons': _converse.visible_toolbar_buttons.emoticons,
                     });
                 },
 
                 renderToolbar: function (toolbar, options) {
-                    if (!converse.show_toolbar) { return; }
-                    toolbar = toolbar || converse.templates.toolbar;
+                    if (!_converse.show_toolbar) { return; }
+                    toolbar = toolbar || _converse.templates.toolbar;
                     options = _.extend(
                         this.model.toJSON(),
                         this.getToolbarOptions(options || {})
@@ -5861,10 +8168,10 @@ return __p;
                     if (!this.model.get('image')) {
                         return;
                     }
-                    var width = converse.chatview_avatar_width;
-                    var height = converse.chatview_avatar_height;
+                    var width = _converse.chatview_avatar_width;
+                    var height = _converse.chatview_avatar_height;
                     var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                        canvas = $(converse.templates.avatar({
+                        canvas = $(_converse.templates.avatar({
                             'width': width,
                             'height': height
                         })).get(0);
@@ -5890,7 +8197,7 @@ return __p;
 
                 focus: function () {
                     this.$el.find('.chat-textarea').focus();
-                    converse.emit('chatBoxFocused', this);
+                    _converse.emit('chatBoxFocused', this);
                     return this;
                 },
 
@@ -5901,12 +8208,12 @@ return __p;
                 },
 
                 afterShown: function () {
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
                     }
-                    this.setChatState(converse.ACTIVE);
+                    this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
                     if (focus) {
                         this.focus();
@@ -5923,12 +8230,12 @@ return __p;
                 },
 
                 show: function (focus) {
-                    if (typeof this.debouncedShow === 'undefined') {
+                    if (_.isUndefined(this.debouncedShow)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedShow = _.debounce(this._show, 250, true);
+                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
                     }
                     this.debouncedShow.apply(this, arguments);
                     return this;
@@ -5966,11 +8273,23 @@ return __p;
                     return this;
                 },
 
-                scrollDown: function () {
+                _scrollDown: function () {
+                    /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
                         this.$el.find('.new-msgs-indicator').addClass('hidden');
                     }
+                },
+
+                scrollDown: function () {
+                    if (_.isUndefined(this.debouncedScrollDown)) {
+                        /* We wrap the method in a debouncer and set it on the
+                         * instance, so that we have it debounced per instance.
+                         * Debouncing it on the class-level is too broad.
+                         */
+                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250, {'leading': true});
+                    }
+                    this.debouncedScrollDown.apply(this, arguments);
                     return this;
                 }
             });
@@ -5979,400 +8298,444 @@ return __p;
 }));
 
 
-define('tpl!add_contact_dropdown', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="'+
-((__t=(label_click_to_chat))==null?'':__t)+
-'"> '+
-((__t=(label_add_contact))==null?'':__t)+
+define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
+((__t = (label_click_to_chat)) == null ? '' : __t) +
+'"> ' +
+((__t = (label_add_contact)) == null ? '' : __t) +
 '</a>\n    </dt>\n    <dd class="search-xmpp"><ul></ul></dd>\n</dl>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!add_contact_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li>\n    <form class="pure-form add-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="'+
-((__t=(label_contact_username))==null?'':__t)+
-'"/>\n        <button class="pure-button button-primary" type="submit">'+
-((__t=(label_add))==null?'':__t)+
+define('tpl!add_contact_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<li>\n    <form class="pure-form add-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
+((__t = (label_contact_username)) == null ? '' : __t) +
+'"/>\n        <button class="pure-button button-primary" type="submit">' +
+((__t = (label_add)) == null ? '' : __t) +
 '</button>\n    </form>\n</li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!change_status_message', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form id="set-custom-xmpp-status" class="pure-form">\n<fieldset>\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" '+
-((__t=(status_message))==null?'':__t)+
-' placeholder="'+
-((__t=(label_custom_status))==null?'':__t)+
-'"/>\n        <input type="submit" class="pure-button button-primary" value="'+
-((__t=(label_save))==null?'':__t)+
+define('tpl!change_status_message', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<form id="set-custom-xmpp-status" class="pure-form">\n<fieldset>\n    <span class="input-button-group">\n        <input type="text" class="custom-xmpp-status" ' +
+((__t = (status_message)) == null ? '' : __t) +
+' placeholder="' +
+((__t = (label_custom_status)) == null ? '' : __t) +
+'"/>\n        <input type="submit" class="pure-button button-primary" value="' +
+((__t = (label_save)) == null ? '' : __t) +
 '"/>\n    </span>\n</fieldset>\n</form>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chat_status', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="xmpp-status">\n    <a class="choose-xmpp-status '+
-((__t=(chat_status))==null?'':__t)+
-' icon-'+
-((__t=(chat_status))==null?'':__t)+
-'" data-value="'+
-((__t=(status_message))==null?'':__t)+
-'" href="#" title="'+
-((__t=(desc_change_status))==null?'':__t)+
-'">\n        '+
-((__t=(status_message))==null?'':__t)+
-'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="'+
-((__t=(desc_custom_status))==null?'':__t)+
+define('tpl!chat_status', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="xmpp-status">\n    <a class="choose-xmpp-status ' +
+((__t = (chat_status)) == null ? '' : __t) +
+' icon-' +
+((__t = (chat_status)) == null ? '' : __t) +
+'" data-value="' +
+((__t = (status_message)) == null ? '' : __t) +
+'" href="#" title="' +
+((__t = (desc_change_status)) == null ? '' : __t) +
+'">\n        ' +
+((__t = (status_message)) == null ? '' : __t) +
+'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
+((__t = (desc_custom_status)) == null ? '' : __t) +
 '"></a>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!choose_status', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<dl id="target" class="dropdown">\n    <dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>\n    <dd><ul class="xmpp-status-menu"></ul></dd>\n</dl>\n';
+define('tpl!choose_status', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<dl id="target" class="dropdown">\n    <dt id="fancy-xmpp-status-select" class="fancy-dropdown"></dt>\n    <dd><ul class="xmpp-status-menu"></ul></dd>\n</dl>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!contacts_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form class="pure-form set-xmpp-status" action="" method="post">\n    <span id="xmpp-status-holder">\n        <select id="select-xmpp-status" style="display:none">\n            <option value="online">'+
-((__t=(label_online))==null?'':__t)+
-'</option>\n            <option value="dnd">'+
-((__t=(label_busy))==null?'':__t)+
-'</option>\n            <option value="away">'+
-((__t=(label_away))==null?'':__t)+
+define('tpl!contacts_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<form class="pure-form set-xmpp-status" action="" method="post">\n    <span id="xmpp-status-holder">\n        <select id="select-xmpp-status" style="display:none">\n            <option value="online">' +
+((__t = (label_online)) == null ? '' : __t) +
+'</option>\n            <option value="dnd">' +
+((__t = (label_busy)) == null ? '' : __t) +
+'</option>\n            <option value="away">' +
+((__t = (label_away)) == null ? '' : __t) +
 '</option>\n            ';
- if (include_offline_state)  { 
-__p+='\n            <option value="offline">'+
-((__t=(label_offline))==null?'':__t)+
+ if (include_offline_state)  { ;
+__p += '\n            <option value="offline">' +
+((__t = (label_offline)) == null ? '' : __t) +
 '</option>\n            ';
- } 
-__p+='\n            ';
- if (allow_logout)  { 
-__p+='\n            <option value="logout">'+
-((__t=(label_logout))==null?'':__t)+
+ } ;
+__p += '\n            ';
+ if (allow_logout)  { ;
+__p += '\n            <option value="logout">' +
+((__t = (label_logout)) == null ? '' : __t) +
 '</option>\n            ';
- } 
-__p+='\n        </select>\n    </span>\n</form>\n';
+ } ;
+__p += '\n        </select>\n    </span>\n</form>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!contacts_tab', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li><a class="s ';
- if (is_current) { 
-__p+=' current ';
- } 
-__p+='"\n       data-id="users" href="#users">\n    '+
-((__t=(label_contacts))==null?'':__t)+
+define('tpl!contacts_tab', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<li><a class="s ';
+ if (is_current) { ;
+__p += ' current ';
+ } ;
+__p += '"\n       data-id="users" href="#users">\n    ' +
+((__t = (label_contacts)) == null ? '' : __t) +
 '\n</a></li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!controlbox', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
- if (!sticky_controlbox) { 
-__p+='\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
- } 
-__p+='\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+define('tpl!controlbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="flyout box-flyout">\n    <div class="dragresize dragresize-top"></div>\n    <div class="dragresize dragresize-topleft"></div>\n    <div class="dragresize dragresize-left"></div>\n    <div class="chat-head controlbox-head">\n        <ul id="controlbox-tabs"></ul>\n        ';
+ if (!sticky_controlbox) { ;
+__p += '\n            <a class="chatbox-btn close-chatbox-button icon-close"></a>\n        ';
+ } ;
+__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!controlbox_toggle', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<span class="conn-feedback">'+
-((__t=(label_toggle))==null?'':__t)+
+define('tpl!controlbox_toggle', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="conn-feedback">' +
+((__t = (label_toggle)) == null ? '' : __t) +
 '</span>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!login_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
- if (auto_login) { 
-__p+='\n        <span class="spinner login-submit"/>\n    ';
- } 
-__p+='\n    ';
- if (!auto_login) { 
-__p+='\n        ';
- if (authentication == LOGIN || authentication == EXTERNAL) { 
-__p+='\n            <label>'+
-((__t=(label_username))==null?'':__t)+
-'</label>\n            <input type="text" name="jid" placeholder="'+
-((__t=(placeholder_username))==null?'':__t)+
+define('tpl!login_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
+ if (auto_login) { ;
+__p += '\n        <span class="spinner login-submit"/>\n    ';
+ } ;
+__p += '\n    ';
+ if (!auto_login) { ;
+__p += '\n        ';
+ if (authentication == LOGIN || authentication == EXTERNAL) { ;
+__p += '\n            <label>' +
+((__t = (label_username)) == null ? '' : __t) +
+'</label>\n            <input type="text" name="jid" placeholder="' +
+((__t = (placeholder_username)) == null ? '' : __t) +
 '">\n            ';
- if (authentication !== EXTERNAL) { 
-__p+='\n                <label>'+
-((__t=(label_password))==null?'':__t)+
-'</label>\n                <input type="password" name="password" placeholder="'+
-((__t=(placeholder_password))==null?'':__t)+
+ if (authentication !== EXTERNAL) { ;
+__p += '\n                <label>' +
+((__t = (label_password)) == null ? '' : __t) +
+'</label>\n                <input type="password" name="password" placeholder="' +
+((__t = (placeholder_password)) == null ? '' : __t) +
 '">\n            ';
- } 
-__p+='\n            <input class="pure-button button-primary" type="submit" value="'+
-((__t=(label_login))==null?'':__t)+
+ } ;
+__p += '\n            <input class="pure-button button-primary" type="submit" value="' +
+((__t = (label_login)) == null ? '' : __t) +
 '">\n            <span class="conn-feedback"></span>\n        ';
- } 
-__p+='\n        ';
- if (authentication == ANONYMOUS) { 
-__p+='\n            <input type="pure-button button-primary" class="submit login-anon" value="'+
-((__t=(label_anon_login))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (authentication == ANONYMOUS) { ;
+__p += '\n            <input type="pure-button button-primary" class="submit login-anon" value="' +
+((__t = (label_anon_login)) == null ? '' : __t) +
 '"/>\n        ';
- } 
-__p+='\n        ';
- if (authentication == PREBIND) { 
-__p+='\n            <p>Disconnected.</p>\n        ';
- } 
-__p+='\n    ';
- } 
-__p+='\n</form>\n';
+ } ;
+__p += '\n        ';
+ if (authentication == PREBIND) { ;
+__p += '\n            <p>Disconnected.</p>\n        ';
+ } ;
+__p += '\n    ';
+ } ;
+__p += '\n</form>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!login_tab', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li><a class="current" href="#login-dialog">'+
-((__t=(label_sign_in))==null?'':__t)+
+define('tpl!login_tab', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<li><a class="current" href="#login-dialog">' +
+((__t = (label_sign_in)) == null ? '' : __t) +
 '</a></li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!search_contact', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li>\n    <form class="search-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="'+
-((__t=(label_contact_name))==null?'':__t)+
-'"/>\n        <button type="submit">'+
-((__t=(label_search))==null?'':__t)+
+define('tpl!search_contact', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<li>\n    <form class="search-xmpp-contact">\n        <input type="text"\n            name="identifier"\n            class="username"\n            placeholder="' +
+((__t = (label_contact_name)) == null ? '' : __t) +
+'"/>\n        <button type="submit">' +
+((__t = (label_search)) == null ? '' : __t) +
 '</button>\n    </form>\n</li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!status_option', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li>\n    <a href="#" class="'+
-((__t=( value ))==null?'':__t)+
-'" data-value="'+
-((__t=( value ))==null?'':__t)+
-'">\n        <span class="icon-'+
-((__t=( value ))==null?'':__t)+
-'"></span>\n        '+
-((__t=( text ))==null?'':__t)+
+define('tpl!status_option', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<li>\n    <a href="#" class="' +
+((__t = ( value )) == null ? '' : __t) +
+'" data-value="' +
+((__t = ( value )) == null ? '' : __t) +
+'">\n        <span class="icon-' +
+((__t = ( value )) == null ? '' : __t) +
+'"></span>\n        ' +
+((__t = ( text )) == null ? '' : __t) +
 '\n    </a>\n</li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!group_header', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a href="#" class="group-toggle icon-'+
-((__t=(toggle_state))==null?'':__t)+
-'" title="'+
-((__t=(desc_group_toggle))==null?'':__t)+
-'">'+
-((__t=(label_group))==null?'':__t)+
+define('tpl!group_header', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<a href="#" class="group-toggle icon-' +
+((__t = (toggle_state)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_group_toggle)) == null ? '' : __t) +
+'">' +
+((__t = (label_group)) == null ? '' : __t) +
 '</a>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!pending_contact', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (allow_chat_pending_contacts)  { 
-__p+='\n<a class="open-chat"href="#">\n';
- } 
-__p+='\n<span class="pending-contact-name" title="Name: '+
-((__t=(fullname))==null?'':__t)+
-'\nJID: '+
-((__t=(jid))==null?'':__t)+
-'">'+
-((__t=(fullname))==null?'':__t)+
+define('tpl!pending_contact', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (allow_chat_pending_contacts)  { ;
+__p += '\n<a class="open-chat"href="#">\n';
+ } ;
+__p += '\n<span class="pending-contact-name" title="Name: ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'">' +
+((__t = (fullname)) == null ? '' : __t) +
 '</span> \n';
- if (allow_chat_pending_contacts)  { 
-__p+='\n</a>\n';
- } 
-__p+='\n<a class="remove-xmpp-contact icon-remove" title="'+
-((__t=(desc_remove))==null?'':__t)+
+ if (allow_chat_pending_contacts)  { ;
+__p += '\n</a>\n';
+ } ;
+__p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
+((__t = (desc_remove)) == null ? '' : __t) +
 '" href="#"></a>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!requesting_contact', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (allow_chat_pending_contacts)  { 
-__p+='\n<a class="open-chat"href="#">\n';
- } 
-__p+='\n<span class="req-contact-name" title="Name: '+
-((__t=(fullname))==null?'':__t)+
-'\nJID: '+
-((__t=(jid))==null?'':__t)+
-'">'+
-((__t=(fullname))==null?'':__t)+
+define('tpl!requesting_contact', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (allow_chat_pending_contacts)  { ;
+__p += '\n<a class="open-chat"href="#">\n';
+ } ;
+__p += '\n<span class="req-contact-name" title="Name: ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'">' +
+((__t = (fullname)) == null ? '' : __t) +
 '</span>\n';
- if (allow_chat_pending_contacts)  { 
-__p+='\n</a>\n';
- } 
-__p+='\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" title="'+
-((__t=(desc_accept))==null?'':__t)+
-'" href="#"></a>\n    <a class="decline-xmpp-request icon-close" title="'+
-((__t=(desc_decline))==null?'':__t)+
+ if (allow_chat_pending_contacts)  { ;
+__p += '\n</a>\n';
+ } ;
+__p += '\n<span class="request-actions">\n    <a class="accept-xmpp-request icon-checkmark" title="' +
+((__t = (desc_accept)) == null ? '' : __t) +
+'" href="#"></a>\n    <a class="decline-xmpp-request icon-close" title="' +
+((__t = (desc_decline)) == null ? '' : __t) +
 '" href="#"></a>\n</span>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!roster', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form class="pure-form roster-filter-group input-button-group">\n    <input value="'+
-((__t=(filter_text))==null?'':__t)+
-'" class="roster-filter"\n           placeholder="'+
-((__t=(placeholder))==null?'':__t)+
+define('tpl!roster', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<form class="pure-form roster-filter-group input-button-group">\n    <input value="' +
+((__t = (filter_text)) == null ? '' : __t) +
+'" class="roster-filter"\n           placeholder="' +
+((__t = (placeholder)) == null ? '' : __t) +
 '"\n           ';
- if (filter_type === 'state') { 
-__p+='  style="display: none" ';
- } 
-__p+=' >\n    <select class="state-type" ';
- if (filter_type !== 'state') { 
-__p+='  style="display: none" ';
- } 
-__p+=' >\n        <option value="">'+
-((__t=(label_any))==null?'':__t)+
+ if (filter_type === 'state') { ;
+__p += '  style="display: none" ';
+ } ;
+__p += ' >\n    <select class="state-type" ';
+ if (filter_type !== 'state') { ;
+__p += '  style="display: none" ';
+ } ;
+__p += ' >\n        <option value="">' +
+((__t = (label_any)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'online') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="online">'+
-((__t=(label_online))==null?'':__t)+
+ if (chat_state === 'online') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="online">' +
+((__t = (label_online)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'chat') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="chat">'+
-((__t=(label_chatty))==null?'':__t)+
+ if (chat_state === 'chat') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="chat">' +
+((__t = (label_chatty)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'dnd') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="dnd">'+
-((__t=(label_busy))==null?'':__t)+
+ if (chat_state === 'dnd') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="dnd">' +
+((__t = (label_busy)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'away') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="away">'+
-((__t=(label_away))==null?'':__t)+
+ if (chat_state === 'away') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="away">' +
+((__t = (label_away)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'xa') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="xa">'+
-((__t=(label_xa))==null?'':__t)+
+ if (chat_state === 'xa') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="xa">' +
+((__t = (label_xa)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (chat_state === 'offline') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n            value="offline">'+
-((__t=(label_offline))==null?'':__t)+
+ if (chat_state === 'offline') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n            value="offline">' +
+((__t = (label_offline)) == null ? '' : __t) +
 '</option>\n    </select>\n    <select class="filter-type">\n        <option ';
- if (filter_type === 'contacts') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n                value="contacts">'+
-((__t=(label_contacts))==null?'':__t)+
+ if (filter_type === 'contacts') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="contacts">' +
+((__t = (label_contacts)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (filter_type === 'groups') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n                value="groups">'+
-((__t=(label_groups))==null?'':__t)+
+ if (filter_type === 'groups') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="groups">' +
+((__t = (label_groups)) == null ? '' : __t) +
 '</option>\n        <option ';
- if (filter_type === 'state') { 
-__p+=' selected="selected" ';
- } 
-__p+='\n                value="state">'+
-((__t=(label_state))==null?'':__t)+
+ if (filter_type === 'state') { ;
+__p += ' selected="selected" ';
+ } ;
+__p += '\n                value="state">' +
+((__t = (label_state)) == null ? '' : __t) +
 '</option>\n    </select>\n</form>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!roster_item', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a class="open-chat" title="'+
-((__t=(title_fullname))==null?'':__t)+
-': '+
-((__t=(fullname))==null?'':__t)+
-'\nJID: '+
-((__t=(jid))==null?'':__t)+
-'\n'+
-((__t=(desc_chat))==null?'':__t)+
-'" href="#"><span class="icon-'+
-((__t=(chat_status))==null?'':__t)+
-'" title="'+
-((__t=(desc_status))==null?'':__t)+
-'"></span>'+
-((__t=(fullname))==null?'':__t)+
+define('tpl!roster_item', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<a class="open-chat" title="' +
+((__t = (title_fullname)) == null ? '' : __t) +
+': ' +
+((__t = (fullname)) == null ? '' : __t) +
+'\nJID: ' +
+((__t = (jid)) == null ? '' : __t) +
+'\n' +
+((__t = (desc_chat)) == null ? '' : __t) +
+'" href="#"><span class="icon-' +
+((__t = (chat_status)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_status)) == null ? '' : __t) +
+'"></span>' +
+((__t = (fullname)) == null ? '' : __t) +
 '</a>\n';
- if (allow_contact_removal) { 
-__p+='\n<a class="remove-xmpp-contact icon-remove" title="'+
-((__t=(desc_remove))==null?'':__t)+
+ if (allow_contact_removal) { ;
+__p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
+((__t = (desc_remove)) == null ? '' : __t) +
 '" href="#"></a>\n';
- } 
-__p+='\n';
+ } ;
+__p += '\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -6384,7 +8747,6 @@ return __p;
 
 (function (root, factory) {
     define("converse-rosterview", [
-            "converse-core",
             "converse-api",
             "tpl!group_header",
             "tpl!pending_contact",
@@ -6393,29 +8755,21 @@ return __p;
             "tpl!roster_item"
     ], factory);
 }(this, function (
-            converse,
-            converse_api, 
+            converse, 
             tpl_group_header,
             tpl_pending_contact,
             tpl_requesting_contact,
             tpl_roster,
             tpl_roster_item) {
     "use strict";
-    converse.templates.group_header = tpl_group_header;
-    converse.templates.pending_contact = tpl_pending_contact;
-    converse.templates.requesting_contact = tpl_requesting_contact;
-    converse.templates.roster = tpl_roster;
-    converse.templates.roster_item = tpl_roster_item;
+    var $ = converse.env.jQuery,
+        utils = converse.env.utils,
+        Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        b64_sha1 = converse.env.b64_sha1,
+        _ = converse.env._;
 
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        b64_sha1 = converse_api.env.b64_sha1,
-        _ = converse_api.env._,
-        __ = utils.__.bind(converse);
-
-    converse_api.plugins.add('rosterview', {
+    converse.plugins.add('converse-rosterview', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -6442,7 +8796,8 @@ return __p;
                 comparator: function () {
                     // RosterGroupsComparator only gets set later (once i18n is
                     // set up), so we need to wrap it in this nameless function.
-                    return converse.RosterGroupsComparator.apply(this, arguments);
+                    var _converse = this.__super__._converse;
+                    return _converse.RosterGroupsComparator.apply(this, arguments);
                 }
             }
         },
@@ -6452,8 +8807,18 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates
+            _converse.templates.group_header = tpl_group_header;
+            _converse.templates.pending_contact = tpl_pending_contact;
+            _converse.templates.requesting_contact = tpl_requesting_contact;
+            _converse.templates.roster = tpl_roster;
+            _converse.templates.roster_item = tpl_roster_item;
+
             this.updateSettings({
-                allow_chat_pending_contacts: false,
+                allow_chat_pending_contacts: true,
                 allow_contact_removal: true,
                 show_toolbar: true,
             });
@@ -6478,7 +8843,7 @@ return __p;
             HEADER_WEIGHTS[HEADER_UNGROUPED]           = 2;
             HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
-            converse.RosterGroupsComparator = function (a, b) {
+            _converse.RosterGroupsComparator = function (a, b) {
                 /* Groups are sorted alphabetically, ignoring case.
                  * However, Ungrouped, Requesting Contacts and Pending Contacts
                  * appear last and in that order.
@@ -6486,8 +8851,8 @@ return __p;
                 a = a.get('name');
                 b = b.get('name');
                 var special_groups = _.keys(HEADER_WEIGHTS);
-                var a_is_special = _.contains(special_groups, a);
-                var b_is_special = _.contains(special_groups, b);
+                var a_is_special = _.includes(special_groups, a);
+                var b_is_special = _.includes(special_groups, b);
                 if (!a_is_special && !b_is_special ) {
                     return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
                 } else if (a_is_special && b_is_special) {
@@ -6500,7 +8865,7 @@ return __p;
             };
 
 
-            converse.RosterFilter = Backbone.Model.extend({
+            _converse.RosterFilter = Backbone.Model.extend({
                 initialize: function () {
                     this.set({
                         'filter_text': '',
@@ -6510,7 +8875,7 @@ return __p;
                 },
             });
 
-            converse.RosterFilterView = Backbone.View.extend({
+            _converse.RosterFilterView = Backbone.View.extend({
                 tagName: 'span',
                 events: {
                     "keydown .roster-filter": "liveFilter",
@@ -6525,7 +8890,7 @@ return __p;
                 },
 
                 render: function () {
-                    this.$el.html(converse.templates.roster(
+                    this.$el.html(_converse.templates.roster(
                         _.extend(this.model.toJSON(), {
                             placeholder: __('Filter'),
                             label_contacts: LABEL_CONTACTS,
@@ -6628,28 +8993,28 @@ return __p;
                 }
             });
 
-            converse.RosterView = Backbone.Overview.extend({
+            _converse.RosterView = Backbone.Overview.extend({
                 tagName: 'div',
                 id: 'converse-roster',
 
                 initialize: function () {
                     this.roster_handler_ref = this.registerRosterHandler();
                     this.rosterx_handler_ref = this.registerRosterXHandler();
-                    converse.roster.on("add", this.onContactAdd, this);
-                    converse.roster.on('change', this.onContactChange, this);
-                    converse.roster.on("destroy", this.update, this);
-                    converse.roster.on("remove", this.update, this);
+                    _converse.roster.on("add", this.onContactAdd, this);
+                    _converse.roster.on('change', this.onContactChange, this);
+                    _converse.roster.on("destroy", this.update, this);
+                    _converse.roster.on("remove", this.update, this);
                     this.model.on("add", this.onGroupAdd, this);
                     this.model.on("reset", this.reset, this);
-                    converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
-                    converse.on('rosterContactsFetched', this.update, this);
+                    _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
+                    _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
                 },
 
                 render: function () {
                     this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                     this.$el.html(this.filter_view.render());
-                    if (!converse.allow_contact_requests) {
+                    if (!_converse.allow_contact_requests) {
                         // XXX: if we ever support live editing of config then
                         // we'll need to be able to remove this class on the fly.
                         this.$el.addClass('no-contact-requests');
@@ -6659,10 +9024,10 @@ return __p;
 
                 createRosterFilter: function () {
                     // Create a model on which we can store filter properties
-                    var model = new converse.RosterFilter();
-                    model.id = b64_sha1('converse.rosterfilter'+converse.bare_jid);
+                    var model = new _converse.RosterFilter();
+                    model.id = b64_sha1('_converse.rosterfilter'+_converse.bare_jid);
                     model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-                    this.filter_view = new converse.RosterFilterView({'model': model});
+                    this.filter_view = new _converse.RosterFilterView({'model': model});
                     this.filter_view.model.on('change', this.updateFilter, this);
                     this.filter_view.model.fetch();
                 },
@@ -6684,9 +9049,9 @@ return __p;
                 }, 100),
 
                 unregisterHandlers: function () {
-                    converse.connection.deleteHandler(this.roster_handler_ref);
+                    _converse.connection.deleteHandler(this.roster_handler_ref);
                     delete this.roster_handler_ref;
-                    converse.connection.deleteHandler(this.rosterx_handler_ref);
+                    _converse.connection.deleteHandler(this.rosterx_handler_ref);
                     delete this.rosterx_handler_ref;
                 },
 
@@ -6695,7 +9060,7 @@ return __p;
                         this.$el.append(this.$roster.show());
                     }
                     return this.showHideFilter();
-                }, converse.animate ? 100 : 0),
+                }, _converse.animate ? 100 : 0),
 
                 showHideFilter: function () {
                     if (!this.$el.is(':visible')) {
@@ -6721,7 +9086,7 @@ return __p;
                     query = query.toLowerCase();
                     if (type === 'groups') {
                         _.each(this.getAll(), function (view, idx) {
-                            if (view.model.get('name').toLowerCase().indexOf(query.toLowerCase()) === -1) {
+                            if (!_.includes(view.model.get('name').toLowerCase(), query.toLowerCase())) {
                                 view.hide();
                             } else if (view.model.contacts.length > 0) {
                                 view.show();
@@ -6735,7 +9100,7 @@ return __p;
                 },
 
                 reset: function () {
-                    converse.roster.reset();
+                    _converse.roster.reset();
                     this.removeAll();
                     this.$roster = $('<dl class="roster-contacts" style="display: none;"></dl>');
                     this.render().update();
@@ -6743,20 +9108,20 @@ return __p;
                 },
 
                 registerRosterHandler: function () {
-                    converse.connection.addHandler(
-                        converse.roster.onRosterPush.bind(converse.roster),
+                    _converse.connection.addHandler(
+                        _converse.roster.onRosterPush.bind(_converse.roster),
                         Strophe.NS.ROSTER, 'iq', "set"
                     );
                 },
 
                 registerRosterXHandler: function () {
                     var t = 0;
-                    converse.connection.addHandler(
+                    _converse.connection.addHandler(
                         function (msg) {
                             window.setTimeout(
                                 function () {
-                                    converse.connection.flush();
-                                    converse.roster.subscribeToSuggestedItems.bind(converse.roster)(msg);
+                                    _converse.connection.flush();
+                                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
                                 },
                                 t
                             );
@@ -6768,7 +9133,7 @@ return __p;
                 },
 
                 onGroupAdd: function (group) {
-                    var view = new converse.RosterGroupView({model: group});
+                    var view = new _converse.RosterGroupView({model: group});
                     this.add(group.get('name'), view.render());
                     this.positionGroup(view);
                 },
@@ -6783,7 +9148,7 @@ return __p;
                     if (_.has(contact.changed, 'subscription')) {
                         if (contact.changed.subscription === 'from') {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
-                        } else if (_.contains(['both', 'to'], contact.get('subscription'))) {
+                        } else if (_.includes(['both', 'to'], contact.get('subscription'))) {
                             this.addExistingContact(contact);
                         }
                     }
@@ -6797,7 +9162,7 @@ return __p;
                 },
 
                 updateChatBox: function (contact) {
-                    var chatbox = converse.chatboxes.get(contact.get('jid')),
+                    var chatbox = _converse.chatboxes.get(contact.get('jid')),
                         changes = {};
                     if (!chatbox) {
                         return this;
@@ -6812,7 +9177,7 @@ return __p;
                     return this;
                 },
 
-                positionFetchedGroups: function (model, resp, options) {
+                positionFetchedGroups: function () {
                     /* Instead of throwing an add event for each group
                      * fetched, we wait until they're all fetched and then
                      * we position them.
@@ -6821,19 +9186,20 @@ return __p;
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
+                    var that = this;
                     this.model.sort();
                     this.model.each(function (group, idx) {
-                        var view = this.get(group.get('name'));
+                        var view = that.get(group.get('name'));
                         if (!view) {
-                            view = new converse.RosterGroupView({model: group});
-                            this.add(group.get('name'), view.render());
+                            view = new _converse.RosterGroupView({model: group});
+                            that.add(group.get('name'), view.render());
                         }
                         if (idx === 0) {
-                            this.$roster.append(view.$el);
+                            that.$roster.append(view.$el);
                         } else {
-                            this.appendGroup(view);
+                            that.appendGroup(view);
                         }
-                    }.bind(this));
+                    });
                 },
 
                 positionGroup: function (view) {
@@ -6882,7 +9248,7 @@ return __p;
 
                 addExistingContact: function (contact) {
                     var groups;
-                    if (converse.roster_groups) {
+                    if (_converse.roster_groups) {
                         groups = contact.get('groups');
                         if (groups.length === 0) {
                             groups = [HEADER_UNGROUPED];
@@ -6908,7 +9274,7 @@ return __p;
             });
 
 
-            converse.RosterContactView = Backbone.View.extend({
+            _converse.RosterContactView = Backbone.View.extend({
                 tagName: 'dd',
 
                 events: {
@@ -6926,6 +9292,7 @@ return __p;
                 },
 
                 render: function () {
+                    var that = this;
                     if (!this.mayBeShown()) {
                         this.$el.hide();
                         return this;
@@ -6944,10 +9311,10 @@ return __p;
 
                     _.each(classes_to_remove,
                         function (cls) {
-                            if (this.el.className.indexOf(cls) !== -1) {
-                                this.$el.removeClass(cls);
+                            if (_.includes(that.el.className, cls)) {
+                                that.$el.removeClass(cls);
                             }
-                        }, this);
+                        });
                     this.$el.addClass(chat_status).data('status', chat_status);
 
                     if ((ask === 'subscribe') || (subscription === 'from')) {
@@ -6963,31 +9330,31 @@ return __p;
                          *  So in both cases the user is a "pending" contact.
                          */
                         this.$el.addClass('pending-xmpp-contact');
-                        this.$el.html(converse.templates.pending_contact(
+                        this.$el.html(_converse.templates.pending_contact(
                             _.extend(item.toJSON(), {
                                 'desc_remove': __('Click to remove this contact'),
-                                'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
+                                'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
                     } else if (requesting === true) {
                         this.$el.addClass('requesting-xmpp-contact');
-                        this.$el.html(converse.templates.requesting_contact(
+                        this.$el.html(_converse.templates.requesting_contact(
                             _.extend(item.toJSON(), {
                                 'desc_accept': __("Click to accept this contact request"),
                                 'desc_decline': __("Click to decline this contact request"),
-                                'allow_chat_pending_contacts': converse.allow_chat_pending_contacts
+                                'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.$el.addClass('current-xmpp-contact');
                         this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
-                        this.$el.html(converse.templates.roster_item(
+                        this.$el.html(_converse.templates.roster_item(
                             _.extend(item.toJSON(), {
                                 'desc_status': STATUSES[chat_status||'offline'],
                                 'desc_chat': __('Click to chat with this contact'),
                                 'desc_remove': __('Click to remove this contact'),
                                 'title_fullname': __('Name'),
-                                'allow_contact_removal': converse.allow_contact_removal
+                                'allow_contact_removal': _converse.allow_contact_removal
                             })
                         ));
                     }
@@ -7005,8 +9372,8 @@ return __p;
                     // would simplify things by not having to check whether the
                     // group is collapsed or not.
                     var name = this.$el.prevAll('dt:first').data('group');
-                    var group = converse.rosterview.model.where({'name': name})[0];
-                    if (group.get('state') === converse.CLOSED) {
+                    var group = _converse.rosterview.model.where({'name': name})[0];
+                    if (group.get('state') === _converse.CLOSED) {
                         return true;
                     }
                     return false;
@@ -7020,8 +9387,8 @@ return __p;
                      * the group it's in is collapsed (see isGroupCollapsed).
                      */
                     var chatStatus = this.model.get('chat_status');
-                    if ((converse.show_only_online_users && chatStatus !== 'online') ||
-                        (converse.hide_offline_users && chatStatus === 'offline')) {
+                    if ((_converse.show_only_online_users && chatStatus !== 'online') ||
+                        (_converse.hide_offline_users && chatStatus === 'offline')) {
                         // If pending or requesting, show
                         if ((this.model.get('ask') === 'subscribe') ||
                                 (this.model.get('subscription') === 'from') ||
@@ -7035,25 +9402,25 @@ return __p;
 
                 openChat: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    return converse.chatboxviews.showChat(this.model.attributes);
+                    return _converse.chatboxviews.showChat(this.model.attributes);
                 },
 
                 removeContact: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (!converse.allow_contact_removal) { return; }
+                    if (!_converse.allow_contact_removal) { return; }
                     var result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
                         var iq = $iq({type: 'set'})
                             .c('query', {xmlns: Strophe.NS.ROSTER})
                             .c('item', {jid: this.model.get('jid'), subscription: "remove"});
-                        converse.connection.sendIQ(iq,
+                        _converse.connection.sendIQ(iq,
                             function (iq) {
                                 this.model.destroy();
                                 this.remove();
                             }.bind(this),
                             function (err) {
                                 alert(__("Sorry, there was an error while trying to remove "+name+" as a contact."));
-                                converse.log(err);
+                                _converse.log(err);
                             }
                         );
                     }
@@ -7061,7 +9428,7 @@ return __p;
 
                 acceptRequest: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    converse.roster.sendContactAddIQ(
+                    _converse.roster.sendContactAddIQ(
                         this.model.get('jid'),
                         this.model.get('fullname'),
                         [],
@@ -7080,7 +9447,7 @@ return __p;
             });
 
 
-            converse.RosterGroupView = Backbone.Overview.extend({
+            _converse.RosterGroupView = Backbone.Overview.extend({
                 tagName: 'dt',
                 className: 'roster-group',
                 events: {
@@ -7099,13 +9466,13 @@ return __p;
                     }, this);
                     this.model.contacts.on("destroy", this.onRemove, this);
                     this.model.contacts.on("remove", this.onRemove, this);
-                    converse.roster.on('change:groups', this.onContactGroupChange, this);
+                    _converse.roster.on('change:groups', this.onContactGroupChange, this);
                 },
 
                 render: function () {
                     this.$el.attr('data-group', this.model.get('name'));
                     this.$el.html(
-                        $(converse.templates.group_header({
+                        $(_converse.templates.group_header({
                             label_group: this.model.get('name'),
                             desc_group_toggle: this.model.get('description'),
                             toggle_state: this.model.get('state')
@@ -7115,11 +9482,11 @@ return __p;
                 },
 
                 addContact: function (contact) {
-                    var view = new converse.RosterContactView({model: contact});
+                    var view = new _converse.RosterContactView({model: contact});
                     this.add(contact.get('id'), view);
                     view = this.positionContact(contact).render();
                     if (view.mayBeShown()) {
-                        if (this.model.get('state') === converse.CLOSED) {
+                        if (this.model.get('state') === _converse.CLOSED) {
                             if (view.$el[0].style.display !== "none") { view.$el.hide(); }
                             if (!this.$el.is(':visible')) { this.$el.show(); }
                         } else {
@@ -7167,7 +9534,7 @@ return __p;
                      */
                     var matches;
                     if (q.length === 0) {
-                        if (this.model.get('state') === converse.OPENED) {
+                        if (this.model.get('state') === _converse.OPENED) {
                             this.model.contacts.each(function (item) {
                                 var view = this.get(item.get('id'));
                                 if (view.mayBeShown() && !view.isGroupCollapsed()) {
@@ -7224,20 +9591,20 @@ return __p;
                     var $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
                         this.$el.nextUntil('dt').slideUp();
-                        this.model.save({state: converse.CLOSED});
+                        this.model.save({state: _converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
-                        this.model.save({state: converse.OPENED});
+                        this.model.save({state: _converse.OPENED});
                         this.filter(
-                            converse.rosterview.$('.roster-filter').val() || '',
-                            converse.rosterview.$('.filter-type').val()
+                            _converse.rosterview.$('.roster-filter').val() || '',
+                            _converse.rosterview.$('.filter-type').val()
                         );
                     }
                 },
 
                 onContactGroupChange: function (contact) {
-                    var in_this_group = _.contains(contact.get('groups'), this.model.get('name'));
+                    var in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
                     var cid = contact.get('id');
                     var in_this_overview = !this.get(cid);
                     if (in_this_group && !in_this_overview) {
@@ -7281,13 +9648,13 @@ return __p;
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
-                converse.rosterview = new converse.RosterView({
-                    'model': converse.rostergroups
+                _converse.rosterview = new _converse.RosterView({
+                    'model': _converse.rostergroups
                 });
-                converse.rosterview.render();
+                _converse.rosterview.render();
             };
-            converse.on('rosterInitialized', initRoster);
-            converse.on('rosterReadyAfterReconnection', initRoster);
+            _converse.on('rosterInitialized', initRoster);
+            _converse.on('rosterReadyAfterReconnection', initRoster);
         }
     });
 }));
@@ -7295,14 +9662,13 @@ return __p;
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define, Backbone */
 
 (function (root, factory) {
     define("converse-controlbox", [
-            "converse-core",
             "converse-api",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
@@ -7322,7 +9688,6 @@ return __p;
     ], factory);
 }(this, function (
             converse,
-            converse_api,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_change_status_message,
@@ -7338,33 +9703,18 @@ return __p;
             tpl_status_option
         ) {
     "use strict";
-    converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
-    converse.templates.add_contact_form = tpl_add_contact_form;
-    converse.templates.change_status_message = tpl_change_status_message;
-    converse.templates.chat_status = tpl_chat_status;
-    converse.templates.choose_status = tpl_choose_status;
-    converse.templates.contacts_panel = tpl_contacts_panel;
-    converse.templates.contacts_tab = tpl_contacts_tab;
-    converse.templates.controlbox = tpl_controlbox;
-    converse.templates.controlbox_toggle = tpl_controlbox_toggle;
-    converse.templates.login_panel = tpl_login_panel;
-    converse.templates.login_tab = tpl_login_tab;
-    converse.templates.search_contact = tpl_search_contact;
-    converse.templates.status_option = tpl_status_option;
 
     var USERS_PANEL_ID = 'users';
-
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        __ = utils.__.bind(converse),
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
 
-    converse_api.plugins.add('converse-controlbox', {
+    converse.plugins.add('converse-controlbox', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -7414,7 +9764,7 @@ return __p;
 
                 onChatBoxesFetched: function (collection, resp) {
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    if (!_.include(_.pluck(resp, 'id'), 'controlbox')) {
+                    if (!_.includes(_.map(resp, 'id'), 'controlbox')) {
                         this.add({
                             id: 'controlbox',
                             box_id: 'controlbox'
@@ -7426,6 +9776,7 @@ return __p;
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     if (item.get('box_id') === 'controlbox') {
                         var view = this.get(item.get('id'));
                         if (view) {
@@ -7433,7 +9784,7 @@ return __p;
                             view.initialize();
                             return view;
                         } else {
-                            view = new converse.ControlBoxView({model: item});
+                            view = new _converse.ControlBoxView({model: item});
                             return this.add(item.get('id'), view);
                         }
                     } else {
@@ -7442,8 +9793,9 @@ return __p;
                 },
 
                 closeAllChatBoxes: function () {
+                    var _converse = this.__super__._converse;
                     this.each(function (view) {
-                        if (!converse.connection.connected ||
+                        if (_converse.disconnection_cause === _converse.LOGOUT ||
                             view.model.get('id') !== 'controlbox') {
                                 view.close();
                         }
@@ -7452,13 +9804,14 @@ return __p;
                 },
 
                 getChatBoxWidth: function (view) {
+                    var _converse = this.__super__._converse;
                     var controlbox = this.get('controlbox');
                     if (view.model.get('id') === 'controlbox') {
                         /* We return the width of the controlbox or its toggle,
                          * depending on which is visible.
                          */
                         if (!controlbox || !controlbox.$el.is(':visible')) {
-                            return converse.controlboxtoggle.$el.outerWidth(true);
+                            return _converse.controlboxtoggle.$el.outerWidth(true);
                         } else {
                             return controlbox.$el.outerWidth(true);
                         }
@@ -7485,7 +9838,8 @@ return __p;
 
             ChatBoxView: {
                 insertIntoDOM: function () {
-                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    var _converse = this.__super__._converse;
+                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
                     return this;
                 }
             }
@@ -7495,7 +9849,24 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
+            _converse.templates.add_contact_form = tpl_add_contact_form;
+            _converse.templates.change_status_message = tpl_change_status_message;
+            _converse.templates.chat_status = tpl_chat_status;
+            _converse.templates.choose_status = tpl_choose_status;
+            _converse.templates.contacts_panel = tpl_contacts_panel;
+            _converse.templates.contacts_tab = tpl_contacts_tab;
+            _converse.templates.controlbox = tpl_controlbox;
+            _converse.templates.controlbox_toggle = tpl_controlbox_toggle;
+            _converse.templates.login_panel = tpl_login_panel;
+            _converse.templates.login_tab = tpl_login_tab;
+            _converse.templates.search_contact = tpl_search_contact;
+            _converse.templates.status_option = tpl_status_option;
+
             this.updateSettings({
                 allow_logout: true,
                 default_domain: undefined,
@@ -7507,15 +9878,15 @@ return __p;
 
             var LABEL_CONTACTS = __('Contacts');
 
-            converse.addControlBox = function () {
-                return converse.chatboxes.add({
+            _converse.addControlBox = function () {
+                return _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
-                    closed: !converse.show_controlbox_by_default
+                    closed: !_converse.show_controlbox_by_default
                 });
             };
 
-            converse.ControlBoxView = converse.ChatBoxView.extend({
+            _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
                 className: 'chatbox',
                 id: 'controlbox',
@@ -7525,7 +9896,7 @@ return __p;
                 },
 
                 initialize: function () {
-                    this.$el.insertAfter(converse.controlboxtoggle.$el);
+                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -7535,8 +9906,8 @@ return __p;
                     if (this.model.get('connected')) {
                         this.insertRoster();
                     }
-                    if (typeof this.model.get('closed')==='undefined') {
-                        this.model.set('closed', !converse.show_controlbox_by_default);
+                    if (_.isUndefined(this.model.get('closed'))) {
+                        this.model.set('closed', !_converse.show_controlbox_by_default);
                     }
                     if (!this.model.get('closed')) {
                         this.show();
@@ -7546,12 +9917,12 @@ return __p;
                 },
 
                 render: function () {
-                    this.$el.html(converse.templates.controlbox(
+                    this.$el.html(_converse.templates.controlbox(
                         _.extend(this.model.toJSON(), {
-                            sticky_controlbox: converse.sticky_controlbox
+                            sticky_controlbox: _converse.sticky_controlbox
                         }))
                     );
-                    if (!converse.connection.connected || !converse.connection.authenticated || converse.connection.disconnecting) {
+                    if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
                         this.renderLoginPanel();
                     } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
                         this.renderContactsPanel();
@@ -7568,12 +9939,12 @@ return __p;
                 insertRoster: function () {
                     /* Place the rosterview inside the "Contacts" panel.
                      */
-                    this.contactspanel.$el.append(converse.rosterview.$el);
+                    this.contactspanel.$el.append(_converse.rosterview.$el);
                     return this;
                 },
 
                 renderLoginPanel: function () {
-                    this.loginpanel = new converse.LoginPanel({
+                    this.loginpanel = new _converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
                     });
@@ -7585,24 +9956,24 @@ return __p;
                     if (_.isUndefined(this.model.get('active-panel'))) {
                         this.model.save({'active-panel': USERS_PANEL_ID});
                     }
-                    this.contactspanel = new converse.ContactsPanel({
+                    this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });
                     this.contactspanel.render();
-                    converse.xmppstatusview = new converse.XMPPStatusView({
-                        'model': converse.xmppstatus
+                    _converse.xmppstatusview = new _converse.XMPPStatusView({
+                        'model': _converse.xmppstatus
                     });
-                    converse.xmppstatusview.render();
+                    _converse.xmppstatusview.render();
                 },
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
                     } else {
                         this.model.trigger('hide');
                     }
-                    converse.emit('controlBoxClosed', this);
+                    _converse.emit('controlBoxClosed', this);
                     return this;
                 },
 
@@ -7617,25 +9988,25 @@ return __p;
                 hide: function (callback) {
                     this.$el.addClass('hidden');
                     utils.refreshWebkit();
-                    converse.emit('chatBoxClosed', this);
-                    if (!converse.connection.connected) {
-                        converse.controlboxtoggle.render();
+                    _converse.emit('chatBoxClosed', this);
+                    if (!_converse.connection.connected) {
+                        _converse.controlboxtoggle.render();
                     }
-                    converse.controlboxtoggle.show(callback);
+                    _converse.controlboxtoggle.show(callback);
                     return this;
                 },
 
                 onControlBoxToggleHidden: function () {
                     var that = this;
                     utils.fadeIn(this.el, function () {
-                        converse.controlboxtoggle.updateOnlineCount();
+                        _converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
-                        converse.emit('controlBoxOpened', that);
+                        _converse.emit('controlBoxOpened', that);
                     });
                 },
 
                 show: function () {
-                    converse.controlboxtoggle.hide(
+                    _converse.controlboxtoggle.hide(
                         this.onControlBoxToggleHidden.bind(this)
                     );
                     return this;
@@ -7651,20 +10022,24 @@ return __p;
                     $sibling.removeClass('current');
                     $tab.addClass('current');
                     $tab_panel.removeClass('hidden');
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         this.model.save({'active-panel': $tab.data('id')});
                     }
                     return this;
                 },
 
-                showHelpMessages: function (msgs) {
-                    // Override showHelpMessages in ChatBoxView, for now do nothing.
+                showHelpMessages: function () {
+                    /* Override showHelpMessages in ChatBoxView, for now do nothing.
+                     *
+                     * Parameters:
+                     *  (Array) msgs: Array of messages
+                     */
                     return;
                 }
             });
 
 
-            converse.LoginPanel = Backbone.View.extend({
+            _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "login-dialog",
                 className: 'controlbox-pane',
@@ -7674,18 +10049,18 @@ return __p;
 
                 initialize: function (cfg) {
                     cfg.$parent.html(this.$el.html(
-                        converse.templates.login_panel({
-                            'ANONYMOUS': converse.ANONYMOUS,
-                            'EXTERNAL': converse.EXTERNAL,
-                            'LOGIN': converse.LOGIN,
-                            'PREBIND': converse.PREBIND,
-                            'auto_login': converse.auto_login,
-                            'authentication': converse.authentication,
+                        _converse.templates.login_panel({
+                            'ANONYMOUS': _converse.ANONYMOUS,
+                            'EXTERNAL': _converse.EXTERNAL,
+                            'LOGIN': _converse.LOGIN,
+                            'PREBIND': _converse.PREBIND,
+                            'auto_login': _converse.auto_login,
+                            'authentication': _converse.authentication,
                             'label_username': __('XMPP Username:'),
                             'label_password': __('Password:'),
                             'label_anon_login': __('Click here to log in anonymously'),
                             'label_login': __('Log In'),
-                            'placeholder_username': (converse.locked_domain || converse.default_domain) && __('Username') || __('user@server'),
+                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
                             'placeholder_password': __('password')
                         })
                     ));
@@ -7693,7 +10068,7 @@ return __p;
                 },
 
                 render: function () {
-                    this.$tabs.append(converse.templates.login_tab({label_sign_in: __('Sign in')}));
+                    this.$tabs.append(_converse.templates.login_tab({label_sign_in: __('Sign in')}));
                     this.$el.find('input#jid').focus();
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
@@ -7704,8 +10079,8 @@ return __p;
                 authenticate: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var $form = $(ev.target);
-                    if (converse.authentication === converse.ANONYMOUS) {
-                        this.connect($form, converse.jid, null);
+                    if (_converse.authentication === _converse.ANONYMOUS) {
+                        this.connect($form, _converse.jid, null);
                         return;
                     }
                     var $jid_input = $form.find('input[name=jid]'),
@@ -7718,15 +10093,15 @@ return __p;
                         errors = true;
                         $jid_input.addClass('error');
                     }
-                    if (!password && converse.authentication !== converse.EXTERNAL)  {
+                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
                         errors = true;
                         $pw_input.addClass('error');
                     }
                     if (errors) { return; }
-                    if (converse.locked_domain) {
-                        jid = Strophe.escapeNode(jid) + '@' + converse.locked_domain;
-                    } else if (converse.default_domain && jid.indexOf('@') === -1) {
-                        jid = jid + '@' + converse.default_domain;
+                    if (_converse.locked_domain) {
+                        jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
+                    } else if (_converse.default_domain && !_.includes(jid, '@')) {
+                        jid = jid + '@' + _converse.default_domain;
                     }
                     this.connect($form, jid, password);
                     return false;
@@ -7740,12 +10115,12 @@ return __p;
                     if (jid) {
                         resource = Strophe.getResourceFromJid(jid);
                         if (!resource) {
-                            jid = jid.toLowerCase() + converse.generateResource();
+                            jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                         }
                     }
-                    converse.connection.connect(jid, password, converse.onConnectStatusChanged);
+                    _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
                 },
 
                 remove: function () {
@@ -7755,7 +10130,7 @@ return __p;
             });
 
 
-            converse.XMPPStatusView = Backbone.View.extend({
+            _converse.XMPPStatusView = Backbone.View.extend({
                 el: "span#xmpp-status-holder",
 
                 events: {
@@ -7778,9 +10153,9 @@ return __p;
                         options = $('option', $select),
                         $options_target,
                         options_list = [];
-                    this.$el.html(converse.templates.choose_status());
+                    this.$el.html(_converse.templates.choose_status());
                     this.$el.find('#fancy-xmpp-status-select')
-                            .html(converse.templates.chat_status({
+                            .html(_converse.templates.chat_status({
                                 'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
                                 'chat_status': chat_status,
                                 'desc_custom_status': __('Click here to write a custom status message'),
@@ -7788,7 +10163,7 @@ return __p;
                                 }));
                     // iterate through all the <option> elements and add option values
                     options.each(function () {
-                        options_list.push(converse.templates.status_option({
+                        options_list.push(_converse.templates.status_option({
                             'value': $(this).val(),
                             'text': this.text
                         }));
@@ -7807,7 +10182,7 @@ return __p;
                 renderStatusChangeForm: function (ev) {
                     ev.preventDefault();
                     var status_message = this.model.get('status') || 'offline';
-                    var input = converse.templates.change_status_message({
+                    var input = _converse.templates.change_status_message({
                         'status_message': status_message,
                         'label_custom_status': __('Custom status'),
                         'label_save': __('Save')
@@ -7829,7 +10204,7 @@ return __p;
                         value = $el.attr('data-value');
                     if (value === 'logout') {
                         this.$el.find(".dropdown dd ul").hide();
-                        converse.logOut();
+                        _converse.logOut();
                     } else {
                         this.model.setStatus(value);
                         this.$el.find(".dropdown dd ul").hide();
@@ -7858,7 +10233,7 @@ return __p;
                     // Example, I am online
                     var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
                     this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
-                        converse.templates.chat_status({
+                        _converse.templates.chat_status({
                             'chat_status': stat,
                             'status_message': status_message,
                             'desc_custom_status': __('Click here to write a custom status message'),
@@ -7868,7 +10243,7 @@ return __p;
             });
 
 
-            converse.ContactsPanel = Backbone.View.extend({
+            _converse.ContactsPanel = Backbone.View.extend({
                 tagName: 'div',
                 className: 'controlbox-pane',
                 id: 'users',
@@ -7886,33 +10261,33 @@ return __p;
 
                 render: function () {
                     var markup;
-                    var widgets = converse.templates.contacts_panel({
+                    var widgets = _converse.templates.contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
                         label_away: __('Away'),
                         label_offline: __('Offline'),
                         label_logout: __('Log out'),
-                        include_offline_state: converse.include_offline_state,
-                        allow_logout: converse.allow_logout
+                        include_offline_state: _converse.include_offline_state,
+                        allow_logout: _converse.allow_logout
                     });
-                    var controlbox = converse.chatboxes.get('controlbox');
-                    this.$tabs.append(converse.templates.contacts_tab({
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    this.$tabs.append(_converse.templates.contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
                         'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
                     }));
-                    if (converse.xhr_user_search) {
-                        markup = converse.templates.search_contact({
+                    if (_converse.xhr_user_search) {
+                        markup = _converse.templates.search_contact({
                             label_contact_name: __('Contact name'),
                             label_search: __('Search')
                         });
                     } else {
-                        markup = converse.templates.add_contact_form({
+                        markup = _converse.templates.add_contact_form({
                             label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add')
                         });
                     }
-                    if (converse.allow_contact_requests) {
-                        widgets += converse.templates.add_contact_dropdown({
+                    if (_converse.allow_contact_requests) {
+                        widgets += _converse.templates.add_contact_dropdown({
                             label_click_to_chat: __('Click to add new chat contacts'),
                             label_add_contact: __('Add a contact')
                         });
@@ -7936,7 +10311,7 @@ return __p;
 
                 searchContacts: function (ev) {
                     ev.preventDefault();
-                    $.getJSON(converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                    $.getJSON(_converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
                         var $ul= $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
@@ -7965,7 +10340,7 @@ return __p;
                         $input.addClass('error');
                         return;
                     }
-                    converse.roster.addAndSubscribe(jid);
+                    _converse.roster.addAndSubscribe(jid);
                     $('.search-xmpp').hide();
                 },
 
@@ -7974,14 +10349,14 @@ return __p;
                     var $target = $(ev.target),
                         jid = $target.attr('data-recipient'),
                         name = $target.text();
-                    converse.roster.addAndSubscribe(jid, name);
+                    _converse.roster.addAndSubscribe(jid, name);
                     $target.parent().remove();
                     $('.search-xmpp').hide();
                 }
             });
 
 
-            converse.ControlBoxToggle = Backbone.View.extend({
+            _converse.ControlBoxToggle = Backbone.View.extend({
                 tagName: 'a',
                 className: 'toggle-controlbox hidden',
                 id: 'toggle-controlbox',
@@ -7993,14 +10368,14 @@ return __p;
                 },
 
                 initialize: function () {
-                    converse.chatboxviews.$el.prepend(this.render());
+                    _converse.chatboxviews.$el.prepend(this.render());
                     this.updateOnlineCount();
                     var that = this;
-                    converse.on('initialized', function () {
-                        converse.roster.on("add", that.updateOnlineCount, that);
-                        converse.roster.on('change', that.updateOnlineCount, that);
-                        converse.roster.on("destroy", that.updateOnlineCount, that);
-                        converse.roster.on("remove", that.updateOnlineCount, that);
+                    _converse.on('initialized', function () {
+                        _converse.roster.on("add", that.updateOnlineCount, that);
+                        _converse.roster.on('change', that.updateOnlineCount, that);
+                        _converse.roster.on("destroy", that.updateOnlineCount, that);
+                        _converse.roster.on("remove", that.updateOnlineCount, that);
                     });
                 },
 
@@ -8010,22 +10385,22 @@ return __p;
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     return this.$el.html(
-                        converse.templates.controlbox_toggle({
+                        _converse.templates.controlbox_toggle({
                             'label_toggle': __('Toggle chat')
                         })
                     );
                 },
 
                 updateOnlineCount: _.debounce(function () {
-                    if (typeof converse.roster === 'undefined') {
+                    if (_.isUndefined(_converse.roster)) {
                         return;
                     }
                     var $count = this.$('#online-count');
-                    $count.text('('+converse.roster.getNumOnlineContacts()+')');
+                    $count.text('('+_converse.roster.getNumOnlineContacts()+')');
                     if (!$count.is(':visible')) {
                         $count.show();
                     }
-                }, converse.animate ? 100 : 0),
+                }, _converse.animate ? 100 : 0),
 
                 hide: function (callback) {
                     this.el.classList.add('hidden');
@@ -8037,11 +10412,11 @@ return __p;
                 },
 
                 showControlBox: function () {
-                    var controlbox = converse.chatboxes.get('controlbox');
+                    var controlbox = _converse.chatboxes.get('controlbox');
                     if (!controlbox) {
-                        controlbox = converse.addControlBox();
+                        controlbox = _converse.addControlBox();
                     }
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         controlbox.save({closed: false});
                     } else {
                         controlbox.trigger('show');
@@ -8051,8 +10426,8 @@ return __p;
                 onClick: function (e) {
                     e.preventDefault();
                     if ($("div#controlbox").is(':visible')) {
-                        var controlbox = converse.chatboxes.get('controlbox');
-                        if (converse.connection.connected) {
+                        var controlbox = _converse.chatboxes.get('controlbox');
+                        if (_converse.connection.connected) {
                             controlbox.save({closed: true});
                         } else {
                             controlbox.trigger('hide');
@@ -8069,362 +10444,397 @@ return __p;
                  * "onConnected" will be called, to fetch the roster again and
                  * to send out a presence stanza.
                  */
-                var view = converse.chatboxviews.get('controlbox');
+                var view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
                 view.$('#controlbox-tabs').empty();
                 view.renderLoginPanel();
             };
-            converse.on('disconnected', disconnect);
+            _converse.on('disconnected', disconnect);
 
             var afterReconnected = function () {
                 /* After reconnection makes sure the controlbox's is aware.
                  */
-                var view = converse.chatboxviews.get('controlbox');
+                var view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {
-                    converse.chatboxviews.get("controlbox").onConnected();
+                    _converse.chatboxviews.get("controlbox").onConnected();
                 } else {
                     view.model.set({connected:true});
                 }
             };
-            converse.on('reconnected', afterReconnected);
-
+            _converse.on('reconnected', afterReconnected);
         }
     });
 }));
 
 
-define('tpl!chatarea', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chat-area">\n    <div class="chat-content"></div>\n    <div class="new-msgs-indicator hidden">▼ '+
-((__t=( unread_msgs ))==null?'':__t)+
+define('tpl!chatarea', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="chat-area">\n    <div class="chat-content"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
+((__t = ( unread_msgs )) == null ? '' : __t) +
 ' ▼</div>\n    <form class="sendXMPPMessage" action="" method="post">\n        ';
- if (show_toolbar) { 
-__p+='\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } 
-__p+='\n        <textarea type="text" class="chat-textarea" \n            placeholder="'+
-((__t=(label_message))==null?'':__t)+
+ if (show_toolbar) { ;
+__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
+ } ;
+__p += '\n        <textarea type="text" class="chat-textarea" \n            placeholder="' +
+((__t = (label_message)) == null ? '' : __t) +
 '"/>\n    </form>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom"></div>\n    <div class="chat-body chatroom-body"><span class="spinner centered"/></div>\n</div>\n';
+define('tpl!chatroom', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="flyout box-flyout">\n    <div class="chat-head chat-head-chatroom"></div>\n    <div class="chat-body chatroom-body"><span class="spinner centered"/></div>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chatroom-form-container">\n    <form class="pure-form pure-form-stacked converse-form chatroom-form">\n        <fieldset>\n            <span class="spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
+define('tpl!chatroom_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form pure-form-stacked converse-form chatroom-form">\n        <fieldset>\n            <span class="spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_nickname_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <label>'+
-((__t=(heading))==null?'':__t)+
-'</label>\n            <p class="validation-message">'+
-((__t=(validation_message))==null?'':__t)+
-'</p>\n            <input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="'+
-((__t=(label_nickname))==null?'':__t)+
-'"/>\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="pure-button button-primary" name="join" value="'+
-((__t=(label_join))==null?'':__t)+
+define('tpl!chatroom_nickname_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form converse-centered-form">\n        <fieldset>\n            <label>' +
+((__t = (heading)) == null ? '' : __t) +
+'</label>\n            <p class="validation-message">' +
+((__t = (validation_message)) == null ? '' : __t) +
+'</p>\n            <input type="text" required="required" name="nick" class="new-chatroom-nick" placeholder="' +
+((__t = (label_nickname)) == null ? '' : __t) +
+'"/>\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="pure-button button-primary" name="join" value="' +
+((__t = (label_join)) == null ? '' : __t) +
 '"/>\n        </fieldset>\n    </form>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_password_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>'+
-((__t=(heading))==null?'':__t)+
-'</legend>\n            <label>'+
-((__t=(label_password))==null?'':__t)+
-'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="'+
-((__t=(label_submit))==null?'':__t)+
+define('tpl!chatroom_password_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
+((__t = (heading)) == null ? '' : __t) +
+'</legend>\n            <label>' +
+((__t = (label_password)) == null ? '' : __t) +
+'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
+((__t = (label_submit)) == null ? '' : __t) +
 '"/>\n        </fieldset>\n    </form>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_sidebar', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<!-- <div class="occupants"> -->\n';
- if (allow_muc_invitations) { 
-__p+='\n<form class="pure-form room-invite">\n    <input class="invited-contact" placeholder="'+
-((__t=(label_invitation))==null?'':__t)+
+define('tpl!chatroom_sidebar', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<!-- <div class="occupants"> -->\n';
+ if (allow_muc_invitations) { ;
+__p += '\n<form class="pure-form room-invite">\n    <input class="invited-contact" placeholder="' +
+((__t = (label_invitation)) == null ? '' : __t) +
 '" type="text"/>\n</form>\n';
- } 
-__p+='\n<p class="occupants-heading">'+
-((__t=(label_occupants))==null?'':__t)+
+ } ;
+__p += '\n<p class="occupants-heading">' +
+((__t = (label_occupants)) == null ? '' : __t) +
 ':</p>\n<ul class="occupant-list"></ul>\n<!-- </div> -->\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_toolbar', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (show_emoticons)  { 
-__p+='\n    <li class="toggle-smiley icon-happy" title="'+
-((__t=(label_insert_smiley))==null?'':__t)+
+define('tpl!chatroom_toolbar', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (show_emoticons)  { ;
+__p += '\n    <li class="toggle-smiley icon-happy" title="' +
+((__t = (label_insert_smiley)) == null ? '' : __t) +
 '">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
- } 
-__p+='\n';
- if (show_call_button)  { 
-__p+='\n<li class="toggle-call"><a class="icon-phone" title="'+
-((__t=(label_start_call))==null?'':__t)+
+ } ;
+__p += '\n';
+ if (show_call_button)  { ;
+__p += '\n<li class="toggle-call"><a class="icon-phone" title="' +
+((__t = (label_start_call)) == null ? '' : __t) +
 '"></a></li>\n';
- } 
-__p+='\n';
- if (show_occupants_toggle)  { 
-__p+='\n<li class="toggle-occupants"><a class="icon-hide-users" title="'+
-((__t=(label_hide_occupants))==null?'':__t)+
+ } ;
+__p += '\n';
+ if (show_occupants_toggle)  { ;
+__p += '\n<li class="toggle-occupants"><a class="icon-hide-users" title="' +
+((__t = (label_hide_occupants)) == null ? '' : __t) +
 '"></a></li>\n';
- } 
-__p+='\n';
- if (show_clear_button)  { 
-__p+='\n<li class="toggle-clear"><a class="icon-remove" title="'+
-((__t=(label_clear))==null?'':__t)+
+ } ;
+__p += '\n';
+ if (show_clear_button)  { ;
+__p += '\n<li class="toggle-clear"><a class="icon-remove" title="' +
+((__t = (label_clear)) == null ? '' : __t) +
 '"></a></li>\n';
- } 
-__p+='\n\n';
+ } ;
+__p += '\n\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_head', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a class="chatbox-btn close-chatbox-button icon-close" title="'+
-((__t=(info_close))==null?'':__t)+
+define('tpl!chatroom_head', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<a class="chatbox-btn close-chatbox-button icon-close" title="' +
+((__t = (info_close)) == null ? '' : __t) +
 '"></a>\n';
- if (affiliation == 'owner') { 
-__p+='\n    <a class="chatbox-btn configure-chatroom-button icon-wrench" title="'+
-((__t=(info_configure))==null?'':__t)+
+ if (affiliation == 'owner') { ;
+__p += '\n    <a class="chatbox-btn configure-chatroom-button icon-wrench" title="' +
+((__t = (info_configure)) == null ? '' : __t) +
 ' "></a>\n';
- } 
-__p+='\n<div class="chat-title">\n    '+
-((__t=( _.escape(name) ))==null?'':__t)+
+ } ;
+__p += '\n<div class="chat-title">\n    ' +
+((__t = ( _.escape(name) )) == null ? '' : __t) +
 '\n    <p class="chatroom-topic"><p/>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatrooms_tab', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li><a class="s ';
- if (is_current) { 
-__p+=' current ';
- } 
-__p+='"\n       data-id="chatrooms" href="#chatrooms">\n    '+
-((__t=(label_rooms))==null?'':__t)+
+define('tpl!chatrooms_tab', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<li><a class="s ';
+ if (is_current) { ;
+__p += ' current ';
+ } ;
+__p += '"\n       data-id="chatrooms" href="#chatrooms">\n    ' +
+((__t = (label_rooms)) == null ? '' : __t) +
 '\n</a></li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!info', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chat-info">'+
-((__t=(message))==null?'':__t)+
+define('tpl!info', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chat-info">' +
+((__t = (message)) == null ? '' : __t) +
 '</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!occupant', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li class="'+
-((__t=(role))==null?'':__t)+
-' occupant" id="'+
-((__t=(id))==null?'':__t)+
+define('tpl!occupant', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<li class="' +
+((__t = (role)) == null ? '' : __t) +
+' occupant" id="' +
+((__t = (id)) == null ? '' : __t) +
 '"\n    ';
- if (role === "moderator") { 
-__p+='\n       title="'+
-((__t=(desc_moderator))==null?'':__t)+
-' '+
-((__t=(hint_occupant))==null?'':__t)+
+ if (role === "moderator") { ;
+__p += '\n       title="' +
+((__t = (desc_moderator)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
- } 
-__p+='\n    ';
- if (role === "occupant") { 
-__p+='\n       title="'+
-((__t=(desc_occupant))==null?'':__t)+
-' '+
-((__t=(hint_occupant))==null?'':__t)+
+ } ;
+__p += '\n    ';
+ if (role === "occupant") { ;
+__p += '\n       title="' +
+((__t = (desc_occupant)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
- } 
-__p+='\n    ';
- if (role === "visitor") { 
-__p+='\n       title="'+
-((__t=(desc_visitor))==null?'':__t)+
-' '+
-((__t=(hint_occupant))==null?'':__t)+
+ } ;
+__p += '\n    ';
+ if (role === "visitor") { ;
+__p += '\n       title="' +
+((__t = (desc_visitor)) == null ? '' : __t) +
+' ' +
+((__t = (hint_occupant)) == null ? '' : __t) +
 '"\n    ';
- } 
-__p+='>'+
-((__t=(nick))==null?'':__t)+
+ } ;
+__p += '>' +
+((__t = (nick)) == null ? '' : __t) +
 '</li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!room_description', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class="room-info"><strong>'+
-((__t=(label_desc))==null?'':__t)+
-'</strong> '+
-((__t=(desc))==null?'':__t)+
-'</p>\n<p class="room-info"><strong>'+
-((__t=(label_occ))==null?'':__t)+
-'</strong> '+
-((__t=(occ))==null?'':__t)+
-'</p>\n<p class="room-info"><strong>'+
-((__t=(label_features))==null?'':__t)+
+define('tpl!room_description', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<!-- FIXME: check markup in mockup -->\n<div class="room-info">\n<p class="room-info"><strong>' +
+((__t = (label_desc)) == null ? '' : __t) +
+'</strong> ' +
+((__t = (desc)) == null ? '' : __t) +
+'</p>\n<p class="room-info"><strong>' +
+((__t = (label_occ)) == null ? '' : __t) +
+'</strong> ' +
+((__t = (occ)) == null ? '' : __t) +
+'</p>\n<p class="room-info"><strong>' +
+((__t = (label_features)) == null ? '' : __t) +
 '</strong>\n    <ul>\n        ';
- if (passwordprotected) { 
-__p+='\n        <li class="room-info locked">'+
-((__t=(label_requires_auth))==null?'':__t)+
+ if (passwordprotected) { ;
+__p += '\n        <li class="room-info locked">' +
+((__t = (label_requires_auth)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (hidden) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_hidden))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (hidden) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_hidden)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (membersonly) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_requires_invite))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (membersonly) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_requires_invite)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (moderated) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_moderated))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (moderated) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_moderated)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (nonanonymous) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_non_anon))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (nonanonymous) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_non_anon)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (open) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_open_room))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (open) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_open_room)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (persistent) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_permanent_room))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (persistent) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_permanent_room)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (publicroom) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_public))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (publicroom) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_public)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (semianonymous) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_semi_anon))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (semianonymous) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_semi_anon)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (temporary) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_temp_room))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (temporary) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_temp_room)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n        ';
- if (unmoderated) { 
-__p+='\n        <li class="room-info">'+
-((__t=(label_unmoderated))==null?'':__t)+
+ } ;
+__p += '\n        ';
+ if (unmoderated) { ;
+__p += '\n        <li class="room-info">' +
+((__t = (label_unmoderated)) == null ? '' : __t) +
 '</li>\n        ';
- } 
-__p+='\n    </ul>\n</p>\n</div>\n';
+ } ;
+__p += '\n    </ul>\n</p>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!room_item', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<dd class="available-chatroom">\n<a class="open-room" data-room-jid="'+
-((__t=(jid))==null?'':__t)+
-'"\n   title="'+
-((__t=(open_title))==null?'':__t)+
-'" href="#">'+
-((__t=(_.escape(name)))==null?'':__t)+
-'</a>\n<a class="room-info icon-room-info" data-room-jid="'+
-((__t=(jid))==null?'':__t)+
-'"\n   title="'+
-((__t=(info_title))==null?'':__t)+
+define('tpl!room_item', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<dd class="available-chatroom">\n<a class="open-room" data-room-jid="' +
+((__t = (jid)) == null ? '' : __t) +
+'"\n   title="' +
+((__t = (open_title)) == null ? '' : __t) +
+'" href="#">' +
+((__t = (_.escape(name))) == null ? '' : __t) +
+'</a>\n<a class="room-info icon-room-info" data-room-jid="' +
+((__t = (jid)) == null ? '' : __t) +
+'"\n   title="' +
+((__t = (info_title)) == null ? '' : __t) +
 '" href="#">&nbsp;</a>\n</dd>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!room_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>'+
-((__t=(label_room_name))==null?'':__t)+
-'</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="'+
-((__t=(label_room_name))==null?'':__t)+
+define('tpl!room_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<form class="pure-form pure-form-stacked converse-form add-chatroom" action="" method="post">\n    <fieldset>\n        <label>' +
+((__t = (label_room_name)) == null ? '' : __t) +
+'</label>\n        <input type="text" name="chatroom" class="new-chatroom-name" placeholder="' +
+((__t = (label_room_name)) == null ? '' : __t) +
 '"/>\n        ';
- if (server_input_type != 'hidden') { 
-__p+='\n            <label'+
-((__t=(server_label_global_attr))==null?'':__t)+
-'>'+
-((__t=(label_server))==null?'':__t)+
+ if (server_input_type != 'hidden') { ;
+__p += '\n            <label' +
+((__t = (server_label_global_attr)) == null ? '' : __t) +
+'>' +
+((__t = (label_server)) == null ? '' : __t) +
 '</label>\n        ';
- } 
-__p+='\n        <input type="'+
-((__t=(server_input_type))==null?'':__t)+
-'" name="server" class="new-chatroom-server" placeholder="'+
-((__t=(label_server))==null?'':__t)+
-'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="'+
-((__t=(label_join))==null?'':__t)+
-'"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="'+
-((__t=(label_show_rooms))==null?'':__t)+
+ } ;
+__p += '\n        <input type="' +
+((__t = (server_input_type)) == null ? '' : __t) +
+'" name="server" class="new-chatroom-server" placeholder="' +
+((__t = (label_server)) == null ? '' : __t) +
+'"/>\n        <input type="submit" class="pure-button button-primary" name="join" value="' +
+((__t = (label_join)) == null ? '' : __t) +
+'"/>\n        <input type="button" class="pure-button button-secondary" name="show" id="show-rooms" value="' +
+((__t = (label_show_rooms)) == null ? '' : __t) +
 '"/>\n    </fieldset>\n</form>\n<dl id="available-chatrooms" class="rooms-list"></dl>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -8439,7 +10849,6 @@ return __p;
  */
 (function (root, factory) {
     define("converse-muc", [
-            "converse-core",
             "converse-api",
             "tpl!chatarea",
             "tpl!chatroom",
@@ -8460,7 +10869,6 @@ return __p;
     ], factory);
 }(this, function (
             converse,
-            converse_api,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_form,
@@ -8477,38 +10885,20 @@ return __p;
             tpl_room_panel
     ) {
     "use strict";
-    converse.templates.chatarea = tpl_chatarea;
-    converse.templates.chatroom = tpl_chatroom;
-    converse.templates.chatroom_form = tpl_chatroom_form;
-    converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
-    converse.templates.chatroom_password_form = tpl_chatroom_password_form;
-    converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
-    converse.templates.chatroom_head = tpl_chatroom_head;
-    converse.templates.chatrooms_tab = tpl_chatrooms_tab;
-    converse.templates.info = tpl_info;
-    converse.templates.occupant = tpl_occupant;
-    converse.templates.room_description = tpl_room_description;
-    converse.templates.room_item = tpl_room_item;
-    converse.templates.room_panel = tpl_room_panel;
-
     var ROOMS_PANEL_ID = 'chatrooms';
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        $build = converse_api.env.$build,
-        $msg = converse_api.env.$msg,
-        $pres = converse_api.env.$pres,
-        b64_sha1 = converse_api.env.b64_sha1,
-        utils = converse_api.env.utils;
+    var Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        $build = converse.env.$build,
+        $msg = converse.env.$msg,
+        $pres = converse.env.$pres,
+        b64_sha1 = converse.env.b64_sha1,
+        utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
-
-    // For translations
-    var __ = utils.__.bind(converse);
-    var ___ = utils.___;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -8517,7 +10907,7 @@ return __p;
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    converse_api.plugins.add('converse-muc', {
+    converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
          * overridden or relied upon, if they exist, otherwise they're ignored.
          *
@@ -8540,7 +10930,8 @@ return __p;
                 * returned via the API.
                 */
                 if (!chatbox) { return; }
-                var view = converse.chatboxviews.get(chatbox.get('id'));
+                var _converse = this.__super__._converse;
+                var view = _converse.chatboxviews.get(chatbox.get('id'));
                 var box = this.__super__.wrappedChatBox.apply(this, arguments);
                 box.is_chatroom = view.is_chatroom;
                 return box;
@@ -8548,57 +10939,58 @@ return __p;
 
             Features: {
                 addClientFeatures: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
-                    if (converse.allow_muc_invitations) {
-                        converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                    if (_converse.allow_muc_invitations) {
+                        _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
                     }
-                    if (converse.allow_muc) {
-                        converse.connection.disco.addFeature(Strophe.NS.MUC);
+                    if (_converse.allow_muc) {
+                        _converse.connection.disco.addFeature(Strophe.NS.MUC);
                     }
                 }
             },
 
             ControlBoxView: {
                 renderContactsPanel: function () {
-                    var converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.renderContactsPanel.apply(this, arguments);
-                    if (converse.allow_muc) {
-                        this.roomspanel = new converse.RoomsPanel({
+                    if (_converse.allow_muc) {
+                        this.roomspanel = new _converse.RoomsPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': new (Backbone.Model.extend({
-                                id: b64_sha1('converse.roomspanel'+converse.bare_jid), // Required by sessionStorage
-                                browserStorage: new Backbone.BrowserStorage[converse.storage](
-                                    b64_sha1('converse.roomspanel'+converse.bare_jid))
+                                id: b64_sha1('converse.roomspanel'+_converse.bare_jid), // Required by sessionStorage
+                                browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                                    b64_sha1('converse.roomspanel'+_converse.bare_jid))
                             }))()
                         });
                         this.roomspanel.render().model.fetch();
                         if (!this.roomspanel.model.get('nick')) {
                             this.roomspanel.model.save({
-                                nick: Strophe.getNodeFromJid(converse.bare_jid)
+                                nick: Strophe.getNodeFromJid(_converse.bare_jid)
                             });
                         }
                     }
                 },
 
                 onConnected: function () {
-                    var converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.onConnected.apply(this, arguments);
                     if (!this.model.get('connected')) {
                         return;
                     }
-                    if (_.isUndefined(converse.muc_domain)) {
-                        converse.features.off('add', this.featureAdded, this);
-                        converse.features.on('add', this.featureAdded, this);
+                    if (_.isUndefined(_converse.muc_domain)) {
+                        _converse.features.off('add', this.featureAdded, this);
+                        _converse.features.on('add', this.featureAdded, this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        var feature = converse.features.findWhere({
+                        var feature = _converse.features.findWhere({
                             'var': Strophe.NS.MUC
                         });
                         if (feature) {
                             this.featureAdded(feature);
                         }
                     } else {
-                        this.setMUCDomain(converse.muc_domain);
+                        this.setMUCDomain(_converse.muc_domain);
                     }
                 },
 
@@ -8611,8 +11003,8 @@ return __p;
                 },
 
                 featureAdded: function (feature) {
-                    var converse = this.__super__.converse;
-                    if ((feature.get('var') === Strophe.NS.MUC) && (converse.allow_muc)) {
+                    var _converse = this.__super__._converse;
+                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
                         this.setMUCDomain(feature.get('from'));
                     }
                 }
@@ -8620,9 +11012,10 @@ return __p;
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'chatroom') {
-                        view = new converse.ChatRoomView({'model': item});
+                        view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
                         return this.__super__.onChatBoxAdded.apply(this, arguments);
@@ -8635,7 +11028,23 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__,
+                ___ = _converse.___;
+
+            _converse.templates.chatarea = tpl_chatarea;
+            _converse.templates.chatroom = tpl_chatroom;
+            _converse.templates.chatroom_form = tpl_chatroom_form;
+            _converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
+            _converse.templates.chatroom_password_form = tpl_chatroom_password_form;
+            _converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
+            _converse.templates.chatroom_head = tpl_chatroom_head;
+            _converse.templates.chatrooms_tab = tpl_chatrooms_tab;
+            _converse.templates.info = tpl_info;
+            _converse.templates.occupant = tpl_occupant;
+            _converse.templates.room_description = tpl_room_description;
+            _converse.templates.room_item = tpl_room_item;
+            _converse.templates.room_panel = tpl_room_panel;
 
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
@@ -8664,7 +11073,7 @@ return __p;
              * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
              * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
              */
-            converse.muc = {
+            _converse.muc = {
                 info_messages: {
                     100: __('This room is not anonymous'),
                     102: __('This room now shows unavailable members'),
@@ -8731,12 +11140,12 @@ return __p;
                 },
             });
 
-            converse.createChatRoom = function (settings) {
+            _converse.createChatRoom = function (settings) {
                 /* Creates a new chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                return converse.chatboxviews.showChat(
+                return _converse.chatboxviews.showChat(
                     _.extend(settings, {
                         'type': 'chatroom',
                         'affiliation': null,
@@ -8758,7 +11167,7 @@ return __p;
                 );
             };
 
-            converse.ChatRoomView = converse.ChatBoxView.extend({
+            _converse.ChatRoomView = _converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
                  */
@@ -8800,17 +11209,17 @@ return __p;
                     this.getRoomFeatures().always(function () {
                         that.join();
                         that.fetchMessages();
-                        converse.emit('chatRoomOpened', that);
+                        _converse.emit('chatRoomOpened', that);
                     });
                 },
 
                 createOccupantsView: function () {
                     /* Create the ChatRoomOccupantsView Backbone.View
                      */
-                    this.occupantsview = new converse.ChatRoomOccupantsView({
-                        model: new converse.ChatRoomOccupants()
+                    this.occupantsview = new _converse.ChatRoomOccupantsView({
+                        model: new _converse.ChatRoomOccupants()
                     });
-                    var id = b64_sha1('converse.occupants'+converse.bare_jid+this.model.get('jid'));
+                    var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.chatroomview = this;
                     this.occupantsview.render();
@@ -8818,7 +11227,7 @@ return __p;
                 },
 
                 insertIntoDOM: function () {
-                    var view = converse.chatboxviews.get("controlbox");
+                    var view = _converse.chatboxviews.get("controlbox");
                     if (view) {
                         this.$el.insertAfter(view.$el);
                     } else {
@@ -8829,7 +11238,7 @@ return __p;
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                            .html(converse.templates.chatroom());
+                            .html(_converse.templates.chatroom());
                     this.renderHeading();
                     this.renderChatArea();
                     utils.refreshWebkit();
@@ -8840,7 +11249,7 @@ return __p;
                     /* Pure function which returns the heading HTML to be
                      * rendered.
                      */
-                    return converse.templates.chatroom_head(
+                    return _converse.templates.chatroom_head(
                         _.extend(this.model.toJSON(), {
                             info_close: __('Close and leave this room'),
                             info_configure: __('Configure this room'),
@@ -8860,9 +11269,9 @@ return __p;
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
                             .append(
-                                converse.templates.chatarea({
+                                _converse.templates.chatarea({
                                     'unread_msgs': __('You have unread messages'),
-                                    'show_toolbar': converse.show_toolbar,
+                                    'show_toolbar': _converse.show_toolbar,
                                     'label_message': __('Message')
                                 }))
                             .append(this.occupantsview.$el);
@@ -8875,10 +11284,10 @@ return __p;
 
                 getToolbarOptions: function () {
                     return _.extend(
-                        converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
+                        _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                         {
                           label_hide_occupants: __('Hide the list of occupants'),
-                          show_occupants_toggle: this.is_chatroom && converse.visible_toolbar_buttons.toggle_occupants
+                          show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
                         }
                     );
                 },
@@ -8924,13 +11333,15 @@ return __p;
                     this.insertIntoTextArea(ev.target.textContent);
                 },
 
-                requestMemberList: function (affiliation) {
+                requestMemberList: function (chatroom_jid, affiliation) {
                     /* Send an IQ stanza to the server, asking it for the
                      * member-list of this room.
                      *
                      * See: http://xmpp.org/extensions/xep-0045.html#modifymember
                      *
                      * Parameters:
+                     *  (String) chatroom_jid: The JID of the chatroom for
+                     *      which the member-list is being requested
                      *  (String) affiliation: The specific member list to
                      *      fetch. 'admin', 'owner' or 'member'.
                      *
@@ -8940,10 +11351,10 @@ return __p;
                      */
                     var deferred = new $.Deferred();
                     affiliation = affiliation || 'member';
-                    var iq = $iq({to: this.model.get('jid'), type: "get"})
+                    var iq = $iq({to: chatroom_jid, type: "get"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                             .c("item", {'affiliation': affiliation});
-                    converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                    _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
                     return deferred.promise();
                 },
 
@@ -8989,8 +11400,8 @@ return __p;
                      *  (Array) new_list: Array containing the new affiliations
                      *  (Array) old_list: Array containing the old affiliations
                      */
-                    var new_jids = _.pluck(new_list, 'jid');
-                    var old_jids = _.pluck(old_list, 'jid');
+                    var new_jids = _.map(new_list, 'jid');
+                    var old_jids = _.map(old_list, 'jid');
 
                     // Get the new affiliations
                     var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
@@ -9015,6 +11426,30 @@ return __p;
                     return delta;
                 },
 
+                sendAffiliationIQ: function (chatroom_jid, affiliation, member) {
+                    /* Send an IQ stanza specifying an affiliation change.
+                     *
+                     * Paremeters:
+                     *  (String) chatroom_jid: JID of the relevant room
+                     *  (String) affiliation: affiliation (could also be stored
+                     *      on the member object).
+                     *  (Object) member: Map containing the member's jid and
+                     *      optionally a reason and affiliation.
+                     */
+                    var deferred = new $.Deferred();
+                    var iq = $iq({to: chatroom_jid, type: "set"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                        .c("item", {
+                            'affiliation': member.affiliation || affiliation,
+                            'jid': member.jid
+                        });
+                    if (!_.isUndefined(member.reason)) {
+                        iq.c("reason", member.reason);
+                    }
+                    _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
+                    return deferred;
+                },
+
                 setAffiliation: function (affiliation, members) {
                     /* Send IQ stanzas to the server to set an affiliation for
                      * the provided JIDs.
@@ -9027,6 +11462,7 @@ return __p;
                      * Related ticket: https://prosody.im/issues/issue/795
                      *
                      * Parameters:
+                     *  (String) affiliation: The affiliation
                      *  (Object) members: A map of jids, affiliations and
                      *      optionally reasons. Only those entries with the
                      *      same affiliation as being currently set will be
@@ -9043,21 +11479,11 @@ return __p;
                         return _.isUndefined(member.affiliation) ||
                                 member.affiliation === affiliation;
                     });
-                    var promises = _.map(members, function (member) {
-                        var deferred = new $.Deferred();
-                        var iq = $iq({to: this.model.get('jid'), type: "set"})
-                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                            .c("item", {
-                                'affiliation': member.affiliation || affiliation,
-                                'jid': member.jid
-                            });
-                        if (!_.isUndefined(member.reason)) {
-                            iq.c("reason", member.reason);
-                        }
-                        converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
-                        return deferred;
-                    }, this);
-                    return $.when.apply($, promises);
+                    var promises = _.map(
+                        members,
+                        _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
+                    );
+                    return $.when.apply($, promises); 
                 },
 
                 setAffiliations: function (members, onSuccess, onError) {
@@ -9076,8 +11502,8 @@ return __p;
                         onSuccess(null);
                         return;
                     }
-                    var affiliations = _.uniq(_.pluck(members, 'affiliation'));
-                    var promises = _.map(affiliations, _.partial(this.setAffiliation, _, members), this);
+                    var affiliations = _.uniq(_.map(members, 'affiliation'));
+                    var promises = _.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
                     $.when.apply($, promises).done(onSuccess).fail(onError);
                 },
 
@@ -9089,24 +11515,20 @@ return __p;
                      *  Any amount of XMLElement objects, representing the IQ
                      *  stanzas.
                      */
-                    return _.flatten(_.map(arguments, this.parseMemberListIQ));
+                    return _.flatMap(arguments, this.parseMemberListIQ);
                 },
 
                 getJidsWithAffiliations: function (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
                      */
-                    if (typeof affiliations === "string") {
+                    if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    var that = this;
                     var deferred = new $.Deferred();
-                    var promises = [];
-                    _.each(affiliations, function (affiliation) {
-                        promises.push(that.requestMemberList(affiliation));
-                    });
+                    var promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
                     $.when.apply($, promises).always(
-                        _.compose(deferred.resolve, this.marshallAffiliationIQs.bind(this))
+                        _.flow(this.marshallAffiliationIQs.bind(this), deferred.resolve)
                     );
                     return deferred.promise();
                 },
@@ -9168,12 +11590,12 @@ return __p;
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
                     var invitation = $msg({
-                        from: converse.connection.jid,
+                        from: _converse.connection.jid,
                         to: recipient,
-                        id: converse.connection.getUniqueId()
+                        id: _converse.connection.getUniqueId()
                     }).c('x', attrs);
-                    converse.connection.send(invitation);
-                    converse.emit('roomInviteSent', {
+                    _converse.connection.send(invitation);
+                    _converse.emit('roomInviteSent', {
                         'room': this,
                         'recipient': recipient,
                         'reason': reason
@@ -9193,8 +11615,8 @@ return __p;
                         // We ignore them here...
                         return;
                     }
-                    if (message.get('chat_state') !== converse.GONE) {
-                        converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
+                    if (message.get('chat_state') !== _converse.GONE) {
+                        _converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
                     }
                 },
 
@@ -9204,11 +11626,11 @@ return __p;
                      * See XEP-0085 Chat State Notifications.
                      */
                     var chat_state = this.model.get('chat_state');
-                    if (chat_state === converse.GONE) {
+                    if (chat_state === _converse.GONE) {
                         // <gone/> is not applicable within MUC context
                         return;
                     }
-                    converse.connection.send(
+                    _converse.connection.send(
                         $msg({'to':this.model.get('jid'), 'type': 'groupchat'})
                             .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
@@ -9223,15 +11645,15 @@ return __p;
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
-                    var msgid = converse.connection.getUniqueId();
+                    var msgid = _converse.connection.getUniqueId();
                     var msg = $msg({
                         to: this.model.get('jid'),
-                        from: converse.connection.jid,
+                        from: _converse.connection.jid,
                         type: 'groupchat',
                         id: msgid
                     }).c("body").t(text).up()
-                    .c("x", {xmlns: "jabber:x:event"}).c(converse.COMPOSING);
-                    converse.connection.send(msg);
+                    .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
+                    _converse.connection.send(msg);
                     this.model.messages.create({
                         fullname: this.model.get('nick'),
                         sender: 'me',
@@ -9245,7 +11667,7 @@ return __p;
                     var item = $build("item", {nick: nick, role: role});
                     var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
-                    return converse.connection.sendIQ(iq.tree(), onSuccess, onError);
+                    return _converse.connection.sendIQ(iq.tree(), onSuccess, onError);
                 },
 
                 validateRoleChangeCommand: function (command, args) {
@@ -9266,7 +11688,7 @@ return __p;
                 clearChatRoomMessages: function (ev) {
                     /* Remove all messages from the chat room UI.
                      */
-                    if (typeof ev !== "undefined") { ev.stopPropagation(); }
+                    if (!_.isUndefined(ev)) { ev.stopPropagation(); }
                     var result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
                         this.$content.empty();
@@ -9285,21 +11707,22 @@ return __p;
                      * Parameters:
                      *    (String) text - The message text.
                      */
-                    if (converse.muc_disable_moderator_commands) {
+                    if (_converse.muc_disable_moderator_commands) {
                         return this.sendChatRoomMessage(text);
                     }
                     var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                        args = match[2] && match[2].splitOnce(' ') || [];
-                    switch (match[1]) {
+                        args = match[2] && match[2].splitOnce(' ') || [],
+                        command = match[1].toLowerCase();
+                    switch (command) {
                         case 'admin':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'ban':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -9309,87 +11732,89 @@ return __p;
                             this.clearChatRoomMessages();
                             break;
                         case 'deop':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'occupant', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'help':
                             this.showHelpMessages([
-                                '<strong>/admin</strong>: ' +__("Change user's affiliation to admin"),
-                                '<strong>/ban</strong>: '   +__('Ban user from room'),
-                                '<strong>/clear</strong>: ' +__('Remove messages'),
-                                '<strong>/deop</strong>: '  +__('Change user role to occupant'),
-                                '<strong>/help</strong>: '  +__('Show this menu'),
-                                '<strong>/kick</strong>: '  +__('Kick user from room'),
-                                '<strong>/me</strong>: '    +__('Write in 3rd person'),
-                                '<strong>/member</strong>: '+__('Grant membership to a user'),
-                                '<strong>/mute</strong>: '  +__("Remove user's ability to post messages"),
-                                '<strong>/nick</strong>: '  +__('Change your nickname'),
-                                '<strong>/op</strong>: '    +__('Grant moderator role to user'),
-                                '<strong>/owner</strong>: ' +__('Grant ownership of this room'),
-                                '<strong>/revoke</strong>: '+__("Revoke user's membership"),
-                                '<strong>/topic</strong>: ' +__('Set room topic'),
-                                '<strong>/voice</strong>: ' +__('Allow muted user to post messages')
+                                '<strong>/admin</strong>: '   +__("Change user's affiliation to admin"),
+                                '<strong>/ban</strong>: '     +__('Ban user from room'),
+                                '<strong>/clear</strong>: '   +__('Remove messages'),
+                                '<strong>/deop</strong>: '    +__('Change user role to occupant'),
+                                '<strong>/help</strong>: '    +__('Show this menu'),
+                                '<strong>/kick</strong>: '    +__('Kick user from room'),
+                                '<strong>/me</strong>: '      +__('Write in 3rd person'),
+                                '<strong>/member</strong>: '  +__('Grant membership to a user'),
+                                '<strong>/mute</strong>: '    +__("Remove user's ability to post messages"),
+                                '<strong>/nick</strong>: '    +__('Change your nickname'),
+                                '<strong>/op</strong>: '      +__('Grant moderator role to user'),
+                                '<strong>/owner</strong>: '   +__('Grant ownership of this room'),
+                                '<strong>/revoke</strong>: '  +__("Revoke user's membership"),
+                                '<strong>/subject</strong>: ' +__('Set room subject'),
+                                '<strong>/topic</strong>: '   +__('Set room subject (alias for /subject)'),
+                                '<strong>/voice</strong>: '   +__('Allow muted user to post messages')
                             ]);
                             break;
                         case 'kick':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'none', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'mute':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'visitor', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'member':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('member',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'nick':
-                            converse.connection.send($pres({
-                                from: converse.connection.jid,
+                            _converse.connection.send($pres({
+                                from: _converse.connection.jid,
                                 to: this.getRoomJIDAndNick(match[2]),
-                                id: converse.connection.getUniqueId()
+                                id: _converse.connection.getUniqueId()
                             }).tree());
                             break;
                         case 'owner':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'op':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'revoke':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
                                     }]).fail(this.onCommandError.bind(this));
                             break;
                         case 'topic':
-                            converse.connection.send(
+                        case 'subject':
+                            _converse.connection.send(
                                 $msg({
                                     to: this.model.get('jid'),
-                                    from: converse.connection.jid,
+                                    from: _converse.connection.jid,
                                     type: "groupchat"
                                 }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
                             );
                             break;
                         case 'voice':
-                            if (!this.validateRoleChangeCommand(match[1], args)) { break; }
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'occupant', args[1],
                                     undefined, this.onCommandError.bind(this));
@@ -9423,7 +11848,7 @@ return __p;
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
                         this.getRoomFeatures();
                     }
-                    _.compose(this.onChatRoomMessage.bind(this), this.showStatusMessages.bind(this))(stanza);
+                    _.flow(this.showStatusMessages.bind(this), this.onChatRoomMessage.bind(this))(stanza);
                     return true;
                 },
 
@@ -9453,12 +11878,12 @@ return __p;
                      */
                     var room_jid = this.model.get('jid');
                     this.removeHandlers();
-                    this.presence_handler = converse.connection.addHandler(
+                    this.presence_handler = _converse.connection.addHandler(
                         this.onChatRoomPresence.bind(this),
                         Strophe.NS.MUC, 'presence', null, null, room_jid,
                         {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                     );
-                    this.message_handler = converse.connection.addHandler(
+                    this.message_handler = _converse.connection.addHandler(
                         this.handleMUCMessage.bind(this),
                         null, 'message', null, null, room_jid,
                         {'matchBareFromJid': true}
@@ -9470,11 +11895,11 @@ return __p;
                      * registered for this chat room.
                      */
                     if (this.message_handler) {
-                        converse.connection.deleteHandler(this.message_handler);
+                        _converse.connection.deleteHandler(this.message_handler);
                         delete this.message_handler;
                     }
                     if (this.presence_handler) {
-                        converse.connection.deleteHandler(this.presence_handler);
+                        _converse.connection.deleteHandler(this.presence_handler);
                         delete this.presence_handler;
                     }
                     return this;
@@ -9499,22 +11924,22 @@ return __p;
                         return this;
                     }
                     var stanza = $pres({
-                        'from': converse.connection.jid,
+                        'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
                     }).c("x", {'xmlns': Strophe.NS.MUC})
-                      .c("history", {'maxstanzas': converse.muc_history_max_stanzas}).up();
+                      .c("history", {'maxstanzas': _converse.muc_history_max_stanzas}).up();
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
                     this.model.save('connection_status', Strophe.Status.CONNECTING);
-                    converse.connection.send(stanza);
+                    _converse.connection.send(stanza);
                     return this;
                 },
 
                 cleanup: function () {
                     this.model.save('connection_status', Strophe.Status.DISCONNECTED);
                     this.removeHandlers();
-                    converse.ChatBoxView.prototype.close.apply(this, arguments);
+                    _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 leave: function(exit_msg) {
@@ -9527,7 +11952,7 @@ return __p;
                     this.hide();
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
-                    if (!converse.connection.connected ||
+                    if (!_converse.connection.connected ||
                             this.model.get('connection_status') === Strophe.Status.DISCONNECTED) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
@@ -9535,13 +11960,13 @@ return __p;
                     }
                     var presence = $pres({
                         type: "unavailable",
-                        from: converse.connection.jid,
+                        from: _converse.connection.jid,
                         to: this.getRoomJIDAndNick()
                     });
                     if (exit_msg !== null) {
                         presence.c("status", exit_msg);
                     }
-                    converse.connection.sendPresence(
+                    _converse.connection.sendPresence(
                         presence,
                         this.cleanup.bind(this),
                         this.cleanup.bind(this),
@@ -9564,7 +11989,7 @@ return __p;
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
-                    $body.append(converse.templates.chatroom_form());
+                    $body.append(_converse.templates.chatroom_form());
 
                     var $form = $body.find('form.chatroom-form'),
                         $fieldset = $form.children('fieldset:first'),
@@ -9614,7 +12039,7 @@ return __p;
                     _.each(config || [], function (node) { iq.cnode(node).up(); });
                     onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
                     onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
-                    return converse.connection.sendIQ(iq, onSuccess, onError);
+                    return _converse.connection.sendIQ(iq, onSuccess, onError);
                 },
 
                 saveConfiguration: function (form) {
@@ -9706,7 +12131,7 @@ return __p;
                      */
                     var that = this;
                     var deferred = new $.Deferred();
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         $iq({
                             'to': this.model.get('jid'),
                             'type': "get"
@@ -9728,7 +12153,7 @@ return __p;
                      */
                     var deferred = new $.Deferred();
                     var that = this;
-                    converse.connection.disco.info(this.model.get('jid'), null,
+                    _converse.connection.disco.info(this.model.get('jid'), null,
                         function (iq) {
                             /*
                              * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
@@ -9782,7 +12207,7 @@ return __p;
                     if (_.isUndefined(ev) && this.model.get('auto_configure')) {
                         this.fetchRoomConfiguration().then(that.autoConfigureChatRoom.bind(that));
                     } else {
-                        if (typeof ev !== 'undefined' && ev.preventDefault) {
+                        if (!_.isUndefined(ev) && ev.preventDefault) {
                             ev.preventDefault();
                         }
                         this.showSpinner();
@@ -9815,10 +12240,10 @@ return __p;
                      * form.
                      */
                     this.showSpinner();
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         $iq({
                             'to': this.model.get('jid'),
-                            'from': converse.connection.jid,
+                            'from': _converse.connection.jid,
                             'type': "get"
                         }).c("query", {
                             'xmlns': Strophe.NS.DISCO_INFO,
@@ -9851,10 +12276,10 @@ return __p;
                 },
 
                 onNickNameNotFound: function (message) {
-                    if (converse.muc_nickname_from_jid) {
+                    if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
-                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid)));
+                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid)));
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -9866,7 +12291,7 @@ return __p;
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(converse.bare_jid));
+                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
                 },
 
                 onNicknameClash: function (presence) {
@@ -9878,7 +12303,7 @@ return __p;
                      * Which option is take depends on the value of
                      * muc_nickname_from_jid.
                      */
-                    if (converse.muc_nickname_from_jid) {
+                    if (_converse.muc_nickname_from_jid) {
                         var nick = presence.getAttribute('from').split('/')[1];
                         if (nick === this.getDefaultNickName()) {
                             this.join(nick + '-2');
@@ -9900,11 +12325,11 @@ return __p;
                      */
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    if (typeof message !== "string") {
+                    if (!_.isString(message)) {
                         message = '';
                     }
                     this.$('.chatroom-body').append(
-                        converse.templates.chatroom_nickname_form({
+                        _converse.templates.chatroom_nickname_form({
                             heading: __('Please choose your nickname'),
                             label_nickname: __('Nickname'),
                             label_join: __('Enter room'),
@@ -9924,7 +12349,7 @@ return __p;
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
                     this.$('.chatroom-body').append(
-                        converse.templates.chatroom_password_form({
+                        _converse.templates.chatroom_password_form({
                             heading: __('This chatroom requires a password'),
                             label_password: __('Password: '),
                             label_submit: __('Submit')
@@ -9950,17 +12375,17 @@ return __p;
                         from_nick;
                     if (is_self && code === "210") {
                         from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
-                        return __(converse.muc.new_nickname_messages[code], from_nick);
+                        return __(_converse.muc.new_nickname_messages[code], from_nick);
                     } else if (is_self && code === "303") {
                         return __(
-                            converse.muc.new_nickname_messages[code],
+                            _converse.muc.new_nickname_messages[code],
                             stanza.querySelector('x item').getAttribute('nick')
                         );
-                    } else if (!is_self && (code in converse.muc.action_info_messages)) {
+                    } else if (!is_self && (code in _converse.muc.action_info_messages)) {
                         from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
-                        return __(converse.muc.action_info_messages[code], from_nick);
-                    } else if (code in converse.muc.info_messages) {
-                        return converse.muc.info_messages[code];
+                        return __(_converse.muc.action_info_messages[code], from_nick);
+                    } else if (code in _converse.muc.info_messages) {
+                        return _converse.muc.info_messages[code];
                     } else if (code !== '110') {
                         if (stat.textContent) {
                             // Sometimes the status contains human readable text and not a code.
@@ -9987,7 +12412,7 @@ return __p;
                     var item = $(pres).find('x[xmlns="'+Strophe.NS.MUC_USER+'"] item').get(0);
                     if (_.isUndefined(item)) { return; }
                     var jid = item.getAttribute('jid');
-                    if (Strophe.getBareJidFromJid(jid) === converse.bare_jid) {
+                    if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
                         var affiliation = item.getAttribute('affiliation');
                         var role = item.getAttribute('role');
                         if (affiliation) {
@@ -10011,12 +12436,12 @@ return __p;
                         'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
                     };
                     // 2. Get disconnection messages based on the <status> elements
-                    var codes = _.map(statuses, function (stat) { return stat.getAttribute('code'); });
-                    var disconnection_codes = _.intersection(codes, _.keys(converse.muc.disconnect_messages));
+                    var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
+                    var disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
                     var disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
                         notification.disconnected = true;
-                        notification.disconnection_message = converse.muc.disconnect_messages[disconnection_codes[0]];
+                        notification.disconnection_message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                     }
                     // 3. Find the reason and actor from the <item> element
                     var item = x.querySelector('item');
@@ -10055,7 +12480,7 @@ return __p;
                         return;
                     }
                     _.each(notification.messages, function (message) {
-                        that.$content.append(converse.templates.info({'message': message}));
+                        that.$content.append(_converse.templates.info({'message': message}));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "'+notification.reason+'"'), true);
@@ -10077,10 +12502,12 @@ return __p;
 
                     // Unfortunately this doesn't work (returns empty list)
                     // var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
-                    var elements = _.chain(stanza.querySelectorAll('x')).filter(function (x) {
-                        return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
-                    }).value();
-
+                    var elements = _.filter(
+                        stanza.querySelectorAll('x'),
+                        function (x) {
+                            return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
+                        }
+                    );
                     var notifications = _.map(
                         elements,
                         _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
@@ -10174,7 +12601,7 @@ return __p;
                         // This is a new room. It will now be configured
                         // and the configuration cached on the
                         // Backbone.Model.
-                        if (converse.muc_instant_rooms) {
+                        if (_converse.muc_instant_rooms) {
                             this.createInstantRoom(); // Accept default configuration
                         } else {
                             this.configureChatRoom();
@@ -10208,31 +12635,31 @@ return __p;
                     // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
                     this.$content.append(
-                        converse.templates.info({
+                        _converse.templates.info({
                             'message': __('Topic set by %1$s to: %2$s', sender, subject)
                         }));
                     this.scrollDown();
                 },
 
-                onChatRoomMessage: function (msg) {
+                onChatRoomMessage: function (message) {
                     /* Given a <message> stanza, create a message
                      * Backbone.Model if appropriate.
                      *
                      * Parameters:
                      *  (XMLElement) msg: The received message stanza
                      */
-                    var $message = $(msg),
-                        $forwarded = $message.find('forwarded'),
-                        $delay;
-                    if ($forwarded.length) {
-                        $message = $forwarded.children('message');
-                        $delay = $forwarded.children('delay');
+                    var original_stanza = message,
+                        forwarded = message.querySelector('forwarded'),
+                        delay;
+                    if (!_.isNull(forwarded)) {
+                        message = forwarded.querySelector('message');
+                        delay = forwarded.querySelector('delay');
                     }
-                    var jid = msg.getAttribute('from'),
-                        msgid = msg.getAttribute('id'),
+                    var jid = message.getAttribute('from'),
+                        msgid = message.getAttribute('id'),
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
-                        subject = $message.children('subject').text(),
+                        subject = _.propertyOf(message.querySelector('subject'))('textContent'),
                         dupes = msgid && this.model.messages.filter(function (msg) {
                             // Find duplicates.
                             // Some bots (like HAL in the prosody chatroom)
@@ -10249,10 +12676,10 @@ return __p;
                     if (sender === '') {
                         return true;
                     }
-                    this.model.createMessage($message, $delay, msg);
+                    this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
-                        converse.emit('message', msg);
+                        _converse.emit('message', message);
                     }
                     return true;
                 },
@@ -10264,35 +12691,35 @@ return __p;
                      * so that they are displayed inside it.
                      */
                     var that = this;
-                    if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        _converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
                     }
                     this.addSpinner();
-                    converse_api.archive.query(_.extend(options, {'groupchat': true}),
+                    _converse.api.archive.query(_.extend(options, {'groupchat': true}),
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, that.onChatRoomMessage.bind(that));
+                                _.each(messages, that.onChatRoomMessage.bind(that));
                             }
                         },
                         function () {
                             that.clearSpinner();
-                            converse.log("Error while trying to fetch archived messages", "error");
+                            _converse.log("Error while trying to fetch archived messages", "error");
                         }
                     );
                 }
             });
 
-            converse.ChatRoomOccupant = Backbone.Model.extend({
+            _converse.ChatRoomOccupant = Backbone.Model.extend({
                 initialize: function (attributes) {
                     this.set(_.extend({
-                        'id': converse.connection.getUniqueId(),
+                        'id': _converse.connection.getUniqueId(),
                     }, attributes));
                 }
             });
 
-            converse.ChatRoomOccupantView = Backbone.View.extend({
+            _converse.ChatRoomOccupantView = Backbone.View.extend({
                 tagName: 'li',
                 initialize: function () {
                     this.model.on('change', this.render, this);
@@ -10300,7 +12727,7 @@ return __p;
                 },
 
                 render: function () {
-                    var new_el = converse.templates.occupant(
+                    var new_el = _converse.templates.occupant(
                         _.extend(
                             this.model.toJSON(), {
                                 'hint_occupant': __('Click to mention this user in your message.'),
@@ -10326,11 +12753,11 @@ return __p;
                 }
             });
 
-            converse.ChatRoomOccupants = Backbone.Collection.extend({
-                model: converse.ChatRoomOccupant
+            _converse.ChatRoomOccupants = Backbone.Collection.extend({
+                model: _converse.ChatRoomOccupant
             });
 
-            converse.ChatRoomOccupantsView = Backbone.Overview.extend({
+            _converse.ChatRoomOccupantsView = Backbone.Overview.extend({
                 tagName: 'div',
                 className: 'occupants',
 
@@ -10340,13 +12767,13 @@ return __p;
 
                 render: function () {
                     this.$el.html(
-                        converse.templates.chatroom_sidebar({
-                            'allow_muc_invitations': converse.allow_muc_invitations,
+                        _converse.templates.chatroom_sidebar({
+                            'allow_muc_invitations': _converse.allow_muc_invitations,
                             'label_invitation': __('Invite'),
                             'label_occupants': __('Occupants')
                         })
                     );
-                    if (converse.allow_muc_invitations) {
+                    if (_converse.allow_muc_invitations) {
                         return this.initInviteWidget();
                     }
                     return this;
@@ -10355,7 +12782,7 @@ return __p;
                 onOccupantAdded: function (item) {
                     var view = this.get(item.get('id'));
                     if (!view) {
-                        view = this.add(item.get('id'), new converse.ChatRoomOccupantView({model: item}));
+                        view = this.add(item.get('id'), new _converse.ChatRoomOccupantView({model: item}));
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
@@ -10455,11 +12882,12 @@ return __p;
                     }, {
                         name: 'contacts-dataset',
                         source: function (q, cb) {
-                            var results = [];
-                            _.each(converse.roster.filter(utils.contains(['fullname', 'jid'], q)), function (n) {
-                                results.push({value: n.get('fullname'), jid: n.get('jid')});
-                            });
-                            cb(results);
+                            cb(_.map(
+                                _converse.roster.filter(utils.contains(['fullname', 'jid'], q)),
+                                function (n) {
+                                    return {value: n.get('fullname'), jid: n.get('jid')};
+                                }
+                            ));
                         },
                         templates: {
                             suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
@@ -10479,7 +12907,7 @@ return __p;
                 }
             });
 
-            converse.RoomsPanel = Backbone.View.extend({
+            _converse.RoomsPanel = Backbone.View.extend({
                 /* Backbone View which renders the "Rooms" tab and accompanying
                  * panel in the control box.
                  *
@@ -10507,9 +12935,9 @@ return __p;
                 render: function () {
                     this.$parent.append(
                         this.$el.html(
-                            converse.templates.room_panel({
-                                'server_input_type': converse.hide_muc_server && 'hidden' || 'text',
-                                'server_label_global_attr': converse.hide_muc_server && ' hidden' || '',
+                            _converse.templates.room_panel({
+                                'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                                'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
                                 'label_room_name': __('Room name'),
                                 'label_nickname': __('Nickname'),
                                 'label_server': __('Server'),
@@ -10519,8 +12947,8 @@ return __p;
                         ));
                     this.$tabs = this.$parent.parent().find('#controlbox-tabs');
 
-                    var controlbox = converse.chatboxes.get('controlbox');
-                    this.$tabs.append(converse.templates.chatrooms_tab({
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    this.$tabs.append(_converse.templates.chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
                     }));
@@ -10533,7 +12961,7 @@ return __p;
                 onDomainChange: function (model) {
                     var $server = this.$el.find('input.new-chatroom-server');
                     $server.val(model.get('muc_domain'));
-                    if (converse.auto_list_rooms) {
+                    if (_converse.auto_list_rooms) {
                         this.updateRoomsList();
                     }
                 },
@@ -10566,7 +12994,7 @@ return __p;
                             name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
                             jid = $(this.rooms[i]).attr('jid');
                             fragment.appendChild($(
-                                converse.templates.room_item({
+                                _converse.templates.room_item({
                                     'name':name,
                                     'jid':jid,
                                     'open_title': __('Click to open this room'),
@@ -10585,10 +13013,10 @@ return __p;
                 updateRoomsList: function () {
                     /* Send and IQ stanza to the server asking for all rooms
                      */
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         $iq({
                             to: this.model.get('muc_domain'),
-                            from: converse.connection.jid,
+                            from: _converse.connection.jid,
                             type: "get"
                         }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
                         this.onRoomsFound.bind(this),
@@ -10624,7 +13052,7 @@ return __p;
                     var $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     $(el).find('span.spinner').replaceWith(
-                        converse.templates.room_description({
+                        _converse.templates.room_description({
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                             'hidden': $stanza.find('feature[var="muc_hidden"]').length,
@@ -10667,7 +13095,7 @@ return __p;
                     } else {
                         $parent.find('span.spinner').remove();
                         $parent.append('<span class="spinner hor_centered"/>');
-                        converse.connection.disco.info(
+                        _converse.connection.disco.info(
                             $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
                         );
                     }
@@ -10696,7 +13124,7 @@ return __p;
                             return;
                         }
                     }
-                    converse.createChatRoom({
+                    _converse.createChatRoom({
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -10716,7 +13144,7 @@ return __p;
             /************************ End of ChatRoomView **********************/
 
 
-            converse.onDirectMUCInvitation = function (message) {
+            _converse.onDirectMUCInvitation = function (message) {
                 /* A direct MUC invitation to join a room has been received
                  * See XEP-0249: Direct MUC invitations.
                  *
@@ -10729,10 +13157,10 @@ return __p;
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     room_jid = $x.attr('jid'),
                     reason = $x.attr('reason'),
-                    contact = converse.roster.get(from),
+                    contact = _converse.roster.get(from),
                     result;
 
-                if (converse.auto_join_on_invite) {
+                if (_converse.auto_join_on_invite) {
                     result = true;
                 } else {
                     // Invite request might come from someone not your roster list
@@ -10750,34 +13178,34 @@ return __p;
                     }
                 }
                 if (result === true) {
-                    var chatroom = converse.createChatRoom({
+                    var chatroom = _converse.createChatRoom({
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(converse.connection.jid)),
+                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.connection.jid)),
                         'type': 'chatroom',
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (!_.contains(
+                    if (!_.includes(
                                 [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
                                 chatroom.get('connection_status'))
                             ) {
-                        converse.chatboxviews.get(room_jid).join();
+                        _converse.chatboxviews.get(room_jid).join();
                     }
                 }
             };
 
-            if (converse.allow_muc_invitations) {
+            if (_converse.allow_muc_invitations) {
                 var registerDirectInvitationHandler = function () {
-                    converse.connection.addHandler(
+                    _converse.connection.addHandler(
                         function (message) {
-                            converse.onDirectMUCInvitation(message);
+                            _converse.onDirectMUCInvitation(message);
                             return true;
                         }, 'jabber:x:conference', 'message');
                 };
-                converse.on('connected', registerDirectInvitationHandler);
-                converse.on('reconnected', registerDirectInvitationHandler);
+                _converse.on('connected', registerDirectInvitationHandler);
+                _converse.on('reconnected', registerDirectInvitationHandler);
             }
 
             var autoJoinRooms = function () {
@@ -10786,21 +13214,21 @@ return __p;
                  * of strings (room JIDs) or objects (with room JID and other
                  * settings).
                  */
-                _.each(converse.auto_join_rooms, function (room) {
-                    if (typeof room === 'string') {
-                        converse_api.rooms.open(room);
-                    } else if (typeof room === 'object') {
-                        converse_api.rooms.open(room.jid, room.nick);
+                _.each(_converse.auto_join_rooms, function (room) {
+                    if (_.isString(room)) {
+                        _converse.api.rooms.open(room);
+                    } else if (_.isObject(room)) {
+                        _converse.api.rooms.open(room.jid, room.nick);
                     } else {
-                        converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
+                        _converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
                     }
                 });
             };
-            converse.on('chatBoxesFetched', autoJoinRooms);
+            _converse.on('chatBoxesFetched', autoJoinRooms);
 
-            converse.getWrappedChatRoom = function (jid, attrs, fetcher) {
+            _converse.getWrappedChatRoom = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();
-                return converse.wrappedChatBox(fetcher(_.extend({
+                return _converse.wrappedChatBox(fetcher(_.extend({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -10813,67 +13241,67 @@ return __p;
             /* We extend the default converse.js API to add methods specific to MUC
              * chat rooms.
              */
-            _.extend(converse_api, {
+            _.extend(_converse.api, {
                 'rooms': {
                     'close': function (jids) {
-                        if (typeof jids === "undefined") {
-                            converse.chatboxviews.each(function (view) {
+                        if (_.isUndefined(jids)) {
+                            _converse.chatboxviews.each(function (view) {
                                 if (view.is_chatroom && view.model) {
                                     view.close();
                                 }
                             });
-                        } else if (typeof jids === "string") {
-                            var view = converse.chatboxviews.get(jids);
+                        } else if (_.isString(jids)) {
+                            var view = _converse.chatboxviews.get(jids);
                             if (view) { view.close(); }
                         } else {
-                            _.map(jids, function (jid) {
-                                var view = converse.chatboxviews.get(jid);
+                            _.each(jids, function (jid) {
+                                var view = _converse.chatboxviews.get(jid);
                                 if (view) { view.close(); }
                             });
                         }
                     },
                     'open': function (jids, attrs) {
-                        if (typeof attrs === "string") {
+                        if (_.isString(attrs)) {
                             attrs = {'nick': attrs};
-                        } else if (typeof attrs === "undefined") {
+                        } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
                         if (_.isUndefined(attrs.maximize)) {
                             attrs.maximize = false;
                         }
-                        if (!attrs.nick && converse.muc_nickname_from_jid) {
-                            attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
+                        if (!attrs.nick && _converse.muc_nickname_from_jid) {
+                            attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
-                        if (typeof jids === "undefined") {
+                        if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
-                        } else if (typeof jids === "string") {
-                            return converse.getWrappedChatRoom(jids, attrs, converse.createChatRoom);
+                        } else if (_.isString(jids)) {
+                            return _converse.getWrappedChatRoom(jids, attrs, _converse.createChatRoom);
                         }
-                        return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, converse.createChatRoom));
+                        return _.map(jids, _.partial(_converse.getWrappedChatRoom, _, attrs, _converse.createChatRoom));
                     },
                     'get': function (jids, attrs, create) {
-                        if (typeof attrs === "string") {
+                        if (_.isString(attrs)) {
                             attrs = {'nick': attrs};
-                        } else if (typeof attrs === "undefined") {
+                        } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
-                        if (typeof jids === "undefined") {
+                        if (_.isUndefined(jids)) {
                             var result = [];
-                            converse.chatboxes.each(function (chatbox) {
+                            _converse.chatboxes.each(function (chatbox) {
                                 if (chatbox.get('type') === 'chatroom') {
-                                    result.push(converse.wrappedChatBox(chatbox));
+                                    result.push(_converse.wrappedChatBox(chatbox));
                                 }
                             });
                             return result;
                         }
-                        var fetcher = _.partial(converse.chatboxviews.getChatBox.bind(converse.chatboxviews), _, create);
+                        var fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
                         if (!attrs.nick) {
-                            attrs.nick = Strophe.getNodeFromJid(converse.bare_jid);
+                            attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
-                        if (typeof jids === "string") {
-                            return converse.getWrappedChatRoom(jids, attrs, fetcher);
+                        if (_.isString(jids)) {
+                            return _converse.getWrappedChatRoom(jids, attrs, fetcher);
                         }
-                        return _.map(jids, _.partial(converse.getWrappedChatRoom, _, attrs, fetcher));
+                        return _.map(jids, _.partial(_converse.getWrappedChatRoom, _, attrs, fetcher));
                     }
                 }
             });
@@ -10882,114 +13310,123 @@ return __p;
                 /* Upon a reconnection event from converse, join again
                  * all the open chat rooms.
                  */
-                converse.chatboxviews.each(function (view) {
+                _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === 'chatroom') {
                         view.model.save('connection_status', Strophe.Status.DISCONNECTED);
                         view.join();
                     }
                 });
             };
-            converse.on('reconnected', reconnectToChatRooms);
+            _converse.on('reconnected', reconnectToChatRooms);
 
             var disconnectChatRooms = function () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
                  * when fetched from session storage.
                  */
-                converse.chatboxes.each(function (model) {
+                _converse.chatboxes.each(function (model) {
                     if (model.get('type') === 'chatroom') {
                         model.save('connection_status', Strophe.Status.DISCONNECTED);
                     }
                 });
             };
-            converse.on('reconnecting', disconnectChatRooms);
-            converse.on('disconnecting', disconnectChatRooms);
+            _converse.on('reconnecting', disconnectChatRooms);
+            _converse.on('disconnecting', disconnectChatRooms);
         }
     });
 }));
 
 
-define('tpl!chatroom_bookmark_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>'+
-((__t=(heading))==null?'':__t)+
-'</legend>\n            <label>'+
-((__t=(label_name))==null?'':__t)+
-'</label>\n            <input type="text" name="name" required="required"/>\n            <label>'+
-((__t=(label_autojoin))==null?'':__t)+
-'</label>\n            <input type="checkbox" name="autojoin"/>\n            <label>'+
-((__t=(label_nick))==null?'':__t)+
-'</label>\n            <input type="text" name="nick" value="'+
-((__t=(default_nick))==null?'':__t)+
-'"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="'+
-((__t=(label_submit))==null?'':__t)+
-'"/>\n            <input class="pure-button button-cancel" type="button" value="'+
-((__t=(label_cancel))==null?'':__t)+
+define('tpl!chatroom_bookmark_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset>\n            <legend>' +
+((__t = (heading)) == null ? '' : __t) +
+'</legend>\n            <label>' +
+((__t = (label_name)) == null ? '' : __t) +
+'</label>\n            <input type="text" name="name" required="required"/>\n            <label>' +
+((__t = (label_autojoin)) == null ? '' : __t) +
+'</label>\n            <input type="checkbox" name="autojoin"/>\n            <label>' +
+((__t = (label_nick)) == null ? '' : __t) +
+'</label>\n            <input type="text" name="nick" value="' +
+((__t = (default_nick)) == null ? '' : __t) +
+'"/>\n        </fieldset>\n        <fieldset>\n            <input class="pure-button button-primary" type="submit" value="' +
+((__t = (label_submit)) == null ? '' : __t) +
+'"/>\n            <input class="pure-button button-cancel" type="button" value="' +
+((__t = (label_cancel)) == null ? '' : __t) +
 '"/>\n        </fieldset>\n    </form>\n</div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chatroom_bookmark_toggle', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a class="chatbox-btn toggle-bookmark icon-pushpin\n   ';
- if (bookmarked) {
-__p+='\n    button-on\n   ';
- } 
-__p+='" title="'+
-((__t=(info_toggle_bookmark))==null?'':__t)+
+define('tpl!chatroom_bookmark_toggle', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<a class="chatbox-btn toggle-bookmark icon-pushpin\n   ';
+ if (bookmarked) {;
+__p += '\n    button-on\n   ';
+ } ;
+__p += '" title="' +
+((__t = (info_toggle_bookmark)) == null ? '' : __t) +
 '"></a>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!bookmark', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<dd class="available-chatroom">\n    <a class="open-room" data-room-jid="'+
-((__t=(jid))==null?'':__t)+
-'" title="'+
-((__t=(open_title))==null?'':__t)+
-'" href="#">'+
-((__t=(name))==null?'':__t)+
-'</a>\n    <a class="remove-bookmark icon-close" data-room-jid="'+
-((__t=(jid))==null?'':__t)+
-'" data-bookmark-name="'+
-((__t=(name))==null?'':__t)+
-'"\n       title="'+
-((__t=(info_remove))==null?'':__t)+
-'" href="#">&nbsp;</a>\n    <a class="room-info icon-room-info" data-room-jid="'+
-((__t=(jid))==null?'':__t)+
-'"\n       title="'+
-((__t=(info_title))==null?'':__t)+
+define('tpl!bookmark', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<dd class="available-chatroom">\n    <a class="open-room" data-room-jid="' +
+((__t = (jid)) == null ? '' : __t) +
+'" title="' +
+((__t = (open_title)) == null ? '' : __t) +
+'" href="#">' +
+((__t = (name)) == null ? '' : __t) +
+'</a>\n    <a class="remove-bookmark icon-close" data-room-jid="' +
+((__t = (jid)) == null ? '' : __t) +
+'" data-bookmark-name="' +
+((__t = (name)) == null ? '' : __t) +
+'"\n       title="' +
+((__t = (info_remove)) == null ? '' : __t) +
+'" href="#">&nbsp;</a>\n    <a class="room-info icon-room-info" data-room-jid="' +
+((__t = (jid)) == null ? '' : __t) +
+'"\n       title="' +
+((__t = (info_title)) == null ? '' : __t) +
 '" href="#">&nbsp;</a>\n</dd>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!bookmarks_list', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a href="#" class="bookmarks-toggle icon-'+
-((__t=(toggle_state))==null?'':__t)+
-'" title="'+
-((__t=(desc_bookmarks))==null?'':__t)+
-'">'+
-((__t=(label_bookmarks))==null?'':__t)+
+define('tpl!bookmarks_list', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<a href="#" class="bookmarks-toggle icon-' +
+((__t = (toggle_state)) == null ? '' : __t) +
+'" title="' +
+((__t = (desc_bookmarks)) == null ? '' : __t) +
+'">' +
+((__t = (label_bookmarks)) == null ? '' : __t) +
 '</a>\n<dl class="bookmarks rooms-list"></dl>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define */
@@ -11000,11 +13437,10 @@ return __p;
 (function (root, factory) {
     define("converse-bookmarks", [
             "jquery",
-            "underscore",
+            "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
-            "converse-core",
             "converse-api",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -11015,26 +13451,18 @@ return __p;
         factory);
 }(this, function (
         $, _, moment, strophe, utils,
-        converse, converse_api, muc,
+        converse, muc,
         tpl_chatroom_bookmark_form,
         tpl_chatroom_bookmark_toggle,
         tpl_bookmark,
         tpl_bookmarks_list
     ) {
 
-    var __ = utils.__.bind(converse),
-        ___ = utils.___,
-        Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        b64_sha1 = converse_api.env.b64_sha1;
+    var Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        b64_sha1 = converse.env.b64_sha1;
 
-    // Add new HTML templates.
-    converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
-    converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
-    converse.templates.bookmark = tpl_bookmark;
-    converse.templates.bookmarks_list = tpl_bookmarks_list;
-
-    converse_api.plugins.add('converse-bookmarks', {
+    converse.plugins.add('converse-bookmarks', {
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -11061,12 +13489,14 @@ return __p;
                 },
 
                 generateHeadingHTML: function () {
-                    var html = this.__super__.generateHeadingHTML.apply(this, arguments);
-                    if (converse.allow_bookmarks) {
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                    if (_converse.allow_bookmarks) {
                         var div = document.createElement('div');
                         div.innerHTML = html;
-                        var bookmark_button = converse.templates.chatroom_bookmark_toggle(
-                            _.extend(
+                        var bookmark_button = _converse.templates.chatroom_bookmark_toggle(
+                            _.assignIn(
                                 this.model.toJSON(),
                                 {
                                     info_toggle_bookmark: __('Bookmark this room'),
@@ -11085,10 +13515,11 @@ return __p;
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    if (_.isUndefined(converse.bookmarks) || !converse.allow_bookmarks) {
+                    var _converse = this.__super__._converse;
+                    if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
-                    var model = converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    var model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(this.model.get('nick'));
                     } else {
@@ -11107,8 +13538,9 @@ return __p;
                 setBookmarkState: function () {
                     /* Set whether the room is bookmarked or not.
                      */
-                    if (!_.isUndefined(converse.bookmarks)) {
-                        var models = converse.bookmarks.where({'jid': this.model.get('jid')});
+                    var _converse = this.__super__._converse;
+                    if (!_.isUndefined(_converse.bookmarks)) {
+                        var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                         if (!models.length) {
                             this.model.save('bookmarked', false);
                         } else {
@@ -11118,12 +13550,14 @@ return __p;
                 },
 
                 renderBookmarkForm: function () {
-                    var $body = this.$('.chatroom-body');
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
                     $body.append(
-                        converse.templates.chatroom_bookmark_form({
+                        _converse.templates.chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
                             label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
@@ -11138,8 +13572,9 @@ return __p;
 
                 onBookmarkFormSubmitted: function (ev) {
                     ev.preventDefault();
+                    var _converse = this.__super__._converse;
                     var $form = $(ev.target), that = this;
-                    converse.bookmarks.createBookmark({
+                    _converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
                         'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
                         'name':  $form.find('input[name=name]').val(),
@@ -11157,11 +13592,12 @@ return __p;
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
-                    var models = converse.bookmarks.where({'jid': this.model.get('jid')});
+                    var _converse = this.__super__._converse;
+                    var models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
-                        _.each(models, function (model) {
+                        _.forEach(models, function (model) {
                             model.destroy();
                         });
                         this.$('.icon-pushpin').removeClass('button-on');
@@ -11174,7 +13610,16 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__,
+                ___ = _converse.___;
+
+            // Add new HTML templates.
+            _converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
+            _converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
+            _converse.templates.bookmark = tpl_bookmark;
+            _converse.templates.bookmarks_list = tpl_bookmarks_list;
+
             // Configuration values for this plugin
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these
@@ -11183,32 +13628,32 @@ return __p;
                 allow_bookmarks: true
             });
 
-            converse.Bookmark = Backbone.Model;
+            _converse.Bookmark = Backbone.Model;
 
-            converse.BookmarksList = Backbone.Model.extend({
+            _converse.BookmarksList = Backbone.Model.extend({
                 defaults: {
-                    "toggle-state":  converse.OPENED
+                    "toggle-state":  _converse.OPENED
                 }
             });
 
-            converse.Bookmarks = Backbone.Collection.extend({
-                model: converse.Bookmark,
+            _converse.Bookmarks = Backbone.Collection.extend({
+                model: _converse.Bookmark,
 
                 initialize: function () {
-                    this.on('add', _.compose(this.markRoomAsBookmarked, this.openBookmarkedRoom));
+                    this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
-                    var cache_key = 'converse.room-bookmarks'+converse.bare_jid;
+                    var cache_key = 'converse.room-bookmarks'+_converse.bare_jid;
                     this.cached_flag = b64_sha1(cache_key+'fetched');
-                    this.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(cache_key)
                     );
                 },
 
                 openBookmarkedRoom: function (bookmark) {
                     if (bookmark.get('autojoin')) {
-                        converse_api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
+                        _converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
                     }
                     return bookmark;
                 },
@@ -11238,14 +13683,14 @@ return __p;
                 },
 
                 createBookmark: function (options) {
-                    converse.bookmarks.create(options);
-                    converse.bookmarks.sendBookmarkStanza();
+                    _converse.bookmarks.create(options);
+                    _converse.bookmarks.sendBookmarkStanza();
                 },
 
                 sendBookmarkStanza: function () {
                     var stanza = $iq({
                             'type': 'set',
-                            'from': converse.connection.jid,
+                            'from': _converse.connection.jid,
                         })
                         .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                             .c('publish', {'node': 'storage:bookmarks'})
@@ -11267,12 +13712,12 @@ return __p;
                                 .c('value').t('true').up().up()
                             .c('field', {'var':'pubsub#access_model'})
                                 .c('value').t('whitelist');
-                    converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+                    _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
                 },
 
                 onBookmarkError: function (iq) {
-                    converse.log("Error while trying to add bookmark", "error");
-                    converse.log(iq);
+                    _converse.log("Error while trying to add bookmark", "error");
+                    _converse.log(iq);
                     // We remove all locally cached bookmarks and fetch them
                     // again from the server.
                     this.reset();
@@ -11282,11 +13727,11 @@ return __p;
 
                 fetchBookmarksFromServer: function (deferred) {
                     var stanza = $iq({
-                        'from': converse.connection.jid,
+                        'from': _converse.connection.jid,
                         'type': 'get',
                     }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'});
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         stanza,
                         _.bind(this.onBookmarksReceived, this, deferred),
                         _.bind(this.onBookmarksReceivedError, this, deferred)
@@ -11294,14 +13739,14 @@ return __p;
                 },
 
                 markRoomAsBookmarked: function (bookmark) {
-                    var room = converse.chatboxes.get(bookmark.get('jid'));
+                    var room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', true);
                     }
                 },
 
                 markRoomAsUnbookmarked: function (bookmark) {
-                    var room = converse.chatboxes.get(bookmark.get('jid'));
+                    var room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', false);
                     }
@@ -11312,7 +13757,7 @@ return __p;
                         'items[node="storage:bookmarks"] item[id="current"] storage conference'
                     );
                     var that = this;
-                    _.each(bookmarks, function (bookmark) {
+                    _.forEach(bookmarks, function (bookmark) {
                         that.create({
                             'jid': bookmark.getAttribute('jid'),
                             'name': bookmark.getAttribute('name'),
@@ -11327,15 +13772,15 @@ return __p;
 
                 onBookmarksReceivedError: function (deferred, iq) {
                     window.sessionStorage.setItem(this.cached_flag, true);
-                    converse.log('Error while fetching bookmarks');
-                    converse.log(iq);
+                    _converse.log('Error while fetching bookmarks');
+                    _converse.log(iq);
                     if (!_.isUndefined(deferred)) {
                         return deferred.reject();
                     }
                 }
             });
 
-            converse.BookmarksView = Backbone.View.extend({
+            _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
                 className: 'bookmarks-list',
                 events: {
@@ -11347,27 +13792,27 @@ return __p;
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
 
-                    var cachekey = 'converse.room-bookmarks'+converse.bare_jid+'-list-model';
-                    this.list_model = new converse.BookmarksList();
+                    var cachekey = 'converse.room-bookmarks'+_converse.bare_jid+'-list-model';
+                    this.list_model = new _converse.BookmarksList();
                     this.list_model.id = cachekey;
-                    this.list_model.browserStorage = new Backbone.BrowserStorage[converse.storage](
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(cachekey)
                     );
                     this.list_model.fetch();
                     this.render();
                 },
 
-                render: function (cfg) {
-                    this.$el.html(converse.templates.bookmarks_list({
+                render: function () {
+                    this.$el.html(_converse.templates.bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
                     })).hide();
-                    if (this.list_model.get('toggle-state') !== converse.OPENED) {
+                    if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.$('.bookmarks').hide();
                     }
-                    this.model.each(this.renderBookmarkListElement, this);
-                    var controlboxview = converse.chatboxviews.get('controlbox');
+                    this.model.each(this.renderBookmarkListElement.bind(this));
+                    var controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         this.$el.prependTo(controlboxview.$('#chatrooms'));
                     }
@@ -11379,12 +13824,12 @@ return __p;
                     var name = $(ev.target).data('bookmarkName');
                     var jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.each(converse.bookmarks.where({'jid': jid}), function (item) { item.destroy(); });
+                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
                     }
                 },
 
                 renderBookmarkListElement: function (item) {
-                    var $bookmark = $(converse.templates.bookmark({
+                    var $bookmark = $(_converse.templates.bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
                             'open_title': __('Click to open this room'),
@@ -11409,40 +13854,40 @@ return __p;
                     var $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
                         this.$('.bookmarks').slideUp('fast');
-                        this.list_model.save({'toggle-state': converse.CLOSED});
+                        this.list_model.save({'toggle-state': _converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
                         this.$('.bookmarks').slideDown('fast');
-                        this.list_model.save({'toggle-state': converse.OPENED});
+                        this.list_model.save({'toggle-state': _converse.OPENED});
                     }
                 }
             });
 
             var initBookmarks = function () {
-                if (!converse.allow_bookmarks) {
+                if (!_converse.allow_bookmarks) {
                     return;
                 }
-                converse.bookmarks = new converse.Bookmarks();
-                converse.bookmarks.fetchBookmarks().always(function () {
-                    converse.bookmarksview = new converse.BookmarksView(
-                        {'model': converse.bookmarks}
+                _converse.bookmarks = new _converse.Bookmarks();
+                _converse.bookmarks.fetchBookmarks().always(function () {
+                    _converse.bookmarksview = new _converse.BookmarksView(
+                        {'model': _converse.bookmarks}
                     );
                 });
             };
-            converse.on('chatBoxesFetched', initBookmarks);
+            _converse.on('chatBoxesFetched', initBookmarks);
 
             var afterReconnection = function () {
-                if (!converse.allow_bookmarks) {
+                if (!_converse.allow_bookmarks) {
                     return;
                 }
-                if (_.isUndefined(converse.bookmarksview)) {
+                if (_.isUndefined(_converse.bookmarksview)) {
                     initBookmarks();
                 } else {
-                    converse.bookmarksview.render();
+                    _converse.bookmarksview.render();
                 }
             };
-            converse.on('reconnected', afterReconnection);
+            _converse.on('reconnected', afterReconnection);
         }
     });
 }));
@@ -11459,19 +13904,18 @@ return __p;
 
 (function (root, factory) {
     define("converse-mam", [
-            "converse-core",
             "converse-api",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        Strophe = converse_api.env.Strophe,
-        $iq = converse_api.env.$iq,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
+    var $ = converse.env.jQuery,
+        Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
@@ -11481,7 +13925,7 @@ return __p;
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
 
-    converse_api.plugins.add('converse-mam', {
+    converse.plugins.add('converse-mam', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -11492,7 +13936,8 @@ return __p;
 
             Features: {
                 addClientFeatures: function () {
-                    converse.connection.disco.addFeature(Strophe.NS.MAM);
+                    var _converse = this.__super__._converse;
+                    _converse.connection.disco.addFeature(Strophe.NS.MAM);
                     return this.__super__.addClientFeatures.apply(this, arguments);
                 }
             },
@@ -11515,16 +13960,17 @@ return __p;
                 },
 
                 afterMessagesFetched: function () {
-                    if (this.disable_mam || !converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    var _converse = this.__super__._converse;
+                    if (this.disable_mam || !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
                     if (!this.model.get('mam_initialized') &&
-                            this.model.messages.length < converse.archived_messages_page_size) {
+                            this.model.messages.length < _converse.archived_messages_page_size) {
 
                         this.fetchArchivedMessages({
                             'before': '', // Page backwards from the most recent message
                             'with': this.model.get('jid'),
-                            'max': converse.archived_messages_page_size
+                            'max': _converse.archived_messages_page_size
                         });
                         this.model.save({'mam_initialized': true});
                     }
@@ -11537,33 +13983,35 @@ return __p;
                      * Then, upon receiving them, call onMessage on the chat box,
                      * so that they are displayed inside it.
                      */
-                    if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                    var _converse = this.__super__._converse;
+                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        _converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
                         return;
                     }
                     if (this.disable_mam) {
                         return;
                     }
                     this.addSpinner();
-                    converse.queryForArchivedMessages(options, function (messages) {
+                    _converse.queryForArchivedMessages(options, function (messages) {
                             this.clearSpinner();
                             if (messages.length) {
-                                _.map(messages, converse.chatboxes.onMessage.bind(converse.chatboxes));
+                                _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
                             }
                         }.bind(this),
                         function () {
                             this.clearSpinner();
-                            converse.log("Error or timeout while trying to fetch archived messages", "error");
+                            _converse.log("Error or timeout while trying to fetch archived messages", "error");
                         }.bind(this)
                     );
                 },
 
                 onScroll: function (ev) {
+                    var _converse = this.__super__._converse;
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id'),
                             'with': this.model.get('jid'),
-                            'max': converse.archived_messages_page_size
+                            'max': _converse.archived_messages_page_size
                         });
                     }
                 },
@@ -11585,15 +14033,17 @@ return __p;
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
+             * loaded by Converse.js's plugin machinery.
              */
+            var _converse = this._converse;
+
             this.updateSettings({
                 archived_messages_page_size: '20',
                 message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
 
-            converse.queryForArchivedMessages = function (options, callback, errback) {
+            _converse.queryForArchivedMessages = function (options, callback, errback) {
                 /* Do a MAM (XEP-0313) query for archived messages.
                  *
                  * Parameters:
@@ -11612,27 +14062,27 @@ return __p;
                  * get the next or previous page in the result set.
                  */
                 var date, messages = [];
-                if (typeof options === "function") {
+                if (_.isFunction(options)) {
                     callback = options;
                     errback = callback;
                 }
                 /*
-                if (!converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    converse.log('This server does not support XEP-0313, Message Archive Management');
+                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.log('This server does not support XEP-0313, Message Archive Management');
                     errback(null);
                     return;
                 }
                 */
-                var queryid = converse.connection.getUniqueId();
+                var queryid = _converse.connection.getUniqueId();
                 var attrs = {'type':'set'};
-                if (typeof options !== "undefined" && options.groupchat) {
+                if (!_.isUndefined(options) && options.groupchat) {
                     if (!options['with']) {
                         throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
                     }
                     attrs.to = options['with'];
                 }
                 var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-                if (typeof options !== "undefined") {
+                if (!_.isUndefined(options)) {
                     stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                             .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                             .c('value').t(Strophe.NS.MAM).up().up();
@@ -11658,8 +14108,8 @@ return __p;
                     }
                 }
 
-                if (typeof callback === "function") {
-                    converse.connection.addHandler(function (message) {
+                if (_.isFunction(callback)) {
+                    _converse.connection.addHandler(function (message) {
                         var $msg = $(message), rsm,
                             $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
                         if ($fin.length && $fin.attr('queryid') === queryid) {
@@ -11674,27 +14124,27 @@ return __p;
                         return true;
                     }, Strophe.NS.MAM);
                 }
-                converse.connection.sendIQ(stanza, null, errback, converse.message_archiving_timeout);
+                _converse.connection.sendIQ(stanza, null, errback, _converse.message_archiving_timeout);
             };
 
-            _.extend(converse_api, {
+            _.extend(_converse.api, {
                 /* Extend default converse.js API to add methods specific to MAM
                  */
                 'archive': {
-                    'query': converse.queryForArchivedMessages.bind(converse)
+                    'query': _converse.queryForArchivedMessages.bind(_converse)
                 }
             });
 
-            converse.onMAMError = function (iq) {
+            _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
-                    converse.log("Message Archive Management (XEP-0313) not supported by this browser");
+                    _converse.log("Message Archive Management (XEP-0313) not supported by this browser");
                 } else {
-                    converse.log("An error occured while trying to set archiving preferences.");
-                    converse.log(iq);
+                    _converse.log("An error occured while trying to set archiving preferences.");
+                    _converse.log(iq);
                 }
             };
 
-            converse.onMAMPreferences = function (feature, iq) {
+            _converse.onMAMPreferences = function (feature, iq) {
                 /* Handle returned IQ stanza containing Message Archive
                  * Management (XEP-0313) preferences.
                  *
@@ -11708,37 +14158,37 @@ return __p;
                 var $prefs = $(iq).find('prefs[xmlns="'+Strophe.NS.MAM+'"]');
                 var default_pref = $prefs.attr('default');
                 var stanza;
-                if (default_pref !== converse.message_archiving) {
-                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':converse.message_archiving});
+                if (default_pref !== _converse.message_archiving) {
+                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
                     $prefs.children().each(function (idx, child) {
                         stanza.cnode(child).up();
                     });
-                    converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
+                    _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
                             // XXX: Strictly speaking, the server should respond with the updated prefs
                             // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
                             // but Prosody doesn't do this, so we don't rely on it.
-                            feature.save({'preferences': {'default':converse.message_archiving}});
+                            feature.save({'preferences': {'default':_converse.message_archiving}});
                         }, feature),
-                        converse.onMAMError
+                        _converse.onMAMError
                     );
                 } else {
-                    feature.save({'preferences': {'default':converse.message_archiving}});
+                    feature.save({'preferences': {'default':_converse.message_archiving}});
                 }
             };
 
 
-            var onFeatureAdded = function (evt, feature) {
+            var onFeatureAdded = function (feature) {
                 var prefs = feature.get('preferences') || {};
-                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
+                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving) {
                     // Ask the server for archiving preferences
-                    converse.connection.sendIQ(
+                    _converse.connection.sendIQ(
                         $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
-                        _.partial(converse.onMAMPreferences, feature),
-                        _.partial(converse.onMAMError, feature)
+                        _.partial(_converse.onMAMPreferences, feature),
+                        _.partial(_converse.onMAMError, feature)
                     );
                 }
             };
-            converse.on('serviceDiscovered', onFeatureAdded.bind(converse.features));
+            _converse.on('serviceDiscovered', onFeatureAdded.bind(_converse.features));
         }
     });
 }));
@@ -11753,18 +14203,17 @@ return __p;
 
 (function (root, factory) {
     define("converse-vcard", [
-            "converse-core",
             "converse-api",
             "strophe.vcard",
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var Strophe = converse_api.env.Strophe,
-        $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        moment = converse_api.env.moment;
+    var Strophe = converse.env.Strophe,
+        $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
 
-    converse_api.plugins.add('converse-vcard', {
+    converse.plugins.add('converse-vcard', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -11775,22 +14224,24 @@ return __p;
 
             Features: {
                 addClientFeatures: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
-                    if (converse.use_vcards) {
-                        converse.connection.disco.addFeature(Strophe.NS.VCARD);
+                    if (_converse.use_vcards) {
+                        _converse.connection.disco.addFeature(Strophe.NS.VCARD);
                     }
                 }
             },
 
             RosterContacts: {
                 createRequestingContact: function (presence) {
+                    var _converse = this.__super__._converse;
                     var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                    converse.getVCard(
+                    _converse.getVCard(
                         bare_jid,
-                        _.partial(converse.createRequestingContactFromVCard, presence),
+                        _.partial(_converse.createRequestingContactFromVCard, presence),
                         function (iq, jid) {
-                            converse.log("Error while retrieving vcard for "+jid);
-                            converse.createRequestingContactFromVCard(presence, iq, jid);
+                            _converse.log("Error while retrieving vcard for "+jid);
+                            _converse.createRequestingContactFromVCard(presence, iq, jid);
                         }
                     );
                 }
@@ -11802,11 +14253,12 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
+            var _converse = this._converse;
             this.updateSettings({
                 use_vcards: true,
             });
 
-            converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
+            _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var nick = $(presence).children('nick[xmlns="'+Strophe.NS.NICK+'"]').text();
                 var user_data = {
@@ -11820,26 +14272,26 @@ return __p;
                     url: url,
                     vcard_updated: moment().format()
                 };
-                converse.roster.create(user_data);
-                converse.emit('contactRequest', user_data);
+                _converse.roster.create(user_data);
+                _converse.emit('contactRequest', user_data);
             };
 
-            converse.onVCardError = function (jid, iq, errback) {
-                var contact = converse.roster.get(jid);
+            _converse.onVCardError = function (jid, iq, errback) {
+                var contact = _converse.roster.get(jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
                 if (errback) { errback(iq, jid); }
             };
 
-            converse.onVCardData = function (jid, iq, callback) {
+            _converse.onVCardData = function (jid, iq, callback) {
                 var $vcard = $(iq).find('vCard'),
                     fullname = $vcard.find('FN').text(),
                     img = $vcard.find('BINVAL').text(),
                     img_type = $vcard.find('TYPE').text(),
                     url = $vcard.find('URL').text();
                 if (jid) {
-                    var contact = converse.roster.get(jid);
+                    var contact = _converse.roster.get(jid);
                     if (contact) {
                         fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
                         contact.save({
@@ -11856,7 +14308,7 @@ return __p;
                 }
             };
 
-            converse.getVCard = function (jid, callback, errback) {
+            _converse.getVCard = function (jid, callback, errback) {
                 /* Request the VCard of another user.
                  *
                  * Parameters:
@@ -11867,22 +14319,22 @@ return __p;
                  *    (Function) errback - A function to call if an error occured
                  *      while trying to fetch the VCard.
                  */
-                if (!converse.use_vcards) {
+                if (!_converse.use_vcards) {
                     if (callback) { callback(null, jid); }
                 } else {
-                    converse.connection.vcard.get(
-                        _.partial(converse.onVCardData, jid, _, callback),
+                    _converse.connection.vcard.get(
+                        _.partial(_converse.onVCardData, jid, _, callback),
                         jid,
-                        _.partial(converse.onVCardError, jid, _, errback));
+                        _.partial(_converse.onVCardError, jid, _, errback));
                 }
             };
 
-            var updateVCardForChatBox = function (evt, chatbox) {
-                if (!converse.use_vcards) { return; }
+            var updateVCardForChatBox = function (chatbox) {
+                if (!_converse.use_vcards) { return; }
                 var jid = chatbox.model.get('jid'),
-                    contact = converse.roster.get(jid);
+                    contact = _converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
-                    converse.getVCard(
+                    _converse.getVCard(
                         jid,
                         function (iq, jid, fullname, image, image_type, url) {
                             chatbox.model.save({
@@ -11893,100 +14345,103 @@ return __p;
                             });
                         },
                         function () {
-                            converse.log(
+                            _converse.log(
                                 "updateVCardForChatBox: Error occured while fetching vcard"
                             );
                         }
                     );
                 }
             };
-            converse.on('chatBoxInitialized', updateVCardForChatBox);
+            _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
 
             var onContactAdd = function (contact) {
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
                     // request which will rerender the roster contact.
-                    converse.getVCard(contact.get('jid'));
+                    _converse.getVCard(contact.get('jid'));
                 }
             };
-            converse.on('initialized', function () {
-                converse.roster.on("add", onContactAdd);
+            _converse.on('initialized', function () {
+                _converse.roster.on("add", onContactAdd);
             });
 
             var fetchOwnVCard = function () {
-                if (converse.xmppstatus.get('fullname') === undefined) {
-                    converse.getVCard(
+                if (_converse.xmppstatus.get('fullname') === undefined) {
+                    _converse.getVCard(
                         null, // No 'to' attr when getting one's own vCard
                         function (iq, jid, fullname) {
-                            converse.xmppstatus.save({'fullname': fullname});
+                            _converse.xmppstatus.save({'fullname': fullname});
                         }
                     );
                 }
             };
-            converse.on('statusInitialized', fetchOwnVCard);
+            _converse.on('statusInitialized', fetchOwnVCard);
         }
     });
 }));
 
 
-define('tpl!toolbar_otr', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='';
- if (allow_otr)  { 
-__p+='\n    <li class="toggle-otr '+
-((__t=(otr_status_class))==null?'':__t)+
-'" title="'+
-((__t=(otr_tooltip))==null?'':__t)+
-'">\n        <span class="chat-toolbar-text">'+
-((__t=(otr_translated_status))==null?'':__t)+
+define('tpl!toolbar_otr', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (allow_otr)  { ;
+__p += '\n    <li class="toggle-otr ' +
+((__t = (otr_status_class)) == null ? '' : __t) +
+'" title="' +
+((__t = (otr_tooltip)) == null ? '' : __t) +
+'">\n        <span class="chat-toolbar-text">' +
+((__t = (otr_translated_status)) == null ? '' : __t) +
 '</span>\n        ';
- if (otr_status == UNENCRYPTED) { 
-__p+='\n            <span class="icon-unlocked"></span>\n        ';
- } 
-__p+='\n        ';
- if (otr_status == UNVERIFIED) { 
-__p+='\n            <span class="icon-lock"></span>\n        ';
- } 
-__p+='\n        ';
- if (otr_status == VERIFIED) { 
-__p+='\n            <span class="icon-lock"></span>\n        ';
- } 
-__p+='\n        ';
- if (otr_status == FINISHED) { 
-__p+='\n            <span class="icon-unlocked"></span>\n        ';
- } 
-__p+='\n        <ul>\n            ';
- if (otr_status == UNENCRYPTED) { 
-__p+='\n               <li><a class="start-otr" href="#">'+
-((__t=(label_start_encrypted_conversation))==null?'':__t)+
+ if (otr_status == UNENCRYPTED) { ;
+__p += '\n            <span class="icon-unlocked"></span>\n        ';
+ } ;
+__p += '\n        ';
+ if (otr_status == UNVERIFIED) { ;
+__p += '\n            <span class="icon-lock"></span>\n        ';
+ } ;
+__p += '\n        ';
+ if (otr_status == VERIFIED) { ;
+__p += '\n            <span class="icon-lock"></span>\n        ';
+ } ;
+__p += '\n        ';
+ if (otr_status == FINISHED) { ;
+__p += '\n            <span class="icon-unlocked"></span>\n        ';
+ } ;
+__p += '\n        <ul>\n            ';
+ if (otr_status == UNENCRYPTED) { ;
+__p += '\n               <li><a class="start-otr" href="#">' +
+((__t = (label_start_encrypted_conversation)) == null ? '' : __t) +
 '</a></li>\n            ';
- } 
-__p+='\n            ';
- if (otr_status != UNENCRYPTED) { 
-__p+='\n               <li><a class="start-otr" href="#">'+
-((__t=(label_refresh_encrypted_conversation))==null?'':__t)+
-'</a></li>\n               <li><a class="end-otr" href="#">'+
-((__t=(label_end_encrypted_conversation))==null?'':__t)+
-'</a></li>\n               <li><a class="auth-otr" data-scheme="smp" href="#">'+
-((__t=(label_verify_with_smp))==null?'':__t)+
+ } ;
+__p += '\n            ';
+ if (otr_status != UNENCRYPTED) { ;
+__p += '\n               <li><a class="start-otr" href="#">' +
+((__t = (label_refresh_encrypted_conversation)) == null ? '' : __t) +
+'</a></li>\n               <li><a class="end-otr" href="#">' +
+((__t = (label_end_encrypted_conversation)) == null ? '' : __t) +
+'</a></li>\n               <li><a class="auth-otr" data-scheme="smp" href="#">' +
+((__t = (label_verify_with_smp)) == null ? '' : __t) +
 '</a></li>\n            ';
- } 
-__p+='\n            ';
- if (otr_status == UNVERIFIED) { 
-__p+='\n               <li><a class="auth-otr" data-scheme="fingerprint" href="#">'+
-((__t=(label_verify_with_fingerprints))==null?'':__t)+
+ } ;
+__p += '\n            ';
+ if (otr_status == UNVERIFIED) { ;
+__p += '\n               <li><a class="auth-otr" data-scheme="fingerprint" href="#">' +
+((__t = (label_verify_with_fingerprints)) == null ? '' : __t) +
 '</a></li>\n            ';
- } 
-__p+='\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">'+
-((__t=(label_whats_this))==null?'':__t)+
+ } ;
+__p += '\n            <li><a href="http://www.cypherpunks.ca/otr/help/3.2.0/levels.php" target="_blank" rel="noopener">' +
+((__t = (label_whats_this)) == null ? '' : __t) +
 '</a></li>\n        </ul>\n    </li>\n';
- } 
-__p+='\n';
+ } ;
+__p += '\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -12002,32 +14457,27 @@ return __p;
 (function (root, factory) {
     define("converse-otr", [
             "otr",
-            "converse-core",
             "converse-api",
             "tpl!toolbar_otr"
     ], factory);
-}(this, function (otr, converse, converse_api, tpl_toolbar_otr) {
+}(this, function (otr, converse, tpl_toolbar_otr) {
     "use strict";
-    converse.templates.toolbar_otr = tpl_toolbar_otr;
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils,
-        b64_sha1 = converse_api.env.b64_sha1;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils,
+        b64_sha1 = converse.env.b64_sha1;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
 
-    // For translations
-    var __ = utils.__.bind(converse);
-
-    var HAS_CSPRNG = ((typeof crypto !== 'undefined') &&
-        ((typeof crypto.randomBytes === 'function') ||
-            (typeof crypto.getRandomValues === 'function')
+    var HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
+        ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
     ));
+
     var HAS_CRYPTO = HAS_CSPRNG && (
-        (typeof CryptoJS !== "undefined") &&
-        (typeof otr.OTR !== "undefined") &&
-        (typeof otr.DSA !== "undefined")
+        (!_.isUndefined(CryptoJS)) &&
+        (!_.isUndefined(otr.OTR)) &&
+        (!_.isUndefined(otr.DSA))
     );
 
     var UNENCRYPTED = 0;
@@ -12042,7 +14492,7 @@ return __p;
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
 
-    converse_api.plugins.add('converse-otr', {
+    converse.plugins.add('converse-otr', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -12095,21 +14545,20 @@ return __p;
                      * "visible" OTR messages being exchanged.
                      */
                     return this.__super__.shouldPlayNotification.apply(this, arguments) &&
-                        !(utils.isOTRMessage($message[0]) && !_.contains([UNVERIFIED, VERIFIED], this.get('otr_status')));
+                        !(utils.isOTRMessage($message[0]) && !_.includes([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
 
-                createMessage: function ($message, $delay, original_stanza) {
-                    var converse = this.__super__.converse,
-                        $body = $message.children('body'),
-                        text = ($body.length > 0 ? $body.text() : undefined);
+                createMessage: function (message, delay, original_stanza) {
+                    var _converse = this.__super__._converse,
+                        text = _.propertyOf(message.querySelector('body'))('textContent');
 
-                    if ((!text) || (!converse.allow_otr)) {
+                    if ((!text) || (!_converse.allow_otr)) {
                         return this.__super__.createMessage.apply(this, arguments);
                     }
                     if (text.match(/^\?OTRv23?/)) {
                         this.initiateOTR(text);
                     } else {
-                        if (_.contains([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                        if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
                             this.otr.receiveMsg(text);
                         } else {
                             if (text.match(/^\?OTR/)) {
@@ -12127,16 +14576,17 @@ return __p;
                 },
                 
                 getSession: function (callback) {
-                    var converse = this.__super__.converse;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     var cipher = CryptoJS.lib.PasswordBasedCipher;
                     var pass, instance_tag, saved_key, pass_check;
-                    if (converse.cache_otr_key) {
-                        pass = converse.otr.getSessionPassphrase();
-                        if (typeof pass !== "undefined") {
+                    if (_converse.cache_otr_key) {
+                        pass = _converse.otr.getSessionPassphrase();
+                        if (!_.isUndefined(pass)) {
                             instance_tag = window.sessionStorage[b64_sha1(this.id+'instance_tag')];
                             saved_key = window.sessionStorage[b64_sha1(this.id+'priv_key')];
                             pass_check = window.sessionStorage[b64_sha1(this.connection.jid+'pass_check')];
-                            if (saved_key && instance_tag && typeof pass_check !== 'undefined') {
+                            if (saved_key && instance_tag && !_.isUndefined(pass_check)) {
                                 var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
                                 var key = otr.DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
                                 if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
@@ -12161,7 +14611,7 @@ return __p;
                     window.setTimeout(function () {
                         var instance_tag = otr.OTR.makeInstanceTag();
                         callback({
-                            'key': converse.otr.generatePrivateKey.call(this, instance_tag),
+                            'key': _converse.otr.generatePrivateKey.call(this, instance_tag),
                             'instance_tag': instance_tag
                         });
                     }, 500);
@@ -12187,6 +14637,8 @@ return __p;
                 onSMP: function (type, data) {
                     // Event handler for SMP (Socialist's Millionaire Protocol)
                     // used by OTR (off-the-record).
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     switch (type) {
                         case 'question':
                             this.otr.smpSecret(prompt(__(
@@ -12216,9 +14668,11 @@ return __p;
                     // If 'query_msg' is passed in, it means there is an alread incoming
                     // query message from our contact. Otherwise, it is us who will
                     // send the query message to them.
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     this.save({'otr_status': UNENCRYPTED});
                     this.getSession(function (session) {
-                        var converse = this.__super__.converse;
+                        var _converse = this.__super__._converse;
                         this.otr = new otr.OTR({
                             fragment_size: 140,
                             send_interval: 200,
@@ -12233,7 +14687,7 @@ return __p;
                             this.trigger('showReceivedOTRMessage', msg);
                         }.bind(this));
                         this.otr.on('io', function (msg) {
-                            this.trigger('sendMessage', new converse.Message({ message: msg }));
+                            this.trigger('sendMessage', new _converse.Message({ message: msg }));
                         }.bind(this));
                         this.otr.on('error', function (msg) {
                             this.trigger('showOTRError', msg);
@@ -12265,7 +14719,7 @@ return __p;
                 },
 
                 initialize: function () {
-                    var converse = this.__super__.converse;
+                    var _converse = this.__super__._converse;
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                     this.model.on('showOTRError', this.showOTRError, this);
@@ -12275,7 +14729,7 @@ return __p;
                     this.model.on('showReceivedOTRMessage', function (text) {
                         this.showMessage({'message': text, 'sender': 'them'});
                     }, this);
-                    if ((_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || converse.use_otr_by_default) {
+                    if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
                 },
@@ -12293,8 +14747,8 @@ return __p;
                 },
 
                 onMessageSubmitted: function (text) {
-                    var converse = this.__super__.converse;
-                    if (!converse.connection.authenticated) {
+                    var _converse = this.__super__._converse;
+                    if (!_converse.connection.authenticated) {
                         return this.showHelpMessages(
                             ['Sorry, the connection has been lost, '+
                               'and your message could not be sent'],
@@ -12303,13 +14757,13 @@ return __p;
                     }
                     var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
-                        if ((converse.allow_otr) && (match[1] === "endotr")) {
+                        if ((_converse.allow_otr) && (match[1] === "endotr")) {
                             return this.endOTR();
-                        } else if ((converse.allow_otr) && (match[1] === "otr")) {
+                        } else if ((_converse.allow_otr) && (match[1] === "otr")) {
                             return this.model.initiateOTR();
                         }
                     }
-                    if (_.contains([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
+                    if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) {
                         // Off-the-record encryption is active
                         this.model.otr.sendMsg(text);
                         this.model.trigger('showSentOTRMessage', text);
@@ -12323,8 +14777,10 @@ return __p;
                 },
 
                 informOTRChange: function () {
-                    var data = this.model.toJSON();
-                    var msgs = [];
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        data = this.model.toJSON(),
+                        msgs = [];
                     if (data.otr_status === UNENCRYPTED) {
                         msgs.push(__("Your messages are not encrypted anymore"));
                     } else if (data.otr_status === UNVERIFIED) {
@@ -12338,7 +14794,8 @@ return __p;
                 },
 
                 showOTRError: function (msg) {
-                    var converse = this.__super__.converse;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     if (msg === 'Message cannot be sent at this time.') {
                         this.showHelpMessages(
                             [__('Your message could not be sent')], 'error');
@@ -12352,7 +14809,7 @@ return __p;
                     } else {
                         this.showHelpMessages(['Encryption error occured: '+msg], 'error');
                     }
-                    converse.log("OTR ERROR:"+msg);
+                    _converse.log("OTR ERROR:"+msg);
                 },
 
                 startOTRFromToolbar: function (ev) {
@@ -12362,7 +14819,7 @@ return __p;
                 },
 
                 endOTR: function (ev) {
-                    if (typeof ev !== "undefined") {
+                    if (!_.isUndefined(ev)) {
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
@@ -12370,13 +14827,14 @@ return __p;
                 },
 
                 authOTR: function (ev) {
-                    var converse = this.__super__.converse;
-                    var scheme = $(ev.target).data().scheme;
-                    var result, question, answer;
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        scheme = $(ev.target).data().scheme,
+                        result, question, answer;
                     if (scheme === 'fingerprint') {
                         result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
                                 this.model.get('fullname'),
-                                converse.xmppstatus.get('fullname')||converse.bare_jid,
+                                _converse.xmppstatus.get('fullname')||_converse.bare_jid,
                                 this.model.otr.priv.fingerprint(),
                                 this.model.otr.their_priv_pk.fingerprint()
                             ]
@@ -12404,7 +14862,9 @@ return __p;
                 },
                 
                 getOTRTooltip: function () {
-                    var data = this.model.toJSON();
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__,
+                        data = this.model.toJSON();
                     if (data.otr_status === UNENCRYPTED) {
                         return __('Your messages are not encrypted. Click here to enable OTR encryption.');
                     } else if (data.otr_status === UNVERIFIED) {
@@ -12417,8 +14877,9 @@ return __p;
                 },
 
                 renderToolbar: function (toolbar, options) {
-                    var converse = this.__super__.converse;
-                    if (!converse.show_toolbar) {
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
+                    if (!_converse.show_toolbar) {
                         return;
                     }
                     var data = this.model.toJSON();
@@ -12428,7 +14889,7 @@ return __p;
                         UNVERIFIED: UNVERIFIED,
                         VERIFIED: VERIFIED,
                         // FIXME: Leaky abstraction MUC
-                        allow_otr: converse.allow_otr && !this.is_chatroom,
+                        allow_otr: _converse.allow_otr && !this.is_chatroom,
                         label_end_encrypted_conversation: __('End encrypted conversation'),
                         label_refresh_encrypted_conversation: __('Refresh encrypted conversation'),
                         label_start_encrypted_conversation: __('Start encrypted conversation'),
@@ -12441,7 +14902,7 @@ return __p;
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
                     this.$el.find('.chat-toolbar').append(
-                            converse.templates.toolbar_otr(
+                            _converse.templates.toolbar_otr(
                                 _.extend(this.model.toJSON(), options || {})
                             ));
                     return this;
@@ -12453,7 +14914,12 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML template
+            _converse.templates.toolbar_otr = tpl_toolbar_otr;
+
             // Translation aware constants
             // ---------------------------
             // We can only call the __ translation method *after* converse.js
@@ -12466,47 +14932,47 @@ return __p;
             OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
 
             // For translations
-            __ = utils.__.bind(converse);
+            __ = utils.__.bind(_converse);
             // Configuration values for this plugin
             var settings = {
                 allow_otr: true,
                 cache_otr_key: false,
                 use_otr_by_default: false
             };
-            _.extend(converse.default_settings, settings);
-            _.extend(converse, settings);
-            _.extend(converse, _.pick(converse.user_settings, Object.keys(settings)));
+            _.extend(_converse.default_settings, settings);
+            _.extend(_converse, settings);
+            _.extend(_converse, _.pick(_converse.user_settings, _.keys(settings)));
 
             // Only allow OTR if we have the capability
-            converse.allow_otr = converse.allow_otr && HAS_CRYPTO;
+            _converse.allow_otr = _converse.allow_otr && HAS_CRYPTO;
             // Only use OTR by default if allow OTR is enabled to begin with
-            converse.use_otr_by_default = converse.use_otr_by_default && converse.allow_otr;
+            _converse.use_otr_by_default = _converse.use_otr_by_default && _converse.allow_otr;
 
             // Backbone Models and Views
             // -------------------------
-            converse.OTR = Backbone.Model.extend({
+            _converse.OTR = Backbone.Model.extend({
                 // A model for managing OTR settings.
                 getSessionPassphrase: function () {
-                    if (converse.authentication === 'prebind') {
-                        var key = b64_sha1(converse.connection.jid),
+                    if (_converse.authentication === 'prebind') {
+                        var key = b64_sha1(_converse.connection.jid),
                             pass = window.sessionStorage[key];
-                        if (typeof pass === 'undefined') {
+                        if (_.isUndefined(pass)) {
                             pass = Math.floor(Math.random()*4294967295).toString();
                             window.sessionStorage[key] = pass;
                         }
                         return pass;
                     } else {
-                        return converse.connection.pass;
+                        return _converse.connection.pass;
                     }
                 },
 
                 generatePrivateKey: function (instance_tag) {
                     var key = new otr.DSA();
-                    var jid = converse.connection.jid;
-                    if (converse.cache_otr_key) {
+                    var jid = _converse.connection.jid;
+                    if (_converse.cache_otr_key) {
                         var cipher = CryptoJS.lib.PasswordBasedCipher;
                         var pass = this.getSessionPassphrase();
-                        if (typeof pass !== "undefined") {
+                        if (!_.isUndefined(pass)) {
                             // Encrypt the key and set in sessionStorage. Also store instance tag.
                             window.sessionStorage[b64_sha1(jid+'priv_key')] =
                                 cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
@@ -12523,68 +14989,76 @@ return __p;
 }));
 
 
-define('tpl!register_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<form id="converse-register" class="pure-form converse-form">\n    <span class="reg-feedback"></span>\n    <label>'+
-((__t=(label_domain))==null?'':__t)+
-'</label>\n    <input type="text" name="domain" placeholder="'+
-((__t=(domain_placeholder))==null?'':__t)+
-'">\n    <p class="form-help">'+
-((__t=(help_providers))==null?'':__t)+
-' <a href="'+
-((__t=(href_providers))==null?'':__t)+
-'" class="url" target="_blank" rel="noopener">'+
-((__t=(help_providers_link))==null?'':__t)+
-'</a>.</p>\n    <input class="pure-button button-primary" type="submit" value="'+
-((__t=(label_register))==null?'':__t)+
+define('tpl!register_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<form id="converse-register" class="pure-form converse-form">\n    <span class="reg-feedback"></span>\n    <label>' +
+((__t = (label_domain)) == null ? '' : __t) +
+'</label>\n    <input type="text" name="domain" placeholder="' +
+((__t = (domain_placeholder)) == null ? '' : __t) +
+'">\n    <p class="form-help">' +
+((__t = (help_providers)) == null ? '' : __t) +
+' <a href="' +
+((__t = (href_providers)) == null ? '' : __t) +
+'" class="url" target="_blank" rel="noopener">' +
+((__t = (help_providers_link)) == null ? '' : __t) +
+'</a>.</p>\n    <input class="pure-button button-primary" type="submit" value="' +
+((__t = (label_register)) == null ? '' : __t) +
 '">\n</form>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!register_tab', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<li><a class="s" href="#register">'+
-((__t=(label_register))==null?'':__t)+
+define('tpl!register_tab', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<li><a class="s" href="#register">' +
+((__t = (label_register)) == null ? '' : __t) +
 '</a></li>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!registration_form', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<p class="provider-title">'+
-((__t=(domain))==null?'':__t)+
-'</p>\n<a href=\'https://xmpp.net/result.php?domain='+
-((__t=(domain))==null?'':__t)+
-'&amp;type=client\'>\n    <img class="provider-score" src=\'https://xmpp.net/badge.php?domain='+
-((__t=(domain))==null?'':__t)+
-'\' alt=\'xmpp.net score\' />\n</a>\n<p class="title">'+
-((__t=(title))==null?'':__t)+
-'</p>\n<p class="instructions">'+
-((__t=(instructions))==null?'':__t)+
+define('tpl!registration_form', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<p class="provider-title">' +
+((__t = (domain)) == null ? '' : __t) +
+'</p>\n<a href=\'https://xmpp.net/result.php?domain=' +
+((__t = (domain)) == null ? '' : __t) +
+'&amp;type=client\'>\n    <img class="provider-score" src=\'https://xmpp.net/badge.php?domain=' +
+((__t = (domain)) == null ? '' : __t) +
+'\' alt=\'xmpp.net score\' />\n</a>\n<p class="title">' +
+((__t = (title)) == null ? '' : __t) +
+'</p>\n<p class="instructions">' +
+((__t = (instructions)) == null ? '' : __t) +
 '</p>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!registration_request', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<span class="spinner login-submit"/>\n<p class="info">'+
-((__t=(info_message))==null?'':__t)+
-'</p>\n<button class="pure-button button-cancel hor_centered">'+
-((__t=(cancel))==null?'':__t)+
+define('tpl!registration_request', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="spinner login-submit"/>\n<p class="info">' +
+((__t = (info_message)) == null ? '' : __t) +
+'</p>\n<button class="pure-button button-cancel hor_centered">' +
+((__t = (cancel)) == null ? '' : __t) +
 '</button>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -12599,7 +15073,6 @@ return __p;
  */
 (function (root, factory) {
     define("converse-register", [
-            "converse-core",
             "converse-api",
             "tpl!form_username",
             "tpl!register_panel",
@@ -12610,7 +15083,6 @@ return __p;
     ], factory);
 }(this, function (
             converse,
-            converse_api,
             tpl_form_username,
             tpl_register_panel,
             tpl_register_tab,
@@ -12618,28 +15090,21 @@ return __p;
             tpl_registration_request) {
 
     "use strict";
-    converse.templates.form_username = tpl_form_username;
-    converse.templates.register_panel = tpl_register_panel;
-    converse.templates.register_tab = tpl_register_tab;
-    converse.templates.registration_form = tpl_registration_form;
-    converse.templates.registration_request = tpl_registration_request;
 
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe,
-        utils = converse_api.env.utils,
-        $iq = converse_api.env.$iq;
+    var Strophe = converse.env.Strophe,
+        utils = converse.env.utils,
+        $iq = converse.env.$iq;
     // Other necessary globals
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(converse);
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
     
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
     // Add Strophe Statuses
     var i = 0;
-    Object.keys(Strophe.Status).forEach(function (key) {
+    _.each(_.keys(Strophe.Status), function (key) {
         i = Math.max(i, Strophe.Status[key]);
     });
     Strophe.Status.REGIFAIL        = i + 1;
@@ -12647,7 +15112,7 @@ return __p;
     Strophe.Status.CONFLICT        = i + 3;
     Strophe.Status.NOTACCEPTABLE   = i + 5;
 
-    converse_api.plugins.add('converse-register', {
+    converse.plugins.add('converse-register', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -12663,9 +15128,9 @@ return __p;
                      * login panel.
                      */
                     this.__super__.renderLoginPanel.apply(this, arguments);
-                    var converse = this.__super__.converse;
-                    if (converse.allow_registration) {
-                        this.registerpanel = new converse.RegisterPanel({
+                    var _converse = this.__super__._converse;
+                    if (_converse.allow_registration) {
+                        this.registerpanel = new _converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
                             'model': this
                         });
@@ -12680,7 +15145,15 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new templates
+            _converse.templates.form_username = tpl_form_username;
+            _converse.templates.register_panel = tpl_register_panel;
+            _converse.templates.register_tab = tpl_register_tab;
+            _converse.templates.registration_form = tpl_registration_form;
+            _converse.templates.registration_request = tpl_registration_request;
 
             this.updateSettings({
                 allow_registration: true,
@@ -12688,8 +15161,7 @@ return __p;
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
-
-            converse.RegisterPanel = Backbone.View.extend({
+            _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "register",
                 className: 'controlbox-pane',
@@ -12706,16 +15178,16 @@ return __p;
 
                 render: function () {
                     this.$parent.append(this.$el.html(
-                        converse.templates.register_panel({
+                        _converse.templates.register_panel({
                             'label_domain': __("Your XMPP provider's domain name:"),
                             'label_register': __('Fetch registration form'),
                             'help_providers': __('Tip: A list of public XMPP providers is available'),
                             'help_providers_link': __('here'),
-                            'href_providers': converse.providers_link,
-                            'domain_placeholder': converse.domain_placeholder
+                            'href_providers': _converse.providers_link,
+                            'domain_placeholder': _converse.domain_placeholder
                         })
                     ));
-                    this.$tabs.append(converse.templates.register_tab({label_register: __('Register')}));
+                    this.$tabs.append(_converse.templates.register_tab({label_register: __('Register')}));
                     return this;
                 },
 
@@ -12723,7 +15195,7 @@ return __p;
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
                      * requesting the registration fields.
                      */
-                    var conn = converse.connection;
+                    var conn = _converse.connection;
                     var connect_cb = conn._connect_cb.bind(conn);
                     conn._connect_cb = function (req, callback, raw) {
                         if (!this._registering) {
@@ -12743,8 +15215,8 @@ return __p;
                      *    (Strophe.Request) req - The current request
                      *    (Function) callback
                      */
-                    converse.log("sendQueryStanza was called");
-                    var conn = converse.connection;
+                    _converse.log("sendQueryStanza was called");
+                    var conn = _converse.connection;
                     conn.connected = true;
 
                     var body = conn._proto._reqToData(req);
@@ -12778,7 +15250,7 @@ return __p;
                      *    (XMLElement) elem - The query stanza.
                      */
                     if (stanza.getElementsByTagName("query").length !== 1) {
-                        converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
                     this.setFields(stanza);
@@ -12799,7 +15271,7 @@ return __p;
                     };
                     _.extend(this, defaults);
                     if (settings) {
-                        _.extend(this, _.pick(settings, Object.keys(defaults)));
+                        _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
 
@@ -12819,16 +15291,16 @@ return __p;
                         return;
                     }
                     $form.find('input[type=submit]').hide()
-                        .after(converse.templates.registration_request({
+                        .after(_converse.templates.registration_request({
                             cancel: __('Cancel'),
                             info_message: __('Requesting a registration form from the XMPP server')
                         }));
-                    $form.find('button.cancel').on('click', this.cancelRegistration.bind(this));
+                    $form.find('button.button-cancel').on('click', this.cancelRegistration.bind(this));
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain),
                         _registering: true
                     });
-                    converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
+                    _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
                     return false;
                 },
 
@@ -12841,8 +15313,8 @@ return __p;
 
                 onRegistering: function (status, error) {
                     var that;
-                    converse.log('onRegistering');
-                    if (_.contains([
+                    _converse.log('onRegistering');
+                    if (_.includes([
                                 Strophe.Status.DISCONNECTED,
                                 Strophe.Status.CONNFAIL,
                                 Strophe.Status.REGIFAIL,
@@ -12850,36 +15322,35 @@ return __p;
                                 Strophe.Status.CONFLICT
                             ], status)) {
 
-                        converse.log('Problem during registration: Strophe.Status is: '+status);
+                        _converse.log('Problem during registration: Strophe.Status is: '+status);
                         this.cancelRegistration();
                         if (error) {
                             this.giveFeedback(error, 'error');
                         } else {
                             this.giveFeedback(__(
-                                    'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
-                                    this.domain
-                                ), 'error');
+                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
                         }
                     } else if (status === Strophe.Status.REGISTERED) {
-                        converse.log("Registered successfully.");
-                        converse.connection.reset();
+                        _converse.log("Registered successfully.");
+                        _converse.connection.reset();
                         that = this;
                         this.$('form').hide(function () {
                             $(this).replaceWith('<span class="spinner centered"/>');
                             if (that.fields.password && that.fields.username) {
                                 // automatically log the user in
-                                converse.connection.connect(
+                                _converse.connection.connect(
                                     that.fields.username.toLowerCase()+'@'+that.domain.toLowerCase(),
                                     that.fields.password,
-                                    converse.onConnectStatusChanged
+                                    _converse.onConnectStatusChanged
                                 );
-                                converse.chatboxviews.get('controlbox')
-                                    .switchTab({target: that.$tabs.find('.current')})
-                                    .giveFeedback(__('Now logging you in'));
+                                _converse.chatboxviews.get('controlbox')
+                                    .switchTab({'target': that.$tabs.find('.current')});
+                                _converse.giveFeedback(__('Now logging you in'));
                             } else {
-                                converse.chatboxviews.get('controlbox')
-                                    .renderLoginPanel()
-                                    .giveFeedback(__('Registered successfully'));
+                                _converse.chatboxviews.get('controlbox').renderLoginPanel();
+                                _converse.giveFeedback(__('Registered successfully'));
                             }
                             that.reset();
                         });
@@ -12896,7 +15367,7 @@ return __p;
                     var $form= this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
-                    $form.empty().append(converse.templates.registration_form({
+                    $form.empty().append(_converse.templates.registration_form({
                         'domain': this.domain,
                         'title': this.title,
                         'instructions': this.instructions
@@ -12908,9 +15379,9 @@ return __p;
                         }.bind(this));
                     } else {
                         // Show fields
-                        _.each(Object.keys(this.fields), function (key) {
+                        _.each(_.keys(this.fields), function (key) {
                             if (key === "username") {
-                                $input = converse.templates.form_username({
+                                $input = _converse.templates.form_username({
                                     domain: ' @'+this.domain,
                                     name: key,
                                     type: "text",
@@ -12980,7 +15451,7 @@ return __p;
                     /* Handler, when the user cancels the registration form.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    converse.connection.reset();
+                    _converse.connection.reset();
                     this.render();
                 },
 
@@ -13012,8 +15483,8 @@ return __p;
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
-                    converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
-                    converse.connection.send(iq);
+                    _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
+                    _converse.connection.send(iq);
                     this.setFields(iq.tree());
                 },
 
@@ -13063,7 +15534,7 @@ return __p;
                             this.fields[_var.toLowerCase()] = $(field).children('value').text();
                         } else {
                             // TODO: other option seems to be type="fixed"
-                            converse.log("WARNING: Found field we couldn't parse");
+                            _converse.log("WARNING: Found field we couldn't parse");
                         }
                     }.bind(this));
                     this.form_type = 'xform';
@@ -13083,23 +15554,23 @@ return __p;
                         query = query[0];
                     }
                     if (stanza.getAttribute("type") === "error") {
-                        converse.log("Registration failed.");
+                        _converse.log("Registration failed.");
                         error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
-                            converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                            _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                             return false;
                         }
                         error = error[0].firstChild.tagName.toLowerCase();
                         if (error === 'conflict') {
-                            converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.CONFLICT, error);
                         } else if (error === 'not-acceptable') {
-                            converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.NOTACCEPTABLE, error);
                         } else {
-                            converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
+                            _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                         }
                         this.reportErrors(stanza);
                     } else {
-                        converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                     }
                     return false;
                 },
@@ -13126,99 +15597,88 @@ return __p;
  */
 (function (root, factory) {
     define("converse-ping", [
-        "converse-core",
         "converse-api",
         "strophe.ping"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
-    var Strophe = converse_api.env.Strophe;
-    // Other necessary globals
-    var _ = converse_api.env._;
+    var Strophe = converse.env.Strophe,
+        _ = converse.env._;
     
-    converse_api.plugins.add('converse-ping', {
+    converse.plugins.add('converse-ping', {
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse;
 
             this.updateSettings({
                 ping_interval: 180 //in seconds
             });
 
-            converse.ping = function (jid, success, error, timeout) {
+            _converse.ping = function (jid, success, error, timeout) {
                 // XXX: We could first check here if the server advertised that
                 // it supports PING.
                 // However, some servers don't advertise while still keeping the
                 // connection option due to pings.
                 //
-                // var feature = converse.features.findWhere({'var': Strophe.NS.PING});
-                converse.lastStanzaDate = new Date();
-                if (typeof jid === 'undefined' || jid === null) {
-                    jid = Strophe.getDomainFromJid(converse.bare_jid);
+                // var feature = _converse.features.findWhere({'var': Strophe.NS.PING});
+                _converse.lastStanzaDate = new Date();
+                if (_.isNil(jid)) {
+                    jid = Strophe.getDomainFromJid(_converse.bare_jid);
                 }
-                if (typeof timeout === 'undefined' ) { timeout = null; }
-                if (typeof success === 'undefined' ) { success = null; }
-                if (typeof error === 'undefined' ) { error = null; }
-                if (converse.connection) {
-                    converse.connection.ping.ping(jid, success, error, timeout);
+                if (_.isUndefined(timeout) ) { timeout = null; }
+                if (_.isUndefined(success) ) { success = null; }
+                if (_.isUndefined(error) ) { error = null; }
+                if (_converse.connection) {
+                    _converse.connection.ping.ping(jid, success, error, timeout);
                     return true;
                 }
                 return false;
             };
 
-            converse.pong = function (ping) {
-                converse.lastStanzaDate = new Date();
-                converse.connection.ping.pong(ping);
+            _converse.pong = function (ping) {
+                _converse.lastStanzaDate = new Date();
+                _converse.connection.ping.pong(ping);
                 return true;
             };
 
-            converse.registerPongHandler = function () {
-                converse.connection.disco.addFeature(Strophe.NS.PING);
-                converse.connection.ping.addPingHandler(converse.pong);
+            _converse.registerPongHandler = function () {
+                _converse.connection.disco.addFeature(Strophe.NS.PING);
+                _converse.connection.ping.addPingHandler(_converse.pong);
             };
 
-            converse.registerPingHandler = function () {
-                converse.registerPongHandler();
-                if (converse.ping_interval > 0) {
-                    converse.connection.addHandler(function () {
+            _converse.registerPingHandler = function () {
+                _converse.registerPongHandler();
+                if (_converse.ping_interval > 0) {
+                    _converse.connection.addHandler(function () {
                         /* Handler on each stanza, saves the received date
                          * in order to ping only when needed.
                          */
-                        converse.lastStanzaDate = new Date();
+                        _converse.lastStanzaDate = new Date();
                         return true;
                     });
-                    converse.connection.addTimedHandler(1000, function () {
+                    _converse.connection.addTimedHandler(1000, function () {
                         var now = new Date();
-                        if (!converse.lastStanzaDate) {
-                            converse.lastStanzaDate = now;
+                        if (!_converse.lastStanzaDate) {
+                            _converse.lastStanzaDate = now;
                         }
-                        if ((now - converse.lastStanzaDate)/1000 > converse.ping_interval) {
-                            return converse.ping();
+                        if ((now - _converse.lastStanzaDate)/1000 > _converse.ping_interval) {
+                            return _converse.ping();
                         }
                         return true;
                     });
                 }
             };
-
-            _.extend(converse_api, {
-                /* We extend the default converse.js API to add a method specific
-                 * to this plugin.
-                 */
-                'ping': function (jid) {
-                    converse.ping(jid);
-                }
-            });
 
             var onConnected = function () {
                 // Wrapper so that we can spy on registerPingHandler in tests
-                converse.registerPingHandler();
+                _converse.registerPingHandler();
             };
-            converse.on('connected', onConnected);
-            converse.on('reconnected', onConnected);
+            _converse.on('connected', onConnected);
+            _converse.on('reconnected', onConnected);
         }
     });
 }));
@@ -13232,26 +15692,27 @@ return __p;
 /*global define */
 
 (function (root, factory) {
-    define("converse-notification", ["converse-core", "converse-api"], factory);
-}(this, function (converse, converse_api) {
+    define("converse-notification", ["converse-api"], factory);
+}(this, function (converse) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        utils = converse_api.env.utils,
-        Strophe = converse_api.env.Strophe,
-        _ = converse_api.env._;
-    // For translations
-    var __ = utils.__.bind(converse);
-    var ___ = utils.___;
+    var $ = converse.env.jQuery,
+        utils = converse.env.utils,
+        Strophe = converse.env.Strophe,
+        _ = converse.env._;
 
-
-    converse_api.plugins.add('converse-notification', {
+    converse.plugins.add('converse-notification', {
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
-            converse.supports_html5_notification = "Notification" in window;
+            var _converse = this._converse;
+
+            // For translations
+            var __ = _converse.__;
+            var ___ = _converse.___;
+
+            _converse.supports_html5_notification = "Notification" in window;
 
             this.updateSettings({
                 notify_all_room_messages: false,
@@ -13263,23 +15724,23 @@ return __p;
                 notification_icon: '/logo/conversejs128.png'
             });
 
-            converse.isOnlyChatStateNotification = function ($msg) {
+            _converse.isOnlyChatStateNotification = function ($msg) {
                 // See XEP-0085 Chat State Notification
                 return (
                     $msg.find('body').length === 0 && (
-                        $msg.find(converse.ACTIVE).length !== 0 ||
-                        $msg.find(converse.COMPOSING).length !== 0 ||
-                        $msg.find(converse.INACTIVE).length !== 0 ||
-                        $msg.find(converse.PAUSED).length !== 0 ||
-                        $msg.find(converse.GONE).length !== 0
+                        $msg.find(_converse.ACTIVE).length !== 0 ||
+                        $msg.find(_converse.COMPOSING).length !== 0 ||
+                        $msg.find(_converse.INACTIVE).length !== 0 ||
+                        $msg.find(_converse.PAUSED).length !== 0 ||
+                        $msg.find(_converse.GONE).length !== 0
                     )
                 );
             };
 
-            converse.shouldNotifyOfGroupMessage = function ($message) {
+            _converse.shouldNotifyOfGroupMessage = function ($message) {
                 /* Is this a group message worthy of notification?
                  */
-                var notify_all = converse.notify_all_room_messages,
+                var notify_all = _converse.notify_all_room_messages,
                     jid = $message.attr('from'),
                     resource = Strophe.getResourceFromJid(jid),
                     room_jid = Strophe.getBareJidFromJid(jid),
@@ -13287,20 +15748,20 @@ return __p;
                 if (sender === '' || $message.find('delay').length > 0) {
                     return false;
                 }
-                var room = converse.chatboxes.get(room_jid);
+                var room = _converse.chatboxes.get(room_jid);
                 var $body = $message.children('body');
                 if (!$body.length) {
                     return false;
                 }
                 var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test($body.text());
-                notify_all = notify_all === true || (_.isArray(notify_all) && _.contains(notify_all, room_jid));
+                notify_all = notify_all === true || (_.isArray(notify_all) && _.includes(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }
                 return true;
             };
 
-            converse.shouldNotifyOfMessage = function (message) {
+            _converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
                 if (utils.isOTRMessage(message)) {
@@ -13311,51 +15772,51 @@ return __p;
                 if ($forwarded.length) {
                     return false;
                 } else if ($message.attr('type') === 'groupchat') {
-                    return converse.shouldNotifyOfGroupMessage($message);
+                    return _converse.shouldNotifyOfGroupMessage($message);
                 } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
                     return true;
                 }
-                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === converse.bare_jid;
-                return !converse.isOnlyChatStateNotification($message) && !is_me;
+                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === _converse.bare_jid;
+                return !_converse.isOnlyChatStateNotification($message) && !is_me;
             };
 
-            converse.playSoundNotification = function ($message) {
+            _converse.playSoundNotification = function ($message) {
                 /* Plays a sound to notify that a new message was recieved.
                  */
                 // XXX Eventually this can be refactored to use Notification's sound
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
                 var audio;
-                if (converse.play_sounds && typeof Audio !== "undefined") {
-                    audio = new Audio(converse.sounds_path+"msg_received.ogg");
+                if (_converse.play_sounds && !_.isUndefined(Audio)) {
+                    audio = new Audio(_converse.sounds_path+"msg_received.ogg");
                     if (audio.canPlayType('/audio/ogg')) {
                         audio.play();
                     } else {
-                        audio = new Audio(converse.sounds_path+"msg_received.mp3");
+                        audio = new Audio(_converse.sounds_path+"msg_received.mp3");
                         audio.play();
                     }
                 }
             };
 
-            converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                var enabled = converse.supports_html5_notification &&
-                    converse.show_desktop_notifications &&
+            _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
+                var enabled = _converse.supports_html5_notification &&
+                    _converse.show_desktop_notifications &&
                     Notification.permission === "granted";
                 if (ignore_hidden) {
                     return enabled;
                 } else {
-                    return enabled && converse.windowState === 'hidden';
+                    return enabled && _converse.windowState === 'hidden';
                 }
             };
 
-            converse.showMessageNotification = function ($message) {
+            _converse.showMessageNotification = function ($message) {
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
                 var n, title, contact_jid, roster_item,
                     from_jid = $message.attr('from');
-                if ($message.attr('type') === 'headline' || from_jid.indexOf('@') === -1) {
+                if ($message.attr('type') === 'headline' || !_.includes(from_jid, '@')) {
                     // XXX: 2nd check is workaround for Prosody which doesn't
                     // give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
@@ -13363,28 +15824,28 @@ return __p;
                     if ($message.attr('type') === 'groupchat') {
                         title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
                     } else {
-                        if (typeof converse.roster === 'undefined') {
-                            converse.log("Could not send notification, because roster is undefined", "error");
+                        if (_.isUndefined(_converse.roster)) {
+                            _converse.log("Could not send notification, because roster is undefined", "error");
                             return;
                         }
                         contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
-                        roster_item = converse.roster.get(contact_jid);
+                        roster_item = _converse.roster.get(contact_jid);
                         title = __(___("%1$s says"), roster_item.get('fullname'));
                     }
                 }
                 n = new Notification(title, {
                         body: $message.children('body').text(),
-                        lang: converse.i18n.locale_data.converse[""].lang,
-                        icon: converse.notification_icon
+                        lang: _converse.i18n.locale_data.converse[""].lang,
+                        icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.showChatStateNotification = function (contact) {
+            _converse.showChatStateNotification = function (contact) {
                 /* Creates an HTML5 Notification to inform of a change in a
                  * contact's chat state.
                  */
-                if (_.contains(converse.chatstate_notification_blacklist, contact.jid)) {
+                if (_.includes(_converse.chatstate_notification_blacklist, contact.jid)) {
                     // Don't notify if the user is being ignored.
                     return;
                 }
@@ -13404,147 +15865,157 @@ return __p;
                 }
                 var n = new Notification(contact.fullname, {
                         body: message,
-                        lang: converse.i18n.locale_data.converse[""].lang,
+                        lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.showContactRequestNotification = function (contact) {
+            _converse.showContactRequestNotification = function (contact) {
                 var n = new Notification(contact.fullname, {
                         body: __('wants to be your contact'),
-                        lang: converse.i18n.locale_data.converse[""].lang,
+                        lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: 'logo/conversejs.png'
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
 
-            converse.showFeedbackNotification = function (data) {
+            _converse.showFeedbackNotification = function (data) {
                 if (data.klass === 'error' || data.klass === 'warn') {
                     var n = new Notification(data.subject, {
                             body: data.message,
-                            lang: converse.i18n.locale_data.converse[""].lang,
+                            lang: _converse.i18n.locale_data.converse[""].lang,
                             icon: 'logo/conversejs.png'
                         });
                     setTimeout(n.close.bind(n), 5000);
                 }
             };
 
-            converse.handleChatStateNotification = function (evt, contact) {
+            _converse.handleChatStateNotification = function (contact) {
                 /* Event handler for on('contactStatusChanged').
                  * Will show an HTML5 notification to indicate that the chat
                  * status has changed.
                  */
-                if (converse.areDesktopNotificationsEnabled()) {
-                    converse.showChatStateNotification(contact);
+                if (_converse.areDesktopNotificationsEnabled()) {
+                    _converse.showChatStateNotification(contact);
                 }
             };
 
-            converse.handleMessageNotification = function (evt, message) {
+            _converse.handleMessageNotification = function (message) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
                 var $message = $(message);
-                if (!converse.shouldNotifyOfMessage(message)) {
+                if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }
-                converse.playSoundNotification($message);
-                if (converse.areDesktopNotificationsEnabled()) {
-                    converse.showMessageNotification($message);
+                _converse.playSoundNotification($message);
+                if (_converse.areDesktopNotificationsEnabled()) {
+                    _converse.showMessageNotification($message);
                 }
             };
 
-            converse.handleContactRequestNotification = function (evt, contact) {
-                if (converse.areDesktopNotificationsEnabled(true)) {
-                    converse.showContactRequestNotification(contact);
+            _converse.handleContactRequestNotification = function (contact) {
+                if (_converse.areDesktopNotificationsEnabled(true)) {
+                    _converse.showContactRequestNotification(contact);
                 }
             };
 
-            converse.handleFeedback = function (evt, data) {
-                if (converse.areDesktopNotificationsEnabled(true)) {
-                    converse.showFeedbackNotification(data);
+            _converse.handleFeedback = function (data) {
+                if (_converse.areDesktopNotificationsEnabled(true)) {
+                    _converse.showFeedbackNotification(data);
                 }
             };
 
-            converse.requestPermission = function (evt) {
-                if (converse.supports_html5_notification &&
-                    ! _.contains(['denied', 'granted'], Notification.permission)) {
+            _converse.requestPermission = function () {
+                if (_converse.supports_html5_notification &&
+                    ! _.includes(['denied', 'granted'], Notification.permission)) {
                     // Ask user to enable HTML5 notifications
                     Notification.requestPermission();
                 }
             };
 
-            converse.on('pluginsInitialized', function () {
+            _converse.on('pluginsInitialized', function () {
                 // We only register event handlers after all plugins are
                 // registered, because other plugins might override some of our
                 // handlers.
-                converse.on('contactRequest',  converse.handleContactRequestNotification);
-                converse.on('contactStatusChanged',  converse.handleChatStateNotification);
-                converse.on('message',  converse.handleMessageNotification);
-                converse.on('feedback', converse.handleFeedback);
-                converse.on('connected', converse.requestPermission);
+                _converse.on('contactRequest',  _converse.handleContactRequestNotification);
+                _converse.on('contactStatusChanged',  _converse.handleChatStateNotification);
+                _converse.on('message',  _converse.handleMessageNotification);
+                _converse.on('feedback', _converse.handleFeedback);
+                _converse.on('connected', _converse.requestPermission);
             });
         }
     });
 }));
 
 
-define('tpl!chatbox_minimize', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a class="chatbox-btn toggle-chatbox-button icon-minus" title="'+
-((__t=(info_minimize))==null?'':__t)+
+define('tpl!chatbox_minimize', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
+((__t = (info_minimize)) == null ? '' : __t) +
 '"></a>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!toggle_chats', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+=''+
-((__t=(Minimized))==null?'':__t)+
-' <span id="minimized-count">('+
-((__t=(num_minimized))==null?'':__t)+
+define('tpl!toggle_chats', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p +=
+((__t = (Minimized)) == null ? '' : __t) +
+' <span id="minimized-count">(' +
+((__t = (num_minimized)) == null ? '' : __t) +
 ')</span>\n<span class="unread-message-count"\n    ';
- if (!num_unread) { 
-__p+=' style="display: none" ';
- } 
-__p+='\n    href="#">'+
-((__t=(num_unread))==null?'':__t)+
+ if (!num_unread) { ;
+__p += ' style="display: none" ';
+ } ;
+__p += '\n    href="#">' +
+((__t = (num_unread)) == null ? '' : __t) +
 '</span>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!trimmed_chat', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count" \n    ';
- if (!num_unread) { 
-__p+=' style="display: none" ';
- } 
-__p+='\n    href="#">'+
-((__t=(num_unread))==null?'':__t)+
-'</a>\n<a href="#" class="restore-chat" title="'+
-((__t=(tooltip))==null?'':__t)+
-'">\n    '+
-((__t=( title ))==null?'':__t)+
+define('tpl!trimmed_chat', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count" \n    ';
+ if (!num_unread) { ;
+__p += ' style="display: none" ';
+ } ;
+__p += '\n    href="#">' +
+((__t = (num_unread)) == null ? '' : __t) +
+'</a>\n<a href="#" class="restore-chat" title="' +
+((__t = (tooltip)) == null ? '' : __t) +
+'">\n    ' +
+((__t = ( title )) == null ? '' : __t) +
 '\n</a>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 
-define('tpl!chats_panel', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
+define('tpl!chats_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -13556,7 +16027,6 @@ return __p;
 
 (function (root, factory) {
     define("converse-minimize", [
-            "converse-core",
             "converse-api",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
@@ -13568,27 +16038,18 @@ return __p;
     ], factory);
 }(this, function (
         converse,
-        converse_api,
         tpl_chatbox_minimize,
         tpl_toggle_chats,
         tpl_trimmed_chat,
         tpl_chats_panel
     ) {
     "use strict";
-    converse.templates.chatbox_minimize = tpl_chatbox_minimize;
-    converse.templates.toggle_chats = tpl_toggle_chats;
-    converse.templates.trimmed_chat = tpl_trimmed_chat;
-    converse.templates.chats_panel = tpl_chats_panel;
+    var $ = converse.env.jQuery,
+        _ = converse.env._,
+        b64_sha1 = converse.env.b64_sha1,
+        moment = converse.env.moment;
 
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        b64_sha1 = converse_api.env.b64_sha1,
-        moment = converse_api.env.moment,
-        utils = converse_api.env.utils,
-        __ = utils.__.bind(converse);
-
-    converse_api.plugins.add('converse-minimize', {
-
+    converse.plugins.add('converse-minimize', {
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -13597,17 +16058,19 @@ return __p;
             // New functions which don't exist yet can also be added.
 
             initChatBoxes: function () {
+                var _converse = this.__super__._converse;
                 var result = this.__super__.initChatBoxes.apply(this, arguments);
-                converse.minimized_chats = new converse.MinimizedChats({
-                    model: converse.chatboxes
+                _converse.minimized_chats = new _converse.MinimizedChats({
+                    model: _converse.chatboxes
                 });
                 return result;
             },
 
             registerGlobalEventHandlers: function () {
+                var _converse = this.__super__._converse;
                 $(window).on("resize", _.debounce(function (ev) {
-                    if (converse.connection.connected) {
-                        converse.chatboxviews.trimChats();
+                    if (_converse.connection.connected) {
+                        _converse.chatboxviews.trimChats();
                     }
                 }, 200));
                 return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
@@ -13662,9 +16125,10 @@ return __p;
                 },
 
                 _show: function () {
+                    var _converse = this.__super__._converse;
                     this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
-                        converse.chatboxviews.trimChats(this);
+                        _converse.chatboxviews.trimChats(this);
                     }
                 },
 
@@ -13695,19 +16159,21 @@ return __p;
 
                 maximize: function () {
                     // Restores a minimized chat box
-                    this.$el.insertAfter(converse.chatboxviews.get("controlbox").$el);
+                    var _converse = this.__super__._converse;
+                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
                     this.show();
-                    converse.emit('chatBoxMaximized', this);
+                    _converse.emit('chatBoxMaximized', this);
                     return this;
                 },
 
                 minimize: function (ev) {
+                    var _converse = this.__super__._converse;
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     // save the scroll position to restore it on maximize
                     this.model.save({'scroll': this.$content.scrollTop()});
-                    this.setChatState(converse.INACTIVE).model.minimize();
+                    this.setChatState(_converse.INACTIVE).model.minimize();
                     this.hide();
-                    converse.emit('chatBoxMinimized', this);
+                    _converse.emit('chatBoxMinimized', this);
                 },
             },
 
@@ -13732,10 +16198,12 @@ return __p;
                 },
 
                 generateHeadingHTML: function () {
+                    var _converse = this.__super__._converse,
+                        __ = _converse.__;
                     var html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     var div = document.createElement('div');
                     div.innerHTML = html;
-                    var el = converse.templates.chatbox_minimize(
+                    var el = _converse.templates.chatbox_minimize(
                         {info_minimize: __('Minimize this chat box')}
                     );
                     var button = div.querySelector('.close-chatbox-button');
@@ -13791,8 +16259,9 @@ return __p;
                      * another chat box. Otherwise it minimizes the oldest chat box
                      * to create space.
                      */
+                    var _converse = this.__super__._converse;
                     var shown_chats = this.getShownChats();
-                    if (converse.no_trimming || shown_chats.length <= 1) {
+                    if (_converse.no_trimming || shown_chats.length <= 1) {
                         return;
                     }
                     if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
@@ -13802,8 +16271,8 @@ return __p;
                         return;
                     }
                     var oldest_chat, boxes_width, view,
-                        $minimized = converse.minimized_chats.$el,
-                        minimized_width = _.contains(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                        $minimized = _converse.minimized_chats.$el,
+                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                         new_id = newchat ? newchat.model.get('id') : null;
 
                     boxes_width = _.reduce(this.xget(new_id), function (memo, view) {
@@ -13831,7 +16300,7 @@ return __p;
                     exclude_ids.push('controlbox');
                     var i = 0;
                     var model = this.model.sort().at(i);
-                    while (_.contains(exclude_ids, model.get('id')) ||
+                    while (_.includes(exclude_ids, model.get('id')) ||
                         model.get('minimized') === true) {
                         i++;
                         model = this.model.at(i);
@@ -13847,13 +16316,22 @@ return __p;
 
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
+             * loaded by Converse.js's plugin machinery.
              */
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            // Add new HTML templates.
+            _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
+            _converse.templates.toggle_chats = tpl_toggle_chats;
+            _converse.templates.trimmed_chat = tpl_trimmed_chat;
+            _converse.templates.chats_panel = tpl_chats_panel;
+
             this.updateSettings({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });
 
-            converse.MinimizedChatBoxView = Backbone.View.extend({
+            _converse.MinimizedChatBoxView = Backbone.View.extend({
                 tagName: 'div',
                 className: 'chat-head',
                 events: {
@@ -13885,7 +16363,7 @@ return __p;
                         data.title = this.model.get('fullname');
                         this.$el.addClass('chat-head-chatbox');
                     }
-                    return this.$el.html(converse.templates.trimmed_chat(data));
+                    return this.$el.html(_converse.templates.trimmed_chat(data));
                 },
 
                 clearUnreadMessagesCounter: function () {
@@ -13901,14 +16379,14 @@ return __p;
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.remove();
-                    var view = converse.chatboxviews.get(this.model.get('id'));
+                    var view = _converse.chatboxviews.get(this.model.get('id'));
                     if (view) {
                         // This will call model.destroy(), removing it from the
                         // collection and will also emit 'chatBoxClosed'
                         view.close();
                     } else {
                         this.model.destroy();
-                        converse.emit('chatBoxClosed', this);
+                        _converse.emit('chatBoxClosed', this);
                     }
                     return this;
                 },
@@ -13918,11 +16396,11 @@ return __p;
                     this.model.messages.off('add',null,this);
                     this.remove();
                     this.model.maximize();
-                }, 200, true)
+                }, 200, {'leading': true})
             });
 
 
-            converse.MinimizedChats = Backbone.Overview.extend({
+            _converse.MinimizedChats = Backbone.Overview.extend({
                 tagName: 'div',
                 id: "minimized-chats",
                 className: 'hidden',
@@ -13948,26 +16426,26 @@ return __p;
                 },
 
                 initToggle: function () {
-                    this.toggleview = new converse.MinimizedChatsToggleView({
-                        model: new converse.MinimizedChatsToggle()
+                    this.toggleview = new _converse.MinimizedChatsToggleView({
+                        model: new _converse.MinimizedChatsToggle()
                     });
-                    var id = b64_sha1('converse.minchatstoggle'+converse.bare_jid);
+                    var id = b64_sha1('converse.minchatstoggle'+_converse.bare_jid);
                     this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
-                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                     this.toggleview.model.fetch();
                 },
 
                 render: function () {
                     if (!this.el.parentElement) {
-                        this.el.innerHTML = converse.templates.chats_panel();
-                        converse.chatboxviews.el.appendChild(this.el);
+                        this.el.innerHTML = _converse.templates.chats_panel();
+                        _converse.chatboxviews.el.appendChild(this.el);
                     }
                     if (this.keys().length === 0) {
                         this.el.classList.add('hidden');
-                        converse.chatboxviews.trimChats.bind(converse.chatboxviews);
+                        _converse.chatboxviews.trimChats.bind(_converse.chatboxviews);
                     } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
                         this.el.classList.remove('hidden');
-                        converse.chatboxviews.trimChats();
+                        _converse.chatboxviews.trimChats();
                     }
                     return this.$el;
                 },
@@ -13995,7 +16473,7 @@ return __p;
                     if (existing && existing.$el.parent().length !== 0) {
                         return;
                     }
-                    var view = new converse.MinimizedChatBoxView({model: item});
+                    var view = new _converse.MinimizedChatBoxView({model: item});
                     this.$('.minimized-chats-flyout').append(view.render());
                     this.add(item.get('id'), view);
                     this.toggleview.model.set({'num_minimized': this.keys().length});
@@ -14018,7 +16496,7 @@ return __p;
             });
 
 
-            converse.MinimizedChatsToggle = Backbone.Model.extend({
+            _converse.MinimizedChatsToggle = Backbone.Model.extend({
                 initialize: function () {
                     this.set({
                         'collapsed': this.get('collapsed') || false,
@@ -14029,7 +16507,7 @@ return __p;
             });
 
 
-            converse.MinimizedChatsToggleView = Backbone.View.extend({
+            _converse.MinimizedChatsToggleView = Backbone.View.extend({
                 el: '#toggle-minimized-chats',
 
                 initialize: function () {
@@ -14039,7 +16517,7 @@ return __p;
                 },
 
                 render: function () {
-                    this.$el.html(converse.templates.toggle_chats(
+                    this.$el.html(_converse.templates.toggle_chats(
                         _.extend(this.model.toJSON(), {
                             'Minimized': __('Minimized')
                         })
@@ -14053,10 +16531,10 @@ return __p;
                 }
             });
 
-            var renderMinimizeButton = function (evt, view) {
+            var renderMinimizeButton = function (view) {
                 // Inserts a "minimize" button in the chatview's header
                 var $el = view.$el.find('.toggle-chatbox-button');
-                var $new_el = converse.templates.chatbox_minimize(
+                var $new_el = _converse.templates.chatbox_minimize(
                     {info_minimize: __('Minimize this chat box')}
                 );
                 if ($el.length) {
@@ -14065,27 +16543,34 @@ return __p;
                     view.$el.find('.close-chatbox-button').after($new_el);
                 }
             };
-            converse.on('chatBoxOpened', renderMinimizeButton);
+            _converse.on('chatBoxOpened', renderMinimizeButton);
 
-            converse.on('controlBoxOpened', function (evt, chatbox) {
+            _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
                 // attr not set yet.
-                if (converse.connection.connected) {
-                    converse.chatboxviews.trimChats(chatbox);
+                if (_converse.connection.connected) {
+                    _converse.chatboxviews.trimChats(chatbox);
                 }
             });
+
+            var logOut = function () {
+                _converse.minimized_chats.remove();
+            };
+            _converse.on('logout', logOut);
         }
     });
 }));
 
 
-define('tpl!dragresize', [],function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="dragresize dragresize-top"></div>\n<div class="dragresize dragresize-topleft"></div>\n<div class="dragresize dragresize-left"></div>\n';
+define('tpl!dragresize', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="dragresize dragresize-top"></div>\n<div class="dragresize dragresize-topleft"></div>\n<div class="dragresize dragresize-left"></div>\n';
+
 }
-return __p;
-}; });
+return __p
+};});
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -14097,20 +16582,18 @@ return __p;
 
 (function (root, factory) {
     define("converse-dragresize", [
-            "converse-core",
             "converse-api",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function (converse, converse_api, tpl_dragresize) {
+}(this, function (converse, tpl_dragresize) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._;
-    converse.templates.dragresize = tpl_dragresize;
+    var $ = converse.env.jQuery,
+        _ = converse.env._;
 
-    converse_api.plugins.add('converse-dragresize', {
+    converse.plugins.add('converse-dragresize', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -14120,44 +16603,47 @@ return __p;
             // New functions which don't exist yet can also be added.
 
             registerGlobalEventHandlers: function () {
+                var that = this;
+                
                 $(document).on('mousemove', function (ev) {
-                    if (!this.resizing || !this.allow_dragresize) { return true; }
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
-                    this.resizing.chatbox.resizeChatBox(ev);
-                }.bind(this));
+                    that.resizing.chatbox.resizeChatBox(ev);
+                });
 
                 $(document).on('mouseup', function (ev) {
-                    if (!this.resizing || !this.allow_dragresize) { return true; }
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
                     ev.preventDefault();
-                    var height = this.applyDragResistance(
-                            this.resizing.chatbox.height,
-                            this.resizing.chatbox.model.get('default_height')
+                    var height = that.applyDragResistance(
+                            that.resizing.chatbox.height,
+                            that.resizing.chatbox.model.get('default_height')
                     );
-                    var width = this.applyDragResistance(
-                            this.resizing.chatbox.width,
-                            this.resizing.chatbox.model.get('default_width')
+                    var width = that.applyDragResistance(
+                            that.resizing.chatbox.width,
+                            that.resizing.chatbox.model.get('default_width')
                     );
-                    if (this.connection.connected) {
-                        this.resizing.chatbox.model.save({'height': height});
-                        this.resizing.chatbox.model.save({'width': width});
+                    if (that.connection.connected) {
+                        that.resizing.chatbox.model.save({'height': height});
+                        that.resizing.chatbox.model.save({'width': width});
                     } else {
-                        this.resizing.chatbox.model.set({'height': height});
-                        this.resizing.chatbox.model.set({'width': width});
+                        that.resizing.chatbox.model.set({'height': height});
+                        that.resizing.chatbox.model.set({'width': width});
                     }
-                    this.resizing = null;
-                }.bind(this));
+                    that.resizing = null;
+                });
 
                 return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
             },
 
             ChatBox: {
                 initialize: function () {
+                    var _converse = this.__super__._converse;
                     var result = this.__super__.initialize.apply(this, arguments),
                         height = this.get('height'), width = this.get('width'),
                         save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
                     save({
-                        'height': converse.applyDragResistance(height, this.get('default_height')),
-                        'width': converse.applyDragResistance(width, this.get('default_width')),
+                        'height': _converse.applyDragResistance(height, this.get('default_height')),
+                        'width': _converse.applyDragResistance(width, this.get('default_width')),
                     });
                     return result;
                 }
@@ -14198,8 +16684,9 @@ return __p;
                     /* Determine and store the default box size.
                      * We need this information for the drag-resizing feature.
                      */
+                    var _converse = this.__super__._converse;
                     var $flyout = this.$el.find('.box-flyout');
-                    if (typeof this.model.get('height') === 'undefined') {
+                    if (_.isUndefined(this.model.get('height'))) {
                         var height = $flyout.height();
                         var width = $flyout.width();
                         this.model.set('height', height);
@@ -14214,7 +16701,7 @@ return __p;
                     // Initialize last known mouse position
                     this.prev_pageY = 0;
                     this.prev_pageX = 0;
-                    if (converse.connection.connected) {
+                    if (_converse.connection.connected) {
                         this.height = this.model.get('height');
                         this.width = this.model.get('width');
                     }
@@ -14229,8 +16716,9 @@ return __p;
                 },
 
                 setChatBoxHeight: function (height) {
+                    var _converse = this.__super__._converse;
                     if (height) {
-                        height = converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                        height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
                     } else {
                         height = "";
                     }
@@ -14238,8 +16726,9 @@ return __p;
                 },
 
                 setChatBoxWidth: function (width) {
+                    var _converse = this.__super__._converse;
                     if (width) {
-                        width = converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                        width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
                     } else {
                         width = "";
                     }
@@ -14265,10 +16754,11 @@ return __p;
                 },
 
                 onStartVerticalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
+                    var _converse = this.__super__._converse;
+                    if (!_converse.allow_dragresize) { return true; }
                     // Record element attributes for mouseMove().
                     this.height = this.$el.children('.box-flyout').height();
-                    converse.resizing = {
+                    _converse.resizing = {
                         'chatbox': this,
                         'direction': 'top'
                     };
@@ -14276,9 +16766,10 @@ return __p;
                 },
 
                 onStartHorizontalResize: function (ev) {
-                    if (!converse.allow_dragresize) { return true; }
+                    var _converse = this.__super__._converse;
+                    if (!_converse.allow_dragresize) { return true; }
                     this.width = this.$el.children('.box-flyout').width();
-                    converse.resizing = {
+                    _converse.resizing = {
                         'chatbox': this,
                         'direction': 'left'
                     };
@@ -14286,14 +16777,16 @@ return __p;
                 },
 
                 onStartDiagonalResize: function (ev) {
+                    var _converse = this.__super__._converse;
                     this.onStartHorizontalResize(ev);
                     this.onStartVerticalResize(ev);
-                    converse.resizing.direction = 'topleft';
+                    _converse.resizing.direction = 'topleft';
                 },
 
                 resizeChatBox: function (ev) {
                     var diff;
-                    if (converse.resizing.direction.indexOf('top') === 0) {
+                    var _converse = this.__super__._converse;
+                    if (_converse.resizing.direction.indexOf('top') === 0) {
                         diff = ev.pageY - this.prev_pageY;
                         if (diff) {
                             this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
@@ -14301,7 +16794,7 @@ return __p;
                             this.setChatBoxHeight(this.height);
                         }
                     }
-                    if (converse.resizing.direction.indexOf('left') !== -1) {
+                    if (_.includes(_converse.resizing.direction, 'left')) {
                         diff = this.prev_pageX - ev.pageX;
                         if (diff) {
                             this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
@@ -14309,6 +16802,24 @@ return __p;
                             this.setChatBoxWidth(this.width);
                         }
                     }
+                }
+            },
+
+            HeadlinesBoxView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize: function () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                render: function () {
+                    $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
+                    return this.__super__.render.apply(this, arguments);
                 }
             },
 
@@ -14357,11 +16868,12 @@ return __p;
                 },
 
                 renderDragResizeHandles: function () {
+                    var _converse = this.__super__._converse;
                     var flyout = this.el.querySelector('.box-flyout');
                     var div = document.createElement('div');
-                    div.innerHTML = converse.templates.dragresize();
+                    div.innerHTML = _converse.templates.dragresize();
                     flyout.insertBefore(
-                        div.firstChild,
+                        div,
                         flyout.firstChild
                     );
                 }
@@ -14372,18 +16884,22 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var converse = this.converse;
+            var _converse = this._converse;
+            // Add new HTML template
+            _converse.templates.dragresize = tpl_dragresize;
+
             this.updateSettings({
                 allow_dragresize: true,
             });
-            converse.applyDragResistance = function (value, default_value) {
+
+            _converse.applyDragResistance = function (value, default_value) {
                 /* This method applies some resistance around the
                 * default_value. If value is close enough to
                 * default_value, then default_value is returned instead.
                 */
-                if (typeof value === 'undefined') {
+                if (_.isUndefined(value)) {
                     return undefined;
-                } else if (typeof default_value === 'undefined') {
+                } else if (_.isUndefined(default_value)) {
                     return value;
                 }
                 var resistance = 10;
@@ -14403,39 +16919,37 @@ return __p;
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, window */
+/*global define */
 
 (function (root, factory) {
     define("converse-headline", [
-            "converse-core",
             "converse-api",
             "converse-chatview"
     ], factory);
-}(this, function (converse, converse_api) {
+}(this, function (converse) {
     "use strict";
-    var $ = converse_api.env.jQuery,
-        _ = converse_api.env._,
-        utils = converse_api.env.utils,
-        __ = utils.__.bind(converse);
+    var _ = converse.env._,
+        utils = converse.env.utils;
 
     var onHeadlineMessage = function (message) {
         /* Handler method for all incoming messages of type "headline".
          */
-        var $message = $(message),
-            from_jid = $message.attr('from');
+        var from_jid = message.getAttribute('from');
+        var _converse = this.__super__._converse;
         if (utils.isHeadlineMessage(message)) {
-            converse.chatboxes.create({
+            _converse.chatboxes.create({
                 'id': from_jid,
                 'jid': from_jid,
                 'fullname':  from_jid,
                 'type': 'headline'
-            }).createMessage($message, undefined, message);
-            converse.emit('message', message);
+            }).createMessage(message, undefined, message);
+            _converse.emit('message', message);
         }
         return true;
     };
 
-    converse_api.plugins.add('converse-headline', {
+
+    converse.plugins.add('converse-headline', {
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -14446,9 +16960,10 @@ return __p;
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
+                    var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
-                        view = new converse.HeadlinesBoxView({model: item});
+                        view = new _converse.HeadlinesBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
                     } else {
@@ -14462,37 +16977,33 @@ return __p;
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            converse.HeadlinesBoxView = converse.ChatBoxView.extend({
+            var _converse = this._converse,
+                __ = _converse.__;
+
+            _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
 
                 events: {
                     'click .close-chatbox-button': 'close',
                     'click .toggle-chatbox-button': 'minimize',
-                    'keypress textarea.chat-textarea': 'keyPressed',
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                    'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
                 initialize: function () {
-                    if (typeof this.setDimensions !== "undefined") {
-                        // setDimensions is defined for dragresize
-                        $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    }
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
                     this.render().fetchMessages().insertIntoDOM().hide();
-                    converse.emit('chatBoxInitialized', this);
+                    _converse.emit('chatBoxInitialized', this);
                 },
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(converse.templates.chatbox(
+                        .html(_converse.templates.chatbox(
                                 _.extend(this.model.toJSON(), {
-                                        show_toolbar: converse.show_toolbar,
+                                        show_toolbar: _converse.show_toolbar,
                                         show_textarea: false,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
@@ -14502,23 +17013,35 @@ return __p;
                                 )
                             )
                         );
-                    if (typeof this.setWidth !== "undefined") {
-                        // setWidth is defined for dragresize
-                        $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
-                    }
                     this.$content = this.$el.find('.chat-content');
-                    converse.emit('chatBoxOpened', this);
+                    _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this;
                 }
             });
 
+            var onHeadlineMessage = function (message) {
+                /* Handler method for all incoming messages of type "headline".
+                */
+                var from_jid = message.getAttribute('from');
+                if (utils.isHeadlineMessage(message)) {
+                    _converse.chatboxes.create({
+                        'id': from_jid,
+                        'jid': from_jid,
+                        'fullname':  from_jid,
+                        'type': 'headline'
+                    }).createMessage(message, undefined, message);
+                    _converse.emit('message', message);
+                }
+                return true;
+            };
+
             var registerHeadlineHandler = function () {
-                converse.connection.addHandler(
+                _converse.connection.addHandler(
                         onHeadlineMessage, null, 'message');
             };
-            converse.on('connected', registerHeadlineHandler);
-            converse.on('reconnected', registerHeadlineHandler);
+            _converse.on('connected', registerHeadlineHandler);
+            _converse.on('reconnected', registerHeadlineHandler);
         }
     });
 }));
@@ -14528,6 +17051,7 @@ return __p;
  * This file is used to tell require.js which components (or plugins) to load
  * when it generates a build.
  */
+/*global define */
 
 if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
@@ -14535,9 +17059,9 @@ if (typeof define !== 'undefined') {
         "converse-api",
 
         /* START: Removable components
-        * --------------------
-        * Any of the following components may be removed if they're not needed.
-        */
+         * --------------------
+         * Any of the following components may be removed if they're not needed.
+         */
         "locales",              // Translations for converse.js. This line can be removed
                                 // to remove *all* translations, or you can modify the
                                 // file src/locales.js to include only those
@@ -14558,10 +17082,10 @@ if (typeof define !== 'undefined') {
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 
-    ], function(converse_api) {
-        converse_api.env.jQuery(window).trigger('converse-loaded', converse_api);
-        window.converse = converse_api;
-        return converse_api;
+    ], function(converse) {
+        converse.env.jQuery(window).trigger('converse-loaded', converse);
+        window.converse = converse;
+        return converse;
     });
 }
 ;
@@ -14573,7 +17097,7 @@ define('jquery-private', [], function () { return jQuery; });
 /*global jQuery, _, moment, Strophe, $build, $iq, $msg, $pres, SHA1, Base64, MD5, DSA, OTR */
 define('jquery.browser', [], function () { return jQuery; });
 define('typeahead', [], function () { return jQuery; });
-define('underscore', [], function () { return _; });
+define('lodash', [], function () { return _; });
 define('moment_with_locales', [], function () { return moment; });
 define('strophe', [], function () {
     return {

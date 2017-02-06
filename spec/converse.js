@@ -1,129 +1,123 @@
 (function (root, factory) {
     define([
-        "jquery",
         "converse-api",
-        "underscore",
         "mock",
         "test_utils"], factory);
-} (this, function ($, converse_api, _, mock, test_utils) {
-    var b64_sha1 = converse_api.env.b64_sha1;
+} (this, function (converse, mock, test_utils) {
+    var b64_sha1 = converse.env.b64_sha1;
+    var _ = converse.env._;
+    var $ = converse.env.jQuery;
 
     describe("Converse", function() {
         
-        afterEach(function () {
-            converse_api.user.logout();
-            converse_api.listen.not();
-            test_utils.clearBrowserStorage();
-        });
-
         describe("Authentication", function () {
-            it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(function (converse) {
-                var url = converse.bosh_service_url;
-                var connection = converse.connection;
-                delete converse.bosh_service_url;
-                delete converse.connection;
-                expect(converse.initConnection.bind(converse)).toThrow(
+            it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(function (_converse) {
+                var url = _converse.bosh_service_url;
+                var connection = _converse.connection;
+                delete _converse.bosh_service_url;
+                delete _converse.connection;
+                expect(_converse.initConnection.bind(_converse)).toThrow(
                     new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
-                converse.bosh_service_url = url;
-                converse.connection = connection;
+                _converse.bosh_service_url = url;
+                _converse.connection = connection;
             }));
 
             describe("with prebind", function () {
-                it("needs a jid when also using keepalive", mock.initConverse(function (converse) {
-                    var authentication = converse.authentication;
-                    var jid = converse.jid;
-                    delete converse.jid;
-                    converse.keepalive = true;
-                    converse.authentication = "prebind";
-                    expect(converse.logIn.bind(converse)).toThrow(
+                it("needs a jid when also using keepalive", mock.initConverse(function (_converse) {
+                    var authentication = _converse.authentication;
+                    var jid = _converse.jid;
+                    delete _converse.jid;
+                    _converse.keepalive = true;
+                    _converse.authentication = "prebind";
+                    expect(_converse.logIn.bind(_converse)).toThrow(
                         new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
-                    converse.authentication= authentication;
-                    converse.jid = jid;
-                    converse.keepalive = false;
+                    _converse.authentication= authentication;
+                    _converse.jid = jid;
+                    _converse.keepalive = false;
                 }));
 
-                it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (converse) {
-                    var jid = converse.jid;
-                    delete converse.jid;
-                    converse.authentication = "prebind";
-                    expect(converse.logIn.bind(converse)).toThrow(
+                it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (_converse) {
+                    var jid = _converse.jid;
+                    delete _converse.jid;
+                    _converse.authentication = "prebind";
+                    expect(_converse.logIn.bind(_converse)).toThrow(
                         new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
-                    converse.bosh_service_url = undefined;
-                    converse.jid = jid;
+                    _converse.bosh_service_url = undefined;
+                    _converse.jid = jid;
                 }));
             });
         });
 
         describe("A chat state indication", function () {
 
-            it("are sent out when the client becomes or stops being idle", mock.initConverse(function (converse) {
-                spyOn(converse, 'sendCSI').andCallThrough();
+            it("are sent out when the client becomes or stops being idle", mock.initConverse(function (_converse) {
+                spyOn(_converse, 'sendCSI').andCallThrough();
                 var sent_stanza;
-                spyOn(converse.connection, 'send').andCallFake(function (stanza) {
+                spyOn(_converse.connection, 'send').andCallFake(function (stanza) {
                     sent_stanza = stanza;
                 });
                 var i = 0;
-                converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
-                converse.features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
+                _converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
+                _converse.features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
 
-                converse.csi_waiting_time = 3; // The relevant config option
-                while (i <= converse.csi_waiting_time) {
-                    expect(converse.sendCSI).not.toHaveBeenCalled();
-                    converse.onEverySecond();
+                _converse.csi_waiting_time = 3; // The relevant config option
+                while (i <= _converse.csi_waiting_time) {
+                    expect(_converse.sendCSI).not.toHaveBeenCalled();
+                    _converse.onEverySecond();
                     i++;
                 }
-                expect(converse.sendCSI).toHaveBeenCalledWith('inactive');
+                expect(_converse.sendCSI).toHaveBeenCalledWith('inactive');
                 expect(sent_stanza.toLocaleString()).toBe(
                     "<inactive xmlns='urn:xmpp:csi:0'/>"
                 );
-                converse.onUserActivity();
-                expect(converse.sendCSI).toHaveBeenCalledWith('active');
+                _converse.onUserActivity();
+                expect(_converse.sendCSI).toHaveBeenCalledWith('active');
                 expect(sent_stanza.toLocaleString()).toBe(
                     "<active xmlns='urn:xmpp:csi:0'/>"
                 );
 
                 // Reset values
-                converse.csi_waiting_time = 0;
-                converse.features['urn:xmpp:csi:0'] = false;
+                _converse.csi_waiting_time = 0;
+                _converse.features['urn:xmpp:csi:0'] = false;
             }));
         });
 
         describe("Automatic status change", function () {
 
-            it("happens when the client is idle for long enough", mock.initConverse(function (converse) {
+            it("happens when the client is idle for long enough", mock.initConverse(function (_converse) {
                 var i = 0;
                 // Usually initialized by registerIntervalHandler
-                converse.idle_seconds = 0;
-                converse.auto_changed_status = false;
+                _converse.idle_seconds = 0;
+                _converse.auto_changed_status = false;
 
                 // The relevant config options
-                converse.auto_away = 3;
-                converse.auto_xa = 6;
+                _converse.auto_away = 3;
+                _converse.auto_xa = 6;
 
-                expect(converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.xmppstatus.getStatus()).toBe('online');
 
-                while (i <= converse.auto_away) {
-                    converse.onEverySecond();
+                while (i <= _converse.auto_away) {
+                    _converse.onEverySecond();
                     i++;
                 }
-                expect(converse.auto_changed_status).toBe(true);
+                expect(_converse.auto_changed_status).toBe(true);
 
-                while (i <= converse.auto_xa) {
-                    expect(converse.xmppstatus.getStatus()).toBe('away');
-                    converse.onEverySecond();
+                while (i <= _converse.auto_xa) {
+                    expect(_converse.xmppstatus.getStatus()).toBe('away');
+                    _converse.onEverySecond();
                     i++;
                 }
-                expect(converse.xmppstatus.getStatus()).toBe('xa');
-                expect(converse.auto_changed_status).toBe(true);
+                expect(_converse.xmppstatus.getStatus()).toBe('xa');
+                expect(_converse.auto_changed_status).toBe(true);
 
-                converse.onUserActivity();
-                expect(converse.xmppstatus.getStatus()).toBe('online');
-                expect(converse.auto_changed_status).toBe(false);
+                _converse.onUserActivity();
+                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.auto_changed_status).toBe(false);
 
                 // Reset values
-                converse.auto_away = 0;
-                converse.auto_xa = 0;
-                converse.auto_changed_status = false;
+                _converse.auto_away = 0;
+                _converse.auto_xa = 0;
+                _converse.auto_changed_status = false;
             }));
         });
 
@@ -131,163 +125,161 @@
 
             describe("The \"status\" API", function () {
 
-                it("has a method for getting the user's availability", mock.initConverse(function (converse) {
-                    converse.xmppstatus.set('status', 'online');
-                    expect(converse_api.user.status.get()).toBe('online');
-                    converse.xmppstatus.set('status', 'dnd');
-                    expect(converse_api.user.status.get()).toBe('dnd');
+                it("has a method for getting the user's availability", mock.initConverse(function (_converse) {
+                    _converse.xmppstatus.set('status', 'online');
+                    expect(_converse.api.user.status.get()).toBe('online');
+                    _converse.xmppstatus.set('status', 'dnd');
+                    expect(_converse.api.user.status.get()).toBe('dnd');
                 }));
 
-                it("has a method for setting the user's availability", mock.initConverse(function (converse) {
-                    converse_api.user.status.set('away');
-                    expect(converse.xmppstatus.get('status')).toBe('away');
-                    converse_api.user.status.set('dnd');
-                    expect(converse.xmppstatus.get('status')).toBe('dnd');
-                    converse_api.user.status.set('xa');
-                    expect(converse.xmppstatus.get('status')).toBe('xa');
-                    converse_api.user.status.set('chat');
-                    expect(converse.xmppstatus.get('status')).toBe('chat');
-                    expect(_.partial(converse_api.user.status.set, 'invalid')).toThrow(
+                it("has a method for setting the user's availability", mock.initConverse(function (_converse) {
+                    _converse.api.user.status.set('away');
+                    expect(_converse.xmppstatus.get('status')).toBe('away');
+                    _converse.api.user.status.set('dnd');
+                    expect(_converse.xmppstatus.get('status')).toBe('dnd');
+                    _converse.api.user.status.set('xa');
+                    expect(_converse.xmppstatus.get('status')).toBe('xa');
+                    _converse.api.user.status.set('chat');
+                    expect(_converse.xmppstatus.get('status')).toBe('chat');
+                    expect(_.partial(_converse.api.user.status.set, 'invalid')).toThrow(
                         new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1')
                     );
                 }));
 
-                it("allows setting the status message as well", mock.initConverse(function (converse) {
-                    converse_api.user.status.set('away', "I'm in a meeting");
-                    expect(converse.xmppstatus.get('status')).toBe('away');
-                    expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                it("allows setting the status message as well", mock.initConverse(function (_converse) {
+                    _converse.api.user.status.set('away', "I'm in a meeting");
+                    expect(_converse.xmppstatus.get('status')).toBe('away');
+                    expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 }));
 
-                it("has a method for getting the user's status message", mock.initConverse(function (converse) {
-                    converse.xmppstatus.set('status_message', undefined);
-                    expect(converse_api.user.status.message.get()).toBe(undefined);
-                    converse.xmppstatus.set('status_message', "I'm in a meeting");
-                    expect(converse_api.user.status.message.get()).toBe("I'm in a meeting");
+                it("has a method for getting the user's status message", mock.initConverse(function (_converse) {
+                    _converse.xmppstatus.set('status_message', undefined);
+                    expect(_converse.api.user.status.message.get()).toBe(undefined);
+                    _converse.xmppstatus.set('status_message', "I'm in a meeting");
+                    expect(_converse.api.user.status.message.get()).toBe("I'm in a meeting");
                 }));
 
-                it("has a method for setting the user's status message", mock.initConverse(function (converse) {
-                    converse.xmppstatus.set('status_message', undefined);
-                    converse_api.user.status.message.set("I'm in a meeting");
-                    expect(converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
+                it("has a method for setting the user's status message", mock.initConverse(function (_converse) {
+                    _converse.xmppstatus.set('status_message', undefined);
+                    _converse.api.user.status.message.set("I'm in a meeting");
+                    expect(_converse.xmppstatus.get('status_message')).toBe("I'm in a meeting");
                 }));
             });
         });
 
         describe("The \"tokens\" API", function () {
 
-            it("has a method for retrieving the next RID", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
-                var old_connection = converse.connection;
-                converse.connection._proto.rid = '1234';
-                converse.expose_rid_and_sid = false;
-                expect(converse_api.tokens.get('rid')).toBe(null);
-                converse.expose_rid_and_sid = true;
-                expect(converse_api.tokens.get('rid')).toBe('1234');
-                converse.connection = undefined;
-                expect(converse_api.tokens.get('rid')).toBe(null);
+            it("has a method for retrieving the next RID", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+                var old_connection = _converse.connection;
+                _converse.connection._proto.rid = '1234';
+                _converse.expose_rid_and_sid = false;
+                expect(_converse.api.tokens.get('rid')).toBe(null);
+                _converse.expose_rid_and_sid = true;
+                expect(_converse.api.tokens.get('rid')).toBe('1234');
+                _converse.connection = undefined;
+                expect(_converse.api.tokens.get('rid')).toBe(null);
                 // Restore the connection
-                converse.connection = old_connection;
+                _converse.connection = old_connection;
             }));
 
-            it("has a method for retrieving the SID", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
-                var old_connection = converse.connection;
-                converse.connection._proto.sid = '1234';
-                converse.expose_rid_and_sid = false;
-                expect(converse_api.tokens.get('sid')).toBe(null);
-                converse.expose_rid_and_sid = true;
-                expect(converse_api.tokens.get('sid')).toBe('1234');
-                converse.connection = undefined;
-                expect(converse_api.tokens.get('sid')).toBe(null);
+            it("has a method for retrieving the SID", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+                var old_connection = _converse.connection;
+                _converse.connection._proto.sid = '1234';
+                _converse.expose_rid_and_sid = false;
+                expect(_converse.api.tokens.get('sid')).toBe(null);
+                _converse.expose_rid_and_sid = true;
+                expect(_converse.api.tokens.get('sid')).toBe('1234');
+                _converse.connection = undefined;
+                expect(_converse.api.tokens.get('sid')).toBe(null);
                 // Restore the connection
-                converse.connection = old_connection;
+                _converse.connection = old_connection;
             }));
         });
 
         describe("The \"contacts\" API", function () {
 
-            it("has a method 'get' which returns wrapped contacts", mock.initConverse(function (converse) {
+            it("has a method 'get' which returns wrapped contacts", mock.initConverse(function (_converse) {
                 // Check that it returns nothing if a non-existing JID is given
-                test_utils.createContacts(converse, 'current');
-                expect(converse_api.contacts.get('non-existing@jabber.org')).toBeFalsy();
+                test_utils.createContacts(_converse, 'current');
+                expect(_converse.api.contacts.get('non-existing@jabber.org')).toBeFalsy();
                 // Check when a single jid is given
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var attrs = converse_api.contacts.get(jid);
+                var attrs = _converse.api.contacts.get(jid);
                 expect(typeof attrs).toBe('object');
                 expect(attrs.fullname).toBe(mock.cur_names[0]);
                 expect(attrs.jid).toBe(jid);
                 // You can retrieve multiple contacts by passing in an array
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var list = converse_api.contacts.get([jid, jid2]);
-                expect(Array.isArray(list)).toBeTruthy();
+                var list = _converse.api.contacts.get([jid, jid2]);
+                expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].fullname).toBe(mock.cur_names[0]);
                 expect(list[1].fullname).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
-                list = converse_api.contacts.get();
+                list = _converse.api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);
             }));
 
-            it("has a method 'add' with which contacts can be added", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("has a method 'add' with which contacts can be added", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 var error = new TypeError('contacts.add: invalid jid');
-                expect(converse_api.contacts.add).toThrow(error);
-                expect(converse_api.contacts.add.bind(converse_api, "invalid jid")).toThrow(error);
-                spyOn(converse.roster, 'addAndSubscribe');
-                converse_api.contacts.add("newcontact@example.org");
-                expect(converse.roster.addAndSubscribe).toHaveBeenCalled();
+                expect(_converse.api.contacts.add).toThrow(error);
+                expect(_converse.api.contacts.add.bind(_converse.api, "invalid jid")).toThrow(error);
+                spyOn(_converse.roster, 'addAndSubscribe');
+                _converse.api.contacts.add("newcontact@example.org");
+                expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
             }));
         });
 
         describe("The \"chats\" API", function() {
 
-            it("has a method 'get' which returns a wrapped chat box", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("has a method 'get' which returns a wrapped chat box", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 // Test on chat that doesn't exist.
-                expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-
                 // Test on chat that's not open
-                var box = converse_api.chats.get(jid);
+                var box = _converse.api.chats.get(jid);
                 expect(typeof box === 'undefined').toBeTruthy();
-
-                var chatboxview = converse.chatboxviews.get(jid);
+                var chatboxview = _converse.chatboxviews.get(jid);
                 // Test for single JID
-                test_utils.openChatBoxFor(converse, jid);
-                box = converse_api.chats.get(jid);
+                test_utils.openChatBoxFor(_converse, jid);
+                box = _converse.api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
-                chatboxview = converse.chatboxviews.get(jid);
+                chatboxview = _converse.chatboxviews.get(jid);
                 expect(chatboxview.$el.is(':visible')).toBeTruthy();
                 // Test for multiple JIDs
                 var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(converse, jid2);
-                var list = converse_api.chats.get([jid, jid2]);
-                expect(Array.isArray(list)).toBeTruthy();
+                test_utils.openChatBoxFor(_converse, jid2);
+                var list = _converse.api.chats.get([jid, jid2]);
+                expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                 expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
             }));
 
-            it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverse(function (converse) {
-                test_utils.createContacts(converse, 'current');
+            it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var chatboxview;
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
                     // Test on chat that doesn't exist.
-                    expect(converse_api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                    var box = converse_api.chats.open(jid);
+                    expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                    var box = _converse.api.chats.open(jid);
                     expect(box instanceof Object).toBeTruthy();
                     expect(box.get('box_id')).toBe(b64_sha1(jid));
                     expect(
-                        Object.keys(box),
+                        _.keys(box),
                         ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                     );
-                    chatboxview = converse.chatboxviews.get(jid);
+                    chatboxview = _converse.chatboxviews.get(jid);
                     expect(chatboxview.$el.is(':visible')).toBeTruthy();
                     // Test for multiple JIDs
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var list = converse_api.chats.open([jid, jid2]);
-                    expect(Array.isArray(list)).toBeTruthy();
+                    var list = _converse.api.chats.open([jid, jid2]);
+                    expect(_.isArray(list)).toBeTruthy();
                     expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                     expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
                 });
@@ -295,18 +287,40 @@
         });
 
         describe("The \"settings\" API", function() {
-            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (converse) {
-                expect(Object.keys(converse_api.settings)).toEqual(["get", "set"]);
-                expect(converse_api.settings.get("play_sounds")).toBe(false);
-                converse_api.settings.set("play_sounds", true);
-                expect(converse_api.settings.get("play_sounds")).toBe(true);
-                converse_api.settings.set({"play_sounds": false});
-                expect(converse_api.settings.get("play_sounds")).toBe(false);
+            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (_converse) {
+                expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
+                expect(_converse.api.settings.get("play_sounds")).toBe(false);
+                _converse.api.settings.set("play_sounds", true);
+                expect(_converse.api.settings.get("play_sounds")).toBe(true);
+                _converse.api.settings.set({"play_sounds": false});
+                expect(_converse.api.settings.get("play_sounds")).toBe(false);
                 // Only whitelisted settings allowed.
-                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
-                converse_api.settings.set("non_existing", true);
-                expect(typeof converse_api.settings.get("non_existing")).toBe("undefined");
+                expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
+                _converse.api.settings.set("non_existing", true);
+                expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
             }));
+        });
+
+        describe("The \"plugins\" API", function() {
+            it("only has a method 'add' for registering plugins", mock.initConverse(function (_converse) {
+                expect(_.keys(converse.plugins)).toEqual(["add"]);
+                // Cheating a little bit. We clear the plugins to test more easily.
+                var _old_plugins = _converse.pluggable.plugins;
+                _converse.pluggable.plugins = [];
+                converse.plugins.add('plugin1', {});
+                expect(_.keys(_converse.pluggable.plugins)).toEqual(['plugin1']);
+                converse.plugins.add('plugin2', {});
+                expect(_.keys(_converse.pluggable.plugins)).toEqual(['plugin1', 'plugin2']);
+                _converse.pluggable.plugins = _old_plugins;
+            }));
+
+            describe("The \"plugins.add\" method", function() {
+                it("throws an error when multiple plugins attempt to register with the same name", mock.initConverse(function (_converse) {
+                    converse.plugins.add('myplugin', {});
+                    var error = new TypeError('Error: plugin with name "myplugin" has already been registered!');
+                    expect(_.partial(converse.plugins.add, 'myplugin', {})).toThrow(error);
+                }));
+            });
         });
     });
 }));

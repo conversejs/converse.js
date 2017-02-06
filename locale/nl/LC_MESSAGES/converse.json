@@ -207,14 +207,6 @@
             null,
             "Authenticeren mislukt"
          ],
-         "Disconnected": [
-            null,
-            "Verbinding verbroken."
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""

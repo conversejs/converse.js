@@ -3,6 +3,7 @@
  * This file is used to tell require.js which components (or plugins) to load
  * when it generates a build.
  */
+/*global define */
 
 if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
@@ -10,9 +11,9 @@ if (typeof define !== 'undefined') {
         "converse-api",
 
         /* START: Removable components
-        * --------------------
-        * Any of the following components may be removed if they're not needed.
-        */
+         * --------------------
+         * Any of the following components may be removed if they're not needed.
+         */
         "locales",              // Translations for converse.js. This line can be removed
                                 // to remove *all* translations, or you can modify the
                                 // file src/locales.js to include only those
@@ -33,9 +34,9 @@ if (typeof define !== 'undefined') {
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
 
-    ], function(converse_api) {
-        converse_api.env.jQuery(window).trigger('converse-loaded', converse_api);
-        window.converse = converse_api;
-        return converse_api;
+    ], function(converse) {
+        converse.env.jQuery(window).trigger('converse-loaded', converse);
+        window.converse = converse;
+        return converse;
     });
 }

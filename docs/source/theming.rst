@@ -2,6 +2,8 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
 
+.. _theming:
+
 =======
 Theming
 =======

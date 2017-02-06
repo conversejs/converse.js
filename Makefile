@@ -3,11 +3,12 @@ BOWER           ?= node_modules/.bin/bower
 BUILDDIR        = ./docs
 BUNDLE          ?= ./.bundle/bin/bundle
 GRUNT           ?= ./node_modules/.bin/grunt
-HTTPSERVE		?= ./node_modules/.bin/http-server
-JSHINT 			?= ./node_modules/.bin/jshint
+HTTPSERVE       ?= ./node_modules/.bin/http-server
+JSHINT          ?= ./node_modules/.bin/jshint
+ESLINT          ?= ./node_modules/.bin/eslint
 PAPER           =
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
-RJS				?= ./node_modules/.bin/r.js
+RJS             ?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
 CLEANCSS        ?= ./node_modules/.bin/cleancss
@@ -16,16 +17,13 @@ SPHINXOPTS      =
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
-SOURCES	= $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
+SOURCES    = $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
 JSHINTEXCEPTIONS = $(GENERATED) \
-		   src/otr.js \
-		   src/crypto.js \
-		   src/build-mobile.js \
-		   src/build-no-jquery.js \
-		   src/build-no-dependencies.js \
-		   src/build.js \
-		   src/bigint.js
-CHECKSOURCES	= $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
+           src/build-mobile.js \
+           src/build-no-jquery.js \
+           src/build-no-dependencies.js \
+           src/build.js \
+CHECKSOURCES    = $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
 .PHONY: all
 all: dev dist
@@ -127,7 +125,13 @@ dev: stamp-bower stamp-bundler
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css
+
+css/converse-muc-embedded.css:: stamp-bundler stamp-bower sass
+	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
+
+css/converse-muc-embedded.min.css:: stamp-bundler stamp-bower sass css/converse-muc-embedded.css
+	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
 css/converse.css:: stamp-bundler stamp-bower sass
 	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
@@ -143,7 +147,7 @@ css/mobile.min.css:: stamp-npm
 
 .PHONY: watch
 watch: stamp-bundler
-	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css
+	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
@@ -189,8 +193,13 @@ build:: stamp-bundler stamp-bower css
 jshint: stamp-bower
 	$(JSHINT) --config jshintrc $(CHECKSOURCES)
 
+.PHONY: eslint
+eslint: stamp-npm
+	$(ESLINT) src/
+	$(ESLINT) spec/
+
 .PHONY: check
-check: stamp-bower jshint
+check: stamp-bower jshint eslint
 	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
 
 ########################################################################

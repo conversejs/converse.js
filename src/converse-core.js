@@ -1,15 +1,16 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define, window, document */
 
 (function (root, factory) {
     define("converse-core", [
+        "sizzle",
         "jquery",
-        "underscore",
+        "lodash",
         "polyfill",
         "utils",
         "moment_with_locales",
@@ -19,7 +20,7 @@
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function ($, _, dummy, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, dummy, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -34,7 +35,7 @@
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
-    /* Configuration of underscore templates (this config is distinct to the
+    /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
@@ -42,47 +43,34 @@
         interpolate : /\{\{([\s\S]+?)\}\}/g
     };
 
-    // We create an object to act as the "this" context for event handlers (as
-    // defined below and accessible via converse_api.listen).
-    // We don't want the inner converse object to be the context, since it
-    // contains sensitive information, and we don't want it to be something in
-    // the DOM or window, because then anyone can trigger converse events.
-    var event_context = {};
+    var _converse = {};
+    _converse.templates = {};
+    _.extend(_converse, Backbone.Events);
+    _converse.emit = _converse.trigger;
 
-    var converse = {
-        templates: {},
-
-        emit: function (evt, data) {
-            $(event_context).trigger(evt, data);
-        },
-
-        once: function (evt, handler, context) {
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).one(evt, handler);
-        },
-
-        on: function (evt, handler, context) {
-            if (_.contains(['ready', 'initialized'], evt)) {
-                converse.log('Warning: The "'+evt+'" event has been deprecated and will be removed, please use "connected".');
-            }
-            if (context) {
-                handler = handler.bind(context);
-            }
-            $(event_context).bind(evt, handler);
-        },
-
-        off: function (evt, handler) {
-            $(event_context).unbind(evt, handler);
-        }
-    };
+    _converse.core_plugins = [
+        'converse-bookmarks',
+        'converse-chatview',
+        'converse-controlbox',
+        'converse-core',
+        'converse-dragresize',
+        'converse-headline',
+        'converse-mam',
+        'converse-minimize',
+        'converse-muc',
+        'converse-notification',
+        'converse-otr',
+        'converse-ping',
+        'converse-register',
+        'converse-rosterview',
+        'converse-vcard'
+    ];
 
     // Make converse pluggable
-    pluggable.enable(converse, 'converse', 'pluggable');
+    pluggable.enable(_converse, '_converse', 'pluggable');
 
     // Module-level constants
-    converse.STATUS_WEIGHTS = {
+    _converse.STATUS_WEIGHTS = {
         'offline':      6,
         'unavailable':  5,
         'xa':           4,
@@ -91,13 +79,13 @@
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
     };
-    converse.ANONYMOUS  = "anonymous";
-    converse.CLOSED = 'closed';
-    converse.EXTERNAL = "external";
-    converse.LOGIN = "login";
-    converse.LOGOUT = "logout";
-    converse.OPENED = 'opened';
-    converse.PREBIND = "prebind";
+    _converse.ANONYMOUS  = "anonymous";
+    _converse.CLOSED = 'closed';
+    _converse.EXTERNAL = "external";
+    _converse.LOGIN = "login";
+    _converse.LOGOUT = "logout";
+    _converse.OPENED = 'opened';
+    _converse.PREBIND = "prebind";
 
     var PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
@@ -112,14 +100,17 @@
         9: 'REDIRECT'
     };
 
-    converse.log = function (txt, level) {
+    var DEFAULT_IMAGE_TYPE = 'image/png';
+    var DEFAULT_IMAGE = "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";
+
+    _converse.log = function (txt, level) {
         var logger;
-        if (typeof console === "undefined" || typeof console.log === "undefined") {
-            logger = { log: function () {}, error: function () {} };
+        if (_.isUndefined(console) || _.isUndefined(console.log)) {
+            logger = { log: _.noop, error: _.noop };
         } else {
             logger = console;
         }
-        if (converse.debug) {
+        if (_converse.debug) {
             if (level === 'error') {
                 logger.log('ERROR: '+txt);
             } else {
@@ -129,18 +120,19 @@
     };
 
 
-    converse.initialize = function (settings, callback) {
+    _converse.initialize = function (settings, callback) {
         "use strict";
-        settings = typeof settings !== "undefined" ? settings : {};
+        settings = !_.isUndefined(settings) ? settings : {};
         var init_deferred = new $.Deferred();
-        var converse = this;
 
-        if (typeof converse.chatboxes !== 'undefined') {
-            // Looks like converse.initialized was called again without logging
+        if (!_.isUndefined(_converse.chatboxes)) {
+            // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
-            // This happens in tests.
-            // We therefore first clean up.
-            converse._tearDown();
+            // This happens in tests. We therefore first clean up.
+            _converse.connection.reset();
+            _converse.off();
+            _converse.stopListening();
+            _converse._tearDown();
         }
 
         var unloadevent;
@@ -157,8 +149,8 @@
         }
 
         // Logging
-        Strophe.log = function (level, msg) { converse.log(level+' '+msg, level); };
-        Strophe.error = function (msg) { converse.log(msg, 'error'); };
+        Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { _converse.log(msg, 'error'); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
@@ -186,8 +178,8 @@
 
         // Detect support for the user's locale
         // ------------------------------------
-        var locales = typeof locales === "undefined" ? {} : locales;
-        this.isConverseLocale = function (locale) { return typeof locales[locale] !== "undefined"; };
+        var locales = _.isUndefined(locales) ? {} : locales;
+        this.isConverseLocale = function (locale) { return !_.isUndefined(locales[locale]); };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
@@ -197,13 +189,15 @@
 
         // Translation machinery
         // ---------------------
-        var __ = utils.__.bind(this);
+        var __ = _converse.__ = utils.__.bind(_converse);
+        _converse.___ = utils.___;
         var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
         this.default_settings = {
             allow_contact_requests: true,
+            allow_non_roster_messaging: false,
             animate: true,
             authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
             auto_away: 0, // Seconds after which user status is set to 'away'
@@ -211,7 +205,8 @@
             auto_reconnect: false,
             auto_subscribe: false,
             auto_xa: 0, // Seconds after which user status is set to 'xa'
-            bosh_service_url: undefined, // The BOSH connection manager URL.
+            blacklisted_plugins: [],
+            bosh_service_url: undefined,
             connection_options: {},
             credentials_url: null, // URL from where login credentials can be fetched
             csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
@@ -225,30 +220,30 @@
             jid: undefined,
             keepalive: false,
             locked_domain: undefined,
-            message_carbons: false, // Support for XEP-280
+            message_carbons: false,
+            message_storage: 'session',
             password: undefined,
-            prebind: false, // XXX: Deprecated, use "authentication" instead.
             prebind_url: null,
             rid: undefined,
             roster_groups: false,
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
-            message_storage: 'session',
             strict_plugin_dependencies: false,
-            synchronize_availability: true, // Set to false to not sync with other clients or with resource name of the particular client that it should synchronize with
+            synchronize_availability: true,
             websocket_url: undefined,
+            whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
         };
-        _.extend(this, this.default_settings);
+        _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
-        _.extend(this, _.pick(settings, Object.keys(this.default_settings)));
+        _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
 
         // BBB
-        if (this.prebind === true) { this.authentication = converse.PREBIND; }
+        if (this.prebind === true) { this.authentication = _converse.PREBIND; }
 
-        if (this.authentication === converse.ANONYMOUS) {
+        if (this.authentication === _converse.ANONYMOUS) {
             if (this.auto_login && !this.jid) {
                 throw new Error("Config Error: you need to provide the server's " +
                       "domain via the 'jid' option when using anonymous " +
@@ -260,7 +255,7 @@
 
         // Module-level variables
         // ----------------------
-        this.callback = callback || function () {};
+        this.callback = callback || _.noop;
         /* When reloading the page:
          * For new sessions, we need to send out a presence stanza to notify
          * the server/network that we're online.
@@ -280,7 +275,7 @@
              * returned via the API.
              */
             if (!chatbox) { return; }
-            var view = converse.chatboxviews.get(chatbox.get('id'));
+            var view = _converse.chatboxviews.get(chatbox.get('id'));
             return {
                 'close': view.close.bind(view),
                 'focus': view.focus.bind(view),
@@ -295,31 +290,35 @@
         };
 
         this.sendCSI = function (stat) {
+            /* Send out a Chat Status Notification (XEP-0352)
+             *
+             * Parameters:
+             *  (String) stat: The user's chat status
+             */
             /* Send out a Chat Status Notification (XEP-0352) */
-            if (converse.features[Strophe.NS.CSI] || true) {
-                converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
-                converse.inactive = (stat === converse.INACTIVE) ? true : false;
-            }
+            // XXX if (converse.features[Strophe.NS.CSI] || true) {
+            _converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
+            _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
         };
 
         this.onUserActivity = function () {
             /* Resets counters and flags relating to CSI and auto_away/auto_xa */
-            if (converse.idle_seconds > 0) {
-                converse.idle_seconds = 0;
+            if (_converse.idle_seconds > 0) {
+                _converse.idle_seconds = 0;
             }
-            if (!converse.connection.authenticated) {
+            if (!_converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // converse can happen when the connection reconnects.
                 return;
             }
-            if (converse.inactive) {
-                converse.sendCSI(converse.ACTIVE);
+            if (_converse.inactive) {
+                _converse.sendCSI(_converse.ACTIVE);
             }
-            if (converse.auto_changed_status === true) {
-                converse.auto_changed_status = false;
+            if (_converse.auto_changed_status === true) {
+                _converse.auto_changed_status = false;
                 // XXX: we should really remember the original state here, and
                 // then set it back to that...
-                converse.xmppstatus.setStatus(converse.default_state);
+                _converse.xmppstatus.setStatus(_converse.default_state);
             }
         };
 
@@ -327,27 +326,27 @@
             /* An interval handler running every second.
              * Used for CSI and the auto_away and auto_xa features.
              */
-            if (!converse.connection.authenticated) {
+            if (!_converse.connection.authenticated) {
                 // We can't send out any stanzas when there's no authenticated connection.
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = converse.xmppstatus.getStatus();
-            converse.idle_seconds++;
-            if (converse.csi_waiting_time > 0 &&
-                    converse.idle_seconds > converse.csi_waiting_time &&
-                    !converse.inactive) {
-                converse.sendCSI(converse.INACTIVE);
+            var stat = _converse.xmppstatus.getStatus();
+            _converse.idle_seconds++;
+            if (_converse.csi_waiting_time > 0 &&
+                    _converse.idle_seconds > _converse.csi_waiting_time &&
+                    !_converse.inactive) {
+                _converse.sendCSI(_converse.INACTIVE);
             }
-            if (converse.auto_away > 0 &&
-                    converse.idle_seconds > converse.auto_away &&
+            if (_converse.auto_away > 0 &&
+                    _converse.idle_seconds > _converse.auto_away &&
                     stat !== 'away' && stat !== 'xa') {
-                converse.auto_changed_status = true;
-                converse.xmppstatus.setStatus('away');
-            } else if (converse.auto_xa > 0 &&
-                    converse.idle_seconds > converse.auto_xa && stat !== 'xa') {
-                converse.auto_changed_status = true;
-                converse.xmppstatus.setStatus('xa');
+                _converse.auto_changed_status = true;
+                _converse.xmppstatus.setStatus('away');
+            } else if (_converse.auto_xa > 0 &&
+                    _converse.idle_seconds > _converse.auto_xa && stat !== 'xa') {
+                _converse.auto_changed_status = true;
+                _converse.xmppstatus.setStatus('xa');
             }
         };
 
@@ -355,27 +354,27 @@
             /* Set an interval of one second and register a handler for it.
              * Required for the auto_away, auto_xa and csi_waiting_time features.
              */
-            if (converse.auto_away < 1 && converse.auto_xa < 1 && converse.csi_waiting_time < 1) {
+            if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1) {
                 // Waiting time of less then one second means features aren't used.
                 return;
             }
-            converse.idle_seconds = 0;
-            converse.auto_changed_status = false; // Was the user's status changed by converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
-            converse.everySecondTrigger = window.setInterval(converse.onEverySecond, 1000);
+            _converse.idle_seconds = 0;
+            _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
+            $(window).on('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (subject, klass, message) {
             $('.conn-feedback').each(function (idx, el) {
-                var $el = $(el);
-                $el.addClass('conn-feedback').text(subject);
+                el.classList.add('conn-feedback');
+                el.textContent = subject;
                 if (klass) {
-                    $el.addClass(klass);
+                    el.classList.add(klass);
                 } else {
-                    $el.removeClass('error');
+                    el.classList.remove('error');
                 }
             });
-            converse.emit('feedback', {
+            _converse.emit('feedback', {
                 'klass': klass,
                 'message': message,
                 'subject': subject
@@ -384,6 +383,7 @@
 
         this.rejectPresenceSubscription = function (jid, message) {
             /* Reject or cancel another user's subscription to our presence updates.
+             *
              *  Parameters:
              *    (String) jid - The Jabber ID of the user whose subscription
              *      is being canceled.
@@ -391,99 +391,112 @@
              */
             var pres = $pres({to: jid, type: "unsubscribed"});
             if (message && message !== "") { pres.c("status").t(message); }
-            converse.connection.send(pres);
+            _converse.connection.send(pres);
         };
 
-
-        this.reconnect = _.debounce(function (condition) {
-            converse.log('The connection has dropped, attempting to reconnect.');
-            converse.giveFeedback(
+        this.reconnect = _.debounce(function () {
+            _converse.log('RECONNECTING');
+            _converse.log('The connection has dropped, attempting to reconnect.');
+            _converse.giveFeedback(
                 __("Reconnecting"),
                 'warn',
                 __('The connection has dropped, attempting to reconnect.')
             );
-            converse.connection.reconnecting = true;
-            converse.connection.disconnect('re-connecting');
-            converse.connection.reset();
-            converse._tearDown();
-            converse.logIn(null, true);
-        }, 1000);
+            _converse.connection.reconnecting = true;
+            _converse._tearDown();
+            _converse.logIn(null, true);
+        }, 3000, {'leading': true});
 
         this.disconnect = function () {
-            delete converse.connection.reconnecting;
-            converse._tearDown();
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.emit('disconnected');
-            converse.log('DISCONNECTED');
-            return 'disconnected';
+            _converse.log('DISCONNECTED');
+            delete _converse.connection.reconnecting;
+            _converse._tearDown();
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.emit('disconnected');
         };
 
-        this.onDisconnected = function (condition) {
-            if (converse.disconnection_cause !== converse.LOGOUT && converse.auto_reconnect) {
-                if (converse.disconnection_cause === Strophe.Status.CONNFAIL) {
-                    converse.reconnect(condition);
-                    converse.log('RECONNECTING');
-                } else if (converse.disconnection_cause === Strophe.Status.DISCONNECTING ||
-                           converse.disconnection_cause === Strophe.Status.DISCONNECTED) {
-                    window.setTimeout(_.partial(converse.reconnect, condition), 3000);
-                    converse.log('RECONNECTING IN 3 SECONDS');
+        this.onDisconnected = function () {
+            /* Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
+             * Will either start a teardown process for converse.js or attempt
+             * to reconnect.
+             */
+            if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
+                if (_converse.credentials_url && _converse.auto_reconnect) {
+                    /* In this case, we reconnect, because we might be receiving
+                     * expirable tokens from the credentials_url.
+                     */
+                    _converse.emit('will-reconnect');
+                    return _converse.reconnect();
+                } else {
+                    return _converse.disconnect();
                 }
-                converse.emit('reconnecting');
-                return 'reconnecting';
+            } else if (_converse.disconnection_cause === _converse.LOGOUT ||
+                    _converse.disconnection_reason === "host-unknown" ||
+                    !_converse.auto_reconnect) {
+                return _converse.disconnect();
             }
-            return this.disconnect();
+            _converse.emit('will-reconnect');
+            _converse.reconnect();
         };
 
-        this.setDisconnectionCause = function (connection_status) {
-            if (typeof converse.disconnection_cause === "undefined") {
-                converse.disconnection_cause = connection_status;
+        this.setDisconnectionCause = function (cause, reason, override) {
+            /* Used to keep track of why we got disconnected, so that we can
+             * decide on what the next appropriate action is (in onDisconnected)
+             */
+            if (_.isUndefined(cause)) {
+                delete _converse.disconnection_cause;
+                delete _converse.disconnection_reason;
+            } else if (_.isUndefined(_converse.disconnection_cause) || override) {
+                _converse.disconnection_cause = cause;
+                _converse.disconnection_reason = reason;
             }
         };
 
         this.onConnectStatusChanged = function (status, condition) {
-            converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
+            /* Callback method called by Strophe as the Strophe.Connection goes
+             * through various states while establishing or tearing down a
+             * connection.
+             */
+            _converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
-                converse.send_initial_presence = true;
-                delete converse.disconnection_cause;
-                if (converse.connection.reconnecting) {
-                    converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
-                    converse.onConnected(true);
+                _converse.send_initial_presence = true;
+                _converse.setDisconnectionCause();
+                if (_converse.connection.reconnecting) {
+                    _converse.log(status === Strophe.Status.CONNECTED ? 'Reconnected' : 'Reattached');
+                    _converse.onConnected(true);
                 } else {
-                    converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
-                    if (converse.connection.restored) {
+                    _converse.log(status === Strophe.Status.CONNECTED ? 'Connected' : 'Attached');
+                    if (_converse.connection.restored) {
                         // No need to send an initial presence stanza when
                         // we're restoring an existing session.
-                        converse.send_initial_presence = false;
+                        _converse.send_initial_presence = false;
                     }
-                    converse.onConnected();
+                    _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                converse.setDisconnectionCause(status);
-                converse.onDisconnected(condition);
+                _converse.setDisconnectionCause(status, condition);
+                _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                converse.giveFeedback(
+                _converse.giveFeedback(
                     __('Connection error'), 'error',
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                converse.giveFeedback(__('Connecting'));
+                _converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                converse.giveFeedback(__('Authenticating'));
+                _converse.giveFeedback(__('Authenticating'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                converse.giveFeedback(__('Authentication failed.'), 'error');
-                converse.connection.disconnect(__('Authentication Failed'));
-                converse.disconnection_cause = Strophe.Status.AUTHFAIL;
+                _converse.giveFeedback(__('Authentication Failed'), 'error');
+                _converse.setDisconnectionCause(status, condition, true);
             } else if (status === Strophe.Status.CONNFAIL) {
-                converse.setDisconnectionCause(status);
+                _converse.giveFeedback(
+                    __('Connection failed'), 'error',
+                    __('An error occurred while connecting to the chat server: '+condition)
+                );
+                _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                converse.setDisconnectionCause(status);
-                if (condition) {
-                    converse.giveFeedback(
-                        __("Disconnected"), 'warn',
-                        __("The connection to the chat server has dropped")
-                    );
-                }
+                _converse.setDisconnectionCause(status, condition);
             }
         };
 
@@ -512,14 +525,14 @@
         this.initStatus = function () {
             var deferred = new $.Deferred();
             this.xmppstatus = new this.XMPPStatus();
-            var id = b64_sha1('converse.xmppstatus-'+converse.bare_jid);
+            var id = b64_sha1('converse.xmppstatus-'+_converse.bare_jid);
             this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.xmppstatus.fetch({
                 success: deferred.resolve,
                 error: deferred.resolve
             });
-            converse.emit('statusInitialized');
+            _converse.emit('statusInitialized');
             return deferred.promise();
         };
 
@@ -527,7 +540,7 @@
             this.session = new this.Session();
             var id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[converse.storage](id);
+            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.session.fetch();
         };
 
@@ -539,15 +552,14 @@
         };
 
         this.logOut = function () {
-            converse.chatboxviews.closeAllChatBoxes();
-            converse.disconnection_cause = converse.LOGOUT;
-            if (typeof converse.connection !== 'undefined') {
-                converse.connection.disconnect();
-                converse.connection.reset();
+            _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
+            if (!_.isUndefined(_converse.connection)) {
+                _converse.connection.disconnect();
             }
-            converse.clearSession();
-            converse._tearDown();
-            converse.emit('logout');
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.clearSession();
+            _converse._tearDown();
+            _converse.emit('logout');
         };
 
         this.saveWindowState = function (ev, hidden) {
@@ -571,9 +583,9 @@
                 state = document[hidden] ? "hidden" : "visible";
             }
             if (state  === 'visible') {
-                converse.clearMsgCounter();
+                _converse.clearMsgCounter();
             }
-            converse.windowState = state;
+            _converse.windowState = state;
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -582,23 +594,23 @@
             var hidden = "hidden";
             // Standards:
             if (hidden in document) {
-                document.addEventListener("visibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "mozHidden") in document) {
-                document.addEventListener("mozvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("mozvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "webkitHidden") in document) {
-                document.addEventListener("webkitvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("webkitvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ((hidden = "msHidden") in document) {
-                document.addEventListener("msvisibilitychange", _.partial(converse.saveWindowState, _, hidden));
+                document.addEventListener("msvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
             } else if ("onfocusin" in document) {
                 // IE 9 and lower:
-                document.onfocusin = document.onfocusout = _.partial(converse.saveWindowState, _, hidden);
+                document.onfocusin = document.onfocusout = _.partial(_converse.saveWindowState, _, hidden);
             } else {
                 // All others:
-                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(converse.saveWindowState, _, hidden);
+                window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(_converse.saveWindowState, _, hidden);
             }
             // set the initial state (but only if browser supports the Page Visibility API)
             if( document[hidden] !== undefined ) {
-                _.partial(converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
+                _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
         };
 
@@ -616,11 +628,11 @@
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler(function (iq) {
-                if ($(iq).find('error').length > 0) {
-                    converse.log('ERROR: An error occured while trying to enable message carbons.');
+                if (iq.querySelectorAll('error').length > 0) {
+                    _converse.log('ERROR: An error occured while trying to enable message carbons.');
                 } else {
                     this.session.save({carbons_enabled: true});
-                    converse.log('Message carbons have been enabled.');
+                    _converse.log('Message carbons have been enabled.');
                 }
             }.bind(this), null, "iq", null, "enablecarbons");
             this.connection.send(carbons_iq);
@@ -630,48 +642,48 @@
             /* Initialize the Bakcbone collections that represent the contats
              * roster and the roster groups.
              */
-            converse.roster = new converse.RosterContacts();
-            converse.roster.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.contacts-'+converse.bare_jid));
-            converse.rostergroups = new converse.RosterGroups();
-            converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.roster.groups'+converse.bare_jid));
-            converse.emit('rosterInitialized');
+            _converse.roster = new _converse.RosterContacts();
+            _converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.contacts-'+_converse.bare_jid));
+            _converse.rostergroups = new _converse.RosterGroups();
+            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1('converse.roster.groups'+_converse.bare_jid));
+            _converse.emit('rosterInitialized');
         };
 
         this.populateRoster = function () {
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
              */
-            converse.rostergroups.fetchRosterGroups().then(function () {
-                converse.emit('rosterGroupsFetched');
-                converse.roster.fetchRosterContacts().then(function () {
-                    converse.emit('rosterContactsFetched');
-                    converse.sendInitialPresence();
+            _converse.rostergroups.fetchRosterGroups().then(function () {
+                _converse.emit('rosterGroupsFetched');
+                _converse.roster.fetchRosterContacts().then(function () {
+                    _converse.emit('rosterContactsFetched');
+                    _converse.sendInitialPresence();
                 });
             });
         };
 
         this.unregisterPresenceHandler = function () {
-            if (typeof converse.presence_ref !== 'undefined') {
-                converse.connection.deleteHandler(converse.presence_ref);
-                delete converse.presence_ref;
+            if (!_.isUndefined(_converse.presence_ref)) {
+                _converse.connection.deleteHandler(_converse.presence_ref);
+                delete _converse.presence_ref;
             }
         };
 
         this.registerPresenceHandler = function () {
-            converse.unregisterPresenceHandler();
-            converse.presence_ref = converse.connection.addHandler(
+            _converse.unregisterPresenceHandler();
+            _converse.presence_ref = _converse.connection.addHandler(
                 function (presence) {
-                    converse.roster.presenceHandler(presence);
+                    _converse.roster.presenceHandler(presence);
                     return true;
                 }, null, 'presence', null);
         };
 
 
         this.sendInitialPresence = function () {
-            if (converse.send_initial_presence) {
-                converse.xmppstatus.sendPresence();
+            if (_converse.send_initial_presence) {
+                _converse.xmppstatus.sendPresence();
             }
         };
 
@@ -685,30 +697,30 @@
                 // cached data. However we still emit an event, to give
                 // event handlers a chance to register views for the
                 // roster and its groups, before we start populating.
-                converse.emit('rosterReadyAfterReconnection');
+                _converse.emit('rosterReadyAfterReconnection');
             } else {
-                converse.registerIntervalHandler();
-                converse.initRoster();
+                _converse.registerIntervalHandler();
+                _converse.initRoster();
             }
             // First set up chat boxes, before populating the roster, so that
             // the controlbox is properly set up and ready for the rosterview.
-            converse.chatboxes.onConnected();
-            converse.populateRoster();
-            converse.registerPresenceHandler();
-            converse.giveFeedback(__('Contacts'));
+            _converse.chatboxes.onConnected();
+            _converse.populateRoster();
+            _converse.registerPresenceHandler();
+            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
-                converse.xmppstatus.sendPresence();
+                _converse.xmppstatus.sendPresence();
             } else {
                 init_deferred.resolve();
-                converse.emit('initialized');
+                _converse.emit('initialized');
             }
         };
 
         this.setUserJid = function () {
-            converse.jid = converse.connection.jid;
-            converse.bare_jid = Strophe.getBareJidFromJid(converse.connection.jid);
-            converse.resource = Strophe.getResourceFromJid(converse.connection.jid);
-            converse.domain = Strophe.getDomainFromJid(converse.connection.jid);
+            _converse.jid = _converse.connection.jid;
+            _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
+            _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
+            _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
         };
 
         this.onConnected = function (reconnecting) {
@@ -717,37 +729,37 @@
              */
             // Solves problem of returned PubSub BOSH response not received
             // by browser.
-            converse.connection.flush();
+            _converse.connection.flush();
 
-            converse.setUserJid();
-            converse.enableCarbons();
+            _converse.setUserJid();
+            _converse.enableCarbons();
 
             // If there's no xmppstatus obj, then we were never connected to
             // begin with, so we set reconnecting to false.
-            reconnecting = _.isUndefined(converse.xmppstatus) ? false : reconnecting;
+            reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
 
             if (reconnecting) {
-                converse.onStatusInitialized(true);
-                converse.emit('reconnected');
+                _converse.onStatusInitialized(true);
+                _converse.emit('reconnected');
             } else {
                 // There might be some open chat boxes. We don't
                 // know whether these boxes are of the same account or not, so we
                 // close them now.
-                converse.chatboxviews.closeAllChatBoxes();
-                converse.features = new converse.Features();
-                converse.initStatus().done(_.partial(converse.onStatusInitialized, false));
-                converse.emit('connected');
+                _converse.chatboxviews.closeAllChatBoxes();
+                _converse.features = new _converse.Features();
+                _converse.initStatus().done(_.partial(_converse.onStatusInitialized, false));
+                _converse.emit('connected');
             }
         };
 
         this.RosterContact = Backbone.Model.extend({
 
-            initialize: function (attributes, options) {
+            initialize: function (attributes) {
                 var jid = attributes.jid;
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
-                this.set(_.extend({
+                this.set(_.assignIn({
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
@@ -755,14 +767,14 @@
                     'user_id': Strophe.getNodeFromJid(jid),
                     'resources': resource ? [resource] : [],
                     'groups': [],
-                    'image_type': 'image/png',
-                    'image': "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",
+                    'image_type': DEFAULT_IMAGE_TYPE,
+                    'image': DEFAULT_IMAGE,
                     'status': ''
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
                 this.on('change:chat_status', function (item) {
-                    converse.emit('contactStatusChanged', item.attributes);
+                    _converse.emit('contactStatusChanged', item.attributes);
                 });
             },
 
@@ -778,11 +790,11 @@
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                var nick = converse.xmppstatus.get('fullname');
+                var nick = _converse.xmppstatus.get('fullname');
                 if (nick && nick !== "") {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
-                converse.connection.send(pres);
+                _converse.connection.send(pres);
                 return this;
             },
 
@@ -792,13 +804,13 @@
                  * state notification by sending a presence stanza of type
                  * "subscribe" to the contact
                  */
-                converse.connection.send($pres({
+                _converse.connection.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
             },
 
-            ackUnsubscribe: function (jid) {
+            ackUnsubscribe: function () {
                 /* Upon receiving the presence stanza of type "unsubscribed",
                  * the user SHOULD acknowledge receipt of that subscription state
                  * notification by sending a presence stanza of type "unsubscribe"
@@ -807,7 +819,7 @@
                  *  Parameters:
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
-                converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
+                _converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
 
@@ -816,7 +828,7 @@
                  * Parameters:
                  *   (String) message - Optional message to send to the person being unauthorized
                  */
-                converse.rejectPresenceSubscription(this.get('jid'), message);
+                _converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },
 
@@ -829,7 +841,7 @@
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
-                converse.connection.send(pres);
+                _converse.connection.send(pres);
                 return this;
             },
 
@@ -860,25 +872,25 @@
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                converse.connection.sendIQ(iq, callback, callback);
+                _converse.connection.sendIQ(iq, callback, callback);
                 return this;
             }
         });
 
 
         this.RosterContacts = Backbone.Collection.extend({
-            model: converse.RosterContact,
+            model: _converse.RosterContact,
 
             comparator: function (contact1, contact2) {
                 var name1, name2;
                 var status1 = contact1.get('chat_status') || 'offline';
                 var status2 = contact2.get('chat_status') || 'offline';
-                if (converse.STATUS_WEIGHTS[status1] === converse.STATUS_WEIGHTS[status2]) {
+                if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
                     name1 = contact1.get('fullname').toLowerCase();
                     name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
-                    return converse.STATUS_WEIGHTS[status1] < converse.STATUS_WEIGHTS[status2] ? -1 : 1;
+                    return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
             },
 
@@ -901,10 +913,10 @@
                              * fetching the roster we are ready to receive presence
                              * updates from our contacts.
                              */
-                            converse.send_initial_presence = true;
-                            converse.roster.fetchFromServer(deferred.resolve);
+                            _converse.send_initial_presence = true;
+                            _converse.roster.fetchFromServer(deferred.resolve);
                         } else {
-                            converse.emit('cachedRoster', collection);
+                            _converse.emit('cachedRoster', collection);
                             deferred.resolve();
                         }
                     }
@@ -913,17 +925,20 @@
             },
 
             subscribeToSuggestedItems: function (msg) {
-                $(msg).find('item').each(function (i, items) {
-                    if (this.getAttribute('action') === 'add') {
-                        converse.roster.addAndSubscribe(
-                                this.getAttribute('jid'), null, converse.xmppstatus.get('fullname'));
+                _.each(msg.querySelectorAll('item'), function (item) {
+                    if (item.getAttribute('action') === 'add') {
+                        _converse.roster.addAndSubscribe(
+                            item.getAttribute('jid'),
+                            null,
+                            _converse.xmppstatus.get('fullname')
+                        );
                     }
                 });
                 return true;
             },
 
             isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(converse.connection.jid));
+                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(_converse.connection.jid));
             },
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
@@ -938,7 +953,7 @@
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
                 this.addContact(jid, name, groups, attributes).done(function (contact) {
-                    if (contact instanceof converse.RosterContact) {
+                    if (contact instanceof _converse.RosterContact) {
                         contact.subscribe(message);
                     }
                 });
@@ -958,12 +973,12 @@
                 var iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', { jid: jid, name: name });
-                _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                converse.connection.sendIQ(iq, callback, errback);
+                _.each(groups, function (group) { iq.c('group').t(group).up(); });
+                _converse.connection.sendIQ(iq, callback, errback);
             },
 
             addContact: function (jid, name, groups, attributes) {
-                /* Adds a RosterContact instance to converse.roster and
+                /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
                  * responded.
@@ -978,8 +993,8 @@
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
-                    function (iq) {
-                        var contact = this.create(_.extend({
+                    function () {
+                        var contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
                             groups: groups,
@@ -991,7 +1006,7 @@
                     }.bind(this),
                     function (err) {
                         alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
-                        converse.log(err);
+                        _converse.log(err);
                         deferred.resolve(err);
                     }
                 );
@@ -1004,7 +1019,7 @@
                 if (item) {
                     resources = item.get('resources');
                     if (resources) {
-                        if (_.indexOf(resources, resource) === -1) {
+                        if (!_.includes(resources, resource)) {
                             resources.push(resource);
                             item.set({'resources': resources});
                         }
@@ -1016,12 +1031,12 @@
 
             subscribeBack: function (bare_jid) {
                 var contact = this.get(bare_jid);
-                if (contact instanceof converse.RosterContact) {
+                if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
                     this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
-                        if (contact instanceof converse.RosterContact) {
+                        if (contact instanceof _converse.RosterContact) {
                             contact.authorize().subscribe();
                         }
                     });
@@ -1034,11 +1049,11 @@
                     models = this.models,
                     models_length = models.length,
                     i;
-                if (converse.show_only_online_users) {
+                if (_converse.show_only_online_users) {
                     ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                 }
                 for (i=0; i<models_length; i++) {
-                    if (_.indexOf(ignored, models[i].get('chat_status')) === -1) {
+                    if (!_.includes(ignored, models[i].get('chat_status'))) {
                         count++;
                     }
                 }
@@ -1054,32 +1069,31 @@
                  */
                 var id = iq.getAttribute('id');
                 var from = iq.getAttribute('from');
-                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== converse.bare_jid) {
+                if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     // XXX: Some naughty servers apparently send from a full
                     // JID so we need to explicitly compare bare jids here.
                     // https://github.com/jcbrand/converse.js/issues/493
-                    converse.connection.send(
-                        $iq({type: 'error', id: id, from: converse.connection.jid})
+                    _converse.connection.send(
+                        $iq({type: 'error', id: id, from: _converse.connection.jid})
                             .c('error', {'type': 'cancel'})
                             .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
                     );
                     return true;
                 }
-                converse.connection.send($iq({type: 'result', id: id, from: converse.connection.jid}));
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-
-                converse.emit('rosterPush', iq);
+                _converse.connection.send($iq({type: 'result', id: id, from: _converse.connection.jid}));
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                _.each(items, this.updateContact.bind(this));
+                _converse.emit('rosterPush', iq);
                 return true;
             },
 
             fetchFromServer: function (callback) {
                 /* Get the roster from the XMPP server */
-                var iq = $iq({type: 'get', 'id': converse.connection.getUniqueId('roster')})
+                var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
-                return converse.connection.sendIQ(iq, function () {
+                return _converse.connection.sendIQ(iq, function () {
                         this.onReceivedFromServer.apply(this, arguments);
                         callback.apply(this, arguments);
                     }.bind(this));
@@ -1089,10 +1103,10 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                $(iq).children('query').find('item').each(function (idx, item) {
-                    this.updateContact(item);
-                }.bind(this));
-                converse.emit('roster', iq);
+                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
+                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                _.each(items, this.updateContact.bind(this));
+                _converse.emit('roster', iq);
             },
 
             updateContact: function (item) {
@@ -1101,13 +1115,10 @@
                  */
                 var jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
-                var groups = [],
+                var groups = _.map(item.getElementsByTagName('group'), Strophe.getText),
                     contact = this.get(jid),
                     ask = item.getAttribute("ask"),
                     subscription = item.getAttribute("subscription");
-                $.map(item.getElementsByTagName('group'), function (group) {
-                    groups.push(Strophe.getText(group));
-                });
                 if (!contact) {
                     if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
@@ -1142,29 +1153,29 @@
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick = $(presence).children('nick[xmlns='+Strophe.NS.NICK+']').text();
+                var nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
                 var user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: nick || bare_jid,
+                    fullname: nick_el && nick_el.textContent || bare_jid,
                 };
                 this.create(user_data);
-                converse.emit('contactRequest', user_data);
+                _converse.emit('contactRequest', user_data);
             },
 
             handleIncomingSubscription: function (presence) {
                 var jid = presence.getAttribute('from');
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var contact = this.get(bare_jid);
-                if (!converse.allow_contact_requests) {
-                    converse.rejectPresenceSubscription(
+                if (!_converse.allow_contact_requests) {
+                    _converse.rejectPresenceSubscription(
                         jid,
                         __("This client does not allow presence subscriptions")
                     );
                 }
-                if (converse.auto_subscribe) {
+                if (_converse.auto_subscribe) {
                     if ((!contact) || (contact.get('subscription') !== 'to')) {
                         this.subscribeBack(bare_jid);
                     } else {
@@ -1184,37 +1195,34 @@
             },
 
             presenceHandler: function (presence) {
-                var $presence = $(presence),
-                    presence_type = presence.getAttribute('type');
+                var presence_type = presence.getAttribute('type');
                 if (presence_type === 'error') { return true; }
                 var jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
-                    chat_status = $presence.find('show').text() || 'online',
-                    status_message = $presence.find('status'),
+                    chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                    status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
-                    if ((converse.connection.jid !== jid) &&
+                    if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
-                        (converse.synchronize_availability === true ||
-                         converse.synchronize_availability === resource)) {
+                        (_converse.synchronize_availability === true ||
+                         _converse.synchronize_availability === resource)) {
                         // Another resource has changed its status and
                         // synchronize_availability option set to update,
                         // we'll update ours as well.
-                        converse.xmppstatus.save({'status': chat_status});
-                        if (status_message.length) {
-                            converse.xmppstatus.save({
-                                'status_message': status_message.text()
-                            });
+                        _converse.xmppstatus.save({'status': chat_status});
+                        if (status_message) {
+                            _converse.xmppstatus.save({'status_message': status_message});
                         }
                     }
                     return;
-                } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                } else if (sizzle('query[xmlns="'+Strophe.NS.MUC+'"]', presence).length) {
                     return; // Ignore MUC
                 }
-                if (contact && (status_message.text() !== contact.get('status'))) {
-                    contact.save({'status': status_message.text()});
+                if (contact && (status_message !== contact.get('status'))) {
+                    contact.save({'status': status_message});
                 }
                 if (presence_type === 'subscribed' && contact) {
                     contact.ackSubscribe();
@@ -1239,19 +1247,19 @@
 
 
         this.RosterGroup = Backbone.Model.extend({
-            initialize: function (attributes, options) {
-                this.set(_.extend({
+            initialize: function (attributes) {
+                this.set(_.assignIn({
                     description: DESC_GROUP_TOGGLE,
-                    state: converse.OPENED
+                    state: _converse.OPENED
                 }, attributes));
                 // Collection of contacts belonging to this group.
-                this.contacts = new converse.RosterContacts();
+                this.contacts = new _converse.RosterContacts();
             }
         });
 
 
         this.RosterGroups = Backbone.Collection.extend({
-            model: converse.RosterGroup,
+            model: _converse.RosterGroup,
 
             fetchRosterGroups: function () {
                 /* Fetches all the roster groups from sessionStorage.
@@ -1274,14 +1282,14 @@
         this.Message = Backbone.Model.extend({
             defaults: function(){
                 return {
-                    msgid: converse.connection.getUniqueId()
+                    msgid: _converse.connection.getUniqueId()
                 };
             }
         });
 
 
         this.Messages = Backbone.Collection.extend({
-            model: converse.Message,
+            model: _converse.Message,
             comparator: 'time'
         });
 
@@ -1289,9 +1297,9 @@
         this.ChatBox = Backbone.Model.extend({
 
             initialize: function () {
-                this.messages = new converse.Messages();
-                this.messages.browserStorage = new Backbone.BrowserStorage[converse.message_storage](
-                    b64_sha1('converse.messages'+this.get('jid')+converse.bare_jid));
+                this.messages = new _converse.Messages();
+                this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                    b64_sha1('converse.messages'+this.get('jid')+_converse.bare_jid));
                 this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
@@ -1304,40 +1312,40 @@
                 });
             },
 
-            getMessageAttributes: function ($message, $delay, original_stanza) {
-                $delay = $delay || $message.find('delay');
-                var type = $message.attr('type'),
+            getMessageAttributes: function (message, delay, original_stanza) {
+                delay = delay || message.querySelector('delay');
+                var type = message.getAttribute('type'),
                     body, stamp, time, sender, from;
 
                 if (type === 'error') {
-                    body = $message.find('error').children('text').text();
+                    body = _.propertyOf(message.querySelector('error text'))('textContent');
                 } else {
-                    body = $message.children('body').text();
+                    body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
-                var delayed = $delay.length > 0,
+                var delayed = !_.isNull(delay),
                     fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
-                    chat_state = $message.find(converse.COMPOSING).length && converse.COMPOSING ||
-                        $message.find(converse.PAUSED).length && converse.PAUSED ||
-                        $message.find(converse.INACTIVE).length && converse.INACTIVE ||
-                        $message.find(converse.ACTIVE).length && converse.ACTIVE ||
-                        $message.find(converse.GONE).length && converse.GONE;
+                    chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                        message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                        message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                        message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                        message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
                 if (is_groupchat) {
-                    from = Strophe.unescapeNode(Strophe.getResourceFromJid($message.attr('from')));
+                    from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
                 } else {
-                    from = Strophe.getBareJidFromJid($message.attr('from'));
+                    from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
                 if (_.isEmpty(fullname)) {
                     fullname = from;
                 }
                 if (delayed) {
-                    stamp = $delay.attr('stamp');
+                    stamp = delay.getAttribute('stamp');
                     time = stamp;
                 } else {
                     time = moment().format();
                 }
-                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === converse.bare_jid)) {
+                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
                 } else {
                     sender = 'them';
@@ -1348,24 +1356,24 @@
                     'delayed': delayed,
                     'fullname': fullname,
                     'message': body || undefined,
-                    'msgid': $message.attr('id'),
+                    'msgid': message.getAttribute('id'),
                     'sender': sender,
                     'time': time
                 };
             },
 
-            createMessage: function ($message, $delay, original_stanza) {
+            createMessage: function (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             }
         });
 
         this.ChatBoxes = Backbone.Collection.extend({
-            model: converse.ChatBox,
+            model: _converse.ChatBox,
             comparator: 'time_opened',
 
             registerMessageHandler: function () {
-                converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+                _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+                _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
             },
 
             chatBoxMayBeShown: function (chatbox) {
@@ -1384,12 +1392,12 @@
                         chatbox.trigger('show');
                     }
                 });
-                converse.emit('chatBoxesFetched');
+                _converse.emit('chatBoxesFetched');
             },
 
             onConnected: function () {
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.chatboxes-'+converse.bare_jid));
+                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1('converse.chatboxes-'+_converse.bare_jid));
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
@@ -1401,9 +1409,8 @@
                 /* Handler method for all incoming error message stanzas
                  */
                 // TODO: we can likely just reuse "onMessage" below
-                var $message = $(message),
-                    from_jid =  Strophe.getBareJidFromJid($message.attr('from'));
-                if (from_jid === converse.bare_jid) {
+                var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
+                if (from_jid === _converse.bare_jid) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.
@@ -1411,7 +1418,7 @@
                 if (!chatbox) {
                     return true;
                 }
-                chatbox.createMessage($message, null, message);
+                chatbox.createMessage(message, null, message);
                 return true;
             },
 
@@ -1419,16 +1426,16 @@
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
-                var $message = $(message),
-                    contact_jid, $forwarded, $delay, from_bare_jid,
+                var original_stanza = message,
+                    contact_jid, forwarded, delay, from_bare_jid,
                     from_resource, is_me, msgid,
                     chatbox, resource,
-                    from_jid = $message.attr('from'),
-                    to_jid = $message.attr('to'),
+                    from_jid = message.getAttribute('from'),
+                    to_jid = message.getAttribute('to'),
                     to_resource = Strophe.getResourceFromJid(to_jid);
 
-                if (converse.filter_by_resource && (to_resource && to_resource !== converse.resource)) {
-                    converse.log(
+                if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+                    _converse.log(
                         'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
                         'info'
                     );
@@ -1437,23 +1444,31 @@
                     // XXX: Ideally we wouldn't have to check for headline
                     // messages, but Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
-                    converse.log(
+                    _converse.log(
                         "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
                         'info'
                     );
                     return true;
                 }
-                $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
-                    $message = $forwarded.children('message');
-                    $delay = $forwarded.children('delay');
-                    from_jid = $message.attr('from');
-                    to_jid = $message.attr('to');
+                forwarded = message.querySelector('forwarded');
+                if (!_.isNull(forwarded)) {
+                    var forwarded_message = forwarded.querySelector('message');
+                    var forwarded_from = forwarded_message.getAttribute('from');
+                    if (Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                        // Prevent message forging via carbons
+                        //
+                        // https://xmpp.org/extensions/xep-0280.html#security
+                        return true;
+                    }
+                    message = forwarded_message;
+                    delay = forwarded.querySelector('delay');
+                    from_jid = message.getAttribute('from');
+                    to_jid = message.getAttribute('to');
                 }
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
-                is_me = from_bare_jid === converse.bare_jid;
-                msgid = $message.attr('id');
+                is_me = from_bare_jid === _converse.bare_jid;
+                msgid = message.getAttribute('id');
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -1462,16 +1477,16 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                converse.emit('message', message);
+                _converse.emit('message', message);
                 // Get chat box, but only create a new one when the message has a body.
-                chatbox = this.getChatBox(contact_jid, $message.find('body').length > 0);
+                chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 if (!chatbox) {
                     return true;
                 }
                 if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
                     return true; // We already have this message stored.
                 }
-                chatbox.createMessage($message, $delay, message);
+                chatbox.createMessage(message, delay, original_stanza);
                 return true;
             },
 
@@ -1482,24 +1497,34 @@
                  * Parameters:
                  *    (String) jid - The JID of the user whose chat box we want
                  *    (Boolean) create - Should a new chat box be created if none exists?
+                 *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
                 var bare_jid = Strophe.getBareJidFromJid(jid);
                 var chatbox = this.get(bare_jid);
                 if (!chatbox && create) {
-                    var roster_item = converse.roster.get(bare_jid);
-                    if (roster_item === undefined) {
-                        converse.log('Could not get roster item for JID '+bare_jid, 'error');
+                    var roster_info = {};
+                    var roster_item = _converse.roster.get(bare_jid);
+                    if (! _.isUndefined(roster_item)) {
+                        roster_info = {
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url'),
+                        };
+                    } else if (!_converse.allow_non_roster_messaging) {
+                        _converse.log('Could not get roster item for JID '+bare_jid+
+                                    ' and allow_non_roster_messaging is set to false', 'error');
                         return;
                     }
-                    chatbox = this.create(_.extend({
+                    chatbox = this.create(_.assignIn({
                         'id': bare_jid,
                         'jid': bare_jid,
-                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url')
-                    }, attrs || {}));
+                        'fullname': jid,
+                        'image_type': DEFAULT_IMAGE_TYPE,
+                        'image': DEFAULT_IMAGE,
+                        'url': '',
+                    }, roster_info, attrs || {}));
                 }
                 return chatbox;
             }
@@ -1557,7 +1582,7 @@
                 if (!chatbox && create) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
-                            converse.log(response.responseText);
+                            _converse.log(response.responseText);
                         }
                     });
                 }
@@ -1584,18 +1609,18 @@
                 });
                 this.on('change', function (item) {
                     if (_.has(item.changed, 'status')) {
-                        converse.emit('statusChanged', this.get('status'));
+                        _converse.emit('statusChanged', this.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        converse.emit('statusMessageChanged', this.get('status_message'));
+                        _converse.emit('statusMessageChanged', this.get('status_message'));
                     }
                 }.bind(this));
             },
 
             constructPresence: function (type, status_message) {
                 var presence;
-                type = typeof type === 'string' ? type : (this.get('status') || converse.default_state);
-                status_message = typeof status_message === 'string' ? status_message : undefined;
+                type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
+                status_message = _.isString(status_message) ? status_message : undefined;
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
                 if ((type === 'unavailable') ||
@@ -1620,7 +1645,7 @@
             },
 
             sendPresence: function (type, status_message) {
-                converse.connection.send(this.constructPresence(type, status_message));
+                _converse.connection.send(this.constructPresence(type, status_message));
             },
 
             setStatus: function (value) {
@@ -1629,7 +1654,7 @@
             },
 
             getStatus: function () {
-                return this.get('status') || converse.default_state;
+                return this.get('status') || _converse.default_state;
             },
 
             setStatusMessage: function (status_message) {
@@ -1659,31 +1684,31 @@
              * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
              * All features are shown here: http://xmpp.org/registrar/disco-features.html
              */
-            model: converse.Feature,
+            model: _converse.Feature,
             initialize: function () {
                 this.addClientIdentities().addClientFeatures();
-                this.browserStorage = new Backbone.BrowserStorage[converse.storage](
-                    b64_sha1('converse.features'+converse.bare_jid)
+                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                    b64_sha1('converse.features'+_converse.bare_jid)
                 );
                 this.on('add', this.onFeatureAdded, this);
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
-                    converse.connection.disco.info(converse.domain, null, this.onInfo.bind(this));
-                    converse.connection.disco.items(converse.domain, null, this.onItems.bind(this));
+                    _converse.connection.disco.info(_converse.domain, null, this.onInfo.bind(this));
+                    _converse.connection.disco.items(_converse.domain, null, this.onItems.bind(this));
                 } else {
                     this.fetch({add:true});
                 }
             },
 
             onFeatureAdded: function (feature) {
-                converse.emit('serviceDiscovered', feature);
+                _converse.emit('serviceDiscovered', feature);
             },
 
             addClientIdentities: function () {
                 /* See http://xmpp.org/registrar/disco-categories.html
                  */
-                 converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
+                 _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
                  return this;
             },
 
@@ -1693,23 +1718,24 @@
                  *
                  * See: http://xmpp.org/extensions/xep-0030.html#info
                  */
-                converse.connection.disco.addFeature(Strophe.NS.BOSH);
-                converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-                if (converse.message_carbons) {
-                    converse.connection.disco.addFeature(Strophe.NS.CARBONS);
+                _converse.connection.disco.addFeature(Strophe.NS.BOSH);
+                _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+                _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+                _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
+                if (_converse.message_carbons) {
+                    _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
                 }
                 return this;
             },
 
             onItems: function (stanza) {
-                $(stanza).find('query item').each(function (idx, item) {
-                    converse.connection.disco.info(
-                        $(item).attr('jid'),
+                var that = this;
+                _.each(stanza.querySelectorAll('query item'), function (item) {
+                    _converse.connection.disco.info(
+                        item.getAttribute('jid'),
                         null,
-                        this.onInfo.bind(this));
-                }.bind(this));
+                        that.onInfo.bind(that));
+                });
             },
 
             onInfo: function (stanza) {
@@ -1720,11 +1746,11 @@
                     return;
                 }
                 $stanza.find('feature').each(function (idx, feature) {
-                    var namespace = $(feature).attr('var');
+                    var namespace = feature.getAttribute('var');
                     this[namespace] = true;
                     this.create({
                         'var': namespace,
-                        'from': $stanza.attr('from')
+                        'from': stanza.getAttribute('from')
                     });
                 }.bind(this));
             }
@@ -1732,18 +1758,18 @@
 
         this.setUpXMLLogging = function () {
             Strophe.log = function (level, msg) {
-                converse.log(msg, level);
+                _converse.log(msg, level);
             };
             if (this.debug) {
-                this.connection.xmlInput = function (body) { converse.log(body.outerHTML); };
-                this.connection.xmlOutput = function (body) { converse.log(body.outerHTML); };
+                this.connection.xmlInput = function (body) { _converse.log(body.outerHTML); };
+                this.connection.xmlOutput = function (body) { _converse.log(body.outerHTML); };
             }
         };
 
         this.fetchLoginCredentials = function () {
             var deferred = new $.Deferred();
             $.ajax({
-                url:  converse.credentials_url,
+                url:  _converse.credentials_url,
                 type: 'GET',
                 dataType: "json",
                 success: function (response) {
@@ -1753,8 +1779,8 @@
                     });
                 },
                 error: function (response) {
-                    delete converse.connection;
-                    converse.emit('noResumeableSession');
+                    delete _converse.connection;
+                    _converse.emit('noResumeableSession');
                     deferred.reject(response);
                 }
             });
@@ -1812,32 +1838,32 @@
         this.autoLogin = function (credentials) {
             if (credentials) {
                 // If passed in, then they come from credentials_url, so we
-                // set them on the converse object.
+                // set them on the _converse object.
                 this.jid = credentials.jid;
                 this.password = credentials.password;
             }
-            if (this.authentication === converse.ANONYMOUS) {
+            if (this.authentication === _converse.ANONYMOUS) {
                 if (!this.jid) {
                     throw new Error("Config Error: when using anonymous login " +
                         "you need to provide the server's domain via the 'jid' option. " +
                         "Either when calling converse.initialize, or when calling " +
-                        "converse.user.login.");
+                        "_converse.api.user.login.");
                 }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
-            } else if (this.authentication === converse.LOGIN) {
-                var password = converse.connection.pass || this.password;
+            } else if (this.authentication === _converse.LOGIN) {
+                var password = _converse.connection.pass || this.password;
                 if (!password) {
                     if (this.auto_login && !this.password) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
-                    converse.disconnection_cause = Strophe.Status.AUTHFAIL;
-                    converse.disconnect();
+                    _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
+                    _converse.disconnect();
                     return;
                 }
                 var resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {
-                    this.jid = this.jid.toLowerCase() + converse.generateResource();
+                    this.jid = this.jid.toLowerCase() + _converse.generateResource();
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
@@ -1886,7 +1912,7 @@
         this.logIn = function (credentials, reconnecting) {
             // We now try to resume or automatically set up a new session.
             // Otherwise the user will be shown a login form.
-            if (this.authentication === converse.PREBIND) {
+            if (this.authentication === _converse.PREBIND) {
                 this.attemptPreboundSession(reconnecting);
             } else {
                 this.attemptNonPreboundSession(credentials, reconnecting);
@@ -1905,7 +1931,7 @@
             } else if (this.bosh_service_url) {
                 this.connection = new Strophe.Connection(
                     this.bosh_service_url,
-                    _.extend(this.connection_options, {'keepalive': this.keepalive})
+                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
                 );
             } else {
                 throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
@@ -1924,8 +1950,8 @@
             if (this.features) {
                 this.features.reset();
             }
-            $(window).off('click mousemove keypress focus'+unloadevent, converse.onUserActivity);
-            window.clearInterval(converse.everySecondTrigger);
+            $(window).off('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.clearInterval(_converse.everySecondTrigger);
             return this;
         };
 
@@ -1953,9 +1979,9 @@
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
              */
-            utils.merge(converse.default_settings, settings);
-            utils.merge(converse, settings);
-            utils.applyUserSettings(converse, settings, converse.user_settings);
+            utils.merge(_converse.default_settings, settings);
+            utils.merge(_converse, settings);
+            utils.applyUserSettings(_converse, settings, _converse.user_settings);
         };
 
         // If initialize gets called a second time (e.g. during tests), then we
@@ -1964,22 +1990,25 @@
         // initialized twice.
         // If initialize is called for the first time, then this array is empty
         // in any case.
-        converse.pluggable.initialized_plugins = [];
+        _converse.pluggable.initialized_plugins = [];
 
-        converse.pluggable.initializePlugins({
+        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+
+        _converse.pluggable.initializePlugins({
             'updateSettings': updateSettings,
-            'converse': converse
-        });
-        converse.emit('pluginsInitialized');
-        converse._initialize();
-        converse.registerGlobalEventHandlers();
+            '_converse': _converse
+        }, whitelist, _converse.blacklisted_plugins);
 
-        if (!_.isUndefined(converse.connection) &&
-            converse.connection.service === 'jasmine tests') {
-            return converse;
+        _converse.emit('pluginsInitialized');
+        _converse._initialize();
+        _converse.registerGlobalEventHandlers();
+
+        if (!_.isUndefined(_converse.connection) &&
+            _converse.connection.service === 'jasmine tests') {
+            return _converse;
         } else {
             return init_deferred.promise();
         }
     };
-    return converse;
+    return _converse;
 }));

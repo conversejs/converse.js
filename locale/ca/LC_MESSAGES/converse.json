@@ -251,14 +251,6 @@
             null,
             "Error d'autenticació"
          ],
-         "Disconnected": [
-            null,
-            ""
-         ],
-         "The connection to the chat server has dropped": [
-            null,
-            ""
-         ],
          "Sorry, there was an error while trying to add ": [
             null,
             "S'ha produït un error en intentar afegir "

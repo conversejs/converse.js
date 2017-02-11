@@ -25,7 +25,7 @@ require.config({
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
         "moment":                   "node_modules/moment/moment",
-        "pluggable":                "node_modules/pluggable.js/pluggable",
+        "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
         "strophe":                  "node_modules/strophe.js/src/wrapper",

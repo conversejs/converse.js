@@ -140,7 +140,7 @@
              */
             this.updateSettings({
                 archived_messages_page_size: '20',
-                message_archiving: 'never', // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
+                message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
 
@@ -280,7 +280,9 @@
 
             var onFeatureAdded = function (evt, feature) {
                 var prefs = feature.get('preferences') || {};
-                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== converse.message_archiving) {
+                if (feature.get('var') === Strophe.NS.MAM &&
+                        prefs['default'] !== converse.message_archiving &&
+                        converse.message_archiving ) {
                     // Ask the server for archiving preferences
                     converse.connection.sendIQ(
                         $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),

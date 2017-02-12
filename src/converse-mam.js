@@ -287,7 +287,7 @@
                 var prefs = feature.get('preferences') || {};
                 if (feature.get('var') === Strophe.NS.MAM &&
                         prefs['default'] !== _converse.message_archiving &&
-                        _converse.message_archiving ) {
+                        !_.isUndefined(_converse.message_archiving) ) {
                     // Ask the server for archiving preferences
                     _converse.connection.sendIQ(
                         $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),

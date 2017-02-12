@@ -7,6 +7,7 @@
 - *Breaking change*: Callbacks for `converse.on` now no longer receive an event
   object as first parameter. [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
+- #486 Honor existing mam user configuration [throwaway42]
 
 ## 2.0.5 (Unreleased)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't

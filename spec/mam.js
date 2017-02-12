@@ -387,6 +387,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 spyOn(converse, 'onMAMPreferences').andCallThrough();
+                converse.message_archiving = 'never';
 
                 var feature = new converse.Feature({
                     'var': Strophe.NS.MAM
@@ -401,7 +402,6 @@
                     "</iq>"
                 );
 
-                converse.message_archiving = 'never';
                 /* Example 15. Server responds with current preferences
                  *
                  * <iq type='result' id='juliet2'>

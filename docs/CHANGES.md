@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.6 (2017-02-01)
+- #486 Honor existing mam user configuration [throwaway42]
+
 ## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]

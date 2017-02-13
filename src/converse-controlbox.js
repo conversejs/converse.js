@@ -520,7 +520,7 @@
 
                 renderStatusChangeForm: function (ev) {
                     ev.preventDefault();
-                    var status_message = this.model.get('status') || 'offline';
+                    var status_message = _converse.xmppstatus.get('status_message') || '';
                     var input = _converse.templates.change_status_message({
                         'status_message': status_message,
                         'label_custom_status': __('Custom status'),

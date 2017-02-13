@@ -8,16 +8,14 @@ if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
     define("converse", [
         "converse-api",
+        // PLEASE NOTE: By default all translations are included.
+        // You can modify the file src/locales.js to include only those
+        // translations that you care about.
 
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
          */
-        "locales",              // Translations for converse.js. This line can be removed
-                                // to remove *all* translations, or you can modify the
-                                // file src/locales.js to include only those
-                                // translations that you care about.
-
         "converse-chatview",    // Renders standalone chat boxes for single user chat
         "converse-controlbox",  // The control box
         "converse-bookmarks",   // XEP-0048 Bookmarks

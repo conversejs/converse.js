@@ -208,7 +208,6 @@
                 locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
             }
             return locale || 'en';
-
         },
 
         fadeIn: function (el, callback) {

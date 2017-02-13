@@ -1,9 +1,10 @@
 # Changelog
 
 ## 2.0.6 (Unreleased)
+- Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]
-- Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
+- #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]
 
 ## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't

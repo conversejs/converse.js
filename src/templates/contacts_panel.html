@@ -1,14 +1,14 @@
 <form class="pure-form set-xmpp-status" action="" method="post">
     <span id="xmpp-status-holder">
         <select id="select-xmpp-status" style="display:none">
-            <option value="online">{{label_online}}</option>
-            <option value="dnd">{{label_busy}}</option>
-            <option value="away">{{label_away}}</option>
+            <option value="online">{{{label_online}}}</option>
+            <option value="dnd">{{{label_busy}}}</option>
+            <option value="away">{{{label_away}}}</option>
             {[ if (include_offline_state)  { ]}
-            <option value="offline">{{label_offline}}</option>
+            <option value="offline">{{{label_offline}}}</option>
             {[ } ]}
             {[ if (allow_logout)  { ]}
-            <option value="logout">{{label_logout}}</option>
+            <option value="logout">{{{label_logout}}}</option>
             {[ } ]}
         </select>
     </span>

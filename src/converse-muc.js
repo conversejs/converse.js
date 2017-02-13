@@ -268,16 +268,16 @@
                     * can then at least tell gettext to scan for it so that these
                     * strings are picked up by the translation machinery.
                     */
-                    301: ___("<strong>%1$s</strong> has been banned"),
-                    303: ___("<strong>%1$s</strong>'s nickname has changed"),
-                    307: ___("<strong>%1$s</strong> has been kicked out"),
-                    321: ___("<strong>%1$s</strong> has been removed because of an affiliation change"),
-                    322: ___("<strong>%1$s</strong> has been removed for not being a member")
+                    301: ___("%1$s has been banned"),
+                    303: ___("%1$s's nickname has changed"),
+                    307: ___("%1$s has been kicked out"),
+                    321: ___("%1$s has been removed because of an affiliation change"),
+                    322: ___("%1$s has been removed for not being a member")
                 },
 
                 new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to: <strong>%1$s</strong>'),
-                    303: ___('Your nickname has been changed to: <strong>%1$s</strong>')
+                    210: ___('Your nickname has been automatically set to: %1$s'),
+                    303: ___('Your nickname has been changed to: %1$s')
                 }
             };
 

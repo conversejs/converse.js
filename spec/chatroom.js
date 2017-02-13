@@ -512,10 +512,36 @@
                 }
             }));
 
+            it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks", mock.initConverse(function (_converse) {
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                /* <presence xmlns="jabber:client" to="jc@chat.example.org/converse.js-17184538"
+                 *      from="oo@conference.chat.example.org/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;">
+                 *   <x xmlns="http://jabber.org/protocol/muc#user">
+                 *    <item jid="jc@chat.example.org/converse.js-17184538" affiliation="owner" role="moderator"/>
+                 *    <status code="110"/>
+                 *   </x>
+                 * </presence>"
+                 */
+                var presence = $pres({
+                        to:'dummy@localhost/pda',
+                        from:"lounge@localhost/&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;"
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    jid: 'someone@localhost',
+                    role: 'moderator',
+                }).up()
+                .c('status').attrs({code:'110'}).nodeTree;
+
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                var view = _converse.chatboxviews.get('lounge@localhost');
+                var occupant = view.$el.find('.occupant-list').find('li');
+                expect(occupant.length).toBe(2);
+                expect($(occupant).last().text()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
+            }));
+
             it("indicates moderators by means of a special css class and tooltip", mock.initConverse(function (_converse) {
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');
-
                 var presence = $pres({
                         to:'dummy@localhost/pda',
                         from:'lounge@localhost/moderatorman'
@@ -785,6 +811,17 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-info').length).toBe(1);
                 expect($chat_content.find('.chat-info').text()).toBe('Topic set by ralphm to: '+text);
+            }));
+
+            it("escapes the subject before rendering it, to avoid JS-injection attacks", mock.initConverse(function (_converse) {
+                test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc');
+                spyOn(window, 'alert');
+                var subject = '<img src="x" onerror="alert(\'XSS\');"/>';
+                var view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                view.setChatRoomSubject('ralphm', subject);
+                var $chat_content = view.$el.find('.chat-content');
+                expect($chat_content.find('.chat-info').length).toBe(1);
+                expect($chat_content.find('.chat-info').text()).toBe('Topic set by ralphm to: '+subject);
             }));
 
             it("informs users if their nicknames has been changed.", mock.initConverse(function (_converse) {

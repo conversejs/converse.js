@@ -12,6 +12,7 @@
         "jquery",
         "lodash",
         "polyfill",
+        "locales",
         "utils",
         "moment_with_locales",
         "strophe",
@@ -20,7 +21,7 @@
         "backbone.browserStorage",
         "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, dummy, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, dummy, locales, utils, moment, Strophe, pluggable) {
     /*
      * Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -178,8 +179,10 @@
 
         // Detect support for the user's locale
         // ------------------------------------
-        var locales = _.isUndefined(locales) ? {} : locales;
-        this.isConverseLocale = function (locale) { return !_.isUndefined(locales[locale]); };
+        locales = _.isUndefined(locales) ? {} : locales;
+        this.isConverseLocale = function (locale) {
+            return !_.isUndefined(locales[locale]);
+        };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;

@@ -1981,7 +1981,7 @@
       list-style: none;
       padding-left: 0;
       text-shadow: white 0 1px 0;
-      width: 38%; }
+      width: 40%; }
       #conversejs #controlbox #controlbox-tabs li a {
         background-color: white;
         border-bottom: 1px solid #CCC;
@@ -2019,7 +2019,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      display: inline; }
+      display: inline-block; }
     #conversejs #controlbox .fancy-dropdown.no-border {
       border: 0; }
   #conversejs #controlbox #fancy-xmpp-status-select {
@@ -2216,7 +2216,6 @@
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
         float: right;
-        margin-right: 1em;
         display: none;
         color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {

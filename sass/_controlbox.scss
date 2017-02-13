@@ -257,7 +257,7 @@
                 list-style: none;
                 padding-left: 0;
                 text-shadow: white 0 1px 0;
-                width: 38%;
+                width: 40%;
                 a {
                     background-color: white;
                     border-bottom: 1px solid $border-color;
@@ -303,7 +303,7 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                display: inline;
+                display: inline-block;
             }
             &.no-border {
                 border: 0;

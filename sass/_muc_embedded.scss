@@ -12,6 +12,14 @@
     position: relative;
     width: 100%;
 
+    form {
+        &.pure-form.converse-centered-form {
+            position: absolute;
+            top: 30%;
+            transform: translateY(-50%);
+        }
+    }
+
     .chatroom {
         width: auto;
     }
@@ -63,7 +71,6 @@
                     font-size: 180%;
                     float: left;
                     height: 100%;
-                    width: 100%;
                     position: relative;
                     input {
                         font-size: 60%;

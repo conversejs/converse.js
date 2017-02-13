@@ -16,6 +16,10 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
+  #converse-embedded-chat form.pure-form.converse-centered-form {
+    position: absolute;
+    top: 30%;
+    transform: translateY(-50%); }
   #converse-embedded-chat .chatroom {
     width: auto; }
   #converse-embedded-chat .flyout {
@@ -52,7 +56,6 @@
       font-size: 180%;
       float: left;
       height: 100%;
-      width: 100%;
       position: relative; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input {
         font-size: 60%; }

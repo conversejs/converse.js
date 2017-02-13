@@ -1368,9 +1368,6 @@
         color: #818479; }
   #converse-embedded-chat form.pure-form.converse-centered-form,
   #conversejs form.pure-form.converse-centered-form {
-    position: absolute;
-    top: 30%;
-    transform: translateY(-50%);
     text-align: center;
     width: 100%; }
   #converse-embedded-chat .chat-textarea-chatbox-selected,
@@ -2363,6 +2360,7 @@
         color: #818479;
         font-size: 14px;
         height: 289px;
+        width: 100%;
         height: -webkit-calc(100% - 55px);
         height: calc(100% - 55px);
         overflow-y: auto;

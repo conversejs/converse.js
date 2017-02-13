@@ -137,6 +137,7 @@
                     color: $text-color;
                     font-size: $font-size;
                     height: 289px;
+                    width: 100%;
                     @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;

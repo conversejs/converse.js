@@ -656,13 +656,17 @@ Similar to `default_domain`_ but no other domains are allowed.
 message_archiving
 -----------------
 
-* Default:  ``never``
+* Default:  ``undefined``
 
 Provides support for `XEP-0313: Message Archive Management <https://xmpp.org/extensions/xep-0313.html>`_,
-whereby messages are archived in the XMPP server for later retrieval. Note, your XMPP server must support
-XEP-0313 MAM for this to work.
+whereby messages are archived in the XMPP server for later retrieval.
+Note, your XMPP server must support XEP-0313 MAM for this to work.
 
-This option sets the default archiving preference. Valid values are ``never``, ``always`` and ``roster``.
+This option sets the default archiving preference.
+Valid values are ``undefined``, ``never``, ``always`` and ``roster``.
+
+``undefined`` means that any existing MAM configuration, as set by the user or
+the server administrator, will be used.
 
 ``roster`` means that only messages to and from JIDs in your roster will be
 archived. The other two values are self-explanatory.

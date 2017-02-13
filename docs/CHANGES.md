@@ -11,6 +11,7 @@
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]
 - #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]
+- #775 Anonymous login form is a text field instead of a push button [jcbrand]
 
 ## 2.0.5 (Unreleased)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't

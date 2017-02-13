@@ -12,6 +12,7 @@
 - Render the login form again upon authfail. [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]
+- #770 Allow setting contact attrs on chats.open [Ape]
 - #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]
 - #775 Anonymous login form is a text field instead of a push button [jcbrand]
 

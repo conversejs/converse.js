@@ -495,6 +495,7 @@
             } else if (status === Strophe.Status.AUTHFAIL) {
                 _converse.giveFeedback(__('Authentication Failed'), 'error');
                 _converse.setDisconnectionCause(status, condition, true);
+                _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
                 _converse.giveFeedback(
                     __('Connection failed'), 'error',

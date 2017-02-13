@@ -7,11 +7,7 @@
 /*global define, window */
 
 (function (root, factory) {
-    define("converse-headline", [
-            "converse-core",
-            "converse-api",
-            "converse-chatview"
-    ], factory);
+    define(["converse-core", "converse-api", "converse-chatview"], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     var $ = converse_api.env.jQuery,

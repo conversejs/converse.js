@@ -10,8 +10,7 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define("converse-register", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!form_username",
             "tpl!register_panel",

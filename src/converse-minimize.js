@@ -7,8 +7,7 @@
 /*global Backbone, define, window */
 
 (function (root, factory) {
-    define("converse-minimize", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",

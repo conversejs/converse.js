@@ -7,8 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define("converse-vcard", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "strophe.vcard",
     ], factory);

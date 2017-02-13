@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define("converse-notification", ["converse-core", "converse-api"], factory);
+    define(["converse-core", "converse-api"], factory);
 }(this, function (converse, converse_api) {
     "use strict";
     var $ = converse_api.env.jQuery,

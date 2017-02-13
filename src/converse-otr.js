@@ -10,8 +10,7 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    define("converse-otr", [
-            "otr",
+    define(["otr",
             "converse-core",
             "converse-api",
             "tpl!toolbar_otr"

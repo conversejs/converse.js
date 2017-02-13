@@ -7,8 +7,7 @@
 /*global Backbone, define */
 
 (function (root, factory) {
-    define("converse-chatview", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!chatbox",
             "tpl!new_day",

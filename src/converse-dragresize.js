@@ -7,8 +7,7 @@
 /*global define, window */
 
 (function (root, factory) {
-    define("converse-dragresize", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!dragresize",
             "converse-chatview",

@@ -10,8 +10,7 @@
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define("converse-muc", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!chatarea",
             "tpl!chatroom",

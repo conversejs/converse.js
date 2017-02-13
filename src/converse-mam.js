@@ -9,8 +9,7 @@
 // XEP-0059 Result Set Management
 
 (function (root, factory) {
-    define("converse-mam", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency

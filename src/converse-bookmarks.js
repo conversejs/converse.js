@@ -10,8 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define("converse-bookmarks", [
-            "jquery",
+    define(["jquery",
             "underscore",
             "moment_with_locales",
             "strophe",

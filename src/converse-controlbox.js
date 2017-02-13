@@ -7,8 +7,7 @@
 /*global define, Backbone */
 
 (function (root, factory) {
-    define("converse-controlbox", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",

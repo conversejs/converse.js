@@ -7,8 +7,7 @@
 /*global Backbone, define */
 
 (function (root, factory) {
-    define("converse-rosterview", [
-            "converse-core",
+    define(["converse-core",
             "converse-api",
             "tpl!group_header",
             "tpl!pending_contact",

@@ -7,7 +7,7 @@
 /*global Backbone, define, window, document */
 
 (function (root, factory) {
-    define("converse-core", [
+    define([
         "jquery",
         "underscore",
         "polyfill",

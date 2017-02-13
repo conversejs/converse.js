@@ -188,6 +188,9 @@
             moment.locale = moment.lang;
         }
         moment.locale(utils.detectLocale(this.isMomentLocale));
+        if (_.includes(_.keys(locales), settings.i18n)) {
+            settings.i18n = locales[settings.i18n];
+        }
         this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
 
         // Translation machinery

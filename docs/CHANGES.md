@@ -8,6 +8,7 @@
   object as first parameter. [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
+- #749 /me will show your contact's name in the sent field [jcbrand]
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
 
 ## 2.0.5 (Unreleased)

@@ -198,8 +198,9 @@ require.config({
         // Configuration for requirejs-tpl
         // Use Mustache style syntax for variable interpolation
         templateSettings: {
-            evaluate : /\{\[([\s\S]+?)\]\}/g,
-            interpolate : /\{\{([\s\S]+?)\}\}/g
+            'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
+            'evaluate': /\{\[([\s\S]+?)\]\}/g,
+            'interpolate': /\{\{([\s\S]+?)\}\}/g
         }
     },
 

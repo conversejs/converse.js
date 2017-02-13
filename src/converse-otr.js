@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define, window, crypto, CryptoJS */
@@ -10,11 +10,7 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    define("converse-otr", [
-            "otr",
-            "converse-api",
-            "tpl!toolbar_otr"
-    ], factory);
+    define(["otr", "converse-api", "tpl!toolbar_otr"], factory);
 }(this, function (otr, converse, tpl_toolbar_otr) {
     "use strict";
     // Strophe methods for building stanzas

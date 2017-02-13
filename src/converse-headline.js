@@ -1,13 +1,13 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
 
 (function (root, factory) {
-    define("converse-headline", [
+    define([
             "converse-api",
             "converse-chatview"
     ], factory);

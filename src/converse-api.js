@@ -6,7 +6,7 @@
 //
 /*global define */
 (function (root, factory) {
-    define("converse-api", [
+    define([
             "jquery",
             "lodash",
             "moment_with_locales",

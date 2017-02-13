@@ -316,7 +316,8 @@
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
                         template = converse.templates.action;
-                        username = fullname;
+                        fullname = converse.xmppstatus.get('fullname');
+                        username = !fullname ? converse.bare_jid: fullname;
                     } else  {
                         template = converse.templates.message;
                         username = attrs.sender === 'me' && __('me') || fullname;

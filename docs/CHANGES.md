@@ -7,16 +7,18 @@
 - *Breaking change*: Callbacks for `converse.on` now no longer receive an event
   object as first parameter. [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
-- Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
+- #770 Allow setting contact attrs on chats.open [Ape]
+
+## 2.0.6 (2017-02-13)
+- Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]
-- #770 Allow setting contact attrs on chats.open [Ape]
 - #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]
 - #775 Anonymous login form is a text field instead of a push button [jcbrand]
 
-## 2.0.5 (Unreleased)
+## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]

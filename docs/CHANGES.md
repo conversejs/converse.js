@@ -8,6 +8,7 @@
   object as first parameter. [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
+- Improved roster filter UX. [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]
 - #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]

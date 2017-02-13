@@ -139,6 +139,7 @@
                 tagName: 'span',
                 events: {
                     "keydown .roster-filter": "liveFilter",
+                    "submit form.roster-filter-form": "submitFilter",
                     "click .onX": "clearFilter",
                     "mousemove .x": "toggleX",
                     "change .filter-type": "changeTypeFilter",
@@ -146,7 +147,8 @@
                 },
 
                 initialize: function () {
-                    this.model.on('change', this.render, this);
+                    this.model.on('change:filter_type', this.render, this);
+                    this.model.on('change:filter_text', this.render, this);
                 },
 
                 render: function () {
@@ -165,9 +167,13 @@
                             label_offline: __('Offline')
                         })
                     ));
+                    this.renderClearButton();
+                    return this.$el;
+                },
+
+                renderClearButton: function () {
                     var $roster_filter = this.$('.roster-filter');
                     $roster_filter[this.tog($roster_filter.val())]('x');
-                    return this.$el;
                 },
 
                 tog: function (v) {
@@ -204,12 +210,17 @@
                 },
 
                 liveFilter: _.debounce(function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.model.save({
                         'filter_type': this.$('.filter-type').val(),
                         'filter_text': this.$('.roster-filter').val()
                     });
                 }, 250),
+
+                submitFilter: function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.liveFilter();
+                    this.render();
+                },
 
                 isActive: function () {
                     /* Returns true if the filter is enabled (i.e. if the user

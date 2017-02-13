@@ -323,30 +323,6 @@
             null,
             "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> נאסר(ה)"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "השם כינוי של<strong>%1$s</strong> השתנה"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> נבעט(ה)"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> הוסרה(ה) משום שינוי שיוך"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "השם כינוי שלך שונה בשם: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "הודעה"

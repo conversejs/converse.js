@@ -282,22 +282,6 @@
             null,
             "由于服务不可用，您已被移除此房间。"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> 已被禁止"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> 已被踢出"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "由于关系解除、<strong>%1$s</strong> 已被移除"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "由于不是成员、<strong>%1$s</strong> 已被移除"
-         ],
          "Message": [
             null,
             "信息"

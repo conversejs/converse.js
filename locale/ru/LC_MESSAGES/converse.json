@@ -318,26 +318,6 @@
             null,
             "Вы отключены от этого чата, потому что службы чатов отключилась."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> забанен"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> выкинут"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что изменились права"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что не участник"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ваш псевдоним изменён на: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Сообщение"

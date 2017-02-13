@@ -347,31 +347,7 @@
             null,
             "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> has been banned"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            ""
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> has been kicked out"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> has been removed because of an affiliation change"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> has been removed for not being a member"
-         ],
-         "Your nickname has been automatically set to: <strong>%1$s</strong>": [
-            null,
-            ""
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
+         "Your nickname has been automatically set to: %1$s": [
             null,
             ""
          ],

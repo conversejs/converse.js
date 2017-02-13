@@ -283,22 +283,6 @@
             null,
             "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> を締め出しました"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> を蹴り出しました"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "分掌の変更のため、<strong>%1$s</strong> を削除しました"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
-         ],
          "Message": [
             null,
             "メッセージ"

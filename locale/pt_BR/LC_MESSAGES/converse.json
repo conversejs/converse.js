@@ -275,22 +275,6 @@
             null,
             "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> foi banido"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> foi expulso"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<srtong>%1$s</strong> foi removido por causa de troca de associação"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> foi removido por não ser um membro"
-         ],
          "Message": [
             null,
             "Mensagem"

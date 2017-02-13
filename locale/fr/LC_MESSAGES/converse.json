@@ -323,30 +323,6 @@
             null,
             "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> a été banni"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> a changé son nom"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> a été expulsé"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> a été supprimé à cause d'un changement d'affiliation"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> a été supprimé car il n'est pas membre"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Votre alias a été modifié en: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Message"

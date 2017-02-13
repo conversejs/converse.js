@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-01 11:01+0000\n"
+"POT-Creation-Date: 2017-02-13 15:52+0000\n"
 "PO-Revision-Date: 2016-04-07 10:34+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans\n"
@@ -19,74 +19,74 @@ msgstr ""
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/converse-bookmarks.js:84 src/converse-bookmarks.js:139
+#: src/converse-bookmarks.js:83 src/converse-bookmarks.js:138
 msgid "Bookmark this room"
 msgstr ""
 
-#: src/converse-bookmarks.js:140
+#: src/converse-bookmarks.js:139
 msgid "The name for this bookmark:"
 msgstr ""
 
-#: src/converse-bookmarks.js:141
+#: src/converse-bookmarks.js:140
 msgid "Would you like this room to be automatically joined upon startup?"
 msgstr ""
 
-#: src/converse-bookmarks.js:142
+#: src/converse-bookmarks.js:141
 msgid "What should your nickname for this room be?"
 msgstr ""
 
-#: src/converse-bookmarks.js:144 src/converse-controlbox.js:519
-#: src/converse-muc.js:1157
+#: src/converse-bookmarks.js:143 src/converse-controlbox.js:518
+#: src/converse-muc.js:1156
 msgid "Save"
 msgstr "Stoor"
 
-#: src/converse-bookmarks.js:145 src/converse-muc.js:1158
-#: src/converse-register.js:235 src/converse-register.js:350
+#: src/converse-bookmarks.js:144 src/converse-muc.js:1157
+#: src/converse-register.js:234 src/converse-register.js:349
 msgid "Cancel"
 msgstr "Kanseleer"
 
-#: src/converse-bookmarks.js:292
+#: src/converse-bookmarks.js:291
 #, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Jammer, 'n fout het voorgekom tydens die verwydering van "
 
-#: src/converse-bookmarks.js:375
+#: src/converse-bookmarks.js:374
 #, fuzzy
 msgid "Click to toggle the bookmarks list"
 msgstr "Klik om hierdie kletskamer te open"
 
-#: src/converse-bookmarks.js:376
+#: src/converse-bookmarks.js:375
 msgid "Bookmarked Rooms"
 msgstr ""
 
-#: src/converse-bookmarks.js:393
+#: src/converse-bookmarks.js:392
 #, fuzzy
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "Is u seker u wil hierdie gespreksmaat verwyder?"
 
-#: src/converse-bookmarks.js:402 src/converse-muc.js:2144
+#: src/converse-bookmarks.js:401 src/converse-muc.js:2143
 msgid "Click to open this room"
 msgstr "Klik om hierdie kletskamer te open"
 
-#: src/converse-bookmarks.js:403 src/converse-muc.js:2145
+#: src/converse-bookmarks.js:402 src/converse-muc.js:2144
 msgid "Show more information on this room"
 msgstr "Wys meer inligting aangaande hierdie kletskamer"
 
-#: src/converse-bookmarks.js:404
+#: src/converse-bookmarks.js:403
 msgid "Remove this bookmark"
 msgstr ""
 
-#: src/converse-chatview.js:135 src/converse-headline.js:99
-#: src/converse-muc.js:436
+#: src/converse-chatview.js:134 src/converse-headline.js:95
+#: src/converse-muc.js:435
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Verwyder boodskappe"
 
-#: src/converse-chatview.js:136
+#: src/converse-chatview.js:135
 msgid "Close this chat box"
 msgstr "Sluit hierdie kletskas"
 
-#: src/converse-chatview.js:137
+#: src/converse-chatview.js:136
 msgid "Personal message"
 msgstr "Persoonlike boodskap"
 
@@ -114,7 +114,7 @@ msgid "has gone away"
 msgstr "het weggegaan"
 
 # The last three values are needed by Jed (a Javascript translations library)
-#: src/converse-chatview.js:503 src/converse-muc.js:895
+#: src/converse-chatview.js:503 src/converse-muc.js:894
 msgid "Show this menu"
 msgstr "Vertoon hierdie keuselys"
 
@@ -122,7 +122,7 @@ msgstr "Vertoon hierdie keuselys"
 msgid "Write in the third person"
 msgstr "Skryf in die derde persoon"
 
-#: src/converse-chatview.js:505 src/converse-muc.js:893
+#: src/converse-chatview.js:505 src/converse-muc.js:892
 msgid "Remove messages"
 msgstr "Verwyder boodskappe"
 
@@ -150,261 +150,261 @@ msgstr "Voeg 'n emotikon by"
 msgid "Start a call"
 msgstr "Begin 'n oproep"
 
-#: src/converse-controlbox.js:214 src/converse-core.js:704
-#: src/converse-rosterview.js:93
+#: src/converse-controlbox.js:213 src/converse-core.js:707
+#: src/converse-rosterview.js:92
 msgid "Contacts"
 msgstr "Kontakte"
 
-#: src/converse-controlbox.js:390
+#: src/converse-controlbox.js:389
 msgid "XMPP Username:"
 msgstr "XMPP Gebruikersnaam:"
 
-#: src/converse-controlbox.js:391
+#: src/converse-controlbox.js:390
 msgid "Password:"
 msgstr "Wagwoord"
 
-#: src/converse-controlbox.js:392
+#: src/converse-controlbox.js:391
 msgid "Click here to log in anonymously"
 msgstr "Klik hier om anoniem aan te meld"
 
-#: src/converse-controlbox.js:393
+#: src/converse-controlbox.js:392
 msgid "Log In"
 msgstr "Meld aan"
 
-#: src/converse-controlbox.js:394
+#: src/converse-controlbox.js:393
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: src/converse-controlbox.js:394
+#: src/converse-controlbox.js:393
 msgid "user@server"
 msgstr "gebruiker@bediener"
 
-#: src/converse-controlbox.js:395
+#: src/converse-controlbox.js:394
 msgid "password"
 msgstr "wagwoord"
 
-#: src/converse-controlbox.js:402
+#: src/converse-controlbox.js:401
 msgid "Sign in"
 msgstr "Teken in"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
-#: src/converse-controlbox.js:490 src/converse-controlbox.js:565
+#: src/converse-controlbox.js:489 src/converse-controlbox.js:564
 msgid "I am %1$s"
 msgstr "Ek is %1$s"
 
-#: src/converse-controlbox.js:492 src/converse-controlbox.js:570
+#: src/converse-controlbox.js:491 src/converse-controlbox.js:569
 msgid "Click here to write a custom status message"
 msgstr "Klik hier om jou eie statusboodskap te skryf"
 
-#: src/converse-controlbox.js:493 src/converse-controlbox.js:571
+#: src/converse-controlbox.js:492 src/converse-controlbox.js:570
 msgid "Click to change your chat status"
 msgstr "Klik om jou klets-status te verander"
 
-#: src/converse-controlbox.js:518
+#: src/converse-controlbox.js:517
 msgid "Custom status"
 msgstr "Doelgemaakte status"
 
-#: src/converse-controlbox.js:547 src/converse-controlbox.js:557
+#: src/converse-controlbox.js:546 src/converse-controlbox.js:556
 msgid "online"
 msgstr "aangemeld"
 
-#: src/converse-controlbox.js:549
+#: src/converse-controlbox.js:548
 msgid "busy"
 msgstr "besig"
 
-#: src/converse-controlbox.js:551
+#: src/converse-controlbox.js:550
 msgid "away for long"
 msgstr "vir lank afwesig"
 
-#: src/converse-controlbox.js:553
+#: src/converse-controlbox.js:552
 msgid "away"
 msgstr "afwesig"
 
-#: src/converse-controlbox.js:555
+#: src/converse-controlbox.js:554
 msgid "offline"
 msgstr "afgemeld"
 
-#: src/converse-controlbox.js:596 src/converse-rosterview.js:159
+#: src/converse-controlbox.js:595 src/converse-rosterview.js:158
 msgid "Online"
 msgstr "Aangemeld"
 
-#: src/converse-controlbox.js:597 src/converse-rosterview.js:161
+#: src/converse-controlbox.js:596 src/converse-rosterview.js:160
 msgid "Busy"
 msgstr "Besig"
 
-#: src/converse-controlbox.js:598 src/converse-rosterview.js:162
+#: src/converse-controlbox.js:597 src/converse-rosterview.js:161
 msgid "Away"
 msgstr "Afwesig"
 
-#: src/converse-controlbox.js:599 src/converse-rosterview.js:164
+#: src/converse-controlbox.js:598 src/converse-rosterview.js:163
 msgid "Offline"
 msgstr "Afgemeld"
 
-#: src/converse-controlbox.js:600
+#: src/converse-controlbox.js:599
 msgid "Log out"
 msgstr "Meld af"
 
-#: src/converse-controlbox.js:611
+#: src/converse-controlbox.js:610
 msgid "Contact name"
 msgstr "Kontaknaam"
 
-#: src/converse-controlbox.js:612
+#: src/converse-controlbox.js:611
 msgid "Search"
 msgstr "Soek"
 
-#: src/converse-controlbox.js:616
+#: src/converse-controlbox.js:615
 #, fuzzy
 msgid "e.g. user@example.org"
 msgstr "bv. gebruiker@voorbeeld.org"
 
-#: src/converse-controlbox.js:617
+#: src/converse-controlbox.js:616
 msgid "Add"
 msgstr "Voeg by"
 
-#: src/converse-controlbox.js:622
+#: src/converse-controlbox.js:621
 msgid "Click to add new chat contacts"
 msgstr "Klik om nuwe kletskontakte by te voeg"
 
-#: src/converse-controlbox.js:623
+#: src/converse-controlbox.js:622
 msgid "Add a contact"
 msgstr "Voeg 'n kontak by"
 
-#: src/converse-controlbox.js:650
+#: src/converse-controlbox.js:649
 msgid "No users found"
 msgstr "Geen gebruikers gevind"
 
-#: src/converse-controlbox.js:656
+#: src/converse-controlbox.js:655
 msgid "Click to add as a chat contact"
 msgstr "Klik om as kletskontak by te voeg"
 
-#: src/converse-controlbox.js:720
+#: src/converse-controlbox.js:719
 msgid "Toggle chat"
 msgstr "Klets"
 
-#: src/converse-core.js:205
+#: src/converse-core.js:208
 msgid "Click to hide these contacts"
 msgstr "Klik om hierdie kontakte te verskuil"
 
-#: src/converse-core.js:406
+#: src/converse-core.js:409
 msgid "Reconnecting"
 msgstr "Herkonnekteer"
 
-#: src/converse-core.js:408
+#: src/converse-core.js:411
 msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
-#: src/converse-core.js:475
+#: src/converse-core.js:478
 #, fuzzy
 msgid "Connection error"
 msgstr "Verbind tans"
 
-#: src/converse-core.js:476
+#: src/converse-core.js:479
 #, fuzzy
 msgid "An error occurred while connecting to the chat server."
 msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
 
-#: src/converse-core.js:479
+#: src/converse-core.js:482
 msgid "Connecting"
 msgstr "Verbind tans"
 
-#: src/converse-core.js:481
+#: src/converse-core.js:484
 msgid "Authenticating"
 msgstr "Besig om te bekragtig"
 
-#: src/converse-core.js:483
+#: src/converse-core.js:486
 msgid "Authentication Failed"
 msgstr "Bekragtiging het gefaal"
 
-#: src/converse-core.js:488
+#: src/converse-core.js:491
 #, fuzzy
 msgid "Connection failed"
 msgstr "Verbind tans"
 
-#: src/converse-core.js:489
+#: src/converse-core.js:492
 #, fuzzy
 msgid "An error occurred while connecting to the chat server: "
 msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
 
-#: src/converse-core.js:999
+#: src/converse-core.js:1002
 msgid "Sorry, there was an error while trying to add "
 msgstr ""
 
-#: src/converse-core.js:1170
+#: src/converse-core.js:1173
 msgid "This client does not allow presence subscriptions"
 msgstr "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
 
-#: src/converse-headline.js:100
+#: src/converse-headline.js:96
 msgid "Close this box"
 msgstr "Maak hierdie kletskas toe"
 
-#: src/converse-minimize.js:191 src/converse-minimize.js:511
+#: src/converse-minimize.js:190 src/converse-minimize.js:510
 msgid "Minimize this chat box"
 msgstr "Minimeer hierdie kletskas"
 
-#: src/converse-minimize.js:331
+#: src/converse-minimize.js:330
 msgid "Click to restore this chat"
 msgstr "Klik om hierdie klets te herstel"
 
-#: src/converse-minimize.js:495
+#: src/converse-minimize.js:494
 msgid "Minimized"
 msgstr "Geminimaliseer"
 
-#: src/converse-muc.js:241
+#: src/converse-muc.js:240
 msgid "This room is not anonymous"
 msgstr "Hierdie vertrek is nie anoniem nie"
 
-#: src/converse-muc.js:242
+#: src/converse-muc.js:241
 msgid "This room now shows unavailable members"
 msgstr "Hierdie vertrek wys nou onbeskikbare lede"
 
-#: src/converse-muc.js:243
+#: src/converse-muc.js:242
 msgid "This room does not show unavailable members"
 msgstr "Hierdie vertrek wys nie onbeskikbare lede nie"
 
-#: src/converse-muc.js:244
+#: src/converse-muc.js:243
 #, fuzzy
 msgid "The room configuration has changed"
 msgstr "Nie-privaatheidverwante kamer instellings het verander"
 
-#: src/converse-muc.js:245
+#: src/converse-muc.js:244
 msgid "Room logging is now enabled"
 msgstr "Kamer log is nou aangeskakel"
 
-#: src/converse-muc.js:246
+#: src/converse-muc.js:245
 msgid "Room logging is now disabled"
 msgstr "Kamer log is nou afgeskakel"
 
-#: src/converse-muc.js:247
+#: src/converse-muc.js:246
 #, fuzzy
 msgid "This room is now no longer anonymous"
 msgstr "Hiedie kamer is nou nie anoniem nie"
 
-#: src/converse-muc.js:248
+#: src/converse-muc.js:247
 msgid "This room is now semi-anonymous"
 msgstr "Hierdie kamer is nou gedeeltelik anoniem"
 
-#: src/converse-muc.js:249
+#: src/converse-muc.js:248
 msgid "This room is now fully-anonymous"
 msgstr "Hierdie kamer is nou ten volle anoniem"
 
-#: src/converse-muc.js:250
+#: src/converse-muc.js:249
 msgid "A new room has been created"
 msgstr "'n Nuwe kamer is geskep"
 
-#: src/converse-muc.js:254 src/converse-muc.js:1674
+#: src/converse-muc.js:253 src/converse-muc.js:1673
 msgid "You have been banned from this room"
 msgstr "Jy is uit die kamer verban"
 
-#: src/converse-muc.js:255
+#: src/converse-muc.js:254
 msgid "You have been kicked from this room"
 msgstr "Jy is uit die kamer geskop"
 
-#: src/converse-muc.js:256
+#: src/converse-muc.js:255
 msgid "You have been removed from this room because of an affiliation change"
 msgstr "Jy is vanuit die kamer verwyder a.g.v 'n verandering van affiliasie"
 
-#: src/converse-muc.js:257
+#: src/converse-muc.js:256
 msgid ""
 "You have been removed from this room because the room has changed to members-"
 "only and you're not a member"
@@ -412,7 +412,7 @@ msgstr ""
 "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk "
 "word en jy nie 'n lid is nie."
 
-#: src/converse-muc.js:258
+#: src/converse-muc.js:257
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down."
@@ -430,224 +430,230 @@ msgstr ""
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: src/converse-muc.js:272
-msgid "<strong>%1$s</strong> has been banned"
+#: src/converse-muc.js:271
+#, fuzzy
+msgid "%1$s has been banned"
 msgstr "<strong>%1$s</strong> is verban"
 
-#: src/converse-muc.js:273
-msgid "<strong>%1$s</strong>'s nickname has changed"
+#: src/converse-muc.js:272
+#, fuzzy
+msgid "%1$s's nickname has changed"
 msgstr "<strong>%1$s</strong> se bynaam het verander"
 
-#: src/converse-muc.js:274
-msgid "<strong>%1$s</strong> has been kicked out"
+#: src/converse-muc.js:273
+#, fuzzy
+msgid "%1$s has been kicked out"
 msgstr "<strong>%1$s</strong> is uitgeskop"
 
-#: src/converse-muc.js:275
-msgid "<strong>%1$s</strong> has been removed because of an affiliation change"
+#: src/converse-muc.js:274
+#, fuzzy
+msgid "%1$s has been removed because of an affiliation change"
 msgstr "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
 
-#: src/converse-muc.js:276
-msgid "<strong>%1$s</strong> has been removed for not being a member"
+#: src/converse-muc.js:275
+#, fuzzy
+msgid "%1$s has been removed for not being a member"
 msgstr "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
+
+#: src/converse-muc.js:279
+#, fuzzy
+msgid "Your nickname has been automatically set to: %1$s"
+msgstr "U bynaam is outomaties verander na: <strong>%1$s</strong>"
 
 #: src/converse-muc.js:280
 #, fuzzy
-msgid "Your nickname has been automatically set to: <strong>%1$s</strong>"
-msgstr "U bynaam is outomaties verander na: <strong>%1$s</strong>"
-
-#: src/converse-muc.js:281
-msgid "Your nickname has been changed to: <strong>%1$s</strong>"
+msgid "Your nickname has been changed to: %1$s"
 msgstr "U bynaam is verander na: <strong>%1$s</strong>"
 
-#: src/converse-muc.js:417
+#: src/converse-muc.js:416
 #, fuzzy
 msgid "Close and leave this room"
 msgstr "Klik om hierdie kletskamer te open"
 
-#: src/converse-muc.js:418
+#: src/converse-muc.js:417
 #, fuzzy
 msgid "Configure this room"
 msgstr "Klik om hierdie kletskamer te open"
 
-#: src/converse-muc.js:438
+#: src/converse-muc.js:437
 msgid "Message"
 msgstr "Boodskap"
 
-#: src/converse-muc.js:452
+#: src/converse-muc.js:451
 msgid "Hide the list of occupants"
 msgstr "Verskuil die lys van deelnemers"
 
-#: src/converse-muc.js:830
+#: src/converse-muc.js:829
 msgid "Error: the \""
 msgstr ""
 
-#: src/converse-muc.js:842
+#: src/converse-muc.js:841
 msgid "Are you sure you want to clear the messages from this room?"
 msgstr "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
 
-#: src/converse-muc.js:850
+#: src/converse-muc.js:849
 msgid "Error: could not execute the command"
 msgstr "Fout: kon nie die opdrag uitvoer nie"
 
-#: src/converse-muc.js:891
+#: src/converse-muc.js:890
 msgid "Change user's affiliation to admin"
 msgstr "Verander die gebruiker se affiliasie na admin"
 
-#: src/converse-muc.js:892
+#: src/converse-muc.js:891
 msgid "Ban user from room"
 msgstr "Verban gebruiker uit hierdie kletskamer"
 
-#: src/converse-muc.js:894
+#: src/converse-muc.js:893
 msgid "Change user role to occupant"
 msgstr "Verander gebruiker se rol na lid"
 
-#: src/converse-muc.js:896
+#: src/converse-muc.js:895
 msgid "Kick user from room"
 msgstr "Skop gebruiker uit hierdie kletskamer"
 
-#: src/converse-muc.js:897
+#: src/converse-muc.js:896
 msgid "Write in 3rd person"
 msgstr "Skryf in die derde persoon"
 
-#: src/converse-muc.js:898
+#: src/converse-muc.js:897
 msgid "Grant membership to a user"
 msgstr "Verleen lidmaatskap aan 'n gebruiker"
 
-#: src/converse-muc.js:899
+#: src/converse-muc.js:898
 msgid "Remove user's ability to post messages"
 msgstr "Verwyder gebruiker se vermoë om boodskappe te plaas"
 
-#: src/converse-muc.js:900
+#: src/converse-muc.js:899
 msgid "Change your nickname"
 msgstr "Verander u bynaam"
 
-#: src/converse-muc.js:901
+#: src/converse-muc.js:900
 msgid "Grant moderator role to user"
 msgstr "Verleen moderator rol aan gebruiker"
 
-#: src/converse-muc.js:902
+#: src/converse-muc.js:901
 msgid "Grant ownership of this room"
 msgstr "Verleen eienaarskap van hierdie kamer"
 
-#: src/converse-muc.js:903
+#: src/converse-muc.js:902
 msgid "Revoke user's membership"
 msgstr "Herroep gebruiker se lidmaatskap"
 
-#: src/converse-muc.js:904
+#: src/converse-muc.js:903
 msgid "Set room topic"
 msgstr "Stel onderwerp vir kletskamer"
 
-#: src/converse-muc.js:905
+#: src/converse-muc.js:904
 msgid "Allow muted user to post messages"
 msgstr "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
 
-#: src/converse-muc.js:1464
+#: src/converse-muc.js:1463
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
 
-#: src/converse-muc.js:1480
+#: src/converse-muc.js:1479
 #, fuzzy
 msgid "Please choose your nickname"
 msgstr "Verander u bynaam"
 
-#: src/converse-muc.js:1481 src/converse-muc.js:2086
+#: src/converse-muc.js:1480 src/converse-muc.js:2085
 msgid "Nickname"
 msgstr "Bynaam"
 
-#: src/converse-muc.js:1482
+#: src/converse-muc.js:1481
 #, fuzzy
 msgid "Enter room"
 msgstr "Oop kletskamer"
 
-#: src/converse-muc.js:1500
+#: src/converse-muc.js:1499
 msgid "This chatroom requires a password"
 msgstr "Hiedie kletskamer benodig 'n wagwoord"
 
-#: src/converse-muc.js:1501
+#: src/converse-muc.js:1500
 msgid "Password: "
 msgstr "Wagwoord:"
 
-#: src/converse-muc.js:1502
+#: src/converse-muc.js:1501
 msgid "Submit"
 msgstr "Dien in"
 
-#: src/converse-muc.js:1621
+#: src/converse-muc.js:1620
 #, fuzzy
 msgid "This action was done by <strong>%1$s</strong>."
 msgstr "U bynaam is verander na: <strong>%1$s</strong>"
 
-#: src/converse-muc.js:1624
+#: src/converse-muc.js:1623
 #, fuzzy
 msgid "The reason given is: <em>\"%1$s\"</em>."
 msgstr "Die gegewe rede is: \""
 
-#: src/converse-muc.js:1633
+#: src/converse-muc.js:1632
 msgid "The reason given is: \""
 msgstr "Die gegewe rede is: \""
 
-#: src/converse-muc.js:1672
+#: src/converse-muc.js:1671
 msgid "You are not on the member list of this room"
 msgstr "Jy is nie op die ledelys van hierdie kamer nie"
 
-#: src/converse-muc.js:1678
+#: src/converse-muc.js:1677
 msgid "No nickname was specified"
 msgstr "Geen bynaam verskaf nie"
 
-#: src/converse-muc.js:1682
+#: src/converse-muc.js:1681
 msgid "You are not allowed to create new rooms"
 msgstr "Jy word nie toegelaat om nog kletskamers te skep nie"
 
-#: src/converse-muc.js:1684
+#: src/converse-muc.js:1683
 msgid "Your nickname doesn't conform to this room's policies"
 msgstr "Jou bynaam voldoen nie aan die kamer se beleid nie"
 
-#: src/converse-muc.js:1688
+#: src/converse-muc.js:1687
 msgid "This room does not (yet) exist"
 msgstr "Hierdie kamer bestaan tans (nog) nie"
 
-#: src/converse-muc.js:1690
+#: src/converse-muc.js:1689
 msgid "This room has reached its maximum number of occupants"
 msgstr "Hierdie kletskamer het sy maksimum aantal deelnemers bereik"
 
-#: src/converse-muc.js:1784
+#: src/converse-muc.js:1783
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
-#: src/converse-muc.js:1878
+#: src/converse-muc.js:1877
 #, fuzzy
 msgid "Click to mention this user in your message."
 msgstr "Klik om hierdie kletskamer te open"
 
-#: src/converse-muc.js:1879
+#: src/converse-muc.js:1878
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "Hierdie gebruiker is 'n moderator"
 
-#: src/converse-muc.js:1880
+#: src/converse-muc.js:1879
 #, fuzzy
 msgid "This user can send messages in this room."
 msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur"
 
-#: src/converse-muc.js:1881
+#: src/converse-muc.js:1880
 #, fuzzy
 msgid "This user can NOT send messages in this room."
 msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
 
-#: src/converse-muc.js:1917
+#: src/converse-muc.js:1916
 msgid "Invite"
 msgstr "Nooi uit"
 
-#: src/converse-muc.js:1918
+#: src/converse-muc.js:1917
 msgid "Occupants"
 msgstr "Deelnemers"
 
-#: src/converse-muc.js:2042
+#: src/converse-muc.js:2041
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
 msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
 
-#: src/converse-muc.js:2043
+#: src/converse-muc.js:2042
 msgid ""
 "You may optionally include a message, explaining the reason for the "
 "invitation."
@@ -655,98 +661,98 @@ msgstr ""
 "U mag na keuse 'n boodskap insluit, om bv. die rede vir die uitnodiging te "
 "staaf."
 
-#: src/converse-muc.js:2085
+#: src/converse-muc.js:2084
 msgid "Room name"
 msgstr "Kamer naam"
 
-#: src/converse-muc.js:2087
+#: src/converse-muc.js:2086
 msgid "Server"
 msgstr "Bediener"
 
-#: src/converse-muc.js:2088
+#: src/converse-muc.js:2087
 msgid "Join Room"
 msgstr "Betree kletskamer"
 
-#: src/converse-muc.js:2089
+#: src/converse-muc.js:2088
 msgid "Show rooms"
 msgstr "Wys kletskamers"
 
-#: src/converse-muc.js:2096
+#: src/converse-muc.js:2095
 msgid "Rooms"
 msgstr "Kletskamers"
 
 #. For translators: %1$s is a variable and will be replaced with the XMPP server name
-#: src/converse-muc.js:2121
+#: src/converse-muc.js:2120
 msgid "No rooms on %1$s"
 msgstr "Geen kletskamers op %1$s"
 
 #. For translators: %1$s is a variable and will be
 #. replaced with the XMPP server name
-#: src/converse-muc.js:2135
+#: src/converse-muc.js:2134
 msgid "Rooms on %1$s"
 msgstr "Kletskamers op %1$s"
 
-#: src/converse-muc.js:2213
+#: src/converse-muc.js:2212
 msgid "Description:"
 msgstr "Beskrywing:"
 
-#: src/converse-muc.js:2214
+#: src/converse-muc.js:2213
 msgid "Occupants:"
 msgstr "Deelnemers:"
 
-#: src/converse-muc.js:2215
+#: src/converse-muc.js:2214
 msgid "Features:"
 msgstr "Eienskappe:"
 
-#: src/converse-muc.js:2216
+#: src/converse-muc.js:2215
 msgid "Requires authentication"
 msgstr "Benodig magtiging"
 
-#: src/converse-muc.js:2217
+#: src/converse-muc.js:2216
 msgid "Hidden"
 msgstr "Verskuil"
 
-#: src/converse-muc.js:2218
+#: src/converse-muc.js:2217
 msgid "Requires an invitation"
 msgstr "Benodig 'n uitnodiging"
 
-#: src/converse-muc.js:2219
+#: src/converse-muc.js:2218
 msgid "Moderated"
 msgstr "Gemodereer"
 
-#: src/converse-muc.js:2220
+#: src/converse-muc.js:2219
 msgid "Non-anonymous"
 msgstr "Nie-anoniem"
 
-#: src/converse-muc.js:2221
+#: src/converse-muc.js:2220
 msgid "Open room"
 msgstr "Oop kletskamer"
 
-#: src/converse-muc.js:2222
+#: src/converse-muc.js:2221
 msgid "Permanent room"
 msgstr "Permanente kamer"
 
-#: src/converse-muc.js:2223
+#: src/converse-muc.js:2222
 msgid "Public"
 msgstr "Publiek"
 
-#: src/converse-muc.js:2224
+#: src/converse-muc.js:2223
 msgid "Semi-anonymous"
 msgstr "Deels anoniem"
 
-#: src/converse-muc.js:2225
+#: src/converse-muc.js:2224
 msgid "Temporary room"
 msgstr "Tydelike kamer"
 
-#: src/converse-muc.js:2226
+#: src/converse-muc.js:2225
 msgid "Unmoderated"
 msgstr "Ongemodereer"
 
-#: src/converse-muc.js:2314
+#: src/converse-muc.js:2313
 msgid "%1$s has invited you to join a chat room: %2$s"
 msgstr "%1$s het u uitgenooi om die kletskamer %2$s te besoek"
 
-#: src/converse-muc.js:2319
+#: src/converse-muc.js:2318
 msgid ""
 "%1$s has invited you to join a chat room: %2$s, and left the following "
 "reason: \"%3$s\""
@@ -773,19 +779,19 @@ msgid "wants to be your contact"
 msgstr "wil jou kontak wees"
 
 #. Verified that the passphrase is still the same
-#: src/converse-otr.js:154
+#: src/converse-otr.js:153
 msgid "Re-establishing encrypted session"
 msgstr "Herstel versleutelde sessie"
 
-#: src/converse-otr.js:166
+#: src/converse-otr.js:165
 msgid "Generating private key."
 msgstr "Genereer private sleutel."
 
-#: src/converse-otr.js:167
+#: src/converse-otr.js:166
 msgid "Your browser might become unresponsive."
 msgstr "U webblaaier mag tydelik onreageerbaar word."
 
-#: src/converse-otr.js:203
+#: src/converse-otr.js:202
 msgid ""
 "Authentication request from %1$s\n"
 "\n"
@@ -801,19 +807,19 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: src/converse-otr.js:212
+#: src/converse-otr.js:211
 msgid "Could not verify this user's identify."
 msgstr "Kon nie hierdie gebruiker se identitied bevestig nie."
 
-#: src/converse-otr.js:252
+#: src/converse-otr.js:251
 msgid "Exchanging private key with contact."
 msgstr "Sleutels word met gespreksmaat uitgeruil."
 
-#: src/converse-otr.js:339
+#: src/converse-otr.js:338
 msgid "Your messages are not encrypted anymore"
 msgstr "U boodskappe is nie meer versleutel nie"
 
-#: src/converse-otr.js:341
+#: src/converse-otr.js:340
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
@@ -821,28 +827,28 @@ msgstr ""
 "U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog "
 "onseker."
 
-#: src/converse-otr.js:343
+#: src/converse-otr.js:342
 msgid "Your contact's identify has been verified."
 msgstr "U gespreksmaat se identiteit is bevestig."
 
-#: src/converse-otr.js:345
+#: src/converse-otr.js:344
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
 "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
 
-#: src/converse-otr.js:354
+#: src/converse-otr.js:353
 msgid "Your message could not be sent"
 msgstr "U boodskap kon nie gestuur word nie"
 
-#: src/converse-otr.js:357
+#: src/converse-otr.js:356
 msgid "We received an unencrypted message"
 msgstr "Ons het 'n onversleutelde boodskap ontvang"
 
-#: src/converse-otr.js:360
+#: src/converse-otr.js:359
 msgid "We received an unreadable encrypted message"
 msgstr "Ons het 'n onleesbare versleutelde boodskap ontvang"
 
-#: src/converse-otr.js:387
+#: src/converse-otr.js:386
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
 "chat.\n"
@@ -863,7 +869,7 @@ msgstr ""
 "\n"
 "Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
 
-#: src/converse-otr.js:400
+#: src/converse-otr.js:399
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -878,61 +884,61 @@ msgstr ""
 "dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit "
 "bevestig wees."
 
-#: src/converse-otr.js:401
+#: src/converse-otr.js:400
 msgid "What is your security question?"
 msgstr "Wat is u sekuriteitsvraag?"
 
-#: src/converse-otr.js:403
+#: src/converse-otr.js:402
 msgid "What is the answer to the security question?"
 msgstr "Wat is die antwoord tot die sekuriteitsvraag?"
 
-#: src/converse-otr.js:407
+#: src/converse-otr.js:406
 msgid "Invalid authentication scheme provided"
 msgstr "Ongeldige verifikasiemetode verskaf"
 
-#: src/converse-otr.js:419
+#: src/converse-otr.js:418
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
 "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te "
 "aktiveer."
 
-#: src/converse-otr.js:421
+#: src/converse-otr.js:420
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr ""
 "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
 
-#: src/converse-otr.js:423
+#: src/converse-otr.js:422
 msgid "Your messages are encrypted and your contact verified."
 msgstr "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
 
-#: src/converse-otr.js:425
+#: src/converse-otr.js:424
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
 "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
 
-#: src/converse-otr.js:442
+#: src/converse-otr.js:441
 msgid "End encrypted conversation"
 msgstr "Beëindig versleutelde gesprek"
 
-#: src/converse-otr.js:443
+#: src/converse-otr.js:442
 msgid "Refresh encrypted conversation"
 msgstr "Verfris versleutelde gesprek"
 
-#: src/converse-otr.js:444
+#: src/converse-otr.js:443
 msgid "Start encrypted conversation"
 msgstr "Begin versleutelde gesprek"
 
-#: src/converse-otr.js:445
+#: src/converse-otr.js:444
 msgid "Verify with fingerprints"
 msgstr "Bevestig met vingerafdrukke"
 
-#: src/converse-otr.js:446
+#: src/converse-otr.js:445
 msgid "Verify with SMP"
 msgstr "Bevestig met SMP"
 
-#: src/converse-otr.js:447
+#: src/converse-otr.js:446
 msgid "What's this?"
 msgstr "Wat is hierdie?"
 
@@ -942,47 +948,47 @@ msgstr "Wat is hierdie?"
 #. has been initialized and with it the i18n machinery. That's why
 #. we do it here in the "initialize" method and not at the top of
 #. the module.
-#: src/converse-otr.js:473
+#: src/converse-otr.js:472
 msgid "unencrypted"
 msgstr "nie-privaat"
 
-#: src/converse-otr.js:474
+#: src/converse-otr.js:473
 msgid "unverified"
 msgstr "onbevestig"
 
-#: src/converse-otr.js:475
+#: src/converse-otr.js:474
 msgid "verified"
 msgstr "privaat"
 
-#: src/converse-otr.js:476
+#: src/converse-otr.js:475
 msgid "finished"
 msgstr "afgesluit"
 
-#: src/converse-register.js:99
+#: src/converse-register.js:98
 msgid " e.g. conversejs.org"
 msgstr "bv. conversejs.org"
 
-#: src/converse-register.js:122
+#: src/converse-register.js:121
 msgid "Your XMPP provider's domain name:"
 msgstr "U XMPP-verskaffer se domein naam:"
 
-#: src/converse-register.js:123
+#: src/converse-register.js:122
 msgid "Fetch registration form"
 msgstr "Haal die registrasie form"
 
-#: src/converse-register.js:124
+#: src/converse-register.js:123
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"
 
-#: src/converse-register.js:125
+#: src/converse-register.js:124
 msgid "here"
 msgstr "hier"
 
-#: src/converse-register.js:130 src/converse-register.js:348
+#: src/converse-register.js:129 src/converse-register.js:347
 msgid "Register"
 msgstr "Registreer"
 
-#: src/converse-register.js:176
+#: src/converse-register.js:175
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -990,11 +996,11 @@ msgstr ""
 "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer "
 "weer met 'n ander verskaffer."
 
-#: src/converse-register.js:236
+#: src/converse-register.js:235
 msgid "Requesting a registration form from the XMPP server"
 msgstr "Vra tans die XMPP-bediener vir 'n registrasie vorm"
 
-#: src/converse-register.js:271
+#: src/converse-register.js:270
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
@@ -1002,19 +1008,19 @@ msgstr ""
 "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit "
 "bestaan?"
 
-#: src/converse-register.js:290
+#: src/converse-register.js:289
 msgid "Now logging you in"
 msgstr "U word nou aangemeld"
 
-#: src/converse-register.js:294
+#: src/converse-register.js:293
 msgid "Registered successfully"
 msgstr "Suksesvol geregistreer"
 
-#: src/converse-register.js:353
+#: src/converse-register.js:352
 msgid "Return"
 msgstr "Terug"
 
-#: src/converse-register.js:385
+#: src/converse-register.js:384
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1022,99 +1028,99 @@ msgstr ""
 "Die verskaffer het u registrasieversoek verwerp. Kontrolleer asb. jou gegewe "
 "waardes vir korrektheid."
 
-#: src/converse-rosterview.js:86
+#: src/converse-rosterview.js:85
 msgid "This contact is busy"
 msgstr "Hierdie persoon is besig"
 
-#: src/converse-rosterview.js:87
+#: src/converse-rosterview.js:86
 msgid "This contact is online"
 msgstr "Hierdie persoon is aanlyn"
 
-#: src/converse-rosterview.js:88
+#: src/converse-rosterview.js:87
 msgid "This contact is offline"
 msgstr "Hierdie persoon is aflyn"
 
-#: src/converse-rosterview.js:89
+#: src/converse-rosterview.js:88
 msgid "This contact is unavailable"
 msgstr "Hierdie persoon is onbeskikbaar"
 
-#: src/converse-rosterview.js:90
+#: src/converse-rosterview.js:89
 msgid "This contact is away for an extended period"
 msgstr "Hierdie persoon is vir lank afwesig"
 
-#: src/converse-rosterview.js:91
+#: src/converse-rosterview.js:90
 msgid "This contact is away"
 msgstr "Hierdie persoon is afwesig"
 
-#: src/converse-rosterview.js:94
+#: src/converse-rosterview.js:93
 msgid "Groups"
 msgstr "Groepe"
 
-#: src/converse-rosterview.js:95
+#: src/converse-rosterview.js:94
 msgid "My contacts"
 msgstr "My kontakte"
 
-#: src/converse-rosterview.js:96
+#: src/converse-rosterview.js:95
 msgid "Pending contacts"
 msgstr "Hangende kontakte"
 
-#: src/converse-rosterview.js:97
+#: src/converse-rosterview.js:96
 msgid "Contact requests"
 msgstr "Kontak versoeke"
 
-#: src/converse-rosterview.js:98
+#: src/converse-rosterview.js:97
 msgid "Ungrouped"
 msgstr "Ongegroepeer"
 
-#: src/converse-rosterview.js:154
+#: src/converse-rosterview.js:153
 msgid "Filter"
 msgstr "Filtreer"
 
-#: src/converse-rosterview.js:157
+#: src/converse-rosterview.js:156
 msgid "State"
 msgstr "Kletsstand"
 
-#: src/converse-rosterview.js:158
+#: src/converse-rosterview.js:157
 msgid "Any"
 msgstr "Enige"
 
-#: src/converse-rosterview.js:160
+#: src/converse-rosterview.js:159
 msgid "Chatty"
 msgstr "Geselserig"
 
-#: src/converse-rosterview.js:163
+#: src/converse-rosterview.js:162
 msgid "Extended Away"
 msgstr "Weg vir langer"
 
-#: src/converse-rosterview.js:592 src/converse-rosterview.js:612
+#: src/converse-rosterview.js:591 src/converse-rosterview.js:611
 msgid "Click to remove this contact"
 msgstr "Klik om hierdie kontak te verwyder"
 
-#: src/converse-rosterview.js:600
+#: src/converse-rosterview.js:599
 msgid "Click to accept this contact request"
 msgstr "Klik om hierdie kontakversoek te aanvaar"
 
-#: src/converse-rosterview.js:601
+#: src/converse-rosterview.js:600
 msgid "Click to decline this contact request"
 msgstr "Klik om hierdie kontakversoek te weier"
 
-#: src/converse-rosterview.js:611
+#: src/converse-rosterview.js:610
 msgid "Click to chat with this contact"
 msgstr "Klik om met hierdie kontak te klets"
 
-#: src/converse-rosterview.js:613
+#: src/converse-rosterview.js:612
 msgid "Name"
 msgstr "Naam"
 
-#: src/converse-rosterview.js:668
+#: src/converse-rosterview.js:667
 msgid "Are you sure you want to remove this contact?"
 msgstr "Is u seker u wil hierdie gespreksmaat verwyder?"
 
-#: src/converse-rosterview.js:679
+#: src/converse-rosterview.js:678
 msgid "Sorry, there was an error while trying to remove "
 msgstr "Jammer, 'n fout het voorgekom tydens die verwydering van "
 
-#: src/converse-rosterview.js:698
+#: src/converse-rosterview.js:697
 msgid "Are you sure you want to decline this contact request?"
 msgstr "Is u seker dat u hierdie persoon se versoek wil afkeur?"
 

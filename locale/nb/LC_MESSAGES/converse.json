@@ -307,30 +307,6 @@
             null,
             "Du har blitt fjernet fra dette rommet fordi MBC (Multi-Bruker-Chat)-tjenesten er stengt ned."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong>  har blitt utestengt"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> sitt kallenavn er endret"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong>  ble kastet ut"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> har blitt fjernet på grunn av en holdningsendring"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> har blitt fjernet på grunn av at han/hun ikke er medlem"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ditt kallenavn har blitt endret til <strong>%1$s</strong> "
-         ],
          "Message": [
             null,
             "Melding"

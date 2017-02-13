@@ -326,30 +326,6 @@
             null,
             "Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás leállításra került."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "A szobából kitíltva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> beceneve módosult"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "A szobából kidobva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "A beceneved a következőre módosult: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Üzenet"

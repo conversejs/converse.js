@@ -282,22 +282,6 @@
             null,
             "Anda telah dihapus dari ruangan ini karena layanan MUC (Multi-user chat) telah dimatikan."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> telah dicekal"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> telah ditendang keluar"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> telah dihapus karena perubahan afiliasi"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> telah dihapus karena bukan anggota"
-         ],
          "Message": [
             null,
             "Pesan"

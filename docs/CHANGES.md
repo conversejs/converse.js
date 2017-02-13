@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.6 (Unreleased)
+## 2.0.6 (2017-02-13)
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
 - #486 Honor existing mam user configuration [throwaway42]
 - #749 /me will show your contact's name in the sent field [jcbrand]

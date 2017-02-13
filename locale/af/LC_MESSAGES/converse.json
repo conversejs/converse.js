@@ -334,30 +334,6 @@
             null,
             "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verban"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> se bynaam het verander"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> is uitgeskop"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "U bynaam is verander na: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Boodskap"

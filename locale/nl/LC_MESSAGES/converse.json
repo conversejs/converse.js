@@ -279,19 +279,11 @@
             null,
             ""
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verbannen"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> has been kicked out"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+         "%1$s has been removed because of an affiliation change": [
             null,
             ""
          ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
+         "%1$s has been removed for not being a member": [
             null,
             ""
          ],

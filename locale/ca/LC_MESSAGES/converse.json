@@ -323,30 +323,6 @@
             null,
             "Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat multiusuari)."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "S'ha expulsat <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "L'àlies de <strong>%1$s</strong> ha canviat"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "S'ha expulsat <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "El vostre àlies ha canviat a: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Missatge"

@@ -235,6 +235,114 @@
             }));
         });
 
+        describe("An instant chat room", function () {
+            it("will be created when muc_instant_rooms is set to true", mock.initConverse(function (_converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                /* <iq from="jordie.langen@chat.example.org/converse.js-11659299" to="myroom@conference.chat.example.org" type="get">
+                 *     <query xmlns="http://jabber.org/protocol/disco#info"/>
+                 * </iq>
+                 * <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
+                 *     <error type="cancel">
+                 *         <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                 *     </error>
+                 * </iq>
+                 */
+                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                // We pretend this is a new room, so no disco info is returned.
+                var features_stanza = $iq({
+                        from: 'lounge@localhost',
+                        'id': IQ_id,
+                        'to': 'dummy@localhost/desktop',
+                        'type': 'error'
+                    }).c('error', {'type': 'cancel'})
+                        .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+
+
+                var view = _converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'join').andCallThrough();
+
+                /* <iq to="myroom@conference.chat.example.org"
+                 *     from="jordie.langen@chat.example.org/converse.js-11659299"
+                 *     type="get">
+                 *   <query xmlns="http://jabber.org/protocol/disco#info"
+                 *          node="x-roomuser-item"/>
+                 * </iq>
+                 */
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
+                        "type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>"
+                );
+                /* *  <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
+                 *      <error type="cancel">
+                 *          <item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                 *      </error>
+                 *  </iq>
+                 */
+                var stanza = $iq({
+                    'type': 'error',
+                    'id': IQ_id,
+                    'from': view.model.get('jid'),
+                    'to': _converse.connection.jid
+                }).c('error', {'type': 'cancel'})
+                  .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                // TODO: enter nickname
+                var $input = view.$el.find('input.new-chatroom-nick');
+                $input.val('nicky').parents('form').submit();
+
+                expect(view.join).toHaveBeenCalled();
+
+                // The user has just entered the room (because join was called)
+                // and receives their own presence from the server.
+                // See example 24:
+                // http://xmpp.org/extensions/xep-0045.html#enter-pres
+                //
+                /* <presence xmlns="jabber:client" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org/jc">
+                 *    <x xmlns="http://jabber.org/protocol/muc#user">
+                 *        <item jid="jordie.langen@chat.example.org/converse.js-11659299" affiliation="owner" role="moderator"/>
+                 *        <status code="110"/>
+                 *        <status code="201"/>
+                 *    </x>
+                 *  </presence>
+                 */
+                var presence = $pres({
+                        to:'dummy@localhost/resource',
+                        from:'lounge@localhost/thirdwitch',
+                        id:'5025e055-036c-4bc5-a227-706e7e352053'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                  .c('item').attrs({
+                      affiliation: 'owner',
+                      jid: 'dummy@localhost/resource',
+                      role: 'moderator'
+                  }).up()
+                  .c('status').attrs({code:'110'}).up()
+                  .c('status').attrs({code:'201'}).nodeTree;
+
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                var info_text = view.$el.find('.chat-content .chat-info').text();
+                expect(info_text).toBe('A new room has been created');
+
+                // An instant room is created by saving the default configuratoin.
+                //
+                /* <iq to="myroom@conference.chat.example.org" type="set" xmlns="jabber:client" id="5025e055-036c-4bc5-a227-706e7e352053:sendIQ">
+                 *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
+                 * </iq>
+                 */
+                expect(sent_IQ.toLocaleString()).toBe(
+                    "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                        "<query xmlns='http://jabber.org/protocol/muc#owner'><x xmlns='jabber:x:data' type='submit'/>"+
+                    "</query></iq>");
+            }));
+        });
+
         describe("A Chat Room", function () {
 
             it("can have spaces and special characters in its name", mock.initConverse(function (_converse) {

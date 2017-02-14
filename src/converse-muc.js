@@ -1203,19 +1203,25 @@
                      * Parameters:
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
+                    var deferred = new $.Deferred();
                     var that = this;
                     var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                         configArray = [];
                     $inputs.each(function () {
                         configArray.push(utils.webForm2xForm(this));
                     });
-                    this.sendConfiguration(configArray);
+                    this.sendConfiguration(
+                        configArray,
+                        deferred.resolve,
+                        deferred.reject
+                    );
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
                             that.$el.find('.chat-area').removeClass('hidden');
                             that.$el.find('.occupants').removeClass('hidden');
                         });
+                    return deferred.promise();
                 },
 
                 autoConfigureChatRoom: function (stanza) {
@@ -1727,7 +1733,7 @@
                      *
                      * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
                      */
-                    this.sendConfiguration().then(this.getRoomFeatures.bind(this));
+                    this.saveConfiguration().then(this.getRoomFeatures.bind(this));
                 },
 
                 onChatRoomPresence: function (pres) {

@@ -11,6 +11,8 @@
 .pydevproject
 analytics.js
 .idea
+eggs
+.Python
 
 dev-jc.html
 

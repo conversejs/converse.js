@@ -15,6 +15,7 @@ require.config({
     baseUrl: '.',
     paths: {
         "almond":                   "node_modules/almond/almond",
+        "awesomplete":              "node_modules/awesomplete/awesomplete",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
@@ -213,6 +214,7 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
+        'awesomplete':          { exports: 'Awesomplete' },
         'backbone':             { deps: ['underscore'] },
         'bigint':               { deps: ['crypto'] },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },

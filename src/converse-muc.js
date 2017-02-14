@@ -26,7 +26,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
-            "typeahead",
+            "awesomplete",
             "converse-chatview"
     ], factory);
 }(this, function (
@@ -44,7 +44,8 @@
             tpl_occupant,
             tpl_room_description,
             tpl_room_item,
-            tpl_room_panel
+            tpl_room_panel,
+            Awesomplete
     ) {
     "use strict";
     var ROOMS_PANEL_ID = 'chatrooms';
@@ -1936,7 +1937,7 @@
                         })
                     );
                     if (_converse.allow_muc_invitations) {
-                        return this.initInviteWidget();
+                        _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
                     }
                     return this;
                 },
@@ -2037,33 +2038,24 @@
                 },
 
                 initInviteWidget: function () {
-                    var $el = this.$('input.invited-contact');
-                    $el.typeahead({
-                        minLength: 1,
-                        highlight: true
-                    }, {
-                        name: 'contacts-dataset',
-                        source: function (q, cb) {
-                            cb(_.map(
-                                _converse.roster.filter(utils.contains(['fullname', 'jid'], q)),
-                                function (n) {
-                                    return {value: n.get('fullname'), jid: n.get('jid')};
-                                }
-                            ));
-                        },
-                        templates: {
-                            suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
-                        }
+                    var el = this.el.querySelector('input.invited-contact');
+                    var list = _converse.roster.map(function (item) {
+                            var label = item.get('fullname') || item.get('jid');
+                            return {'label': label, 'value':item.get('jid')};
+                        });
+                    var awesomplete = new Awesomplete(el, {
+                        'minChars': 1,
+                        'list': list
                     });
-                    $el.on('typeahead:selected', function (ev, suggestion, dname) {
+                    el.addEventListener('awesomplete-selectcomplete', function (suggestion) {
                         var reason = prompt(
-                            __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.value, this.model.get('id')) +
+                            __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
                             __("You may optionally include a message, explaining the reason for the invitation.")
                         );
                         if (reason !== null) {
-                            this.chatroomview.directInvite(suggestion.jid, reason);
+                            this.chatroomview.directInvite(suggestion.text.value, reason);
                         }
-                        $(ev.target).typeahead('val', '');
+                        el.value = '';
                     }.bind(this));
                     return this;
                 }

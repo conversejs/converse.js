@@ -2384,38 +2384,6 @@
       margin: -1px 0 0 -1px;
       width: 100%;
       border: 1px solid #999; }
-      #converse-embedded-chat .chatroom .room-invite .invited-contact.tt-input,
-      #conversejs .chatroom .room-invite .invited-contact.tt-input {
-        width: 100%;
-        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC) no-repeat right 3px center; }
-        #converse-embedded-chat .chatroom .room-invite .invited-contact.tt-input:focus,
-        #conversejs .chatroom .room-invite .invited-contact.tt-input:focus {
-          border-color: #E76F51; }
-      #converse-embedded-chat .chatroom .room-invite .invited-contact.tt-hint,
-      #conversejs .chatroom .room-invite .invited-contact.tt-hint {
-        color: transparent;
-        background-color: white; }
-    #converse-embedded-chat .chatroom .room-invite .tt-dropdown-menu,
-    #conversejs .chatroom .room-invite .tt-dropdown-menu {
-      width: 96%;
-      max-height: 250px;
-      background: #E76F51;
-      border-bottom-right-radius: 4px;
-      border-bottom-left-radius: 4px;
-      overflow-y: auto; }
-      #converse-embedded-chat .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p,
-      #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p {
-        color: white;
-        cursor: pointer;
-        font-size: 11px;
-        text-overflow: ellipsis;
-        overflow-x: hidden; }
-        #converse-embedded-chat .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p:hover,
-        #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion p:hover {
-          background-color: #FF977C; }
-      #converse-embedded-chat .chatroom .room-invite .tt-dropdown-menu .tt-suggestion .tt-highlight,
-      #conversejs .chatroom .room-invite .tt-dropdown-menu .tt-suggestion .tt-highlight {
-        background-color: #D24E2B; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: #2A9D8F; }
@@ -2481,5 +2449,98 @@
     width: 75%; }
   #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom .remove-bookmark {
     float: right; }
+
+#converse-embedded-chat,
+#conversejs {
+  /* Pointer */ }
+  #converse-embedded-chat [hidden],
+  #conversejs [hidden] {
+    display: none; }
+  #converse-embedded-chat .visually-hidden,
+  #conversejs .visually-hidden {
+    position: absolute;
+    clip: rect(0, 0, 0, 0); }
+  #converse-embedded-chat div.awesomplete,
+  #conversejs div.awesomplete {
+    display: inline-block;
+    position: relative; }
+  #converse-embedded-chat div.awesomplete > input,
+  #conversejs div.awesomplete > input {
+    display: block; }
+  #converse-embedded-chat div.awesomplete > ul,
+  #conversejs div.awesomplete > ul {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    min-width: 100%;
+    box-sizing: border-box;
+    list-style: none;
+    padding: 0;
+    border-radius: .3em;
+    margin: .2em 0 0;
+    background: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.8));
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.2);
+    text-shadow: none; }
+  #converse-embedded-chat div.awesomplete > ul[hidden],
+  #converse-embedded-chat div.awesomplete > ul:empty,
+  #conversejs div.awesomplete > ul[hidden],
+  #conversejs div.awesomplete > ul:empty {
+    display: none; }
+  @supports (transform: scale(0)) {
+    #converse-embedded-chat div.awesomplete > ul,
+    #conversejs div.awesomplete > ul {
+      transition: 0.3s cubic-bezier(0.4, 0.2, 0.5, 1.4);
+      transform-origin: 1.43em -.43em; }
+    #converse-embedded-chat div.awesomplete > ul[hidden],
+    #converse-embedded-chat div.awesomplete > ul:empty,
+    #conversejs div.awesomplete > ul[hidden],
+    #conversejs div.awesomplete > ul:empty {
+      opacity: 0;
+      transform: scale(0);
+      display: block;
+      transition-timing-function: ease; } }
+  #converse-embedded-chat div.awesomplete > ul:before,
+  #conversejs div.awesomplete > ul:before {
+    content: "";
+    position: absolute;
+    top: -.43em;
+    left: 1em;
+    width: 0;
+    height: 0;
+    padding: .4em;
+    background: white;
+    border: inherit;
+    border-right: 0;
+    border-bottom: 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg); }
+  #converse-embedded-chat div.awesomplete > ul > li,
+  #conversejs div.awesomplete > ul > li {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    position: relative;
+    padding: .2em .5em;
+    cursor: pointer; }
+  #converse-embedded-chat div.awesomplete > ul > li:hover,
+  #conversejs div.awesomplete > ul > li:hover {
+    background: #b8d3e0;
+    color: black; }
+  #converse-embedded-chat div.awesomplete > ul > li[aria-selected="true"],
+  #conversejs div.awesomplete > ul > li[aria-selected="true"] {
+    background: #3d6d8f;
+    color: white; }
+  #converse-embedded-chat div.awesomplete mark,
+  #conversejs div.awesomplete mark {
+    background: #eaff00; }
+  #converse-embedded-chat div.awesomplete li:hover mark,
+  #conversejs div.awesomplete li:hover mark {
+    background: #b5d100; }
+  #converse-embedded-chat div.awesomplete li[aria-selected="true"] mark,
+  #conversejs div.awesomplete li[aria-selected="true"] mark {
+    background: #3d6b00;
+    color: inherit; }
 
 /*# sourceMappingURL=converse.css.map */

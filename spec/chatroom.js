@@ -646,30 +646,48 @@
 
             it("allows the user to invite their roster contacts to enter the chat room", mock.initConverse(function (_converse) {
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
+                // Since we don't actually fetch roster contacts, we need to
+                // cheat here and emit the event.
+                _converse.emit('rosterContactsFetched');
+
                 spyOn(_converse, 'emit');
                 spyOn(window, 'prompt').andCallFake(function () {
-                    return null;
+                    return "Please join!";
                 });
-                var $input;
                 var view = _converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'directInvite').andCallThrough();
+                var $input;
                 view.$el.find('.chat-area').remove();
-                test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
-                $input = view.$el.find('input.invited-contact.tt-input');
-                var $hint = view.$el.find('input.invited-contact.tt-hint');
+                $input = view.$el.find('input.invited-contact');
                 runs (function () {
                     expect($input.length).toBe(1);
                     expect($input.attr('placeholder')).toBe('Invite');
                     $input.val("Felix");
-                    $input.trigger('input');
+                    $input[0].dispatchEvent(new Event('input'));
                 });
                 waits(350); // Needed, due to debounce
                 runs (function () {
+                    var sent_stanza;
+                    spyOn(_converse.connection, 'send').andCallFake(function (stanza) {
+                        sent_stanza = stanza;
+                    });
+                    var $hint = $input.siblings('ul').children('li');
                     expect($input.val()).toBe('Felix');
-                    expect($hint.val()).toBe('Felix Amsel');
-                    var $sugg = view.$el.find('[data-jid="felix.amsel@localhost"]');
-                    expect($sugg.length).toBe(1);
-                    $sugg.trigger('click');
+                    expect($hint[0].textContent).toBe('Felix Amsel');
+                    expect($hint.length).toBe(1);
+                    var evt = new Event('mousedown', {'bubbles': true});
+                    evt.button = 0; // For some reason awesomplete wants this
+                    $hint[0].dispatchEvent(evt);
                     expect(window.prompt).toHaveBeenCalled();
+                    expect(view.directInvite).toHaveBeenCalled();
+                    expect(sent_stanza.toLocaleString()).toBe(
+                        "<message from='dummy@localhost/resource' to='felix.amsel@localhost' id='" +
+                                sent_stanza.nodeTree.getAttribute('id') +
+                                "' xmlns='jabber:client'>"+
+                            "<x xmlns='jabber:x:conference' jid='lounge@localhost' reason='Please join!'/>"+
+                        "</message>"
+                    );
                 });
             }));
 

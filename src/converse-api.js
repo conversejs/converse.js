@@ -6,8 +6,7 @@
 //
 /*global define */
 (function (root, factory) {
-    define([
-            "jquery",
+    define(["jquery",
             "lodash",
             "moment_with_locales",
             "strophe",

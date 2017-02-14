@@ -9,6 +9,7 @@
 - Use lodash instead of underscore.js [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
+- New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil) [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 
 ## 2.0.6 (2017-02-13)

@@ -47,7 +47,24 @@
     var _converse = {};
     _converse.templates = {};
     _.extend(_converse, Backbone.Events);
-    _converse.emit = _converse.trigger;
+    _converse.promises = {
+        'cachedRoster': new $.Deferred(),
+        'chatBoxesFetched': new $.Deferred(),
+        'connected': new $.Deferred(),
+        'pluginsInitialized': new $.Deferred(),
+        'roster': new $.Deferred(),
+        'rosterContactsFetched': new $.Deferred(),
+        'rosterGroupsFetched': new $.Deferred(),
+        'rosterInitialized': new $.Deferred(),
+        'statusInitialized': new $.Deferred()
+    };
+    _converse.emit = function (name) {
+        _converse.trigger.apply(this, arguments);
+        var promise = _converse.promises[name];
+        if (!_.isUndefined(promise)) {
+            promise.resolve();
+        }
+    };
 
     _converse.core_plugins = [
         'converse-bookmarks',

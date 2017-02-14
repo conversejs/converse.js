@@ -180,6 +180,13 @@
                 );
             },
         },
+        'waitUntil': function (name) {
+            var promise = _converse.promises[name];
+            if (_.isUndefined(promise)) {
+                return null;
+            }
+            return _converse.promises[name].promise();
+        },
         'send': function (stanza) {
             _converse.connection.send(stanza);
         },

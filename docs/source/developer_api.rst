@@ -1,7 +1,7 @@
 .. raw:: html
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
- 
+
 =============================
 The converse.js developer API
 =============================
@@ -84,6 +84,7 @@ Example:
             roster_groups: true
         });
 
+
 The **plugin** grouping
 ------------------------
 
@@ -162,6 +163,44 @@ For example, to send a message stanza:
 
         }
     });
+
+
+.. _`waituntil-grouping`:
+
+waitUntil
+---------
+
+This method can be used to wait for promises. Promises are similar to events
+(for event handling, refer to the :ref:`listen-grouping`), but they differ in
+two important ways:
+
+* A promise gets resolved only once, whereas events can fire multiple times.
+* A handler registered for a promise, will still fire *after* the promise has
+  been resolved, which is not the case with an event handler.
+
+Converse.js has the following promises:
+
+* cachedRoster
+* chatBoxesFetched
+* connected
+* pluginsInitialized
+* roster
+* rosterContactsFetched
+* rosterGroupsFetched
+* rosterInitialized
+* statusInitialized
+
+Below is an example from `converse-muc.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-muc.js>`_
+where the `rosterContactsFetched` promise is waited on. The method
+`this.initInviteWidget` will initialize the chatroom invitation widget.
+
+.. code-block:: javascript
+
+    _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
+
+The line above executes only once a chatroom has been opened and entered, so
+using an event handler here would not work, since the event might have fired
+already by that time.
 
 
 The **archive** grouping
@@ -982,3 +1021,4 @@ grouping:
 .. code-block:: javascript
 
         _converse.listen.not('message', function (messageXML) { ... });
+

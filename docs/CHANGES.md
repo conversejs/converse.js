@@ -10,6 +10,9 @@
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
 - New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil) [jcbrand]
+- New configuration setting:
+  [show_chatstate_notifications](https://conversejs.org/docs/html/configuration.html#show-chatstate-notifications)
+  [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 
 ## 2.0.6 (2017-02-13)

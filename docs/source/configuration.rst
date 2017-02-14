@@ -885,6 +885,13 @@ configured.
     Converse.js can only show users and groups that were previously configured
     elsewhere.
 
+show_chatstate_notifications
+----------------------------
+
+* Default:  ``false``
+
+Specifies whether chat state (online, dnd, away) HTML5 desktop notifications should be shown.
+
 show_controlbox_by_default
 --------------------------
 

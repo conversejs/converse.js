@@ -10,9 +10,16 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    define(["otr", "converse-core", "tpl!toolbar_otr"], factory);
-}(this, function (otr, converse, tpl_toolbar_otr) {
+
+    define(["converse-chatview",
+            "tpl!toolbar_otr",
+            'otr',
+            'crypto',
+            'aes'
+    ], factory);
+}(this, function (converse, tpl_toolbar_otr, otr, CryptoJS) {
     "use strict";
+
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
         utils = converse.env.utils,

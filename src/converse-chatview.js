@@ -830,4 +830,6 @@
             });
         }
     });
+
+    return converse;
 }));

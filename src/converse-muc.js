@@ -2052,7 +2052,7 @@
                             ));
                         },
                         templates: {
-                            suggestion: _.template('<p data-jid="{{jid}}">{{value}}</p>')
+                            suggestion: _.template('<p data-jid="{{{jid}}}">{{{value}}}</p>')
                         }
                     });
                     $el.on('typeahead:selected', function (ev, suggestion, dname) {

@@ -664,7 +664,16 @@
                     expect($input.length).toBe(1);
                     expect($input.attr('placeholder')).toBe('Invite');
                     $input.val("Felix");
-                    $input[0].dispatchEvent(new Event('input'));
+                    var evt;
+                    // check if Event() is a constructor function
+                    // usage as per the spec, if true
+                    if (typeof(Event) === 'function') {
+                        evt = new Event('input');
+                    } else { // the deprecated way for PhantomJS
+                        evt = document.createEvent('CustomEvent');
+                        evt.initCustomEvent('input', false, false, null);
+                    }
+                    $input[0].dispatchEvent(evt);
                 });
                 waits(350); // Needed, due to debounce
                 runs (function () {
@@ -676,18 +685,22 @@
                     expect($input.val()).toBe('Felix');
                     expect($hint[0].textContent).toBe('Felix Amsel');
                     expect($hint.length).toBe(1);
-                    var evt = new Event('mousedown', {'bubbles': true});
-                    evt.button = 0; // For some reason awesomplete wants this
-                    $hint[0].dispatchEvent(evt);
-                    expect(window.prompt).toHaveBeenCalled();
-                    expect(view.directInvite).toHaveBeenCalled();
-                    expect(sent_stanza.toLocaleString()).toBe(
-                        "<message from='dummy@localhost/resource' to='felix.amsel@localhost' id='" +
-                                sent_stanza.nodeTree.getAttribute('id') +
-                                "' xmlns='jabber:client'>"+
-                            "<x xmlns='jabber:x:conference' jid='lounge@localhost' reason='Please join!'/>"+
-                        "</message>"
-                    );
+                    var evt;
+                    if (typeof(Event) === 'function') {
+                        // Not working on PhantomJS
+                        evt = new Event('mousedown', {'bubbles': true});
+                        evt.button = 0; // For some reason awesomplete wants this
+                        $hint[0].dispatchEvent(evt);
+                        expect(window.prompt).toHaveBeenCalled();
+                        expect(view.directInvite).toHaveBeenCalled();
+                        expect(sent_stanza.toLocaleString()).toBe(
+                            "<message from='dummy@localhost/resource' to='felix.amsel@localhost' id='" +
+                                    sent_stanza.nodeTree.getAttribute('id') +
+                                    "' xmlns='jabber:client'>"+
+                                "<x xmlns='jabber:x:conference' jid='lounge@localhost' reason='Please join!'/>"+
+                            "</message>"
+                        );
+                    }
                 });
             }));
 

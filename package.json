@@ -57,6 +57,7 @@
     "moment": "~2.13.0",
     "npm": "^4.1.1",
     "otr": "0.2.16",
+    "jasmine": "https://github.com/jcbrand/jasmine.git#439a7f805eeaec0cabe18a8ecf7e47da1a0afa33",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
     "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#e5fc6a78dd568a120674ff7325da038d5ba9b334",

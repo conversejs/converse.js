@@ -134,10 +134,11 @@
                 closeAllChatBoxes: function () {
                     var _converse = this.__super__._converse;
                     this.each(function (view) {
-                        if (_converse.disconnection_cause === _converse.LOGOUT ||
-                            view.model.get('id') !== 'controlbox') {
-                                view.close();
+                        if (view.model.get('id') === 'controlbox' &&
+                                (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
+                            return;
                         }
+                        view.close();
                     });
                     return this;
                 },
@@ -244,9 +245,9 @@
                     this.render();
                     if (this.model.get('connected')) {
                         this.insertRoster();
-                    }
-                    if (_.isUndefined(this.model.get('closed'))) {
-                        this.model.set('closed', !_converse.show_controlbox_by_default);
+                        if (_.isUndefined(this.model.get('closed'))) {
+                            this.model.set('closed', !_converse.show_controlbox_by_default);
+                        }
                     }
                     if (!this.model.get('closed')) {
                         this.show();
@@ -272,6 +273,7 @@
                 onConnected: function () {
                     if (this.model.get('connected')) {
                         this.render().insertRoster();
+                        this.model.save('closed', !this.$el.is(':visible'));
                     }
                 },
 

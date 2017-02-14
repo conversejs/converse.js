@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -49,6 +49,7 @@
     "install": "^0.8.4",
     "jed": "0.5.4",
     "jquery": "2.2.3",
+    "sinon": "^1.17.3",
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
     "jshint": "^2.9.4",

@@ -213,6 +213,8 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
+        'backbone':             { deps: ['underscore'] },
+        'bigint':               { deps: ['crypto'] },
         'crypto.aes':           { deps: ['crypto.cipher-core'] },
         'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
         'crypto.enc-base64':    { deps: ['crypto.core'] },
@@ -223,10 +225,8 @@ require.config({
         'crypto.pad-nopadding': { deps: ['crypto.cipher-core'] },
         'crypto.sha1':          { deps: ['crypto.core'] },
         'crypto.sha256':        { deps: ['crypto.core'] },
-        'bigint':               { deps: ['crypto'] },
         'strophe.ping':         { deps: ['strophe'] },
         'strophe.register':     { deps: ['strophe'] },
         'strophe.vcard':        { deps: ['strophe'] },
-        'backbone':             { deps: ['underscore'] }
     }
 });

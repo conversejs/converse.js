@@ -8,7 +8,6 @@
     "bourbon": "~4.2.6",
     "crypto-js-evanvosberg": "https://github.com/evanvosberg/crypto-js.git#release-3.1.2-5",
     "fontawesome": "~4.1.0",
-    "sinon": "^1.17.3",
     "typeahead.js": "https://raw.githubusercontent.com/jcbrand/typeahead.js/eedfb10505dd3a20123d1fafc07c1352d83f0ab3/dist/typeahead.jquery.js"
   },
   "dependencies": {},

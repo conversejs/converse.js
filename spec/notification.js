@@ -64,8 +64,10 @@
                         }
                     }));
 
-                    it("is shown when a user changes their chat state", mock.initConverse(function (_converse) {
+                    it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse(function (_converse) {
                         // TODO: not yet testing show_desktop_notifications setting
+                        _converse.show_chatstate_notifications = true;
+
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
                         spyOn(_converse, 'showChatStateNotification');

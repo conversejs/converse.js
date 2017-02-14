@@ -13,6 +13,10 @@
 - New configuration setting:
   [show_chatstate_notifications](https://conversejs.org/docs/html/configuration.html#show-chatstate-notifications)
   [jcbrand]
+- The API now no longer returns wrapped chatboxes (or rooms) but instead a
+  Backbone.View object. This means the API of the returned object has changed.
+  You're still able to do everything from before but now also much more.
+  [jcbrand]
 - Allow JIDs not on the roster to be invited to a chatroom. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 

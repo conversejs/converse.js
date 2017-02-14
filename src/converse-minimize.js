@@ -57,17 +57,6 @@
                 return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
             },
 
-            wrappedChatBox: function (chatbox) {
-                /* Wrap a chatbox for outside consumption (i.e. so that it can be
-                * returned via the API.
-                */
-                if (!chatbox) { return; }
-                var box = this.__super__.wrappedChatBox.apply(this, arguments);
-                box.maximize = chatbox.maximize.bind(chatbox);
-                box.minimize = chatbox.minimize.bind(chatbox);
-                return box;
-            },
-
             ChatBox: {
                 initialize: function () {
                     this.__super__.initialize.apply(this, arguments);

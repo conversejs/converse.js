@@ -699,7 +699,7 @@ To return all open chat boxes, call the method without any JIDs::
 open
 ~~~~
 
-Opens a chat box and returns an object representing a chat box.
+Opens a chat box and returns a Backbone.View object representing a chat box.
 
 To open a single chat box, provide the JID of the contact:
 
@@ -724,25 +724,27 @@ To return an array of chat boxes, provide an array of JIDs:
 
 *The returned chat box object contains the following methods:*
 
-+-------------+------------------------------------------+
-| Method      | Description                              |
-+=============+==========================================+
-| endOTR      | End an OTR (Off-the-record) session.     |
-+-------------+------------------------------------------+
-| get         | Get an attribute (i.e. accessor).        |
-+-------------+------------------------------------------+
-| initiateOTR | Start an OTR (off-the-record) session.   |
-+-------------+------------------------------------------+
-| maximize    | Minimize the chat box.                   |
-+-------------+------------------------------------------+
-| minimize    | Maximize the chat box.                   |
-+-------------+------------------------------------------+
-| set         | Set an attribute (i.e. mutator).         |
-+-------------+------------------------------------------+
-| close       | Close the chat box.                      |
-+-------------+------------------------------------------+
-| open        | Opens the chat box.                      |
-+-------------+------------------------------------------+
++-------------------+------------------------------------------+
+| Method            | Description                              |
++===================+==========================================+
+| close             | Close the chat box.                      |
++-------------------+------------------------------------------+
+| focus             | Focuses the chat box textarea            |
++-------------------+------------------------------------------+
+| model.endOTR      | End an OTR (Off-the-record) session.     |
++-------------------+------------------------------------------+
+| model.get         | Get an attribute (i.e. accessor).        |
++-------------------+------------------------------------------+
+| model.initiateOTR | Start an OTR (off-the-record) session.   |
++-------------------+------------------------------------------+
+| model.maximize    | Minimize the chat box.                   |
++-------------------+------------------------------------------+
+| model.minimize    | Maximize the chat box.                   |
++-------------------+------------------------------------------+
+| model.set         | Set an attribute (i.e. mutator).         |
++-------------------+------------------------------------------+
+| show              | Opens/shows the chat box.                |
++-------------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
 

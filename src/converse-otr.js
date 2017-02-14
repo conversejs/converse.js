@@ -70,15 +70,6 @@
                 });
             },
 
-            wrappedChatBox: function (chatbox) {
-                var wrapped_chatbox = this.__super__.wrappedChatBox.apply(this, arguments);
-                if (!chatbox) { return; }
-                return _.extend(wrapped_chatbox, {
-                    'endOTR': chatbox.endOTR.bind(chatbox),
-                    'initiateOTR': chatbox.initiateOTR.bind(chatbox),
-                });
-            },
-
             ChatBox: {
                 initialize: function () {
                     this.__super__.initialize.apply(this, arguments);

@@ -88,18 +88,6 @@
             //
             // New functions which don't exist yet can also be added.
 
-            wrappedChatBox: function (chatbox) {
-                /* Wrap a chatbox for outside consumption (i.e. so that it can be
-                * returned via the API.
-                */
-                if (!chatbox) { return; }
-                var _converse = this.__super__._converse;
-                var view = _converse.chatboxviews.get(chatbox.get('id'));
-                var box = this.__super__.wrappedChatBox.apply(this, arguments);
-                box.is_chatroom = view.is_chatroom;
-                return box;
-            },
-
             Features: {
                 addClientFeatures: function () {
                     var _converse = this.__super__._converse;
@@ -2395,9 +2383,9 @@
             };
             _converse.on('chatBoxesFetched', autoJoinRooms);
 
-            _converse.getWrappedChatRoom = function (jid, attrs, fetcher) {
+            _converse.getChatRoom = function (jid, attrs, fetcher) {
                 jid = jid.toLowerCase();
-                return _converse.wrappedChatBox(fetcher(_.extend({
+                return _converse.getViewForChatBox(fetcher(_.extend({
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -2405,7 +2393,6 @@
                     'box_id': b64_sha1(jid)
                 }, attrs)));
             };
-
 
             /* We extend the default converse.js API to add methods specific to MUC
              * chat rooms.
@@ -2444,9 +2431,9 @@
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getWrappedChatRoom(jids, attrs, _converse.createChatRoom);
+                            return _converse.getChatRoom(jids, attrs, _converse.createChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getWrappedChatRoom, _, attrs, _converse.createChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.createChatRoom));
                     },
                     'get': function (jids, attrs, create) {
                         if (_.isString(attrs)) {
@@ -2458,7 +2445,7 @@
                             var result = [];
                             _converse.chatboxes.each(function (chatbox) {
                                 if (chatbox.get('type') === 'chatroom') {
-                                    result.push(_converse.wrappedChatBox(chatbox));
+                                    result.push(_converse.getViewForChatBox(chatbox));
                                 }
                             });
                             return result;
@@ -2468,9 +2455,9 @@
                             attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
                         if (_.isString(jids)) {
-                            return _converse.getWrappedChatRoom(jids, attrs, fetcher);
+                            return _converse.getChatRoom(jids, attrs, fetcher);
                         }
-                        return _.map(jids, _.partial(_converse.getWrappedChatRoom, _, attrs, fetcher));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, fetcher));
                     }
                 }
             });

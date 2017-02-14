@@ -292,19 +292,9 @@
 
         // Module-level functions
         // ----------------------
-        this.wrappedChatBox = function (chatbox) {
-            /* Wrap a chatbox for outside consumption (i.e. so that it can be
-             * returned via the API.
-             */
+        this.getViewForChatBox = function (chatbox) {
             if (!chatbox) { return; }
-            var view = _converse.chatboxviews.get(chatbox.get('id'));
-            return {
-                'close': view.close.bind(view),
-                'focus': view.focus.bind(view),
-                'get': chatbox.get.bind(chatbox),
-                'open': view.show.bind(view),
-                'set': chatbox.set.bind(chatbox)
-            };
+            return _converse.chatboxviews.get(chatbox.get('id'));
         };
 
         this.generateResource = function () {
@@ -2126,13 +2116,13 @@
                     _converse.log("chats.open: You need to provide at least one JID", "error");
                     return null;
                 } else if (_.isString(jids)) {
-                    chatbox = _converse.wrappedChatBox(
+                    chatbox = _converse.getViewForChatBox(
                         _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
                     );
                     return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = _converse.wrappedChatBox(
+                    chatbox = _converse.getViewForChatBox(
                         _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
                     );
                     return chatbox;
@@ -2145,18 +2135,18 @@
                         // FIXME: Leaky abstraction from MUC. We need to add a
                         // base type for chat boxes, and check for that.
                         if (chatbox.get('type') !== 'chatroom') {
-                            result.push(_converse.wrappedChatBox(chatbox));
+                            result.push(_converse.getViewForChatBox(chatbox));
                         }
                     });
                     return result;
                 } else if (_.isString(jids)) {
-                    return _converse.wrappedChatBox(_converse.chatboxes.getChatBox(jids));
+                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
                 }
                 return _.map(jids,
                     _.partial(
                         _.flow(
                             _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
-                            _converse.wrappedChatBox.bind(_converse)
+                            _converse.getViewForChatBox.bind(_converse)
                         ), _, true
                     )
                 );

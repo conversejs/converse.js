@@ -53,8 +53,7 @@ Below is an example code that wraps converse.js as an angular.js service.
 
         // Here we define the core components of converse.js that will be
         // loaded and used.
-        define("converse", [
-            "converse-api",
+        define(["converse-core",
             // START: Removable components
             // --------------------
             // Any of the following components may be removed if they're not needed.

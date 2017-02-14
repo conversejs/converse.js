@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "tpl!chatbox",
             "tpl!new_day",
             "tpl!action",

@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this

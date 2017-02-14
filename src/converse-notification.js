@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-api"], factory);
+    define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
     var $ = converse.env.jQuery,

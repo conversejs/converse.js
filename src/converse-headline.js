@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "converse-chatview"
     ], factory);
 }(this, function (converse) {

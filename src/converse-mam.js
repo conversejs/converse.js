@@ -10,7 +10,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"

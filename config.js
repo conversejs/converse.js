@@ -50,11 +50,10 @@ require.config({
         "utils":                    "src/utils",
 
         // Converse
-        "converse-api":             "src/converse-api",
+        "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
-        "converse-core":            "src/converse-core",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",

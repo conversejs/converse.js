@@ -1,7 +1,7 @@
 (function (root, factory) {
     define([
         "jquery",
-        "converse-api",
+        "converse-core",
         "utils",
         "mock",
         "test_utils"

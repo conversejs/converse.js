@@ -16,7 +16,7 @@
             "moment_with_locales",
             "strophe",
             "utils",
-            "converse-api",
+            "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
             "tpl!chatroom_bookmark_toggle",

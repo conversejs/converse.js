@@ -1,7 +1,7 @@
 (function (root, factory) {
     define([
         "utils",
-        "converse-api",
+        "converse-core",
         "mock",
         "test_utils"
         ], factory);

@@ -6,7 +6,7 @@
 //
 /*global Backbone */
 (function (root, factory) {
-    define(["converse-api", "converse-muc"], factory);
+    define(["converse-core", "converse-muc"], factory);
 }(this, function (converse) {
     "use strict";
 

@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
             "tpl!trimmed_chat",

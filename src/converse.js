@@ -8,7 +8,7 @@
 if (typeof define !== 'undefined') {
     /* When running tests, define is not defined. */
     define("converse", [
-        "converse-api",
+        "converse-core",
         // PLEASE NOTE: By default all translations are included.
         // You can modify the file src/locales.js to include only those
         // translations that you care about.

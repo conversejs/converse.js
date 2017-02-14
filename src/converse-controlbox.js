@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!change_status_message",

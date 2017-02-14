@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
     define([
-            "converse-api",
+            "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
             "tpl!chatroom_form",

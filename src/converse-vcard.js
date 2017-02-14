@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-api", "strophe.vcard"], factory);
+    define(["converse-core", "strophe.vcard"], factory);
 }(this, function (converse) {
     "use strict";
     var Strophe = converse.env.Strophe,

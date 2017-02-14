@@ -2037,7 +2037,31 @@
                     }
                 },
 
+                promptForInvite: function (suggestion) {
+                    var reason = prompt(
+                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
+                        __("You may optionally include a message, explaining the reason for the invitation.")
+                    );
+                    if (reason !== null) {
+                        this.chatroomview.directInvite(suggestion.text.value, reason);
+                    }
+                    suggestion.target.value = '';
+                },
+
+                inviteFormSubmitted: function (evt) {
+                    evt.preventDefault();
+                    var el = evt.target.querySelector('input.invited-contact');
+                    this.promptForInvite({
+                        'target': el,
+                        'text': {
+                            'label': el.value,
+                            'value': el.value
+                        }});
+                },
+
                 initInviteWidget: function () {
+                    var form = this.el.querySelector('form.room-invite');
+                    form.addEventListener('submit', this.inviteFormSubmitted.bind(this));
                     var el = this.el.querySelector('input.invited-contact');
                     var list = _converse.roster.map(function (item) {
                             var label = item.get('fullname') || item.get('jid');
@@ -2047,16 +2071,7 @@
                         'minChars': 1,
                         'list': list
                     });
-                    el.addEventListener('awesomplete-selectcomplete', function (suggestion) {
-                        var reason = prompt(
-                            __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
-                            __("You may optionally include a message, explaining the reason for the invitation.")
-                        );
-                        if (reason !== null) {
-                            this.chatroomview.directInvite(suggestion.text.value, reason);
-                        }
-                        el.value = '';
-                    }.bind(this));
+                    el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
                     return this;
                 }
             });

@@ -13,6 +13,7 @@
 - New configuration setting:
   [show_chatstate_notifications](https://conversejs.org/docs/html/configuration.html#show-chatstate-notifications)
   [jcbrand]
+- Allow JIDs not on the roster to be invited to a chatroom. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 
 ## 2.0.6 (2017-02-13)

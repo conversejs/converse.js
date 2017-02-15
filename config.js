@@ -67,7 +67,8 @@ require.config({
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
-        "bigint":               "node_modules/otr/build/dep/bigint",
+        // "bigint":               "node_modules/otr/build/dep/bigint",
+        "bigint":               "3rdparty/bigint",
         "crypto":               "node_modules/otr/build/dep/crypto",
         "salsa20":              "node_modules/otr/build/dep/salsa20",
         "otr":                  "node_modules/otr/build/otr",

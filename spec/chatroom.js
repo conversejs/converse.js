@@ -362,6 +362,35 @@
                 expect(view.$el.find('.chat-message').hasClass('mentioned')).toBeTruthy();
             }));
 
+            it("supports the /me command", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                var view = _converse.chatboxviews.get('lounge@localhost');
+                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                var message = '/me is tired';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: 'lounge@localhost/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Dyon van de Wege')).toBeTruthy();
+                expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
+
+                message = '/me is as well';
+                msg = $msg({
+                    from: 'lounge@localhost/dummy',
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t(message).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
+                expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
+            }));
+
             it("can have spaces and special characters in its name", mock.initConverse(function (_converse) {
                 test_utils.openChatRoom(_converse, 'lounge & leisure', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get(

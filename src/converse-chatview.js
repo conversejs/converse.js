@@ -325,8 +325,12 @@
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
                         template = _converse.templates.action;
-                        fullname = _converse.xmppstatus.get('fullname');
-                        username = _.isNil(fullname)? _converse.bare_jid: fullname;
+                        if (attrs.sender === 'me') {
+                            fullname = _converse.xmppstatus.get('fullname');
+                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
+                        } else {
+                            username = attrs.fullname;
+                        }
                     } else  {
                         template = _converse.templates.message;
                         username = attrs.sender === 'me' && __('me') || fullname;

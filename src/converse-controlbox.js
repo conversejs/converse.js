@@ -245,6 +245,11 @@
                     this.render();
                     if (this.model.get('connected')) {
                         this.insertRoster();
+                    }
+                },
+
+                render: function () {
+                    if (this.model.get('connected')) {
                         if (_.isUndefined(this.model.get('closed'))) {
                             this.model.set('closed', !_converse.show_controlbox_by_default);
                         }
@@ -254,9 +259,6 @@
                     } else {
                         this.hide();
                     }
-                },
-
-                render: function () {
                     this.$el.html(_converse.templates.controlbox(
                         _.extend(this.model.toJSON(), {
                             sticky_controlbox: _converse.sticky_controlbox

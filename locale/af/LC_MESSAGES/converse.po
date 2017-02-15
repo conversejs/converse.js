@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-01 11:01+0000\n"
-"PO-Revision-Date: 2016-04-07 10:34+0000\n"
+"PO-Revision-Date: 2017-02-15 10:57+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -78,9 +78,8 @@ msgstr ""
 
 #: src/converse-chatview.js:135 src/converse-headline.js:99
 #: src/converse-muc.js:436
-#, fuzzy
 msgid "You have unread messages"
-msgstr "Verwyder boodskappe"
+msgstr "U het ongelese boodskappe"
 
 #: src/converse-chatview.js:136
 msgid "Close this chat box"
@@ -254,7 +253,6 @@ msgid "Search"
 msgstr "Soek"
 
 #: src/converse-controlbox.js:616
-#, fuzzy
 msgid "e.g. user@example.org"
 msgstr "bv. gebruiker@voorbeeld.org"
 
@@ -295,14 +293,12 @@ msgid "The connection has dropped, attempting to reconnect."
 msgstr ""
 
 #: src/converse-core.js:475
-#, fuzzy
 msgid "Connection error"
-msgstr "Verbind tans"
+msgstr "Fout tydens verbinding"
 
 #: src/converse-core.js:476
-#, fuzzy
 msgid "An error occurred while connecting to the chat server."
-msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
+msgstr "A fout het voorgekom tydens verbinding met die kletsbediener"
 
 #: src/converse-core.js:479
 msgid "Connecting"
@@ -317,14 +313,12 @@ msgid "Authentication Failed"
 msgstr "Bekragtiging het gefaal"
 
 #: src/converse-core.js:488
-#, fuzzy
 msgid "Connection failed"
-msgstr "Verbind tans"
+msgstr "Verbinding het gefaal"
 
 #: src/converse-core.js:489
-#, fuzzy
 msgid "An error occurred while connecting to the chat server: "
-msgstr "A fout het voorgekom terwyl probeer is om die vorm te stoor."
+msgstr "A fout het voorgekom tydens verbinding met die kletsbediener: "
 
 #: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
@@ -363,9 +357,8 @@ msgid "This room does not show unavailable members"
 msgstr "Hierdie vertrek wys nie onbeskikbare lede nie"
 
 #: src/converse-muc.js:244
-#, fuzzy
 msgid "The room configuration has changed"
-msgstr "Nie-privaatheidverwante kamer instellings het verander"
+msgstr "Die kamer instellings het verander"
 
 #: src/converse-muc.js:245
 msgid "Room logging is now enabled"
@@ -376,9 +369,8 @@ msgid "Room logging is now disabled"
 msgstr "Kamer log is nou afgeskakel"
 
 #: src/converse-muc.js:247
-#, fuzzy
 msgid "This room is now no longer anonymous"
-msgstr "Hiedie kamer is nou nie anoniem nie"
+msgstr "Hiedie kamer is nie meer anoniem nie"
 
 #: src/converse-muc.js:248
 msgid "This room is now semi-anonymous"
@@ -451,23 +443,20 @@ msgid "<strong>%1$s</strong> has been removed for not being a member"
 msgstr "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
 
 #: src/converse-muc.js:280
-#, fuzzy
 msgid "Your nickname has been automatically set to: <strong>%1$s</strong>"
-msgstr "U bynaam is outomaties verander na: <strong>%1$s</strong>"
+msgstr "U bynaam is outomaties gestel na: <strong>%1$s</strong>"
 
 #: src/converse-muc.js:281
 msgid "Your nickname has been changed to: <strong>%1$s</strong>"
 msgstr "U bynaam is verander na: <strong>%1$s</strong>"
 
 #: src/converse-muc.js:417
-#, fuzzy
 msgid "Close and leave this room"
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Sluit en verlaat hierdie kletskamer"
 
 #: src/converse-muc.js:418
-#, fuzzy
 msgid "Configure this room"
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Konfigureer hierdie kletskamer"
 
 #: src/converse-muc.js:438
 msgid "Message"
@@ -548,18 +537,16 @@ msgid ""
 msgstr ""
 
 #: src/converse-muc.js:1480
-#, fuzzy
 msgid "Please choose your nickname"
-msgstr "Verander u bynaam"
+msgstr "Kies asb. u bynaam"
 
 #: src/converse-muc.js:1481 src/converse-muc.js:2086
 msgid "Nickname"
 msgstr "Bynaam"
 
 #: src/converse-muc.js:1482
-#, fuzzy
 msgid "Enter room"
-msgstr "Oop kletskamer"
+msgstr "Betree kletskamer"
 
 #: src/converse-muc.js:1500
 msgid "This chatroom requires a password"
@@ -574,14 +561,12 @@ msgid "Submit"
 msgstr "Dien in"
 
 #: src/converse-muc.js:1621
-#, fuzzy
 msgid "This action was done by <strong>%1$s</strong>."
-msgstr "U bynaam is verander na: <strong>%1$s</strong>"
+msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>"
 
 #: src/converse-muc.js:1624
-#, fuzzy
 msgid "The reason given is: <em>\"%1$s\"</em>."
-msgstr "Die gegewe rede is: \""
+msgstr "Die gegewe rede is: <em>\"%1$s\"</em>."
 
 #: src/converse-muc.js:1633
 msgid "The reason given is: \""
@@ -616,22 +601,18 @@ msgid "Topic set by %1$s to: %2$s"
 msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
 #: src/converse-muc.js:1878
-#, fuzzy
 msgid "Click to mention this user in your message."
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Klik om na hierdie gebruiker te verwys"
 
 #: src/converse-muc.js:1879
-#, fuzzy
 msgid "This user is a moderator."
 msgstr "Hierdie gebruiker is 'n moderator"
 
 #: src/converse-muc.js:1880
-#, fuzzy
 msgid "This user can send messages in this room."
 msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur"
 
 #: src/converse-muc.js:1881
-#, fuzzy
 msgid "This user can NOT send messages in this room."
 msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
 
@@ -818,7 +799,7 @@ msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
-"U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog "
+"U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog "
 "onseker."
 
 #: src/converse-otr.js:343

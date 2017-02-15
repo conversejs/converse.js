@@ -433,6 +433,20 @@
                     return this;
                 },
 
+                getExtraMessageClasses: function (attrs) {
+                    var extra_classes = _converse.ChatBoxView.prototype
+                            .getExtraMessageClasses.apply(this, arguments);
+
+                    if (this.is_chatroom && attrs.sender === 'them' &&
+                            (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(attrs.message)
+                        ) {
+                        // Add special class to mark groupchat messages
+                        // in which we are mentioned.
+                        extra_classes += ' mentioned';
+                    }
+                    return extra_classes;
+                },
+
                 getToolbarOptions: function () {
                     return _.extend(
                         _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),

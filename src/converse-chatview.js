@@ -303,6 +303,10 @@
                     return {};
                 },
 
+                getExtraMessageClasses: function (attrs) {
+                    return attrs.delayed && 'delayed' || '';
+                },
+
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -316,7 +320,6 @@
                         text = attrs.message,
                         match = text.match(/^\/(.*?)(?: (.*))?$/),
                         fullname = this.model.get('fullname') || attrs.fullname,
-                        extra_classes = attrs.delayed && 'delayed' || '',
                         template, username;
 
                     if ((match) && (match[1] === 'me')) {
@@ -330,12 +333,6 @@
                     }
                     this.$content.find('div.chat-event').remove();
 
-                    // FIXME: leaky abstraction from MUC
-                    if (this.is_chatroom && attrs.sender === 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
-                        // Add special class to mark groupchat messages in which we
-                        // are mentioned.
-                        extra_classes += ' mentioned';
-                    }
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
                         this.showStatusNotification(
@@ -351,7 +348,7 @@
                             'time': msg_time.format('hh:mm'),
                             'isodate': msg_time.format(),
                             'username': username,
-                            'extra_classes': extra_classes
+                            'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
                     $msg.find('.chat-msg-content').first()

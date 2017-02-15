@@ -345,6 +345,23 @@
 
         describe("A Chat Room", function () {
 
+            it("will specially mark messages in which you are mentioned", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                var view = _converse.chatboxviews.get('lounge@localhost');
+                if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                var message = 'dummy: Your attention is required';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: 'lounge@localhost/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(view.$el.find('.chat-message').hasClass('mentioned')).toBeTruthy();
+            }));
+
             it("can have spaces and special characters in its name", mock.initConverse(function (_converse) {
                 test_utils.openChatRoom(_converse, 'lounge & leisure', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get(

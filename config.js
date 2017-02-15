@@ -67,21 +67,8 @@ require.config({
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
-        "bigint":               "node_modules/otr/vendor/bigint",
+        "bigint":               "node_modules/otr/build/dep/bigint",
         "crypto":               "node_modules/otr/build/dep/crypto",
-        "aes":                  "node_modules/crypto-js/aes",
-        "cipher-core":          "node_modules/crypto-js/cipher-core",
-        "core":                 "node_modules/crypto-js/core",
-        "const":                "node_modules/otr/lib/const",
-        "helpers":              "node_modules/otr/lib/helpers",
-        "sha1":                 "node_modules/crypto-js/sha1",
-        "hmac":                 "node_modules/crypto-js/hmac",
-        "enc-base64":           "node_modules/crypto-js/enc-base64",
-        "evpkdf":               "node_modules/crypto-js/evpkdf",
-        "md5":                  "node_modules/crypto-js/md5",
-        "mode-ctr":             "node_modules/crypto-js/mode-ctr",
-        "pad-nopadding":        "node_modules/crypto-js/pad-nopadding",
-        "sha256":               "node_modules/crypto-js/sha256",
         "salsa20":              "node_modules/otr/build/dep/salsa20",
         "otr":                  "node_modules/otr/build/otr",
 

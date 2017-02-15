@@ -116,11 +116,12 @@
             }
             &.requesting-xmpp-contact {
                 .request-actions {
-                    margin-left: 0.5em;
+                    margin-left: 0.3em;
                     margin-bottom: 0.3em;
                     float: right;
                 }
                 .open-chat {
+                    max-width: 75%;
                     .req-contact-name {
                         width: 100%;
                     }
@@ -147,7 +148,7 @@
                 text-overflow: ellipsis;
             }
             span {
-                padding: 0 0.5em 0 0;
+                padding: 0;
                 height: 100%;
             }
             a {

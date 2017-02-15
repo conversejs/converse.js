@@ -2188,11 +2188,13 @@
         #conversejs #converse-roster .roster-contacts dd:hover .remove-xmpp-contact {
           display: inline-block; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .request-actions {
-        margin-left: 0.5em;
+        margin-left: 0.3em;
         margin-bottom: 0.3em;
         float: right; }
-      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .open-chat .req-contact-name {
-        width: 100%; }
+      #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .open-chat {
+        max-width: 75%; }
+        #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .open-chat .req-contact-name {
+          width: 100%; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .req-contact-name {
         width: 69%;
         padding: 0; }
@@ -2210,7 +2212,7 @@
         white-space: nowrap;
         text-overflow: ellipsis; }
       #conversejs #converse-roster .roster-contacts dd span {
-        padding: 0 0.5em 0 0;
+        padding: 0;
         height: 100%; }
       #conversejs #converse-roster .roster-contacts dd a.decline-xmpp-request {
         margin-left: 5px; }

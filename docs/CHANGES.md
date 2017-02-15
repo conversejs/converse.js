@@ -20,9 +20,10 @@
 - Allow JIDs not on the roster to be invited to a chatroom. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 
-## 2.0.7 (2017-02-14)
+## 2.0.7 (2017-02-15)
 - Bugfix. 'TypeError: this.sendConfiguration(...).then is not a function' when an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
+- #694 The `notification_option` wasn't being used consistently. [jcbrand]
 
 ## 2.0.6 (2017-02-13)
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]

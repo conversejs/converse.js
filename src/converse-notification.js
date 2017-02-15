@@ -182,7 +182,7 @@
                 var n = new Notification(contact.fullname, {
                         body: message,
                         lang: _converse.i18n.locale_data.converse[""].lang,
-                        icon: 'logo/conversejs.png'
+                        icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
@@ -191,7 +191,7 @@
                 var n = new Notification(contact.fullname, {
                         body: __('wants to be your contact'),
                         lang: _converse.i18n.locale_data.converse[""].lang,
-                        icon: 'logo/conversejs.png'
+                        icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
             };
@@ -201,7 +201,7 @@
                     var n = new Notification(data.subject, {
                             body: data.message,
                             lang: _converse.i18n.locale_data.converse[""].lang,
-                            icon: 'logo/conversejs.png'
+                            icon: _converse.notification_icon
                         });
                     setTimeout(n.close.bind(n), 5000);
                 }

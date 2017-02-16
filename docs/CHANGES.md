@@ -13,6 +13,9 @@
       available to plugins, has been renamed from `converse` to `_converse`.
       The public API is accessible via a global `converse` object.
 
+- Created a new non-core plugin `converse-muc-embedded` which embeds a single
+  chat room into a page. An example can be found at https://conversejs.org/demo/embedded.html
+  [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]

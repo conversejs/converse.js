@@ -24,8 +24,7 @@ Please follow the instructions below to create these directories and fetch Conve
 Installing the development and front-end dependencies
 -----------------------------------------------------
 
-We use development tools (`Grunt <http://gruntjs.com>`_ and `Bower <http://bower.io>`_)
-which depend on Node.js and npm (the Node package manager).
+We use development tools which depend on Node.js and npm (the Node package manager).
 
 If you don't have Node.js installed, you can download and install the latest
 version `here <https://nodejs.org/download>`_.
@@ -54,10 +53,8 @@ Or alternatively, if you don't have GNU Make:
 ::
 
     npm install
-    bower update
 
-This will first install the Node.js development tools (like Grunt and Bower)
-as well as Converse.js's front-end dependencies.
+This will install the Node.js development tools and Converse.js's front-end dependencies.
 
 The front-end dependencies are those javascript files on which
 Converse.js directly depends and which will be loaded in the browser.

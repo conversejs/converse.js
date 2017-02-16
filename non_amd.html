@@ -16,25 +16,14 @@
     <!-- BEGIN JQUERY -->
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="node_modules/jquery.browser/dist/jquery.browser.js"></script>
-    <script type="text/javascript" src="components/typeahead.js/index.js"></script>
     <!-- END JQUERY -->
 
     <!-- BEGIN OTR: Off-the-record encryption stuff. Can be omitted if OTR is not used. -->
+    <script type="text/javascript" src="node_modules/otr/build/dep/crypto.js"></script>
     <script type="text/javascript" src="node_modules/otr/build/dep/salsa20.js"></script>
-    <script type="text/javascript" src="src/bigint.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/core.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/enc-base64.js"></script>
-    <script type="text/javascript" src="components/crypto-js-evanvosberg/src/md5.js"></script>
-    <script type="text/javascript" src="components/crypto-js-evanvosberg/src/evpkdf.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/cipher-core.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/aes.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/sha1.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/sha256.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/hmac.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/pad-nopadding.js"></script>
-    <script type="text/javascript" src="node_modules/otr/vendor/cryptojs/mode-ctr.js"></script>
+    <script type="text/javascript" src="node_modules/otr/build/dep/bigint.js"></script>
     <script type="text/javascript" src="node_modules/otr/build/dep/eventemitter.js"></script>
-    <script type="text/javascript" src="src/otr.js"></script>
+    <script type="text/javascript" src="node_modules/otr/build/otr.js"></script>
     <!-- END OTR -->
 
     <!-- BEGIN STROPHE -->
@@ -46,7 +35,7 @@
     <!-- END STROPHE -->
 
     <!-- BEGIN BACKBONE -->
-    <script type="text/javascript" src="node_modules/lodash/core.js"></script>
+    <script type="text/javascript" src="node_modules/lodash/lodash.js"></script>
     <script type="text/javascript" src="node_modules/backbone//backbone.js"></script>
     <script type="text/javascript" src="node_modules/backbone.browserStorage/backbone.browserStorage.js"></script>
     <script type="text/javascript" src="node_modules/backbone.overview/backbone.overview.js"></script>
@@ -63,6 +52,7 @@
     <script type="text/javascript" src="dist/locales.js"></script>
     <!-- END I18N -->
 
+    <script type="text/javascript" src="node_modules/awesomplete/awesomplete.js"></script>
     <script type="text/javascript" src="node_modules/moment/min/moment-with-locales.js"></script>
 
 	<script src="https://cdn.conversejs.org/dist/converse-no-dependencies.min.js"></script>

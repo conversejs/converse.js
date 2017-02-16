@@ -96,7 +96,7 @@
                     }
                     var model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
-                        this.join(this.model.get('nick'));
+                        this.join(model.get('nick'));
                     } else {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }

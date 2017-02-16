@@ -2179,7 +2179,7 @@
       overflow-y: hidden;
       padding: 0.3em 1em;
       text-shadow: 0 1px 0 #FAFAFA;
-      line-height: 14px;
+      line-height: 16px;
       width: 100%; }
       #conversejs #converse-roster .roster-contacts dd .open-chat {
         max-width: 90%; }
@@ -2196,12 +2196,14 @@
         #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .open-chat .req-contact-name {
           width: 100%; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .req-contact-name {
+        line-height: 16px;
         width: 69%;
         padding: 0; }
       #conversejs #converse-roster .roster-contacts dd.current-xmpp-contact span {
         font-size: 16px;
         float: left;
-        color: #2A9D8F; }
+        color: #2A9D8F;
+        padding-right: 0.5em; }
       #conversejs #converse-roster .roster-contacts dd.odd {
         background-color: #DCEAC5;
         /* Make this difference */ }
@@ -2221,7 +2223,8 @@
         display: none;
         color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
-    width: 80%; }
+    line-height: 16px;
+    width: 100%; }
 
 #converse-embedded-chat .new-chatroom-nick,
 #conversejs .new-chatroom-nick {

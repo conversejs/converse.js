@@ -103,7 +103,7 @@
             overflow-y: hidden;
             padding: 0.3em 1em;
             text-shadow: 0 1px 0 $text-shadow-color;
-            line-height: $font-size;
+            line-height: $line-height;
             width: 100%;
             .open-chat {
                 max-width: 90%;
@@ -127,6 +127,7 @@
                     }
                 }
                 .req-contact-name {
+                    line-height: $line-height;
                     width: 69%;
                     padding: 0;
                 }
@@ -135,6 +136,7 @@
                 font-size: 16px;
                 float: left;
                 color: $link-color;
+                padding-right: 0.5em;
             }
             &.odd {
                 background-color: #DCEAC5;
@@ -165,7 +167,8 @@
     }
     span {
         &.pending-contact-name {
-            width: 80%;
+            line-height: $line-height;
+            width: 100%;
         }
     }
 }

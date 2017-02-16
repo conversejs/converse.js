@@ -130,13 +130,13 @@ css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded
 css/converse.css:: stamp-bundler sass
 	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
-css/converse.min.css:: stamp-npm
+css/converse.min.css:: stamp-npm sass
 	$(CLEANCSS) css/converse.css > css/converse.min.css
 
-css/theme.min.css:: stamp-npm
+css/theme.min.css:: stamp-npm css/theme.css
 	$(CLEANCSS) css/theme.css > css/theme.min.css
 
-css/mobile.min.css:: stamp-npm
+css/mobile.min.css:: stamp-npm sass
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
 
 .PHONY: watch

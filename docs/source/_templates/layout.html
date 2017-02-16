@@ -3,7 +3,7 @@
 
 {# Custom CSS overrides #}
 {% set bootswatch_css_custom = ['_static/style.css', "../../css/converse.min.css"] %}
-{% set script_files = script_files + ["../../builds/converse.min.js", "../../analytics.js"] %}
+{% set script_files = script_files + ["../../dist/converse.min.js", "../../analytics.js"] %}
 
 {# Add some extra stuff before and use existing with 'super()' call. #}
 {% block footer %}

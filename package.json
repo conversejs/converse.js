@@ -38,6 +38,7 @@
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.3",
     "bootstrap": "^3.3.7",
+    "bourbon": "^4.3.2",
     "bower": "latest",
     "clean-css": "^3.4.19",
     "eslint": "^3.14.1",

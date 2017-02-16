@@ -4,21 +4,29 @@
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]
 - `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
-- *Breaking change*: Callbacks for `converse.on` now no longer receive an event
-  object as first parameter. [jcbrand]
+- *Breaking change*: Callbacks for `converse.on` now no longer receive an
+  event object as first parameter. [jcbrand]
 - Use lodash instead of underscore.js [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
-- New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil) [jcbrand]
+- New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil)
+  [jcbrand]
 - New configuration setting:
   [show_chatstate_notifications](https://conversejs.org/docs/html/configuration.html#show-chatstate-notifications)
+  [jcbrand]
+- New configuration setting:
+  [whitelisted_plugins](https://conversejs.org/docs/html/configuration.html#whitelisted-plugins)
+  [jcbrand]
+- New configuration setting:
+  [blacklisted_plugins](https://conversejs.org/docs/html/configuration.html#blacklisted-plugins)
   [jcbrand]
 - The API now no longer returns wrapped chatboxes (or rooms) but instead a
   Backbone.View object. This means the API of the returned object has changed.
   You're still able to do everything from before but now also much more.
   [jcbrand]
 - Allow JIDs not on the roster to be invited to a chatroom. [jcbrand]
-- Bugfix. 'TypeError: this.sendConfiguration(...).then is not a function' when an instant room is created. [jcbrand]
+- Bugfix. 'TypeError: this.sendConfiguration(...).then is not a function' when
+  an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]

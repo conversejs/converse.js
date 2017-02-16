@@ -330,7 +330,7 @@ You can either specify a simple list of room JIDs, in which case your nickname
 will be taken from your JID, or you can specify a list of maps, where each map
 specifies the room's JID and the nickname that should be used.
 
-For example:
+For example::
 
     `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
 
@@ -411,7 +411,9 @@ accepts, refer to the
 
 As an example, suppose you want to restrict the supported SASL authentication
 mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
-``key:value`` pair::
+``key:value`` pair:
+
+.. code-block:: javascript 
 
         converse.initialize({
             connection_options: {
@@ -582,7 +584,8 @@ state. The only defined states are:
 * dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
 * xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
 
-Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info.
+Read the `relevant section in the XMPP spec <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show>`_
+for more info.
 
 What used to happen in converse.js when the `offline` state was chosen, is
 that a presence stanza with a `type` of `unavailable` was sent out.
@@ -1068,7 +1071,9 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
 
 * *call*:
     Provides a button with a picture of a telephone on it.
-    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
+    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
+
+    .. code-block:: javascript
 
         converse.listen.on('callButtonClicked', function(data) {
             console.log('Strophe connection is', data.connection);
@@ -1108,6 +1113,107 @@ support.
 
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
+
+blacklisted_plugins
+-------------------
+
+* Default: ``[]``
+
+A list of plugin names that are blacklisted and will therefore not be
+initialized once ``converse.initialize`` is called, even if the same plugin is
+whitelisted.
+
+From Converse.js 3.0 onwards most of the API is available only to plugins and
+all plugins need to be whitelisted first.
+
+The usecase for blacklisting is generally to disable removed core plugins
+(which are automatically whitelisted) to prevent other (potentially malicious)
+plugins from registering themselves under those names.
+
+The core, and by default whitelisted, plugins are::
+
+    converse-bookmarks
+    converse-chatview
+    converse-controlbox
+    converse-core
+    converse-dragresize
+    converse-headline
+    converse-mam
+    converse-minimize
+    converse-muc
+    converse-notification
+    converse-otr
+    converse-ping
+    converse-register
+    converse-rosterview
+    converse-vcard
+
+An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+
+.. code-block:: javascript 
+
+    require(['converse-core', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            // other settings removed for brevity
+            blacklisted_plugins: [
+                'converse-controlbox',
+                'converse-dragresize',
+                'converse-minimize',
+                'converse-vcard'
+            ],
+        });
+    });
+
+
+whitelisted_plugins
+-------------------
+
+* Default: ``[]``
+
+A list of plugin names that are whitelisted and will therefore be
+initialized once ``converse.initialize`` is called.
+
+From Converse.js 3.0 onwards most of the API is available only to plugins and
+all plugins need to be whitelisted first.
+
+This is done to prevent malicious scripts from using the API to trick users or
+to read their conversations.
+
+By default all the core plugins are already whitelisted.
+
+These are::
+
+    converse-bookmarks
+    converse-chatview
+    converse-controlbox
+    converse-core
+    converse-dragresize
+    converse-headline
+    converse-mam
+    converse-minimize
+    converse-muc
+    converse-notification
+    converse-otr
+    converse-ping
+    converse-register
+    converse-rosterview
+    converse-vcard
+
+If you are using a custom build which excludes some core plugins, then you 
+should blacklist them so that malicious scripts can't register their own
+plugins under those names. See `blacklisted_plugins`_ for more info.
+
+An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+
+.. code-block:: javascript 
+
+    require(['converse-core', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            // other settings removed for brevity
+            whitelisted_plugins: ['converse-muc-embedded']
+        });
+    });
+
 
 xhr_custom_status
 -----------------

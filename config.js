@@ -59,6 +59,7 @@ require.config({
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
         "converse-muc":             "src/converse-muc",
+        "converse-muc-embedded":    "src/converse-muc-embedded",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",

@@ -1,12 +1,22 @@
 # Changelog
 
 ## 3.0.0 (Unreleased)
+
+- **Breaking changes**:
+    * Callbacks for `converse.on` now no longer receive an event object as first parameter.
+    * The API has been split into public and private parts.
+      The private API methods are now only available to plugins.
+      For more info, read [developer API](https://conversejs.org/docs/html/developer_api.html)
+      and the [plugin_development](https://conversejs.org/docs/html/plugin_development.html)
+      documentation.
+    * To prevent confusion the private, closured object, only
+      available to plugins, has been renamed from `converse` to `_converse`.
+      The public API is accessible via a global `converse` object.
+
+- Use lodash instead of underscore.js [jcbrand]
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]
 - `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
-- *Breaking change*: Callbacks for `converse.on` now no longer receive an
-  event object as first parameter. [jcbrand]
-- Use lodash instead of underscore.js [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
 - New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil)
@@ -25,7 +35,7 @@
   You're still able to do everything from before but now also much more.
   [jcbrand]
 - Allow JIDs not on the roster to be invited to a chatroom. [jcbrand]
-- Bugfix. 'TypeError: this.sendConfiguration(...).then is not a function' when
+- Bugfix. `TypeError: this.sendConfiguration(...).then is not a function` when
   an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]

@@ -68,7 +68,11 @@
     "sinon": "^1.17.3",
     "snyk": "^1.21.2",
     "strophe.js": "1.2.12",
-    "strophejs-plugins": "0.0.7",
+    "strophejs-plugin-disco": "0.0.1",
+    "strophejs-plugin-ping": "0.0.1",
+    "strophejs-plugin-register": "0.0.1",
+    "strophejs-plugin-rsm": "0.0.1",
+    "strophejs-plugin-vcard": "0.0.1",
     "text": "requirejs/text#2.0.15"
   },
   "dependencies": {}

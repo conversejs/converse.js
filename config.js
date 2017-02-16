@@ -38,10 +38,10 @@ require.config({
         "strophe-sha1":             "node_modules/strophe.js/src/sha1",
         "strophe-utils":            "node_modules/strophe.js/src/utils",
         "strophe-websocket":        "node_modules/strophe.js/src/websocket",
-        "strophe.disco":            "node_modules/strophejs-plugins/disco/strophe.disco",
-        "strophe.ping":             "node_modules/strophejs-plugins/ping/strophe.ping",
-        "strophe.rsm":              "node_modules/strophejs-plugins/rsm/strophe.rsm",
-        "strophe.vcard":            "node_modules/strophejs-plugins/vcard/strophe.vcard",
+        "strophe.disco":            "node_modules/strophejs-plugin-disco/strophe.disco",
+        "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",
+        "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
+        "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
@@ -204,9 +204,6 @@ require.config({
     // define module dependencies for modules not using define
     shim: {
         'awesomplete':          { exports: 'Awesomplete' },
-        'backbone':             { deps: ['underscore'] },
-        'strophe.ping':         { deps: ['strophe'] },
-        'strophe.register':     { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] },
+        'backbone':             { deps: ['underscore'] }
     }
 });

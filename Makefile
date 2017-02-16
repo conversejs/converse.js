@@ -116,7 +116,7 @@ stamp-bundler: Gemfile
 .PHONY: clean
 clean:
 	-rm -f stamp-npm stamp-bower stamp-bundler
-	-rm -rf node_modules components .bundle
+	-rm -rf node_modules .bundle
 
 .PHONY: dev
 dev: stamp-bower stamp-bundler
@@ -128,13 +128,13 @@ dev: stamp-bower stamp-bundler
 css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css
 
 css/converse-muc-embedded.css:: stamp-bundler stamp-bower sass
-	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
+	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler stamp-bower sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
 css/converse.css:: stamp-bundler stamp-bower sass
-	$(SASS) -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
 
 css/converse.min.css:: stamp-npm
 	$(CLEANCSS) css/converse.css > css/converse.min.css
@@ -147,7 +147,7 @@ css/mobile.min.css:: stamp-npm
 
 .PHONY: watch
 watch: stamp-bundler
-	$(SASS) --watch -I ./components/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
+	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
@@ -158,21 +158,21 @@ BUILDS = dist/converse.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
-dist/converse.min.js: stamp-bower src locale components *.js
+dist/converse.min.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build.js
-dist/converse.js: stamp-bower src locale components *.js
+dist/converse.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build.js optimize=none out=dist/converse.js
-dist/converse.nojquery.min.js: stamp-bower src locale components *.js
+dist/converse.nojquery.min.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-no-jquery.js
-dist/converse.nojquery.js: stamp-bower src locale components *.js
+dist/converse.nojquery.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-no-jquery.js optimize=none out=dist/converse.nojquery.js
-dist/converse-no-dependencies.min.js: stamp-bower src locale components *.js
+dist/converse-no-dependencies.min.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js
-dist/converse-no-dependencies.js: stamp-bower src locale components *.js
+dist/converse-no-dependencies.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-mobile.min.js: stamp-bower src locale components *.js
+dist/converse-mobile.min.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-mobile.js
-dist/converse-mobile.js: stamp-bower src locale components *.js
+dist/converse-mobile.js: stamp-bower src locale node_modules *.js
 	$(RJS) -o src/build-mobile.js optimize=none out=dist/converse-mobile.js
 
 .PHONY: jsmin

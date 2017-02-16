@@ -10,7 +10,7 @@ Developer guidelines
    :local:
 
 If you want to work with the non-minified Javascript and CSS files you'll soon
-notice that there are references to missing *components* and *node_modules* directories.
+notice that there are references to a missing *node_modules* directory.
 Please follow the instructions below to create these directories and fetch Converse's
 3rd-party dependencies.
 
@@ -66,8 +66,8 @@ To see the dependencies, take a look at whats under the *devDependencies* key in
     `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
 .. note::
-    After running ```make dev```, you should now have new directories *components*
-    and *node_modules*, which contain all the front-end dependencies of Converse.js.
+    After running ```make dev```, you should now have a new *node_modules* directory
+    which contains all the external dependencies of Converse.js.
     If these directory does NOT exist, something must have gone wrong.
     Double-check the output of ```make dev``` to see if there are any errors
     listed. For support, you can write to the mailing list: conversejs@librelist.com
@@ -88,7 +88,7 @@ Add the following two lines to the *<head>* section of your webpage:
 .. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="converse.css">
-    <script data-main="main" src="components/requirejs/require.js"></script>
+    <script data-main="main" src="node_modules/requirejs/require.js"></script>
 
 require.js will then let the main.js file be parsed (because of the *data-main*
 attribute on the *script* tag), which will in turn cause converse.js to be

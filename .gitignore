@@ -34,9 +34,6 @@ stamp-bundler
 docs/html
 docs/doctrees
 
-# Bower
-components
-
 # Node.js
 node_modules
 

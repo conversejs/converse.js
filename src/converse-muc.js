@@ -344,6 +344,7 @@
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
+                    this.model.on('change:connection_status', this.afterConnected, this);
                     this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
@@ -397,8 +398,7 @@
                 },
 
                 generateHeadingHTML: function () {
-                    /* Pure function which returns the heading HTML to be
-                     * rendered.
+                    /* Returns the heading HTML to be rendered.
                      */
                     return _converse.templates.chatroom_head(
                         _.extend(this.model.toJSON(), {
@@ -408,8 +408,7 @@
                 },
 
                 renderHeading: function () {
-                    /* Render the heading UI of the chat room.
-                     */
+                    /* Render the heading UI of the chat room. */
                     this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
                 },
 
@@ -431,6 +430,27 @@
                     }
                     this.toggleOccupants(null, true);
                     return this;
+                },
+
+                afterShown: function () {
+                    /* Override from converse-chatview, specifically to avoid
+                     * the 'active' chat state from being sent out prematurely.
+                     *
+                     * This is instead done in `afterConnected` below.
+                     */
+                    if (_converse.connection.connected) {
+                        // Without a connection, we haven't yet initialized
+                        // localstorage
+                        this.model.save();
+                    }
+                },
+
+                afterConnected: function () {
+                    if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
+                        this.setChatState(_converse.ACTIVE);
+                        this.scrollDown();
+                        this.focus();
+                    }
                 },
 
                 getExtraMessageClasses: function (attrs) {
@@ -790,6 +810,9 @@
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
+                    if (this.model.get('connection_status') !==  Strophe.Status.CONNECTED) {
+                        return;
+                    }
                     var chat_state = this.model.get('chat_state');
                     if (chat_state === _converse.GONE) {
                         // <gone/> is not applicable within MUC context

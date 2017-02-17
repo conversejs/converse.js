@@ -743,7 +743,7 @@
                     return this;
                 },
 
-                afterShown: function () {
+                afterShown: function (focus) {
                     if (_converse.connection.connected) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
@@ -762,7 +762,7 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    utils.fadeIn(this.el, this.afterShown.bind(this));
+                    utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
 
                 show: function (focus) {

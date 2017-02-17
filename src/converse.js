@@ -1,12 +1,11 @@
-/* Converse.js components configuration
+/* Converse.js
  *
- * This file is used to tell require.js which components (or plugins) to load
- * when it generates a build.
+ * Version: 3.0.0
  */
 /*global define */
 
 if (typeof define !== 'undefined') {
-    /* When running tests, define is not defined. */
+    // The section below determines which plugins will be included in a build
     define([
         "converse-core",
         // PLEASE NOTE: By default all translations are included.

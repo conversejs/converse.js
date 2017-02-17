@@ -205,6 +205,5 @@ require.config({
     // define module dependencies for modules not using define
     shim: {
         'awesomplete':          { exports: 'Awesomplete' },
-        'backbone':             { deps: ['underscore'] }
     }
 });

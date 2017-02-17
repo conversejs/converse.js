@@ -12,6 +12,7 @@
     * To prevent confusion the private, closured object, only
       available to plugins, has been renamed from `converse` to `_converse`.
       The public API is accessible via a global `converse` object.
+    * The `keepalive` and `roster_groups` options are now set to `true` by default.
 
 - Created a new non-core plugin `converse-muc-embedded` which embeds a single
   chat room into a page. An example can be found at https://conversejs.org/demo/embedded.html

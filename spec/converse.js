@@ -39,6 +39,7 @@
                 it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (_converse) {
                     var jid = _converse.jid;
                     delete _converse.jid;
+                    _converse.keepalive = false;
                     _converse.authentication = "prebind";
                     expect(_converse.logIn.bind(_converse)).toThrow(
                         new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));

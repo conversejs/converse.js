@@ -418,6 +418,7 @@
         this.disconnect = function () {
             _converse.log('DISCONNECTED');
             delete _converse.connection.reconnecting;
+            _converse.connection.reset();
             _converse._tearDown();
             _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');

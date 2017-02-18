@@ -357,12 +357,18 @@
                     // Which for some reason doesn't work.
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
-
-                    this.getRoomFeatures().always(function () {
-                        that.join();
-                        that.fetchMessages();
+                    
+                    this.registerHandlers();
+                    if (this.model.get('connection_status') !==  Strophe.Status.CONNECTED) {
+                        this.getRoomFeatures().always(function () {
+                            that.join();
+                            that.fetchMessages();
+                            _converse.emit('chatRoomOpened', that);
+                        });
+                    } else {
+                        this.fetchMessages();
                         _converse.emit('chatRoomOpened', that);
-                    });
+                    }
                 },
 
                 render: function () {
@@ -1105,7 +1111,6 @@
                     if (!nick) {
                         return this.checkForReservedNick();
                     }
-                    this.registerHandlers();
                     if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
                         // We have restored a chat room from session storage,
                         // so we don't send out a presence stanza again.

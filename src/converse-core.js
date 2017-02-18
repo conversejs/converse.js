@@ -20,8 +20,7 @@
             "backbone.overview",
     ], factory);
 }(this, function (sizzle, $, _, polyfill, locales, utils, moment, Strophe, pluggable) {
-    /*
-     * Cannot use this due to Safari bug.
+    /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
@@ -261,9 +260,6 @@
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
-
-        // BBB
-        if (this.prebind === true) { this.authentication = _converse.PREBIND; }
 
         if (this.authentication === _converse.ANONYMOUS) {
             if (this.auto_login && !this.jid) {

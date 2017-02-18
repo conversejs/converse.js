@@ -297,11 +297,13 @@
                  * "chatroom".
                  */
                 return _converse.chatboxviews.showChat(
-                    _.extend(settings, {
-                        'type': 'chatroom',
+                    _.extend({
                         'affiliation': null,
+                        'connection_status': Strophe.Status.DISCONNECTED,
+                        'description': '',
                         'features_fetched': false,
                         'hidden': false,
+                        'mam_enabled': false,
                         'membersonly': false,
                         'moderated': false,
                         'nonanonymous': false,
@@ -309,12 +311,13 @@
                         'passwordprotected': false,
                         'persistent': false,
                         'public': false,
+                        'roomconfig': {},
                         'semianonymous': false,
                         'temporary': false,
+                        'type': 'chatroom',
                         'unmoderated': false,
                         'unsecured': false,
-                        'connection_status': Strophe.Status.DISCONNECTED
-                    })
+                    }, settings)
                 );
             };
 
@@ -410,11 +413,13 @@
                     /* Create the ChatRoomOccupantsView Backbone.View
                      */
                     this.occupantsview = new _converse.ChatRoomOccupantsView({
-                        model: new _converse.ChatRoomOccupants()
+                        'model': new _converse.ChatRoomOccupants(),
+                        'attributes': {
+                            'chatroomview': this
+                        }
                     });
                     var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
-                    this.occupantsview.chatroomview = this;
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({add:true});
                 },
@@ -1369,6 +1374,7 @@
                              *  <feature var='muc_open'/>
                              *  <feature var='muc_unmoderated'/>
                              *  <feature var='muc_nonanonymous'/>
+                             *  <feature var='urn:xmpp:mam:0'/>
                              */
                             var features = {
                                 'features_fetched': true
@@ -1376,6 +1382,9 @@
                             _.each(iq.querySelectorAll('feature'), function (field) {
                                 var fieldname = field.getAttribute('var');
                                 if (!fieldname.startsWith('muc_')) {
+                                    if (fieldname === 'urn:xmpp:mam:0') {
+                                        features.mam_enabled = true;
+                                    }
                                     return;
                                 }
                                 features[fieldname.replace('muc_', '')] = true;
@@ -1966,15 +1975,58 @@
 
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
+                    var debounced_render = _.debounce(this.render, 100);
+                    this.chatroomview = this.attributes.chatroomview;
+                    this.chatroomview.model.on('change:hidden', debounced_render, this);
+                    this.chatroomview.model.on('change:mam_enabled', debounced_render, this);
+                    this.chatroomview.model.on('change:membersonly', debounced_render, this);
+                    this.chatroomview.model.on('change:moderated', debounced_render, this);
+                    this.chatroomview.model.on('change:nonanonymous', debounced_render, this);
+                    this.chatroomview.model.on('change:open', debounced_render, this);
+                    this.chatroomview.model.on('change:passwordprotected', debounced_render, this);
+                    this.chatroomview.model.on('change:persistent', debounced_render, this);
+                    this.chatroomview.model.on('change:public', debounced_render, this);
+                    this.chatroomview.model.on('change:semianonymous', debounced_render, this);
+                    this.chatroomview.model.on('change:temporary', debounced_render, this);
+                    this.chatroomview.model.on('change:unmoderated', debounced_render, this);
+                    this.chatroomview.model.on('change:unsecured', debounced_render, this);
                 },
 
                 render: function () {
                     this.$el.html(
-                        _converse.templates.chatroom_sidebar({
-                            'allow_muc_invitations': _converse.allow_muc_invitations,
-                            'label_invitation': __('Invite'),
-                            'label_occupants': __('Occupants')
-                        })
+                        _converse.templates.chatroom_sidebar(
+                            _.extend(this.chatroomview.model.toJSON(), {
+                                'allow_muc_invitations': _converse.allow_muc_invitations,
+                                'label_features': __('Features'),
+                                'label_hidden': __('Hidden'),
+                                'label_invitation': __('Invite'),
+                                'label_mam_enabled': __('Message archiving'),
+                                'label_membersonly': __('Members only'),
+                                'label_moderated': __('Moderated'),
+                                'label_nonanonymous': __('Non-anonymous'),
+                                'label_occupants': __('Occupants'),
+                                'label_open': __('Open'),
+                                'label_passwordprotected': __('Password protected'),
+                                'label_persistent': __('Persistent'),
+                                'label_public': __('Public'),
+                                'label_semianonymous': __('Semi-anonymous'),
+                                'label_temporary': __('Temporary'),
+                                'label_unmoderated': __('Unmoderated'),
+                                'label_unsecured': __('Unsecured'),
+                                'tt_hidden': __('This room is not publically searchable'),
+                                'tt_mam_enabled': __('Messages are archived on the server'),
+                                'tt_membersonly': __('This room is restricted to members only'),
+                                'tt_moderated': __('This room is being moderated'),
+                                'tt_nonanonymous': __('All other room occupants can see your Jabber ID'),
+                                'tt_open': __('Anyone can join this room'),
+                                'tt_passwordprotected': __('This room requires a password before entry'),
+                                'tt_persistent': __('This room pesists even if it\'s unoccupied'),
+                                'tt_public': __('This room is publically searchable'),
+                                'tt_semianonymous': __('Only moderators can see your Jabber ID'),
+                                'tt_temporary': __('This room will disappear once the last person leaves'),
+                                'tt_unmoderated': __('This room is not being moderated'),
+                                'tt_unsecured': __('This room does not require a password upon entry')
+                            }))
                     );
                     if (_converse.allow_muc_invitations) {
                         _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));

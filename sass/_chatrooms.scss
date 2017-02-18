@@ -93,33 +93,38 @@
                     float: right;
                     vertical-align: top;
                     background-color: white;
-                    overflow: hidden;
+                    overflow: scroll;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
                     width: 30%;
                     height: 100%;
+                    padding: 0.5em;
                     &.hidden {
                         display: none;
                     }
                     .occupants-heading {
-                        padding: 0.3em;
+                        padding: 0.3em 0;
                         font-weight: bold;
                     }
-                    .occupant-list {
-                        height: 85%;
-                        height: calc(100% - 70px);
+                    ul {
+                        padding: 0.3em 0;
                         overflow-x: hidden;
                         overflow-y: auto;
                         list-style: none;
                         li {
                             cursor: default;
                             display: block;
-                            font-size: 12px;
+                            font-size: $font-size-small;
                             overflow: hidden;
                             padding: 2px 5px;
                             text-overflow: ellipsis;
                             white-space: nowrap;
-                            width: 100px;
+                            [class^="icon-"], [class*=" icon-"] {
+                                padding-right: 0.5em;
+                            }
+                            &.feature {
+                                font-size: $font-size-tiny;
+                            }
                             &.occupant {
                                 cursor: pointer;
                             }
@@ -161,7 +166,6 @@
         }
 
         .room-invite {
-            margin: 0.3em;
             .invited-contact {
                 margin: -1px 0 0 -1px;
                 width: 100%;

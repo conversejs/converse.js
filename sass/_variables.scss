@@ -49,6 +49,7 @@ $chatbox-hover-height: 6px !default;
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
+$font-size-tiny: 10px !default;
 $font-size-small: 12px !default;
 $font-size: 14px !default;
 $font-size-large: 16px !default;
@@ -66,7 +67,7 @@ $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
 /* $font-path: "../fonticons/fonts/" !default; */
-$font-path: "https://cdn.conversejs.org/fonticons/fonts/" !default;
+$font-path: "/fonticons/fonts/" !default;
 
 $chatroom-width: 300px !default;
 $chatroom-head-color: #E76F51 !default;

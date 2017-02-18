@@ -1,9 +1,53 @@
 <!-- <div class="occupants"> -->
+<p class="occupants-heading">{{{label_occupants}}}</p>
 {[ if (allow_muc_invitations) { ]}
 <form class="pure-form room-invite">
     <input class="invited-contact" placeholder="{{{label_invitation}}}" type="text"/>
 </form>
 {[ } ]}
-<p class="occupants-heading">{{{label_occupants}}}:</p>
 <ul class="occupant-list"></ul>
+
+<p class="occupants-heading">{{{label_features}}}</p>
+<ul>
+    {[ if (passwordprotected) { ]}
+    <li class="feature" title="{{{ tt_passwordprotected }}}"><span class="icon-lock-2"></span>{{{ label_passwordprotected }}}</li>
+    {[ } ]}
+    {[ if (unsecured) { ]}
+    <li class="feature" title="{{{ tt_unsecured }}}"><span class="icon-unlocked"></span>{{{ label_unsecured }}}</li>
+    {[ } ]}
+    {[ if (hidden) { ]}
+    <li class="feature" title="{{{ tt_hidden }}}"><span class="icon-eye-blocked"></span>{{{ label_hidden }}}</li>
+    {[ } ]}
+    {[ if (public) { ]}
+    <li class="feature" title="{{{ tt_public }}}"><span class="icon-eye"></span>{{{ label_public }}}</li>
+    {[ } ]}
+    {[ if (membersonly) { ]}
+    <li class="feature" title="{{{ tt_membersonly }}}"><span class="icon-address-book"></span>{{{ label_membersonly }}}</li>
+    {[ } ]}
+    {[ if (open) { ]}
+    <li class="feature" title="{{{ tt_open }}}"><span class="icon-globe"></span>{{{ label_open }}}</li>
+    {[ } ]}
+    {[ if (persistent) { ]}
+    <li class="feature" title="{{{ tt_persistent }}}"><span class="icon-save"></span>{{{ label_persistent }}}</li>
+    {[ } ]}
+    {[ if (temporary) { ]}
+    <li class="feature" title="{{{ tt_temporary }}}"><span class="icon-snowflake"></span>{{{ label_temporary }}}</li>
+    {[ } ]}
+    {[ if (nonanonymous) { ]}
+    <li class="feature" title="{{{ tt_nonanonymous }}}"><span class="icon-idcard-dark"></span>{{{ label_nonanonymous }}}</li>
+    {[ } ]}
+    {[ if (semianonymous) { ]}
+    <li class="feature" title="{{{ tt_semianonymous }}}"><span class="icon-info"></span>{{{ label_semianonymous }}}</li>
+    {[ } ]}
+    {[ if (moderated) { ]}
+    <li class="feature" title="{{{ tt_moderated }}}"><span class="icon-legal"></span>{{{ label_moderated }}}</li>
+    {[ } ]}
+    {[ if (unmoderated) { ]}
+    <li class="feature" title="{{{ tt_unmoderated }}}"><span class="icon-info"></span>{{{ label_unmoderated }}}</li>
+    {[ } ]}
+    {[ if (mam_enabled) { ]}
+    <li class="feature" title="{{{ tt_mam_enabled }}}"><span class="icon-database"></span>{{{ label_mam_enabled }}}</li>
+    {[ } ]}
+</ul>
+
 <!-- </div> -->

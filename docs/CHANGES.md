@@ -16,6 +16,7 @@
 
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]
+- Chat room features are shown in the sidebar. [jcbrand]
 - Created a new non-core plugin `converse-muc-embedded` which embeds a single
   chat room into a page. An example can be found at https://conversejs.org/demo/embedded.html
   [jcbrand]

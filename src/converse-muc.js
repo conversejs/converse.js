@@ -365,29 +365,6 @@
                     });
                 },
 
-                createOccupantsView: function () {
-                    /* Create the ChatRoomOccupantsView Backbone.View
-                     */
-                    this.occupantsview = new _converse.ChatRoomOccupantsView({
-                        model: new _converse.ChatRoomOccupants()
-                    });
-                    var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
-                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
-                    this.occupantsview.chatroomview = this;
-                    this.occupantsview.render();
-                    this.occupantsview.model.fetch({add:true});
-                },
-
-                insertIntoDOM: function () {
-                    var view = _converse.chatboxviews.get("controlbox");
-                    if (view) {
-                        this.$el.insertAfter(view.$el);
-                    } else {
-                        $('#conversejs').prepend(this.$el);
-                    }
-                    return this;
-                },
-
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
                             .html(_converse.templates.chatroom());
@@ -395,16 +372,6 @@
                     this.renderChatArea();
                     utils.refreshWebkit();
                     return this;
-                },
-
-                generateHeadingHTML: function () {
-                    /* Returns the heading HTML to be rendered.
-                     */
-                    return _converse.templates.chatroom_head(
-                        _.extend(this.model.toJSON(), {
-                            info_close: __('Close and leave this room'),
-                            info_configure: __('Configure this room'),
-                    }));
                 },
 
                 renderHeading: function () {
@@ -430,6 +397,39 @@
                     }
                     this.toggleOccupants(null, true);
                     return this;
+                },
+
+                createOccupantsView: function () {
+                    /* Create the ChatRoomOccupantsView Backbone.View
+                     */
+                    this.occupantsview = new _converse.ChatRoomOccupantsView({
+                        model: new _converse.ChatRoomOccupants()
+                    });
+                    var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
+                    this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
+                    this.occupantsview.chatroomview = this;
+                    this.occupantsview.render();
+                    this.occupantsview.model.fetch({add:true});
+                },
+
+                insertIntoDOM: function () {
+                    var view = _converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        this.$el.insertAfter(view.$el);
+                    } else {
+                        $('#conversejs').prepend(this.$el);
+                    }
+                    return this;
+                },
+
+                generateHeadingHTML: function () {
+                    /* Returns the heading HTML to be rendered.
+                     */
+                    return _converse.templates.chatroom_head(
+                        _.extend(this.model.toJSON(), {
+                            info_close: __('Close and leave this room'),
+                            info_configure: __('Configure this room'),
+                    }));
                 },
 
                 afterShown: function () {

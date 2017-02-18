@@ -345,8 +345,9 @@
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
-                    this.model.on('change:chat_state', this.sendChatState, this);
                     this.model.on('change:affiliation', this.renderHeading, this);
+                    this.model.on('change:chat_state', this.sendChatState, this);
+                    this.model.on('change:description', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
 
                     this.createOccupantsView();
@@ -435,6 +436,7 @@
                         _.extend(this.model.toJSON(), {
                             info_close: __('Close and leave this room'),
                             info_configure: __('Configure this room'),
+                            description: this.model.get('description') || ''
                     }));
                 },
 
@@ -1268,7 +1270,7 @@
 
                 autoConfigureChatRoom: function (stanza) {
                     /* Automatically configure room based on the
-                     * 'roomconfigure' data on this view's model.
+                     * 'roomconfig' data on this view's model.
                      *
                      * Returns a promise which resolves once a response IQ has
                      * been received.
@@ -1354,8 +1356,7 @@
                     var that = this;
                     _converse.connection.disco.info(this.model.get('jid'), null,
                         function (iq) {
-                            /*
-                             * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
+                            /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
                              *
                              *  <identity
                              *      category='conference'
@@ -1379,6 +1380,10 @@
                                 }
                                 features[fieldname.replace('muc_', '')] = true;
                             });
+                            var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
+                            if (!_.isNull(desc_field)) {
+                                features.description = desc_field.textContent;
+                            }
                             that.model.save(features);
                             return deferred.resolve();
                         },
@@ -1830,7 +1835,6 @@
                 },
 
                 setChatRoomSubject: function (sender, subject) {
-                    this.$el.find('.chatroom-topic').text(subject).attr('title', subject);
                     // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
                     this.$content.append(

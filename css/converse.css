@@ -1415,7 +1415,7 @@
   font-size: 100%;
   height: 55px;
   margin: 0;
-  padding: 5px;
+  padding: 0.5em;
   position: relative; }
   @media screen and (max-height: 450px) {
     #converse-embedded-chat .chat-head,
@@ -2241,8 +2241,8 @@
   #conversejs .chat-head-chatroom .chatbox-btn.button-on {
     background-color: white;
     color: #E76F51; }
-  #converse-embedded-chat .chat-head-chatroom .chatroom-topic,
-  #conversejs .chat-head-chatroom .chatroom-topic {
+  #converse-embedded-chat .chat-head-chatroom .chatroom-description,
+  #conversejs .chat-head-chatroom .chatroom-description {
     color: white;
     font-size: 80%;
     font-style: italic;

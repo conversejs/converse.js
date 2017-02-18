@@ -14,6 +14,8 @@
       The public API is accessible via a global `converse` object.
     * The `keepalive` and `roster_groups` options are now set to `true` by default.
 
+- The chat room `description` is now shown in the heading, not the `subject`.
+  [jcbrand]
 - Created a new non-core plugin `converse-muc-embedded` which embeds a single
   chat room into a page. An example can be found at https://conversejs.org/demo/embedded.html
   [jcbrand]

@@ -345,6 +345,47 @@
 
         describe("A Chat Room", function () {
 
+            it("shows its description in the chat heading",  mock.initConverse(function (_converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                var view = _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+                spyOn(view, 'generateHeadingHTML').andCallThrough();
+                var features_stanza = $iq({
+                        from: 'coven@chat.shakespeare.lit',
+                        'id': IQ_id,
+                        'to': 'dummy@localhost/desktop',
+                        'type': 'result'
+                    })
+                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {
+                            'category': 'conference',
+                            'name': 'A Dark Cave',
+                            'type': 'text'
+                        }).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'muc_passwordprotected'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_open'}).up()
+                        .c('feature', {'var': 'muc_unmoderated'}).up()
+                        .c('feature', {'var': 'muc_nonanonymous'}).up()
+                        .c('feature', {'var': 'urn:xmpp:mam:0'}).up()
+                        .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                                .c('value').t('This is the description').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                                .c('value').t(0);
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+                expect(view.generateHeadingHTML).toHaveBeenCalled();
+                expect(view.$('.chatroom-description').text()).toBe('This is the description');
+            }));
+
             it("will specially mark messages in which you are mentioned", mock.initConverse(function (_converse) {
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');

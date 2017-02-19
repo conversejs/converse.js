@@ -1038,6 +1038,29 @@
                     }
                 }
             },
+            
+            setPriority: function (bare_jid, resource, priority) {
+                var item = this.get(bare_jid),
+                    stored_priority;
+                if (item) {
+                    stored_priority = item.get('priority');
+                    if (stored_priority) {
+                        if (priority >= stored_priority) {
+                            item.set({'priority': priority});
+                            item.set({'priority_updated_by': resource});
+                            return true;
+                        } else if (resource === item.get('priority_updated_by')) {
+                                item.set({'priority': priority});
+                                return true;
+                        }
+                    } else  {
+                        item.set({'priority': priority});
+                        item.set({'priority_updated_by': resource});
+                        return true;
+                    }
+                }
+                return false;
+            },
 
             subscribeBack: function (bare_jid) {
                 var contact = this.get(bare_jid);
@@ -1214,7 +1237,7 @@
                     status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                     priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
                     contact = this.get(bare_jid);
-
+            
                 if (this.isSelf(bare_jid)) {
                     if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
@@ -1244,6 +1267,8 @@
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(presence);
                 } else if (presence_type === 'unavailable' && contact) {
+                    // update priority to default level
+                    this.setPriority(bare_jid, resource, 0);
                     // Only set the user to offline if there aren't any
                     // other resources still available.
                     if (contact.removeResource(resource) === 0) {
@@ -1251,7 +1276,9 @@
                     }
                 } else if (contact) { // presence_type is undefined
                     this.addResource(bare_jid, resource);
-                    contact.save({'chat_status': chat_status});
+                    if (this.setPriority(bare_jid, resource, priority)) {
+                            contact.save({'chat_status': chat_status});
+                    }
                 }
             }
         });

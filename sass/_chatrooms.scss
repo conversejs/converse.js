@@ -90,6 +90,8 @@
                     }
                 }
                 .occupants {
+                    overflow-x: hidden;
+                    overflow-y: hidden;
                     float: right;
                     vertical-align: top;
                     background-color: white;
@@ -110,9 +112,11 @@
 
                         &.occupant-list {
                             overflow-y: scroll;
-                            @include calc(height, '100% - 200px');
+                            @include calc(height, '100% - 205px');
                         }
-
+                        &.features-list {
+                            padding-top: 0;
+                        }
                         li {
                             cursor: default;
                             display: block;

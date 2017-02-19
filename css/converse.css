@@ -2314,6 +2314,8 @@
             min-width: 100%; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants,
       #conversejs .chatroom .box-flyout .chatroom-body .occupants {
+        overflow-x: hidden;
+        overflow-y: hidden;
         float: right;
         vertical-align: top;
         background-color: white;
@@ -2335,8 +2337,11 @@
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list {
             overflow-y: scroll;
-            height: -webkit-calc(100% - 200px);
-            height: calc(100% - 200px); }
+            height: -webkit-calc(100% - 205px);
+            height: calc(100% - 205px); }
+          #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list,
+          #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list {
+            padding-top: 0; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li {
             cursor: default;

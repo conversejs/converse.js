@@ -39,7 +39,7 @@
     "backbone.overview": "0.0.3",
     "bootstrap": "^3.3.7",
     "bourbon": "^4.3.2",
-    "clean-css": "^3.4.19",
+    "clean-css": "^4.0.7",
     "eslint": "^3.14.1",
     "eslint-plugin-lodash": "^2.3.3",
     "font-awesome": "^4.7.0",

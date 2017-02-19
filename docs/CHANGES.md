@@ -13,6 +13,8 @@
       available to plugins, has been renamed from `converse` to `_converse`.
       The public API is accessible via a global `converse` object.
     * The `keepalive` and `roster_groups` options are now set to `true` by default.
+    * Templates are no longer stored as attributes on the `_converse` object.
+      If you need a particular template, use `require` to load it.
 
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]

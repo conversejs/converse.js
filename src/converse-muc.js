@@ -14,12 +14,13 @@
             "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
+            "tpl!chatroom_features",
             "tpl!chatroom_form",
+            "tpl!chatroom_head",
             "tpl!chatroom_nickname_form",
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
             "tpl!chatroom_toolbar",
-            "tpl!chatroom_head",
             "tpl!chatrooms_tab",
             "tpl!info",
             "tpl!occupant",
@@ -33,12 +34,13 @@
             converse,
             tpl_chatarea,
             tpl_chatroom,
+            tpl_chatroom_features,
             tpl_chatroom_form,
+            tpl_chatroom_head,
             tpl_chatroom_nickname_form,
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
             tpl_chatroom_toolbar,
-            tpl_chatroom_head,
             tpl_chatrooms_tab,
             tpl_info,
             tpl_occupant,
@@ -398,9 +400,7 @@
                      */
                     this.occupantsview = new _converse.ChatRoomOccupantsView({
                         'model': new _converse.ChatRoomOccupants(),
-                        'attributes': {
-                            'chatroomview': this
-                        }
+                        'attributes': { 'chatroomview': this }  // Hack
                     });
                     var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
@@ -1959,21 +1959,25 @@
 
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
-                    var debounced_render = _.debounce(this.render, 100);
+                    var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
+
+                    // This is an ugly hack (misusing view attributes)
                     this.chatroomview = this.attributes.chatroomview;
-                    this.chatroomview.model.on('change:hidden', debounced_render, this);
-                    this.chatroomview.model.on('change:mam_enabled', debounced_render, this);
-                    this.chatroomview.model.on('change:membersonly', debounced_render, this);
-                    this.chatroomview.model.on('change:moderated', debounced_render, this);
-                    this.chatroomview.model.on('change:nonanonymous', debounced_render, this);
-                    this.chatroomview.model.on('change:open', debounced_render, this);
-                    this.chatroomview.model.on('change:passwordprotected', debounced_render, this);
-                    this.chatroomview.model.on('change:persistent', debounced_render, this);
-                    this.chatroomview.model.on('change:public', debounced_render, this);
-                    this.chatroomview.model.on('change:semianonymous', debounced_render, this);
-                    this.chatroomview.model.on('change:temporary', debounced_render, this);
-                    this.chatroomview.model.on('change:unmoderated', debounced_render, this);
-                    this.chatroomview.model.on('change:unsecured', debounced_render, this);
+                    delete this.attributes.chatroomview;
+
+                    this.chatroomview.model.on('change:hidden', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:mam_enabled', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:membersonly', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:moderated', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:nonanonymous', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:open', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:passwordprotected', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:persistent', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:public', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:semianonymous', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:temporary', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:unmoderated', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:unsecured', debouncedRenderRoomFeatures, this);
                 },
 
                 render: function () {
@@ -1982,13 +1986,26 @@
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'allow_muc_invitations': _converse.allow_muc_invitations,
                                 'label_features': __('Features'),
+                                'label_invitation': __('Invite'),
+                                'label_occupants': __('Occupants'),
+                            }))
+                    );
+                    if (_converse.allow_muc_invitations) {
+                        _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
+                    }
+                    return this.renderRoomFeatures();
+                },
+
+                renderRoomFeatures: function () {
+                    this.$('.features-list').html(
+                        tpl_chatroom_features(
+                            _.extend(this.chatroomview.model.toJSON(), {
                                 'label_hidden': __('Hidden'),
                                 'label_invitation': __('Invite'),
                                 'label_mam_enabled': __('Message archiving'),
                                 'label_membersonly': __('Members only'),
                                 'label_moderated': __('Moderated'),
                                 'label_nonanonymous': __('Non-anonymous'),
-                                'label_occupants': __('Occupants'),
                                 'label_open': __('Open'),
                                 'label_passwordprotected': __('Password protected'),
                                 'label_persistent': __('Persistent'),
@@ -2012,9 +2029,6 @@
                                 'tt_unsecured': __('This room does not require a password upon entry')
                             }))
                     );
-                    if (_converse.allow_muc_invitations) {
-                        _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
-                    }
                     return this;
                 },
 

@@ -737,13 +737,14 @@
             it("indicates moderators by means of a special css class and tooltip", mock.initConverse(function (_converse) {
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');
+                var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var presence = $pres({
                         to:'dummy@localhost/pda',
                         from:'lounge@localhost/moderatorman'
                 }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
                     affiliation: 'admin',
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: contact_jid,
                     role: 'moderator',
                 }).up()
                 .c('status').attrs({code:'110'}).nodeTree;
@@ -754,7 +755,7 @@
                 expect($(occupant).first().text()).toBe("dummy");
                 expect($(occupant).last().text()).toBe("moderatorman");
                 expect($(occupant).last().attr('class').indexOf('moderator')).not.toBe(-1);
-                expect($(occupant).last().attr('title')).toBe('This user is a moderator. Click to mention this user in your message.');
+                expect($(occupant).last().attr('title')).toBe(contact_jid + ' This user is a moderator. Click to mention this user in your message.');
             }));
 
             it("will use the user's reserved nickname, if it exists", mock.initConverse(function (_converse) {

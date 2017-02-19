@@ -1,10 +1,13 @@
-<li class="{{{role}}} occupant" id="{{{id}}}"
+<li class="{{{ role }}} occupant" id="{{{ id }}}"
     {[ if (role === "moderator") { ]}
-       title="{{{desc_moderator}}} {{{hint_occupant}}}"
+       title="{{{ jid }}} {{{ desc_moderator }}} {{{ hint_occupant }}}"
     {[ } ]}
     {[ if (role === "occupant") { ]}
-       title="{{{desc_occupant}}} {{{hint_occupant}}}"
+       title="{{{ jid }}} {{{ desc_occupant }}} {{{ hint_occupant }}}"
     {[ } ]}
     {[ if (role === "visitor") { ]}
-       title="{{{desc_visitor}}} {{{hint_occupant}}}"
+       title="{{{ jid }}} {{{ desc_visitor }}} {{{ hint_occupant }}}"
+    {[ } ]}
+    {[ if (!_.includes(["visitor", "occupant", "moderator"], role)) { ]}
+       title="{{{ jid }}} {{{ hint_occupant }}}"
     {[ } ]}>{{{nick}}}</li>

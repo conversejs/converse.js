@@ -1941,12 +1941,13 @@
                 render: function () {
                     var new_el = _converse.templates.occupant(
                         _.extend(
-                            this.model.toJSON(), {
-                                'hint_occupant': __('Click to mention this user in your message.'),
-                                'desc_moderator': __('This user is a moderator.'),
-                                'desc_occupant': __('This user can send messages in this room.'),
-                                'desc_visitor': __('This user can NOT send messages in this room.')
-                        })
+                            { 'jid': '',
+                              'hint_occupant': __('Click to mention this user in your message.'),
+                              'desc_moderator': __('This user is a moderator.'),
+                              'desc_occupant': __('This user can send messages in this room.'),
+                              'desc_visitor': __('This user can NOT send messages in this room.')
+                            }, this.model.toJSON()
+                        )
                     );
                     var $parents = this.$el.parents();
                     if ($parents.length) {

@@ -93,15 +93,11 @@
                     float: right;
                     vertical-align: top;
                     background-color: white;
-                    overflow: scroll;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
                     width: 30%;
                     height: 100%;
                     padding: 0.5em;
-                    &.hidden {
-                        display: none;
-                    }
                     .occupants-heading {
                         padding: 0.3em 0;
                         font-weight: bold;
@@ -111,6 +107,12 @@
                         overflow-x: hidden;
                         overflow-y: auto;
                         list-style: none;
+
+                        &.occupant-list {
+                            overflow-y: scroll;
+                            @include calc(height, '100% - 200px');
+                        }
+
                         li {
                             cursor: default;
                             display: block;

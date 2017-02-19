@@ -9,9 +9,10 @@
 (function (root, factory) {
     define([
             "converse-core",
-            "converse-chatview"
+            "tpl!chatbox",
+            "converse-chatview",
     ], factory);
-}(this, function (converse) {
+}(this, function (converse, tpl_chatbox) {
     "use strict";
     var _ = converse.env._,
         utils = converse.env.utils;
@@ -86,7 +87,7 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(_converse.templates.chatbox(
+                        .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: false,

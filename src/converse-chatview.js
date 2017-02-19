@@ -71,14 +71,6 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new HTML templates.
-            _converse.templates.chatbox = tpl_chatbox;
-            _converse.templates.new_day = tpl_new_day;
-            _converse.templates.action = tpl_action;
-            _converse.templates.message = tpl_message;
-            _converse.templates.toolbar = tpl_toolbar;
-            _converse.templates.avatar = tpl_avatar;
-
             this.updateSettings({
                 show_toolbar: true,
                 chatview_avatar_width: 32,
@@ -129,7 +121,7 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(_converse.templates.chatbox(
+                        .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
@@ -207,7 +199,7 @@
                      */
                     var day_date = moment(date).startOf('day');
                     var insert = prepend ? this.$content.prepend: this.$content.append;
-                    insert.call(this.$content, _converse.templates.new_day({
+                    insert.call(this.$content, tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
@@ -324,7 +316,7 @@
 
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
-                        template = _converse.templates.action;
+                        template = tpl_action;
                         if (attrs.sender === 'me') {
                             fullname = _converse.xmppstatus.get('fullname');
                             username = _.isNil(fullname)? _converse.bare_jid: fullname;
@@ -332,7 +324,7 @@
                             username = attrs.fullname;
                         }
                     } else  {
-                        template = _converse.templates.message;
+                        template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
                     this.$content.find('div.chat-event').remove();
@@ -691,7 +683,7 @@
 
                 renderToolbar: function (toolbar, options) {
                     if (!_converse.show_toolbar) { return; }
-                    toolbar = toolbar || _converse.templates.toolbar;
+                    toolbar = toolbar || tpl_toolbar;
                     options = _.extend(
                         this.model.toJSON(),
                         this.getToolbarOptions(options || {})
@@ -707,7 +699,7 @@
                     var width = _converse.chatview_avatar_width;
                     var height = _converse.chatview_avatar_height;
                     var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                        canvas = $(_converse.templates.avatar({
+                        canvas = $(tpl_avatar({
                             'width': width,
                             'height': height
                         })).get(0);

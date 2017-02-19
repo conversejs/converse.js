@@ -297,7 +297,7 @@
                     var _converse = this.__super__._converse;
                     var flyout = this.el.querySelector('.box-flyout');
                     var div = document.createElement('div');
-                    div.innerHTML = _converse.templates.dragresize();
+                    div.innerHTML = tpl_dragresize();
                     flyout.insertBefore(
                         div,
                         flyout.firstChild
@@ -311,8 +311,6 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-            // Add new HTML template
-            _converse.templates.dragresize = tpl_dragresize;
 
             this.updateSettings({
                 allow_dragresize: true,

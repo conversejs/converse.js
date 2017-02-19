@@ -444,7 +444,7 @@
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
                     this.$el.find('.chat-toolbar').append(
-                            _converse.templates.toolbar_otr(
+                            tpl_toolbar_otr(
                                 _.extend(this.model.toJSON(), options || {})
                             ));
                     return this;
@@ -464,9 +464,6 @@
                 cache_otr_key: false,
                 use_otr_by_default: false
             });
-
-            // Add new HTML template
-            _converse.templates.toolbar_otr = tpl_toolbar_otr;
 
             // Translation aware constants
             // ---------------------------

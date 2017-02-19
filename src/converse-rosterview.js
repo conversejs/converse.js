@@ -70,13 +70,6 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new HTML templates
-            _converse.templates.group_header = tpl_group_header;
-            _converse.templates.pending_contact = tpl_pending_contact;
-            _converse.templates.requesting_contact = tpl_requesting_contact;
-            _converse.templates.roster = tpl_roster;
-            _converse.templates.roster_item = tpl_roster_item;
-
             this.updateSettings({
                 allow_chat_pending_contacts: true,
                 allow_contact_removal: true,
@@ -152,7 +145,7 @@
                 },
 
                 render: function () {
-                    this.$el.html(_converse.templates.roster(
+                    this.$el.html(tpl_roster(
                         _.extend(this.model.toJSON(), {
                             placeholder: __('Filter'),
                             label_contacts: LABEL_CONTACTS,
@@ -601,7 +594,7 @@
                          *  So in both cases the user is a "pending" contact.
                          */
                         this.$el.addClass('pending-xmpp-contact');
-                        this.$el.html(_converse.templates.pending_contact(
+                        this.$el.html(tpl_pending_contact(
                             _.extend(item.toJSON(), {
                                 'desc_remove': __('Click to remove this contact'),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
@@ -609,7 +602,7 @@
                         ));
                     } else if (requesting === true) {
                         this.$el.addClass('requesting-xmpp-contact');
-                        this.$el.html(_converse.templates.requesting_contact(
+                        this.$el.html(tpl_requesting_contact(
                             _.extend(item.toJSON(), {
                                 'desc_accept': __("Click to accept this contact request"),
                                 'desc_decline': __("Click to decline this contact request"),
@@ -619,7 +612,7 @@
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.$el.addClass('current-xmpp-contact');
                         this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
-                        this.$el.html(_converse.templates.roster_item(
+                        this.$el.html(tpl_roster_item(
                             _.extend(item.toJSON(), {
                                 'desc_status': STATUSES[chat_status||'offline'],
                                 'desc_chat': __('Click to chat with this contact'),
@@ -743,7 +736,7 @@
                 render: function () {
                     this.$el.attr('data-group', this.model.get('name'));
                     this.$el.html(
-                        $(_converse.templates.group_header({
+                        $(tpl_group_header({
                             label_group: this.model.get('name'),
                             desc_group_toggle: this.model.get('description'),
                             toggle_state: this.model.get('state')

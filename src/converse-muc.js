@@ -182,25 +182,10 @@
             var _converse = this._converse,
                 __ = _converse.__,
                 ___ = _converse.___;
-
-            _converse.templates.chatarea = tpl_chatarea;
-            _converse.templates.chatroom = tpl_chatroom;
-            _converse.templates.chatroom_form = tpl_chatroom_form;
-            _converse.templates.chatroom_nickname_form = tpl_chatroom_nickname_form;
-            _converse.templates.chatroom_password_form = tpl_chatroom_password_form;
-            _converse.templates.chatroom_sidebar = tpl_chatroom_sidebar;
-            _converse.templates.chatroom_head = tpl_chatroom_head;
-            _converse.templates.chatrooms_tab = tpl_chatrooms_tab;
-            _converse.templates.info = tpl_info;
-            _converse.templates.occupant = tpl_occupant;
-            _converse.templates.room_description = tpl_room_description;
-            _converse.templates.room_item = tpl_room_item;
-            _converse.templates.room_panel = tpl_room_panel;
-
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
-            // and it'll fallback to English.
+            // and it'll fall back to English.
 
             /* http://xmpp.org/extensions/xep-0045.html
              * ----------------------------------------
@@ -377,7 +362,7 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                            .html(_converse.templates.chatroom());
+                            .html(tpl_chatroom());
                     this.renderHeading();
                     this.renderChatArea();
                     utils.refreshWebkit();
@@ -395,8 +380,7 @@
                      */
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
-                            .append(
-                                _converse.templates.chatarea({
+                            .append(tpl_chatarea({
                                     'unread_msgs': __('You have unread messages'),
                                     'show_toolbar': _converse.show_toolbar,
                                     'label_message': __('Message')
@@ -437,7 +421,7 @@
                 generateHeadingHTML: function () {
                     /* Returns the heading HTML to be rendered.
                      */
-                    return _converse.templates.chatroom_head(
+                    return tpl_chatroom_head(
                         _.extend(this.model.toJSON(), {
                             info_close: __('Close and leave this room'),
                             info_configure: __('Configure this room'),
@@ -1189,7 +1173,7 @@
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
-                    $body.append(_converse.templates.chatroom_form());
+                    $body.append(tpl_chatroom_form());
 
                     var $form = $body.find('form.chatroom-form'),
                         $fieldset = $form.children('fieldset:first'),
@@ -1542,7 +1526,7 @@
                         message = '';
                     }
                     this.$('.chatroom-body').append(
-                        _converse.templates.chatroom_nickname_form({
+                        tpl_chatroom_nickname_form({
                             heading: __('Please choose your nickname'),
                             label_nickname: __('Nickname'),
                             label_join: __('Enter room'),
@@ -1562,7 +1546,7 @@
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
                     this.$('.chatroom-body').append(
-                        _converse.templates.chatroom_password_form({
+                        tpl_chatroom_password_form({
                             heading: __('This chatroom requires a password'),
                             label_password: __('Password: '),
                             label_submit: __('Submit')
@@ -1693,7 +1677,7 @@
                         return;
                     }
                     _.each(notification.messages, function (message) {
-                        that.$content.append(_converse.templates.info({'message': message}));
+                        that.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "'+notification.reason+'"'), true);
@@ -1829,8 +1813,8 @@
                         // The features for this room weren't fetched yet, perhaps
                         // because it's a new room without locking (in which
                         // case Prosody doesn't send a 201 status).
-                        // This is the first presence received for the room, so
-                        // a good time to fetch the features.
+                        // This is the first presence received for the room,
+                        // so a good time to fetch the features.
                         this.getRoomFeatures();
                     }
                     if (show_status_messages) {
@@ -1844,12 +1828,11 @@
                 },
 
                 setChatRoomSubject: function (sender, subject) {
-                    // For translators: the %1$s and %2$s parts will get replaced by the user and topic text respectively
+                    // For translators: the %1$s and %2$s parts will get
+                    // replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
                     this.$content.append(
-                        _converse.templates.info({
-                            'message': __('Topic set by %1$s to: %2$s', sender, subject)
-                        }));
+                        tpl_info({'message': __('Topic set by %1$s to: %2$s', sender, subject)}));
                     this.scrollDown();
                 },
 
@@ -1939,7 +1922,7 @@
                 },
 
                 render: function () {
-                    var new_el = _converse.templates.occupant(
+                    var new_el = tpl_occupant(
                         _.extend(
                             { 'jid': '',
                               'hint_occupant': __('Click to mention this user in your message.'),
@@ -1995,7 +1978,7 @@
 
                 render: function () {
                     this.$el.html(
-                        _converse.templates.chatroom_sidebar(
+                        tpl_chatroom_sidebar(
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'allow_muc_invitations': _converse.allow_muc_invitations,
                                 'label_features': __('Features'),
@@ -2197,7 +2180,7 @@
                 render: function () {
                     this.$parent.append(
                         this.$el.html(
-                            _converse.templates.room_panel({
+                            tpl_room_panel({
                                 'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
                                 'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
                                 'label_room_name': __('Room name'),
@@ -2210,7 +2193,7 @@
                     this.$tabs = this.$parent.parent().find('#controlbox-tabs');
 
                     var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(_converse.templates.chatrooms_tab({
+                    this.$tabs.append(tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
                     }));
@@ -2256,7 +2239,7 @@
                             name = Strophe.unescapeNode($(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid'));
                             jid = $(this.rooms[i]).attr('jid');
                             fragment.appendChild($(
-                                _converse.templates.room_item({
+                                tpl_room_item({
                                     'name':name,
                                     'jid':jid,
                                     'open_title': __('Click to open this room'),
@@ -2314,7 +2297,7 @@
                     var $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     $(el).find('span.spinner').replaceWith(
-                        _converse.templates.room_description({
+                        tpl_room_description({
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                             'hidden': $stanza.find('feature[var="muc_hidden"]').length,

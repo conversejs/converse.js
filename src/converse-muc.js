@@ -398,10 +398,9 @@
                 createOccupantsView: function () {
                     /* Create the ChatRoomOccupantsView Backbone.View
                      */
-                    this.occupantsview = new _converse.ChatRoomOccupantsView({
-                        'model': new _converse.ChatRoomOccupants(),
-                        'attributes': { 'chatroomview': this }  // Hack
-                    });
+                    var model = new _converse.ChatRoomOccupants();
+                    model.chatroomview = this;
+                    this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
                     var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
@@ -1960,11 +1959,7 @@
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
                     var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
-
-                    // This is an ugly hack (misusing view attributes)
-                    this.chatroomview = this.attributes.chatroomview;
-                    delete this.attributes.chatroomview;
-
+                    this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:hidden', debouncedRenderRoomFeatures, this);
                     this.chatroomview.model.on('change:mam_enabled', debouncedRenderRoomFeatures, this);
                     this.chatroomview.model.on('change:membersonly', debouncedRenderRoomFeatures, this);

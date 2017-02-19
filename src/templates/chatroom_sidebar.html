@@ -1,10 +1,12 @@
 <!-- <div class="occupants"> -->
 <p class="occupants-heading">{{{label_occupants}}}</p>
-{[ if (allow_muc_invitations) { ]}
-<form class="pure-form room-invite">
+<form class="pure-form room-invite
+    {[ if (!allow_muc_invitations || (!open && affiliation !== "owner")) { ]}
+        hidden
+    {[ } ]}
+    ">
     <input class="invited-contact" placeholder="{{{label_invitation}}}" type="text"/>
 </form>
-{[ } ]}
 <ul class="occupant-list"></ul>
 
 <p class="occupants-heading">{{{label_features}}}</p>

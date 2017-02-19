@@ -1212,6 +1212,7 @@
                     resource = Strophe.getResourceFromJid(jid),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                     status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
+                    priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {

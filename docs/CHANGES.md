@@ -52,7 +52,7 @@
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
-- #785 Add presence priority handling [w3host, jcbrand]
+- #610, #785 Add presence priority handling [w3host, jcbrand]
 
 
 ## 2.0.6 (2017-02-13)

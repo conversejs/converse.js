@@ -59,6 +59,56 @@
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
+            '          id="tYRdj-35"'+
+            '          to="dummy@localhost/converse.js-21770972"'+
+            '          from="'+contact_jid+'/other-resource">'+
+            '    <priority>2</priority>'+
+            '    <show>dnd</show>'+
+            '</presence>');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
+            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('dnd');
+            expect(_.keys(contact.get('resources')).length).toBe(3);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['priority']).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['status']).toBe('online');
+            expect(contact.get('resources')['androidkhydmcKW']['priority']).toBe(0);
+            expect(contact.get('resources')['androidkhydmcKW']['status']).toBe('xa');
+            expect(contact.get('resources')['other-resource']['priority']).toBe(2);
+            expect(contact.get('resources')['other-resource']['status']).toBe('dnd');
+
+            stanza = $(
+            '<presence xmlns="jabber:client"'+
+            '          id="tYRdj-35"'+
+            '          to="dummy@localhost/converse.js-21770972"'+
+            '          from="'+contact_jid+'/other-resource">'+
+            '    <priority>3</priority>'+
+            '    <show>away</show>'+
+            '</presence>');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
+            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('away');
+            expect(_.keys(contact.get('resources')).length).toBe(3);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['priority']).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['status']).toBe('online');
+            expect(contact.get('resources')['androidkhydmcKW']['priority']).toBe(0);
+            expect(contact.get('resources')['androidkhydmcKW']['status']).toBe('xa');
+            expect(contact.get('resources')['other-resource']['priority']).toBe(3);
+            expect(contact.get('resources')['other-resource']['status']).toBe('away');
+
+            stanza = $(
+            '<presence xmlns="jabber:client"'+
+            '          to="dummy@localhost/converse.js-21770972"'+
+            '          type="unavailable"'+
+            '          from="'+contact_jid+'/other-resource">'+
+            '</presence>');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
+            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('online');
+            expect(_.keys(contact.get('resources')).length).toBe(2);
+            expect(contact.get('resources')['androidkhydmcKW']['priority']).toBe(0);
+            expect(contact.get('resources')['androidkhydmcKW']['status']).toBe('xa');
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['priority']).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['status']).toBe('online');
+
+            stanza = $(
+            '<presence xmlns="jabber:client"'+
             '          to="dummy@localhost/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/c71f218b-0797-4732-8a88-b42cb1d8557a">'+

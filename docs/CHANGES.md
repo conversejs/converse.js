@@ -19,7 +19,6 @@
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]
 - Chat room features are shown in the sidebar. [jcbrand]
-- Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - Hide the chat room invite widget if the room is not open or if the room is members-only
   and the user is not the owner. [jcbrand]
 - Created a new non-core plugin `converse-muc-embedded` which embeds a single
@@ -50,6 +49,7 @@
 - Bugfix. `TypeError: this.sendConfiguration(...).then is not a function` when
   an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
+- #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
 

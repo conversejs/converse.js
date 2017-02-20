@@ -104,6 +104,12 @@
                         padding: 0.3em 0;
                         font-weight: bold;
                     }
+                    .chatroom-features {
+                        position: absolute;
+                        bottom: 0.5em;
+                        width: 25%;
+                        @include calc(width, '30% - 1em');
+                    }
                     ul {
                         padding: 0.3em 0;
                         overflow-x: hidden;

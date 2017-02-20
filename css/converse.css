@@ -2328,6 +2328,13 @@
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
           padding: 0.3em 0;
           font-weight: bold; }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
+          position: absolute;
+          bottom: 0.5em;
+          width: 25%;
+          width: -webkit-calc(30% - 1em);
+          width: calc(30% - 1em); }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants ul {
           padding: 0.3em 0;

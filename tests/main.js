@@ -48,6 +48,7 @@ require([
     "spec/headline",
     "spec/disco",
     "spec/protocol",
+    "spec/presence",
     "spec/mam",
     "spec/otr",
     "spec/eventemitter",

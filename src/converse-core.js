@@ -775,7 +775,7 @@
                     'fullname': bare_jid,
                     'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? [resource] : [],
+                    'resources': resource ? {'resource':0} : {},
                     'groups': [],
                     'image_type': DEFAULT_IMAGE_TYPE,
                     'image': DEFAULT_IMAGE,
@@ -855,23 +855,44 @@
                 return this;
             },
 
+            addResource: function (resource, priority, chat_status) {
+                var resources = this.get('resources');
+                if (!_.isObject(resources)) { resources = {}; }
+                resources[resource] = {
+                    'priority': _.isNaN(Number(priority)) ? 0 : Number(priority),
+                    'status': chat_status
+                };
+                this.set({'resources': resources});
+                return resources;
+            },
+
             removeResource: function (resource) {
-                var resources = this.get('resources'), idx;
-                if (resource) {
-                    idx = _.indexOf(resources, resource);
-                    if (idx !== -1) {
-                        resources.splice(idx, 1);
-                        this.save({'resources': resources});
+                /* Remove the passed in resource from the contact's resources
+                 * map.
+                 * Return the amount of resources left over.
+                 */
+                var resources = this.get('resources');
+                if (!_.isObject(resources)) {
+                    resources = {};
+                } else {
+                    delete resources[resource];
+                }
+                this.save({'resources': resources});
+                return _.size(resources);
+            },
+
+            getHighestPriorityStatus: function () {
+                /* Return the chat status assigned to the resource with the
+                 * highest priority.
+                 */
+                var resources = this.get('resources');
+                if (_.isObject(resources) && _.size(resources)) {
+                    var val = _(resources).values().sortBy('priority').get(0);
+                    if (!_.isUndefined(val)) {
+                        return val.status;
                     }
                 }
-                else {
-                    // if there is no resource (resource is null), it probably
-                    // means that the user is now completely offline. To make sure
-                    // that there isn't any "ghost" resources left, we empty the array
-                    this.save({'resources': []});
-                    return 0;
-                }
-                return resources.length;
+                return 'offline';
             },
 
             removeFromRoster: function (callback) {
@@ -1021,45 +1042,6 @@
                     }
                 );
                 return deferred.promise();
-            },
-
-            addResource: function (bare_jid, resource) {
-                var item = this.get(bare_jid),
-                    resources;
-                if (item) {
-                    resources = item.get('resources');
-                    if (resources) {
-                        if (!_.includes(resources, resource)) {
-                            resources.push(resource);
-                            item.set({'resources': resources});
-                        }
-                    } else  {
-                        item.set({'resources': [resource]});
-                    }
-                }
-            },
-            
-            setPriority: function (bare_jid, resource, priority) {
-                var item = this.get(bare_jid),
-                    stored_priority;
-                if (item) {
-                    stored_priority = item.get('priority');
-                    if (stored_priority) {
-                        if (priority >= stored_priority) {
-                            item.set({'priority': priority});
-                            item.set({'priority_updated_by': resource});
-                            return true;
-                        } else if (resource === item.get('priority_updated_by')) {
-                                item.set({'priority': priority});
-                                return true;
-                        }
-                    } else  {
-                        item.set({'priority': priority});
-                        item.set({'priority_updated_by': resource});
-                        return true;
-                    }
-                }
-                return false;
             },
 
             subscribeBack: function (bare_jid) {
@@ -1237,7 +1219,7 @@
                     status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
                     priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
                     contact = this.get(bare_jid);
-            
+
                 if (this.isSelf(bare_jid)) {
                     if ((_converse.connection.jid !== jid) &&
                         (presence_type !== 'unavailable') &&
@@ -1267,17 +1249,14 @@
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(presence);
                 } else if (presence_type === 'unavailable' && contact) {
-                    // update priority to default level
-                    this.setPriority(bare_jid, resource, 0);
-                    // Only set the user to offline if there aren't any
-                    // other resources still available.
-                    if (contact.removeResource(resource) === 0) {
-                        contact.save({'chat_status': "offline"});
-                    }
+                    contact.removeResource(resource);
+                    contact.save({'chat_status': contact.getHighestPriorityStatus()});
                 } else if (contact) { // presence_type is undefined
-                    this.addResource(bare_jid, resource);
-                    if (this.setPriority(bare_jid, resource, priority)) {
-                            contact.save({'chat_status': chat_status});
+                    var resources = contact.addResource(resource, priority, chat_status);
+                    if (priority >= _(resources).values().map('priority').max()) {
+                        // Only save if it's the resource with the highest
+                        // priority
+                        contact.save({'chat_status': chat_status});
                     }
                 }
             }

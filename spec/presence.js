@@ -1,3 +1,4 @@
+/*jshint sub:true*/
 (function (root, factory) {
     define([
         "jquery",
@@ -17,6 +18,7 @@
             test_utils.openControlBox();
             test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
             var contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var contact = _converse.roster.get(contact_jid);
             var stanza = $(
             '<presence xmlns="jabber:client"'+
             '          to="dummy@localhost/converse.js-21770972"'+
@@ -30,7 +32,10 @@
             '    <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T20:26:05Z" from="jabbim.hu"/>'+
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
-            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('online');
+            expect(contact.get('chat_status')).toBe('online');
+            expect(_.keys(contact.get('resources')).length).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['priority']).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['status']).toBe('online');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -46,6 +51,33 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('online');
+            expect(_.keys(contact.get('resources')).length).toBe(2);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['priority']).toBe(1);
+            expect(contact.get('resources')['c71f218b-0797-4732-8a88-b42cb1d8557a']['status']).toBe('online');
+            expect(contact.get('resources')['androidkhydmcKW']['priority']).toBe(0);
+            expect(contact.get('resources')['androidkhydmcKW']['status']).toBe('xa');
+
+            stanza = $(
+            '<presence xmlns="jabber:client"'+
+            '          to="dummy@localhost/converse.js-21770972"'+
+            '          type="unavailable"'+
+            '          from="'+contact_jid+'/c71f218b-0797-4732-8a88-b42cb1d8557a">'+
+            '</presence>');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
+            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('xa');
+            expect(_.keys(contact.get('resources')).length).toBe(1);
+            expect(contact.get('resources')['androidkhydmcKW']['priority']).toBe(0);
+            expect(contact.get('resources')['androidkhydmcKW']['status']).toBe('xa');
+
+            stanza = $(
+            '<presence xmlns="jabber:client"'+
+            '          to="dummy@localhost/converse.js-21770972"'+
+            '          type="unavailable"'+
+            '          from="'+contact_jid+'/androidkhydmcKW">'+
+            '</presence>');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
+            expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('offline');
+            expect(_.keys(contact.get('resources')).length).toBe(0);
         }));
     });
 }));

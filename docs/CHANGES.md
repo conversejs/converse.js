@@ -16,7 +16,6 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
-- Add Presence Priority Handling [w3host]
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]
 - Chat room features are shown in the sidebar. [jcbrand]
@@ -53,6 +52,8 @@
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
+- #785 Add presence priority handling [w3host, jcbrand]
+
 
 ## 2.0.6 (2017-02-13)
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]

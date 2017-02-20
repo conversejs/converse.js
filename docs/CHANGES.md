@@ -16,6 +16,7 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
+- Add Presence Priority Handling [w3host]
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]
 - Chat room features are shown in the sidebar. [jcbrand]

@@ -887,7 +887,7 @@
                  */
                 var resources = this.get('resources');
                 if (_.isObject(resources) && _.size(resources)) {
-                    var val = _(resources).values().sortBy('priority').reverse().get(0);
+                    var val = _.flow(_.values, _.partial(_.sortBy, _, 'priority'), _.reverse)(resources)[0];
                     if (!_.isUndefined(val)) {
                         return val.status;
                     }

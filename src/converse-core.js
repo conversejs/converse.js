@@ -859,8 +859,9 @@
                 var resources = this.get('resources');
                 if (!_.isObject(resources)) { resources = {}; }
                 resources[resource] = {
-                    'priority': _.isNaN(Number(priority)) ? 0 : Number(priority),
-                    'status': chat_status
+                    'priority': _.isNaN(parseInt(priority)) ? 0 : parseInt(priority),
+                    'status': chat_status,
+                    'timestamp': moment().format()
                 };
                 this.set({'resources': resources});
                 return resources;
@@ -884,10 +885,17 @@
             getHighestPriorityStatus: function () {
                 /* Return the chat status assigned to the resource with the
                  * highest priority.
+                 *
+                 * If multiple resources have the same priority, take the
+                 * newest one.
                  */
                 var resources = this.get('resources');
                 if (_.isObject(resources) && _.size(resources)) {
-                    var val = _.flow(_.values, _.partial(_.sortBy, _, 'priority'), _.reverse)(resources)[0];
+                    var val = _.flow(
+                            _.values,
+                            _.partial(_.sortBy, _, ['priority', 'timestamp']),
+                            _.reverse
+                        )(resources)[0];
                     if (!_.isUndefined(val)) {
                         return val.status;
                     }

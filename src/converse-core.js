@@ -177,6 +177,7 @@
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
         Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
@@ -855,22 +856,44 @@
                 return this;
             },
 
-            addResource: function (resource, priority, chat_status) {
-                var resources = this.get('resources');
-                if (!_.isObject(resources)) { resources = {}; }
+            addResource: function (presence) {
+                /* Adds a new resource and it's associated attributes as taken
+                 * from the passed in presence stanza.
+                 *
+                 * Also updates the contact's chat_status if the presence has
+                 * higher priority (and is newer).
+                 */
+                var jid = presence.getAttribute('from'),
+                    chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                    resource = Strophe.getResourceFromJid(jid),
+                    priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+                    delay = presence.querySelector('delay[xmlns="'+Strophe.NS.DELAY+'"]'),
+                    timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+
+                priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
+
+                var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
                 resources[resource] = {
-                    'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+                    'priority': priority,
                     'status': chat_status,
-                    'timestamp': moment().format()
+                    'timestamp': timestamp 
                 };
-                this.set({'resources': resources});
+                var changed = {'resources': resources};
+                var hpr = this.getHighestPriorityResource();
+                if (priority == hpr.priority && timestamp == hpr.timestamp) {
+                    // Only set the chat status if this is the newest resource
+                    // with the highest priority
+                    changed.chat_status = chat_status;
+                }
+                this.save(changed);
                 return resources;
             },
 
             removeResource: function (resource) {
-                /* Remove the passed in resource from the contact's resources
-                 * map.
-                 * Return the amount of resources left over.
+                /* Remove the passed in resource from the contact's resources map.
+                 *
+                 * Also recomputes the chat_status given that there's one less
+                 * resource.
                  */
                 var resources = this.get('resources');
                 if (!_.isObject(resources)) {
@@ -878,13 +901,15 @@
                 } else {
                     delete resources[resource];
                 }
-                this.save({'resources': resources});
-                return _.size(resources);
+                this.save({
+                    'resources': resources,
+                    'chat_status': _.propertyOf(
+                        this.getHighestPriorityResource())('status') || 'offline'
+                });
             },
 
-            getHighestPriorityStatus: function () {
-                /* Return the chat status assigned to the resource with the
-                 * highest priority.
+            getHighestPriorityResource: function () {
+                /* Return the resource with the highest priority.
                  *
                  * If multiple resources have the same priority, take the
                  * newest one.
@@ -897,10 +922,9 @@
                             _.reverse
                         )(resources)[0];
                     if (!_.isUndefined(val)) {
-                        return val.status;
+                        return val;
                     }
                 }
-                return 'offline';
             },
 
             removeFromRoster: function (callback) {
@@ -1225,7 +1249,6 @@
                     resource = Strophe.getResourceFromJid(jid),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                     status_message = _.propertyOf(presence.querySelector('status'))('textContent'),
-                    priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
@@ -1258,14 +1281,9 @@
                     this.handleIncomingSubscription(presence);
                 } else if (presence_type === 'unavailable' && contact) {
                     contact.removeResource(resource);
-                    contact.save({'chat_status': contact.getHighestPriorityStatus()});
-                } else if (contact) { // presence_type is undefined
-                    var resources = contact.addResource(resource, priority, chat_status);
-                    if (priority >= _.flow(_.values, _.partial(_.map, _, 'priority'), _.max)(resources)) {
-                        // Only save if it's the resource with the highest
-                        // priority
-                        contact.save({'chat_status': chat_status});
-                    }
+                } else if (contact) {
+                    // presence_type is undefined
+                    contact.addResource(presence);
                 }
             }
         });

@@ -1253,7 +1253,7 @@
                     contact.save({'chat_status': contact.getHighestPriorityStatus()});
                 } else if (contact) { // presence_type is undefined
                     var resources = contact.addResource(resource, priority, chat_status);
-                    if (priority >= _(resources).values().map('priority').max()) {
+                    if (priority >= _.flow(_.values, _.partial(_.map, _, 'priority'), _.max)(resources)) {
                         // Only save if it's the resource with the highest
                         // priority
                         contact.save({'chat_status': chat_status});

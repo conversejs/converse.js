@@ -859,7 +859,7 @@
                 var resources = this.get('resources');
                 if (!_.isObject(resources)) { resources = {}; }
                 resources[resource] = {
-                    'priority': _.isNaN(parseInt(priority)) ? 0 : parseInt(priority),
+                    'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
                     'status': chat_status,
                     'timestamp': moment().format()
                 };

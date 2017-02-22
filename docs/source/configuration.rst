@@ -866,6 +866,26 @@ three tokens::
         "rid": "876987608760"
     }
 
+priority
+--------
+
+* Default:  ``0``
+* Type:     Number
+
+Determines the priority used for presence stanzas sent out from this resource
+(i.e. this instance of Converse.js).
+
+The priority of a given XMPP chat client determines the importance of its presence
+stanzas in relation to stanzas received from other clients of the same user.
+
+In Converse.js, the indicated chat status of a roster contact will be taken from the
+presence stanza (and associated resource) with the highest priority.
+
+If multiple resources have the same top priority, then the chat status will be
+taken from the most recent present stanza.
+
+For more info you can read `Section 2.2.2.3 of RFC-3921 <https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.3>`_.
+
 providers_link
 --------------
 

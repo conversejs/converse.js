@@ -51,9 +51,10 @@
   an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
-- #694 The `notification_option` wasn't being used consistently. [jcbrand]
-- #770 Allow setting contact attrs on chats.open [Ape]
 - #610, #785 Add presence priority handling [w3host, jcbrand]
+- #694 The `notification_option` wasn't being used consistently. [jcbrand]
+- #745 New config option [priority](https://conversejs.org/docs/html/configuration.html#priority) [jcbrand]
+- #770 Allow setting contact attrs on chats.open [Ape]
 
 
 ## 2.0.6 (2017-02-13)

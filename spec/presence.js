@@ -14,6 +14,38 @@
     var $pres = converse.env.$pres;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
+    describe("A sent presence stanza", function () {
+
+        it("has a given priority", mock.initConverse(function (_converse) {
+            var pres = _converse.xmppstatus.constructPresence('online', 'Hello world');
+            expect(pres.toLocaleString()).toBe(
+                "<presence xmlns='jabber:client'>"+
+                    "<status>Hello world</status>"+
+                    "<priority>0</priority>"+
+                "</presence>"
+            );
+            _converse.priority = 2;
+            pres = _converse.xmppstatus.constructPresence('away', 'Going jogging');
+            expect(pres.toLocaleString()).toBe(
+                "<presence xmlns='jabber:client'>"+
+                    "<show>away</show>"+
+                    "<status>Going jogging</status>"+
+                    "<priority>2</priority>"+
+                "</presence>"
+            );
+
+            delete _converse.priority;
+            pres = _converse.xmppstatus.constructPresence('dnd', 'Doing taxes');
+            expect(pres.toLocaleString()).toBe(
+                "<presence xmlns='jabber:client'>"+
+                    "<show>dnd</show>"+
+                    "<status>Doing taxes</status>"+
+                    "<priority>0</priority>"+
+                "</presence>"
+            );
+        }));
+    });
+
     describe("A received presence stanza", function () {
 
         it("has its priority taken into account", mock.initConverse(function (_converse) {

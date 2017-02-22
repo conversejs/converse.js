@@ -246,6 +246,7 @@
             message_storage: 'session',
             password: undefined,
             prebind_url: null,
+            priority: 0,
             rid: undefined,
             roster_groups: true,
             show_only_online_users: false,
@@ -1682,8 +1683,11 @@
                     presence = $pres().c('show').t(type).up();
                 }
                 if (status_message) {
-                    presence.c('status').t(status_message);
+                    presence.c('status').t(status_message).up();
                 }
+                presence.c('priority').t(
+                    _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
+                );
                 return presence;
             },
 

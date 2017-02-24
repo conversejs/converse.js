@@ -59,6 +59,7 @@
         $msg = converse.env.$msg,
         $pres = converse.env.$pres,
         b64_sha1 = converse.env.b64_sha1,
+        sizzle = converse.env.sizzle,
         utils = converse.env.utils;
     // Other necessary globals
     var $ = converse.env.jQuery,
@@ -1598,15 +1599,8 @@
                      * Parameters:
                      *  (XMLElement) pres: A <presence> stanza.
                      */
-                    // XXX: For some inexplicable reason, the following line of
-                    // code works in tests, but not with live data, even though
-                    // the passed in stanza looks exactly the same to me:
-                    // var item = pres.querySelector('x[xmlns="'+Strophe.NS.MUC_USER+'"] item');
-                    // If we want to eventually get rid of jQuery altogether,
-                    // then the Sizzle selector library might still be needed
-                    // here.
-                    var item = $(pres).find('x[xmlns="'+Strophe.NS.MUC_USER+'"] item').get(0);
-                    if (_.isUndefined(item)) { return; }
+                    var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
+                    if (_.isNil(item)) { return; }
                     var jid = item.getAttribute('jid');
                     if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
                         var affiliation = item.getAttribute('affiliation');
@@ -1695,15 +1689,7 @@
                      *      containing the status codes.
                      */
                     var is_self = stanza.querySelectorAll("status[code='110']").length;
-
-                    // Unfortunately this doesn't work (returns empty list)
-                    // var elements = stanza.querySelectorAll('x[xmlns="'+Strophe.NS.MUC_USER+'"]');
-                    var elements = _.filter(
-                        stanza.querySelectorAll('x'),
-                        function (x) {
-                            return x.getAttribute('xmlns') === Strophe.NS.MUC_USER;
-                        }
-                    );
+                    var elements = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"]', stanza);
                     var notifications = _.map(
                         elements,
                         _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
@@ -1713,8 +1699,7 @@
                 },
 
                 showErrorMessage: function (presence) {
-                    // We didn't enter the room, so we must remove it from the MUC
-                    // add-on
+                    // We didn't enter the room, so we must remove it from the MUC add-on
                     var $error = $(presence).find('error');
                     if ($error.attr('type') === 'auth') {
                         if ($error.find('not-authorized').length) {

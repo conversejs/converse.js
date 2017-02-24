@@ -2258,6 +2258,7 @@
             'b64_sha1':  b64_sha1,
             '_': _,
             'jQuery': $,
+            'sizzle': sizzle,
             'moment': moment,
             'utils': utils
         }

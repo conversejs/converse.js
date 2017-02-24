@@ -17,24 +17,6 @@
     var _ = converse.env._,
         utils = converse.env.utils;
 
-    var onHeadlineMessage = function (message) {
-        /* Handler method for all incoming messages of type "headline".
-         */
-        var from_jid = message.getAttribute('from');
-        var _converse = this.__super__._converse;
-        if (utils.isHeadlineMessage(message)) {
-            _converse.chatboxes.create({
-                'id': from_jid,
-                'jid': from_jid,
-                'fullname':  from_jid,
-                'type': 'headline'
-            }).createMessage(message, undefined, message);
-            _converse.emit('message', message);
-        }
-        return true;
-    };
-
-
     converse.plugins.add('converse-headline', {
 
         overrides: {
@@ -107,10 +89,12 @@
             });
 
             var onHeadlineMessage = function (message) {
-                /* Handler method for all incoming messages of type "headline".
-                */
+                /* Handler method for all incoming messages of type "headline". */
                 var from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(message)) {
+                    if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
+                        return;
+                    }
                     _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,

@@ -1700,29 +1700,29 @@
 
                 showErrorMessage: function (presence) {
                     // We didn't enter the room, so we must remove it from the MUC add-on
-                    var $error = $(presence).find('error');
-                    if ($error.attr('type') === 'auth') {
-                        if ($error.find('not-authorized').length) {
+                    var error = presence.querySelector('error');
+                    if (error.getAttribute('type') === 'auth') {
+                        if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
-                        } else if ($error.find('registration-required').length) {
+                        } else if (!_.isNull(error.querySelector('registration-required'))) {
                             this.showDisconnectMessage(__('You are not on the member list of this room'));
-                        } else if ($error.find('forbidden').length) {
+                        } else if (!_.isNull(error.querySelector('forbidden'))) {
                             this.showDisconnectMessage(__('You have been banned from this room'));
                         }
-                    } else if ($error.attr('type') === 'modify') {
-                        if ($error.find('jid-malformed').length) {
+                    } else if (error.getAttribute('type') === 'modify') {
+                        if (!_.isNull(error.querySelector('jid-malformed'))) {
                             this.showDisconnectMessage(__('No nickname was specified'));
                         }
-                    } else if ($error.attr('type') === 'cancel') {
-                        if ($error.find('not-allowed').length) {
+                    } else if (error.getAttribute('type') === 'cancel') {
+                        if (!_.isNull(error.querySelector('not-allowed'))) {
                             this.showDisconnectMessage(__('You are not allowed to create new rooms'));
-                        } else if ($error.find('not-acceptable').length) {
+                        } else if (!_.isNull(error.querySelector('not-acceptable'))) {
                             this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
-                        } else if ($error.find('conflict').length) {
+                        } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
-                        } else if ($error.find('item-not-found').length) {
+                        } else if (!_.isNull(error.querySelector('item-not-found'))) {
                             this.showDisconnectMessage(__("This room does not (yet) exist"));
-                        } else if ($error.find('service-unavailable').length) {
+                        } else if (!_.isNull(error.querySelector('service-unavailable'))) {
                             this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
                         }
                     }

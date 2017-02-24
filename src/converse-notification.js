@@ -10,8 +10,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    var $ = converse.env.jQuery,
-        utils = converse.env.utils,
+    var utils = converse.env.utils,
         Strophe = converse.env.Strophe,
         _ = converse.env._;
 
@@ -40,37 +39,38 @@
                 notification_icon: '/logo/conversejs128.png'
             });
 
-            _converse.isOnlyChatStateNotification = function ($msg) {
+            _converse.isOnlyChatStateNotification = function (msg) {
                 // See XEP-0085 Chat State Notification
                 return (
-                    $msg.find('body').length === 0 && (
-                        $msg.find(_converse.ACTIVE).length !== 0 ||
-                        $msg.find(_converse.COMPOSING).length !== 0 ||
-                        $msg.find(_converse.INACTIVE).length !== 0 ||
-                        $msg.find(_converse.PAUSED).length !== 0 ||
-                        $msg.find(_converse.GONE).length !== 0
+                    _.isNull(msg.querySelector('body')) && (
+                        _.isNull(msg.querySelector(_converse.ACTIVE)) ||
+                        _.isNull(msg.querySelector(_converse.COMPOSING)) ||
+                        _.isNull(msg.querySelector(_converse.INACTIVE)) ||
+                        _.isNull(msg.querySelector(_converse.PAUSED)) ||
+                        _.isNull(msg.querySelector(_converse.GONE))
                     )
                 );
             };
 
-            _converse.shouldNotifyOfGroupMessage = function ($message) {
+            _converse.shouldNotifyOfGroupMessage = function (message) {
                 /* Is this a group message worthy of notification?
                  */
                 var notify_all = _converse.notify_all_room_messages,
-                    jid = $message.attr('from'),
+                    jid = message.getAttribute('from'),
                     resource = Strophe.getResourceFromJid(jid),
                     room_jid = Strophe.getBareJidFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '';
-                if (sender === '' || $message.find('delay').length > 0) {
+                if (sender === '' || message.querySelectorAll('delay').length > 0) {
                     return false;
                 }
                 var room = _converse.chatboxes.get(room_jid);
-                var $body = $message.children('body');
-                if (!$body.length) {
+                var body = message.querySelector('body');
+                if (_.isNull(body)) {
                     return false;
                 }
-                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test($body.text());
-                notify_all = notify_all === true || (_.isArray(notify_all) && _.includes(notify_all, room_jid));
+                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test(body.textContent);
+                notify_all = notify_all === true ||
+                    (_.isArray(notify_all) && _.includes(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }
@@ -83,21 +83,21 @@
                 if (utils.isOTRMessage(message)) {
                     return false;
                 }
-                var $message = $(message),
-                    $forwarded = $message.find('forwarded');
-                if ($forwarded.length) {
+                var forwarded = message.querySelector('forwarded');
+                if (!_.isNull(forwarded)) {
                     return false;
-                } else if ($message.attr('type') === 'groupchat') {
-                    return _converse.shouldNotifyOfGroupMessage($message);
+                } else if (message.getAttribute('type') === 'groupchat') {
+                    return _converse.shouldNotifyOfGroupMessage(message);
                 } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
                     return true;
                 }
-                var is_me = Strophe.getBareJidFromJid($message.attr('from')) === _converse.bare_jid;
-                return !_converse.isOnlyChatStateNotification($message) && !is_me;
+                var is_me = Strophe.getBareJidFromJid(
+                        message.getAttribute('from')) === _converse.bare_jid;
+                return !_converse.isOnlyChatStateNotification(message) && !is_me;
             };
 
-            _converse.playSoundNotification = function ($message) {
+            _converse.playSoundNotification = function () {
                 /* Plays a sound to notify that a new message was recieved.
                  */
                 // XXX Eventually this can be refactored to use Notification's sound
@@ -126,31 +126,31 @@
                 }
             };
 
-            _converse.showMessageNotification = function ($message) {
+            _converse.showMessageNotification = function (message) {
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
                 var n, title, contact_jid, roster_item,
-                    from_jid = $message.attr('from');
-                if ($message.attr('type') === 'headline' || !_.includes(from_jid, '@')) {
+                    from_jid = message.getAttribute('from');
+                if (message.getAttribute('type') === 'headline' || !_.includes(from_jid, '@')) {
                     // XXX: 2nd check is workaround for Prosody which doesn't
                     // give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
                 } else {
-                    if ($message.attr('type') === 'groupchat') {
+                    if (message.getAttribute('type') === 'groupchat') {
                         title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
                     } else {
                         if (_.isUndefined(_converse.roster)) {
                             _converse.log("Could not send notification, because roster is undefined", "error");
                             return;
                         }
-                        contact_jid = Strophe.getBareJidFromJid($message.attr('from'));
+                        contact_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
                         roster_item = _converse.roster.get(contact_jid);
                         title = __(___("%1$s says"), roster_item.get('fullname'));
                     }
                 }
                 n = new Notification(title, {
-                        body: $message.children('body').text(),
+                        body: message.querySelector('body').textContent,
                         lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: _converse.notification_icon
                     });
@@ -212,7 +212,8 @@
                  * Will show an HTML5 notification to indicate that the chat
                  * status has changed.
                  */
-                if (_converse.areDesktopNotificationsEnabled() && _converse.show_chatstate_notifications) {
+                if (_converse.areDesktopNotificationsEnabled() &&
+                        _converse.show_chatstate_notifications) {
                     _converse.showChatStateNotification(contact);
                 }
             };
@@ -221,13 +222,12 @@
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
-                var $message = $(message);
                 if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }
-                _converse.playSoundNotification($message);
+                _converse.playSoundNotification();
                 if (_converse.areDesktopNotificationsEnabled()) {
-                    _converse.showMessageNotification($message);
+                    _converse.showMessageNotification(message);
                 }
             };
 

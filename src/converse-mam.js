@@ -86,12 +86,14 @@
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
                      *
-                     * Then, upon receiving them, call onMessage on the chat box,
-                     * so that they are displayed inside it.
+                     * Then, upon receiving them, call onMessage on the chat
+                     * box, so that they are displayed inside it.
                      */
                     var _converse = this.__super__._converse;
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        _converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
+                        _converse.log(
+                            "Attempted to fetch archived messages but this "+
+                            "user's server doesn't support XEP-0313");
                         return;
                     }
                     if (this.disable_mam) {
@@ -106,7 +108,9 @@
                         }.bind(this),
                         function () {
                             this.clearSpinner();
-                            _converse.log("Error or timeout while trying to fetch archived messages", "error");
+                            _converse.log(
+                                "Error or timeout while trying to fetch "+
+                                "archived messages", "error");
                         }.bind(this)
                     );
                 },
@@ -132,8 +136,40 @@
                     return result;
                 },
 
+                fetchArchivedMessages: function (options) {
+                    /* Fetch archived chat messages from the XMPP server.
+                     *
+                     * Then, upon receiving them, call onChatRoomMessage
+                     * so that they are displayed inside it.
+                     */
+                    var that = this;
+                    var _converse = this.__super__._converse;
+                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                        _converse.log(
+                            "Attempted to fetch archived messages but this "+
+                            "user's server doesn't support XEP-0313");
+                        return;
+                    }
+                    if (!this.model.get('mam_enabled')) {
+                        return;
+                    }
+                    this.addSpinner();
+                    _converse.api.archive.query(_.extend(options, {'groupchat': true}),
+                        function (messages) {
+                            that.clearSpinner();
+                            if (messages.length) {
+                                _.each(messages, that.onChatRoomMessage.bind(that));
+                            }
+                        },
+                        function () {
+                            that.clearSpinner();
+                            _converse.log(
+                                "Error while trying to fetch archived messages",
+                                "error");
+                        }
+                    );
+                }
             }
-
         },
 
 

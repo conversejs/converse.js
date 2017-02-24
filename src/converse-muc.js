@@ -1888,32 +1888,6 @@
                         _converse.emit('message', message);
                     }
                     return true;
-                },
-
-                fetchArchivedMessages: function (options) {
-                    /* Fetch archived chat messages from the XMPP server.
-                     *
-                     * Then, upon receiving them, call onChatRoomMessage
-                     * so that they are displayed inside it.
-                     */
-                    var that = this;
-                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                        _converse.log("Attempted to fetch archived messages but this user's server doesn't support XEP-0313");
-                        return;
-                    }
-                    this.addSpinner();
-                    _converse.api.archive.query(_.extend(options, {'groupchat': true}),
-                        function (messages) {
-                            that.clearSpinner();
-                            if (messages.length) {
-                                _.each(messages, that.onChatRoomMessage.bind(that));
-                            }
-                        },
-                        function () {
-                            that.clearSpinner();
-                            _converse.log("Error while trying to fetch archived messages", "error");
-                        }
-                    );
                 }
             });
 

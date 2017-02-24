@@ -1773,27 +1773,26 @@
                     }
                     var show_status_messages = true;
                     var is_self = pres.querySelector("status[code='110']");
-                    var new_room = pres.querySelector("status[code='201']");
-
+                    var locked_room = pres.querySelector("status[code='201']");
                     if (is_self) {
                         this.saveAffiliationAndRole(pres);
-                    }
-                    if (is_self && new_room) {
-                        // This is a new room. It will now be configured
-                        // and the configuration cached on the
-                        // Backbone.Model.
-                        if (_converse.muc_instant_rooms) {
-                            this.createInstantRoom(); // Accept default configuration
-                        } else {
-                            this.configureChatRoom();
-                            if (!this.model.get('auto_configure')) {
-                                // We don't show status messages if the
-                                // configuration form is being shown.
-                                show_status_messages = false;
+                        if (locked_room) {
+                            // This is a new room. It will now be configured
+                            // and the configuration cached on the Backbone.Model.
+                            if (_converse.muc_instant_rooms) {
+                                this.createInstantRoom(); // Accept default configuration
+                            } else {
+                                this.configureChatRoom();
+                                if (!this.model.get('auto_configure')) {
+                                    // We don't show status messages if the
+                                    // configuration form is being shown.
+                                    show_status_messages = false;
+                                }
                             }
                         }
-                    } else if (!this.model.get('features_fetched') &&
-                                    this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                    }
+                    if (!locked_room && !this.model.get('features_fetched') &&
+                            this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
                         // The features for this room weren't fetched yet, perhaps
                         // because it's a new room without locking (in which
                         // case Prosody doesn't send a 201 status).

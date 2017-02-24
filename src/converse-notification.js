@@ -130,26 +130,38 @@
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                var n, title, contact_jid, roster_item,
-                    from_jid = message.getAttribute('from');
-                if (message.getAttribute('type') === 'headline' || !_.includes(from_jid, '@')) {
-                    // XXX: 2nd check is workaround for Prosody which doesn't
-                    // give type "headline"
-                    title = __(___("Notification from %1$s"), from_jid);
-                } else {
-                    if (message.getAttribute('type') === 'groupchat') {
-                        title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                var title, roster_item,
+                    from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                if (message.getAttribute('type') === 'headline') {
+                    if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
+                        title = __(___("Notification from %1$s"), from_jid);
                     } else {
-                        if (_.isUndefined(_converse.roster)) {
-                            _converse.log("Could not send notification, because roster is undefined", "error");
+                        return;
+                    }
+                } else if (!_.includes(from_jid, '@')) {
+                    // XXX: workaround for Prosody which doesn't give type "headline"
+                    title = __(___("Notification from %1$s"), from_jid);
+                } else if (message.getAttribute('type') === 'groupchat') {
+                    title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                } else {
+                    if (_.isUndefined(_converse.roster)) {
+                        _converse.log(
+                            "Could not send notification, because roster is undefined",
+                            "error");
+                        return;
+                    }
+                    roster_item = _converse.roster.get(from_jid);
+                    if (!_.isUndefined(roster_item)) {
+                        title = __(___("%1$s says"), roster_item.get('fullname'));
+                    } else {
+                        if (_converse.allow_non_roster_messaging) {
+                            title = __(___("%1$s says"), from_jid);
+                        } else {
                             return;
                         }
-                        contact_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                        roster_item = _converse.roster.get(contact_jid);
-                        title = __(___("%1$s says"), roster_item.get('fullname'));
                     }
                 }
-                n = new Notification(title, {
+                var n = new Notification(title, {
                         body: message.querySelector('body').textContent,
                         lang: _converse.i18n.locale_data.converse[""].lang,
                         icon: _converse.notification_icon

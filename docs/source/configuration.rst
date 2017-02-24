@@ -791,6 +791,14 @@ automatically be "john". If now john@differentdomain.com tries to join the
 room, his nickname will be "john-2", and if john@somethingelse.com joins, then
 his nickname will be "john-3", and so forth.
 
+muc_show_join_leave
+-------------------
+
+* Default; ``true``
+
+Determines whether Converse.js will show info messages inside a chat room
+whenever a user joins or leaves it.
+
 notify_all_room_messages
 ------------------------
 

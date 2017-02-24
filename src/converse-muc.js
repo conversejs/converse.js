@@ -73,6 +73,13 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
+    var ROOMSTATUS = {
+        CONNECTED: 0,
+        CONNECTING: 1,
+        DISCONNECTED: 2,
+        ENTERED: 3
+    };
+
     converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
          * overridden or relied upon, if they exist, otherwise they're ignored.
@@ -274,6 +281,7 @@
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
                 muc_nickname_from_jid: false,
+                muc_show_join_leave: true,
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
                 },
@@ -287,7 +295,7 @@
                 return _converse.chatboxviews.showChat(
                     _.extend({
                         'affiliation': null,
-                        'connection_status': Strophe.Status.DISCONNECTED,
+                        'connection_status': ROOMSTATUS.DISCONNECTED,
                         'description': '',
                         'features_fetched': false,
                         'hidden': false,
@@ -349,9 +357,9 @@
                     // Which for some reason doesn't work.
                     // So working around that fact here:
                     this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
-                    
+
                     this.registerHandlers();
-                    if (this.model.get('connection_status') !==  Strophe.Status.CONNECTED) {
+                    if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
                         this.getRoomFeatures().always(function () {
                             that.join();
                             that.fetchMessages();
@@ -443,7 +451,7 @@
                 },
 
                 afterConnected: function () {
-                    if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
+                    if (this.model.get('connection_status') ===  ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
                         this.scrollDown();
                         this.focus();
@@ -665,7 +673,7 @@
                         members,
                         _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
                     );
-                    return $.when.apply($, promises); 
+                    return $.when.apply($, promises);
                 },
 
                 setAffiliations: function (members, onSuccess, onError) {
@@ -807,7 +815,7 @@
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    if (this.model.get('connection_status') !==  Strophe.Status.CONNECTED) {
+                    if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
                         return;
                     }
                     var chat_state = this.model.get('chat_state');
@@ -1102,7 +1110,7 @@
                     if (!nick) {
                         return this.checkForReservedNick();
                     }
-                    if (this.model.get('connection_status') ===  Strophe.Status.CONNECTED) {
+                    if (this.model.get('connection_status') === ROOMSTATUS.ENTERED) {
                         // We have restored a chat room from session storage,
                         // so we don't send out a presence stanza again.
                         return this;
@@ -1115,13 +1123,13 @@
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
-                    this.model.save('connection_status', Strophe.Status.CONNECTING);
+                    this.model.save('connection_status', ROOMSTATUS.CONNECTING);
                     _converse.connection.send(stanza);
                     return this;
                 },
 
                 cleanup: function () {
-                    this.model.save('connection_status', Strophe.Status.DISCONNECTED);
+                    this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
@@ -1137,7 +1145,7 @@
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
                     if (!_converse.connection.connected ||
-                            this.model.get('connection_status') === Strophe.Status.DISCONNECTED) {
+                            this.model.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
                         // Don't send out a stanza if we're not connected.
                         this.cleanup();
                         return;
@@ -1568,26 +1576,23 @@
                      *                     current user.
                      *  (XMLElement) stanza: The original stanza received.
                      */
-                    var code = stat.getAttribute('code'),
-                        from_nick;
-                    if (is_self && code === "210") {
-                        from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
-                        return __(_converse.muc.new_nickname_messages[code], from_nick);
-                    } else if (is_self && code === "303") {
-                        return __(
-                            _converse.muc.new_nickname_messages[code],
-                            stanza.querySelector('x item').getAttribute('nick')
-                        );
-                    } else if (!is_self && (code in _converse.muc.action_info_messages)) {
-                        from_nick = Strophe.unescapeNode(Strophe.getResourceFromJid(stanza.getAttribute('from')));
-                        return __(_converse.muc.action_info_messages[code], from_nick);
-                    } else if (code in _converse.muc.info_messages) {
+                    var code = stat.getAttribute('code'), nick;
+                    if (code === '110') { return; }
+                    if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
-                    } else if (code !== '110') {
-                        if (stat.textContent) {
-                            // Sometimes the status contains human readable text and not a code.
-                            return stat.textContent;
+                    }
+                    if (!is_self) {
+                        if (code in _converse.muc.action_info_messages) {
+                            nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                            return __(_converse.muc.action_info_messages[code], nick);
                         }
+                    } else if (code in _converse.muc.new_nickname_messages) {
+                        if (is_self && code === "210") {
+                            nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                        } else if (is_self && code === "303") {
+                            nick = stanza.querySelector('x item').getAttribute('nick');
+                        }
+                        return __(_converse.muc.new_nickname_messages[code], nick);
                     }
                     return;
                 },
@@ -1622,9 +1627,11 @@
                     // 1. Get notification messages based on the <status> elements.
                     var statuses = x.querySelectorAll('status');
                     var mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
-                    var notification = {
-                        'messages': _.reject(_.map(statuses, mapper), _.isUndefined),
-                    };
+                    var notification = {};
+                    var messages = _.reject(_.map(statuses, mapper), _.isUndefined);
+                    if (messages.length) {
+                        notification.messages = messages;
+                    }
                     // 2. Get disconnection messages based on the <status> elements
                     var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
                     var disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
@@ -1666,7 +1673,7 @@
                         if (notification.reason) {
                             this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
                         }
-                        this.model.save('connection_status', Strophe.Status.DISCONNECTED);
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         return;
                     }
                     _.each(notification.messages, function (message) {
@@ -1680,6 +1687,25 @@
                     }
                 },
 
+                getJoinLeaveMessages: function (stanza) {
+                    /* Parse the given stanza and return notification messages
+                     * for join/leave events.
+                     */
+                    // XXX: some mangling required to make the returned
+                    // result look like the structure returned by
+                    // parseXUserElement. Not nice...
+                    var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    if (stanza.getAttribute('type') === 'unavailable') {
+                        var stat = stanza.querySelector('status');
+                        if (!_.isNull(stat) && stat.textContent) {
+                            return [{'messages': [__(nick+' has left the room. "'+stat.textContent+'"')]}];
+                        } else {
+                            return [{'messages': [__(nick+' has left the room')]}];
+                        }
+                    }
+                    return [{'messages': [__(nick+' has joined the room')]}];
+                },
+
                 showStatusMessages: function (stanza) {
                     /* Check for status codes and communicate their purpose to the user.
                      * See: http://xmpp.org/registrar/mucstatus.html
@@ -1688,12 +1714,17 @@
                      *  (XMLElement) stanza: The message or presence stanza
                      *      containing the status codes.
                      */
-                    var is_self = stanza.querySelectorAll("status[code='110']").length;
                     var elements = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"]', stanza);
-                    var notifications = _.map(
-                        elements,
-                        _.partial(this.parseXUserElement.bind(this), _, stanza, is_self)
-                    );
+                    var is_self = stanza.querySelectorAll("status[code='110']").length;
+                    var iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
+                    var notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
+                    if (_.isEmpty(notifications) &&
+                            _converse.muc_show_join_leave &&
+                            stanza.nodeName === 'presence' &&
+                            this.model.get('connection_status') === ROOMSTATUS.ENTERED
+                        ) {
+                        notifications = this.getJoinLeaveMessages(stanza);
+                    }
                     _.each(notifications, this.displayNotificationsforUser.bind(this));
                     return stanza;
                 },
@@ -1767,11 +1798,10 @@
                      *  (XMLElement) pres: The stanza
                      */
                     if (pres.getAttribute('type') === 'error') {
-                        this.model.save('connection_status', Strophe.Status.DISCONNECTED);
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         this.showErrorMessage(pres);
                         return true;
                     }
-                    var show_status_messages = true;
                     var is_self = pres.querySelector("status[code='110']");
                     var locked_room = pres.querySelector("status[code='201']");
                     if (is_self) {
@@ -1784,15 +1814,14 @@
                             } else {
                                 this.configureChatRoom();
                                 if (!this.model.get('auto_configure')) {
-                                    // We don't show status messages if the
-                                    // configuration form is being shown.
-                                    show_status_messages = false;
+                                    return;
                                 }
                             }
                         }
+                        this.model.save('connection_status', ROOMSTATUS.ENTERED);
                     }
                     if (!locked_room && !this.model.get('features_fetched') &&
-                            this.model.get('connection_status') !== Strophe.Status.CONNECTED) {
+                            this.model.get('connection_status') !== ROOMSTATUS.CONNECTED) {
                         // The features for this room weren't fetched yet, perhaps
                         // because it's a new room without locking (in which
                         // case Prosody doesn't send a 201 status).
@@ -1800,12 +1829,11 @@
                         // so a good time to fetch the features.
                         this.getRoomFeatures();
                     }
-                    if (show_status_messages) {
-                        this.hideSpinner().showStatusMessages(pres);
-                    }
+                    this.hideSpinner().showStatusMessages(pres);
                     this.occupantsview.updateOccupantsOnPresence(pres);
-                    if (this.model.get('role') !== 'none') {
-                        this.model.save('connection_status', Strophe.Status.CONNECTED);
+                    if (this.model.get('role') !== 'none' &&
+                            this.model.get('connection_status') === ROOMSTATUS.CONNECTING) {
+                        this.model.save('connection_status', ROOMSTATUS.CONNECTED);
                     }
                     return true;
                 },
@@ -2425,10 +2453,7 @@
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (!_.includes(
-                                [Strophe.Status.CONNECTING, Strophe.Status.CONNECTED],
-                                chatroom.get('connection_status'))
-                            ) {
+                    if (chatroom.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
                         _converse.chatboxviews.get(room_jid).join();
                     }
                 }
@@ -2549,7 +2574,7 @@
                  */
                 _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === 'chatroom') {
-                        view.model.save('connection_status', Strophe.Status.DISCONNECTED);
+                        view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         view.join();
                     }
                 });
@@ -2563,7 +2588,7 @@
                  */
                 _converse.chatboxes.each(function (model) {
                     if (model.get('type') === 'chatroom') {
-                        model.save('connection_status', Strophe.Status.DISCONNECTED);
+                        model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     }
                 });
             };

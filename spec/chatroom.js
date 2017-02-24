@@ -345,6 +345,76 @@
 
         describe("A Chat Room", function () {
 
+            it("shows join/leave messages when users enter or exit a room", mock.initConverse(function (_converse) {
+                test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                var $chat_content = view.$el.find('.chat-content');
+
+                /* We don't show join/leave messages for existing occupants. We
+                 * know about them because we receive their presences before we
+                 * receive our own.
+                 */
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/oldguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'oldguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info').length).toBe(0);
+
+                /* <presence to="dummy@localhost/_converse.js-29092160"
+                 *           from="coven@chat.shakespeare.lit/some1">
+                 *      <x xmlns="http://jabber.org/protocol/muc#user">
+                 *          <item affiliation="owner" jid="dummy@localhost/_converse.js-29092160" role="moderator"/>
+                 *          <status code="110"/>
+                 *      </x>
+                 *  </presence></body>
+                 */
+                var presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/some1'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'owner',
+                        'jid': 'dummy@localhost/_converse.js-29092160',
+                        'role': 'moderator'
+                    }).up()
+                    .c('status', {code: '110'});
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has joined the room");
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has joined the room");
+
+                presence = $pres({
+                        to: 'dummy@localhost/_converse.js-29092160',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect($chat_content.find('div.chat-info').length).toBe(3);
+                expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has left the room");
+            }));
+
             it("shows its description in the chat heading",  mock.initConverse(function (_converse) {
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
@@ -1036,8 +1106,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 var view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.find('.chat-info').length).toBe(1);
-                expect($chat_content.find('.chat-info').text()).toBe('Topic set by ralphm to: '+text);
+                expect($chat_content.find('.chat-info:last').text()).toBe('Topic set by ralphm to: '+text);
             }));
 
             it("escapes the subject before rendering it, to avoid JS-injection attacks", mock.initConverse(function (_converse) {
@@ -1047,8 +1116,7 @@
                 var view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 view.setChatRoomSubject('ralphm', subject);
                 var $chat_content = view.$el.find('.chat-content');
-                expect($chat_content.find('.chat-info').length).toBe(1);
-                expect($chat_content.find('.chat-info').text()).toBe('Topic set by ralphm to: '+subject);
+                expect($chat_content.find('.chat-info:last').text()).toBe('Topic set by ralphm to: '+subject);
             }));
 
             it("informs users if their nicknames has been changed.", mock.initConverse(function (_converse) {
@@ -1114,8 +1182,9 @@
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("oldnick");
 
-                expect($chat_content.find('div.chat-info').length).toBe(1);
-                expect($chat_content.find('div.chat-info').html()).toBe(__(_converse.muc.new_nickname_messages["210"], "oldnick"));
+                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has joined the room");
+                expect($chat_content.find('div.chat-info:last').html()).toBe(__(_converse.muc.new_nickname_messages["210"], "oldnick"));
 
                 presence = $pres().attrs({
                         from:'lounge@localhost/oldnick',
@@ -1134,7 +1203,7 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(2);
+                expect($chat_content.find('div.chat-info').length).toBe(3);
                 expect($chat_content.find('div.chat-info').last().html()).toBe(__(_converse.muc.new_nickname_messages["303"], "newnick"));
 
                 $occupants = view.$('.occupant-list');
@@ -1154,8 +1223,9 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect($chat_content.find('div.chat-info').length).toBe(2);
-                expect($chat_content.find('div.chat-info').last().html()).toBe(__(_converse.muc.new_nickname_messages["303"], "newnick"));
+                expect($chat_content.find('div.chat-info').length).toBe(4);
+                expect($chat_content.find('div.chat-info').get(2).textContent).toBe(__(_converse.muc.new_nickname_messages["303"], "newnick"));
+                expect($chat_content.find('div.chat-info').last().html()).toBe("newnick has joined the room");
                 $occupants = view.$('.occupant-list');
                 expect($occupants.children().length).toBe(1);
                 expect($occupants.children().first(0).text()).toBe("newnick");
@@ -1400,7 +1470,7 @@
 
         describe("Each chat room can take special commands", function () {
 
-            it("to set the room subject", mock.initConverse(function (_converse) {
+            it("to set the room topic", mock.initConverse(function (_converse) {
                 var sent_stanza;
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');

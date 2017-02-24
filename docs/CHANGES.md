@@ -50,6 +50,9 @@
 - Bugfix. `TypeError: this.sendConfiguration(...).then is not a function` when
   an instant room is created. [jcbrand]
 - Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
+- #365 Show join/leave messages for chat rooms.
+  New configuration setting:
+  [muc_show_join_leave](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave)
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - #610, #785 Add presence priority handling [w3host, jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]

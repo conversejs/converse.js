@@ -109,13 +109,7 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoDOM();
-                    // XXX: adding the event below to the events map above doesn't work.
-                    // The code that gets executed because of that looks like this:
-                    //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
-                    // Which for some reason doesn't work.
-                    // So working around that fact here:
-                    this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
+                    this.render().fetchMessages();
                     _converse.emit('chatBoxInitialized', this);
                 },
 
@@ -141,14 +135,18 @@
                 },
 
                 afterMessagesFetched: function () {
-                    // Provides a hook for plugins, such as converse-mam.
-                    return;
+                    this.scrollDown();
+                    this.insertIntoDOM();
+                    // We only start listening for the scroll event after
+                    // cached messages have been fetched
+                    this.$content.on('scroll', this.markScrolled.bind(this));
                 },
 
                 fetchMessages: function () {
                     this.model.messages.fetch({
                         'add': true,
-                        'success': this.afterMessagesFetched.bind(this)
+                        'success': this.afterMessagesFetched.bind(this),
+                        'error': this.afterMessagesFetched.bind(this),
                     });
                     return this;
                 },
@@ -233,7 +231,8 @@
                      * message, or older than the oldest message.
                      *
                      * Parameters:
-                     *  (Object) attrs: An object containing the message attributes.
+                     *  (Object) attrs: An object containing the message
+                     *      attributes.
                      */
                     var msg_dates, idx,
                         $first_msg = this.$content.find('.chat-message:first'),
@@ -248,7 +247,8 @@
                         this.insertMessage(attrs);
                         return;
                     }
-                    if (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date)) {
+                    if (current_msg_date.isAfter(last_msg_date) ||
+                            current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
@@ -257,13 +257,16 @@
                         this.insertMessage(attrs);
                         return;
                     }
-                    if (current_msg_date.isBefore(first_msg_date) || current_msg_date.isSame(first_msg_date)) {
+                    if (current_msg_date.isBefore(first_msg_date) ||
+                            current_msg_date.isSame(first_msg_date)) {
                         // The message is before the first, but on the same day.
                         // We need to prepend the message immediately before the
-                        // first message (so that it'll still be after the day indicator).
+                        // first message (so that it'll still be after the day
+                        // indicator).
                         this.insertMessage(attrs, 'prepend');
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
-                            // This message is also on a different day, so we prepend a day indicator.
+                            // This message is also on a different day, so
+                            // we prepend a day indicator.
                             this.insertDayIndicator(current_msg_date, 'prepend');
                         }
                         return;
@@ -278,7 +281,8 @@
                     idx = msg_dates.indexOf(current_msg_date)-1;
                     _.flow(
                         function ($el) {
-                            $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                            $el.insertAfter(
+                                this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
                             return $el;
                         }.bind(this),
                         this.scrollDownMessageHeight.bind(this)
@@ -777,26 +781,28 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight-10;
+                    var is_at_bottom =
+                        (this.$content.scrollTop() + this.$content.innerHeight()) >=
+                            this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.set('scrolled', false);
+                        this.model.save('scrolled', false);
                         this.$el.find('.new-msgs-indicator').addClass('hidden');
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
-                        this.model.set('scrolled', true);
+                        this.model.save('scrolled', true);
                     }
                 }, 150),
 
-
                 viewUnreadMessages: function () {
-                    this.model.set('scrolled', false);
+                    this.model.save('scrolled', false);
                     this.scrollDown();
                 },
 
                 scrollDownMessageHeight: function ($message) {
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
-                        this.$content.scrollTop(this.$content.scrollTop() + $message[0].scrollHeight);
+                        this.$content.scrollTop(
+                            this.$content.scrollTop() + $message[0].scrollHeight);
                     }
                     return this;
                 },

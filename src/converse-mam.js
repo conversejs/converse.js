@@ -67,7 +67,8 @@
 
                 afterMessagesFetched: function () {
                     var _converse = this.__super__._converse;
-                    if (this.disable_mam || !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    if (this.disable_mam ||
+                            !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
                     if (!this.model.get('mam_initialized') &&

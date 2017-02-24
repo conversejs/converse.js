@@ -451,7 +451,7 @@
                 },
 
                 afterConnected: function () {
-                    if (this.model.get('connection_status') ===  ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') === ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
                         this.scrollDown();
                         this.focus();

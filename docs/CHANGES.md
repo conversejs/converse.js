@@ -16,6 +16,8 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
+- 100 is the new default [archived_messages_page_size](https://conversejs.org/docs/html/configuration.html#archived-messages-page-size)
+  [jcbrand]
 - Better support for delayed delivery of presence stanzas (XEP-0203). [jcbrand]
 - The chat room `description` is now shown in the heading, not the `subject`.
   [jcbrand]

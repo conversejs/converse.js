@@ -67,7 +67,7 @@
     "requirejs": "2.3.3",
     "sinon": "^1.17.3",
     "snyk": "^1.21.2",
-    "strophe.js": "1.2.12",
+    "strophe.js": "1.2.13",
     "strophejs-plugin-disco": "0.0.1",
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",

@@ -117,7 +117,7 @@
                         list-style: none;
 
                         &.occupant-list {
-                            overflow-y: scroll;
+                            overflow-y: auto;
                             @include calc(height, '100% - 205px');
                         }
                         &.features-list {

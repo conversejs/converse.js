@@ -2341,7 +2341,7 @@
           list-style: none; }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list {
-            overflow-y: scroll;
+            overflow-y: auto;
             height: -webkit-calc(100% - 205px);
             height: calc(100% - 205px); }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list,

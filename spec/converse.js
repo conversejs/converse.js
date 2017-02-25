@@ -96,10 +96,8 @@
                 _converse.auto_xa = 6;
 
                 expect(_converse.xmppstatus.getStatus()).toBe('online');
-
                 while (i <= _converse.auto_away) {
-                    _converse.onEverySecond();
-                    i++;
+                    _converse.onEverySecond(); i++;
                 }
                 expect(_converse.auto_changed_status).toBe(true);
 
@@ -115,10 +113,46 @@
                 expect(_converse.xmppstatus.getStatus()).toBe('online');
                 expect(_converse.auto_changed_status).toBe(false);
 
-                // Reset values
-                _converse.auto_away = 0;
-                _converse.auto_xa = 0;
-                _converse.auto_changed_status = false;
+                // Check that it also works for the chat feature
+                _converse.xmppstatus.setStatus('chat');
+                i = 0;
+                while (i <= _converse.auto_away) {
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.auto_changed_status).toBe(true);
+                while (i <= _converse.auto_xa) {
+                    expect(_converse.xmppstatus.getStatus()).toBe('away');
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('xa');
+                expect(_converse.auto_changed_status).toBe(true);
+
+                _converse.onUserActivity();
+                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.auto_changed_status).toBe(false);
+
+                // Check that it doesn't work for 'dnd'
+                _converse.xmppstatus.setStatus('dnd');
+                i = 0;
+                while (i <= _converse.auto_away) {
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
+                while (i <= _converse.auto_xa) {
+                    expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
+
+                _converse.onUserActivity();
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
             }));
         });
 

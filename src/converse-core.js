@@ -350,11 +350,12 @@
             }
             if (_converse.auto_away > 0 &&
                     _converse.idle_seconds > _converse.auto_away &&
-                    stat !== 'away' && stat !== 'xa') {
+                    stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('away');
             } else if (_converse.auto_xa > 0 &&
-                    _converse.idle_seconds > _converse.auto_xa && stat !== 'xa') {
+                    _converse.idle_seconds > _converse.auto_xa &&
+                    stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('xa');
             }

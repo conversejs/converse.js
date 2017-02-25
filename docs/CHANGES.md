@@ -57,6 +57,7 @@
   [muc_show_join_leave](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave)
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
 - #610, #785 Add presence priority handling [w3host, jcbrand]
+- #620 `auto_away` shouldn't change the user's status if it's set to `dnd`. [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #745 New config option [priority](https://conversejs.org/docs/html/configuration.html#priority) [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]

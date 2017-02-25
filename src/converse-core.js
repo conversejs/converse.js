@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document */
+/*global Backbone, define, window, document, JSON */
 (function (root, factory) {
     define(["sizzle",
             "jquery-private",
@@ -1720,11 +1720,10 @@
                 var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
-                    $.ajax({
-                        url:  this.xhr_custom_status_url,
-                        type: 'POST',
-                        data: {'msg': status_message}
-                    });
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', this.xhr_custom_status_url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    xhr.send({'msg': status_message});
                 }
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
@@ -1826,44 +1825,48 @@
 
         this.fetchLoginCredentials = function () {
             var deferred = new $.Deferred();
-            $.ajax({
-                url:  _converse.credentials_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.credentials_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
                     deferred.resolve({
-                        'jid': response.jid,
-                        'password': response.password
+                        'jid': data.jid,
+                        'password': data.password
                     });
-                },
-                error: function (response) {
-                    delete _converse.connection;
-                    _converse.emit('noResumeableSession');
-                    deferred.reject(response);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+                deferred.reject(xhr.responseText);
+            };
+            xhr.send();
             return deferred.promise();
         };
 
         this.startNewBOSHSession = function () {
-            var that = this;
-            $.ajax({
-                url:  this.prebind_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
-                    that.connection.attach(
-                            response.jid,
-                            response.sid,
-                            response.rid,
-                            that.onConnectStatusChanged
-                    );
-                },
-                error: function (response) {
-                    delete that.connection;
-                    that.emit('noResumeableSession');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.prebind_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
+                    _converse.connection.attach(
+                            data.jid, data.sid, data.rid,
+                            _converse.onConnectStatusChanged);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+            };
+            xhr.send();
         };
 
         this.attemptPreboundSession = function (reconnecting) {

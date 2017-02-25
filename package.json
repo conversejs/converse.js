@@ -48,7 +48,7 @@
     "grunt-cli": "^1.1.0",
     "grunt-json": "^0.2.0",
     "http-server": "^0.9.0",
-    "install": "^0.8.4",
+    "install": "^0.8.5",
     "jasmine": "https://github.com/jcbrand/jasmine.git#439a7f805eeaec0cabe18a8ecf7e47da1a0afa33",
     "jed": "0.5.4",
     "jquery": "2.2.3",

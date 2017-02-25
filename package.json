@@ -62,7 +62,7 @@
     "otr": "0.2.16",
     "phantom-jasmine": "0.1.8",
     "phantomjs": "~1.9.7-1",
-    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#e5fc6a78dd568a120674ff7325da038d5ba9b334",
+    "pluggable.js": "1.0.0",
     "po2json": "^0.4.4",
     "requirejs": "2.3.3",
     "sinon": "^1.17.3",

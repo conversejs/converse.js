@@ -1,4 +1,4 @@
-/*global jQuery, _, moment, Strophe, $build, $iq, $msg, $pres, SHA1, Base64, MD5, DSA, OTR */
+/*global jQuery, _, moment, Strophe, $build, $iq, $msg, $pres, SHA1, MD5, DSA, OTR */
 define('jquery', [], function () { return jQuery; });
 define('jquery.browser', [], function () { return jQuery; });
 define('typeahead', [], function () { return jQuery; });
@@ -13,7 +13,6 @@ define('strophe', [], function () {
         '$msg':            $msg,
         '$pres':           $pres,
         'SHA1':            SHA1,
-        'Base64':          Base64,
         'MD5':             MD5,
         'b64_hmac_sha1':   SHA1.b64_hmac_sha1,
         'b64_sha1':        SHA1.b64_sha1,

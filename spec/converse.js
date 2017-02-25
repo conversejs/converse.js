@@ -1,6 +1,6 @@
 (function (root, factory) {
     define([
-        "converse-api",
+        "converse-core",
         "mock",
         "test_utils"], factory);
 } (this, function (converse, mock, test_utils) {
@@ -39,6 +39,7 @@
                 it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (_converse) {
                     var jid = _converse.jid;
                     delete _converse.jid;
+                    _converse.keepalive = false;
                     _converse.authentication = "prebind";
                     expect(_converse.logIn.bind(_converse)).toThrow(
                         new Error("attemptPreboundSession: If you use prebind and not keepalive, then you MUST supply JID, RID and SID values or a prebind_url."));
@@ -95,10 +96,8 @@
                 _converse.auto_xa = 6;
 
                 expect(_converse.xmppstatus.getStatus()).toBe('online');
-
                 while (i <= _converse.auto_away) {
-                    _converse.onEverySecond();
-                    i++;
+                    _converse.onEverySecond(); i++;
                 }
                 expect(_converse.auto_changed_status).toBe(true);
 
@@ -114,10 +113,46 @@
                 expect(_converse.xmppstatus.getStatus()).toBe('online');
                 expect(_converse.auto_changed_status).toBe(false);
 
-                // Reset values
-                _converse.auto_away = 0;
-                _converse.auto_xa = 0;
-                _converse.auto_changed_status = false;
+                // Check that it also works for the chat feature
+                _converse.xmppstatus.setStatus('chat');
+                i = 0;
+                while (i <= _converse.auto_away) {
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.auto_changed_status).toBe(true);
+                while (i <= _converse.auto_xa) {
+                    expect(_converse.xmppstatus.getStatus()).toBe('away');
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('xa');
+                expect(_converse.auto_changed_status).toBe(true);
+
+                _converse.onUserActivity();
+                expect(_converse.xmppstatus.getStatus()).toBe('online');
+                expect(_converse.auto_changed_status).toBe(false);
+
+                // Check that it doesn't work for 'dnd'
+                _converse.xmppstatus.setStatus('dnd');
+                i = 0;
+                while (i <= _converse.auto_away) {
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
+                while (i <= _converse.auto_xa) {
+                    expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                    _converse.onEverySecond();
+                    i++;
+                }
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
+
+                _converse.onUserActivity();
+                expect(_converse.xmppstatus.getStatus()).toBe('dnd');
+                expect(_converse.auto_changed_status).toBe(false);
             }));
         });
 
@@ -247,7 +282,7 @@
                 test_utils.openChatBoxFor(_converse, jid);
                 box = _converse.api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
-                expect(box.get('box_id')).toBe(b64_sha1(jid));
+                expect(box.model.get('box_id')).toBe(b64_sha1(jid));
                 chatboxview = _converse.chatboxviews.get(jid);
                 expect(chatboxview.$el.is(':visible')).toBeTruthy();
                 // Test for multiple JIDs
@@ -255,8 +290,8 @@
                 test_utils.openChatBoxFor(_converse, jid2);
                 var list = _converse.api.chats.get([jid, jid2]);
                 expect(_.isArray(list)).toBeTruthy();
-                expect(list[0].get('box_id')).toBe(b64_sha1(jid));
-                expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
+                expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
+                expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
             }));
 
             it("has a method 'open' which opens and returns a wrapped chat box", mock.initConverse(function (_converse) {
@@ -269,7 +304,7 @@
                     expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
                     var box = _converse.api.chats.open(jid);
                     expect(box instanceof Object).toBeTruthy();
-                    expect(box.get('box_id')).toBe(b64_sha1(jid));
+                    expect(box.model.get('box_id')).toBe(b64_sha1(jid));
                     expect(
                         _.keys(box),
                         ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
@@ -280,8 +315,8 @@
                     var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var list = _converse.api.chats.open([jid, jid2]);
                     expect(_.isArray(list)).toBeTruthy();
-                    expect(list[0].get('box_id')).toBe(b64_sha1(jid));
-                    expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
+                    expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
+                    expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
                 });
             }));
         });

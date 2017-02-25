@@ -7,8 +7,8 @@
 /*global Backbone, define */
 
 (function (root, factory) {
-    define("converse-chatview", [
-            "converse-api",
+    define([
+            "converse-core",
             "tpl!chatbox",
             "tpl!new_day",
             "tpl!action",
@@ -71,14 +71,6 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new HTML templates.
-            _converse.templates.chatbox = tpl_chatbox;
-            _converse.templates.new_day = tpl_new_day;
-            _converse.templates.action = tpl_action;
-            _converse.templates.message = tpl_message;
-            _converse.templates.toolbar = tpl_toolbar;
-            _converse.templates.avatar = tpl_avatar;
-
             this.updateSettings({
                 show_toolbar: true,
                 chatview_avatar_width: 32,
@@ -117,19 +109,13 @@
                     this.model.on('change:status', this.onStatusChanged, this);
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
-                    this.render().fetchMessages().insertIntoDOM();
-                    // XXX: adding the event below to the events map above doesn't work.
-                    // The code that gets executed because of that looks like this:
-                    //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
-                    // Which for some reason doesn't work.
-                    // So working around that fact here:
-                    this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
+                    this.render().fetchMessages();
                     _converse.emit('chatBoxInitialized', this);
                 },
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(_converse.templates.chatbox(
+                        .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
@@ -149,14 +135,18 @@
                 },
 
                 afterMessagesFetched: function () {
-                    // Provides a hook for plugins, such as converse-mam.
-                    return;
+                    this.insertIntoDOM();
+                    this.scrollDown();
+                    // We only start listening for the scroll event after
+                    // cached messages have been fetched
+                    this.$content.on('scroll', this.markScrolled.bind(this));
                 },
 
                 fetchMessages: function () {
                     this.model.messages.fetch({
                         'add': true,
-                        'success': this.afterMessagesFetched.bind(this)
+                        'success': this.afterMessagesFetched.bind(this),
+                        'error': this.afterMessagesFetched.bind(this),
                     });
                     return this;
                 },
@@ -165,7 +155,10 @@
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */
-                    $('#conversejs').prepend(this.$el);
+                    var container = document.querySelector('#conversejs');
+                    if (this.el.parentNode !== container) {
+                        container.insertBefore(this.el, container.firstChild);
+                    }
                     return this;
                 },
 
@@ -207,7 +200,7 @@
                      */
                     var day_date = moment(date).startOf('day');
                     var insert = prepend ? this.$content.prepend: this.$content.append;
-                    insert.call(this.$content, _converse.templates.new_day({
+                    insert.call(this.$content, tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
@@ -241,7 +234,8 @@
                      * message, or older than the oldest message.
                      *
                      * Parameters:
-                     *  (Object) attrs: An object containing the message attributes.
+                     *  (Object) attrs: An object containing the message
+                     *      attributes.
                      */
                     var msg_dates, idx,
                         $first_msg = this.$content.find('.chat-message:first'),
@@ -256,7 +250,8 @@
                         this.insertMessage(attrs);
                         return;
                     }
-                    if (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date)) {
+                    if (current_msg_date.isAfter(last_msg_date) ||
+                            current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
@@ -265,13 +260,16 @@
                         this.insertMessage(attrs);
                         return;
                     }
-                    if (current_msg_date.isBefore(first_msg_date) || current_msg_date.isSame(first_msg_date)) {
+                    if (current_msg_date.isBefore(first_msg_date) ||
+                            current_msg_date.isSame(first_msg_date)) {
                         // The message is before the first, but on the same day.
                         // We need to prepend the message immediately before the
-                        // first message (so that it'll still be after the day indicator).
+                        // first message (so that it'll still be after the day
+                        // indicator).
                         this.insertMessage(attrs, 'prepend');
                         if (current_msg_date.isBefore(first_msg_date, 'day')) {
-                            // This message is also on a different day, so we prepend a day indicator.
+                            // This message is also on a different day, so
+                            // we prepend a day indicator.
                             this.insertDayIndicator(current_msg_date, 'prepend');
                         }
                         return;
@@ -286,7 +284,8 @@
                     idx = msg_dates.indexOf(current_msg_date)-1;
                     _.flow(
                         function ($el) {
-                            $el.insertAfter(this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
+                            $el.insertAfter(
+                                this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
                             return $el;
                         }.bind(this),
                         this.scrollDownMessageHeight.bind(this)
@@ -303,6 +302,10 @@
                     return {};
                 },
 
+                getExtraMessageClasses: function (attrs) {
+                    return attrs.delayed && 'delayed' || '';
+                },
+
                 renderMessage: function (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
@@ -316,25 +319,23 @@
                         text = attrs.message,
                         match = text.match(/^\/(.*?)(?: (.*))?$/),
                         fullname = this.model.get('fullname') || attrs.fullname,
-                        extra_classes = attrs.delayed && 'delayed' || '',
                         template, username;
 
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
-                        template = _converse.templates.action;
-                        username = fullname;
+                        template = tpl_action;
+                        if (attrs.sender === 'me') {
+                            fullname = _converse.xmppstatus.get('fullname');
+                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
+                        } else {
+                            username = attrs.fullname;
+                        }
                     } else  {
-                        template = _converse.templates.message;
+                        template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
                     this.$content.find('div.chat-event').remove();
 
-                    // FIXME: leaky abstraction from MUC
-                    if (this.is_chatroom && attrs.sender === 'them' && (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(text)) {
-                        // Add special class to mark groupchat messages in which we
-                        // are mentioned.
-                        extra_classes += ' mentioned';
-                    }
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
                         this.showStatusNotification(
@@ -350,7 +351,7 @@
                             'time': msg_time.format('hh:mm'),
                             'isodate': msg_time.format(),
                             'username': username,
-                            'extra_classes': extra_classes
+                            'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
                     $msg.find('.chat-msg-content').first()
@@ -689,7 +690,7 @@
 
                 renderToolbar: function (toolbar, options) {
                     if (!_converse.show_toolbar) { return; }
-                    toolbar = toolbar || _converse.templates.toolbar;
+                    toolbar = toolbar || tpl_toolbar;
                     options = _.extend(
                         this.model.toJSON(),
                         this.getToolbarOptions(options || {})
@@ -705,7 +706,7 @@
                     var width = _converse.chatview_avatar_width;
                     var height = _converse.chatview_avatar_height;
                     var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
-                        canvas = $(_converse.templates.avatar({
+                        canvas = $(tpl_avatar({
                             'width': width,
                             'height': height
                         })).get(0);
@@ -741,7 +742,7 @@
                     return this;
                 },
 
-                afterShown: function () {
+                afterShown: function (focus) {
                     if (_converse.connection.connected) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
@@ -760,7 +761,7 @@
                         if (focus) { this.focus(); }
                         return;
                     }
-                    utils.fadeIn(this.el, this.afterShown.bind(this));
+                    utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
 
                 show: function (focus) {
@@ -783,26 +784,28 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight-10;
+                    var is_at_bottom =
+                        (this.$content.scrollTop() + this.$content.innerHeight()) >=
+                            this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.set('scrolled', false);
+                        this.model.save('scrolled', false);
                         this.$el.find('.new-msgs-indicator').addClass('hidden');
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
-                        this.model.set('scrolled', true);
+                        this.model.save('scrolled', true);
                     }
                 }, 150),
 
-
                 viewUnreadMessages: function () {
-                    this.model.set('scrolled', false);
+                    this.model.save('scrolled', false);
                     this.scrollDown();
                 },
 
                 scrollDownMessageHeight: function ($message) {
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
-                        this.$content.scrollTop(this.$content.scrollTop() + $message[0].scrollHeight);
+                        this.$content.scrollTop(
+                            this.$content.scrollTop() + $message[0].scrollHeight);
                     }
                     return this;
                 },
@@ -821,7 +824,7 @@
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250, {'leading': true});
+                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250);
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
@@ -829,4 +832,6 @@
             });
         }
     });
+
+    return converse;
 }));

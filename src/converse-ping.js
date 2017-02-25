@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -10,10 +10,7 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-    define("converse-ping", [
-        "converse-api",
-        "strophe.ping"
-    ], factory);
+    define(["converse-core", "strophe.ping"], factory);
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas

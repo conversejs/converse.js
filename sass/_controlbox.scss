@@ -257,7 +257,7 @@
                 list-style: none;
                 padding-left: 0;
                 text-shadow: white 0 1px 0;
-                width: 38%;
+                width: 40%;
                 a {
                     background-color: white;
                     border-bottom: 1px solid $border-color;
@@ -294,16 +294,13 @@
             text-align: left;
             padding: 0;
             padding-left: 0.3em;
-            .choose-xmpp-status {
-                width: 155px;
-            }
             .choose-xmpp-status,
             .toggle-xmpp-contact-form {
                 text-shadow: 0 1px 0 #ffffff;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                display: inline;
+                display: inline-block;
             }
             &.no-border {
                 border: 0;

@@ -1,6 +1,7 @@
 ;(function (root, factory) {
 
   if (typeof define === 'function' && define.amd) {
+    // XXX: Simply add an empty deps list here so that almond works.
     define([], factory.bind(root, root.crypto || root.msCrypto))
   } else if (typeof module !== 'undefined' && module.exports) {
     module.exports = factory(require('crypto'))

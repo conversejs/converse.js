@@ -7,8 +7,7 @@
 /*global define, Backbone */
 
 (function (root, factory) {
-    define("converse-controlbox", [
-            "converse-api",
+    define(["converse-core",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!change_status_message",
@@ -134,10 +133,11 @@
                 closeAllChatBoxes: function () {
                     var _converse = this.__super__._converse;
                     this.each(function (view) {
-                        if (_converse.disconnection_cause === _converse.LOGOUT ||
-                            view.model.get('id') !== 'controlbox') {
-                                view.close();
+                        if (view.model.get('id') === 'controlbox' &&
+                                (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
+                            return;
                         }
+                        view.close();
                     });
                     return this;
                 },
@@ -191,21 +191,6 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new HTML templates.
-            _converse.templates.add_contact_dropdown = tpl_add_contact_dropdown;
-            _converse.templates.add_contact_form = tpl_add_contact_form;
-            _converse.templates.change_status_message = tpl_change_status_message;
-            _converse.templates.chat_status = tpl_chat_status;
-            _converse.templates.choose_status = tpl_choose_status;
-            _converse.templates.contacts_panel = tpl_contacts_panel;
-            _converse.templates.contacts_tab = tpl_contacts_tab;
-            _converse.templates.controlbox = tpl_controlbox;
-            _converse.templates.controlbox_toggle = tpl_controlbox_toggle;
-            _converse.templates.login_panel = tpl_login_panel;
-            _converse.templates.login_tab = tpl_login_tab;
-            _converse.templates.search_contact = tpl_search_contact;
-            _converse.templates.status_option = tpl_status_option;
-
             this.updateSettings({
                 allow_logout: true,
                 default_domain: undefined,
@@ -245,18 +230,20 @@
                     if (this.model.get('connected')) {
                         this.insertRoster();
                     }
-                    if (_.isUndefined(this.model.get('closed'))) {
-                        this.model.set('closed', !_converse.show_controlbox_by_default);
+                },
+
+                render: function () {
+                    if (this.model.get('connected')) {
+                        if (_.isUndefined(this.model.get('closed'))) {
+                            this.model.set('closed', !_converse.show_controlbox_by_default);
+                        }
                     }
                     if (!this.model.get('closed')) {
                         this.show();
                     } else {
                         this.hide();
                     }
-                },
-
-                render: function () {
-                    this.$el.html(_converse.templates.controlbox(
+                    this.$el.html(tpl_controlbox(
                         _.extend(this.model.toJSON(), {
                             sticky_controlbox: _converse.sticky_controlbox
                         }))
@@ -272,6 +259,7 @@
                 onConnected: function () {
                     if (this.model.get('connected')) {
                         this.render().insertRoster();
+                        this.model.save('closed', !this.$el.is(':visible'));
                     }
                 },
 
@@ -388,7 +376,7 @@
 
                 initialize: function (cfg) {
                     cfg.$parent.html(this.$el.html(
-                        _converse.templates.login_panel({
+                        tpl_login_panel({
                             'ANONYMOUS': _converse.ANONYMOUS,
                             'EXTERNAL': _converse.EXTERNAL,
                             'LOGIN': _converse.LOGIN,
@@ -407,7 +395,7 @@
                 },
 
                 render: function () {
-                    this.$tabs.append(_converse.templates.login_tab({label_sign_in: __('Sign in')}));
+                    this.$tabs.append(tpl_login_tab({label_sign_in: __('Sign in')}));
                     this.$el.find('input#jid').focus();
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
@@ -492,9 +480,9 @@
                         options = $('option', $select),
                         $options_target,
                         options_list = [];
-                    this.$el.html(_converse.templates.choose_status());
+                    this.$el.html(tpl_choose_status());
                     this.$el.find('#fancy-xmpp-status-select')
-                            .html(_converse.templates.chat_status({
+                            .html(tpl_chat_status({
                                 'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
                                 'chat_status': chat_status,
                                 'desc_custom_status': __('Click here to write a custom status message'),
@@ -502,7 +490,7 @@
                                 }));
                     // iterate through all the <option> elements and add option values
                     options.each(function () {
-                        options_list.push(_converse.templates.status_option({
+                        options_list.push(tpl_status_option({
                             'value': $(this).val(),
                             'text': this.text
                         }));
@@ -520,8 +508,8 @@
 
                 renderStatusChangeForm: function (ev) {
                     ev.preventDefault();
-                    var status_message = this.model.get('status') || 'offline';
-                    var input = _converse.templates.change_status_message({
+                    var status_message = _converse.xmppstatus.get('status_message') || '';
+                    var input = tpl_change_status_message({
                         'status_message': status_message,
                         'label_custom_status': __('Custom status'),
                         'label_save': __('Save')
@@ -572,7 +560,7 @@
                     // Example, I am online
                     var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
                     this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
-                        _converse.templates.chat_status({
+                        tpl_chat_status({
                             'chat_status': stat,
                             'status_message': status_message,
                             'desc_custom_status': __('Click here to write a custom status message'),
@@ -600,7 +588,7 @@
 
                 render: function () {
                     var markup;
-                    var widgets = _converse.templates.contacts_panel({
+                    var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
                         label_away: __('Away'),
@@ -610,23 +598,23 @@
                         allow_logout: _converse.allow_logout
                     });
                     var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(_converse.templates.contacts_tab({
+                    this.$tabs.append(tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
                         'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
                     }));
                     if (_converse.xhr_user_search) {
-                        markup = _converse.templates.search_contact({
+                        markup = tpl_search_contact({
                             label_contact_name: __('Contact name'),
                             label_search: __('Search')
                         });
                     } else {
-                        markup = _converse.templates.add_contact_form({
+                        markup = tpl_add_contact_form({
                             label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add')
                         });
                     }
                     if (_converse.allow_contact_requests) {
-                        widgets += _converse.templates.add_contact_dropdown({
+                        widgets += tpl_add_contact_dropdown({
                             label_click_to_chat: __('Click to add new chat contacts'),
                             label_add_contact: __('Add a contact')
                         });
@@ -724,7 +712,7 @@
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     return this.$el.html(
-                        _converse.templates.controlbox_toggle({
+                        tpl_controlbox_toggle({
                             'label_toggle': __('Toggle chat')
                         })
                     );

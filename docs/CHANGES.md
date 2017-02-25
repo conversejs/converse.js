@@ -1,15 +1,76 @@
 # Changelog
 
 ## 3.0.0 (Unreleased)
+
+- **Breaking changes**:
+    * Callbacks for `converse.on` now no longer receive an event object as first parameter.
+    * The API has been split into public and private parts.
+      The private API methods are now only available to plugins.
+      For more info, read [developer API](https://conversejs.org/docs/html/developer_api.html)
+      and the [plugin_development](https://conversejs.org/docs/html/plugin_development.html)
+      documentation.
+    * To prevent confusion the private, closured object, only
+      available to plugins, has been renamed from `converse` to `_converse`.
+      The public API is accessible via a global `converse` object.
+    * The `keepalive` and `roster_groups` options are now set to `true` by default.
+    * Templates are no longer stored as attributes on the `_converse` object.
+      If you need a particular template, use `require` to load it.
+
+- 100 is the new default [archived_messages_page_size](https://conversejs.org/docs/html/configuration.html#archived-messages-page-size)
+  [jcbrand]
+- Better support for delayed delivery of presence stanzas (XEP-0203). [jcbrand]
+- The chat room `description` is now shown in the heading, not the `subject`.
+  [jcbrand]
+- Chat room features are shown in the sidebar. [jcbrand]
+- Hide the chat room invite widget if the room is not open or if the room is members-only
+  and the user is not the owner. [jcbrand]
+- Created a new non-core plugin `converse-muc-embedded` which embeds a single
+  chat room into a page. An example can be found at https://conversejs.org/demo/embedded.html
+  [jcbrand]
+- Use lodash instead of underscore.js [jcbrand]
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]
 - `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
-- *Breaking change*: Callbacks for `converse.on` now no longer receive an event
-  object as first parameter. [jcbrand]
-- Use lodash instead of underscore.js [jcbrand]
-- #486 Honor existing mam user configuration [throwaway42]
+- Improved roster filter UX. [jcbrand]
+- Render the login form again upon authfail. [jcbrand]
+- New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil)
+  [jcbrand]
+- New configuration setting:
+  [show_chatstate_notifications](https://conversejs.org/docs/html/configuration.html#show-chatstate-notifications)
+  [jcbrand]
+- New configuration setting:
+  [whitelisted_plugins](https://conversejs.org/docs/html/configuration.html#whitelisted-plugins)
+  [jcbrand]
+- New configuration setting:
+  [blacklisted_plugins](https://conversejs.org/docs/html/configuration.html#blacklisted-plugins)
+  [jcbrand]
+- The API now no longer returns wrapped chatboxes (or rooms) but instead a
+  Backbone.View object. This means the API of the returned object has changed.
+  You're still able to do everything from before but now also much more.
+  [jcbrand]
+- Allow JIDs not on the roster to be invited to a chat room. [jcbrand]
+- Bugfix. `TypeError: this.sendConfiguration(...).then is not a function` when
+  an instant room is created. [jcbrand]
+- Ensure consistent behavior from `show_controlbox_by_default` [jcbrand]
+- #365 Show join/leave messages for chat rooms.
+  New configuration setting:
+  [muc_show_join_leave](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave)
+- #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
+- #610, #785 Add presence priority handling [w3host, jcbrand]
+- #620 `auto_away` shouldn't change the user's status if it's set to `dnd`. [jcbrand]
+- #694 The `notification_option` wasn't being used consistently. [jcbrand]
+- #745 New config option [priority](https://conversejs.org/docs/html/configuration.html#priority) [jcbrand]
+- #770 Allow setting contact attrs on chats.open [Ape]
+- #790 MAM retrieval broken [jcbrand]
 
-## 2.0.5 (Unreleased)
+## 2.0.6 (2017-02-13)
+- Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]
+- #486 Honor existing mam user configuration [throwaway42]
+- #749 /me will show your contact's name in the sent field [jcbrand]
+- #774 Browser language (fr-fr or fr) is not detected by default [jcbrand]
+- #775 Anonymous login form is a text field instead of a push button [jcbrand]
+
+## 2.0.5 (2017-02-01)
 - #743, #751, #753 Update to Strophe 1.2.12. SASL-EXTERNAL now has reduced priority, so it won't
   be prioritized above other auth mechanisms. [jcbrand]
 - #755: create composer.json to add this project in packagist.org [fabiomontefuscolo]
@@ -62,7 +123,7 @@
 
 ## 2.0.1 (2016-11-07)
 - #203 New configuration setting [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) [jcbrand]
-- #705 White content after submitting password on chatrooms [jcbrand]
+- #705 White content after submitting password on chat rooms [jcbrand]
 - #712 Controlbox clicks stop responding after auto-reconnect [jcbrand]
 - Removed shared state between tests. All tests are now isolated. [jcbrand]
 - Allow the context (i.e. `this` value) to be passed in when registering event
@@ -81,7 +142,7 @@
 - Continuously attempt to resurrect dead connections when `auto_reconnect` is `true`. [jcbrand]
 - Update the 'rooms' API to allow user to pass in room attributes. [jcbrand]
 - New configuration setting [message_storage](https://conversejs.org/docs/html/configuration.html#message-storage) [jcbrand]
-- Hardcode the storage for roster contacts and chatroom occupants to `sessionStorage`. [jcbrand]
+- Hardcode the storage for roster contacts and chat room occupants to `sessionStorage`. [jcbrand]
 - Fixed wrong chat state value, should be `chat`, not `chatty`.
   See [RFC 3921](https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.1.2.2). [jcbrand]
 - Adds support for SASL-EXTERNAL. [jcbrand]
@@ -112,7 +173,7 @@
 
 ## 1.0.4 (2016-07-26)
 
-- Restrict occupants sidebar to 30% chatroom width. [jcbrand]
+- Restrict occupants sidebar to 30% chat room width. [jcbrand]
 - Made requesting contacts more visible, by placing them at the top of the roster. [jcbrand]
 - `insertIntoPage` method of `ChatBoxView` has been renamed to `insertIntoDOM`,
   to make it the same as the method of `ChatRoomView`. [jcbrand]
@@ -197,7 +258,7 @@
 - #352 When the user has manually scrolled up in a chat window, don't scroll
   down on chat event notifications. [jcbrand]
 - #524 Added [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto_join_on_invite)
-  parameter for automatically joining chatrooms. [ben]
+  parameter for automatically joining chat rooms. [ben]
 - #520 Set specific domain. Two new options [default_domain](https://conversejs.org/docs/html/configuration.html#default_domain)
   and [locked_domain](https://conversejs.org/docs/html/configuration.html#locked_domain). [jcbrand]
 - #521 Not sending presence when connecting after disconnection. [jcbrand]
@@ -206,7 +267,7 @@
 - #540 `bind is not a function` error for plugins without `initialize` method. [jcbrand]
 - #547 By default the `offline` state is no longer choosable.
   See [include_offline_state](https://conversejs.org/docs/html/configuration.html#include-offline-state) for details. [jcbrand]
-- A chatroom invite might come from someone not in your roster list. [ben]
+- A chat room invite might come from someone not in your roster list. [ben]
 - #487 Empty the resources array when the resource is null [rlanvin]
 - #534 Updated Russian translation [LaconicTranslator]
 - #555 The status restored from sessionStorage is never updated [jcbrand]
@@ -604,9 +665,9 @@ versions of the 0.6 branch.*
 
 ## 0.4.0 (2013-06-03)
 
-- CSS tweaks: fixed overflowing text in status message and chatrooms list. [jcbrand]
-- Bugfix: Couldn't join chatroom when clicking from a list of rooms. [jcbrand]
-- Add better support for kicking or banning users from chatrooms. [jcbrand]
+- CSS tweaks: fixed overflowing text in status message and chat rooms list. [jcbrand]
+- Bugfix: Couldn't join chat room when clicking from a list of rooms. [jcbrand]
+- Add better support for kicking or banning users from chat rooms. [jcbrand]
 - Fixed alignment of chat messages in Firefox. [jcbrand]
 - More intelligent fetching of vCards. [jcbrand]
 - Fixed a race condition bug. Make sure that the roster is populated before sending initial presence. [jcbrand]
@@ -623,9 +684,9 @@ versions of the 0.6 branch.*
 - Separate messages according to day in chats. [jcbrand]
 - Add support for specifying the BOSH bind URL as configuration setting. [jcbrand]
 - #8 Improve the message counter to only increment when the window is not focused [witekdev]
-- Make fetching of list of chatrooms on a server a configuration option. [jcbrand]
+- Make fetching of list of chat rooms on a server a configuration option. [jcbrand]
 - Use service discovery to show all available features on a room. [jcbrand]
-- Multi-user chatrooms are now configurable. [jcbrand]
+- Multi-user chat rooms are now configurable. [jcbrand]
 
 ## 0.2.0 (2013-03-28)
 

@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-api", "test_utils"], factory);
+    define(["mock", "converse-core", "test_utils"], factory);
 } (this, function (mock, converse, test_utils) {
     var _ = converse.env._;
     var $ = converse.env.jQuery;
@@ -586,6 +586,7 @@
             }));
 
             it("will be hidden when appearing under a collapsed group", mock.initConverse(function (_converse) {
+                _converse.roster_groups = false;
                 _addContacts(_converse);
                 _converse.rosterview.$el.find('dt.roster-group').find('a.group-toggle').click();
                 var name = "Max Mustermann";

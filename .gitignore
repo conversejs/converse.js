@@ -11,6 +11,8 @@
 .pydevproject
 analytics.js
 .idea
+eggs
+.Python
 
 dev-jc.html
 
@@ -31,9 +33,6 @@ stamp-bundler
 # Sphinx
 docs/html
 docs/doctrees
-
-# Bower
-components
 
 # Node.js
 node_modules

@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-api", "test_utils", "converse-ping"], factory);
+    define(["mock", "converse-core", "test_utils", "converse-ping"], factory);
 } (this, function (mock, test_utils) {
     "use strict";
 

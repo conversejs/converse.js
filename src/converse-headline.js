@@ -1,38 +1,21 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
 
 (function (root, factory) {
-    define("converse-headline", [
-            "converse-api",
-            "converse-chatview"
+    define([
+            "converse-core",
+            "tpl!chatbox",
+            "converse-chatview",
     ], factory);
-}(this, function (converse) {
+}(this, function (converse, tpl_chatbox) {
     "use strict";
     var _ = converse.env._,
         utils = converse.env.utils;
-
-    var onHeadlineMessage = function (message) {
-        /* Handler method for all incoming messages of type "headline".
-         */
-        var from_jid = message.getAttribute('from');
-        var _converse = this.__super__._converse;
-        if (utils.isHeadlineMessage(message)) {
-            _converse.chatboxes.create({
-                'id': from_jid,
-                'jid': from_jid,
-                'fullname':  from_jid,
-                'type': 'headline'
-            }).createMessage(message, undefined, message);
-            _converse.emit('message', message);
-        }
-        return true;
-    };
-
 
     converse.plugins.add('converse-headline', {
 
@@ -86,7 +69,7 @@
 
                 render: function () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(_converse.templates.chatbox(
+                        .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: false,
@@ -106,10 +89,12 @@
             });
 
             var onHeadlineMessage = function (message) {
-                /* Handler method for all incoming messages of type "headline".
-                */
+                /* Handler method for all incoming messages of type "headline". */
                 var from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(message)) {
+                    if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
+                        return;
+                    }
                     _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,

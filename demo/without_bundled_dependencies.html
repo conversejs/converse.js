@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Converse.js (Non-AMD Example)</title>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Converse.js: A free chat client for your website" />
+    <meta name="author" content="JC Brand" />
+    <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../node_modules/font-awesome/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../css/theme.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../css/converse.min.css" />
+
+    <!-- BEGIN JQUERY -->
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../node_modules/jquery.browser/dist/jquery.browser.js"></script>
+    <!-- END JQUERY -->
+
+    <!-- BEGIN OTR: Off-the-record encryption stuff. Can be omitted if OTR is not used. -->
+    <script type="text/javascript" src="../node_modules/otr/build/dep/crypto.js"></script>
+    <script type="text/javascript" src="../node_modules/otr/build/dep/salsa20.js"></script>
+    <script type="text/javascript" src="../node_modules/otr/build/dep/bigint.js"></script>
+    <script type="text/javascript" src="../node_modules/otr/build/dep/eventemitter.js"></script>
+    <script type="text/javascript" src="../node_modules/otr/build/otr.js"></script>
+    <!-- END OTR -->
+
+    <!-- BEGIN STROPHE -->
+    <script type="text/javascript" src="../node_modules/strophe.js/strophe.js"></script>
+    <script type="text/javascript" src="../node_modules/strophejs-plugin-vcard/strophe.vcard.js"></script>
+    <script type="text/javascript" src="../node_modules/strophejs-plugin-disco/strophe.disco.js"></script>
+    <script type="text/javascript" src="../node_modules/strophejs-plugin-rsm/strophe.rsm.js"></script>
+    <script type="text/javascript" src="../node_modules/strophejs-plugin-ping/strophe.ping.js"></script>
+    <!-- END STROPHE -->
+
+    <!-- BEGIN BACKBONE -->
+    <script type="text/javascript" src="../node_modules/lodash/lodash.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone//backbone.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.browserStorage/backbone.browserStorage.js"></script>
+    <script type="text/javascript" src="../node_modules/backbone.overview/backbone.overview.js"></script>
+    <!-- END BACKBONE -->
+
+    <!-- BEGIN I18N -->
+    <!-- These files can be removed if you don't want to include any
+        translations for converse.js.
+        If you want to modify which translations are included, you can modify
+        src/locales.js to remove those you don't need, and then run `make
+        build` to generates a new dist/locales.js file.
+    -->
+    <script type="text/javascript" src="../node_modules/jed/jed.js"></script>
+    <script type="text/javascript" src="../dist/locales.js"></script>
+    <!-- END I18N -->
+
+    <script type="text/javascript" src="../node_modules/awesomplete/awesomplete.js"></script>
+    <script type="text/javascript" src="../node_modules/moment/min/moment-with-locales.js"></script>
+
+	<script src="../dist/converse-no-dependencies.js"></script>
+</head>
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse.js</h1>
+                        <p class="intro-text">An example page where external dependencies are loaded seperately and not within the converse.js bundle.</p>
+                        <p class="intro-text">Look at the page source for details.</p>
+                        <p class="intro-text">For this page to work, you'll need to
+                            <a href="https://conversejs.org/docs/html/developer_guidelines.html#installing-the-development-and-front-end-dependencies">
+                            install the 3rd party dependencies</a> of converse.js.
+                        </p>
+                        <div class="page-scroll">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+<script>
+    require(['converse'], function (converse) {
+        converse.initialize({
+            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+            prebind: false,
+            show_controlbox_by_default: true,
+            debug: true,
+            roster_groups: true,
+            keepalive: true
+        });
+    });
+</script>
+</html>

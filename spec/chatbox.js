@@ -1,7 +1,7 @@
 (function (root, factory) {
     define([
         "utils",
-        "converse-api",
+        "converse-core",
         "mock",
         "test_utils"
         ], factory);
@@ -15,6 +15,32 @@
 
     return describe("Chatboxes", function() {
         describe("A Chatbox", function () {
+
+            it("supports the /me command", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openControlBox();
+                test_utils.openContactsPanel(_converse);
+                expect(_converse.chatboxes.length).toEqual(1);
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var message = '/me is tired';
+                var msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                _converse.chatboxes.onMessage(msg);
+                var view = _converse.chatboxviews.get(sender_jid);
+                expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Max Frankfurter')).toBeTruthy();
+                expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
+
+                message = '/me is as well';
+                test_utils.sendMessage(view, message);
+                expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
+                expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
+            }));
 
             it("is created when you click on a roster item", mock.initConverse(function (_converse) {
                 test_utils.createContacts(_converse, 'current');

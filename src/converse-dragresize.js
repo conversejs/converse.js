@@ -1,14 +1,14 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define, window */
 
 (function (root, factory) {
-    define("converse-dragresize", [
-            "converse-api",
+    define([
+            "converse-core",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
@@ -297,7 +297,7 @@
                     var _converse = this.__super__._converse;
                     var flyout = this.el.querySelector('.box-flyout');
                     var div = document.createElement('div');
-                    div.innerHTML = _converse.templates.dragresize();
+                    div.innerHTML = tpl_dragresize();
                     flyout.insertBefore(
                         div,
                         flyout.firstChild
@@ -311,8 +311,6 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-            // Add new HTML template
-            _converse.templates.dragresize = tpl_dragresize;
 
             this.updateSettings({
                 allow_dragresize: true,

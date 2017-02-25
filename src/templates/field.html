@@ -1,5 +1,5 @@
-<field var="{{name}}">{[ if (_.isArray(value)) { ]}
-    {[ _.each(value,function(arrayValue) { ]}<value>{{arrayValue}}</value>{[ }); ]}
+<field var="{{{name}}}">{[ if (_.isArray(value)) { ]}
+    {[ _.each(value,function(arrayValue) { ]}<value>{{{arrayValue}}}</value>{[ }); ]}
 {[ } else { ]}
-    <value>{{value}}</value>
+    <value>{{{value}}}</value>
 {[ } ]}</field>

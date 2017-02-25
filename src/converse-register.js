@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define */
@@ -10,8 +10,7 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define("converse-register", [
-            "converse-api",
+    define(["converse-core",
             "tpl!form_username",
             "tpl!register_panel",
             "tpl!register_tab",
@@ -116,7 +115,7 @@
 
                 render: function () {
                     this.$parent.append(this.$el.html(
-                        _converse.templates.register_panel({
+                        tpl_register_panel({
                             'label_domain': __("Your XMPP provider's domain name:"),
                             'label_register': __('Fetch registration form'),
                             'help_providers': __('Tip: A list of public XMPP providers is available'),
@@ -125,7 +124,7 @@
                             'domain_placeholder': _converse.domain_placeholder
                         })
                     ));
-                    this.$tabs.append(_converse.templates.register_tab({label_register: __('Register')}));
+                    this.$tabs.append(tpl_register_tab({label_register: __('Register')}));
                     return this;
                 },
 
@@ -229,7 +228,7 @@
                         return;
                     }
                     $form.find('input[type=submit]').hide()
-                        .after(_converse.templates.registration_request({
+                        .after(tpl_registration_request({
                             cancel: __('Cancel'),
                             info_message: __('Requesting a registration form from the XMPP server')
                         }));
@@ -305,7 +304,7 @@
                     var $form= this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
-                    $form.empty().append(_converse.templates.registration_form({
+                    $form.empty().append(tpl_registration_form({
                         'domain': this.domain,
                         'title': this.title,
                         'instructions': this.instructions
@@ -319,7 +318,7 @@
                         // Show fields
                         _.each(_.keys(this.fields), function (key) {
                             if (key === "username") {
-                                $input = _converse.templates.form_username({
+                                $input = tpl_form_username({
                                     domain: ' @'+this.domain,
                                     name: key,
                                     type: "text",

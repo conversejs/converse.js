@@ -1,14 +1,13 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define, window */
 
 (function (root, factory) {
-    define("converse-minimize", [
-            "converse-api",
+    define(["converse-core",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
@@ -55,17 +54,6 @@
                     }
                 }, 200));
                 return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
-            },
-
-            wrappedChatBox: function (chatbox) {
-                /* Wrap a chatbox for outside consumption (i.e. so that it can be
-                * returned via the API.
-                */
-                if (!chatbox) { return; }
-                var box = this.__super__.wrappedChatBox.apply(this, arguments);
-                box.maximize = chatbox.maximize.bind(chatbox);
-                box.minimize = chatbox.minimize.bind(chatbox);
-                return box;
             },
 
             ChatBox: {
@@ -184,7 +172,7 @@
                     var html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     var div = document.createElement('div');
                     div.innerHTML = html;
-                    var el = _converse.templates.chatbox_minimize(
+                    var el = tpl_chatbox_minimize(
                         {info_minimize: __('Minimize this chat box')}
                     );
                     var button = div.querySelector('.close-chatbox-button');
@@ -344,7 +332,7 @@
                         data.title = this.model.get('fullname');
                         this.$el.addClass('chat-head-chatbox');
                     }
-                    return this.$el.html(_converse.templates.trimmed_chat(data));
+                    return this.$el.html(tpl_trimmed_chat(data));
                 },
 
                 clearUnreadMessagesCounter: function () {
@@ -418,7 +406,7 @@
 
                 render: function () {
                     if (!this.el.parentElement) {
-                        this.el.innerHTML = _converse.templates.chats_panel();
+                        this.el.innerHTML = tpl_chats_panel();
                         _converse.chatboxviews.el.appendChild(this.el);
                     }
                     if (this.keys().length === 0) {
@@ -498,7 +486,7 @@
                 },
 
                 render: function () {
-                    this.$el.html(_converse.templates.toggle_chats(
+                    this.$el.html(tpl_toggle_chats(
                         _.extend(this.model.toJSON(), {
                             'Minimized': __('Minimized')
                         })
@@ -515,7 +503,7 @@
             var renderMinimizeButton = function (view) {
                 // Inserts a "minimize" button in the chatview's header
                 var $el = view.$el.find('.toggle-chatbox-button');
-                var $new_el = _converse.templates.chatbox_minimize(
+                var $new_el = tpl_chatbox_minimize(
                     {info_minimize: __('Minimize this chat box')}
                 );
                 if ($el.length) {

@@ -1,7 +1,8 @@
 (function (root, factory) {
-    define(["mock", "converse-api", "test_utils"], factory);
-} (this, function (mock, converse, test_utils) {
+    define(["mock", "converse-core", "test_utils", "utils"], factory);
+} (this, function (mock, converse, test_utils, utils) {
     "use strict";
+    var _ = converse.env._;
     var $msg = converse.env.$msg;
 
     describe("Notifications", function () {
@@ -64,8 +65,63 @@
                         }
                     }));
 
-                    it("is shown when a user changes their chat state", mock.initConverse(function (_converse) {
+                    it("is shown for headline messages", mock.initConverse(function (_converse) {
+                        spyOn(_converse, 'showMessageNotification').andCallThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        runs(function () {
+                            var stanza = $msg({
+                                    'type': 'headline',
+                                    'from': 'notify.example.com',
+                                    'to': 'dummy@localhost',
+                                    'xml:lang': 'en'
+                                })
+                                .c('subject').t('SIEVE').up()
+                                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                                .c('x', {'xmlns': 'jabber:x:oob'})
+                                .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        });
+                        waits(250);
+                        runs(function () {
+                            expect(
+                                _.includes(_converse.chatboxviews.keys(),
+                                    'notify.example.com')
+                                ).toBeTruthy();
+                            expect(_converse.showMessageNotification).toHaveBeenCalled();
+                        });
+                    }));
+
+                    it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
+                        _converse.allow_non_roster_messaging = false;
+                        spyOn(_converse, 'showMessageNotification').andCallThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        runs(function () {
+                            var stanza = $msg({
+                                    'type': 'headline',
+                                    'from': 'someone@notify.example.com',
+                                    'to': 'dummy@localhost',
+                                    'xml:lang': 'en'
+                                })
+                                .c('subject').t('SIEVE').up()
+                                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                                .c('x', {'xmlns': 'jabber:x:oob'})
+                                .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        });
+                        waits(250);
+                        runs(function () {
+                            expect(
+                                _.includes(_converse.chatboxviews.keys(),
+                                    'someone@notify.example.com')
+                                ).toBeFalsy();
+                            expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                        });
+                    }));
+
+                    it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse(function (_converse) {
                         // TODO: not yet testing show_desktop_notifications setting
+                        _converse.show_chatstate_notifications = true;
+
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
                         spyOn(_converse, 'showChatStateNotification');

@@ -1,7 +1,7 @@
 .. raw:: html
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
- 
+
 =============================
 The converse.js developer API
 =============================
@@ -84,6 +84,7 @@ Example:
             roster_groups: true
         });
 
+
 The **plugin** grouping
 ------------------------
 
@@ -162,6 +163,44 @@ For example, to send a message stanza:
 
         }
     });
+
+
+.. _`waituntil-grouping`:
+
+waitUntil
+---------
+
+This method can be used to wait for promises. Promises are similar to events
+(for event handling, refer to the :ref:`listen-grouping`), but they differ in
+two important ways:
+
+* A promise gets resolved only once, whereas events can fire multiple times.
+* A handler registered for a promise, will still fire *after* the promise has
+  been resolved, which is not the case with an event handler.
+
+Converse.js has the following promises:
+
+* cachedRoster
+* chatBoxesFetched
+* connected
+* pluginsInitialized
+* roster
+* rosterContactsFetched
+* rosterGroupsFetched
+* rosterInitialized
+* statusInitialized
+
+Below is an example from `converse-muc.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-muc.js>`_
+where the `rosterContactsFetched` promise is waited on. The method
+`this.initInviteWidget` will initialize the chatroom invitation widget.
+
+.. code-block:: javascript
+
+    _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
+
+The line above executes only once a chatroom has been opened and entered, so
+using an event handler here would not work, since the event might have fired
+already by that time.
 
 
 The **archive** grouping
@@ -660,7 +699,7 @@ To return all open chat boxes, call the method without any JIDs::
 open
 ~~~~
 
-Opens a chat box and returns an object representing a chat box.
+Opens a chat box and returns a Backbone.View object representing a chat box.
 
 To open a single chat box, provide the JID of the contact:
 
@@ -685,25 +724,27 @@ To return an array of chat boxes, provide an array of JIDs:
 
 *The returned chat box object contains the following methods:*
 
-+-------------+------------------------------------------+
-| Method      | Description                              |
-+=============+==========================================+
-| endOTR      | End an OTR (Off-the-record) session.     |
-+-------------+------------------------------------------+
-| get         | Get an attribute (i.e. accessor).        |
-+-------------+------------------------------------------+
-| initiateOTR | Start an OTR (off-the-record) session.   |
-+-------------+------------------------------------------+
-| maximize    | Minimize the chat box.                   |
-+-------------+------------------------------------------+
-| minimize    | Maximize the chat box.                   |
-+-------------+------------------------------------------+
-| set         | Set an attribute (i.e. mutator).         |
-+-------------+------------------------------------------+
-| close       | Close the chat box.                      |
-+-------------+------------------------------------------+
-| open        | Opens the chat box.                      |
-+-------------+------------------------------------------+
++-------------------+------------------------------------------+
+| Method            | Description                              |
++===================+==========================================+
+| close             | Close the chat box.                      |
++-------------------+------------------------------------------+
+| focus             | Focuses the chat box textarea            |
++-------------------+------------------------------------------+
+| model.endOTR      | End an OTR (Off-the-record) session.     |
++-------------------+------------------------------------------+
+| model.get         | Get an attribute (i.e. accessor).        |
++-------------------+------------------------------------------+
+| model.initiateOTR | Start an OTR (off-the-record) session.   |
++-------------------+------------------------------------------+
+| model.maximize    | Minimize the chat box.                   |
++-------------------+------------------------------------------+
+| model.minimize    | Maximize the chat box.                   |
++-------------------+------------------------------------------+
+| model.set         | Set an attribute (i.e. mutator).         |
++-------------------+------------------------------------------+
+| show              | Opens/shows the chat box.                |
++-------------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
 
@@ -982,3 +1023,4 @@ grouping:
 .. code-block:: javascript
 
         _converse.listen.not('message', function (messageXML) { ... });
+

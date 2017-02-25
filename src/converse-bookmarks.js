@@ -10,13 +10,13 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define("converse-bookmarks", [
+    define([
             "jquery",
             "lodash",
             "moment_with_locales",
             "strophe",
             "utils",
-            "converse-api",
+            "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
             "tpl!chatroom_bookmark_toggle",
@@ -70,7 +70,7 @@
                     if (_converse.allow_bookmarks) {
                         var div = document.createElement('div');
                         div.innerHTML = html;
-                        var bookmark_button = _converse.templates.chatroom_bookmark_toggle(
+                        var bookmark_button = tpl_chatroom_bookmark_toggle(
                             _.assignIn(
                                 this.model.toJSON(),
                                 {
@@ -96,7 +96,7 @@
                     }
                     var model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
-                        this.join(this.model.get('nick'));
+                        this.join(model.get('nick'));
                     } else {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
@@ -132,7 +132,7 @@
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
                     $body.append(
-                        _converse.templates.chatroom_bookmark_form({
+                        tpl_chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
                             label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
@@ -188,12 +188,6 @@
             var _converse = this._converse,
                 __ = _converse.__,
                 ___ = _converse.___;
-
-            // Add new HTML templates.
-            _converse.templates.chatroom_bookmark_form = tpl_chatroom_bookmark_form;
-            _converse.templates.chatroom_bookmark_toggle = tpl_chatroom_bookmark_toggle;
-            _converse.templates.bookmark = tpl_bookmark;
-            _converse.templates.bookmarks_list = tpl_bookmarks_list;
 
             // Configuration values for this plugin
             // ====================================
@@ -378,7 +372,7 @@
                 },
 
                 render: function () {
-                    this.$el.html(_converse.templates.bookmarks_list({
+                    this.$el.html(tpl_bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
                         'label_bookmarks': __('Bookmarked Rooms')
@@ -404,7 +398,7 @@
                 },
 
                 renderBookmarkListElement: function (item) {
-                    var $bookmark = $(_converse.templates.bookmark({
+                    var $bookmark = $(tpl_bookmark({
                             'name': item.get('name'),
                             'jid': item.get('jid'),
                             'open_title': __('Click to open this room'),

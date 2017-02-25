@@ -1,10 +1,10 @@
 // Extra test dependencies
 config.paths.mock = "tests/mock";
 config.paths.test_utils = "tests/utils";
-config.paths.sinon = "components/sinon/lib/sinon";
-config.paths.jasmine = "components/jasmine/lib/jasmine-core/jasmine";
+config.paths.sinon = "node_modules/sinon/lib/sinon";
+config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/jasmine";
 config.paths.transcripts = "converse-logs/converse-logs";
-config.paths["jasmine-html"] = "components/jasmine/lib/jasmine-core/jasmine-html";
+config.paths["jasmine-html"] = "node_modules/jasmine-core/lib/jasmine-core/jasmine-html";
 config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
 config.shim['jasmine-html'] = {
     deps: ['jasmine'],
@@ -48,6 +48,7 @@ require([
     "spec/headline",
     "spec/disco",
     "spec/protocol",
+    "spec/presence",
     "spec/mam",
     "spec/otr",
     "spec/eventemitter",

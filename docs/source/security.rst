@@ -36,8 +36,6 @@ Separate code/data into public and private parts
 1. Encapsulate Converse.js's data structures into a private closured object (named ``_converse``).
 2. Split the API into public and private parts.
 
-TODO: Merge ``converse-core.js`` and ``converse-api.js``, so that the ``_converse`` object can't be accessed outside of a plugin.
-
 Restrict access to private code/data
 ------------------------------------
 

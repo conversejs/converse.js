@@ -1,24 +1,21 @@
-/* Converse.js components configuration
+/* Converse.js
  *
- * This file is used to tell require.js which components (or plugins) to load
- * when it generates a build.
+ * Version: 3.0.0
  */
 /*global define */
 
 if (typeof define !== 'undefined') {
-    /* When running tests, define is not defined. */
-    define("converse", [
-        "converse-api",
+    // The section below determines which plugins will be included in a build
+    define([
+        "converse-core",
+        // PLEASE NOTE: By default all translations are included.
+        // You can modify the file src/locales.js to include only those
+        // translations that you care about.
 
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
          */
-        "locales",              // Translations for converse.js. This line can be removed
-                                // to remove *all* translations, or you can modify the
-                                // file src/locales.js to include only those
-                                // translations that you care about.
-
         "converse-chatview",    // Renders standalone chat boxes for single user chat
         "converse-controlbox",  // The control box
         "converse-bookmarks",   // XEP-0048 Bookmarks

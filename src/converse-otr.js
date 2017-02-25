@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define, window, crypto, CryptoJS */
@@ -10,13 +10,14 @@
  * encryption of one-on-one chat messages.
  */
 (function (root, factory) {
-    define("converse-otr", [
-            "otr",
-            "converse-api",
-            "tpl!toolbar_otr"
+
+    define(["converse-chatview",
+            "tpl!toolbar_otr",
+            'otr'
     ], factory);
-}(this, function (otr, converse, tpl_toolbar_otr) {
+}(this, function (converse, tpl_toolbar_otr, otr) {
     "use strict";
+
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
         utils = converse.env.utils,
@@ -30,7 +31,6 @@
     ));
 
     var HAS_CRYPTO = HAS_CSPRNG && (
-        (!_.isUndefined(CryptoJS)) &&
         (!_.isUndefined(otr.OTR)) &&
         (!_.isUndefined(otr.DSA))
     );
@@ -56,14 +56,8 @@
             //
             // New functions which don't exist yet can also be added.
  
-            _initialize: function () {
-                this.__super__._initialize.apply(this, arguments);
-                this.otr = new this.OTR();
-            },
-
             registerGlobalEventHandlers: function () {
                 this.__super__.registerGlobalEventHandlers();
-
                 $(document).click(function () {
                     if ($('.toggle-otr ul').is(':visible')) {
                         $('.toggle-otr ul', this).slideUp();
@@ -74,22 +68,11 @@
                 });
             },
 
-            wrappedChatBox: function (chatbox) {
-                var wrapped_chatbox = this.__super__.wrappedChatBox.apply(this, arguments);
-                if (!chatbox) { return; }
-                return _.extend(wrapped_chatbox, {
-                    'endOTR': chatbox.endOTR.bind(chatbox),
-                    'initiateOTR': chatbox.initiateOTR.bind(chatbox),
-                });
-            },
-
             ChatBox: {
                 initialize: function () {
                     this.__super__.initialize.apply(this, arguments);
                     if (this.get('box_id') !== 'controlbox') {
-                        this.save({
-                            'otr_status': this.get('otr_status') || UNENCRYPTED
-                        });
+                        this.save({'otr_status': this.get('otr_status') || UNENCRYPTED});
                     }
                 },
 
@@ -129,31 +112,34 @@
                         }
                     }
                 },
+
+                generatePrivateKey: function (instance_tag) {
+                    var _converse = this.__super__._converse;
+                    var key = new otr.DSA();
+                    var jid = _converse.connection.jid;
+                    if (_converse.cache_otr_key) {
+                        this.save({
+                            'otr_priv_key': key.packPrivate(),
+                            'otr_instance_tag': instance_tag
+                        });
+                    }
+                    return key;
+                },
                 
                 getSession: function (callback) {
                     var _converse = this.__super__._converse,
                         __ = _converse.__;
-                    var cipher = CryptoJS.lib.PasswordBasedCipher;
-                    var pass, instance_tag, saved_key, pass_check;
+                    var instance_tag, saved_key;
                     if (_converse.cache_otr_key) {
-                        pass = _converse.otr.getSessionPassphrase();
-                        if (!_.isUndefined(pass)) {
-                            instance_tag = window.sessionStorage[b64_sha1(this.id+'instance_tag')];
-                            saved_key = window.sessionStorage[b64_sha1(this.id+'priv_key')];
-                            pass_check = window.sessionStorage[b64_sha1(this.connection.jid+'pass_check')];
-                            if (saved_key && instance_tag && !_.isUndefined(pass_check)) {
-                                var decrypted = cipher.decrypt(CryptoJS.algo.AES, saved_key, pass);
-                                var key = otr.DSA.parsePrivate(decrypted.toString(CryptoJS.enc.Latin1));
-                                if (cipher.decrypt(CryptoJS.algo.AES, pass_check, pass).toString(CryptoJS.enc.Latin1) === 'match') {
-                                    // Verified that the passphrase is still the same
-                                    this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
-                                    callback({
-                                        'key': key,
-                                        'instance_tag': instance_tag
-                                    });
-                                    return; // Our work is done here
-                                }
-                            }
+                        instance_tag = this.get('otr_instance_tag');
+                        saved_key = otr.DSA.parsePrivate(this.get('otr_priv_key'));
+                        if (saved_key && instance_tag) {
+                            this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
+                            callback({
+                                'key': saved_key,
+                                'instance_tag': instance_tag
+                            });
+                            return; // Our work is done here
                         }
                     }
                     // We need to generate a new key and instance tag
@@ -163,10 +149,11 @@
                         null,
                         true // show spinner
                     );
+                    var that = this;
                     window.setTimeout(function () {
                         var instance_tag = otr.OTR.makeInstanceTag();
                         callback({
-                            'key': _converse.otr.generatePrivateKey.call(this, instance_tag),
+                            'key': that.generatePrivateKey(instance_tag),
                             'instance_tag': instance_tag
                         });
                     }, 500);
@@ -457,7 +444,7 @@
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
                     this.$el.find('.chat-toolbar').append(
-                            _converse.templates.toolbar_otr(
+                            tpl_toolbar_otr(
                                 _.extend(this.model.toJSON(), options || {})
                             ));
                     return this;
@@ -472,8 +459,11 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new HTML template
-            _converse.templates.toolbar_otr = tpl_toolbar_otr;
+            this.updateSettings({
+                allow_otr: true,
+                cache_otr_key: false,
+                use_otr_by_default: false
+            });
 
             // Translation aware constants
             // ---------------------------
@@ -486,59 +476,10 @@
             OTR_TRANSLATED_MAPPING[VERIFIED] = __('verified');
             OTR_TRANSLATED_MAPPING[FINISHED] = __('finished');
 
-            // For translations
-            __ = utils.__.bind(_converse);
-            // Configuration values for this plugin
-            var settings = {
-                allow_otr: true,
-                cache_otr_key: false,
-                use_otr_by_default: false
-            };
-            _.extend(_converse.default_settings, settings);
-            _.extend(_converse, settings);
-            _.extend(_converse, _.pick(_converse.user_settings, _.keys(settings)));
-
             // Only allow OTR if we have the capability
             _converse.allow_otr = _converse.allow_otr && HAS_CRYPTO;
             // Only use OTR by default if allow OTR is enabled to begin with
             _converse.use_otr_by_default = _converse.use_otr_by_default && _converse.allow_otr;
-
-            // Backbone Models and Views
-            // -------------------------
-            _converse.OTR = Backbone.Model.extend({
-                // A model for managing OTR settings.
-                getSessionPassphrase: function () {
-                    if (_converse.authentication === 'prebind') {
-                        var key = b64_sha1(_converse.connection.jid),
-                            pass = window.sessionStorage[key];
-                        if (_.isUndefined(pass)) {
-                            pass = Math.floor(Math.random()*4294967295).toString();
-                            window.sessionStorage[key] = pass;
-                        }
-                        return pass;
-                    } else {
-                        return _converse.connection.pass;
-                    }
-                },
-
-                generatePrivateKey: function (instance_tag) {
-                    var key = new otr.DSA();
-                    var jid = _converse.connection.jid;
-                    if (_converse.cache_otr_key) {
-                        var cipher = CryptoJS.lib.PasswordBasedCipher;
-                        var pass = this.getSessionPassphrase();
-                        if (!_.isUndefined(pass)) {
-                            // Encrypt the key and set in sessionStorage. Also store instance tag.
-                            window.sessionStorage[b64_sha1(jid+'priv_key')] =
-                                cipher.encrypt(CryptoJS.algo.AES, key.packPrivate(), pass).toString();
-                            window.sessionStorage[b64_sha1(jid+'instance_tag')] = instance_tag;
-                            window.sessionStorage[b64_sha1(jid+'pass_check')] =
-                                cipher.encrypt(CryptoJS.algo.AES, 'match', pass).toString();
-                        }
-                    }
-                    return key;
-                }
-            });
         }
     });
 }));

@@ -1,7 +1,7 @@
 (function (root, factory) {
     define([
         "jquery",
-        "converse-api",
+        "converse-core",
         "utils",
         "mock",
         "test_utils"
@@ -24,8 +24,6 @@
              *      <body>SORRY FOR THIS ADVERT</body
              *  </message
              */
-            test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -46,10 +44,8 @@
             });
         }));
 
-
         it("will open and display headline messages", mock.initConverse(function (_converse) {
-            /*
-             *  <message from='notify.example.com'
+            /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
              *          type='headline'
              *          xml:lang='en'>
@@ -62,8 +58,6 @@
              *  </x>
              *  </message>
              */
-            test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
             sinon.spy(utils, 'isHeadlineMessage');
             runs(function () {
                 var stanza = $msg({
@@ -85,6 +79,29 @@
                         _converse.chatboxviews.keys(),
                         'notify.example.com')
                     ).toBeTruthy();
+                expect(utils.isHeadlineMessage.called).toBeTruthy();
+                expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
+                utils.isHeadlineMessage.restore(); // unwraps
+            });
+        }));
+
+        it("will not show a headline messages from a full JID if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
+            _converse.allow_non_roster_messaging = false;
+            sinon.spy(utils, 'isHeadlineMessage');
+            runs(function () {
+                var stanza = $msg({
+                        'type': 'headline',
+                        'from': 'andre5114@jabber.snc.ru/Spark',
+                        'to': 'dummy@localhost',
+                        'xml:lang': 'en'
+                    })
+                    .c('nick').t('gpocy').up()
+                    .c('body').t('Здравствуйте друзья');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            });
+            waits(250);
+            runs(function () {
+                expect(_.without('controlbox', _converse.chatboxviews.keys()).length).toBe(0);
                 expect(utils.isHeadlineMessage.called).toBeTruthy();
                 expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
                 utils.isHeadlineMessage.restore(); // unwraps

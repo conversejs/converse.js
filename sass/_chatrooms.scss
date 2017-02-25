@@ -20,7 +20,7 @@
             }
         }
 
-        .chatroom-topic {
+        .chatroom-description {
             color: white;
             font-size: 80%;
             font-style: italic;
@@ -90,36 +90,53 @@
                     }
                 }
                 .occupants {
+                    overflow-x: hidden;
+                    overflow-y: hidden;
                     float: right;
                     vertical-align: top;
                     background-color: white;
-                    overflow: hidden;
                     border-left: 1px solid $text-color;
                     border-bottom-right-radius: $chatbox-border-radius;
                     width: 30%;
                     height: 100%;
-                    &.hidden {
-                        display: none;
-                    }
+                    padding: 0.5em;
                     .occupants-heading {
-                        padding: 0.3em;
+                        padding: 0.3em 0;
                         font-weight: bold;
                     }
-                    .occupant-list {
-                        height: 85%;
-                        height: calc(100% - 70px);
+                    .chatroom-features {
+                        position: absolute;
+                        bottom: 0.5em;
+                        width: 25%;
+                        @include calc(width, '30% - 1em');
+                    }
+                    ul {
+                        padding: 0.3em 0;
                         overflow-x: hidden;
                         overflow-y: auto;
                         list-style: none;
+
+                        &.occupant-list {
+                            overflow-y: auto;
+                            @include calc(height, '100% - 205px');
+                        }
+                        &.features-list {
+                            padding-top: 0;
+                        }
                         li {
                             cursor: default;
                             display: block;
-                            font-size: 12px;
+                            font-size: $font-size-small;
                             overflow: hidden;
                             padding: 2px 5px;
                             text-overflow: ellipsis;
                             white-space: nowrap;
-                            width: 100px;
+                            [class^="icon-"], [class*=" icon-"] {
+                                padding-right: 0.5em;
+                            }
+                            &.feature {
+                                font-size: $font-size-tiny;
+                            }
                             &.occupant {
                                 cursor: pointer;
                             }
@@ -137,6 +154,7 @@
                     color: $text-color;
                     font-size: $font-size;
                     height: 289px;
+                    width: 100%;
                     @include calc(height, '100% - #{$chat-head-height}');
                     overflow-y: auto;
                     position: absolute;
@@ -160,45 +178,10 @@
         }
 
         .room-invite {
-            margin: 0.3em;
             .invited-contact {
                 margin: -1px 0 0 -1px;
                 width: 100%;
                 border: 1px solid #999;
-                &.tt-input {
-                    width: 100%;
-                    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gkBCjE0uzKkOgAAAidJREFUKM+N0k+IEnEUB/D3cyscdagkWpHV0WGWREXm0AgOGkSJ07kh2UXYU5cOewm6Bp0KXG/tpSCv6hyEFQIhMEaE3yERYfwTOoqKGLQxDAbqYadLgu7J7/XxeY/3ez8EACDLsgljfMfj8ZxUKhXXYDAAnueBoqgyAMipVOovXAuSZdnUaDQeDofDs16vFyUIAjRNUwmCoG02G1AUdZ5IJN7GYrHfm3AvEAjcnUwmX0ajUdRqtV74fL6sruufKYoa6bp+fzabPUMI7ZfL5eImNHk8npNerxc1m80XHMe98fv9H3K5XDkSibxjWfb1arWaYoyPMMbCFqxUKi6CIODw8LDmdDq7oigaAACiKK5omv7KcdylpmlIkiTHFlRVFTRNUxVFqa/ROqIoGoqi5A3DgFartfU4Jp7ngSAI2uVyPZIk6dZmUZKk2w6H4xghBPF4HK7vWLbZbDCdTp+rqvpUkiS0RvV6/bTf7x8wDHMViURqm/AGAMgURZ232+1X1Wr102KxuEwmk3lZlo/7/f7BcrkkSZKs2e12tHXH/x/gHsY4jTE+0jQNGYYBCCFgGOaKJMkfjUaDZximGQ6HXzSbzZ+ZTMbY6oIxFgqFgqPT6YAgCMBxXM1ut6N0Op0fj8chi8XyjWXZ98Fg8DuCHZLNZh+USqWP8/n8idvt/hUKhV7u7QK9Xu8fmqanAJBQVXUfAGY7TQQAKBaLN8fjsdDtdh/run72Dzhf7XLe2UevAAAAAElFTkSuQmCC ) no-repeat right 3px center;
-                    &:focus {
-                        border-color: $chatroom-head-color;
-                    }
-                }
-                &.tt-hint {
-                    color: transparent;
-                    background-color: white;
-                }
-            }
-            .tt-dropdown-menu {
-                width: 96%;
-                max-height: 250px;
-                background: $chatroom-head-color;
-                border-bottom-right-radius: $chatbox-border-radius;
-                border-bottom-left-radius: $chatbox-border-radius;
-                overflow-y: auto;
-                .tt-suggestion {
-                    p {
-                        color: white;
-                        cursor: pointer;
-                        font-size: 11px;
-                        text-overflow: ellipsis;
-                        overflow-x: hidden;
-                        &:hover {
-                            background-color: $chatroom-color-light;
-                        }
-                    }
-                    .tt-highlight {
-                        background-color: $chatroom-color-dark;
-                    }
-                }
             }
         }
     }

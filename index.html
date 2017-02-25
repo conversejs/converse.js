@@ -9,8 +9,8 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="components/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="components/fontawesome/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="node_modules/font-awesome/css/font-awesome.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/theme.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/converse.min.css" />
     <script type="text/javascript" src="analytics.js"></script>
@@ -92,6 +92,8 @@
             <div class="col-lg-8 col-lg-offset-2">
                 <h2><strong>Converse.js</strong> is written in Javascript and runs in your browser.</h2>
                 <p>You can start using it here immediately, or you can <a href="/docs/html/index.html">integrate it into your own website</a>.</p>
+                <p>Take a look at the <a href="/demo">demo page</a> for other examples of how Converse.js can be configured and used.</a>
+
                 <p>
                     You can connect to any publically accessible <a href="http://xmpp.org" target="_blank">XMPP/Jabber</a> server,
                     either from a <a href="https://xmpp.net/directory.php">public provider</a>, or one you have set up yourself.
@@ -241,7 +243,6 @@
         converse.initialize({
             // Please use this connection manager only for testing purposes
             bosh_service_url: 'https://conversejs.org/http-bind/',
-            keepalive: true,
             message_carbons: true,
             play_sounds: true,
             roster_groups: true,

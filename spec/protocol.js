@@ -1,7 +1,7 @@
 (function (root, factory) {
     define([
         "jquery",
-        "converse-api",
+        "converse-core",
         "mock",
         "test_utils"], factory);
 } (this, function ($, converse, mock, test_utils) {
@@ -50,6 +50,7 @@
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
+                _converse.roster_groups = false;
                 var contact, stanza, sent_stanza, IQ_id;
                 runs(function () {
                     test_utils.openControlBox(_converse);
@@ -442,6 +443,7 @@
 
             it("Unsubscribe to a contact when subscription is mutual", mock.initConverse(function (_converse) {
                 var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
+                _converse.roster_groups = false;
                 runs(function () {
                     test_utils.openControlBox(_converse);
                     test_utils.createContacts(_converse, 'current');

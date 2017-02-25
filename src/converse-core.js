@@ -5,24 +5,22 @@
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global Backbone, define, window, document */
-
 (function (root, factory) {
-    define("converse-core", [
-        "sizzle",
-        "jquery",
-        "lodash",
-        "polyfill",
-        "utils",
-        "moment_with_locales",
-        "strophe",
-        "pluggable",
-        "strophe.disco",
-        "backbone.browserStorage",
-        "backbone.overview",
+    define(["sizzle",
+            "jquery",
+            "lodash",
+            "polyfill",
+            "locales",
+            "utils",
+            "moment_with_locales",
+            "strophe",
+            "pluggable",
+            "strophe.disco",
+            "backbone.browserStorage",
+            "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, dummy, utils, moment, Strophe, pluggable) {
-    /*
-     * Cannot use this due to Safari bug.
+}(this, function (sizzle, $, _, polyfill, locales, utils, moment, Strophe, pluggable) {
+    /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
@@ -30,6 +28,7 @@
     // Strophe globals
     var $build = Strophe.$build;
     var $iq = Strophe.$iq;
+    var $msg = Strophe.$msg;
     var $pres = Strophe.$pres;
     var b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
@@ -46,7 +45,24 @@
     var _converse = {};
     _converse.templates = {};
     _.extend(_converse, Backbone.Events);
-    _converse.emit = _converse.trigger;
+    _converse.promises = {
+        'cachedRoster': new $.Deferred(),
+        'chatBoxesFetched': new $.Deferred(),
+        'connected': new $.Deferred(),
+        'pluginsInitialized': new $.Deferred(),
+        'roster': new $.Deferred(),
+        'rosterContactsFetched': new $.Deferred(),
+        'rosterGroupsFetched': new $.Deferred(),
+        'rosterInitialized': new $.Deferred(),
+        'statusInitialized': new $.Deferred()
+    };
+    _converse.emit = function (name) {
+        _converse.trigger.apply(this, arguments);
+        var promise = _converse.promises[name];
+        if (!_.isUndefined(promise)) {
+            promise.resolve();
+        }
+    };
 
     _converse.core_plugins = [
         'converse-bookmarks',
@@ -161,6 +177,7 @@
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
         Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
@@ -178,13 +195,18 @@
 
         // Detect support for the user's locale
         // ------------------------------------
-        var locales = _.isUndefined(locales) ? {} : locales;
-        this.isConverseLocale = function (locale) { return !_.isUndefined(locales[locale]); };
+        locales = _.isUndefined(locales) ? {} : locales;
+        this.isConverseLocale = function (locale) {
+            return !_.isUndefined(locales[locale]);
+        };
         this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
         if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
             moment.locale = moment.lang;
         }
         moment.locale(utils.detectLocale(this.isMomentLocale));
+        if (_.includes(_.keys(locales), settings.i18n)) {
+            settings.i18n = locales[settings.i18n];
+        }
         this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
 
         // Translation machinery
@@ -218,14 +240,15 @@
             hide_offline_users: false,
             include_offline_state: false,
             jid: undefined,
-            keepalive: false,
+            keepalive: true,
             locked_domain: undefined,
             message_carbons: false,
             message_storage: 'session',
             password: undefined,
             prebind_url: null,
+            priority: 0,
             rid: undefined,
-            roster_groups: false,
+            roster_groups: true,
             show_only_online_users: false,
             sid: undefined,
             storage: 'session',
@@ -239,9 +262,6 @@
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
         _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
-
-        // BBB
-        if (this.prebind === true) { this.authentication = _converse.PREBIND; }
 
         if (this.authentication === _converse.ANONYMOUS) {
             if (this.auto_login && !this.jid) {
@@ -270,19 +290,9 @@
 
         // Module-level functions
         // ----------------------
-        this.wrappedChatBox = function (chatbox) {
-            /* Wrap a chatbox for outside consumption (i.e. so that it can be
-             * returned via the API.
-             */
+        this.getViewForChatBox = function (chatbox) {
             if (!chatbox) { return; }
-            var view = _converse.chatboxviews.get(chatbox.get('id'));
-            return {
-                'close': view.close.bind(view),
-                'focus': view.focus.bind(view),
-                'get': chatbox.get.bind(chatbox),
-                'open': view.show.bind(view),
-                'set': chatbox.set.bind(chatbox)
-            };
+            return _converse.chatboxviews.get(chatbox.get('id'));
         };
 
         this.generateResource = function () {
@@ -340,11 +350,12 @@
             }
             if (_converse.auto_away > 0 &&
                     _converse.idle_seconds > _converse.auto_away &&
-                    stat !== 'away' && stat !== 'xa') {
+                    stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('away');
             } else if (_converse.auto_xa > 0 &&
-                    _converse.idle_seconds > _converse.auto_xa && stat !== 'xa') {
+                    _converse.idle_seconds > _converse.auto_xa &&
+                    stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('xa');
             }
@@ -410,6 +421,7 @@
         this.disconnect = function () {
             _converse.log('DISCONNECTED');
             delete _converse.connection.reconnecting;
+            _converse.connection.reset();
             _converse._tearDown();
             _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
@@ -489,6 +501,7 @@
             } else if (status === Strophe.Status.AUTHFAIL) {
                 _converse.giveFeedback(__('Authentication Failed'), 'error');
                 _converse.setDisconnectionCause(status, condition, true);
+                _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
                 _converse.giveFeedback(
                     __('Connection failed'), 'error',
@@ -765,7 +778,7 @@
                     'fullname': bare_jid,
                     'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? [resource] : [],
+                    'resources': resource ? {'resource':0} : {},
                     'groups': [],
                     'image_type': DEFAULT_IMAGE_TYPE,
                     'image': DEFAULT_IMAGE,
@@ -845,23 +858,75 @@
                 return this;
             },
 
+            addResource: function (presence) {
+                /* Adds a new resource and it's associated attributes as taken
+                 * from the passed in presence stanza.
+                 *
+                 * Also updates the contact's chat_status if the presence has
+                 * higher priority (and is newer).
+                 */
+                var jid = presence.getAttribute('from'),
+                    chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                    resource = Strophe.getResourceFromJid(jid),
+                    priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+                    delay = presence.querySelector('delay[xmlns="'+Strophe.NS.DELAY+'"]'),
+                    timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
+
+                priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
+
+                var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
+                resources[resource] = {
+                    'priority': priority,
+                    'status': chat_status,
+                    'timestamp': timestamp 
+                };
+                var changed = {'resources': resources};
+                var hpr = this.getHighestPriorityResource();
+                if (priority == hpr.priority && timestamp == hpr.timestamp) {
+                    // Only set the chat status if this is the newest resource
+                    // with the highest priority
+                    changed.chat_status = chat_status;
+                }
+                this.save(changed);
+                return resources;
+            },
+
             removeResource: function (resource) {
-                var resources = this.get('resources'), idx;
-                if (resource) {
-                    idx = _.indexOf(resources, resource);
-                    if (idx !== -1) {
-                        resources.splice(idx, 1);
-                        this.save({'resources': resources});
+                /* Remove the passed in resource from the contact's resources map.
+                 *
+                 * Also recomputes the chat_status given that there's one less
+                 * resource.
+                 */
+                var resources = this.get('resources');
+                if (!_.isObject(resources)) {
+                    resources = {};
+                } else {
+                    delete resources[resource];
+                }
+                this.save({
+                    'resources': resources,
+                    'chat_status': _.propertyOf(
+                        this.getHighestPriorityResource())('status') || 'offline'
+                });
+            },
+
+            getHighestPriorityResource: function () {
+                /* Return the resource with the highest priority.
+                 *
+                 * If multiple resources have the same priority, take the
+                 * newest one.
+                 */
+                var resources = this.get('resources');
+                if (_.isObject(resources) && _.size(resources)) {
+                    var val = _.flow(
+                            _.values,
+                            _.partial(_.sortBy, _, ['priority', 'timestamp']),
+                            _.reverse
+                        )(resources)[0];
+                    if (!_.isUndefined(val)) {
+                        return val;
                     }
                 }
-                else {
-                    // if there is no resource (resource is null), it probably
-                    // means that the user is now completely offline. To make sure
-                    // that there isn't any "ghost" resources left, we empty the array
-                    this.save({'resources': []});
-                    return 0;
-                }
-                return resources.length;
             },
 
             removeFromRoster: function (callback) {
@@ -1011,22 +1076,6 @@
                     }
                 );
                 return deferred.promise();
-            },
-
-            addResource: function (bare_jid, resource) {
-                var item = this.get(bare_jid),
-                    resources;
-                if (item) {
-                    resources = item.get('resources');
-                    if (resources) {
-                        if (!_.includes(resources, resource)) {
-                            resources.push(resource);
-                            item.set({'resources': resources});
-                        }
-                    } else  {
-                        item.set({'resources': [resource]});
-                    }
-                }
             },
 
             subscribeBack: function (bare_jid) {
@@ -1233,14 +1282,10 @@
                 } else if (presence_type === 'subscribe') {
                     this.handleIncomingSubscription(presence);
                 } else if (presence_type === 'unavailable' && contact) {
-                    // Only set the user to offline if there aren't any
-                    // other resources still available.
-                    if (contact.removeResource(resource) === 0) {
-                        contact.save({'chat_status': "offline"});
-                    }
-                } else if (contact) { // presence_type is undefined
-                    this.addResource(bare_jid, resource);
-                    contact.save({'chat_status': chat_status});
+                    contact.removeResource(resource);
+                } else if (contact) {
+                    // presence_type is undefined
+                    contact.addResource(presence);
                 }
             }
         });
@@ -1432,7 +1477,8 @@
                     chatbox, resource,
                     from_jid = message.getAttribute('from'),
                     to_jid = message.getAttribute('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid);
+                    to_resource = Strophe.getResourceFromJid(to_jid),
+                    is_carbon = !_.isNull(message.querySelector('received[xmlns="'+Strophe.NS.CARBONS+'"]'));
 
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                     _converse.log(
@@ -1454,7 +1500,7 @@
                 if (!_.isNull(forwarded)) {
                     var forwarded_message = forwarded.querySelector('message');
                     var forwarded_from = forwarded_message.getAttribute('from');
-                    if (Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
                         //
                         // https://xmpp.org/extensions/xep-0280.html#security
@@ -1639,8 +1685,11 @@
                     presence = $pres().c('show').t(type).up();
                 }
                 if (status_message) {
-                    presence.c('status').t(status_message);
+                    presence.c('status').t(status_message).up();
                 }
+                presence.c('priority').t(
+                    _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
+                );
                 return presence;
             },
 
@@ -2010,5 +2059,210 @@
             return init_deferred.promise();
         }
     };
-    return _converse;
+
+    // API methods only available to plugins
+    _converse.api = {
+        'connection': {
+            'connected': function () {
+                return _converse.connection && _converse.connection.connected || false;
+            },
+            'disconnect': function () {
+                _converse.connection.disconnect();
+            },
+        },
+        'user': {
+            'jid': function () {
+                return _converse.connection.jid;
+            },
+            'login': function (credentials) {
+                _converse.initConnection();
+                _converse.logIn(credentials);
+            },
+            'logout': function () {
+                _converse.logOut();
+            },
+            'status': {
+                'get': function () {
+                    return _converse.xmppstatus.get('status');
+                },
+                'set': function (value, message) {
+                    var data = {'status': value};
+                    if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
+                        throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
+                    }
+                    if (_.isString(message)) {
+                        data.status_message = message;
+                    }
+                    _converse.xmppstatus.sendPresence(value);
+                    _converse.xmppstatus.save(data);
+                },
+                'message': {
+                    'get': function () {
+                        return _converse.xmppstatus.get('status_message');
+                    },
+                    'set': function (stat) {
+                        _converse.xmppstatus.save({'status_message': stat});
+                    }
+                }
+            },
+        },
+        'settings': {
+            'get': function (key) {
+                if (_.includes(_.keys(_converse.default_settings), key)) {
+                    return _converse[key];
+                }
+            },
+            'set': function (key, val) {
+                var o = {};
+                if (_.isObject(key)) {
+                    _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
+                } else if (_.isString("string")) {
+                    o[key] = val;
+                    _.assignIn(_converse, _.pick(o, _.keys(_converse.default_settings)));
+                }
+            }
+        },
+        'contacts': {
+            'get': function (jids) {
+                var _transform = function (jid) {
+                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
+                    if (contact) {
+                        return contact.attributes;
+                    }
+                    return null;
+                };
+                if (_.isUndefined(jids)) {
+                    jids = _converse.roster.pluck('jid');
+                } else if (_.isString(jids)) {
+                    return _transform(jids);
+                }
+                return _.map(jids, _transform);
+            },
+            'add': function (jid, name) {
+                if (!_.isString(jid) || !_.includes(jid, '@')) {
+                    throw new TypeError('contacts.add: invalid jid');
+                }
+                _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
+            }
+        },
+        'chats': {
+            'open': function (jids, attrs) {
+                var chatbox;
+                if (_.isUndefined(jids)) {
+                    _converse.log("chats.open: You need to provide at least one JID", "error");
+                    return null;
+                } else if (_.isString(jids)) {
+                    chatbox = _converse.getViewForChatBox(
+                        _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
+                    );
+                    return chatbox;
+                }
+                return _.map(jids, function (jid) {
+                    chatbox = _converse.getViewForChatBox(
+                        _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
+                    );
+                    return chatbox;
+                });
+            },
+            'get': function (jids) {
+                if (_.isUndefined(jids)) {
+                    var result = [];
+                    _converse.chatboxes.each(function (chatbox) {
+                        // FIXME: Leaky abstraction from MUC. We need to add a
+                        // base type for chat boxes, and check for that.
+                        if (chatbox.get('type') !== 'chatroom') {
+                            result.push(_converse.getViewForChatBox(chatbox));
+                        }
+                    });
+                    return result;
+                } else if (_.isString(jids)) {
+                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
+                }
+                return _.map(jids,
+                    _.partial(
+                        _.flow(
+                            _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
+                            _converse.getViewForChatBox.bind(_converse)
+                        ), _, true
+                    )
+                );
+            }
+        },
+        'tokens': {
+            'get': function (id) {
+                if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
+                    return null;
+                }
+                if (id.toLowerCase() === 'rid') {
+                    return _converse.connection.rid || _converse.connection._proto.rid;
+                } else if (id.toLowerCase() === 'sid') {
+                    return _converse.connection.sid || _converse.connection._proto.sid;
+                }
+            }
+        },
+        'listen': {
+            'once': _converse.once,
+            'on': _converse.on,
+            'not': _converse.off,
+            'stanza': function (name, options, handler) {
+                if (_.isFunction(options)) {
+                    handler = options;
+                    options = {};
+                } else {
+                    options = options || {};
+                }
+                _converse.connection.addHandler(
+                    handler,
+                    options.ns,
+                    name,
+                    options.type,
+                    options.id,
+                    options.from,
+                    options
+                );
+            },
+        },
+        'waitUntil': function (name) {
+            var promise = _converse.promises[name];
+            if (_.isUndefined(promise)) {
+                return null;
+            }
+            return _converse.promises[name].promise();
+        },
+        'send': function (stanza) {
+            _converse.connection.send(stanza);
+        },
+    };
+
+    // The public API
+    return {
+        'initialize': function (settings, callback) {
+            return _converse.initialize(settings, callback);
+        },
+        'plugins': {
+            'add': function (name, plugin) {
+                plugin.__name__ = name;
+                if (!_.isUndefined(_converse.pluggable.plugins[name])) {
+                    throw new TypeError(
+                        'Error: plugin with name "'+name+'" has already been '+
+                        'registered!');
+                } else {
+                    _converse.pluggable.plugins[name] = plugin;
+                }
+            }
+        },
+        'env': {
+            '$build': $build,
+            '$iq': $iq,
+            '$msg': $msg,
+            '$pres': $pres,
+            'Strophe': Strophe,
+            'b64_sha1':  b64_sha1,
+            '_': _,
+            'jQuery': $,
+            'sizzle': sizzle,
+            'moment': moment,
+            'utils': utils
+        }
+    };
 }));

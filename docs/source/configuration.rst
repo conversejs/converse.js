@@ -211,7 +211,7 @@ Show animations, for example when opening and closing chat boxes.
 archived_messages_page_size
 ---------------------------
 
-* Default:  ``20``
+* Default:  ``100``
 
 See also: `message_archiving`_
 
@@ -330,7 +330,7 @@ You can either specify a simple list of room JIDs, in which case your nickname
 will be taken from your JID, or you can specify a list of maps, where each map
 specifies the room's JID and the nickname that should be used.
 
-For example:
+For example::
 
     `[{'jid': 'room@example.org', 'nick': 'WizardKing69' }]`
 
@@ -411,7 +411,9 @@ accepts, refer to the
 
 As an example, suppose you want to restrict the supported SASL authentication
 mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
-``key:value`` pair::
+``key:value`` pair:
+
+.. code-block:: javascript 
 
         converse.initialize({
             connection_options: {
@@ -582,7 +584,8 @@ state. The only defined states are:
 * dnd -- The entity or resource is busy (dnd = "Do Not Disturb").
 * xa -- The entity or resource is away for an extended period (xa = "eXtended Away").
 
-Read the [relevant section in the XMPP spec](https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show) for more info.
+Read the `relevant section in the XMPP spec <https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show>`_
+for more info.
 
 What used to happen in converse.js when the `offline` state was chosen, is
 that a presence stanza with a `type` of `unavailable` was sent out.
@@ -788,6 +791,14 @@ automatically be "john". If now john@differentdomain.com tries to join the
 room, his nickname will be "john-2", and if john@somethingelse.com joins, then
 his nickname will be "john-3", and so forth.
 
+muc_show_join_leave
+-------------------
+
+* Default; ``true``
+
+Determines whether Converse.js will show info messages inside a chat room
+whenever a user joins or leaves it.
+
 notify_all_room_messages
 ------------------------
 
@@ -863,6 +874,26 @@ three tokens::
         "rid": "876987608760"
     }
 
+priority
+--------
+
+* Default:  ``0``
+* Type:     Number
+
+Determines the priority used for presence stanzas sent out from this resource
+(i.e. this instance of Converse.js).
+
+The priority of a given XMPP chat client determines the importance of its presence
+stanzas in relation to stanzas received from other clients of the same user.
+
+In Converse.js, the indicated chat status of a roster contact will be taken from the
+presence stanza (and associated resource) with the highest priority.
+
+If multiple resources have the same top priority, then the chat status will be
+taken from the most recent present stanza.
+
+For more info you can read `Section 2.2.2.3 of RFC-3921 <https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.3>`_.
+
 providers_link
 --------------
 
@@ -884,6 +915,13 @@ configured.
     It's currently not possible to use converse.js to assign contacts to groups.
     Converse.js can only show users and groups that were previously configured
     elsewhere.
+
+show_chatstate_notifications
+----------------------------
+
+* Default:  ``false``
+
+Specifies whether chat state (online, dnd, away) HTML5 desktop notifications should be shown.
 
 show_controlbox_by_default
 --------------------------
@@ -1061,7 +1099,9 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
 
 * *call*:
     Provides a button with a picture of a telephone on it.
-    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.::
+    When the call button is pressed, it will emit an event that can be used by a third-party library to initiate a call.
+
+    .. code-block:: javascript
 
         converse.listen.on('callButtonClicked', function(data) {
             console.log('Strophe connection is', data.connection);
@@ -1101,6 +1141,107 @@ support.
 
 .. note::
     Converse.js does not yet support "keepalive" with websockets.
+
+blacklisted_plugins
+-------------------
+
+* Default: ``[]``
+
+A list of plugin names that are blacklisted and will therefore not be
+initialized once ``converse.initialize`` is called, even if the same plugin is
+whitelisted.
+
+From Converse.js 3.0 onwards most of the API is available only to plugins and
+all plugins need to be whitelisted first.
+
+The usecase for blacklisting is generally to disable removed core plugins
+(which are automatically whitelisted) to prevent other (potentially malicious)
+plugins from registering themselves under those names.
+
+The core, and by default whitelisted, plugins are::
+
+    converse-bookmarks
+    converse-chatview
+    converse-controlbox
+    converse-core
+    converse-dragresize
+    converse-headline
+    converse-mam
+    converse-minimize
+    converse-muc
+    converse-notification
+    converse-otr
+    converse-ping
+    converse-register
+    converse-rosterview
+    converse-vcard
+
+An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+
+.. code-block:: javascript 
+
+    require(['converse-core', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            // other settings removed for brevity
+            blacklisted_plugins: [
+                'converse-controlbox',
+                'converse-dragresize',
+                'converse-minimize',
+                'converse-vcard'
+            ],
+        });
+    });
+
+
+whitelisted_plugins
+-------------------
+
+* Default: ``[]``
+
+A list of plugin names that are whitelisted and will therefore be
+initialized once ``converse.initialize`` is called.
+
+From Converse.js 3.0 onwards most of the API is available only to plugins and
+all plugins need to be whitelisted first.
+
+This is done to prevent malicious scripts from using the API to trick users or
+to read their conversations.
+
+By default all the core plugins are already whitelisted.
+
+These are::
+
+    converse-bookmarks
+    converse-chatview
+    converse-controlbox
+    converse-core
+    converse-dragresize
+    converse-headline
+    converse-mam
+    converse-minimize
+    converse-muc
+    converse-notification
+    converse-otr
+    converse-ping
+    converse-register
+    converse-rosterview
+    converse-vcard
+
+If you are using a custom build which excludes some core plugins, then you 
+should blacklist them so that malicious scripts can't register their own
+plugins under those names. See `blacklisted_plugins`_ for more info.
+
+An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
+
+.. code-block:: javascript 
+
+    require(['converse-core', 'converse-muc-embedded'], function (converse) {
+        converse.initialize({
+            // other settings removed for brevity
+            whitelisted_plugins: ['converse-muc-embedded']
+        });
+    });
+
 
 xhr_custom_status
 -----------------

@@ -15,6 +15,7 @@ require.config({
     baseUrl: '.',
     paths: {
         "almond":                   "node_modules/almond/almond",
+        "awesomplete":              "node_modules/awesomplete/awesomplete",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
@@ -28,19 +29,11 @@ require.config({
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
-        "strophe":                  "node_modules/strophe.js/src/wrapper",
-        "strophe-base64":           "node_modules/strophe.js/src/base64",
-        "strophe-bosh":             "node_modules/strophe.js/src/bosh",
-        "strophe-core":             "node_modules/strophe.js/src/core",
-        "strophe-md5":              "node_modules/strophe.js/src/md5",
-        "strophe-polyfill":         "node_modules/strophe.js/src/polyfills",
-        "strophe-sha1":             "node_modules/strophe.js/src/sha1",
-        "strophe-utils":            "node_modules/strophe.js/src/utils",
-        "strophe-websocket":        "node_modules/strophe.js/src/websocket",
-        "strophe.disco":            "node_modules/strophejs-plugins/disco/strophe.disco",
-        "strophe.ping":             "node_modules/strophejs-plugins/ping/strophe.ping",
-        "strophe.rsm":              "node_modules/strophejs-plugins/rsm/strophe.rsm",
-        "strophe.vcard":            "node_modules/strophejs-plugins/vcard/strophe.vcard",
+        "strophe":                  "node_modules/strophe.js/strophe",
+        "strophe.disco":            "node_modules/strophejs-plugin-disco/strophe.disco",
+        "strophe.ping":             "node_modules/strophejs-plugin-ping/strophe.ping",
+        "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
+        "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
@@ -49,16 +42,16 @@ require.config({
         "utils":                    "src/utils",
 
         // Converse
-        "converse-api":             "src/converse-api",
+        "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
-        "converse-core":            "src/converse-core",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
         "converse-muc":             "src/converse-muc",
+        "converse-muc-embedded":    "src/converse-muc-embedded",
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
@@ -67,21 +60,11 @@ require.config({
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption
+        // "bigint":               "node_modules/otr/build/dep/bigint",
         "bigint":               "3rdparty/bigint",
-        "crypto":               "3rdparty/crypto",
-        "crypto.aes":           "node_modules/otr/vendor/cryptojs/aes",
-        "crypto.cipher-core":   "node_modules/otr/vendor/cryptojs/cipher-core",
-        "crypto.core":          "node_modules/otr/vendor/cryptojs/core",
-        "crypto.enc-base64":    "node_modules/otr/vendor/cryptojs/enc-base64",
-        "crypto.evpkdf":        "components/crypto-js-evanvosberg/src/evpkdf",
-        "crypto.hmac":          "node_modules/otr/vendor/cryptojs/hmac",
-        "crypto.md5":           "components/crypto-js-evanvosberg/src/md5",
-        "crypto.mode-ctr":      "node_modules/otr/vendor/cryptojs/mode-ctr",
-        "crypto.pad-nopadding": "node_modules/otr/vendor/cryptojs/pad-nopadding",
-        "crypto.sha1":          "node_modules/otr/vendor/cryptojs/sha1",
-        "crypto.sha256":        "node_modules/otr/vendor/cryptojs/sha256",
+        "crypto":               "node_modules/otr/build/dep/crypto",
         "salsa20":              "node_modules/otr/build/dep/salsa20",
-        "otr":                  "3rdparty/otr",
+        "otr":                  "node_modules/otr/build/otr",
 
         // Locales paths
         "locales":   "src/locales",
@@ -138,6 +121,7 @@ require.config({
         "chatroom":                 "src/templates/chatroom",
         "chatroom_bookmark_form":   "src/templates/chatroom_bookmark_form",
         "chatroom_bookmark_toggle": "src/templates/chatroom_bookmark_toggle",
+        "chatroom_features":        "src/templates/chatroom_features",
         "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_head":            "src/templates/chatroom_head",
         "chatroom_nickname_form":   "src/templates/chatroom_nickname_form",
@@ -205,27 +189,14 @@ require.config({
         // Configuration for requirejs-tpl
         // Use Mustache style syntax for variable interpolation
         templateSettings: {
-            evaluate : /\{\[([\s\S]+?)\]\}/g,
-            interpolate : /\{\{([\s\S]+?)\}\}/g
+            'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
+            'evaluate': /\{\[([\s\S]+?)\]\}/g,
+            'interpolate': /\{\{([\s\S]+?)\}\}/g
         }
     },
 
     // define module dependencies for modules not using define
     shim: {
-        'crypto.aes':           { deps: ['crypto.cipher-core'] },
-        'crypto.cipher-core':   { deps: ['crypto.enc-base64', 'crypto.evpkdf'] },
-        'crypto.enc-base64':    { deps: ['crypto.core'] },
-        'crypto.evpkdf':        { deps: ['crypto.md5'] },
-        'crypto.hmac':          { deps: ['crypto.core'] },
-        'crypto.md5':           { deps: ['crypto.core'] },
-        'crypto.mode-ctr':      { deps: ['crypto.cipher-core'] },
-        'crypto.pad-nopadding': { deps: ['crypto.cipher-core'] },
-        'crypto.sha1':          { deps: ['crypto.core'] },
-        'crypto.sha256':        { deps: ['crypto.core'] },
-        'bigint':               { deps: ['crypto'] },
-        'strophe.ping':         { deps: ['strophe'] },
-        'strophe.register':     { deps: ['strophe'] },
-        'strophe.vcard':        { deps: ['strophe'] },
-        'backbone':             { deps: ['underscore'] }
+        'awesomplete':          { exports: 'Awesomplete' },
     }
 });

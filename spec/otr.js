@@ -1,36 +1,11 @@
 (function (root, factory) {
-    define(["mock", "converse-api", "test_utils"], factory);
+    define(["mock", "converse-core", "test_utils"], factory);
 } (this, function (mock, converse, test_utils) {
     var $ = converse.env.jQuery;
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
 
     return describe("The OTR module", function() {
-
-        it("can store a session passphrase in session storage", mock.initConverse(function (_converse) {
-            // With no prebind, the user's XMPP password is used and nothing is
-            // stored in session storage.
-            test_utils.openControlBox();
-            test_utils.openContactsPanel(_converse);
-            test_utils.createContacts(_converse, 'current');
-
-            var auth = _converse.authentication;
-            var pass = _converse.connection.pass;
-            _converse.authentication = "manual";
-            _converse.connection.pass = 's3cr3t!';
-            expect(_converse.otr.getSessionPassphrase()).toBe(_converse.connection.pass);
-
-            // With prebind, a random passphrase is generated and stored in
-            // session storage.
-            _converse.authentication = "prebind";
-            var pp = _converse.otr.getSessionPassphrase();
-            expect(pp).not.toBe(_converse.connection.pass);
-            expect(pp).toBe(window.sessionStorage[b64_sha1(_converse.connection.jid)]);
-
-            // Clean up
-            _converse.authentication = auth;
-            _converse.connection.pass = pass;
-        }));
 
         it("will add processing hints to sent out encrypted <message> stanzas", mock.initConverse(function (_converse) {
             test_utils.openControlBox();

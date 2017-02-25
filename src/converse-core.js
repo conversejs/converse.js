@@ -1476,7 +1476,8 @@
                     chatbox, resource,
                     from_jid = message.getAttribute('from'),
                     to_jid = message.getAttribute('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid);
+                    to_resource = Strophe.getResourceFromJid(to_jid),
+                    is_carbon = !_.isNull(message.querySelector('received[xmlns="'+Strophe.NS.CARBONS+'"]'));
 
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                     _converse.log(
@@ -1498,7 +1499,7 @@
                 if (!_.isNull(forwarded)) {
                     var forwarded_message = forwarded.querySelector('message');
                     var forwarded_from = forwarded_message.getAttribute('from');
-                    if (Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
                         //
                         // https://xmpp.org/extensions/xep-0280.html#security

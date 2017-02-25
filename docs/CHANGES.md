@@ -58,7 +58,7 @@
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]
 - #745 New config option [priority](https://conversejs.org/docs/html/configuration.html#priority) [jcbrand]
 - #770 Allow setting contact attrs on chats.open [Ape]
-
+- #790 MAM retrieval broken [jcbrand]
 
 ## 2.0.6 (2017-02-13)
 - Escape user-generated input to prevent JS-injection attacks. (Thanks to SamWhited) [jcbrand]

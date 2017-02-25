@@ -246,15 +246,16 @@
 
         isHeadlineMessage: function (message) {
             var from_jid = message.getAttribute('from');
-            if (message.getAttribute('type') === 'headline' ||
+            if (message.getAttribute('type') === 'headline') {
+                return true;
+            }
+            if (message.getAttribute('type') !== 'error' &&
+                    !_.isNil(from_jid) &&
+                    !_.includes(from_jid, '@')) {
                 // Some servers (I'm looking at you Prosody) don't set the message
                 // type to "headline" when sending server messages. For now we
                 // check if an @ signal is included, and if not, we assume it's
                 // a headline message.
-                (   message.getAttribute('type') !== 'error' &&
-                    !_.isUndefined(from_jid) &&
-                    !_.includes(from_jid, '@')
-                )) {
                 return true;
             }
             return false;

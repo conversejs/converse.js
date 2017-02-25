@@ -135,8 +135,8 @@
                 },
 
                 afterMessagesFetched: function () {
-                    this.scrollDown();
                     this.insertIntoDOM();
+                    this.scrollDown();
                     // We only start listening for the scroll event after
                     // cached messages have been fetched
                     this.$content.on('scroll', this.markScrolled.bind(this));
@@ -155,7 +155,10 @@
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */
-                    $('#conversejs').prepend(this.$el);
+                    var container = document.querySelector('#conversejs');
+                    if (this.el.parentNode !== container) {
+                        container.insertBefore(this.el, container.firstChild);
+                    }
                     return this;
                 },
 
@@ -821,7 +824,7 @@
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250, {'leading': true});
+                        this.debouncedScrollDown = _.debounce(this._scrollDown, 250);
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;

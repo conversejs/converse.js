@@ -922,6 +922,11 @@
                     return "Please join!";
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
+
+                // XXX: cheating a lttle bit, normally this'll be set after
+                // receiving the features for the room.
+                view.model.set('open', 'true');
+
                 spyOn(view, 'directInvite').andCallThrough();
                 var $input;
                 view.$el.find('.chat-area').remove();

@@ -17,6 +17,7 @@
             "tpl!chatroom_features",
             "tpl!chatroom_form",
             "tpl!chatroom_head",
+            "tpl!chatroom_invite",
             "tpl!chatroom_nickname_form",
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
@@ -37,6 +38,7 @@
             tpl_chatroom_features,
             tpl_chatroom_form,
             tpl_chatroom_head,
+            tpl_chatroom_invite,
             tpl_chatroom_nickname_form,
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
@@ -1944,8 +1946,12 @@
 
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
-                    var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
+
                     this.chatroomview = this.model.chatroomview;
+                    this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
+                    this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
+
+                    var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
                     this.chatroomview.model.on('change:hidden', debouncedRenderRoomFeatures, this);
                     this.chatroomview.model.on('change:mam_enabled', debouncedRenderRoomFeatures, this);
                     this.chatroomview.model.on('change:membersonly', debouncedRenderRoomFeatures, this);
@@ -1967,14 +1973,32 @@
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'allow_muc_invitations': _converse.allow_muc_invitations,
                                 'label_features': __('Features'),
-                                'label_invitation': __('Invite'),
-                                'label_occupants': __('Occupants'),
+                                'label_occupants': __('Occupants')
                             }))
                     );
                     if (_converse.allow_muc_invitations) {
-                        _converse.api.waitUntil('rosterContactsFetched').then(this.initInviteWidget.bind(this));
+                        _converse.api.waitUntil('rosterContactsFetched').then(this.renderInviteWidget.bind(this));
                     }
                     return this.renderRoomFeatures();
+                },
+
+                renderInviteWidget: function () {
+                    var form = this.el.querySelector('form.room-invite');
+                    if (this.shouldInviteWidgetBeShown()) {
+                        if (_.isNull(form)) {
+                            var heading = this.el.querySelector('.occupants-heading');
+                            form = tpl_chatroom_invite({
+                                'label_invitation': __('Invite'),
+                            });
+                            heading.insertAdjacentHTML('afterend', form);
+                            this.initInviteWidget();
+                        }
+                    } else {
+                        if (!_.isNull(form)) {
+                            form.remove();
+                        }
+                    }
+                    return this;
                 },
 
                 renderRoomFeatures: function () {
@@ -1982,7 +2006,6 @@
                         tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'label_hidden': __('Hidden'),
-                                'label_invitation': __('Invite'),
                                 'label_mam_enabled': __('Message archiving'),
                                 'label_membersonly': __('Members only'),
                                 'label_moderated': __('Moderated'),
@@ -2130,8 +2153,18 @@
                         }});
                 },
 
+                shouldInviteWidgetBeShown: function () {
+                    return _converse.allow_muc_invitations &&
+                        (this.chatroomview.model.get('open') ||
+                            this.chatroomview.model.get('affiliation') === "owner"
+                        );
+                },
+
                 initInviteWidget: function () {
                     var form = this.el.querySelector('form.room-invite');
+                    if (_.isNull(form)) {
+                        return;
+                    }
                     form.addEventListener('submit', this.inviteFormSubmitted.bind(this));
                     var el = this.el.querySelector('input.invited-contact');
                     var list = _converse.roster.map(function (item) {
@@ -2143,7 +2176,6 @@
                         'list': list
                     });
                     el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
-                    return this;
                 }
             });
 

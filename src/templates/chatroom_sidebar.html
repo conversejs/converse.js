@@ -1,14 +1,6 @@
 <!-- <div class="occupants"> -->
 <p class="occupants-heading">{{{label_occupants}}}</p>
-<form class="pure-form room-invite
-    {[ if (!allow_muc_invitations || (!open && affiliation !== "owner")) { ]}
-        hidden
-    {[ } ]}
-    ">
-    <input class="invited-contact" placeholder="{{{label_invitation}}}" type="text"/>
-</form>
 <ul class="occupant-list"></ul>
-
 <div class="chatroom-features">
     <p class="occupants-heading">{{{label_features}}}</p>
     <ul class="features-list"></ul>

@@ -24,13 +24,6 @@ if (typeof define !== 'undefined') {
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
     ], function (converse) {
-        var evt;
-        if (window.CustomEvent) {
-            evt = new CustomEvent('converse-loaded', {detail: {'converse': converse}});
-        } else {
-            evt = document.createEvent('CustomEvent');
-            evt.initCustomEvent('converse-loaded', true, true, {'converse': converse});
-        }
-        window.dispatchEvent(evt);
+        return converse;
     });
 }

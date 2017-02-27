@@ -670,8 +670,8 @@
                         // model is going to be destroyed afterwards.
                         this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
-                        this.model.destroy();
                     }
+                    this.model.destroy();
                     this.remove();
                     _converse.emit('chatBoxClosed', this);
                     return this;

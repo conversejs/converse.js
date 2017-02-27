@@ -211,7 +211,7 @@ Show animations, for example when opening and closing chat boxes.
 archived_messages_page_size
 ---------------------------
 
-* Default:  ``100``
+* Default:  ``50``
 
 See also: `message_archiving`_
 

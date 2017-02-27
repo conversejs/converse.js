@@ -21,8 +21,6 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
-        "converse-minimize",    // Allows chat boxes to be minimized
-        "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
     ], function (converse) {

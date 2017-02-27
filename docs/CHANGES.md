@@ -16,6 +16,9 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
+- The no-jQuery build has been renamed from `converse.nojquery.js` to
+  `converse-no-jquery.js` to fit the convention used for other build names.
+  [jcbrand]
 - 100 is the new default [archived_messages_page_size](https://conversejs.org/docs/html/configuration.html#archived-messages-page-size)
   [jcbrand]
 - Better support for delayed delivery of presence stanzas (XEP-0203). [jcbrand]

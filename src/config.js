@@ -42,6 +42,8 @@ require.config({
         "utils":                    "src/utils",
 
         // Converse
+        "converse-mobile":          "src/converse-mobile",
+
         "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",

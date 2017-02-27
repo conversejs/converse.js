@@ -39,8 +39,8 @@
         "lodash"
     ],
     wrap: {
-        endFile: ["wrapper-no-jquery.js", "wrapper-no-deps.js"]
+        startFile: "start.frag",
+        endFile: "end-no-dependencies.frag"
     },
-    insertRequire: ["converse"],
-    mainConfigFile: "../config.js"
+    mainConfigFile: "config.js"
 })

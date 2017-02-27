@@ -1972,7 +1972,6 @@
                         tpl_chatroom_sidebar(
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'allow_muc_invitations': _converse.allow_muc_invitations,
-                                'label_features': __('Features'),
                                 'label_occupants': __('Occupants')
                             }))
                     );
@@ -2002,9 +2001,10 @@
                 },
 
                 renderRoomFeatures: function () {
-                    this.$('.features-list').html(
+                    this.$('.chatroom-features').html(
                         tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
+                                'label_features': __('Features'),
                                 'label_hidden': __('Hidden'),
                                 'label_mam_enabled': __('Message archiving'),
                                 'label_membersonly': __('Members only'),

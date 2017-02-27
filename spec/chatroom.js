@@ -14,26 +14,32 @@
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments", mock.initConverse(function (_converse) {
                 test_utils.createContacts(_converse, 'current');
                 runs(function () {
-                    test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                    test_utils.openChatRoom(_converse, 'leisure', 'localhost', 'dummy');
-                    test_utils.openChatRoom(_converse, 'news', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'news', 'localhost', 'dummy');
                     expect(_converse.chatboxviews.get('lounge@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('news@localhost').$el.is(':visible')).toBeTruthy();
                 });
                 waits('100');
                 runs(function () {
+                    // XXX: bit of a cheat here. We want `cleanup()` to be
+                    // called on the room. Either it's this or faking
+                    // `sendPresence`.
+                    _converse.connection.connected = false;
+
                     _converse.api.rooms.close('lounge@localhost');
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('news@localhost').$el.is(':visible')).toBeTruthy();
+
                     _converse.api.rooms.close(['leisure@localhost', 'news@localhost']);
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
 
-                    test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                    test_utils.openChatRoom(_converse, 'leisure', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
                     expect(_converse.chatboxviews.get('lounge@localhost').$el.is(':visible')).toBeTruthy();
                     expect(_converse.chatboxviews.get('leisure@localhost').$el.is(':visible')).toBeTruthy();
                 });
@@ -49,7 +55,7 @@
                 test_utils.createContacts(_converse, 'current');
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
-                    test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                     var jid = 'lounge@localhost';
                     var room = _converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
@@ -61,7 +67,7 @@
                 waits('300'); // ChatBox.show() is debounced for 250ms
                 runs(function () {
                     // Test with mixed case
-                    test_utils.openChatRoom(_converse, 'Leisure', 'localhost', 'dummy');
+                    test_utils.openAndEnterChatRoom(_converse, 'Leisure', 'localhost', 'dummy');
                     var jid = 'Leisure@localhost';
                     var room = _converse.api.rooms.get(jid);
                     expect(room instanceof Object).toBeTruthy();
@@ -91,6 +97,15 @@
             }));
 
            it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box", mock.initConverse(function (_converse) {
+                // Mock 'getRoomFeatures', otherwise the room won't be
+                // displayed as it waits first for the features to be returned
+                // (when it's a new room being created).
+                spyOn(_converse.ChatRoomView.prototype, 'getRoomFeatures').andCallFake(function () {
+                    var deferred = new $.Deferred();
+                    deferred.resolve();
+                    return deferred.promise();
+                });
+
                 test_utils.createContacts(_converse, 'current');
                 var chatroomview;
                 var jid = 'lounge@localhost';

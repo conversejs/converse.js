@@ -352,15 +352,9 @@
                     this.model.on('change:name', this.renderHeading, this);
 
                     this.createOccupantsView();
-                    this.render().insertIntoDOM(); // TODO: hide chat area until messages received.
-                    // XXX: adding the event below to the declarative events map doesn't work.
-                    // The code that gets executed because of that looks like this:
-                    //      this.$el.on('scroll', '.chat-content', this.markScrolled.bind(this));
-                    // Which for some reason doesn't work.
-                    // So working around that fact here:
-                    this.$el.find('.chat-content').on('scroll', this.markScrolled.bind(this));
-
+                    this.render();
                     this.registerHandlers();
+
                     if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
                         this.getRoomFeatures().always(function () {
                             that.join();
@@ -416,9 +410,13 @@
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({add:true});
+                    return this;
                 },
 
                 insertIntoDOM: function () {
+                    if (document.querySelector('body').contains(this.el)) {
+                        return;
+                    }
                     var view = _converse.chatboxviews.get("controlbox");
                     if (view) {
                         this.$el.insertAfter(view.$el);
@@ -458,6 +456,13 @@
                         this.scrollDown();
                         this.focus();
                     }
+                },
+
+                afterMessagesFetched: function () {
+                    _converse.ChatBoxView.prototype.afterMessagesFetched.apply(this, arguments);
+                    // We only start listening for the scroll event after
+                    // cached messages have been fetched
+                    this.$('.chat-content').on('scroll', this.markScrolled.bind(this));
                 },
 
                 getExtraMessageClasses: function (attrs) {

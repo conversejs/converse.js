@@ -166,9 +166,9 @@ dist/converse-no-dependencies.min.js: src locale node_modules *.js
 dist/converse-no-dependencies.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-mobile.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse-mobile out=dist/converse-mobile.min.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-mobile.js: src locale node_modules *.js
-	$(RJS) -o src/build.js optimize=none include=converse-mobile out=dist/converse-mobile.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
 
 .PHONY: jsmin
 jsmin: $(BUILDS)

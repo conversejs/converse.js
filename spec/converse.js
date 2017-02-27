@@ -324,11 +324,11 @@
         describe("The \"settings\" API", function() {
             it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (_converse) {
                 expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
-                expect(_converse.api.settings.get("play_sounds")).toBe(false);
-                _converse.api.settings.set("play_sounds", true);
                 expect(_converse.api.settings.get("play_sounds")).toBe(true);
-                _converse.api.settings.set({"play_sounds": false});
+                _converse.api.settings.set("play_sounds", false);
                 expect(_converse.api.settings.get("play_sounds")).toBe(false);
+                _converse.api.settings.set({"play_sounds": true});
+                expect(_converse.api.settings.get("play_sounds")).toBe(true);
                 // Only whitelisted settings allowed.
                 expect(typeof _converse.api.settings.get("non_existing")).toBe("undefined");
                 _converse.api.settings.set("non_existing", true);

@@ -33,7 +33,7 @@
 - Use lodash instead of underscore.js [jcbrand]
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]
-- `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
+- `message_carbons`, `play_sounds` and `allow_chat_pending_contacts` now default to `true` [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
 - New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil)

@@ -242,7 +242,7 @@
             jid: undefined,
             keepalive: true,
             locked_domain: undefined,
-            message_carbons: false,
+            message_carbons: true,
             message_storage: 'session',
             password: undefined,
             prebind_url: null,

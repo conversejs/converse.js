@@ -19,7 +19,6 @@ require.config({
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
-        "converse":                 "src/converse",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
@@ -42,7 +41,7 @@ require.config({
         "utils":                    "src/utils",
 
         // Converse
-        "converse-mobile":          "src/converse-mobile",
+        "converse":                 "src/converse",
 
         "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",

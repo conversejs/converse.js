@@ -1455,7 +1455,7 @@
   margin: 0;
   margin-left: 0.1em;
   margin-right: 0.2em;
-  padding: 0.5em 0.5em 0.3em 0.5em;
+  padding: 0.5em;
   text-decoration: none; }
   #converse-embedded-chat .chatbox-btn:active,
   #conversejs .chatbox-btn:active {
@@ -2342,8 +2342,8 @@
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list {
             overflow-y: auto;
-            height: -webkit-calc(100% - 205px);
-            height: calc(100% - 205px); }
+            height: -webkit-calc(100% - 220px);
+            height: calc(100% - 220px); }
           #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul.features-list,
           #conversejs .chatroom .box-flyout .chatroom-body .occupants ul.features-list {
             padding-top: 0; }

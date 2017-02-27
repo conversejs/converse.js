@@ -118,7 +118,7 @@
 
                         &.occupant-list {
                             overflow-y: auto;
-                            @include calc(height, '100% - 205px');
+                            @include calc(height, '100% - 220px');
                         }
                         &.features-list {
                             padding-top: 0;

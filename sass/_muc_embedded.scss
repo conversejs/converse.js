@@ -36,7 +36,7 @@
         }
         .chat-title {
             padding: 0.3em;
-            font-size: 150%;
+            font-size: 120%;
         }
     }
     .chatbox-btn {
@@ -51,7 +51,7 @@
                 @include calc(height, '100% - #{$chat-head-height}');
             }
             .occupants-heading {
-                font-size: 150%;
+                font-size: 120%;
             }
             .chat-content {
                 height: calc(100% - #{$toolbar-height + $chat-textarea-height +2px});

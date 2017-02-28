@@ -32,7 +32,7 @@
       box-shadow: none; }
     #converse-embedded-chat .chatbox .chat-title {
       padding: 0.3em;
-      font-size: 150%; }
+      font-size: 120%; }
   #converse-embedded-chat .chatbox-btn {
     display: none; }
   #converse-embedded-chat .chatroom .box-flyout {
@@ -43,7 +43,7 @@
       height: -webkit-calc(100% - 55px);
       height: calc(100% - 55px); }
     #converse-embedded-chat .chatroom .box-flyout .occupants-heading {
-      font-size: 150%; }
+      font-size: 120%; }
     #converse-embedded-chat .chatroom .box-flyout .chat-content {
       height: calc(100% - 97px); }
       #converse-embedded-chat .chatroom .box-flyout .chat-content .chat-message {

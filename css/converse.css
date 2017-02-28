@@ -1334,7 +1334,8 @@
       color: #818479; }
     #converse-embedded-chat form.pure-form.converse-form label,
     #conversejs form.pure-form.converse-form label {
-      margin-top: 1em; }
+      margin-top: 1em;
+      font-size: 16px; }
     #converse-embedded-chat form.pure-form.converse-form input[type=text],
     #converse-embedded-chat form.pure-form.converse-form input[type=password],
     #converse-embedded-chat form.pure-form.converse-form input[type=number],
@@ -1345,7 +1346,6 @@
     #conversejs form.pure-form.converse-form input[type=number],
     #conversejs form.pure-form.converse-form input[type=button],
     #conversejs form.pure-form.converse-form input[type=submit] {
-      height: 2.2em;
       padding: 0.5em; }
     #converse-embedded-chat form.pure-form.converse-form input[type=button],
     #converse-embedded-chat form.pure-form.converse-form input[type=submit],
@@ -1353,7 +1353,8 @@
     #conversejs form.pure-form.converse-form input[type=submit] {
       padding-left: 1em;
       padding-right: 1em;
-      margin-right: 1em; }
+      margin: 0.5em 0;
+      border: none; }
     #converse-embedded-chat form.pure-form.converse-form input.error,
     #conversejs form.pure-form.converse-form input.error {
       border: 1px solid red;
@@ -1891,7 +1892,7 @@
       color: #818479;
       display: block;
       overflow: hidden;
-      padding: 0.4em;
+      padding: 0.1em;
       text-shadow: 0 1px 0 #FAFAFA;
       word-wrap: break-word; }
       #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom:hover {
@@ -2378,7 +2379,7 @@
                 #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-online, #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-chat,
                 #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-online,
                 #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-chat {
-                  background-color: green; }
+                  background-color: #1A9707; }
                 #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-dnd,
                 #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-dnd {
                   background-color: red; }
@@ -2414,6 +2415,11 @@
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text] {
           display: block; }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=submit],
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],
+        #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=submit] {
+          margin: 0 0.5em; }
   #converse-embedded-chat .chatroom .chat-textarea,
   #conversejs .chatroom .chat-textarea {
     border-bottom-right-radius: 0; }
@@ -2484,7 +2490,11 @@
   #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.room-info {
     clear: none; }
   #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
-    width: 75%; }
+    width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 0.5em; }
   #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom .remove-bookmark {
     float: right; }
 

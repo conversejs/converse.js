@@ -146,7 +146,7 @@
 									height: 0.5em;
                                     &.occupant-online,
                                     &.occupant-chat {
-                                        background-color: green;
+                                        background-color: #1A9707;
                                     }
                                     &.occupant-dnd {
                                         background-color: red;
@@ -187,6 +187,10 @@
                         input[type=text] {
                             display: block;
                         }
+                    }
+                    input[type=button],
+                    input[type=submit] {
+                        margin: 0 0.5em;
                     }
                 }
             }

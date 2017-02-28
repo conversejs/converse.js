@@ -171,20 +171,21 @@
             }
             label {
                 margin-top: 1em;
+                font-size: $font-size-large;
             }
             input[type=text],
             input[type=password],
             input[type=number],
             input[type=button],
             input[type=submit] {
-                height: 2.2em;
                 padding: 0.5em;
             }
             input[type=button],
             input[type=submit] {
                 padding-left: 1em;
                 padding-right: 1em;
-                margin-right: 1em;
+                margin: 0.5em 0;
+                border: none;
             }
             input.error {
                 border: 1px solid red;

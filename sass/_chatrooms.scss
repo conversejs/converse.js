@@ -144,7 +144,8 @@
                                     margin-right: 0.5em;
 									width: 0.5em;
 									height: 0.5em;
-                                    &.occupant-online {
+                                    &.occupant-online,
+                                    &.occupant-chat {
                                         background-color: green;
                                     }
                                     &.occupant-dnd {

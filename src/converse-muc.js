@@ -1925,11 +1925,13 @@
                 },
 
                 render: function () {
+                    var show = this.model.get('show') || 'online';
                     var new_el = tpl_occupant(
                         _.extend(
                             { 'jid': '',
-                              'show': 'online',
-                              'hint_occupant': __('Click to mention this user in your message.'),
+                              'show': show,
+                              'hint_show': _converse.PRETTY_CHAT_STATUS[show],
+                              'hint_occupant': __('Click to mention '+this.model.get('nick')+' in your message.'),
                               'desc_moderator': __('This user is a moderator.'),
                               'desc_occupant': __('This user can send messages in this room.'),
                               'desc_visitor': __('This user can NOT send messages in this room.')

@@ -325,7 +325,7 @@
                         text = text.replace(/^\/me/, '');
                         template = tpl_action;
                         if (attrs.sender === 'me') {
-                            fullname = _converse.xmppstatus.get('fullname');
+                            fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
                             username = _.isNil(fullname)? _converse.bare_jid: fullname;
                         } else {
                             username = attrs.fullname;

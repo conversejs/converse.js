@@ -50,10 +50,10 @@
 
         it("can be used to replay conversations", mock.initConverse(function (_converse) {
             /*
-            test_utils.openChatRoom(_converse, "dummy", 'rooms.localhost', 'jc');
-            test_utils.openChatRoom(_converse, "prosody", 'conference.prosody.im', 'jc');
+            test_utils.openAndEnterChatRoom(_converse, "dummy", 'rooms.localhost', 'jc');
+            test_utils.openAndEnterChatRoom(_converse, "prosody", 'conference.prosody.im', 'jc');
             */
-            test_utils.openChatRoom(_converse, "discuss", 'conference.conversejs.org', 'ee');
+            test_utils.openAndEnterChatRoom(_converse, "discuss", 'conference.conversejs.org', 'jc');
             spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
             _.each(transcripts, function (transcript) {
                 var text = transcript();

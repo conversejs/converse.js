@@ -1702,15 +1702,24 @@
                     // result look like the structure returned by
                     // parseXUserElement. Not nice...
                     var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    var stat = stanza.querySelector('status');
                     if (stanza.getAttribute('type') === 'unavailable') {
-                        var stat = stanza.querySelector('status');
                         if (!_.isNull(stat) && stat.textContent) {
                             return [{'messages': [__(nick+' has left the room. "'+stat.textContent+'"')]}];
                         } else {
                             return [{'messages': [__(nick+' has left the room')]}];
                         }
                     }
-                    return [{'messages': [__(nick+' has joined the room')]}];
+                    if (!this.occupantsview.model.find({'nick': nick})) {
+                        // Only show join message if we don't already have the
+                        // occupant model. Doing so avoids showing duplicate
+                        // join messages.
+                        if (!_.isNull(stat) && stat.textContent) {
+                            return [{'messages': [__(nick+' has joined the room. "'+stat.textContent+'"')]}];
+                        } else {
+                            return [{'messages': [__(nick+' has joined the room.')]}];
+                        }
+                    }
                 },
 
                 showStatusMessages: function (stanza) {
@@ -1837,6 +1846,8 @@
                         this.getRoomFeatures();
                     }
                     this.hideSpinner().showStatusMessages(pres);
+                    // This must be called after showStatusMessages so that
+                    // "join" messages are correctly shown.
                     this.occupantsview.updateOccupantsOnPresence(pres);
                     if (this.model.get('role') !== 'none' &&
                             this.model.get('connection_status') === ROOMSTATUS.CONNECTING) {

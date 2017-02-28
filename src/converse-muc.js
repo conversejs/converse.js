@@ -1021,16 +1021,9 @@
                 handleMUCMessage: function (stanza) {
                     /* Handler for all MUC messages sent to this chat room.
                      *
-                     * MAM (message archive management XEP-0313) messages are
-                     * ignored, since they're handled separately.
-                     *
                      * Parameters:
                      *  (XMLElement) stanza: The message stanza.
                      */
-                    var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
-                    if (is_mam) {
-                        return true;
-                    }
                     var configuration_changed = stanza.querySelector("status[code='104']");
                     var logging_enabled = stanza.querySelector("status[code='170']");
                     var logging_disabled = stanza.querySelector("status[code='171']");
@@ -1374,7 +1367,7 @@
                             _.each(iq.querySelectorAll('feature'), function (field) {
                                 var fieldname = field.getAttribute('var');
                                 if (!fieldname.startsWith('muc_')) {
-                                    if (fieldname === 'urn:xmpp:mam:0') {
+                                    if (fieldname === Strophe.NS.MAM) {
                                         features.mam_enabled = true;
                                     }
                                     return;

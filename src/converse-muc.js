@@ -75,6 +75,12 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
+    var ROOM_FEATURES = [
+        'passwordprotected', 'unsecured', 'hidden',
+        'public', 'membersonly', 'open', 'persistent',
+        'temporary', 'nonanonymous', 'semianonymous',
+        'moderated', 'unmoderated', 'mam_enabled'
+    ];
     var ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
@@ -294,27 +300,18 @@
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
+                settings = _.extend(
+                    _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
+                    settings
+                );
                 return _converse.chatboxviews.showChat(
                     _.extend({
                         'affiliation': null,
                         'connection_status': ROOMSTATUS.DISCONNECTED,
                         'description': '',
                         'features_fetched': false,
-                        'hidden': false,
-                        'mam_enabled': false,
-                        'membersonly': false,
-                        'moderated': false,
-                        'nonanonymous': false,
-                        'open': false,
-                        'passwordprotected': false,
-                        'persistent': false,
-                        'public': false,
                         'roomconfig': {},
-                        'semianonymous': false,
-                        'temporary': false,
                         'type': 'chatroom',
-                        'unmoderated': false,
-                        'unsecured': false,
                     }, settings)
                 );
             };
@@ -2007,9 +2004,12 @@
                 },
 
                 renderRoomFeatures: function () {
+                    var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
+                        iteratee = function (a, v) { return a || v; };
                     this.$('.chatroom-features').html(
                         tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
+                                'has_features': _.reduce(_.values(picks), iteratee),
                                 'label_features': __('Features'),
                                 'label_hidden': __('Hidden'),
                                 'label_mam_enabled': __('Message archiving'),

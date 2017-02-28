@@ -128,7 +128,7 @@
                             display: block;
                             font-size: $font-size-small;
                             overflow: hidden;
-                            padding: 2px 5px;
+                            padding: 0.2em 0.5em 0.2em 0;
                             text-overflow: ellipsis;
                             white-space: nowrap;
                             [class^="icon-"], [class*=" icon-"] {
@@ -139,6 +139,24 @@
                             }
                             &.occupant {
                                 cursor: pointer;
+                                .occupant-status {
+									display: inline-block;
+                                    margin-right: 0.5em;
+									width: 0.5em;
+									height: 0.5em;
+                                    &.occupant-online {
+                                        background-color: green;
+                                    }
+                                    &.occupant-dnd {
+                                        background-color: red;
+                                    }
+                                    &.occupant-away {
+                                        background-color: darkorange;
+                                    }
+                                    &.occupant-xa {
+                                        background-color: orange;
+                                    }
+                                }
                             }
                             &.moderator {
                                 color: $moderator-color;

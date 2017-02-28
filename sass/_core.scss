@@ -20,6 +20,10 @@
         width: 100vw;
     }
 
+    .circle {
+        border-radius: 50%;
+    }
+
     ::selection {
         background-color: $highlight-color;
     }

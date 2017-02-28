@@ -1164,6 +1164,9 @@
     #conversejs {
       width: 100%;
       width: 100vw; } }
+  #converse-embedded-chat .circle,
+  #conversejs .circle {
+    border-radius: 50%; }
   #converse-embedded-chat ::selection,
   #conversejs ::selection {
     background-color: #DCF9F6; }
@@ -2353,7 +2356,7 @@
             display: block;
             font-size: 12px;
             overflow: hidden;
-            padding: 2px 5px;
+            padding: 0.2em 0.5em 0.2em 0;
             text-overflow: ellipsis;
             white-space: nowrap; }
             #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li [class^="icon-"], #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li [class*=" icon-"],
@@ -2366,6 +2369,24 @@
             #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant,
             #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant {
               cursor: pointer; }
+              #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status,
+              #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status {
+                display: inline-block;
+                margin-right: 0.5em;
+                width: 0.5em;
+                height: 0.5em; }
+                #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-online,
+                #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-online {
+                  background-color: green; }
+                #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-dnd,
+                #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-dnd {
+                  background-color: red; }
+                #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-away,
+                #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-away {
+                  background-color: orange; }
+                #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-xa,
+                #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-status.occupant-xa {
+                  background-color: orange; }
             #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul li.moderator,
             #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.moderator {
               color: #D24E2B; }

@@ -1928,6 +1928,7 @@
                     var new_el = tpl_occupant(
                         _.extend(
                             { 'jid': '',
+                              'show': 'online',
                               'hint_occupant': __('Click to mention this user in your message.'),
                               'desc_moderator': __('This user is a moderator.'),
                               'desc_occupant': __('This user can send messages in this room.'),
@@ -2077,7 +2078,7 @@
                                 data.status = child.textContent || null;
                                 break;
                             case "show":
-                                data.show = child.textContent || null;
+                                data.show = child.textContent || 'online';
                                 break;
                             case "x":
                                 if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {

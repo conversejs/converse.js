@@ -352,7 +352,7 @@
                     this.model.on('change:name', this.renderHeading, this);
 
                     this.createOccupantsView();
-                    this.render();
+                    this.render().insertIntoDOM();
                     this.registerHandlers();
 
                     if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
@@ -456,13 +456,6 @@
                         this.scrollDown();
                         this.focus();
                     }
-                },
-
-                afterMessagesFetched: function () {
-                    _converse.ChatBoxView.prototype.afterMessagesFetched.apply(this, arguments);
-                    // We only start listening for the scroll event after
-                    // cached messages have been fetched
-                    this.$('.chat-content').on('scroll', this.markScrolled.bind(this));
                 },
 
                 getExtraMessageClasses: function (attrs) {
@@ -1395,7 +1388,8 @@
                             that.model.save(features);
                             return deferred.resolve();
                         },
-                        deferred.reject
+                        deferred.reject,
+                        5000
                     );
                     return deferred.promise();
                 },

@@ -853,7 +853,7 @@
                 expect($(occupant).first().text()).toBe("dummy");
                 expect($(occupant).last().text()).toBe("moderatorman");
                 expect($(occupant).last().attr('class').indexOf('moderator')).not.toBe(-1);
-                expect($(occupant).last().attr('title')).toBe(contact_jid + ' This user is a moderator. Click to mention this user in your message.');
+                expect($(occupant).last().attr('title')).toBe(contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.');
             }));
 
             it("will use the user's reserved nickname, if it exists", mock.initConverse(function (_converse) {

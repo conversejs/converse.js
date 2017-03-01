@@ -445,6 +445,7 @@
                         // localstorage
                         this.model.save();
                     }
+                    this.occupantsview.setOccupantsHeight();
                 },
 
                 afterConnected: function () {
@@ -2005,9 +2006,10 @@
 
                 renderRoomFeatures: function () {
                     var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
-                        iteratee = function (a, v) { return a || v; };
-                    this.$('.chatroom-features').html(
-                        tpl_chatroom_features(
+                        iteratee = function (a, v) { return a || v; },
+                        el = this.el.querySelector('.chatroom-features');
+
+                    el.innerHTML = tpl_chatroom_features(
                             _.extend(this.chatroomview.model.toJSON(), {
                                 'has_features': _.reduce(_.values(picks), iteratee),
                                 'label_features': __('Features'),
@@ -2037,9 +2039,15 @@
                                 'tt_temporary': __('This room will disappear once the last person leaves'),
                                 'tt_unmoderated': __('This room is not being moderated'),
                                 'tt_unsecured': __('This room does not require a password upon entry')
-                            }))
-                    );
+                            }));
+                    this.setOccupantsHeight();
                     return this;
+                },
+
+                setOccupantsHeight: function () {
+                    var el = this.el.querySelector('.chatroom-features');
+                    this.el.querySelector('.occupant-list').style.cssText =
+                        'height: calc(100% - '+el.offsetHeight+'px - 5em);';
                 },
 
                 onOccupantAdded: function (item) {

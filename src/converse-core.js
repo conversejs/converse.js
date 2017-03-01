@@ -1532,7 +1532,7 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                _converse.emit('message', message);
+                _converse.emit('message', original_stanza);
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 if (!chatbox) {

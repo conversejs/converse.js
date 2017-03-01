@@ -1441,7 +1441,6 @@
     color: white;
     font-size: 80%;
     font-style: italic;
-    height: 1.3em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1449,17 +1448,15 @@
     padding-top: 0.5em; }
 #converse-embedded-chat .chatbox-btn,
 #conversejs .chatbox-btn {
-  border-radius: 50%;
-  border: 1px solid white;
+  border-radius: 25%;
+  border: none;
   color: white;
   cursor: pointer;
   display: inline-block;
   float: right;
-  font-size: 10px;
-  margin: 0;
-  margin-left: 0.1em;
-  margin-right: 0.2em;
-  padding: 0.5em;
+  font-size: 12px;
+  margin: 0 0.2em;
+  padding: 0.3em;
   text-decoration: none; }
   #converse-embedded-chat .chatbox-btn:active,
   #conversejs .chatbox-btn:active {

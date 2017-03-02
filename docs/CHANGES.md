@@ -16,6 +16,8 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
+- Bugfix. After bookmarking a room for which a nickname is required, return to
+  the nickname form. [jcbrand]
 - Show the chat states of room occupants. [jcbrand]
 - The no-jQuery build has been renamed from `converse.nojquery.js` to
   `converse-no-jquery.js` to fit the convention used for other build names.

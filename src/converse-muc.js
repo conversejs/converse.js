@@ -84,8 +84,9 @@
     var ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
-        DISCONNECTED: 2,
-        ENTERED: 3
+        NICKNAME_REQUIRED: 2,
+        DISCONNECTED: 3,
+        ENTERED: 4
     };
 
     converse.plugins.add('converse-muc', {
@@ -1250,8 +1251,7 @@
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
-                            that.$el.find('.chat-area').removeClass('hidden');
-                            that.$el.find('.occupants').removeClass('hidden');
+                            that.renderAfterTransition();
                         });
                     return deferred.promise();
                 },
@@ -1305,8 +1305,7 @@
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
-                            that.$el.find('.chat-area').removeClass('hidden');
-                            that.$el.find('.occupants').removeClass('hidden');
+                            that.renderAfterTransition();
                         });
                 },
 
@@ -1535,6 +1534,7 @@
                             label_join: __('Enter room'),
                             validation_message: message
                         }));
+                    this.model.save('connection_status', ROOMSTATUS.NICKNAME_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
                 },
 
@@ -1768,20 +1768,29 @@
                     this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
                 },
 
+                renderAfterTransition: function () {
+                    /* Rerender the room after some kind of transition. For
+                     * example after the spinner has been removed or after a
+                     * form has been submitted and removed.
+                     */
+                    if (this.model.get('connection_status') == ROOMSTATUS.NICKNAME_REQUIRED) {
+                        this.renderNicknameForm();
+                    } else {
+                        this.$el.find('.chat-area').removeClass('hidden');
+                        this.$el.find('.occupants').removeClass('hidden');
+                        this.scrollDown();
+                    }
+                },
+
                 hideSpinner: function () {
                     /* Check if the spinner is being shown and if so, hide it.
                      * Also make sure then that the chat area and occupants
                      * list are both visible.
                      */
-                    var that = this;
-                    var $spinner = this.$el.find('.spinner');
-                    if ($spinner.length) {
-                        $spinner.hide(function () {
-                            $(this).remove();
-                            that.$el.find('.chat-area').removeClass('hidden');
-                            that.$el.find('.occupants').removeClass('hidden');
-                            that.scrollDown();
-                        });
+                    var spinner = this.el.querySelector('.spinner');
+                    if (!_.isNull(spinner)) {
+                        spinner.parentNode.removeChild(spinner);
+                        this.renderAfterTransition();
                     }
                     return this;
                 },

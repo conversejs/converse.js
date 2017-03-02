@@ -158,7 +158,7 @@
                     this.$el.find('div.chatroom-form-container').hide(
                         function () {
                             $(this).remove();
-                            that.$('.chatroom-body').children().removeClass('hidden');
+                            that.renderAfterTransition();
                         });
                 },
 

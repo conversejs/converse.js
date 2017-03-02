@@ -1400,15 +1400,16 @@
                      *      case, auto-configure won't happen, regardless of
                      *      the settings.
                      */
-                    var that = this;
                     if (_.isUndefined(ev) && this.model.get('auto_configure')) {
-                        this.fetchRoomConfiguration().then(that.autoConfigureChatRoom.bind(that));
+                        this.fetchRoomConfiguration().then(
+                            this.autoConfigureChatRoom.bind(this));
                     } else {
                         if (!_.isUndefined(ev) && ev.preventDefault) {
                             ev.preventDefault();
                         }
                         this.showSpinner();
-                        this.fetchRoomConfiguration().then(that.renderConfigurationForm.bind(that));
+                        this.fetchRoomConfiguration().then(
+                            this.renderConfigurationForm.bind(this));
                     }
                 },
 
@@ -1426,7 +1427,8 @@
                     else {
                         $nick.removeClass('error');
                     }
-                    this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-form-container')
+                            .replaceWith('<span class="spinner centered"/>');
                     this.join(nick);
                 },
 
@@ -1511,7 +1513,8 @@
                         }
                     } else {
                         this.renderNicknameForm(
-                            __("The nickname you chose is reserved or currently in use, please choose a different one.")
+                            __("The nickname you chose is reserved or "+
+                               "currently in use, please choose a different one.")
                         );
                     }
                 },

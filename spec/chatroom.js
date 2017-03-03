@@ -1089,8 +1089,8 @@
                 spyOn(view, 'scrollDown').andCallThrough();
                 runs(function () {
                     /* Create enough messages so that there's a
-                        * scrollbar.
-                        */
+                     * scrollbar.
+                     */
                     for (var i=0; i<20; i++) {
                         _converse.chatboxes.onMessage(
                             $msg({
@@ -1101,7 +1101,7 @@
                             }).c('body').t('Message: '+i).tree());
                     }
                 });
-                waits(50);
+                waits(500); // Give enough time for `markScrolled` to have been called
                 runs(function () {
                     view.$content.scrollTop(0);
                 });

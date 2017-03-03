@@ -35,9 +35,8 @@ connect to once the page loads. Please see the section: :ref:`session-support`.
 
 .. _`XMPP server`:
 
---------------
 An XMPP server
---------------
+==============
 
 *Converse.js* implements `XMPP <http://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
@@ -52,9 +51,8 @@ servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software
 
 .. _`BOSH connection manager`:
 
--------------------------
 A BOSH Connection Manager
--------------------------
+=========================
 
 Your website and *Converse.js* use `HTTP <https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol>`_
 as protocol to communicate with the webserver. HTTP connections are stateless and usually shortlived.
@@ -87,8 +85,8 @@ manager located at https://conversejs.org/http-bind.
 This connection manager is available for testing purposes only, please don't
 use it in production.
 
-Websockets
-==========
+Alternatively, Websocket support
+================================
 
 Websockets provide an alternative means of connection to an XMPP server from
 your browser.
@@ -99,8 +97,9 @@ HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
 `Prosody <http://prosody.im>`_ (from version 0.10) supports websocket connections, as
 does the node-xmpp-bosh connection manager.
 
+--------------------------------------------
 Overcoming cross-domain request restrictions
-============================================
+--------------------------------------------
 
 Lets say your domain is *example.org*, but the domain of your connection
 manager is *example.com*.
@@ -169,30 +168,51 @@ Apache
 Single Session Support
 ----------------------
 
-.. note::
-    What is prebinding?
-
-    **Prebind** refers to a technique whereby your web application sets up an
-    authenticated BOSH session with a BOSH connection manager (which could be your
-    XMPP server). Then later, in the browser, converse.js attaches to that
-    session that was previously set up.
-
-    This reduces network traffic and also speeds up loading times for
-    converse.js. Additionally, because prebinding works with tokens, it's not necessary
-    for the XMPP client to store users' passwords).
-
-Server-side authentication (prebind)
-====================================
-
 It's possible to enable shared sessions whereby users already
-authenticated in your website will also automatically be logged in on the XMPP server,
+logged in to your website will also automatically be logged in on the XMPP server,
 
-This session can also be made to persist across page loads. In other words, we want
-a user to automatically be logged in to chat when they log in to the website,
-and we want their chat session to persist across page loads.
+Once a user is logged in, the session will be kept alive across page loads by
+way of the :ref:`keepalive` setting.
 
-To do this you will require a `BOSH server <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
-for converse.js to connect to (see the :ref:`bosh-service-url` under :ref:`configuration-variables`)
+There are a few ways to let your users be automatically authenticated to an
+XMPP server once they've logged in to your site.
+
+
+Option 1). Server-side authentication via BOSH prebinding
+=========================================================
+
+To **prebind** refers to a technique whereby your web application sets up an
+authenticated BOSH session with the XMPP server or a standalone `BOSH <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
+connection manager.
+
+Once authenticated, it receives RID and SID tokens which need to be passed
+on to converse.js upon pa. Converse.js will then attach to that same session using
+those tokens.
+
+It's called "prebind" because you bind to the BOSH session beforehand, and then
+later in the page you just attach to that session again.
+
+The RID and SID tokens can be passed in manually when calling
+`converse.initialize`, but a more convenient way is to pass converse.js a :ref:`prebind_url`
+which it will call when it needs the tokens. This way it will be able to
+automatically reconnect whenever the connection drops, by simply calling that
+URL again to fetch new tokens.
+
+Prebinding reduces network traffic and also speeds up the startup time for
+converse.js. Additionally, because prebind works with tokens, it's not necessary
+for the XMPP client to know or store users' passwords.
+
+One potential drawback of using prebind is that in order to establish the
+authenticated BOSH session server-side, you'll need to access and pass on the XMPP
+credentials server-side, which, unless you're using tokens, means that you'll
+need to store XMPP passwords in cleartext.
+
+This is however not the case if you for example use LDAP or Active Directory as
+your authentication backend, since you could then configure your XMPP server to
+use that as well.
+
+To prebind you will require a BOSH-enabled XMPP server for converse.js to connect to
+(see the :ref:`bosh-service-url` under :ref:`configuration-variables`)
 as well as a BOSH client in your web application (written for example in
 Python, Ruby or PHP) that will set up an authenticated BOSH session, which
 converse.js can then attach to.
@@ -200,9 +220,11 @@ converse.js can then attach to.
 .. note::
     A BOSH server acts as a bridge between HTTP, the protocol of the web, and
     XMPP, the instant messaging protocol.
-    Converse.js can only communicate via HTTP, but we need to communicate with
-    an XMPP server in order to chat. So the BOSH server acts as a middle man,
-    translating our HTTP requests into XMPP stanzas and vice versa.
+
+    Converse.js can only communicate via HTTP (or websocket, in which case BOSH can't be used).
+    It cannot open TCP sockets to communicate to an XMPP server directly.
+
+    So the BOSH server acts as a middle man, translating our HTTP requests into XMPP stanzas and vice versa.
 
 Jack Moffitt has a great `blogpost <http://metajack.im/2008/10/03/getting-attached-to-strophe>`_
 about this and even provides an
@@ -227,7 +249,7 @@ Please read the documentation on those settings for a fuller picture of what
 needs to be done.
 
 Example code for server-side prebinding
-=======================================
+***************************************
 
 * PHP:
     See `xmpp-prebind-php <https://github.com/candy-chat/xmpp-prebind-php>`_ by
@@ -236,3 +258,25 @@ Example code for server-side prebinding
 * Python:
     See this `example Django application`_ by Jack Moffitt.
 
+
+Option 2). Delegated authentication, also called external authentication
+========================================================================
+
+An alternative to BOSH prebinding is to generate temporary authentication
+tokens which are then sent to the XMPP server and which it in turn checks
+against some kind of external authentication provider (generally the same web-app that
+generated the tokens).
+
+In this case, you could use the :ref:`credentials_url` setting, to specify a
+URL from which converse.js should fetch the username and token.
+
+Option 3). Cryptographically signed tokens
+==========================================
+
+A third potential option is to generate cryptographically signed tokens (e.g.
+HMAC tokens) which the XMPP server could authenticate by checking that they're
+signed with the right key and that they conform to some kind of pre-arranged
+format.
+
+In this case, you would also use the :ref:`credentials_url` setting, to specify a
+URL from which converse.js should fetch the username and token.

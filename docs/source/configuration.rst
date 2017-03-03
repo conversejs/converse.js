@@ -413,7 +413,7 @@ As an example, suppose you want to restrict the supported SASL authentication
 mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
 ``key:value`` pair:
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
         converse.initialize({
             connection_options: {
@@ -422,6 +422,8 @@ mechanisms, then you'd pass in the ``mechanisms`` as a ``connection_options``
                 ]
             },
         });
+
+.. _`credentials_url`:
 
 credentials_url
 ---------------
@@ -1017,7 +1019,7 @@ data.
     Since version 1.0.7, the "storage" option doesn't apply anymore to how roster
     contacts and their statuses are stored (they're now always stored in session
     storage), to address the above issue.
-    
+
 
 sticky_controlbox
 -----------------
@@ -1178,7 +1180,7 @@ The core, and by default whitelisted, plugins are::
 
 An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     require(['converse-core', 'converse-muc-embedded'], function (converse) {
         converse.initialize({
@@ -1227,13 +1229,13 @@ These are::
     converse-rosterview
     converse-vcard
 
-If you are using a custom build which excludes some core plugins, then you 
+If you are using a custom build which excludes some core plugins, then you
 should blacklist them so that malicious scripts can't register their own
 plugins under those names. See `blacklisted_plugins`_ for more info.
 
 An example from `the embedded room demo <https://conversejs.org/demo/embedded.html>`_
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     require(['converse-core', 'converse-muc-embedded'], function (converse) {
         converse.initialize({
@@ -1289,7 +1291,7 @@ This setting enables the second mechanism, otherwise by default the first will b
 A default JSON encoded list of objects must be returned. Each object
 corresponds to a matched user and needs the keys ``id`` and ``fullname``.
 
-.. code-block:: javascript 
+.. code-block:: javascript
 
     [{"id": "foo", "fullname": "Foo McFoo"}, {"id": "bar", "fullname": "Bar McBar"}]
 

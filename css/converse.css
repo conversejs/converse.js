@@ -2337,6 +2337,9 @@
           width: 25%;
           width: -webkit-calc(30% - 1em);
           width: calc(30% - 1em); }
+        #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
+          padding: 0.2em; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants ul {
           padding: 0.3em 0;

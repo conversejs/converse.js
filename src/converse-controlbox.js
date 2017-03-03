@@ -259,7 +259,7 @@
                 onConnected: function () {
                     if (this.model.get('connected')) {
                         this.render().insertRoster();
-                        this.model.save('closed', !this.$el.is(':visible'));
+                        this.model.save();
                     }
                 },
 
@@ -328,6 +328,7 @@
                     utils.fadeIn(this.el, function () {
                         _converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
+                        that.model.set('closed', false);
                         _converse.emit('controlBoxOpened', that);
                     });
                 },

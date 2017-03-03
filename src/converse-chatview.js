@@ -784,6 +784,13 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (this.model.get('auto_scrolled')) {
+                        this.model.set({
+                            'scrolled': false,
+                            'auto_scrolled': false
+                        });
+                        return;
+                    }
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
@@ -806,6 +813,7 @@
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(
                             this.$content.scrollTop() + $message[0].scrollHeight);
+                        this.model.save({'auto_scrolled': true});
                     }
                     return this;
                 },
@@ -815,6 +823,7 @@
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
                         this.$el.find('.new-msgs-indicator').addClass('hidden');
+                        this.model.save({'auto_scrolled': true});
                     }
                 },
 

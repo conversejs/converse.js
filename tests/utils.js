@@ -101,28 +101,25 @@
         return converse.roster.get(jid).trigger("open");
     };
 
-    utils.openChatRoom = function (converse, room, server, nick) {
-        // Open a new chatroom
-        this.openControlBox(converse);
-        this.openRoomsPanel(converse);
-        var roomspanel = converse.chatboxviews.get('controlbox').roomspanel;
+    utils.openChatRoom = function (_converse, room, server, nick) {
+        // Opens a new chatroom
+        this.openControlBox(_converse);
+        this.openRoomsPanel(_converse);
+        var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
         roomspanel.$el.find('input.new-chatroom-name').val(room);
         roomspanel.$el.find('input.new-chatroom-nick').val(nick);
         roomspanel.$el.find('input.new-chatroom-server').val(server);
         roomspanel.$el.find('form').submit();
-        this.closeControlBox(converse);
+        this.closeControlBox(_converse);
     };
 
     utils.openAndEnterChatRoom = function (converse, room, server, nick) {
-        var IQ_id, sendIQ = converse.connection.sendIQ;
-        spyOn(converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
-            IQ_id = sendIQ.bind(this)(iq, callback, errback);
-        });
-
+        sinon.spy(converse.connection, 'sendIQ');
         utils.openChatRoom(converse, room, server);
-        var view = converse.chatboxviews.get(room+'@'+server);
+        var view = converse.chatboxviews.get((room+'@'+server).toLowerCase());
 
         // We pretend this is a new room, so no disco info is returned.
+        var IQ_id = converse.connection.sendIQ.firstCall.returnValue;
         var features_stanza = $iq({
                 from: 'lounge@localhost',
                 'id': IQ_id,
@@ -133,6 +130,7 @@
         converse.connection._dataRecv(utils.createRequest(features_stanza));
 
         // The XMPP server returns the reserved nick for this user.
+        IQ_id = converse.connection.sendIQ.secondCall.returnValue;
         var stanza = $iq({
             'type': 'result',
             'id': IQ_id,
@@ -156,6 +154,7 @@
             }).up()
             .c('status').attrs({code:'110'});
         converse.connection._dataRecv(utils.createRequest(presence));
+        converse.connection.sendIQ.restore();
     };
 
     utils.removeRosterContacts = function () {

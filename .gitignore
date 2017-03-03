@@ -53,8 +53,8 @@ dist/converse-no-locales-no-otr.min.js
 dist/converse-no-otr.js
 dist/converse-no-otr.min.js
 dist/converse.min.js
-dist/converse.nojquery.js
-dist/converse.nojquery.min.js
+dist/converse-no-jquery.js
+dist/converse-no-jquery.min.js
 dist/converse-mobile.min.js
 
 css/*.map

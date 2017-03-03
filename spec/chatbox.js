@@ -699,7 +699,7 @@
                                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                             }
                         });
-                        waits(50);
+                        waits(500); // Give enough time for `markScrolled` to have been called
                         runs(function () {
                             chatboxview.$content.scrollTop(0);
                         });

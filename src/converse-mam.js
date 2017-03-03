@@ -30,7 +30,6 @@
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
-
     converse.plugins.add('converse-mam', {
 
         overrides: {
@@ -137,6 +136,17 @@
                     return result;
                 },
 
+                handleMUCMessage: function (stanza) {
+                    /* MAM (message archive management XEP-0313) messages are
+                     * ignored, since they're handled separately.
+                     */
+                    var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
+                    if (is_mam) {
+                        return true;
+                    }
+                    return this.__super__.handleMUCMessage.apply(this, arguments);
+                },
+
                 fetchArchivedMessages: function (options) {
                     /* Fetch archived chat messages from the XMPP server.
                      *
@@ -181,7 +191,7 @@
             var _converse = this._converse;
 
             this.updateSettings({
-                archived_messages_page_size: '100',
+                archived_messages_page_size: '50',
                 message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });

@@ -1140,14 +1140,17 @@
                 expect($server.length).toBe(1);
                 expect($('.chatroom:visible').length).toBe(0); // There shouldn't be any chatrooms open currently
                 spyOn(roomspanel, 'createChatRoom').andCallThrough();
+                spyOn(_converse.ChatRoomView.prototype, 'getRoomFeatures').andCallFake(function () {
+                    var deferred = new $.Deferred();
+                    deferred.resolve();
+                    return deferred.promise();
+                });
+
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 runs(function () {
                     $input.val('Lounge');
                     $nick.val('dummy');
                     $server.val('muc.localhost');
-                });
-                waits('250');
-                runs(function () {
                     roomspanel.$el.find('form').submit();
                     expect(roomspanel.createChatRoom).toHaveBeenCalled();
                 });

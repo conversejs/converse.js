@@ -221,7 +221,7 @@
                             insert.call(that.$content, $el);
                             return $el;
                         },
-                        this.scrollDownMessageHeight.bind(this)
+                        this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
                 },
 
@@ -288,7 +288,7 @@
                                 this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
                             return $el;
                         }.bind(this),
-                        this.scrollDownMessageHeight.bind(this)
+                        this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
                 },
 
@@ -325,7 +325,7 @@
                         text = text.replace(/^\/me/, '');
                         template = tpl_action;
                         if (attrs.sender === 'me') {
-                            fullname = _converse.xmppstatus.get('fullname');
+                            fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
                             username = _.isNil(fullname)? _converse.bare_jid: fullname;
                         } else {
                             username = attrs.fullname;
@@ -670,8 +670,8 @@
                         // model is going to be destroyed afterwards.
                         this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
-                        this.model.destroy();
                     }
+                    this.model.destroy();
                     this.remove();
                     _converse.emit('chatBoxClosed', this);
                     return this;
@@ -776,6 +776,13 @@
                     return this;
                 },
 
+                hideNewMessagesIndicator: function () {
+                    var new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
+                    if (!_.isNull(new_msgs_indicator)) {
+                        new_msgs_indicator.classList.add('hidden');
+                    }
+                },
+
                 markScrolled: _.debounce(function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
@@ -784,12 +791,19 @@
                      * received.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (this.model.get('auto_scrolled')) {
+                        this.model.set({
+                            'scrolled': false,
+                            'auto_scrolled': false
+                        });
+                        return;
+                    }
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
+                        this.hideNewMessagesIndicator();
                         this.model.save('scrolled', false);
-                        this.$el.find('.new-msgs-indicator').addClass('hidden');
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
@@ -802,19 +816,12 @@
                     this.scrollDown();
                 },
 
-                scrollDownMessageHeight: function ($message) {
-                    if (this.$content.is(':visible') && !this.model.get('scrolled')) {
-                        this.$content.scrollTop(
-                            this.$content.scrollTop() + $message[0].scrollHeight);
-                    }
-                    return this;
-                },
-
                 _scrollDown: function () {
                     /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
-                        this.$el.find('.new-msgs-indicator').addClass('hidden');
+                        this.hideNewMessagesIndicator();
+                        this.model.save({'auto_scrolled': true});
                     }
                 },
 

@@ -110,6 +110,11 @@
                         width: 25%;
                         @include calc(width, '30% - 1em');
                     }
+                    .awesomplete {
+                        ul {
+                            padding: 0.2em;
+                        }
+                    }
                     ul {
                         padding: 0.3em 0;
                         overflow-x: hidden;
@@ -118,7 +123,7 @@
 
                         &.occupant-list {
                             overflow-y: auto;
-                            @include calc(height, '100% - 205px');
+                            @include calc(height, '100% - 220px');
                         }
                         &.features-list {
                             padding-top: 0;
@@ -128,7 +133,7 @@
                             display: block;
                             font-size: $font-size-small;
                             overflow: hidden;
-                            padding: 2px 5px;
+                            padding: 0.2em 0.5em 0.2em 0;
                             text-overflow: ellipsis;
                             white-space: nowrap;
                             [class^="icon-"], [class*=" icon-"] {
@@ -139,6 +144,25 @@
                             }
                             &.occupant {
                                 cursor: pointer;
+                                .occupant-status {
+									display: inline-block;
+                                    margin-right: 0.5em;
+									width: 0.5em;
+									height: 0.5em;
+                                    &.occupant-online,
+                                    &.occupant-chat {
+                                        background-color: #1A9707;
+                                    }
+                                    &.occupant-dnd {
+                                        background-color: red;
+                                    }
+                                    &.occupant-away {
+                                        background-color: darkorange;
+                                    }
+                                    &.occupant-xa {
+                                        background-color: orange;
+                                    }
+                                }
                             }
                             &.moderator {
                                 color: $moderator-color;
@@ -168,6 +192,10 @@
                         input[type=text] {
                             display: block;
                         }
+                    }
+                    input[type=button],
+                    input[type=submit] {
+                        margin: 0 0.5em;
                     }
                 }
             }

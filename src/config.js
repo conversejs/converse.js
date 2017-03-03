@@ -4,6 +4,7 @@ if (typeof(require) === 'undefined') {
      * We want to save the configuration in a variable so that we can reuse it in
      * tests/main.js.
      */
+    // eslint-disable-next-line
     require = { // jshint ignore:line
         config: function (c) {
             config = c;
@@ -19,7 +20,6 @@ require.config({
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
-        "converse":                 "src/converse",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery-private":           "src/jquery-private",
@@ -42,6 +42,8 @@ require.config({
         "utils":                    "src/utils",
 
         // Converse
+        "converse":                 "src/converse",
+
         "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",
@@ -124,6 +126,7 @@ require.config({
         "chatroom_features":        "src/templates/chatroom_features",
         "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_head":            "src/templates/chatroom_head",
+        "chatroom_invite":          "src/templates/chatroom_invite",
         "chatroom_nickname_form":   "src/templates/chatroom_nickname_form",
         "chatroom_password_form":   "src/templates/chatroom_password_form",
         "chatroom_sidebar":         "src/templates/chatroom_sidebar",

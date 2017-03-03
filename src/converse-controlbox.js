@@ -101,12 +101,10 @@
                 },
 
                 onChatBoxesFetched: function (collection, resp) {
+                    var _converse = this.__super__._converse;
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    if (!_.includes(_.map(resp, 'id'), 'controlbox')) {
-                        this.add({
-                            id: 'controlbox',
-                            box_id: 'controlbox'
-                        });
+                    if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
+                        _converse.addControlBox();
                     }
                     this.get('controlbox').save({connected:true});
                 },
@@ -259,7 +257,7 @@
                 onConnected: function () {
                     if (this.model.get('connected')) {
                         this.render().insertRoster();
-                        this.model.save('closed', !this.$el.is(':visible'));
+                        this.model.save();
                     }
                 },
 
@@ -328,6 +326,7 @@
                     utils.fadeIn(this.el, function () {
                         _converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
+                        that.model.set('closed', false);
                         _converse.emit('controlBoxOpened', that);
                     });
                 },

@@ -80,7 +80,7 @@ po2json:
 
 .PHONY: release
 release:
-	sed -i s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ src/converse.js
+	sed -i s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ src/start.frag
 	sed -i s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	sed -i s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	sed -i s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
@@ -148,27 +148,27 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/converse-mobile.js \
          dist/converse-mobile.min.js \
-         dist/converse.nojquery.js \
- 		 dist/converse.nojquery.min.js \
+         dist/converse-no-jquery.js \
+ 		 dist/converse-no-jquery.min.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
 dist/converse.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js
+	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
 dist/converse.js: src locale node_modules *.js
-	$(RJS) -o src/build.js optimize=none out=dist/converse.js
-dist/converse.nojquery.min.js: src locale node_modules *.js
-	$(RJS) -o src/build-no-jquery.js
-dist/converse.nojquery.js: src locale node_modules *.js
-	$(RJS) -o src/build-no-jquery.js optimize=none out=dist/converse.nojquery.js
+	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+dist/converse-no-jquery.min.js: src locale node_modules *.js
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.min.js
+dist/converse-no-jquery.js: src locale node_modules *.js
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.js optimize=none 
 dist/converse-no-dependencies.min.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js
 dist/converse-no-dependencies.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-mobile.min.js: src locale node_modules *.js
-	$(RJS) -o src/build-mobile.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-mobile.js: src locale node_modules *.js
-	$(RJS) -o src/build-mobile.js optimize=none out=dist/converse-mobile.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
 
 .PHONY: jsmin
 jsmin: $(BUILDS)

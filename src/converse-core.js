@@ -95,6 +95,15 @@
         'chat':         1, // We currently don't differentiate between "chat" and "online"
         'online':       1
     };
+    _converse.PRETTY_CHAT_STATUS = {
+        'offline':      'Offline',
+        'unavailable':  'Unavailable',
+        'xa':           'Extended Away',
+        'away':         'Away',
+        'dnd':          'Do not disturb',
+        'chat':         'Chattty',
+        'online':       'Online'
+    };
     _converse.ANONYMOUS  = "anonymous";
     _converse.CLOSED = 'closed';
     _converse.EXTERNAL = "external";
@@ -172,12 +181,12 @@
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
         Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
@@ -242,7 +251,7 @@
             jid: undefined,
             keepalive: true,
             locked_domain: undefined,
-            message_carbons: false,
+            message_carbons: true,
             message_storage: 'session',
             password: undefined,
             prebind_url: null,
@@ -1523,7 +1532,7 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                _converse.emit('message', message);
+                _converse.emit('message', original_stanza);
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 if (!chatbox) {

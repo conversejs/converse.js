@@ -1,8 +1,9 @@
 ({
     baseUrl: "../",
     name: "almond",
-    out: "../dist/converse.min.js",
-    mainConfigFile: '../config.js',
-    include: ['converse'],
-    insertRequire: ['converse'],
+    mainConfigFile: 'config.js',
+    wrap: {
+        startFile: "start.frag",
+        endFile: "end.frag"
+    }
 })

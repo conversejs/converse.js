@@ -16,7 +16,13 @@
     * Templates are no longer stored as attributes on the `_converse` object.
       If you need a particular template, use `require` to load it.
 
-- 100 is the new default [archived_messages_page_size](https://conversejs.org/docs/html/configuration.html#archived-messages-page-size)
+- Bugfix. After bookmarking a room for which a nickname is required, return to
+  the nickname form. [jcbrand]
+- Show the chat states of room occupants. [jcbrand]
+- The no-jQuery build has been renamed from `converse.nojquery.js` to
+  `converse-no-jquery.js` to fit the convention used for other build names.
+  [jcbrand]
+- 50 is the new default [archived_messages_page_size](https://conversejs.org/docs/html/configuration.html#archived-messages-page-size)
   [jcbrand]
 - Better support for delayed delivery of presence stanzas (XEP-0203). [jcbrand]
 - The chat room `description` is now shown in the heading, not the `subject`.
@@ -30,7 +36,7 @@
 - Use lodash instead of underscore.js [jcbrand]
 - Case insensitive matching of moderation commands. [jcbrand]
 - Add `/subject` as alias to `/topic` [jcbrand]
-- `allow_chat_pending_contacts` now defaults to `true` [jcbrand]
+- `message_carbons`, `play_sounds` and `allow_chat_pending_contacts` now default to `true` [jcbrand]
 - Improved roster filter UX. [jcbrand]
 - Render the login form again upon authfail. [jcbrand]
 - New promises API: [waitUntil](https://conversejs.org/docs/html/developer_api.html#waituntil)

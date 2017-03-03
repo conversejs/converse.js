@@ -34,7 +34,7 @@
                 show_chatstate_notifications: false,
                 chatstate_notification_blacklist: [],
                 // ^ a list of JIDs to ignore concerning chat state notifications
-                play_sounds: false,
+                play_sounds: true,
                 sounds_path: '/sounds/',
                 notification_icon: '/logo/conversejs128.png'
             });
@@ -104,7 +104,7 @@
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
                 var audio;
-                if (_converse.play_sounds && !_.isUndefined(Audio)) {
+                if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
                     audio = new Audio(_converse.sounds_path+"msg_received.ogg");
                     if (audio.canPlayType('/audio/ogg')) {
                         audio.play();

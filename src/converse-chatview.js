@@ -348,7 +348,7 @@
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,
                             'sender': attrs.sender,
-                            'time': msg_time.format('hh:mm'),
+                            'time': msg_time.format('HH:MM'),
                             'isodate': msg_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(attrs)

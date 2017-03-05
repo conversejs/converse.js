@@ -1778,6 +1778,7 @@
                     } else {
                         this.$el.find('.chat-area').removeClass('hidden');
                         this.$el.find('.occupants').removeClass('hidden');
+                        this.occupantsview.setOccupantsHeight();
                         this.scrollDown();
                     }
                 },

@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 (Unreleased)
+## 3.0.0 (2017-03-05)
 
 - **Breaking changes**:
     * Callbacks for `converse.on` now no longer receive an event object as first parameter.

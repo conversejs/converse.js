@@ -319,30 +319,6 @@
             null,
             "Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst gerade heruntergefahren wird."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> ist verbannt worden"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> hat den Spitznamen geändert"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> wurde hinausgeworfen"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> wurde wegen einer Zugehörigkeitsänderung entfernt"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> ist kein Mitglied und wurde daher entfernt"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ihr Spitzname wurde geändert zu: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Nachricht"
@@ -399,9 +375,9 @@
             null,
             ""
          ],
-         "Set room topic": [
+         "Set room subject (alias for /subject)": [
             null,
-            "Chatraum Thema festlegen"
+            ""
          ],
          "Allow muted user to post messages": [
             null,
@@ -431,6 +407,18 @@
             null,
             "Die angegebene Begründung lautet: \""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "Sie sind nicht auf der Mitgliederliste dieses Raums"
@@ -455,13 +443,77 @@
             null,
             "%1$s hat das Thema zu \"%2$s\" geändert"
          ],
+         "Occupants": [
+            null,
+            "Teilnehmer"
+         ],
          "Invite": [
             null,
             "Einladen"
          ],
-         "Occupants": [
+         "Hidden": [
             null,
-            "Teilnehmer"
+            "Versteckt"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Moderiert"
+         ],
+         "Non-anonymous": [
+            null,
+            "Nicht anonym"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Öffentlich"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Teils anonym"
+         ],
+         "Unmoderated": [
+            null,
+            "Unmoderiert"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -515,21 +567,9 @@
             null,
             "Authentifizierung erforderlich"
          ],
-         "Hidden": [
-            null,
-            "Versteckt"
-         ],
          "Requires an invitation": [
             null,
             "Einladung erforderlich"
-         ],
-         "Moderated": [
-            null,
-            "Moderiert"
-         ],
-         "Non-anonymous": [
-            null,
-            "Nicht anonym"
          ],
          "Open room": [
             null,
@@ -539,21 +579,9 @@
             null,
             "Dauerhafter Raum"
          ],
-         "Public": [
-            null,
-            "Öffentlich"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Teils anonym"
-         ],
          "Temporary room": [
             null,
             "Vorübergehender Raum"
-         ],
-         "Unmoderated": [
-            null,
-            "Unmoderiert"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

@@ -282,22 +282,6 @@
             null,
             "由于服务不可用，您已被移除此房间。"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> 已被禁止"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> 已被踢出"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "由于关系解除、<strong>%1$s</strong> 已被移除"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "由于不是成员、<strong>%1$s</strong> 已被移除"
-         ],
          "Message": [
             null,
             "信息"
@@ -342,6 +326,10 @@
             null,
             ""
          ],
+         "Set room subject (alias for /subject)": [
+            null,
+            ""
+         ],
          "Allow muted user to post messages": [
             null,
             ""
@@ -378,6 +366,18 @@
             null,
             ""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "您并非此房间成员"
@@ -403,6 +403,70 @@
             "%1$s 设置话题为: %2$s"
          ],
          "Invite": [
+            null,
+            ""
+         ],
+         "Hidden": [
+            null,
+            "隐藏的"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "发言受限"
+         ],
+         "Non-anonymous": [
+            null,
+            "非匿名"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "公开的"
+         ],
+         "Semi-anonymous": [
+            null,
+            "半匿名"
+         ],
+         "Unmoderated": [
+            null,
+            "无发言限制"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
             null,
             ""
          ],
@@ -454,21 +518,9 @@
             null,
             "需要验证"
          ],
-         "Hidden": [
-            null,
-            "隐藏的"
-         ],
          "Requires an invitation": [
             null,
             "需要被邀请"
-         ],
-         "Moderated": [
-            null,
-            "发言受限"
-         ],
-         "Non-anonymous": [
-            null,
-            "非匿名"
          ],
          "Open room": [
             null,
@@ -478,21 +530,9 @@
             null,
             "永久聊天室"
          ],
-         "Public": [
-            null,
-            "公开的"
-         ],
-         "Semi-anonymous": [
-            null,
-            "半匿名"
-         ],
          "Temporary room": [
             null,
             "临时聊天室"
-         ],
-         "Unmoderated": [
-            null,
-            "无发言限制"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

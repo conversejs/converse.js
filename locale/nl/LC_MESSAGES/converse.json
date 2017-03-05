@@ -279,19 +279,11 @@
             null,
             ""
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verbannen"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> has been kicked out"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
+         "%1$s has been removed because of an affiliation change": [
             null,
             ""
          ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
+         "%1$s has been removed for not being a member": [
             null,
             ""
          ],
@@ -339,6 +331,10 @@
             null,
             ""
          ],
+         "Set room subject (alias for /subject)": [
+            null,
+            ""
+         ],
          "Allow muted user to post messages": [
             null,
             ""
@@ -375,6 +371,18 @@
             null,
             ""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "Je bent niet een gebruiker van deze room"
@@ -400,6 +408,70 @@
             ""
          ],
          "Invite": [
+            null,
+            ""
+         ],
+         "Hidden": [
+            null,
+            "Verborgen"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Gemodereerd"
+         ],
+         "Non-anonymous": [
+            null,
+            "Niet annoniem"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Publiek"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi annoniem"
+         ],
+         "Unmoderated": [
+            null,
+            "Niet gemodereerd"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
             null,
             ""
          ],
@@ -451,21 +523,9 @@
             null,
             "Verificatie vereist"
          ],
-         "Hidden": [
-            null,
-            "Verborgen"
-         ],
          "Requires an invitation": [
             null,
             "Veriest een uitnodiging"
-         ],
-         "Moderated": [
-            null,
-            "Gemodereerd"
-         ],
-         "Non-anonymous": [
-            null,
-            "Niet annoniem"
          ],
          "Open room": [
             null,
@@ -475,21 +535,9 @@
             null,
             "Blijvend room"
          ],
-         "Public": [
-            null,
-            "Publiek"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi annoniem"
-         ],
          "Temporary room": [
             null,
             "Tijdelijke room"
-         ],
-         "Unmoderated": [
-            null,
-            "Niet gemodereerd"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

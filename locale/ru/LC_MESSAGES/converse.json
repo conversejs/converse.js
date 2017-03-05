@@ -318,26 +318,6 @@
             null,
             "Вы отключены от этого чата, потому что службы чатов отключилась."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> забанен"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> выкинут"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что изменились права"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> удалён, потому что не участник"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "Ваш псевдоним изменён на: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Сообщение"
@@ -398,6 +378,10 @@
             null,
             "Отозвать членство пользователя"
          ],
+         "Set room subject (alias for /subject)": [
+            null,
+            ""
+         ],
          "Allow muted user to post messages": [
             null,
             "Разрешить заглушенным пользователям отправлять сообщения"
@@ -421,6 +405,18 @@
          "Submit": [
             null,
             "Отправить"
+         ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
          ],
          "You are not on the member list of this room": [
             null,
@@ -446,13 +442,77 @@
             null,
             "Тема %2$s устатновлена %1$s"
          ],
+         "Occupants": [
+            null,
+            "Участники:"
+         ],
          "Invite": [
             null,
             "Пригласить"
          ],
-         "Occupants": [
+         "Hidden": [
             null,
-            "Участники:"
+            "Скрыто"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Модерируемая"
+         ],
+         "Non-anonymous": [
+            null,
+            "Не анонимная"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Публичный"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Частично анонимный"
+         ],
+         "Unmoderated": [
+            null,
+            "Немодерируемый"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -506,21 +566,9 @@
             null,
             "Требуется авторизация"
          ],
-         "Hidden": [
-            null,
-            "Скрыто"
-         ],
          "Requires an invitation": [
             null,
             "Требуется приглашение"
-         ],
-         "Moderated": [
-            null,
-            "Модерируемая"
-         ],
-         "Non-anonymous": [
-            null,
-            "Не анонимная"
          ],
          "Open room": [
             null,
@@ -530,21 +578,9 @@
             null,
             "Постоянный чат"
          ],
-         "Public": [
-            null,
-            "Публичный"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Частично анонимный"
-         ],
          "Temporary room": [
             null,
             "Временный чат"
-         ],
-         "Unmoderated": [
-            null,
-            "Немодерируемый"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

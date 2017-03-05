@@ -326,30 +326,6 @@
             null,
             "Kiléptettünk a csevegőszobából, mert a MUC (Multi-User Chat) szolgáltatás leállításra került."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "A szobából kitíltva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> beceneve módosult"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "A szobából kidobva: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "A beceneved a következőre módosult: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Üzenet"
@@ -414,9 +390,9 @@
             null,
             "Tagság megvonása a felhasználótól"
          ],
-         "Set room topic": [
+         "Set room subject (alias for /subject)": [
             null,
-            "Csevegőszoba téma beállítása"
+            ""
          ],
          "Allow muted user to post messages": [
             null,
@@ -446,6 +422,18 @@
             null,
             "Az indok: \""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "Nem szerepelsz a csevegőszoba taglistáján"
@@ -470,13 +458,77 @@
             null,
             "A következő témát állította be %1$s: %2$s"
          ],
+         "Occupants": [
+            null,
+            "Jelenlevők"
+         ],
          "Invite": [
             null,
             "Meghívás"
          ],
-         "Occupants": [
+         "Hidden": [
             null,
-            "Jelenlevők"
+            "Rejtett"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Moderált"
+         ],
+         "Non-anonymous": [
+            null,
+            "NEM névtelen"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Nyílvános"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Félig névtelen"
+         ],
+         "Unmoderated": [
+            null,
+            "Moderálatlan"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -530,21 +582,9 @@
             null,
             "Azonosítás szükséges"
          ],
-         "Hidden": [
-            null,
-            "Rejtett"
-         ],
          "Requires an invitation": [
             null,
             "Meghívás szükséges"
-         ],
-         "Moderated": [
-            null,
-            "Moderált"
-         ],
-         "Non-anonymous": [
-            null,
-            "NEM névtelen"
          ],
          "Open room": [
             null,
@@ -554,21 +594,9 @@
             null,
             "Állandó szoba"
          ],
-         "Public": [
-            null,
-            "Nyílvános"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Félig névtelen"
-         ],
          "Temporary room": [
             null,
             "Ideiglenes szoba"
-         ],
-         "Unmoderated": [
-            null,
-            "Moderálatlan"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

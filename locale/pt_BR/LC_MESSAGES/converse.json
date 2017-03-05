@@ -275,22 +275,6 @@
             null,
             "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> foi banido"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> foi expulso"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<srtong>%1$s</strong> foi removido por causa de troca de associação"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> foi removido por não ser um membro"
-         ],
          "Message": [
             null,
             "Mensagem"
@@ -335,6 +319,10 @@
             null,
             ""
          ],
+         "Set room subject (alias for /subject)": [
+            null,
+            ""
+         ],
          "Allow muted user to post messages": [
             null,
             ""
@@ -371,6 +359,18 @@
             null,
             ""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "Você não é membro dessa sala"
@@ -396,6 +396,70 @@
             "Topico definido por %1$s para: %2$s"
          ],
          "Invite": [
+            null,
+            ""
+         ],
+         "Hidden": [
+            null,
+            "Escondido"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Moderado"
+         ],
+         "Non-anonymous": [
+            null,
+            "Não anônimo"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Público"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi anônimo"
+         ],
+         "Unmoderated": [
+            null,
+            "Sem moderação"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
             null,
             ""
          ],
@@ -447,21 +511,9 @@
             null,
             "Requer autenticação"
          ],
-         "Hidden": [
-            null,
-            "Escondido"
-         ],
          "Requires an invitation": [
             null,
             "Requer um convite"
-         ],
-         "Moderated": [
-            null,
-            "Moderado"
-         ],
-         "Non-anonymous": [
-            null,
-            "Não anônimo"
          ],
          "Open room": [
             null,
@@ -471,21 +523,9 @@
             null,
             "Sala permanente"
          ],
-         "Public": [
-            null,
-            "Público"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi anônimo"
-         ],
          "Temporary room": [
             null,
             "Sala temporária"
-         ],
-         "Unmoderated": [
-            null,
-            "Sem moderação"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

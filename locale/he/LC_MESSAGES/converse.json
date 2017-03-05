@@ -323,30 +323,6 @@
             null,
             "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> נאסר(ה)"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "השם כינוי של<strong>%1$s</strong> השתנה"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> נבעט(ה)"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> הוסרה(ה) משום שינוי שיוך"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "השם כינוי שלך שונה בשם: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "הודעה"
@@ -403,9 +379,9 @@
             null,
             "שלול חברות משתמש"
          ],
-         "Set room topic": [
+         "Set room subject (alias for /subject)": [
             null,
-            "קבע נושא חדר"
+            ""
          ],
          "Allow muted user to post messages": [
             null,
@@ -435,6 +411,18 @@
             null,
             "הסיבה שניתנה היא: \""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "אינך ברשימת החברים של חדר זה"
@@ -459,13 +447,77 @@
             null,
             "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
          ],
+         "Occupants": [
+            null,
+            "נוכחים"
+         ],
          "Invite": [
             null,
             "הזמנה"
          ],
-         "Occupants": [
+         "Hidden": [
             null,
-            "נוכחים"
+            "נסתר"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "מבוקר"
+         ],
+         "Non-anonymous": [
+            null,
+            "לא-אנונימי"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "פומבי"
+         ],
+         "Semi-anonymous": [
+            null,
+            "אנונימי-למחצה"
+         ],
+         "Unmoderated": [
+            null,
+            "לא מבוקר"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -519,21 +571,9 @@
             null,
             "מצריך אישור"
          ],
-         "Hidden": [
-            null,
-            "נסתר"
-         ],
          "Requires an invitation": [
             null,
             "מצריך הזמנה"
-         ],
-         "Moderated": [
-            null,
-            "מבוקר"
-         ],
-         "Non-anonymous": [
-            null,
-            "לא-אנונימי"
          ],
          "Open room": [
             null,
@@ -543,21 +583,9 @@
             null,
             "חדר צמיתה"
          ],
-         "Public": [
-            null,
-            "פומבי"
-         ],
-         "Semi-anonymous": [
-            null,
-            "אנונימי-למחצה"
-         ],
          "Temporary room": [
             null,
             "חדר זמני"
-         ],
-         "Unmoderated": [
-            null,
-            "לא מבוקר"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

@@ -46,6 +46,10 @@
             null,
             ""
          ],
+         "You have unread messages": [
+            null,
+            "U het ongelese boodskappe"
+         ],
          "Close this chat box": [
             null,
             "Sluit hierdie kletskas"
@@ -210,6 +214,10 @@
             null,
             "Soek"
          ],
+         "e.g. user@example.org": [
+            null,
+            "bv. gebruiker@voorbeeld.org"
+         ],
          "Add": [
             null,
             "Voeg by"
@@ -246,6 +254,14 @@
             null,
             ""
          ],
+         "Connection error": [
+            null,
+            "Fout tydens verbinding"
+         ],
+         "An error occurred while connecting to the chat server.": [
+            null,
+            "A fout het voorgekom tydens verbinding met die kletsbediener"
+         ],
          "Connecting": [
             null,
             "Verbind tans"
@@ -257,6 +273,14 @@
          "Authentication Failed": [
             null,
             "Bekragtiging het gefaal"
+         ],
+         "Connection failed": [
+            null,
+            "Verbinding het gefaal"
+         ],
+         "An error occurred while connecting to the chat server: ": [
+            null,
+            "A fout het voorgekom tydens verbinding met die kletsbediener: "
          ],
          "Sorry, there was an error while trying to add ": [
             null,
@@ -294,6 +318,10 @@
             null,
             "Hierdie vertrek wys nie onbeskikbare lede nie"
          ],
+         "The room configuration has changed": [
+            null,
+            "Die kamer instellings het verander"
+         ],
          "Room logging is now enabled": [
             null,
             "Kamer log is nou aangeskakel"
@@ -301,6 +329,10 @@
          "Room logging is now disabled": [
             null,
             "Kamer log is nou afgeskakel"
+         ],
+         "This room is now no longer anonymous": [
+            null,
+            "Hiedie kamer is nie meer anoniem nie"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -334,33 +366,17 @@
             null,
             "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> is verban"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            "<strong>%1$s</strong> se bynaam het verander"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> is uitgeskop"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
-            null,
-            "U bynaam is verander na: <strong>%1$s</strong>"
-         ],
          "Message": [
             null,
             "Boodskap"
+         ],
+         "Close and leave this room": [
+            null,
+            "Sluit en verlaat hierdie kletskamer"
+         ],
+         "Configure this room": [
+            null,
+            "Konfigureer hierdie kletskamer"
          ],
          "Hide the list of occupants": [
             null,
@@ -422,9 +438,9 @@
             null,
             "Herroep gebruiker se lidmaatskap"
          ],
-         "Set room topic": [
+         "Set room subject (alias for /subject)": [
             null,
-            "Stel onderwerp vir kletskamer"
+            ""
          ],
          "Allow muted user to post messages": [
             null,
@@ -434,9 +450,17 @@
             null,
             ""
          ],
+         "Please choose your nickname": [
+            null,
+            "Kies asb. u bynaam"
+         ],
          "Nickname": [
             null,
             "Bynaam"
+         ],
+         "Enter room": [
+            null,
+            "Betree kletskamer"
          ],
          "This chatroom requires a password": [
             null,
@@ -450,9 +474,29 @@
             null,
             "Dien in"
          ],
+         "This action was done by <strong>%1$s</strong>.": [
+            null,
+            "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>"
+         ],
+         "The reason given is: <em>\"%1$s\"</em>.": [
+            null,
+            "Die gegewe rede is: <em>\"%1$s\"</em>."
+         ],
          "The reason given is: \"": [
             null,
             "Die gegewe rede is: \""
+         ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
          ],
          "You are not on the member list of this room": [
             null,
@@ -482,13 +526,89 @@
             null,
             "Onderwerp deur %1$s bygewerk na: %2$s"
          ],
-         "Invite": [
+         "This user is a moderator.": [
             null,
-            "Nooi uit"
+            "Hierdie gebruiker is 'n moderator"
+         ],
+         "This user can send messages in this room.": [
+            null,
+            "Hierdie gebruiker kan boodskappe na die kamer stuur"
+         ],
+         "This user can NOT send messages in this room.": [
+            null,
+            "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
          ],
          "Occupants": [
             null,
             "Deelnemers"
+         ],
+         "Invite": [
+            null,
+            "Nooi uit"
+         ],
+         "Hidden": [
+            null,
+            "Verskuil"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Gemodereer"
+         ],
+         "Non-anonymous": [
+            null,
+            "Nie-anoniem"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Publiek"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Deels anoniem"
+         ],
+         "Unmoderated": [
+            null,
+            "Ongemodereer"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
+            null,
+            ""
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -542,21 +662,9 @@
             null,
             "Benodig magtiging"
          ],
-         "Hidden": [
-            null,
-            "Verskuil"
-         ],
          "Requires an invitation": [
             null,
             "Benodig 'n uitnodiging"
-         ],
-         "Moderated": [
-            null,
-            "Gemodereer"
-         ],
-         "Non-anonymous": [
-            null,
-            "Nie-anoniem"
          ],
          "Open room": [
             null,
@@ -566,21 +674,9 @@
             null,
             "Permanente kamer"
          ],
-         "Public": [
-            null,
-            "Publiek"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Deels anoniem"
-         ],
          "Temporary room": [
             null,
             "Tydelike kamer"
-         ],
-         "Unmoderated": [
-            null,
-            "Ongemodereer"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,
@@ -636,7 +732,7 @@
          ],
          "Your messages are now encrypted but your contact's identity has not been verified.": [
             null,
-            "U boodskappe is now versleutel maar u gespreksmaat se identiteit is nog onseker."
+            "U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog onseker."
          ],
          "Your contact's identify has been verified.": [
             null,

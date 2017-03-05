@@ -347,31 +347,7 @@
             null,
             "You have been removed from this room because the MUC (Multi-user chat) service is being shut down."
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> has been banned"
-         ],
-         "<strong>%1$s</strong>'s nickname has changed": [
-            null,
-            ""
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> has been kicked out"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "<strong>%1$s</strong> has been removed because of an affiliation change"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "<strong>%1$s</strong> has been removed for not being a member"
-         ],
-         "Your nickname has been automatically set to: <strong>%1$s</strong>": [
-            null,
-            ""
-         ],
-         "Your nickname has been changed to: <strong>%1$s</strong>": [
+         "Your nickname has been automatically set to: %1$s": [
             null,
             ""
          ],
@@ -439,7 +415,11 @@
             null,
             ""
          ],
-         "Set room topic": [
+         "Set room subject": [
+            null,
+            ""
+         ],
+         "Set room subject (alias for /subject)": [
             null,
             ""
          ],
@@ -483,6 +463,18 @@
             null,
             ""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "You are not on the member list of this room"
@@ -507,11 +499,75 @@
             null,
             "Topic set by %1$s to: %2$s"
          ],
+         "Occupants": [
+            null,
+            ""
+         ],
          "Invite": [
             null,
             ""
          ],
-         "Occupants": [
+         "Hidden": [
+            null,
+            "Hidden"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "Moderated"
+         ],
+         "Non-anonymous": [
+            null,
+            "Non-anonymous"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "Public"
+         ],
+         "Semi-anonymous": [
+            null,
+            "Semi-anonymous"
+         ],
+         "Unmoderated": [
+            null,
+            "Unmoderated"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
             null,
             ""
          ],
@@ -567,21 +623,9 @@
             null,
             "Requires authentication"
          ],
-         "Hidden": [
-            null,
-            "Hidden"
-         ],
          "Requires an invitation": [
             null,
             "Requires an invitation"
-         ],
-         "Moderated": [
-            null,
-            "Moderated"
-         ],
-         "Non-anonymous": [
-            null,
-            "Non-anonymous"
          ],
          "Open room": [
             null,
@@ -591,21 +635,9 @@
             null,
             "Permanent room"
          ],
-         "Public": [
-            null,
-            "Public"
-         ],
-         "Semi-anonymous": [
-            null,
-            "Semi-anonymous"
-         ],
          "Temporary room": [
             null,
             "Temporary room"
-         ],
-         "Unmoderated": [
-            null,
-            "Unmoderated"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

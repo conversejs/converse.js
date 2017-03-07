@@ -44,13 +44,10 @@ bottom of your page (after the closing *</body>* element):
 .. code-block:: javascript
 
     <script>
-    require(['converse'], function (converse) {
         converse.initialize({
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-            show_controlbox_by_default: true,
-            play_sounds: true,
+            show_controlbox_by_default: true
         });
-    });
     </script>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the

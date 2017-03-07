@@ -2018,21 +2018,6 @@
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         };
 
-        this._initialize = function () {
-            this.initChatBoxes();
-            this.initSession();
-            this.initConnection();
-            this.setUpXMLLogging();
-            this.logIn();
-            return this;
-        };
-
-        // Initialization
-        // --------------
-        // This is the end of the initialize method.
-        if (settings.connection) {
-            this.connection = settings.connection;
-        }
         var updateSettings = function (settings) {
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
@@ -2042,23 +2027,36 @@
             utils.applyUserSettings(_converse, settings, _converse.user_settings);
         };
 
-        // If initialize gets called a second time (e.g. during tests), then we
-        // need to re-apply all plugins (for a new converse instance), and we
-        // therefore need to clear this array that prevents plugins from being
-        // initialized twice.
-        // If initialize is called for the first time, then this array is empty
-        // in any case.
-        _converse.pluggable.initialized_plugins = [];
+        this.initPlugins = function () {
+            // If initialize gets called a second time (e.g. during tests), then we
+            // need to re-apply all plugins (for a new converse instance), and we
+            // therefore need to clear this array that prevents plugins from being
+            // initialized twice.
+            // If initialize is called for the first time, then this array is empty
+            // in any case.
+            _converse.pluggable.initialized_plugins = [];
+            var whitelist = _converse.core_plugins.concat(
+                _converse.whitelisted_plugins);
 
-        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+            _converse.pluggable.initializePlugins({
+                'updateSettings': updateSettings,
+                '_converse': _converse
+            }, whitelist, _converse.blacklisted_plugins);
+            _converse.emit('pluginsInitialized');
+        };
 
-        _converse.pluggable.initializePlugins({
-            'updateSettings': updateSettings,
-            '_converse': _converse
-        }, whitelist, _converse.blacklisted_plugins);
-
-        _converse.emit('pluginsInitialized');
-        _converse._initialize();
+        // Initialization
+        // --------------
+        // This is the end of the initialize method.
+        if (settings.connection) {
+            this.connection = settings.connection;
+        }
+        _converse.initPlugins();
+        _converse.initChatBoxes();
+        _converse.initSession();
+        _converse.initConnection();
+        _converse.setUpXMLLogging();
+        _converse.logIn();
         _converse.registerGlobalEventHandlers();
 
         if (!_.isUndefined(_converse.connection) &&

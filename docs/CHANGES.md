@@ -3,6 +3,8 @@
 ## 3.0.0 (2017-03-05)
 
 - **Breaking changes**:
+    * Plugins must now be whitelisted.
+      See the [whitelisted_plugins](https://conversejs.org/docs/html/configuration.html#whitelisted-plugins) setting.
     * Callbacks for `converse.on` now no longer receive an event object as first parameter.
     * The API has been split into public and private parts.
       The private API methods are now only available to plugins.

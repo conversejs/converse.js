@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1 (Unreleased)
+
+- #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
+
 ## 3.0.0 (2017-03-05)
 
 - **Breaking changes**:

@@ -1035,6 +1035,7 @@ devices when the intent is to use converse.js as a web app. In this case
 it doesn't make sense to close the control box, as there's often then nothing
 "behind" it that's relevant to the user.
 
+.. _`strict_plugin_dependencies`:
 
 strict_plugin_dependencies
 --------------------------

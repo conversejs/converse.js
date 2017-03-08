@@ -4,8 +4,8 @@
 
 .. _`writing-a-plugin`:
 
-Writing a converse.js plugin
-============================
+Writing a plugin
+================
 
 .. contents:: Table of Contents
    :depth: 2
@@ -59,15 +59,75 @@ The inner ``_converse`` object is made private in order to safely hide and
 encapsulate sensitive information and methods which should not be exposed
 to any 3rd-party scripts that might be running in the same page.
 
-An example plugin
+Loading a plugin
 -----------------
 
-In the example below, you can see how to access 3rd party libraries (such
+Converse.js uses the UMD (Universal Modules Definition) as its module syntax.
+This makes modules loadable via `require.js`, `webpack` or other module
+loaders, but also includable as old-school `<script>` tags in your HTML.
+
+Here's an example of the plugin shown above wrapped inside a UMD module:
+
+.. code-block:: javascript
+
+    (function (root, factory) {
+        if (typeof define === 'function' && define.amd) {
+            // AMD. Register as a module called "myplugin"
+            define("myplugin", ["converse"], factory);
+        } else {
+            // Browser globals. If you're not using a module loader such as require.js,
+            // then this line below executes. Make sure that your plugin's <script> tag
+            // appears after the one from converse.js.
+            factory(converse);
+        }
+    }(this, function (converse) {
+
+        converse.plugins.add('myplugin', {
+
+            initialize: function () {
+                // This method gets called once converse.initialize has been called
+                // and the plugin itself has been loaded.
+
+                // Inside this method, you have access to the closured
+                // _converse object as an attribute on "this".
+                // E.g. this._converse
+            },
+        });
+
+    });
+
+
+Accessing 3rd party libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Immediately inside the module shown above you can access 3rd party libraries (such
 moment, underscore and jQuery) via the ``converse.env`` map.
 
-There is an ``initialize`` method as you've seen in the example above, and then
-also an ``overrides`` map, which can be used to override functions, objects or
-Backbone views and models of Converse.js.
+The code for it would look something like this:
+
+
+.. code-block:: javascript
+
+    // Commonly used utilities and variables can be found under the "env"
+    // namespace of the "converse" global.
+    var Strophe = converse.env.Strophe,
+        $iq = converse.env.$iq,
+        $msg = converse.env.$msg,
+        $pres = converse.env.$pres,
+        $build = converse.env.$build,
+        b64_sha1 = converse.env.b64_sha1;
+        $ = converse.env.jQuery,
+        _ = converse.env._,
+        moment = converse.env.moment;
+
+These dependencies are closured so that they don't pollute the global
+namespace, that's why you need to access them in such a way inside the module.
+
+Overrides
+---------
+
+Plugins can override core code or code from other plugins. Refer to the full
+example at the bottom for code details.
 
 Use the ``overrides`` functionality with caution. It basically resorts to
 monkey patching which pollutes the call stack and can make your code fragile
@@ -77,6 +137,41 @@ is therefore a "code smell" which should ideally be avoided.
 A better approach is to listen to the events emitted by Converse.js, and to add
 your code in event handlers. This is however not always possible, in which case
 the overrides are a powerful tool.
+
+Optional plugin dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using ``overrides``, the code that you want to override (which is either
+in ``converse-core`` or in other plugins), needs to be loaded already by the
+type the ``overrides`` object is being parsed.
+
+So it's important to include overridden plugins in the AMD ``define`` statement
+at the top of the plugin module.
+
+However, sometimes you want to override parts of another plugin if it exists, but you
+don't want anything to break if it doesn't exist (for example when using a
+custom build which excludes that plugin). An example is the
+`converse-dragresize <https://github.com/jcbrand/converse.js/blob/master/src/converse-dragresize.js>`_
+plugin, which will add drag-resize handles to the headlines box (which shows
+messages of type ``headline``) but doesn't care if that particular plugin isn't
+actually loaded.
+
+In this case, you can't specify the plugin as a dependency in the ``define``
+statement at the top of the plugin, since it might not always be available,
+which would cause ``require.js`` to throw an error.
+
+To resolve this problem we thave the ``optional_dependencies`` Array attribute.
+With this you can specify those dependencies which need to be loaded before
+your plugin, if they exist. If they don't exist, they won't be ignored.
+
+If the setting :ref:`strict_plugin_dependencies` is set to true,
+an error will be raised if the plugin is not found, thereby making them
+non-optional.
+
+
+A full example plugin
+---------------------
+
 
 .. code-block:: javascript
 
@@ -127,6 +222,20 @@ the overrides are a powerful tool.
                 // Then we can alert that message, like so:
                 alert(this._converse.user_settings.initialize_message);
             },
+
+            // Optional dependencies are other plugins which might be
+            // overridden or relied upon, and therefore need to be loaded before
+            // this plugin. They are called "optional" because they might not be
+            // available, in which case any overrides applicable to them will be
+            // ignored.
+
+            // It's possible however to make optional dependencies non-optional.
+            // If the setting "strict_plugin_dependencies" is set to true,
+            // an error will be raised if the plugin is not found.
+            //
+            // NB: These plugins need to have already been loaded via require.js.
+
+            optional_dependencies: [],
 
             overrides: {
                 // If you want to override some function or a Backbone model or

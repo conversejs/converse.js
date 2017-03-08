@@ -892,7 +892,7 @@
                     expect(chatbox.messages.length).toEqual(1);
                     var msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(msgtext);
-                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[5]);
+                    expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                     expect(msg_obj.get('sender')).toEqual('me');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM

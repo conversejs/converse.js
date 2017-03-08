@@ -1087,6 +1087,34 @@
             // XXX: Awaiting more tests, close it again for now...
             panel.$el.find('a.toggle-xmpp-contact-form').click();
         }));
+
+        it("can be used to add contact and it checks for case-sensivity", mock.initConverse(function (_converse) {
+            spyOn(_converse, 'emit');
+            spyOn(_converse.rosterview, 'update').andCallThrough();
+            runs(function () {
+                test_utils.openControlBox();
+                // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
+                _converse.roster.create({
+                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    subscription: 'none',
+                    ask: 'subscribe',
+                    fullname: mock.pend_names[0]
+                });
+                _converse.roster.create({
+                    jid: mock.pend_names[0].replace(/ /g,'.') + '@localhost',
+                    subscription: 'none',
+                    ask: 'subscribe',
+                    fullname: mock.pend_names[0]
+                });
+            });
+            waits(300);
+            runs(function () {
+                // Checking that only one entry is created because both JID is same (Case sensitive check)
+                expect(_converse.rosterview.$el.find('dd:visible').length).toBe(1);
+                expect(_converse.rosterview.update).toHaveBeenCalled();
+            });
+        }));
+
     });
 
     describe("The Controlbox Tabs", function () {

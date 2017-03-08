@@ -1072,7 +1072,7 @@ time_format
 
 * Default: ``HH:MM``
 
-Valid option: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
+Examples: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
 
 This option makes the time format for the time shown, for each message, configurable. Converse can be configured to show 
 the time in 24hr or 12hr format. The default value gives a 24hr time-format. To change it to 12hr, use `hh:mm`, and to display

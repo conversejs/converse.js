@@ -1074,9 +1074,9 @@ time_format
 
 Examples: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
 
-This option makes the time format for the time shown, for each message, configurable. Converse can be configured to show 
-the time in 24hr or 12hr format. The default value gives a 24hr time-format. To change it to 12hr, use `hh:mm`, and to display
-AM/PM, use `hh:mm a`.
+This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js<https://momentjs.com/>`_
+for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed
+description of time-format options available for `moment` visit the website.
 
 use_otr_by_default
 ------------------

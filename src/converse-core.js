@@ -778,7 +778,7 @@
 
             initialize: function (attributes) {
                 var jid = attributes.jid;
-                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
@@ -887,7 +887,7 @@
                 resources[resource] = {
                     'priority': priority,
                     'status': chat_status,
-                    'timestamp': timestamp 
+                    'timestamp': timestamp
                 };
                 var changed = {'resources': resources};
                 var hpr = this.getHighestPriorityResource();

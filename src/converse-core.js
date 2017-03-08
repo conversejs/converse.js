@@ -267,7 +267,7 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
-            time_format: 'h', // H stands for 24hr time format and 'h' stands for 12hr time format
+            time_format: 'HH:MM', // H stands for 24hr time format and 'h' stands for 12hr time format
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -281,7 +281,7 @@
             }
         }
 
-        if(this.time_format !== 'h' && this.time_format !== 'H') {
+        if(this.time_format !== 'hh:mm' && this.time_format !== 'HH:MM' && this.time_format !== 'hh:mm a') {
             throw new Error("Config Error: wrong time format configuration");
         }
 

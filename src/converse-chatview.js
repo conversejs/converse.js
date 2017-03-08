@@ -345,18 +345,12 @@
                             true, true);
                     }
 
-                    var mess_time;
-
-                    if(_converse.time_format === 'h')
-                        mess_time = msg_time.format('hh:mm a');
-                    else if(_converse.time_format === 'H')
-                        mess_time = msg_time.format('HH:MM');
 
                     var $msg = $(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,
                             'sender': attrs.sender,
-                            'time': mess_time,
+                            'time': msg_time.format(_converse.time_format),
                             'isodate': msg_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(attrs)

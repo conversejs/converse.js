@@ -1369,7 +1369,7 @@
             getMessageAttributes: function (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
                 var type = message.getAttribute('type'),
-                    body, stamp, time, sender, from;
+                    body, stamp, time, sender, from, fullname;
 
                 if (type === 'error') {
                     body = _.propertyOf(message.querySelector('error text'))('textContent');
@@ -1377,7 +1377,6 @@
                     body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
                 var delayed = !_.isNull(delay),
-                    fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
                     chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                         message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
@@ -1390,9 +1389,6 @@
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-                if (_.isEmpty(fullname)) {
-                    fullname = from;
-                }
                 if (delayed) {
                     stamp = delay.getAttribute('stamp');
                     time = stamp;
@@ -1401,8 +1397,10 @@
                 }
                 if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
+                    fullname = _converse.xmppstatus.get('fullname') || from;
                 } else {
                     sender = 'them';
+                    fullname = this.get('fullname') || from;
                 }
                 return {
                     'type': type,

@@ -2208,9 +2208,9 @@
             }
         },
         'listen': {
-            'once': _converse.once,
-            'on': _converse.on,
-            'not': _converse.off,
+            'once': _converse.once.bind(_converse),
+            'on': _converse.on.bind(_converse),
+            'not': _converse.off.bind(_converse),
             'stanza': function (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;

@@ -267,6 +267,7 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
+            time_format: 'h', // H stands for 24hr time format and 'h' stands for 12hr time format
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -278,6 +279,10 @@
                       "domain via the 'jid' option when using anonymous " +
                       "authentication with auto_login.");
             }
+        }
+
+        if(this.time_format !== 'h' && this.time_format !== 'H') {
+            throw new Error("Config Error: wrong time format configuration");
         }
 
         $.fx.off = !this.animate;

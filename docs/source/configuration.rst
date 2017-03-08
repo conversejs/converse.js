@@ -1067,6 +1067,17 @@ If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
 
+time_format
+-----------
+
+* Default: ``HH:MM``
+
+Valid option: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
+
+This option makes the time format for the time shown, for each message, configurable. Converse can be configured to show 
+the time in 24hr or 12hr format. The default value gives a 24hr time-format. To change it to 12hr, use `hh:mm`, and to display
+AM/PM, use `hh:mm a`.
+
 use_otr_by_default
 ------------------
 

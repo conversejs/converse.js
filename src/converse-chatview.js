@@ -344,8 +344,6 @@
                                "Output has been shortened."),
                             true, true);
                     }
-
-
                     var $msg = $(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,

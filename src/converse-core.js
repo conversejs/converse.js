@@ -281,10 +281,6 @@
             }
         }
 
-        if(this.time_format !== 'hh:mm' && this.time_format !== 'HH:MM' && this.time_format !== 'hh:mm a') {
-            throw new Error("Config Error: wrong time format configuration");
-        }
-
         $.fx.off = !this.animate;
 
         // Module-level variables

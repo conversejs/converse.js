@@ -25,6 +25,17 @@ To understand how this plugin architecture works, please read the
 and to understand its inner workins, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
+Below you'll find an example plugin. Because convers.js is only Javascript,
+HTML and CSS (with no backend code required like PHP, Python or Ruby) it runs
+fine in JSFiddle.
+
+Here's an Fiddle with a plugin that calls `alert` when the plugin gets
+initialized and when a message gets rendered: https://jsfiddle.net/4drfaok0/15/
+
+
+Registering a plugin
+--------------------
+
 You register a converse.js plugin as follows:
 
 .. code-block:: javascript
@@ -40,6 +51,24 @@ You register a converse.js plugin as follows:
             // E.g. this._converse
         },
     });
+
+.. note:: It's important that `converse.plugins.add` is called **before**
+    `converse.initialize` is called. Otherwise the plugin will never get
+    registered and never get called.
+
+
+Whitelisting of plugins
+-----------------------
+
+As of converse.js 3.0.0 and higher, plugins need to be whitelisted before they
+can be used. This is because plugins have access to a powerful API. For
+example, they can read all messages and send messages on the user's behalf.
+
+To avoid malicious plugins being registered (i.e. by malware infected
+advertising networks) we now require whitelisting.
+
+To whitelist a plugin simply means to specify :ref:`whitelisted_plugins` when
+you call ``converse.initialize``.
 
 Security and access to the inner workings
 -----------------------------------------
@@ -59,8 +88,8 @@ The inner ``_converse`` object is made private in order to safely hide and
 encapsulate sensitive information and methods which should not be exposed
 to any 3rd-party scripts that might be running in the same page.
 
-Loading a plugin
------------------
+Loading a plugin module
+-----------------------
 
 Converse.js uses the UMD (Universal Modules Definition) as its module syntax.
 This makes modules loadable via `require.js`, `webpack` or other module
@@ -95,6 +124,7 @@ Here's an example of the plugin shown above wrapped inside a UMD module:
         });
 
     });
+
 
 
 Accessing 3rd party libraries

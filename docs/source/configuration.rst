@@ -1196,6 +1196,8 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
     });
 
 
+.. _`whitelisted_plugins`:
+
 whitelisted_plugins
 -------------------
 

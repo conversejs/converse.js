@@ -2,6 +2,7 @@
 
 ## 3.0.1 (Unreleased)
 
+- #585 Duplicate contact created due to JID case sensivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
@@ -70,7 +71,6 @@
   New configuration setting:
   [muc_show_join_leave](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave)
 - #366 Show the chat room occupant's JID in the tooltip (if you're allowed to see it). [jcbrand]
-- #585 Fixes the duplication bug due to case sensivity in adding contacts [saganshul]
 - #610, #785 Add presence priority handling [w3host, jcbrand]
 - #620 `auto_away` shouldn't change the user's status if it's set to `dnd`. [jcbrand]
 - #694 The `notification_option` wasn't being used consistently. [jcbrand]

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-01 11:01+0000\n"
-"PO-Revision-Date: 2017-03-09 14:54+0000\n"
+"PO-Revision-Date: 2017-03-09 14:56+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans "
 "<https://hosted.weblate.org/projects/conversejs/translations/af/>\n"
@@ -163,7 +163,7 @@ msgstr "XMPP Gebruikersnaam:"
 
 #: src/converse-controlbox.js:391
 msgid "Password:"
-msgstr "Wagwoord"
+msgstr "Wagwoord:"
 
 #: src/converse-controlbox.js:392
 msgid "Click here to log in anonymously"
@@ -301,7 +301,7 @@ msgstr "Fout tydens verbinding"
 
 #: src/converse-core.js:476
 msgid "An error occurred while connecting to the chat server."
-msgstr "A fout het voorgekom tydens verbinding met die kletsbediener"
+msgstr "A fout het voorgekom tydens verbinding met die kletsbediener."
 
 #: src/converse-core.js:479
 msgid "Connecting"
@@ -405,7 +405,7 @@ msgid ""
 "only and you're not a member"
 msgstr ""
 "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk "
-"word en jy nie 'n lid is nie."
+"word en jy nie 'n lid is nie"
 
 #: src/converse-muc.js:258
 msgid ""
@@ -559,7 +559,7 @@ msgstr "Hiedie kletskamer benodig 'n wagwoord"
 
 #: src/converse-muc.js:1501
 msgid "Password: "
-msgstr "Wagwoord:"
+msgstr "Wagwoord: "
 
 #: src/converse-muc.js:1502
 msgid "Submit"
@@ -567,7 +567,7 @@ msgstr "Dien in"
 
 #: src/converse-muc.js:1621
 msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>"
+msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>."
 
 #: src/converse-muc.js:1624
 msgid "The reason given is: <em>\"%1$s\"</em>."
@@ -607,19 +607,19 @@ msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
 #: src/converse-muc.js:1878
 msgid "Click to mention this user in your message."
-msgstr "Klik om na hierdie gebruiker te verwys"
+msgstr "Klik om na hierdie gebruiker te verwys."
 
 #: src/converse-muc.js:1879
 msgid "This user is a moderator."
-msgstr "Hierdie gebruiker is 'n moderator"
+msgstr "Hierdie gebruiker is 'n moderator."
 
 #: src/converse-muc.js:1880
 msgid "This user can send messages in this room."
-msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur"
+msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur."
 
 #: src/converse-muc.js:1881
 msgid "This user can NOT send messages in this room."
-msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
+msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie."
 
 #: src/converse-muc.js:1917
 msgid "Invite"
@@ -631,7 +631,7 @@ msgstr "Deelnemers"
 
 #: src/converse-muc.js:2042
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
-msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
+msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi. "
 
 #: src/converse-muc.js:2043
 msgid ""
@@ -847,7 +847,8 @@ msgstr ""
 "\n"
 "Vingerafdruk vir %1$s: %4$s\n"
 "\n"
-"Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+"Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik "
+"Kanselleer."
 
 #: src/converse-otr.js:400
 msgid ""
@@ -946,7 +947,7 @@ msgstr "afgesluit"
 
 #: src/converse-register.js:99
 msgid " e.g. conversejs.org"
-msgstr "bv. conversejs.org"
+msgstr " bv. conversejs.org"
 
 #: src/converse-register.js:122
 msgid "Your XMPP provider's domain name:"

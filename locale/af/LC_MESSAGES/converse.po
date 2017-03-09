@@ -8,32 +8,35 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-01 11:01+0000\n"
-"PO-Revision-Date: 2017-02-15 10:57+0000\n"
+"PO-Revision-Date: 2017-03-09 14:54+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
-"Language-Team: Afrikaans\n"
+"Language-Team: Afrikaans "
+"<https://hosted.weblate.org/projects/conversejs/translations/af/>\n"
 "Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.12\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/converse-bookmarks.js:84 src/converse-bookmarks.js:139
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Boekmerk hierdie kletskamer"
 
 #: src/converse-bookmarks.js:140
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Die naam vir hierdie boekmerk:"
 
 #: src/converse-bookmarks.js:141
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
 
 #: src/converse-bookmarks.js:142
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Wat sal u bynaam vir hierdie kletskamer wees?"
 
 #: src/converse-bookmarks.js:144 src/converse-controlbox.js:519
 #: src/converse-muc.js:1157
@@ -46,23 +49,20 @@ msgid "Cancel"
 msgstr "Kanseleer"
 
 #: src/converse-bookmarks.js:292
-#, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "Jammer, 'n fout het voorgekom tydens die verwydering van "
+msgstr "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
 
 #: src/converse-bookmarks.js:375
-#, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Klik om die boekmerklys te skakel"
 
 #: src/converse-bookmarks.js:376
 msgid "Bookmarked Rooms"
-msgstr ""
+msgstr "Kletskamerboekmerke"
 
 #: src/converse-bookmarks.js:393
-#, fuzzy
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Is u seker u wil hierdie gespreksmaat verwyder?"
+msgstr "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
 
 #: src/converse-bookmarks.js:402 src/converse-muc.js:2144
 msgid "Click to open this room"
@@ -74,7 +74,7 @@ msgstr "Wys meer inligting aangaande hierdie kletskamer"
 
 #: src/converse-bookmarks.js:404
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Verwyder hierdie boekmerk"
 
 #: src/converse-chatview.js:135 src/converse-headline.js:99
 #: src/converse-muc.js:436
@@ -98,6 +98,9 @@ msgid ""
 "A very large message has been received.This might be due to an attack meant "
 "to degrade the chat performance.Output has been shortened."
 msgstr ""
+"'n Baie groot boodskap is ontvang. Dit mag dalk 'n aanval wees om "
+"werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte weergawe "
+"vertoon."
 
 #: src/converse-chatview.js:372
 msgid "is typing"
@@ -290,7 +293,7 @@ msgstr "Herkonnekteer"
 
 #: src/converse-core.js:408
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
 
 #: src/converse-core.js:475
 msgid "Connection error"
@@ -322,7 +325,7 @@ msgstr "A fout het voorgekom tydens verbinding met die kletsbediener: "
 
 #: src/converse-core.js:999
 msgid "Sorry, there was an error while trying to add "
-msgstr ""
+msgstr "Jammer, 'n ander fout het voorgekom tydens byvoeging. "
 
 #: src/converse-core.js:1170
 msgid "This client does not allow presence subscriptions"
@@ -468,7 +471,7 @@ msgstr "Verskuil die lys van deelnemers"
 
 #: src/converse-muc.js:830
 msgid "Error: the \""
-msgstr ""
+msgstr "Fout: die \""
 
 #: src/converse-muc.js:842
 msgid "Are you sure you want to clear the messages from this room?"
@@ -535,6 +538,8 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. 'n "
+"ander een."
 
 #: src/converse-muc.js:1480
 msgid "Please choose your nickname"

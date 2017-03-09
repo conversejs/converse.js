@@ -1074,9 +1074,9 @@ time_format
 
 Examples: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
 
-This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js<https://momentjs.com/>`_
+This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js <https://momentjs.com/>`_
 for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed
-description of time-format options available for `moment` visit the website.
+description of time-format options available for `moment` you can check this `link <https://momentjs.com/docs/#/parsing/string-format/>`_.
 
 use_otr_by_default
 ------------------

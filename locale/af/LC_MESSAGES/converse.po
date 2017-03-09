@@ -7,33 +7,36 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-05 10:33+0000\n"
-"PO-Revision-Date: 2017-02-15 10:57+0000\n"
+"POT-Creation-Date: 2017-02-01 11:01+0000\n"
+"PO-Revision-Date: 2017-03-09 15:14+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
-"Language-Team: Afrikaans\n"
+"Language-Team: Afrikaans "
+"<https://hosted.weblate.org/projects/conversejs/translations/af/>\n"
 "Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.12\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/converse-bookmarks.js:77 src/converse-bookmarks.js:136
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Boekmerk hierdie kletskamer"
 
 #: src/converse-bookmarks.js:137
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Die naam vir hierdie boekmerk:"
 
 #: src/converse-bookmarks.js:138
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
 
 #: src/converse-bookmarks.js:139
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Wat sal u bynaam vir hierdie kletskamer wees?"
 
 #: src/converse-bookmarks.js:141 src/converse-controlbox.js:514
 #: src/converse-muc.js:1194
@@ -45,24 +48,21 @@ msgstr "Stoor"
 msgid "Cancel"
 msgstr "Kanseleer"
 
-#: src/converse-bookmarks.js:294
-#, fuzzy
+#: src/converse-bookmarks.js:292
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "Jammer, 'n fout het voorgekom tydens die verwydering van "
+msgstr "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
 
-#: src/converse-bookmarks.js:377
-#, fuzzy
+#: src/converse-bookmarks.js:375
 msgid "Click to toggle the bookmarks list"
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Klik om die boekmerklys te skakel"
 
 #: src/converse-bookmarks.js:378
 msgid "Bookmarked Rooms"
-msgstr ""
+msgstr "Kletskamerboekmerke"
 
-#: src/converse-bookmarks.js:395
-#, fuzzy
+#: src/converse-bookmarks.js:393
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Is u seker u wil hierdie gespreksmaat verwyder?"
+msgstr "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
 
 #: src/converse-bookmarks.js:404 src/converse-muc.js:2299
 msgid "Click to open this room"
@@ -74,7 +74,7 @@ msgstr "Wys meer inligting aangaande hierdie kletskamer"
 
 #: src/converse-bookmarks.js:406
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Verwyder hierdie boekmerk"
 
 #: src/converse-chatview.js:123 src/converse-headline.js:77
 #: src/converse-muc.js:389
@@ -98,6 +98,9 @@ msgid ""
 "A very large message has been received.This might be due to an attack meant "
 "to degrade the chat performance.Output has been shortened."
 msgstr ""
+"'n Baie groot boodskap is ontvang. Dit mag dalk 'n aanval wees om "
+"werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte weergawe "
+"vertoon."
 
 #: src/converse-chatview.js:379
 msgid "is typing"
@@ -160,7 +163,7 @@ msgstr "XMPP Gebruikersnaam:"
 
 #: src/converse-controlbox.js:386
 msgid "Password:"
-msgstr "Wagwoord"
+msgstr "Wagwoord:"
 
 #: src/converse-controlbox.js:387
 msgid "Click here to log in anonymously"
@@ -290,7 +293,7 @@ msgstr "Herkonnekteer"
 
 #: src/converse-core.js:423
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
 
 #: src/converse-core.js:503
 msgid "Connection error"
@@ -298,7 +301,7 @@ msgstr "Fout tydens verbinding"
 
 #: src/converse-core.js:504
 msgid "An error occurred while connecting to the chat server."
-msgstr "A fout het voorgekom tydens verbinding met die kletsbediener"
+msgstr "A fout het voorgekom tydens verbinding met die kletsbediener."
 
 #: src/converse-core.js:507
 msgid "Connecting"
@@ -322,7 +325,7 @@ msgstr "A fout het voorgekom tydens verbinding met die kletsbediener: "
 
 #: src/converse-core.js:1082
 msgid "Sorry, there was an error while trying to add "
-msgstr ""
+msgstr "Jammer, 'n ander fout het voorgekom tydens byvoeging. "
 
 #: src/converse-core.js:1233
 msgid "This client does not allow presence subscriptions"
@@ -402,7 +405,7 @@ msgid ""
 "only and you're not a member"
 msgstr ""
 "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk "
-"word en jy nie 'n lid is nie."
+"word en jy nie 'n lid is nie"
 
 #: src/converse-muc.js:250
 msgid ""
@@ -475,7 +478,7 @@ msgstr "Verskuil die lys van deelnemers"
 
 #: src/converse-muc.js:872
 msgid "Error: the \""
-msgstr ""
+msgstr "Fout: die \""
 
 #: src/converse-muc.js:884
 msgid "Are you sure you want to clear the messages from this room?"
@@ -547,6 +550,8 @@ msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
 msgstr ""
+"Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. 'n "
+"ander een."
 
 #: src/converse-muc.js:1532
 msgid "Please choose your nickname"
@@ -566,7 +571,7 @@ msgstr "Hiedie kletskamer benodig 'n wagwoord"
 
 #: src/converse-muc.js:1554
 msgid "Password: "
-msgstr "Wagwoord:"
+msgstr "Wagwoord: "
 
 #: src/converse-muc.js:1555
 msgid "Submit"
@@ -574,7 +579,7 @@ msgstr "Dien in"
 
 #: src/converse-muc.js:1666
 msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>"
+msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>."
 
 #: src/converse-muc.js:1669
 msgid "The reason given is: <em>\"%1$s\"</em>."
@@ -629,22 +634,21 @@ msgstr "Hierdie kletskamer het sy maksimum aantal deelnemers bereik"
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
-#: src/converse-muc.js:1932
-#, fuzzy
-msgid "Click to mention "
-msgstr "Klik om hierdie kletskamer te open"
+#: src/converse-muc.js:1878
+msgid "Click to mention this user in your message."
+msgstr "Klik om na hierdie gebruiker te verwys."
 
 #: src/converse-muc.js:1933
 msgid "This user is a moderator."
-msgstr "Hierdie gebruiker is 'n moderator"
+msgstr "Hierdie gebruiker is 'n moderator."
 
 #: src/converse-muc.js:1934
 msgid "This user can send messages in this room."
-msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur"
+msgstr "Hierdie gebruiker kan boodskappe na die kamer stuur."
 
 #: src/converse-muc.js:1935
 msgid "This user can NOT send messages in this room."
-msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
+msgstr "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie."
 
 #: src/converse-muc.js:1992
 msgid "Occupants"
@@ -775,7 +779,7 @@ msgstr "Hiedie kletskamer benodig 'n wagwoord"
 
 #: src/converse-muc.js:2163
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "
-msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
+msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi. "
 
 #: src/converse-muc.js:2164
 msgid ""
@@ -966,7 +970,8 @@ msgstr ""
 "\n"
 "Vingerafdruk vir %1$s: %4$s\n"
 "\n"
-"Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+"Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik "
+"Kanselleer."
 
 #: src/converse-otr.js:390
 msgid ""
@@ -1065,7 +1070,7 @@ msgstr "afgesluit"
 
 #: src/converse-register.js:97
 msgid " e.g. conversejs.org"
-msgstr "bv. conversejs.org"
+msgstr " bv. conversejs.org"
 
 #: src/converse-register.js:119
 msgid "Your XMPP provider's domain name:"

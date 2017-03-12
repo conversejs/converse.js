@@ -1259,8 +1259,6 @@
                     var msg_time = moment(msg_object.get('time')).format(_converse.time_format);
                     expect(msg_time_rendered[0]).toBe(msg_time);
                 }));
-
-
             });
 
             describe("A Chat Status Notification", function () {

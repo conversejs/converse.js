@@ -267,6 +267,7 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
+            time_format: 'HH:MM',
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -778,7 +779,7 @@
 
             initialize: function (attributes) {
                 var jid = attributes.jid;
-                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
@@ -887,7 +888,7 @@
                 resources[resource] = {
                     'priority': priority,
                     'status': chat_status,
-                    'timestamp': timestamp 
+                    'timestamp': timestamp
                 };
                 var changed = {'resources': resources};
                 var hpr = this.getHighestPriorityResource();
@@ -1369,7 +1370,7 @@
             getMessageAttributes: function (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
                 var type = message.getAttribute('type'),
-                    body, stamp, time, sender, from;
+                    body, stamp, time, sender, from, fullname;
 
                 if (type === 'error') {
                     body = _.propertyOf(message.querySelector('error text'))('textContent');
@@ -1377,7 +1378,6 @@
                     body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
                 var delayed = !_.isNull(delay),
-                    fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
                     chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                         message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
@@ -1390,9 +1390,6 @@
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-                if (_.isEmpty(fullname)) {
-                    fullname = from;
-                }
                 if (delayed) {
                     stamp = delay.getAttribute('stamp');
                     time = stamp;
@@ -1401,8 +1398,10 @@
                 }
                 if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
+                    fullname = _converse.xmppstatus.get('fullname') || from;
                 } else {
                     sender = 'them';
+                    fullname = this.get('fullname') || from;
                 }
                 return {
                     'type': type,
@@ -2018,21 +2017,6 @@
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         };
 
-        this._initialize = function () {
-            this.initChatBoxes();
-            this.initSession();
-            this.initConnection();
-            this.setUpXMLLogging();
-            this.logIn();
-            return this;
-        };
-
-        // Initialization
-        // --------------
-        // This is the end of the initialize method.
-        if (settings.connection) {
-            this.connection = settings.connection;
-        }
         var updateSettings = function (settings) {
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
@@ -2042,23 +2026,36 @@
             utils.applyUserSettings(_converse, settings, _converse.user_settings);
         };
 
-        // If initialize gets called a second time (e.g. during tests), then we
-        // need to re-apply all plugins (for a new converse instance), and we
-        // therefore need to clear this array that prevents plugins from being
-        // initialized twice.
-        // If initialize is called for the first time, then this array is empty
-        // in any case.
-        _converse.pluggable.initialized_plugins = [];
+        this.initPlugins = function () {
+            // If initialize gets called a second time (e.g. during tests), then we
+            // need to re-apply all plugins (for a new converse instance), and we
+            // therefore need to clear this array that prevents plugins from being
+            // initialized twice.
+            // If initialize is called for the first time, then this array is empty
+            // in any case.
+            _converse.pluggable.initialized_plugins = [];
+            var whitelist = _converse.core_plugins.concat(
+                _converse.whitelisted_plugins);
 
-        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+            _converse.pluggable.initializePlugins({
+                'updateSettings': updateSettings,
+                '_converse': _converse
+            }, whitelist, _converse.blacklisted_plugins);
+            _converse.emit('pluginsInitialized');
+        };
 
-        _converse.pluggable.initializePlugins({
-            'updateSettings': updateSettings,
-            '_converse': _converse
-        }, whitelist, _converse.blacklisted_plugins);
-
-        _converse.emit('pluginsInitialized');
-        _converse._initialize();
+        // Initialization
+        // --------------
+        // This is the end of the initialize method.
+        if (settings.connection) {
+            this.connection = settings.connection;
+        }
+        _converse.initPlugins();
+        _converse.initChatBoxes();
+        _converse.initSession();
+        _converse.initConnection();
+        _converse.setUpXMLLogging();
+        _converse.logIn();
         _converse.registerGlobalEventHandlers();
 
         if (!_.isUndefined(_converse.connection) &&
@@ -2210,9 +2207,9 @@
             }
         },
         'listen': {
-            'once': _converse.once,
-            'on': _converse.on,
-            'not': _converse.off,
+            'once': _converse.once.bind(_converse),
+            'on': _converse.on.bind(_converse),
+            'not': _converse.off.bind(_converse),
             'stanza': function (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;

@@ -91,9 +91,13 @@
 
     converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
-         * overridden or relied upon, if they exist, otherwise they're ignored.
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
          *
-         * However, if the setting "strict_plugin_dependencies" is set to true,
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          *
          * NB: These plugins need to have already been loaded via require.js.
@@ -1778,6 +1782,7 @@
                     } else {
                         this.$el.find('.chat-area').removeClass('hidden');
                         this.$el.find('.occupants').removeClass('hidden');
+                        this.occupantsview.setOccupantsHeight();
                         this.scrollDown();
                     }
                 },

@@ -20,6 +20,19 @@
         _ = converse.env._;
 
     converse.plugins.add('converse-dragresize', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-headline"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

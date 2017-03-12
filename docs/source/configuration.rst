@@ -1035,6 +1035,7 @@ devices when the intent is to use converse.js as a web app. In this case
 it doesn't make sense to close the control box, as there's often then nothing
 "behind" it that's relevant to the user.
 
+.. _`strict_plugin_dependencies`:
 
 strict_plugin_dependencies
 --------------------------
@@ -1065,6 +1066,17 @@ If set to ``true``, converse.js will synchronize with all other clients you are 
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
+
+time_format
+-----------
+
+* Default: ``HH:MM``
+
+Examples: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
+
+This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js <https://momentjs.com/>`_
+for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed
+description of time-format options available for `moment` you can check this `link <https://momentjs.com/docs/#/parsing/string-format/>`_.
 
 use_otr_by_default
 ------------------
@@ -1194,6 +1206,8 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
         });
     });
 
+
+.. _`whitelisted_plugins`:
 
 whitelisted_plugins
 -------------------

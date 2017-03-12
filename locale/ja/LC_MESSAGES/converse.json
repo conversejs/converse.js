@@ -283,22 +283,6 @@
             null,
             "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
          ],
-         "<strong>%1$s</strong> has been banned": [
-            null,
-            "<strong>%1$s</strong> を締め出しました"
-         ],
-         "<strong>%1$s</strong> has been kicked out": [
-            null,
-            "<strong>%1$s</strong> を蹴り出しました"
-         ],
-         "<strong>%1$s</strong> has been removed because of an affiliation change": [
-            null,
-            "分掌の変更のため、<strong>%1$s</strong> を削除しました"
-         ],
-         "<strong>%1$s</strong> has been removed for not being a member": [
-            null,
-            "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
-         ],
          "Message": [
             null,
             "メッセージ"
@@ -343,6 +327,10 @@
             null,
             ""
          ],
+         "Set room subject (alias for /subject)": [
+            null,
+            ""
+         ],
          "Allow muted user to post messages": [
             null,
             ""
@@ -379,6 +367,18 @@
             null,
             ""
          ],
+         " has left the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room. \"": [
+            null,
+            ""
+         ],
+         " has joined the room.": [
+            null,
+            ""
+         ],
          "You are not on the member list of this room": [
             null,
             "この談話室のメンバー一覧にいません"
@@ -404,6 +404,70 @@
             "%1$s が話題を設定しました: %2$s"
          ],
          "Invite": [
+            null,
+            ""
+         ],
+         "Hidden": [
+            null,
+            "非表示"
+         ],
+         "Message archiving": [
+            null,
+            ""
+         ],
+         "Members only": [
+            null,
+            ""
+         ],
+         "Moderated": [
+            null,
+            "発言制限"
+         ],
+         "Non-anonymous": [
+            null,
+            "非匿名"
+         ],
+         "Persistent": [
+            null,
+            ""
+         ],
+         "Public": [
+            null,
+            "公開談話室"
+         ],
+         "Semi-anonymous": [
+            null,
+            "半匿名"
+         ],
+         "Unmoderated": [
+            null,
+            "発言制限なし"
+         ],
+         "Unsecured": [
+            null,
+            ""
+         ],
+         "Messages are archived on the server": [
+            null,
+            ""
+         ],
+         "All other room occupants can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room pesists even if it's unoccupied": [
+            null,
+            ""
+         ],
+         "This room is publically searchable": [
+            null,
+            ""
+         ],
+         "Only moderators can see your Jabber ID": [
+            null,
+            ""
+         ],
+         "This room will disappear once the last person leaves": [
             null,
             ""
          ],
@@ -455,21 +519,9 @@
             null,
             "認証の要求"
          ],
-         "Hidden": [
-            null,
-            "非表示"
-         ],
          "Requires an invitation": [
             null,
             "招待の要求"
-         ],
-         "Moderated": [
-            null,
-            "発言制限"
-         ],
-         "Non-anonymous": [
-            null,
-            "非匿名"
          ],
          "Open room": [
             null,
@@ -479,21 +531,9 @@
             null,
             "常設談話室"
          ],
-         "Public": [
-            null,
-            "公開談話室"
-         ],
-         "Semi-anonymous": [
-            null,
-            "半匿名"
-         ],
          "Temporary room": [
             null,
             "臨時談話室"
-         ],
-         "Unmoderated": [
-            null,
-            "発言制限なし"
          ],
          "%1$s has invited you to join a chat room: %2$s": [
             null,

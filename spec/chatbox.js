@@ -892,7 +892,7 @@
                     expect(chatbox.messages.length).toEqual(1);
                     var msg_obj = chatbox.messages.models[0];
                     expect(msg_obj.get('message')).toEqual(msgtext);
-                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[5]);
+                    expect(msg_obj.get('fullname')).toEqual(_converse.xmppstatus.get('fullname'));
                     expect(msg_obj.get('sender')).toEqual('me');
                     expect(msg_obj.get('delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
@@ -1240,6 +1240,25 @@
                     });
                 }));
 
+                it("will render the message time as configured", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
+                    
+                    _converse.time_format = 'hh:mm';
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    var message = 'This message is sent from this chatbox';
+                    test_utils.sendMessage(view, message);
+                    
+                    var chatbox = _converse.chatboxes.get(contact_jid);
+                    expect(chatbox.messages.models.length, 1);
+                    var msg_object = chatbox.messages.models[0];
+                    var msg_time_author = view.$el.find('.chat-content').find('.chat-message')
+                                            .last().find('.chat-msg-author.chat-msg-me').text();
+                    var msg_time_rendered = msg_time_author.split(" ",1);
+                    var msg_time = moment(msg_object.get('time')).format(_converse.time_format);
+                    expect(msg_time_rendered[0]).toBe(msg_time);
+                }));
             });
 
             describe("A Chat Status Notification", function () {

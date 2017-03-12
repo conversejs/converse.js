@@ -1,8 +1,18 @@
 # Changelog
 
-## 3.0.0 (Unreleased)
+## 3.0.1 (Unreleased)
+
+- #585 Duplicate contact created due to JID case sensivity [saganshul]
+- #628 Fixes the bug in displaying chat status during private chat. [saganshul]
+- #797 Time format made configurable. [smitbose]
+- #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
+- #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
+
+## 3.0.0 (2017-03-05)
 
 - **Breaking changes**:
+    * Plugins must now be whitelisted.
+      See the [whitelisted_plugins](https://conversejs.org/docs/html/configuration.html#whitelisted-plugins) setting.
     * Callbacks for `converse.on` now no longer receive an event object as first parameter.
     * The API has been split into public and private parts.
       The private API methods are now only available to plugins.

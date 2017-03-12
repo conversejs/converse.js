@@ -4,6 +4,7 @@
 
 - #585 Duplicate contact created due to JID case sensivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
+- #797 Time format made configurable. [smitbose]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
 

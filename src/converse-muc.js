@@ -1667,10 +1667,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by <strong>%1$s</strong>.'), notification.actor));
+                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
+                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
                         }
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         return;

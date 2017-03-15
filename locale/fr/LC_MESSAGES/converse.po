@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-04-04 15:11+0000\n"
-"PO-Revision-Date: 2017-03-28 19:27+0000\n"
+"PO-Revision-Date: 2017-04-06 11:49+0200\n"
 "Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -436,31 +436,31 @@ msgstr ""
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: src/converse-muc.js:283
+#: src/converse-muc.js:268
 msgid "%1$s has been banned"
 msgstr "%1$s a été banni"
 
-#: src/converse-muc.js:284
+#: src/converse-muc.js:269
 msgid "%1$s's nickname has changed"
 msgstr "L’alias de %1$s a changé"
 
-#: src/converse-muc.js:285
+#: src/converse-muc.js:270
 msgid "%1$s has been kicked out"
 msgstr "%1$s a été expulsé"
 
-#: src/converse-muc.js:286
+#: src/converse-muc.js:271
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s a été supprimé à cause d’un changement d’affiliation"
 
-#: src/converse-muc.js:287
+#: src/converse-muc.js:272
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s a été supprimé car il n’est pas membre"
 
-#: src/converse-muc.js:291
+#: src/converse-muc.js:276
 msgid "Your nickname has been automatically set to: %1$s"
 msgstr "Votre alias a été automatiquement déterminé en : %1$s"
 
-#: src/converse-muc.js:292
+#: src/converse-muc.js:277
 msgid "Your nickname has been changed to: %1$s"
 msgstr "Votre alias a été modifié en : %1$s"
 
@@ -536,7 +536,7 @@ msgstr "Accorder la propriété à ce salon"
 msgid "Revoke user's membership"
 msgstr "Révoquer l’utilisateur des membres"
 
-#: src/converse-muc.js:971
+#: src/converse-muc.js:951
 msgid "Set room subject"
 msgstr "Indiquer le sujet du salon"
 
@@ -580,11 +580,11 @@ msgstr "Mot de passe : "
 msgid "Submit"
 msgstr "Soumettre"
 
-#: src/converse-muc.js:1691
+#: src/converse-muc.js:1670
 msgid "This action was done by %1$s."
 msgstr "L’action a été réalisée par %1$s."
 
-#: src/converse-muc.js:1694
+#: src/converse-muc.js:1673
 msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
@@ -596,7 +596,7 @@ msgstr "La raison indiquée est : \""
 msgid " has left the room. \""
 msgstr " a quitté le salon. \""
 
-#: src/converse-muc.js:1723
+#: src/converse-muc.js:1702
 msgid " has left the room"
 msgstr " a quitté le salon"
 
@@ -636,7 +636,7 @@ msgstr "Ce salon a atteint la limite maximale d’occupants"
 msgid "Topic set by %1$s to: %2$s"
 msgstr "Le sujet « %2$s » a été défini par %1$s"
 
-#: src/converse-muc.js:1960
+#: src/converse-muc.js:1936
 msgid "Click to mention "
 msgstr "Cliquer pour citer "
 
@@ -660,7 +660,7 @@ msgstr "Participants :"
 msgid "Invite"
 msgstr "Inviter"
 
-#: src/converse-muc.js:2054
+#: src/converse-muc.js:2032
 msgid "Features"
 msgstr "Caractéristiques"
 
@@ -684,11 +684,11 @@ msgstr "Modéré"
 msgid "Non-anonymous"
 msgstr "Non-anonyme"
 
-#: src/converse-muc.js:2060
+#: src/converse-muc.js:2038
 msgid "Open"
 msgstr "Ouvrir"
 
-#: src/converse-muc.js:2061
+#: src/converse-muc.js:2039
 msgid "Password protected"
 msgstr "Protégé par mot de passe"
 
@@ -704,7 +704,7 @@ msgstr "Public"
 msgid "Semi-anonymous"
 msgstr "Semi-anonyme"
 
-#: src/converse-muc.js:2065
+#: src/converse-muc.js:2043
 msgid "Temporary"
 msgstr "Temporaire"
 
@@ -716,20 +716,19 @@ msgstr "Non modéré"
 msgid "Unsecured"
 msgstr "Non sécurisé"
 
-#: src/converse-muc.js:2068
-#, fuzzy
-msgid "This room is not publicly searchable"
+#: src/converse-muc.js:2046
+msgid "This room is not publically searchable"
 msgstr "Ce salon ne peut pas être recherché publiquement"
 
 #: src/converse-muc.js:2069
 msgid "Messages are archived on the server"
 msgstr "Les messages sont archivés sur le serveur"
 
-#: src/converse-muc.js:2070
+#: src/converse-muc.js:2048
 msgid "This room is restricted to members only"
 msgstr "Ce salon est restreint aux membres uniquement"
 
-#: src/converse-muc.js:2071
+#: src/converse-muc.js:2049
 msgid "This room is being moderated"
 msgstr "Ce salon est modéré"
 
@@ -737,22 +736,20 @@ msgstr "Ce salon est modéré"
 msgid "All other room occupants can see your Jabber ID"
 msgstr "Tous les autres occupants de ce salon peuvent voir votre ID Jabber"
 
-#: src/converse-muc.js:2073
+#: src/converse-muc.js:2051
 msgid "Anyone can join this room"
 msgstr "N’importe qui peut rejoindre ce salon"
 
-#: src/converse-muc.js:2074
+#: src/converse-muc.js:2052
 msgid "This room requires a password before entry"
 msgstr "Ce salon nécessite un mot de passe pour y accéder"
 
-#: src/converse-muc.js:2075
-#, fuzzy
-msgid "This room persists even if it's unoccupied"
+#: src/converse-muc.js:2053
+msgid "This room pesists even if it's unoccupied"
 msgstr "Ce salon persiste même s'il est inoccupé"
 
-#: src/converse-muc.js:2076
-#, fuzzy
-msgid "This room is publicly searchable"
+#: src/converse-muc.js:2054
+msgid "This room is publically searchable"
 msgstr "Ce salon peut être cherché publiquement"
 
 #: src/converse-muc.js:2077
@@ -763,11 +760,11 @@ msgstr "Seuls les modérateurs peuvent voir votre identifiant Jabber"
 msgid "This room will disappear once the last person leaves"
 msgstr "Ce salon disparaîtra au départ de la dernière personne"
 
-#: src/converse-muc.js:2079
+#: src/converse-muc.js:2057
 msgid "This room is not being moderated"
 msgstr "Ce salon n’est pas modéré"
 
-#: src/converse-muc.js:2080
+#: src/converse-muc.js:2058
 msgid "This room does not require a password upon entry"
 msgstr "Ce salon nécessite un mot de passe pour y accéder"
 

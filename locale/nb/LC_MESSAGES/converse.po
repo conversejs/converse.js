@@ -438,39 +438,39 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong>  har blitt utestengt"
+msgstr "%1$s  har blitt utestengt"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> sitt kallenavn er endret"
+msgstr "%1$s sitt kallenavn er endret"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong>  ble kastet ut"
+msgstr "%1$s  ble kastet ut"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
 msgstr ""
-"<strong>%1$s</strong> har blitt fjernet på grunn av en holdningsendring"
+"%1$s har blitt fjernet på grunn av en holdningsendring"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
 msgstr ""
-"<strong>%1$s</strong> har blitt fjernet på grunn av at han/hun ikke er medlem"
+"%1$s har blitt fjernet på grunn av at han/hun ikke er medlem"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "Ditt kallenavn har blitt automatisk endret til <strong>%1$s</strong> "
+msgstr "Ditt kallenavn har blitt automatisk endret til %1$s "
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "Ditt kallenavn har blitt endret til <strong>%1$s</strong> "
+msgstr "Ditt kallenavn har blitt endret til %1$s "
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -596,8 +596,8 @@ msgstr "Send"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Ditt kallenavn har blitt endret til <strong>%1$s</strong> "
+msgid "This action was done by %1$s."
+msgstr "Ditt kallenavn har blitt endret til %1$s "
 
 #: src/converse-muc.js:1669
 #, fuzzy

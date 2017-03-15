@@ -435,37 +435,37 @@ msgstr "Вас видалено з цієї кімнати, тому що MUC (�
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> заблоковано"
+msgstr "%1$s заблоковано"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "Прізвисько <strong>%1$s</strong> змінено"
+msgstr "Прізвисько %1$s змінено"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> було викинуто звідси"
+msgstr "%1$s було викинуто звідси"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "<strong>%1$s</strong> було видалено через зміни власності кімнати"
+msgstr "%1$s було видалено через зміни власності кімнати"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> було виделано через відсутність членства"
+msgstr "%1$s було виделано через відсутність членства"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "Ваше прізвисько було автоматично змінене на: <strong>%1$s</strong>"
+msgstr "Ваше прізвисько було автоматично змінене на: %1$s"
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
+msgstr "Ваше прізвисько було змінене на: %1$s"
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -590,8 +590,8 @@ msgstr "Надіслати"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Ваше прізвисько було змінене на: <strong>%1$s</strong>"
+msgid "This action was done by %1$s."
+msgstr "Ваше прізвисько було змінене на: %1$s"
 
 #: src/converse-muc.js:1669
 #, fuzzy

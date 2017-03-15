@@ -435,38 +435,38 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "A szobából kitíltva: <strong>%1$s</strong>"
+msgstr "A szobából kitíltva: %1$s"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> beceneve módosult"
+msgstr "%1$s beceneve módosult"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "A szobából kidobva: <strong>%1$s</strong>"
+msgstr "A szobából kidobva: %1$s"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "Taglista módosítás miatt a szobából kiléptetve: <strong>%1$s</strong>"
+msgstr "Taglista módosítás miatt a szobából kiléptetve: %1$s"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
 msgstr ""
-"A taglistán nem szerepel, így a szobából kiléptetve: <strong>%1$s</strong>"
+"A taglistán nem szerepel, így a szobából kiléptetve: %1$s"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "A beceneved módosításra került a következőre: <strong>%1$s</strong>"
+msgstr "A beceneved módosításra került a következőre: %1$s"
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "A beceneved a következőre módosult: <strong>%1$s</strong>"
+msgstr "A beceneved a következőre módosult: %1$s"
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -589,8 +589,8 @@ msgstr "Küldés"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "A beceneved a következőre módosult: <strong>%1$s</strong>"
+msgid "This action was done by %1$s."
+msgstr "A beceneved a következőre módosult: %1$s"
 
 #: src/converse-muc.js:1669
 #, fuzzy

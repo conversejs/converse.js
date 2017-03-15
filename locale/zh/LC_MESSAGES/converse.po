@@ -441,27 +441,27 @@ msgstr "由于服务不可用，您已被移除此房间。"
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> 已被禁止"
+msgstr "%1$s 已被禁止"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> 已被禁止"
+msgstr "%1$s 已被禁止"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> 已被踢出"
+msgstr "%1$s 已被踢出"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "由于关系解除、<strong>%1$s</strong> 已被移除"
+msgstr "由于关系解除、%1$s 已被移除"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "由于不是成员、<strong>%1$s</strong> 已被移除"
+msgstr "由于不是成员、%1$s 已被移除"
 
 #: src/converse-muc.js:272
 #, fuzzy
@@ -598,7 +598,7 @@ msgstr "发送"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
 msgstr "您的昵称被更改了"
 
 #: src/converse-muc.js:1669

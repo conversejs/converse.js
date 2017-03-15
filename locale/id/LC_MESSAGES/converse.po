@@ -443,27 +443,27 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> telah dicekal"
+msgstr "%1$s telah dicekal"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> telah dicekal"
+msgstr "%1$s telah dicekal"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> telah ditendang keluar"
+msgstr "%1$s telah ditendang keluar"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "<strong>%1$s</strong> telah dihapus karena perubahan afiliasi"
+msgstr "%1$s telah dihapus karena perubahan afiliasi"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> telah dihapus karena bukan anggota"
+msgstr "%1$s telah dihapus karena bukan anggota"
 
 #: src/converse-muc.js:272
 #, fuzzy
@@ -600,7 +600,7 @@ msgstr "Kirim"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
 msgstr "Nama panggilan anda telah diubah"
 
 #: src/converse-muc.js:1669

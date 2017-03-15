@@ -443,37 +443,37 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "S'ha expulsat <strong>%1$s</strong>"
+msgstr "S'ha expulsat %1$s"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "L'àlies de <strong>%1$s</strong> ha canviat"
+msgstr "L'àlies de %1$s ha canviat"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "S'ha expulsat <strong>%1$s</strong>"
+msgstr "S'ha expulsat %1$s"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "S'ha eliminat <strong>%1$s</strong> a causa d'un canvi d'afiliació"
+msgstr "S'ha eliminat %1$s a causa d'un canvi d'afiliació"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "S'ha eliminat <strong>%1$s</strong> perquè no és membre"
+msgstr "S'ha eliminat %1$s perquè no és membre"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "El vostre àlies ha canviat automàticament a: <strong>%1$s</strong>"
+msgstr "El vostre àlies ha canviat automàticament a: %1$s"
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "El vostre àlies ha canviat a: <strong>%1$s</strong>"
+msgstr "El vostre àlies ha canviat a: %1$s"
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -596,8 +596,8 @@ msgstr "Envia"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "El vostre àlies ha canviat a: <strong>%1$s</strong>"
+msgid "This action was done by %1$s."
+msgstr "El vostre àlies ha canviat a: %1$s"
 
 #: src/converse-muc.js:1669
 #, fuzzy

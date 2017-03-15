@@ -451,28 +451,28 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> ha sido bloqueado"
+msgstr "%1$s ha sido bloqueado"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> ha sido bloqueado"
+msgstr "%1$s ha sido bloqueado"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> ha sido expulsado"
+msgstr "%1$s ha sido expulsado"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
 msgstr ""
-"<strong>%1$s</strong> ha sido eliminado debido a un cambio de afiliación"
+"%1$s ha sido eliminado debido a un cambio de afiliación"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> ha sido eliminado debido a que no es miembro"
+msgstr "%1$s ha sido eliminado debido a que no es miembro"
 
 #: src/converse-muc.js:272
 #, fuzzy
@@ -608,7 +608,7 @@ msgstr "Enviar"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
 msgstr "Su apodo ha sido cambiado"
 
 #: src/converse-muc.js:1669

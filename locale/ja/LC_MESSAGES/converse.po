@@ -442,27 +442,27 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> を締め出しました"
+msgstr "%1$s を締め出しました"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> を締め出しました"
+msgstr "%1$s を締め出しました"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> を蹴り出しました"
+msgstr "%1$s を蹴り出しました"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "分掌の変更のため、<strong>%1$s</strong> を削除しました"
+msgstr "分掌の変更のため、%1$s を削除しました"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "メンバーでなくなったため、<strong>%1$s</strong> を削除しました"
+msgstr "メンバーでなくなったため、%1$s を削除しました"
 
 #: src/converse-muc.js:272
 #, fuzzy
@@ -599,7 +599,7 @@ msgstr "送信"
 
 #: src/converse-muc.js:1666
 #, fuzzy
-msgid "This action was done by <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
 msgstr "ニックネームを変更しました"
 
 #: src/converse-muc.js:1669

@@ -427,7 +427,7 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> has been banned"
+msgstr "%1$s has been banned"
 
 #: src/converse-muc.js:265
 #, fuzzy
@@ -437,18 +437,18 @@ msgstr "No nickname was specified"
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> has been kicked out"
+msgstr "%1$s has been kicked out"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
 msgstr ""
-"<strong>%1$s</strong> has been removed because of an affiliation change"
+"%1$s has been removed because of an affiliation change"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> has been removed for not being a member"
+msgstr "%1$s has been removed for not being a member"
 
 #: src/converse-muc.js:272
 msgid "Your nickname has been automatically set to: %1$s"
@@ -577,7 +577,7 @@ msgid "Submit"
 msgstr "Submit"
 
 #: src/converse-muc.js:1666
-msgid "This action was done by <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
 msgstr ""
 
 #: src/converse-muc.js:1669

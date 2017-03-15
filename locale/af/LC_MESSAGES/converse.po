@@ -428,37 +428,37 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> is verban"
+msgstr "%1$s is verban"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "<strong>%1$s</strong> se bynaam het verander"
+msgstr "%1$s se bynaam het verander"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> is uitgeskop"
+msgstr "%1$s is uitgeskop"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "<strong>%1$s</strong> is verwyder a.g.v 'n verandering van affiliasie"
+msgstr "%1$s is verwyder a.g.v 'n verandering van affiliasie"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> is nie 'n lid nie, en dus verwyder"
+msgstr "%1$s is nie 'n lid nie, en dus verwyder"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "U bynaam is outomaties gestel na: <strong>%1$s</strong>"
+msgstr "U bynaam is outomaties gestel na: %1$s"
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "U bynaam is verander na: <strong>%1$s</strong>"
+msgstr "U bynaam is verander na: %1$s"
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -578,8 +578,8 @@ msgid "Submit"
 msgstr "Dien in"
 
 #: src/converse-muc.js:1666
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>."
+msgid "This action was done by %1$s."
+msgstr "Hierdie aksie is uitgevoer deur: %1$s."
 
 #: src/converse-muc.js:1669
 msgid "The reason given is: <em>\"%1$s\"</em>."

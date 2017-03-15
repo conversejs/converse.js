@@ -2,6 +2,7 @@
 
 ## 3.0.1 (Unreleased)
 
+- Remove markup from translations. Translations can now only be text. [jcbrand]
 - #585 Duplicate contact created due to JID case sensivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #797 Time format made configurable. [smitbose]

@@ -431,38 +431,38 @@ msgstr ""
 #: src/converse-muc.js:264
 #, fuzzy
 msgid "%1$s has been banned"
-msgstr "<strong>%1$s</strong> a été banni"
+msgstr "%1$s a été banni"
 
 #: src/converse-muc.js:265
 #, fuzzy
 msgid "%1$s's nickname has changed"
-msgstr "L’alias de <strong>%1$s</strong> a changé"
+msgstr "L’alias de %1$s a changé"
 
 #: src/converse-muc.js:266
 #, fuzzy
 msgid "%1$s has been kicked out"
-msgstr "<strong>%1$s</strong> a été expulsé"
+msgstr "%1$s a été expulsé"
 
 #: src/converse-muc.js:267
 #, fuzzy
 msgid "%1$s has been removed because of an affiliation change"
 msgstr ""
-"<strong>%1$s</strong> a été supprimé à cause d’un changement d’affiliation"
+"%1$s a été supprimé à cause d’un changement d’affiliation"
 
 #: src/converse-muc.js:268
 #, fuzzy
 msgid "%1$s has been removed for not being a member"
-msgstr "<strong>%1$s</strong> a été supprimé car il n’est pas membre"
+msgstr "%1$s a été supprimé car il n’est pas membre"
 
 #: src/converse-muc.js:272
 #, fuzzy
 msgid "Your nickname has been automatically set to: %1$s"
-msgstr "Votre alias a été automatiquement déterminé en : <strong>%1$s</strong>"
+msgstr "Votre alias a été automatiquement déterminé en : %1$s"
 
 #: src/converse-muc.js:273
 #, fuzzy
 msgid "Your nickname has been changed to: %1$s"
-msgstr "Votre alias a été modifié en : <strong>%1$s</strong>"
+msgstr "Votre alias a été modifié en : %1$s"
 
 #: src/converse-muc.js:391
 msgid "Message"
@@ -582,8 +582,8 @@ msgid "Submit"
 msgstr "Soumettre"
 
 #: src/converse-muc.js:1666
-msgid "This action was done by <strong>%1$s</strong>."
-msgstr "L’action a été réalisée par : <strong>%1$s</strong>"
+msgid "This action was done by %1$s."
+msgstr "L’action a été réalisée par : %1$s"
 
 #: src/converse-muc.js:1669
 msgid "The reason given is: <em>\"%1$s\"</em>."

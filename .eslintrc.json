@@ -13,7 +13,10 @@
     },
     "rules": {
         "lodash/prefer-lodash-method": [2, {
-            "ignoreMethods": ["find", "endsWith", "startsWith", "filter", "map"]
+            "ignoreMethods": [
+                "find", "endsWith", "startsWith", "filter",
+                "map", "replace", "toLower", "split", "trim"
+            ]
         }],
         "lodash/prefer-startswith": "off",
         "lodash/prefer-constant": "off",

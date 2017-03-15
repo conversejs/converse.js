@@ -1414,8 +1414,8 @@
                 var $chat_body = view.$('.chatroom-body');
                 expect($chat_body.html().trim().indexOf(
                     '<p>You have been kicked from this room</p>'+
-                    '<p>This action was done by <strong>Fluellen</strong>.</p>'+
-                    '<p>The reason given is: <em>"Avaunt, you cullion!"</em>.</p>'
+                    '<p>This action was done by Fluellen.</p>'+
+                    '<p>The reason given is: "Avaunt, you cullion!".</p>'
                 )).not.toBe(-1);
             }));
 

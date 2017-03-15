@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-15 10:58+0000\n"
-"PO-Revision-Date: 2017-03-15 11:11+0000\n"
+"PO-Revision-Date: 2017-03-15 11:12+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans "
 "<https://hosted.weblate.org/projects/conversejs/translations/af/>\n"
@@ -575,7 +575,7 @@ msgstr "Hierdie aksie is uitgevoer deur: %1$s."
 
 #: src/converse-muc.js:1673
 msgid "The reason given is: \"%1$s\"."
-msgstr "Die gegewe rede is: \""
+msgstr "Die gegewe rede is: \"%1$s\"."
 
 #: src/converse-muc.js:1682
 msgid "The reason given is: \""
@@ -587,7 +587,7 @@ msgstr " het die kamer verlaat.\""
 
 #: src/converse-muc.js:1702
 msgid " has left the room"
-msgstr "Sluit en verlaat hierdie kletskamer"
+msgstr " het die kletskamer verlaat"
 
 #: src/converse-muc.js:1710
 msgid " has joined the room. \""
@@ -627,7 +627,7 @@ msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
 #: src/converse-muc.js:1936
 msgid "Click to mention "
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Klik om te noem "
 
 #: src/converse-muc.js:1937
 msgid "This user is a moderator."
@@ -651,7 +651,7 @@ msgstr "Nooi uit"
 
 #: src/converse-muc.js:2032
 msgid "Features"
-msgstr "Eienskappe:"
+msgstr "Eienskappe"
 
 #: src/converse-muc.js:2033 src/converse-muc.js:2376
 msgid "Hidden"
@@ -679,7 +679,7 @@ msgstr "Oop kletskamer"
 
 #: src/converse-muc.js:2039
 msgid "Password protected"
-msgstr "Wagwoord:"
+msgstr "Wagwoord"
 
 #: src/converse-muc.js:2040
 msgid "Persistent"

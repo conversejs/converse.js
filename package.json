@@ -65,7 +65,7 @@
     "pluggable.js": "1.0.0",
     "po2json": "^0.4.4",
     "requirejs": "2.3.3",
-    "sinon": "^1.17.3",
+    "sinon": "^2.0.0",
     "snyk": "^1.21.2",
     "strophe.js": "1.2.13",
     "strophejs-plugin-disco": "0.0.1",

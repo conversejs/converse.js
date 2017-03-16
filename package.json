@@ -41,7 +41,7 @@
     "bourbon": "^4.3.2",
     "clean-css": "^3.4.19",
     "eslint": "^3.16.1",
-    "eslint-plugin-lodash": "^2.3.3",
+    "eslint-plugin-lodash": "^2.3.6",
     "font-awesome": "^4.7.0",
     "greenkeeper": "^4.1.0",
     "grunt": "^1.0.1",

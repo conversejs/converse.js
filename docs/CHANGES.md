@@ -8,6 +8,7 @@
 - #675 Time format made configurable. [smitbose]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
+- #820 Inconsistency in displaying room features. [jcbrand]
 
 ## 3.0.0 (2017-03-05)
 

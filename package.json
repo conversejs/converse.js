@@ -51,7 +51,7 @@
     "install": "^0.8.5",
     "jasmine": "https://github.com/jcbrand/jasmine.git#439a7f805eeaec0cabe18a8ecf7e47da1a0afa33",
     "jed": "0.5.4",
-    "jquery": "2.2.3",
+    "jquery": "3.2.1",
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
     "jshint": "^2.9.4",

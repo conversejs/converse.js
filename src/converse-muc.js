@@ -81,6 +81,20 @@
         'temporary', 'nonanonymous', 'semianonymous',
         'moderated', 'unmoderated', 'mam_enabled'
     ];
+    var ROOM_FEATURES_MAP = {
+        'passwordprotected': 'unsecured',
+        'unsecured': 'passwordprotected',
+        'hidden': 'public',
+        'public': 'hidden',
+        'membersonly': 'open',
+        'open': 'membersonly',
+        'persistent': 'temporary',
+        'temporary': 'persistent',
+        'nonanonymous': 'semianonymous',
+        'semianonymous': 'nonanonymous',
+        'moderated': 'unmoderated',
+        'unmoderated': 'moderated'
+    };
     var ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
@@ -1667,10 +1681,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by <strong>%1$s</strong>.'), notification.actor));
+                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
+                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
                         }
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         return;
@@ -1967,25 +1981,22 @@
 
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
-
                     this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
                     this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-
-                    var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
-                    this.chatroomview.model.on('change:hidden', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:mam_enabled', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:membersonly', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:moderated', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:nonanonymous', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:open', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:passwordprotected', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:persistent', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:public', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:semianonymous', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:temporary', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:unmoderated', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:unsecured', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:hidden', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:mam_enabled', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:membersonly', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:moderated', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:nonanonymous', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:open', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:passwordprotected', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:persistent', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:public', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:semianonymous', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
                 },
 
                 render: function () {
@@ -1997,7 +2008,9 @@
                             }))
                     );
                     if (_converse.allow_muc_invitations) {
-                        _converse.api.waitUntil('rosterContactsFetched').then(this.renderInviteWidget.bind(this));
+                        _converse.api.waitUntil('rosterContactsFetched').then(
+                            this.renderInviteWidget.bind(this)
+                        );
                     }
                     return this.renderRoomFeatures();
                 },
@@ -2060,6 +2073,32 @@
                     this.setOccupantsHeight();
                     return this;
                 },
+
+                onFeatureChanged: function (model) {
+                    /* When a feature has been changed, it's logical opposite
+                     * must be set to the opposite value.
+                     *
+                     * So for example, if "temporary" was set to "false", then
+                     * "persistent" will be set to "true" in this method.
+                     *
+                     * Additionally a debounced render method is called to make
+                     * sure the features widget gets updated.
+                     */
+                    if (_.isUndefined(this.debouncedRenderRoomFeatures)) {
+                        this.debouncedRenderRoomFeatures = _.debounce(
+                            this.renderRoomFeatures, 100, {'leading': false}
+                        );
+                    }
+                    var changed_features = {}
+                    _.each(_.keys(model.changed), function (k) {
+                        if (!_.isNil(ROOM_FEATURES_MAP[k])) {
+                            changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
+                        }
+                    });
+                    this.chatroomview.model.save(changed_features, {'silent': true});
+                    this.debouncedRenderRoomFeatures();
+                },
+
 
                 setOccupantsHeight: function () {
                     var el = this.el.querySelector('.chatroom-features');

@@ -20,6 +20,10 @@
         width: 100vw;
     }
 
+    ::placeholder {
+        color: #BBB;
+    }
+
     .circle {
         border-radius: 50%;
     }

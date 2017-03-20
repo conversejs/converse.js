@@ -5,16 +5,15 @@
  * Copyright (c) 2012-2016, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
-/* 
+/*
     Color scheme helpers:
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
     http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
  */
-/* $font-path: "../fonticons/fonts/" !default; */
 @font-face {
   font-family: 'Converse-js';
-  src: url("/fonticons/fonts/icomoon.eot?wvi0ht");
-  src: url("/fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("/fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("/fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("/fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("../fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("../fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("../fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 .icon-conversejs {
@@ -1164,6 +1163,9 @@
     #conversejs {
       width: 100%;
       width: 100vw; } }
+  #converse-embedded-chat ::placeholder,
+  #conversejs ::placeholder {
+    color: #BBB; }
   #converse-embedded-chat .circle,
   #conversejs .circle {
     border-radius: 50%; }

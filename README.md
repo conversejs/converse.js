@@ -1,7 +1,8 @@
 # converse.js
 
 [![Travis](https://api.travis-ci.org/jcbrand/converse.js.png?branch=master)](https://travis-ci.org/jcbrand/converse.js)
-[![Bountysource](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
+[![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
+[![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
 [Converse.js](https://conversejs.org) is a web based [XMPP/Jabber](http://xmpp.org) instant messaging client.
 

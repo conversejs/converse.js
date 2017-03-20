@@ -1330,6 +1330,56 @@
                 expect(view.model.get('nonanonymous')).toBe(true);
             }));
 
+            it("updates the shown features when the room configuration has changed", mock.initConverse(function (_converse) {
+                var sent_IQ, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                test_utils.openAndEnterChatRoom(_converse, 'room', 'conference.example.org', 'dummy');
+                var view = _converse.chatboxviews.get('room@conference.example.org');
+                view.model.set({
+                    'passwordprotected': false,
+                    'unsecured': true,
+                    'hidden': false,
+                    'public': true,
+                    'membersonly': false,
+                    'open': true,
+                    'persistent': false,
+                    'temporary': true,
+                    'nonanonymous': true,
+                    'semianonymous': false,
+                    'moderated': false,
+                    'unmoderated': true
+                });
+                expect(view.model.get('persistent')).toBe(false);
+                expect(view.model.get('temporary')).toBe(true);
+                view.model.set({'persistent': true});
+                expect(view.model.get('persistent')).toBe(true);
+                expect(view.model.get('temporary')).toBe(false);
+
+                expect(view.model.get('unsecured')).toBe(true);
+                expect(view.model.get('passwordprotected')).toBe(false);
+                view.model.set({'passwordprotected': true});
+                expect(view.model.get('unsecured')).toBe(false);
+                expect(view.model.get('passwordprotected')).toBe(true);
+
+                expect(view.model.get('unmoderated')).toBe(true);
+                expect(view.model.get('moderated')).toBe(false);
+                view.model.set({'moderated': true});
+                expect(view.model.get('unmoderated')).toBe(false);
+                expect(view.model.get('moderated')).toBe(true);
+
+                expect(view.model.get('nonanonymous')).toBe(true);
+                expect(view.model.get('semianonymous')).toBe(false);
+                view.model.set({'nonanonymous': false});
+                expect(view.model.get('nonanonymous')).toBe(false);
+                expect(view.model.get('semianonymous')).toBe(true);
+
+                expect(view.model.get('open')).toBe(true);
+                expect(view.model.get('membersonly')).toBe(false);
+                view.model.set({'membersonly': true});
+                expect(view.model.get('open')).toBe(false);
+                expect(view.model.get('membersonly')).toBe(true);
+            }));
+
             it("indicates when a room is no longer anonymous", mock.initConverse(function (_converse) {
                 var sent_IQ, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
@@ -1414,8 +1464,8 @@
                 var $chat_body = view.$('.chatroom-body');
                 expect($chat_body.html().trim().indexOf(
                     '<p>You have been kicked from this room</p>'+
-                    '<p>This action was done by <strong>Fluellen</strong>.</p>'+
-                    '<p>The reason given is: <em>"Avaunt, you cullion!"</em>.</p>'
+                    '<p>This action was done by Fluellen.</p>'+
+                    '<p>The reason given is: "Avaunt, you cullion!".</p>'
                 )).not.toBe(-1);
             }));
 

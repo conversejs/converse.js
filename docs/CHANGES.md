@@ -6,6 +6,7 @@
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]
 - #675 Time format made configurable. [smitbose]
+- #682 Add "Send" button to input box in chat dialog window. [saganshul]
 - #704 Automatic fetching of registration form when [registration_domain](https://conversejs.org/
 docs/html/configurations.html#registration-domain) is set. [smitbose]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]

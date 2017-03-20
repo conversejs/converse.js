@@ -483,6 +483,14 @@ JIDs with other domains are still allowed but need to be provided in full.
 To specify only one domain and disallow other domains, see the `locked_domain`_
 option.
 
+registration_domain
+-------------------
+
+* Default: ``''``
+
+Specify a domain name for which the registration form will be fetched automatically,
+without the user having to enter any XMPP server domain name.
+
 default_state
 -------------
 

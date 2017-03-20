@@ -256,6 +256,7 @@
             password: undefined,
             prebind_url: null,
             priority: 0,
+            registration_domain: '',
             rid: undefined,
             roster_groups: true,
             show_only_online_users: false,

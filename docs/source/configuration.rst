@@ -976,6 +976,13 @@ show_only_online_users
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+show_send_button
+----------------------
+
+* Default:  ``false``
+
+If set to ``true``, a send button will be visible to activate send message operation via mouse, without keyboard.
+
 sounds_path
 -----------
 

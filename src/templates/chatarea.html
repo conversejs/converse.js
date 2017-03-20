@@ -5,7 +5,10 @@
         {[ if (show_toolbar) { ]}
             <ul class="chat-toolbar no-text-select"></ul>
         {[ } ]}
-        <textarea type="text" class="chat-textarea" 
+        <textarea type="text" class="chat-textarea {[ if (show_send_button) { ]}chat-textarea-send-button{[ } ]}"
             placeholder="{{{label_message}}}"/>
+    {[ if (show_send_button) { ]}
+        <button type="button" class="pure-button send-button">Send</button>
+    {[ } ]}
     </form>
 </div>

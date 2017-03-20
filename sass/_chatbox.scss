@@ -255,6 +255,17 @@
                 width: 100%;
                 resize: none;
             }
+            .chat-textarea-send-button {
+                height: $chat-textarea-height - 35px;
+            }
+            .send-button {
+                position: absolute;
+                bottom: 5px;
+                right: 10px;
+                background-color: #E76F51;
+                color: #fff;
+                font-size: 80%;
+            }
             .chat-toolbar {
                 box-sizing: border-box;
                 font-size: $font-size;
@@ -388,4 +399,3 @@
         }
     }
 }
-

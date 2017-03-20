@@ -269,6 +269,7 @@
             xhr_custom_status: false,
             xhr_custom_status_url: '',
             time_format: 'HH:MM',
+            show_send_button: false
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten

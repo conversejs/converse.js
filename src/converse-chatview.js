@@ -91,6 +91,7 @@
                 events: {
                     'click .close-chatbox-button': 'close',
                     'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onSendButtonClicked',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
@@ -119,6 +120,7 @@
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
+                                        show_send_button: _converse.show_send_button,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
@@ -597,6 +599,22 @@
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                     }
+                },
+
+                onSendButtonClicked: function(ev) {
+                    /* Event handler for when a send button is clicked in a chat box textarea.
+                     */
+                    ev.preventDefault();
+                    var textarea = $(ev.target).siblings('.chat-textarea')[0],
+                        message;
+                    message = textarea.value;
+                    textarea.value = '';
+                    textarea.focus();
+                    if (message !== '') {
+                        this.onMessageSubmitted(message);
+                        _converse.emit('messageSend', message);
+                    }
+                    this.setChatState(_converse.ACTIVE);
                 },
 
                 clearMessages: function (ev) {

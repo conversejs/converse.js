@@ -72,6 +72,11 @@
                             'model': this
                         });
                         this.registerpanel.render().$el.addClass('hidden');
+                        
+                        if (_converse.registration_domain) {
+                            this.registerpanel.renderRegistrationRequest('');
+                            this.registerpanel.fetchRegistrationForm(_converse.registration_domain);   
+                        }
                     }
                     return this;
                 }
@@ -116,6 +121,7 @@
                 render: function () {
                     this.$parent.append(this.$el.html(
                         tpl_register_panel({
+                            'default_domain': _converse.registration_domain,
                             'label_domain': __("Your XMPP provider's domain name:"),
                             'label_register': __('Fetch registration form'),
                             'help_providers': __('Tip: A list of public XMPP providers is available'),
@@ -227,18 +233,36 @@
                         $domain_input.addClass('error');
                         return;
                     }
-                    $form.find('input[type=submit]').hide()
-                        .after(tpl_registration_request({
-                            cancel: __('Cancel'),
-                            info_message: __('Requesting a registration form from the XMPP server')
-                        }));
-                    $form.find('button.button-cancel').on('click', this.cancelRegistration.bind(this));
+                    $form.find('input[type=submit]').hide();
+                    this.renderRegistrationRequest(__('Cancel'));
+                    this.fetchRegistrationForm(domain);
+                },
+
+                fetchRegistrationForm: function(domain_name) {
+                    /* This is called with a domain name based on which, it fetches a
+                     * registration form from the requested domain.
+                     *
+                     * Parameters:
+                     *      (Domain name) domain_name - XMPP server domain
+                     */ 
                     this.reset({
-                        domain: Strophe.getDomainFromJid(domain),
+                        domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
                     });
                     _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
-                    return false;
+                    return false; 
+                },
+
+                renderRegistrationRequest: function(cancel_label) {
+                    var form_help = document.querySelector('.form-help');
+                    $(form_help).after(tpl_registration_request({
+                        cancel: cancel_label,
+                        info_message: _converse.__('Requesting a registration form from the XMPP server')
+                    }));
+                    if (!_converse.registration_domain) {
+                        var cancel_button = document.querySelector('button.button-cancel');
+                        cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
+                    }
                 },
 
                 giveFeedback: function (message, klass) {
@@ -349,6 +373,9 @@
                         $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');
                         $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                     }
+                    if (_converse.registration_domain) {
+                        $form.find('input[type=button]').hide();
+                    }
                 },
 
                 reportErrors: function (stanza) {
@@ -390,6 +417,11 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     _converse.connection.reset();
                     this.render();
+                    if (_converse.registration_domain) {
+                        this.renderRegistrationRequest(__('Retry'));
+                        document.querySelector('button.button-cancel').onclick = 
+                            _.bind(this.fetchRegistrationForm, this, _converse.registration_domain); 
+                    }
                 },
 
                 submitRegistrationForm : function (ev) {

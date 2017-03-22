@@ -605,9 +605,9 @@
                     /* Event handler for when a send button is clicked in a chat box textarea.
                      */
                     ev.preventDefault();
-                    var textarea = $(ev.target).siblings('.chat-textarea')[0],
-                        message;
-                    message = textarea.value;
+                    var textarea = this.el.querySelector('.chat-textarea'),
+                        message = textarea.value;
+
                     textarea.value = '';
                     textarea.focus();
                     if (message !== '') {

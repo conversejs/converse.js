@@ -981,7 +981,7 @@ show_send_button
 
 * Default:  ``false``
 
-If set to ``true``, a send button will be visible to activate send message operation via mouse, without keyboard.
+If set to ``true``, a button will be visible which can be clicked to send a message.
 
 sounds_path
 -----------

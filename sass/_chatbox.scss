@@ -219,6 +219,9 @@
             height: 206px;
             height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
         }
+        .chat-content-sendbutton {
+            height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 1px});
+        }
 
         .dropdown { /* status dropdown styles */
             background-color: $light-background-color;
@@ -254,6 +257,16 @@
                 padding: 0.5em;
                 width: 100%;
                 resize: none;
+            }
+            .chat-textarea-send-button {
+                height: $chat-textarea-height - $send-button-margin-bottom;
+            }
+            .send-button {
+                position: absolute;
+                right: $send-button-margin-right;
+                background-color: #E76F51;
+                color: #fff;
+                font-size: 80%;
             }
             .chat-toolbar {
                 box-sizing: border-box;
@@ -388,4 +401,3 @@
         }
     }
 }
-

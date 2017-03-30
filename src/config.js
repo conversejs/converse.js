@@ -163,6 +163,7 @@ require.config({
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
         "roster":                   "src/templates/roster",
+        "roster_filter":            "src/templates/roster_filter",
         "roster_item":              "src/templates/roster_item",
         "search_contact":           "src/templates/search_contact",
         "select_option":            "src/templates/select_option",

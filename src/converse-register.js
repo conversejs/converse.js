@@ -433,11 +433,15 @@
                      *      (Event) ev - the submit event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var $empty_inputs = this.$('input.required:emptyVal');
-                    if ($empty_inputs.length) {
-                        $empty_inputs.addClass('error');
-                        return;
-                    }
+                    var has_empty_inputs = _.reduce(document.querySelectorAll('input.required'),
+                        function (result, input) {
+                            if (input.value === '') {
+                                input.classList.add('error');
+                                return result + 1;
+                            }
+                            return result;
+                        }, 0);
+                    if (has_empty_inputs) { return; }
                     var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                         iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 

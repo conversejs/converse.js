@@ -1,7 +1,7 @@
 /*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
-        "jquery",
+        "jquery-private",
         "jquery.browser",
         "lodash",
         "tpl!field",

@@ -7,7 +7,7 @@
 /*global Backbone, define, window, document */
 (function (root, factory) {
     define(["sizzle",
-            "jquery",
+            "jquery-private",
             "lodash",
             "polyfill",
             "locales",

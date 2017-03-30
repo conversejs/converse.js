@@ -154,7 +154,7 @@
                 this.i18n = locales.en;
             }
             if (typeof this.i18n === "string") {
-                this.i18n = $.parseJSON(this.i18n);
+                this.i18n = window.JSON.parse(this.i18n);
             }
             if (typeof this.jed === "undefined") {
                 this.jed = new Jed(this.i18n);

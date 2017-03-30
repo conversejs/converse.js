@@ -433,7 +433,7 @@
                      *      (Event) ev - the submit event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var has_empty_inputs = _.reduce(document.querySelectorAll('input.required'),
+                    var has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'),
                         function (result, input) {
                             if (input.value === '') {
                                 input.classList.add('error');

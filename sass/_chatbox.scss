@@ -258,15 +258,16 @@
                 width: 100%;
                 resize: none;
             }
-            .chat-textarea-send-button {
-                height: $chat-textarea-height - $send-button-margin-bottom;
-            }
             .send-button {
                 position: absolute;
-                right: $send-button-margin-right;
-                background-color: #E76F51;
-                color: #fff;
+                left: $send-button-margin;
+                @include calc(width, '100% - #{$send-button-margin} - #{$send-button-margin}');
+                background-color: $chat-head-color;
+                color: $inverse-link-color;
                 font-size: 80%;
+                height: $send-button-height;
+                bottom: -$send-button-height + $send-button-margin;
+
             }
             .chat-toolbar {
                 box-sizing: border-box;

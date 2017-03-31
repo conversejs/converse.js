@@ -72,9 +72,10 @@
                 __ = _converse.__;
 
             this.updateSettings({
-                show_toolbar: true,
-                chatview_avatar_width: 32,
                 chatview_avatar_height: 32,
+                chatview_avatar_width: 32,
+                show_toolbar: true,
+                time_format: 'HH:mm',
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,

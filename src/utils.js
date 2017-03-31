@@ -144,15 +144,10 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
-            if (typeof Jed === "undefined") {
+            if (typeof Jed === "undefined" || _.isUndefined(this.i18n) || this.i18n === 'en') {
                 return str;
             }
-            // FIXME: this can be refactored to take the i18n obj as a
-            // parameter.
             // Translation factory
-            if (typeof this.i18n === "undefined") {
-                this.i18n = locales.en;
-            }
             if (typeof this.i18n === "string") {
                 this.i18n = window.JSON.parse(this.i18n);
             }

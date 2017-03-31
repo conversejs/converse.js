@@ -379,18 +379,16 @@
 
                 handleChatStateMessage: function (message) {
                     if (message.get('chat_state') === _converse.COMPOSING) {
-                        if(message.get('sender') === 'me') {
+                        if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Typing from another device'));
-                        }
-                        else {
+                        } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
                     } else if (message.get('chat_state') === _converse.PAUSED) {
-                        if(message.get('sender') === 'me') {
+                        if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
-                        }
-                        else {
+                        } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {

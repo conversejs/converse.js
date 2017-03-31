@@ -1621,7 +1621,7 @@
     height: calc(100% - 96px); }
   #converse-embedded-chat .chatbox .chat-content-sendbutton,
   #conversejs .chatbox .chat-content-sendbutton {
-    height: calc(100% - 123px); }
+    height: calc(100% - 128px); }
   #converse-embedded-chat .chatbox .dropdown,
   #conversejs .chatbox .dropdown {
     /* status dropdown styles */
@@ -1667,13 +1667,13 @@
     #conversejs .chatbox form.sendXMPPMessage .send-button {
       position: absolute;
       left: 3px;
-      width: -webkit-calc(100% - 3px - 3px);
-      width: calc(100% - 3px - 3px);
+      width: -webkit-calc(100% - 6px);
+      width: calc(100% - 6px);
       background-color: #F4A261;
       color: white;
       font-size: 80%;
       height: 27px;
-      bottom: -24px; }
+      bottom: -30px; }
     #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar,
     #conversejs .chatbox form.sendXMPPMessage .chat-toolbar {
       box-sizing: border-box;

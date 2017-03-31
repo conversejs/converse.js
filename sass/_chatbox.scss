@@ -220,7 +220,7 @@
             height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
         }
         .chat-content-sendbutton {
-            height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 1px});
+            height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 2*$send-button-margin});
         }
 
         .dropdown { /* status dropdown styles */
@@ -261,12 +261,12 @@
             .send-button {
                 position: absolute;
                 left: $send-button-margin;
-                @include calc(width, '100% - #{$send-button-margin} - #{$send-button-margin}');
+                @include calc(width, '100% - #{2*$send-button-margin}');
                 background-color: $chat-head-color;
                 color: $inverse-link-color;
                 font-size: 80%;
                 height: $send-button-height;
-                bottom: -$send-button-height + $send-button-margin;
+                bottom: -$send-button-height - $send-button-margin;
 
             }
             .chat-toolbar {

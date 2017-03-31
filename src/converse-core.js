@@ -1908,6 +1908,7 @@
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _converse.connection.pass || this.password;
@@ -1926,6 +1927,7 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };
@@ -2006,6 +2008,7 @@
                 this.roster.off().reset(); // Removes roster contacts
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+            delete this.chatboxes.browserStorage;
             if (this.features) {
                 this.features.reset();
             }

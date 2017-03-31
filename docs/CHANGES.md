@@ -2,6 +2,7 @@
 
 ## 3.0.1 (Unreleased)
 
+- Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
 - #585 Duplicate contact created due to JID case sensivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]

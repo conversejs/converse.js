@@ -444,5 +444,21 @@
             return !(utils.contains(attr, query)(item));
         };
     };
+
+
+    utils.createElementsFromString = function (element, html) {
+        // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
+        var frag = document.createDocumentFragment(),
+            tmp = document.createElement('body'), child;
+        tmp.innerHTML = html;
+        // Append elements in a loop to a DocumentFragment, so that the browser does
+        // not re-render the document for each node
+        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
+            frag.appendChild(child);
+        }
+        element.appendChild(frag); // Now, append all elements at once
+        frag = tmp = null;
+    }
+
     return utils;
 }));

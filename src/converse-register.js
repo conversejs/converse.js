@@ -35,7 +35,7 @@
     // Other necessary globals
     var $ = converse.env.jQuery,
         _ = converse.env._;
-    
+
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
@@ -60,6 +60,17 @@
 
             ControlBoxView: {
 
+                switchTab: function (ev) {
+                    var _converse = this.__super__._converse;
+                    var result = this.__super__.switchTab.apply(this, arguments);
+                    if (_converse.registration_domain &&
+                            ev.target.getAttribute('data-id') === "register" &&
+                            !this.model.get('registration_form_rendered')) {
+                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
+                    }
+                    return result;
+                },
+
                 renderLoginPanel: function () {
                     /* Also render a registration panel, when rendering the
                      * login panel.
@@ -69,14 +80,9 @@
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
-                            'model': this
+                            'model': this.model
                         });
                         this.registerpanel.render().$el.addClass('hidden');
-                        
-                        if (_converse.registration_domain) {
-                            this.registerpanel.renderRegistrationRequest('');
-                            this.registerpanel.fetchRegistrationForm(_converse.registration_domain);   
-                        }
                     }
                     return this;
                 }
@@ -119,6 +125,7 @@
                 },
 
                 render: function () {
+                    this.model.set('registration_form_rendered', false);
                     this.$parent.append(this.$el.html(
                         tpl_register_panel({
                             'default_domain': _converse.registration_domain,
@@ -158,7 +165,6 @@
                      *    (Strophe.Request) req - The current request
                      *    (Function) callback
                      */
-                    _converse.log("sendQueryStanza was called");
                     var conn = _converse.connection;
                     conn.connected = true;
 
@@ -176,13 +182,16 @@
                     if (register.length === 0) {
                         conn._changeConnectStatus(
                             Strophe.Status.REGIFAIL,
-                            __('Sorry, the given provider does not support in band account registration. Please try with a different provider.')
+                            __("Sorry, the given provider does not support in "+
+                               "band account registration. Please try with a "+
+                               "different provider.")
                         );
                         return true;
                     }
                     // Send an IQ stanza to get all required data fields
                     conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
                     conn.send($iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree());
+                    conn.connected = false;
                     return true;
                 },
 
@@ -234,31 +243,34 @@
                         return;
                     }
                     $form.find('input[type=submit]').hide();
-                    this.renderRegistrationRequest(__('Cancel'));
-                    this.fetchRegistrationForm(domain);
+                    this.fetchRegistrationForm(domain, __('Cancel'));
                 },
 
-                fetchRegistrationForm: function(domain_name) {
+                fetchRegistrationForm: function (domain_name, cancel_label) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
                      * Parameters:
                      *      (Domain name) domain_name - XMPP server domain
-                     */ 
+                     */
+                    this.renderRegistrationRequest(cancel_label);
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
                     });
                     _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
-                    return false; 
+                    return false;
                 },
 
-                renderRegistrationRequest: function(cancel_label) {
-                    var form_help = document.querySelector('.form-help');
-                    $(form_help).after(tpl_registration_request({
-                        cancel: cancel_label,
-                        info_message: _converse.__('Requesting a registration form from the XMPP server')
-                    }));
+                renderRegistrationRequest: function (cancel_label) {
+                    var form = this.el.querySelector('#converse-register');
+                    utils.createElementsFromString(
+                        form,
+                        tpl_registration_request({
+                            cancel: cancel_label,
+                            info_message: _converse.__('Requesting a registration form from the XMPP server')
+                        })
+                    );
                     if (!_converse.registration_domain) {
                         var cancel_button = document.querySelector('button.button-cancel');
                         cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
@@ -325,7 +337,9 @@
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
                      */
-                    var $form= this.$('form'),
+                    this.model.set('registration_form_rendered', true);
+
+                    var $form = this.$('form'),
                         $stanza = $(stanza),
                         $fields, $input;
                     $form.empty().append(tpl_registration_form({
@@ -416,15 +430,18 @@
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     _converse.connection.reset();
+                    this.model.set('registration_form_rendered', false);
                     this.render();
                     if (_converse.registration_domain) {
-                        this.renderRegistrationRequest(__('Retry'));
                         document.querySelector('button.button-cancel').onclick = 
-                            _.bind(this.fetchRegistrationForm, this, _converse.registration_domain); 
+                            _.bind(
+                                this.fetchRegistrationForm, this,
+                                _converse.registration_domain, __('Retry')
+                            );
                     }
                 },
 
-                submitRegistrationForm : function (ev) {
+                submitRegistrationForm: function (ev) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
@@ -456,6 +473,7 @@
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
+                    this.model.set('registration_form_rendered', false);
                     _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                     _converse.connection.send(iq);
                     this.setFields(iq.tree());

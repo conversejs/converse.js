@@ -28,6 +28,7 @@
         'text!zh'
         ], function ($, Jed) {
             root.locales = {
+                'en':     {},
                 'af':     arguments[1],
                 'ca':     arguments[2],
                 'de':     arguments[3],

@@ -163,7 +163,7 @@
                 }
                 var n = new Notification(title, {
                         body: message.querySelector('body').textContent,
-                        lang: _converse.i18n.locale_data.converse[""].lang,
+                        lang: _.isEmpty(converse.i18n) ? 'en' : _converse.i18n.locale_data.converse[""].lang,
                         icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);

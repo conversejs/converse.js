@@ -44,6 +44,13 @@
         }
     };
 
+    // Unescape HTML-escaped characters (e.g. transform occurrences of '&amp;' to '&')
+    var unescapeHTML = function(htmlEscapedText) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlEscapedText;
+        return div.innerText;
+    }
+
     var isImage = function (url) {
         var deferred = new $.Deferred();
         var img = new Image();
@@ -91,7 +98,7 @@
                 }
                 $obj.html(x);
                 _.forEach(list, function (url) {
-                    isImage(url).then(function (img) {
+                    isImage(unescapeHTML(url)).then(function (img) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
                         var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';

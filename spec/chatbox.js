@@ -1224,7 +1224,8 @@
                         // the page is loaded via file:///
                         return;
                     }
-                    var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg";
+                    var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg?param1=val1&param2=val2",
+                        htmlEscapedMessage = message.replace(/&/g, '&amp;');
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
                     var view = _converse.chatboxviews.get(contact_jid);
@@ -1236,7 +1237,7 @@
                     runs(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual('<img src="'+message+'" class="chat-image">');
+                        expect(msg.html()).toEqual('<img src="'+htmlEscapedMessage+'" class="chat-image">');
                     });
                 }));
 

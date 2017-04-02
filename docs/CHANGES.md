@@ -18,6 +18,7 @@
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
 - #811 jQuery wasn't being closured in builds. [jcbrand]
+- #814 Images from URLs with query strings aren't being rendered. [novokrest]
 - #820 Inconsistency in displaying room features. [jcbrand]
 
 ## 3.0.0 (2017-03-05)

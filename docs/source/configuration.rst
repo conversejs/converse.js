@@ -976,6 +976,13 @@ show_only_online_users
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+show_send_button
+----------------------
+
+* Default:  ``false``
+
+If set to ``true``, a button will be visible which can be clicked to send a message.
+
 sounds_path
 -----------
 
@@ -1078,9 +1085,9 @@ If set to ``a resource name``, converse.js will synchronize only with a client t
 time_format
 -----------
 
-* Default: ``HH:MM``
+* Default: ``HH:mm``
 
-Examples: ``HH:MM``, ``hh:mm``, ``hh:mm a``.
+Examples: ``HH:mm``, ``hh:mm``, ``hh:mm a``.
 
 This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js <https://momentjs.com/>`_
 for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed

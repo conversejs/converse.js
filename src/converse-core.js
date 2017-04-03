@@ -7,7 +7,7 @@
 /*global Backbone, define, window, document */
 (function (root, factory) {
     define(["sizzle",
-            "jquery",
+            "jquery-private",
             "lodash",
             "polyfill",
             "locales",
@@ -268,7 +268,7 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
-            time_format: 'HH:MM',
+            show_send_button: false
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -1907,6 +1907,7 @@
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _converse.connection.pass || this.password;
@@ -1925,6 +1926,7 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };
@@ -2005,6 +2007,7 @@
                 this.roster.off().reset(); // Removes roster contacts
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+            delete this.chatboxes.browserStorage;
             if (this.features) {
                 this.features.reset();
             }

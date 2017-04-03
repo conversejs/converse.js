@@ -72,9 +72,10 @@
                 __ = _converse.__;
 
             this.updateSettings({
-                show_toolbar: true,
-                chatview_avatar_width: 32,
                 chatview_avatar_height: 32,
+                chatview_avatar_width: 32,
+                show_toolbar: true,
+                time_format: 'HH:mm',
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,
@@ -91,6 +92,7 @@
                 events: {
                     'click .close-chatbox-button': 'close',
                     'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onSendButtonClicked',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
@@ -119,6 +121,7 @@
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
+                                        show_send_button: _converse.show_send_button,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
@@ -376,18 +379,16 @@
 
                 handleChatStateMessage: function (message) {
                     if (message.get('chat_state') === _converse.COMPOSING) {
-                        if(message.get('sender') === 'me') {
+                        if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Typing from another device'));
-                        }
-                        else {
+                        } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
                     } else if (message.get('chat_state') === _converse.PAUSED) {
-                        if(message.get('sender') === 'me') {
+                        if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
-                        }
-                        else {
+                        } else {
                             this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
@@ -597,6 +598,22 @@
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                     }
+                },
+
+                onSendButtonClicked: function(ev) {
+                    /* Event handler for when a send button is clicked in a chat box textarea.
+                     */
+                    ev.preventDefault();
+                    var textarea = this.el.querySelector('.chat-textarea'),
+                        message = textarea.value;
+
+                    textarea.value = '';
+                    textarea.focus();
+                    if (message !== '') {
+                        this.onMessageSubmitted(message);
+                        _converse.emit('messageSend', message);
+                    }
+                    this.setChatState(_converse.ACTIVE);
                 },
 
                 clearMessages: function (ev) {

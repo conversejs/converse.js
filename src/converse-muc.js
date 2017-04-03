@@ -353,7 +353,8 @@
                     'click .toggle-occupants a': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onSendButtonClicked'
                 },
 
                 initialize: function () {
@@ -406,7 +407,8 @@
                             .append(tpl_chatarea({
                                     'unread_msgs': __('You have unread messages'),
                                     'show_toolbar': _converse.show_toolbar,
-                                    'label_message': __('Message')
+                                    'label_message': __('Message'),
+                                    'show_send_button': _converse.show_send_button
                                 }))
                             .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);

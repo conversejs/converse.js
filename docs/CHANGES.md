@@ -2,14 +2,22 @@
 
 ## 3.0.1 (Unreleased)
 
+- Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
 - #585 Duplicate contact created due to JID case sensivity [saganshul]
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]
-- #675 Time format made configurable. [smitbose]
-- #704 Automatic fetching of registration form when [registration_domain](https://conversejs.org/
-docs/html/configurations.html#registration-domain) is set. [smitbose]
+- #675 Time format made configurable.
+   See [time_format](https://conversejs.org/docs/html/configurations.html#time-format)
+   [smitbose]
+- #682 Add "Send" button to input box in chat dialog window.
+   See [show_send_button](https://conversejs.org/docs/html/configurations.html#show-send-button)
+   [saganshul]
+- #704 Automatic fetching of registration form when
+   [registration_domain](https://conversejs.org/docs/html/configurations.html#registration-domain)
+   is set. [smitbose]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
+- #811 jQuery wasn't being closured in builds. [jcbrand]
 - #820 Inconsistency in displaying room features. [jcbrand]
 
 ## 3.0.0 (2017-03-05)

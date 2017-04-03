@@ -1,7 +1,7 @@
 /*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
-        "jquery",
+        "jquery-private",
         "jquery.browser",
         "lodash",
         "tpl!field",
@@ -46,16 +46,21 @@
 
     var isImage = function (url) {
         var deferred = new $.Deferred();
-        $("<img>", {
-            src: url,
-            error: deferred.reject,
-            load: deferred.resolve
-        });
+        var img = new Image();
+        var timer = window.setTimeout(function () {
+            deferred.reject();
+            img = null;
+        }, 3000);
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            deferred.reject();
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            deferred.resolve(img);
+        };
+        img.src = url;
         return deferred.promise();
-    };
-
-    $.expr[':'].emptyVal = function(obj){
-        return obj.value === '';
     };
 
     $.fn.hasScrollBar = function() {
@@ -86,12 +91,12 @@
                 }
                 $obj.html(x);
                 _.forEach(list, function (url) {
-                    isImage(url).then(function (ev) {
+                    isImage(url).then(function (img) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
                         var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
-                        ev.target.className = 'chat-image';
-                        x = x.replace(new_url, ev.target.outerHTML);
+                        img.className = 'chat-image';
+                        x = x.replace(new_url, img.outerHTML);
                         $obj.throttledHTML(x);
                     });
                 });
@@ -139,17 +144,12 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
-            if (typeof Jed === "undefined") {
+            if (typeof Jed === "undefined" || _.isUndefined(this.i18n) || this.i18n === 'en') {
                 return str;
             }
-            // FIXME: this can be refactored to take the i18n obj as a
-            // parameter.
             // Translation factory
-            if (typeof this.i18n === "undefined") {
-                this.i18n = locales.en;
-            }
             if (typeof this.i18n === "string") {
-                this.i18n = $.parseJSON(this.i18n);
+                this.i18n = window.JSON.parse(this.i18n);
             }
             if (typeof this.jed === "undefined") {
                 this.jed = new Jed(this.i18n);
@@ -439,5 +439,21 @@
             return !(utils.contains(attr, query)(item));
         };
     };
+
+
+    utils.createElementsFromString = function (element, html) {
+        // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
+        var frag = document.createDocumentFragment(),
+            tmp = document.createElement('body'), child;
+        tmp.innerHTML = html;
+        // Append elements in a loop to a DocumentFragment, so that the browser does
+        // not re-render the document for each node
+        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
+            frag.appendChild(child);
+        }
+        element.appendChild(frag); // Now, append all elements at once
+        frag = tmp = null;
+    }
+
     return utils;
 }));

@@ -348,7 +348,7 @@
                     $sibling.removeClass('current');
                     $tab.addClass('current');
                     $tab_panel.removeClass('hidden');
-                    if (_converse.connection.connected) {
+                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
                         this.model.save({'active-panel': $tab.data('id')});
                     }
                     return this;
@@ -446,6 +446,7 @@
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                         }
                     }
+                    _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
                 },
 

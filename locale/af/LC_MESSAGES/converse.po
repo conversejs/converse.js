@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-15 10:58+0000\n"
-"PO-Revision-Date: 2017-03-15 11:01+0000\n"
+"PO-Revision-Date: 2017-03-15 11:12+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
-"Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
-"translations/af/>\n"
+"Language-Team: Afrikaans "
+"<https://hosted.weblate.org/projects/conversejs/translations/af/>\n"
 "Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -531,7 +531,7 @@ msgstr "Stel onderwerp vir kletskamer"
 
 #: src/converse-muc.js:952
 msgid "Set room subject (alias for /subject)"
-msgstr ""
+msgstr "Verskaf kamer onderwerp (alias vir /subject)"
 
 #: src/converse-muc.js:953
 msgid "Allow muted user to post messages"
@@ -575,7 +575,7 @@ msgstr "Hierdie aksie is uitgevoer deur: %1$s."
 
 #: src/converse-muc.js:1673
 msgid "The reason given is: \"%1$s\"."
-msgstr "Die gegewe rede is: \""
+msgstr "Die gegewe rede is: \"%1$s\"."
 
 #: src/converse-muc.js:1682
 msgid "The reason given is: \""
@@ -583,19 +583,19 @@ msgstr "Die gegewe rede is: \""
 
 #: src/converse-muc.js:1700
 msgid " has left the room. \""
-msgstr ""
+msgstr " het die kamer verlaat.\""
 
 #: src/converse-muc.js:1702
 msgid " has left the room"
-msgstr "Sluit en verlaat hierdie kletskamer"
+msgstr " het die kletskamer verlaat"
 
 #: src/converse-muc.js:1710
 msgid " has joined the room. \""
-msgstr ""
+msgstr " het die kamer binnegekom.\""
 
 #: src/converse-muc.js:1712
 msgid " has joined the room."
-msgstr ""
+msgstr " het die kamer bygetree."
 
 #: src/converse-muc.js:1747
 msgid "You are not on the member list of this room"
@@ -627,7 +627,7 @@ msgstr "Onderwerp deur %1$s bygewerk na: %2$s"
 
 #: src/converse-muc.js:1936
 msgid "Click to mention "
-msgstr "Klik om hierdie kletskamer te open"
+msgstr "Klik om te noem "
 
 #: src/converse-muc.js:1937
 msgid "This user is a moderator."
@@ -651,7 +651,7 @@ msgstr "Nooi uit"
 
 #: src/converse-muc.js:2032
 msgid "Features"
-msgstr "Eienskappe:"
+msgstr "Eienskappe"
 
 #: src/converse-muc.js:2033 src/converse-muc.js:2376
 msgid "Hidden"
@@ -659,11 +659,11 @@ msgstr "Verskuil"
 
 #: src/converse-muc.js:2034
 msgid "Message archiving"
-msgstr ""
+msgstr "Boodskap-argivering"
 
 #: src/converse-muc.js:2035
 msgid "Members only"
-msgstr ""
+msgstr "Slegs lede"
 
 #: src/converse-muc.js:2036 src/converse-muc.js:2378
 msgid "Moderated"
@@ -679,11 +679,11 @@ msgstr "Oop kletskamer"
 
 #: src/converse-muc.js:2039
 msgid "Password protected"
-msgstr "Wagwoord:"
+msgstr "Wagwoord"
 
 #: src/converse-muc.js:2040
 msgid "Persistent"
-msgstr ""
+msgstr "Blywend"
 
 #: src/converse-muc.js:2041 src/converse-muc.js:2382
 msgid "Public"
@@ -703,66 +703,59 @@ msgstr "Ongemodereer"
 
 #: src/converse-muc.js:2045
 msgid "Unsecured"
-msgstr ""
+msgstr "Onversekerd"
 
 #: src/converse-muc.js:2046
-#, fuzzy
 msgid "This room is not publically searchable"
-msgstr "Hierdie vertrek is nie anoniem nie"
+msgstr "Hierdie vertrek is nie publiek soekbaar nie"
 
 #: src/converse-muc.js:2047
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "Boodskappe word op die bediener gestoor"
 
 #: src/converse-muc.js:2048
-#, fuzzy
 msgid "This room is restricted to members only"
-msgstr "Hierdie kletskamer het sy maksimum aantal deelnemers bereik"
+msgstr "Hierdie kletskamer is slegs tot lede beperk"
 
 #: src/converse-muc.js:2049
-#, fuzzy
 msgid "This room is being moderated"
-msgstr "Hierdie gebruiker is 'n moderator"
+msgstr "Hierdie kletskamer word gemodereer"
 
 #: src/converse-muc.js:2050
 msgid "All other room occupants can see your Jabber ID"
-msgstr ""
+msgstr "Alle ander deelnemers can u Jabber ID sien"
 
 #: src/converse-muc.js:2051
-#, fuzzy
 msgid "Anyone can join this room"
-msgstr "Sluit en verlaat hierdie kletskamer"
+msgstr "Enige iemand kan hierdie kletskamer binnekom"
 
 #: src/converse-muc.js:2052
-#, fuzzy
 msgid "This room requires a password before entry"
-msgstr "Hiedie kletskamer benodig 'n wagwoord"
+msgstr "Hierdie kletskamer benodig 'n wagwoord"
 
 #: src/converse-muc.js:2053
 msgid "This room pesists even if it's unoccupied"
-msgstr ""
+msgstr "Hierdie kletskamer bestaan voort selfs al is dit leeg"
 
 #: src/converse-muc.js:2054
 msgid "This room is publically searchable"
-msgstr ""
+msgstr "Hierdie kletskamer is publiek opspoorbaar"
 
 #: src/converse-muc.js:2055
 msgid "Only moderators can see your Jabber ID"
-msgstr ""
+msgstr "Slegs moderators kan u Jabber ID sien"
 
 #: src/converse-muc.js:2056
 msgid "This room will disappear once the last person leaves"
-msgstr ""
+msgstr "Hierdie kletskamer sal verdwyn sodra die laaste persoon dit verlaat"
 
 #: src/converse-muc.js:2057
-#, fuzzy
 msgid "This room is not being moderated"
-msgstr "Hierdie vertrek is nie anoniem nie"
+msgstr "Hierdie kletskamer word nie gemodereer nie"
 
 #: src/converse-muc.js:2058
-#, fuzzy
 msgid "This room does not require a password upon entry"
-msgstr "Hiedie kletskamer benodig 'n wagwoord"
+msgstr "Hiedie kletskamer benodig nie 'n wagwoord nie"
 
 #: src/converse-muc.js:2167
 msgid "You are about to invite %1$s to the chat room \"%2$s\". "

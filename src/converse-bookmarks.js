@@ -10,12 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define([
-            "jquery",
-            "lodash",
-            "moment_with_locales",
-            "strophe",
-            "utils",
+    define([ "utils",
             "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -25,17 +20,20 @@
         ],
         factory);
 }(this, function (
-        $, _, moment, strophe, utils,
-        converse, muc,
+        utils,
+        converse,
+        muc,
         tpl_chatroom_bookmark_form,
         tpl_chatroom_bookmark_toggle,
         tpl_bookmark,
         tpl_bookmarks_list
     ) {
 
-    var Strophe = converse.env.Strophe,
+    var $ = converse.env.jQuery,
+        Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
-        b64_sha1 = converse.env.b64_sha1;
+        b64_sha1 = converse.env.b64_sha1,
+        _ = converse.env._;
 
     converse.plugins.add('converse-bookmarks', {
         overrides: {

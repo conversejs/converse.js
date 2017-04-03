@@ -201,8 +201,13 @@
             }
         }
 
-        .chat-textarea {
-            border-bottom-right-radius: 0;
+        form.sendXMPPMessage {
+            .chat-textarea {
+                border-bottom-right-radius: 0;
+            }
+            .send-button {
+                background-color: $chatroom-head-color;
+            }
         }
 
         .room-invite {

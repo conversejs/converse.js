@@ -96,7 +96,6 @@
             _converse.connection._connect_cb(test_utils.createRequest(stanza));
 
             expect(registerview.getRegistrationFields).toHaveBeenCalled();
-            expect(_converse.connection.connected).toBeTruthy();
 
             stanza = $iq({
                     'type': 'result',

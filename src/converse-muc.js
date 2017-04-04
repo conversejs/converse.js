@@ -99,8 +99,9 @@
         CONNECTED: 0,
         CONNECTING: 1,
         NICKNAME_REQUIRED: 2,
-        DISCONNECTED: 3,
-        ENTERED: 4
+        PASSWORD_REQUIRED: 3,
+        DISCONNECTED: 4,
+        ENTERED: 5
     };
 
     converse.plugins.add('converse-muc', {
@@ -385,10 +386,13 @@
                 },
 
                 render: function () {
-                    this.$el.attr('id', this.model.get('box_id'))
-                            .html(tpl_chatroom());
+                    this.el.setAttribute('id', this.model.get('box_id'));
+                    this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
                     this.renderChatArea();
+                    if (this.model.get('connection_status') !== ROOMSTATUS.ENTERED) {
+                        this.showSpinner();
+                    }
                     utils.refreshWebkit();
                     return this;
                 },
@@ -1574,6 +1578,7 @@
                             label_password: __('Password: '),
                             label_submit: __('Submit')
                         }));
+                    this.model.save('connection_status', ROOMSTATUS.PASSWORD_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
                 },
 
@@ -1783,11 +1788,6 @@
                     }
                 },
 
-                showSpinner: function () {
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
-                },
-
                 renderAfterTransition: function () {
                     /* Rerender the room after some kind of transition. For
                      * example after the spinner has been removed or after a
@@ -1795,12 +1795,19 @@
                      */
                     if (this.model.get('connection_status') == ROOMSTATUS.NICKNAME_REQUIRED) {
                         this.renderNicknameForm();
+                    } else if (this.model.get('connection_status') == ROOMSTATUS.PASSWORD_REQUIRED) {
+                        this.renderPasswordForm();
                     } else {
                         this.$el.find('.chat-area').removeClass('hidden');
                         this.$el.find('.occupants').removeClass('hidden');
                         this.occupantsview.setOccupantsHeight();
                         this.scrollDown();
                     }
+                },
+
+                showSpinner: function () {
+                    this.$('.chatroom-body').children().addClass('hidden');
+                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
                 },
 
                 hideSpinner: function () {
@@ -1853,6 +1860,7 @@
                             }
                         }
                         this.model.save('connection_status', ROOMSTATUS.ENTERED);
+                        this.hideSpinner();
                     }
                     if (!locked_room && !this.model.get('features_fetched') &&
                             this.model.get('connection_status') !== ROOMSTATUS.CONNECTED) {
@@ -2002,12 +2010,11 @@
                 },
 
                 render: function () {
-                    this.$el.html(
-                        tpl_chatroom_sidebar(
-                            _.extend(this.chatroomview.model.toJSON(), {
-                                'allow_muc_invitations': _converse.allow_muc_invitations,
-                                'label_occupants': __('Occupants')
-                            }))
+                    this.el.innerHTML = tpl_chatroom_sidebar(
+                        _.extend(this.chatroomview.model.toJSON(), {
+                            'allow_muc_invitations': _converse.allow_muc_invitations,
+                            'label_occupants': __('Occupants')
+                        })
                     );
                     if (_converse.allow_muc_invitations) {
                         _converse.api.waitUntil('rosterContactsFetched').then(

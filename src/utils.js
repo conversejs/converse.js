@@ -44,8 +44,13 @@
         }
     };
 
-    // Unescape HTML-escaped characters (e.g. transform occurrences of '&amp;' to '&')
-    var unescapeHTML = function(htmlEscapedText) {
+    var unescapeHTML = function (htmlEscapedText) {
+        /* Helper method that replace HTML-escaped symbols with equivalent characters
+         * (e.g. transform occurrences of '&amp;' to '&')
+         *
+         * Parameters:
+         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         */
         var div = document.createElement('div');
         div.innerHTML = htmlEscapedText;
         return div.innerText;

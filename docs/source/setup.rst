@@ -57,7 +57,7 @@ A BOSH Connection Manager
 Your website and *Converse.js* use `HTTP <https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol>`_
 as protocol to communicate with the webserver. HTTP connections are stateless and usually shortlived.
 
-`XMPP <https://en.wikipedia.org/wiki/Xmpp>`_ on the other hand, is the protocol that enables instant messaging, and
+XMPP on the other hand, is the protocol that enables instant messaging, and
 its connections are stateful and usually longer.
 
 To enable a web application like *Converse.js* to communicate with an XMPP
@@ -67,9 +67,9 @@ This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
 Synchronous HTTP) is a protocol for allowing XMPP communication over HTTP. The
 protocol is defined in `XEP-0206: XMPP Over BOSH <http://xmpp.org/extensions/xep-0206.html>`_.
 
-Popular XMPP servers such as `ejabberd <http://www.ejabberd.im>`_,
-`prosody <http://prosody.im/doc/setting_up_bosh>`_ and
-`openfire <http://www.igniterealtime.org/projects/openfire/>`_ all include
+Popular XMPP servers such as `Ejabberd <http://www.ejabberd.im>`_,
+prosody `(mod_bosh) <http://prosody.im/doc/setting_up_bosh>`_ and
+`OpenFire <http://www.igniterealtime.org/projects/openfire/>`_ all include
 their own connection managers (but you usually have to enable them in the
 configuration).
 
@@ -124,7 +124,7 @@ Apache/Nginx which serves the connection manager under the same domain as your
 website. This will remove the need for any cross-domain XHR support.
 
 For example:
-------------
+============
 
 Assuming your site is accessible on port ``80`` for the domain ``mysite.com``
 and your connection manager manager is running at ``someothersite.com/http-bind``.
@@ -136,7 +136,7 @@ the cross-domain restriction is ``mysite.com/http-bind`` and not
 Your ``nginx`` or ``apache`` configuration will look as follows:
 
 Nginx
-~~~~~
+-----
 
 .. code-block:: nginx
 
@@ -151,7 +151,7 @@ Nginx
     }
 
 Apache
-~~~~~~
+------
 
 .. code-block:: apache
 
@@ -249,7 +249,7 @@ Please read the documentation on those settings for a fuller picture of what
 needs to be done.
 
 Example code for server-side prebinding
-***************************************
+---------------------------------------
 
 * PHP:
     See `xmpp-prebind-php <https://github.com/candy-chat/xmpp-prebind-php>`_ by

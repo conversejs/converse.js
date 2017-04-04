@@ -286,7 +286,7 @@ If the value is negative or ``0``, the function is disabled.
 auto_reconnect
 --------------
 
-* Default:  ``true``
+* Default:  ``false``
 
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.

@@ -1441,13 +1441,13 @@
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;
-    font-size: 80%;
+    font-size: 75%;
     font-style: italic;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin: 0;
-    padding-top: 0.5em; }
+    padding-top: 0.2em; }
 #converse-embedded-chat .chatbox-btn,
 #conversejs .chatbox-btn {
   border-radius: 25%;

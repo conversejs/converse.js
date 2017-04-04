@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.1 (Unreleased)
+## 3.0.1 ((2017-04-04))
 
 - Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
 - #585 Duplicate contact created due to JID case sensivity [saganshul]

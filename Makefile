@@ -61,7 +61,7 @@ serve: stamp-npm
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.0 -c
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.1 -c
 
 .PHONY: pot
 pot:

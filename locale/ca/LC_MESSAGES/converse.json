@@ -63,9 +63,17 @@
             null,
             ""
          ],
+         "Typing from another device": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "està escrivint"
+         ],
+         "Stopped typing on the other device": [
+            null,
+            ""
          ],
          "has stopped typing": [
             null,
@@ -507,11 +515,7 @@
             null,
             ""
          ],
-         "This room pesists even if it's unoccupied": [
-            null,
-            ""
-         ],
-         "This room is publically searchable": [
+         "This room persists even if it's unoccupied": [
             null,
             ""
          ],
@@ -790,6 +794,10 @@
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que heu introduït siguin correctes."
+         ],
+         "Retry": [
+            null,
+            ""
          ],
          "This contact is busy": [
             null,

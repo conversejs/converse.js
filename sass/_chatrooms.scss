@@ -41,6 +41,10 @@
         @media screen and (max-width: $mobile-portrait-length) {
             width: $mobile-chat-width;
         }
+
+        .spinner {
+        }
+
         .box-flyout {
             min-width: $chatroom-width;
             width: $chatroom-width;

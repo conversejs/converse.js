@@ -1224,6 +1224,32 @@
                         // the page is loaded via file:///
                         return;
                     }
+                    var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg";
+                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    spyOn(view, 'sendMessage').andCallThrough();
+                    runs(function () {
+                        test_utils.sendMessage(view, message);
+                    });
+                    waits(500);
+                    runs(function () {
+                        expect(view.sendMessage).toHaveBeenCalled();
+                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
+                        expect(msg.html()).toEqual('<img src="'+message+'" class="chat-image">');
+                    });
+                }));
+
+                it("will render images from their URLs with query strings containing HTML-escaping characters", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
+                    test_utils.openControlBox();
+                    test_utils.openContactsPanel(_converse);
+
+                    if (/PhantomJS/.test(window.navigator.userAgent)) {
+                        // Doesn't work when running tests in PhantomJS, since
+                        // the page is loaded via file:///
+                        return;
+                    }
                     var message = document.URL.split(window.location.pathname)[0] + "/logo/conversejs.svg?param1=val1&param2=val2",
                         htmlEscapedMessage = message.replace(/&/g, '&amp;');
                     var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';

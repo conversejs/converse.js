@@ -2,7 +2,7 @@
 
 ## 3.0.2 (Unreleased)
 
-- No changes yet.
+- Update Jasmine from 1.3.1 to 2.5.3 and Phantomjs from 1.9.7-1 to 2.1.14 [jcbrand]
 
 ## 3.0.1 (2017-04-04)
 

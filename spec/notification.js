@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils", "utils"], factory);
+    define(["mock", "converse-core", "test-utils", "utils"], factory);
 } (this, function (mock, converse, test_utils, utils) {
     "use strict";
     var _ = converse.env._;
@@ -16,7 +16,7 @@
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification');
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         
                         var message = 'This message will show a desktop notification';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -46,8 +46,8 @@
                                 };
                             };
                         }
-                        spyOn(_converse, 'showMessageNotification').andCallThrough();
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         
                         var message = 'dummy: This message will show a desktop notification';
                         var nick = mock.chatroom_names[0],
@@ -66,56 +66,46 @@
                     }));
 
                     it("is shown for headline messages", mock.initConverse(function (_converse) {
-                        spyOn(_converse, 'showMessageNotification').andCallThrough();
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
-                        runs(function () {
-                            var stanza = $msg({
-                                    'type': 'headline',
-                                    'from': 'notify.example.com',
-                                    'to': 'dummy@localhost',
-                                    'xml:lang': 'en'
-                                })
-                                .c('subject').t('SIEVE').up()
-                                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
-                                .c('x', {'xmlns': 'jabber:x:oob'})
-                                .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
-                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        });
-                        waits(250);
-                        runs(function () {
-                            expect(
-                                _.includes(_converse.chatboxviews.keys(),
-                                    'notify.example.com')
-                                ).toBeTruthy();
-                            expect(_converse.showMessageNotification).toHaveBeenCalled();
-                        });
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                        var stanza = $msg({
+                                'type': 'headline',
+                                'from': 'notify.example.com',
+                                'to': 'dummy@localhost',
+                                'xml:lang': 'en'
+                            })
+                            .c('subject').t('SIEVE').up()
+                            .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                            .c('x', {'xmlns': 'jabber:x:oob'})
+                            .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect(
+                            _.includes(_converse.chatboxviews.keys(),
+                                'notify.example.com')
+                            ).toBeTruthy();
+                        expect(_converse.showMessageNotification).toHaveBeenCalled();
                     }));
 
                     it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
                         _converse.allow_non_roster_messaging = false;
-                        spyOn(_converse, 'showMessageNotification').andCallThrough();
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
-                        runs(function () {
-                            var stanza = $msg({
-                                    'type': 'headline',
-                                    'from': 'someone@notify.example.com',
-                                    'to': 'dummy@localhost',
-                                    'xml:lang': 'en'
-                                })
-                                .c('subject').t('SIEVE').up()
-                                .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
-                                .c('x', {'xmlns': 'jabber:x:oob'})
-                                .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
-                            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        });
-                        waits(250);
-                        runs(function () {
-                            expect(
-                                _.includes(_converse.chatboxviews.keys(),
-                                    'someone@notify.example.com')
-                                ).toBeFalsy();
-                            expect(_converse.showMessageNotification).not.toHaveBeenCalled();
-                        });
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                        var stanza = $msg({
+                                'type': 'headline',
+                                'from': 'someone@notify.example.com',
+                                'to': 'dummy@localhost',
+                                'xml:lang': 'en'
+                            })
+                            .c('subject').t('SIEVE').up()
+                            .c('body').t('&lt;juliet@example.com&gt; You got mail.').up()
+                            .c('x', {'xmlns': 'jabber:x:oob'})
+                            .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect(
+                            _.includes(_converse.chatboxviews.keys(),
+                                'someone@notify.example.com')
+                            ).toBeFalsy();
+                        expect(_converse.showMessageNotification).not.toHaveBeenCalled();
                     }));
 
                     it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse(function (_converse) {
@@ -123,7 +113,7 @@
                         _converse.show_chatstate_notifications = true;
 
                         test_utils.createContacts(_converse, 'current');
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'showChatStateNotification');
                         var jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).set('chat_status', 'busy'); // This will emit 'contactStatusChanged'
@@ -135,7 +125,7 @@
 
             describe("When a new contact request is received", function () {
                 it("an HTML5 Notification is received", mock.initConverse(function (_converse) {
-                    spyOn(_converse, 'areDesktopNotificationsEnabled').andReturn(true);
+                    spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                     spyOn(_converse, 'showContactRequestNotification');
                     _converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
                     expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();

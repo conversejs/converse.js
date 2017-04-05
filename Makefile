@@ -3,7 +3,6 @@ BUILDDIR        = ./docs
 BUNDLE          ?= ./.bundle/bin/bundle
 GRUNT           ?= ./node_modules/.bin/grunt
 HTTPSERVE       ?= ./node_modules/.bin/http-server
-JSHINT          ?= ./node_modules/.bin/jshint
 ESLINT          ?= ./node_modules/.bin/eslint
 PAPER           =
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
@@ -16,13 +15,6 @@ SPHINXOPTS      =
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
-SOURCES    = $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
-JSHINTEXCEPTIONS = $(GENERATED) \
-           src/build-mobile.js \
-           src/build-no-jquery.js \
-           src/build-no-dependencies.js \
-           src/build.js \
-CHECKSOURCES    = $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
 .PHONY: all
 all: dev dist
@@ -184,18 +176,15 @@ build:: dev css
 ########################################################################
 ## Tests
 
-.PHONY: jshint
-jshint: stamp-npm
-	$(JSHINT) --config jshintrc $(CHECKSOURCES)
-
 .PHONY: eslint
 eslint: stamp-npm
 	$(ESLINT) src/
 	$(ESLINT) spec/
 
 .PHONY: check
-check: jshint eslint
-	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
+check: eslint
+	$(PHANTOMJS) tests/run-jasmine2.js tests.html
+
 
 ########################################################################
 ## Documentation

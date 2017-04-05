@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils"], factory);
+    define(["mock", "converse-core", "test-utils"], factory);
 } (this, function (mock, converse, test_utils) {
     "use strict";
     var _ = converse.env._;
@@ -18,7 +18,7 @@
            it("can be used to query for all archived messages", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -34,7 +34,7 @@
            it("can be used to query for all messages to/from a particular JID", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -62,7 +62,7 @@
            it("can be used to query for all messages in a certain timespan", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -108,7 +108,7 @@
            it("can be used to query for all messages after a certain time", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -137,7 +137,7 @@
            it("can be used to query for a limited set of results", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -169,7 +169,7 @@
            it("can be used to page through results", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -206,7 +206,7 @@
            it("accepts \"before\" with an empty string as value to reverse the order", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -242,7 +242,7 @@
                 }
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -280,7 +280,7 @@
                 }
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
@@ -352,7 +352,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(callback).toHaveBeenCalled();
-                var args = callback.argsForCall[0];
+                var args = callback.calls.argsFor(0);
                 expect(args[0].length).toBe(2);
                 expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
                 expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
@@ -370,17 +370,17 @@
             it("is set once server support for MAM has been confirmed", mock.initConverse(function (_converse) {
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').andCallFake(function (iq, callback, errback) {
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                spyOn(_converse, 'onMAMPreferences').andCallThrough();
+                spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
                 var feature = new _converse.Feature({
                     'var': Strophe.NS.MAM
                 });
-                spyOn(feature, 'save').andCallFake(feature.set); // Save will complain about a url not being set
+                spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set
                 _converse.features.onFeatureAdded(feature);
 
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
@@ -407,7 +407,7 @@
 
                 expect(_converse.onMAMPreferences).toHaveBeenCalled();
 
-                expect(_converse.connection.sendIQ.callCount).toBe(2);
+                expect(_converse.connection.sendIQ.calls.count()).toBe(2);
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                         "<prefs xmlns='urn:xmpp:mam:0' default='never'>"+

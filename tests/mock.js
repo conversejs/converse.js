@@ -44,7 +44,7 @@
         'preventDefault': function () {}
     };
 
-    mock.mock_connection = function ()  {
+    mock.mock_connection = function ()  {  // eslint-disable-line wrap-iife
         return function () {
             Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
             var c = new Strophe.Connection('jasmine tests');
@@ -76,25 +76,33 @@
         };
     }();
 
+    function initConverse (settings) {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+        var converse = converse_api.initialize(_.extend({
+            i18n: window.locales.en,
+            auto_subscribe: false,
+            bosh_service_url: 'localhost',
+            connection: mock.mock_connection(),
+            animate: false,
+            no_trimming: true,
+            auto_login: true,
+            jid: 'dummy@localhost',
+            password: 'secret',
+            debug: false
+        }, settings || {}));
+        converse.ChatBoxViews.prototype.trimChat = function () {};
+        return converse;
+    }
+    mock.initConverseWithAsync = function (func, settings) {
+        return function (done) {
+            return func(done, initConverse(settings));
+        };
+    };
     mock.initConverse = function (func, settings) {
         return function () {
-            window.localStorage.clear();
-            window.sessionStorage.clear();
-
-            var converse = converse_api.initialize(_.extend({
-                i18n: window.locales.en,
-                auto_subscribe: false,
-                bosh_service_url: 'localhost',
-                connection: mock.mock_connection(),
-                animate: false,
-                no_trimming: true,
-                auto_login: true,
-                jid: 'dummy@localhost',
-                password: 'secret',
-                debug: false
-            }, settings || {}));
-            converse.ChatBoxViews.prototype.trimChat = function () {};
-            return func(converse);
+            initConverse(settings);
+            return func(initConverse(settings));
         };
     };
     return mock;

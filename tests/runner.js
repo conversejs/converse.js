@@ -4,7 +4,7 @@
 config.paths.mock = "tests/mock";
 config.paths['wait-until-promise'] = "node_modules/wait-until-promise/index";
 config.paths['test-utils'] = "tests/utils";
-config.paths.sinon = "node_modules/sinon/lib/sinon";
+config.paths.sinon = "node_modules/sinon/pkg/sinon";
 config.paths.transcripts = "converse-logs/converse-logs";
 config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/jasmine";
 config.paths.boot = "node_modules/jasmine-core/lib/jasmine-core/boot";

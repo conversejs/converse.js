@@ -9,7 +9,7 @@ PHANTOMJS       ?= ./node_modules/.bin/phantomjs
 RJS             ?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
-CLEANCSS        ?= ./node_modules/.bin/cleancss
+CLEANCSS        ?= ./node_modules/clean-css-cli/bin/cleancss
 SPHINXBUILD     ?= ./bin/sphinx-build
 SPHINXOPTS      =
 

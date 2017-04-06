@@ -4,12 +4,16 @@
 <head>
     <title>Converse.js Tests</title>
     <meta name="description" content="Converse.js: A chat client for your website" />
-    <link rel="shortcut icon" type="image/png" href="components/jasmine/images/jasmine_favicon.png">
+    <link rel="shortcut icon" type="image/png" href="node_modules/jasmine-core/images/jasmine_favicon.png">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/jasmine.css">
     <link type="text/css" rel="stylesheet" media="screen" href="css/theme.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
+
     <script src="src/config.js"></script>
-    <script data-main="tests/main" src="node_modules/requirejs/require.js"></script>
+    <script data-main="tests/runner" src="node_modules/requirejs/require.js"></script>
+
     <style>
         .tests-brand-heading {
             margin-top: 1em;
@@ -21,7 +25,8 @@
 <body>
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <h1 class="brand-heading tests-brand-heading"><i class="icon-conversejs"></i> Converse.js</h1>
+          <h1 class="brand-heading tests-brand-heading">
+              <i class="icon-conversejs"></i> Converse.js</h1>
           <h2 id="project_tagline">Tests</h2>
         </header>
     </div>

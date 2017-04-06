@@ -4,7 +4,7 @@
       "converse": {
          "": {
             "domain": "converse",
-            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "nl"
          },
          "Bookmark this room": [
@@ -60,6 +60,14 @@
             "ikzelf"
          ],
          "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
+            null,
+            ""
+         ],
+         "Typing from another device": [
+            null,
+            ""
+         ],
+         "Stopped typing on the other device": [
             null,
             ""
          ],
@@ -349,7 +357,7 @@
          ],
          "Nickname": [
             null,
-            "Nickname"
+            "Bijnaam"
          ],
          "This chatroom requires a password": [
             null,
@@ -363,7 +371,7 @@
             null,
             "Indienen"
          ],
-         "The reason given is: <em>\"%1$s\"</em>.": [
+         "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
@@ -459,11 +467,7 @@
             null,
             ""
          ],
-         "This room pesists even if it's unoccupied": [
-            null,
-            ""
-         ],
-         "This room is publically searchable": [
+         "This room persists even if it's unoccupied": [
             null,
             ""
          ],
@@ -712,6 +716,10 @@
             ""
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            ""
+         ],
+         "Retry": [
             null,
             ""
          ],

@@ -1,18 +1,31 @@
+/*global config */
+
 // Extra test dependencies
 config.paths.mock = "tests/mock";
-config.paths.test_utils = "tests/utils";
+config.paths['wait-until-promise'] = "node_modules/wait-until-promise/index";
+config.paths['test-utils'] = "tests/utils";
 config.paths.sinon = "node_modules/sinon/lib/sinon";
-config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/jasmine";
 config.paths.transcripts = "converse-logs/converse-logs";
+config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/jasmine";
+config.paths.boot = "node_modules/jasmine-core/lib/jasmine-core/boot";
 config.paths["jasmine-html"] = "node_modules/jasmine-core/lib/jasmine-core/jasmine-html";
-config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
+// config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
+config.shim.jasmine = {
+    exports: 'window.jasmineRequire'
+};
 config.shim['jasmine-html'] = {
     deps: ['jasmine'],
-    exports: 'jasmine'
+    exports: 'window.jasmineRequire'
 };
+config.shim.boot = {
+    deps: ['jasmine', 'jasmine-html'],
+    exports: 'window.jasmineRequire'
+};
+/*
 config.shim['console-runner'] = {
     deps: ['jasmine']
 };
+*/
 require.config(config);
 
 // Polyfill 'bind' which is not available in phantomjs < 2.0
@@ -35,13 +48,9 @@ if (!Function.prototype.bind) {
     };
 }
 
-require([
-    "jquery",
-    "mock",
-    "jasmine-html",
-    "sinon",
-    "console-runner",
+var specs = [
     //"spec/transcripts",
+    // "spec/profiling",
     "spec/utils",
     "spec/converse",
     "spec/bookmarks",
@@ -49,38 +58,31 @@ require([
     "spec/disco",
     "spec/protocol",
     "spec/presence",
+    "spec/eventemitter",
+    "spec/ping",
+    "spec/xmppstatus",
     "spec/mam",
     "spec/otr",
-    "spec/eventemitter",
     "spec/controlbox",
     "spec/chatbox",
     "spec/chatroom",
     "spec/minchats",
     "spec/notification",
-    "spec/profiling",
-    "spec/ping",
-    "spec/register",
-    "spec/xmppstatus"
-    ], function($, mock, jasmine, sinon) {
-        window.sinon = sinon;
-        window.localStorage.clear();
-        window.sessionStorage.clear();
-        // Jasmine stuff
-        var jasmineEnv = jasmine.getEnv();
-        var reporter;
-        if (/PhantomJS/.test(navigator.userAgent)) {
-            reporter = new jasmine.ConsoleReporter();
-            window.console_reporter = reporter;
-            jasmineEnv.addReporter(reporter);
-            jasmineEnv.updateInterval = 0;
-        } else {
-            reporter = new jasmine.HtmlReporter();
-            jasmineEnv.addReporter(reporter);
-            jasmineEnv.specFilter = function(spec) {
-                return reporter.specFilter(spec);
-            };
-            jasmineEnv.updateInterval = 0;
-        }
-        jasmineEnv.execute();
+    "spec/register"
+];
+
+require(['jquery', 'mock', 'boot', 'sinon', 'wait-until-promise'],
+        function($, mock, jasmine, sinon, waitUntilPromise) {
+    window.sinon = sinon;
+    window.waitUntilPromise = waitUntilPromise['default'];
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+
+    // Load the specs
+    require(specs, function () {
+            // Initialize the HTML Reporter and execute the environment (setup by `boot.js`)
+            // http://stackoverflow.com/questions/19240302/does-jasmine-2-0-really-not-work-with-require-js
+            window.onload();
+        });
     }
 );

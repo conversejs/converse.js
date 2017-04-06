@@ -2,7 +2,7 @@
     define([
         "converse-core",
         "mock",
-        "test_utils"], factory);
+        "test-utils"], factory);
 } (this, function (converse, mock, test_utils) {
     var b64_sha1 = converse.env.b64_sha1;
     var _ = converse.env._;
@@ -52,9 +52,9 @@
         describe("A chat state indication", function () {
 
             it("are sent out when the client becomes or stops being idle", mock.initConverse(function (_converse) {
-                spyOn(_converse, 'sendCSI').andCallThrough();
+                spyOn(_converse, 'sendCSI').and.callThrough();
                 var sent_stanza;
-                spyOn(_converse.connection, 'send').andCallFake(function (stanza) {
+                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                     sent_stanza = stanza;
                 });
                 var i = 0;
@@ -298,26 +298,23 @@
                 test_utils.createContacts(_converse, 'current');
                 var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 var chatboxview;
-                waits('300'); // ChatBox.show() is debounced for 250ms
-                runs(function () {
-                    // Test on chat that doesn't exist.
-                    expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                    var box = _converse.api.chats.open(jid);
-                    expect(box instanceof Object).toBeTruthy();
-                    expect(box.model.get('box_id')).toBe(b64_sha1(jid));
-                    expect(
-                        _.keys(box),
-                        ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
-                    );
-                    chatboxview = _converse.chatboxviews.get(jid);
-                    expect(chatboxview.$el.is(':visible')).toBeTruthy();
-                    // Test for multiple JIDs
-                    var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var list = _converse.api.chats.open([jid, jid2]);
-                    expect(_.isArray(list)).toBeTruthy();
-                    expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
-                    expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
-                });
+                // Test on chat that doesn't exist.
+                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                var box = _converse.api.chats.open(jid);
+                expect(box instanceof Object).toBeTruthy();
+                expect(box.model.get('box_id')).toBe(b64_sha1(jid));
+                expect(
+                    _.keys(box),
+                    ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
+                );
+                chatboxview = _converse.chatboxviews.get(jid);
+                expect(chatboxview.$el.is(':visible')).toBeTruthy();
+                // Test for multiple JIDs
+                var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var list = _converse.api.chats.open([jid, jid2]);
+                expect(_.isArray(list)).toBeTruthy();
+                expect(list[0].model.get('box_id')).toBe(b64_sha1(jid));
+                expect(list[1].model.get('box_id')).toBe(b64_sha1(jid2));
             }));
         });
 

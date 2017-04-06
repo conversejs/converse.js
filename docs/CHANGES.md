@@ -1,6 +1,10 @@
 # Changelog
 
-## 3.0.1 (Unreleased)
+## 3.0.2 (Unreleased)
+
+- Update Jasmine from 1.3.1 to 2.5.3 and Phantomjs from 1.9.7-1 to 2.1.14 [jcbrand]
+
+## 3.0.1 (2017-04-04)
 
 - Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
 - #585 Duplicate contact created due to JID case sensivity [saganshul]
@@ -18,6 +22,7 @@
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
 - #811 jQuery wasn't being closured in builds. [jcbrand]
+- #814 Images from URLs with query strings aren't being rendered. [novokrest]
 - #820 Inconsistency in displaying room features. [jcbrand]
 
 ## 3.0.0 (2017-03-05)

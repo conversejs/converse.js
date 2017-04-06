@@ -1,11 +1,17 @@
 (function (root, factory) {
-    define("test_utils", ['converse', 'mock'], factory);
-}(this, function (converse_api, mock) {
+    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function (converse_api, Promise, mock, waitUntilPromise) {
+    var _ = converse_api.env._;
     var $ = converse_api.env.jQuery;
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
     var Strophe = converse_api.env.Strophe;
     var utils = {};
+
+    if (typeof window.Promise === 'undefined') {
+        waitUntilPromise.setPromiseImplementation(Promise);
+    }
+    utils.waitUntil = waitUntilPromise['default'];
 
     utils.createRequest = function (iq) {
         iq = typeof iq.tree == "function" ? iq.tree() : iq;
@@ -27,28 +33,6 @@
         return this;
     };
 
-    utils.removeAllChatBoxes = function () {
-        var i, chatbox, num_chatboxes = converse.chatboxes.models.length;
-        for (i=num_chatboxes-1; i>-1; i--) {
-            chatbox = converse.chatboxes.models[i];
-            converse.chatboxviews.get(chatbox.get('id')).close();
-            converse.chatboxviews.get(chatbox.get('id')).$el.remove();
-        }
-        converse.chatboxviews.get('controlbox').close();
-        converse.chatboxviews.get('controlbox').$el.remove();
-        return this;
-    };
-
-    utils.initConverse = function () {
-        converse._tearDown();
-        converse._initialize();
-    };
-
-    utils.initRoster = function () {
-        converse.roster.browserStorage._clear();
-        converse.initRoster();
-    };
-
     utils.openControlBox = function () {
         var $toggle = $(".toggle-controlbox");
         if (!$("#controlbox").is(':visible')) {
@@ -67,11 +51,6 @@
             $("#controlbox").find(".close-chatbox-button").click();
         }
         return this;
-    };
-
-    utils.removeControlBox = function () {
-        converse.controlboxtoggle.show();
-        $('#controlbox').remove();
     };
 
     utils.openContactsPanel = function (converse) {
@@ -157,14 +136,6 @@
         converse.connection.sendIQ.restore();
     };
 
-    utils.removeRosterContacts = function () {
-        var model;
-        while (converse.rosterview.model.length) {
-            model = converse.rosterview.model.pop();
-            converse.rosterview.model.remove(model);
-        }
-    };
-
     utils.clearBrowserStorage = function () {
         window.localStorage.clear();
         window.sessionStorage.clear();
@@ -184,7 +155,7 @@
          *
          * These contacts are not grouped. See below.
          */
-        var names, jid;
+        var names, jid, subscription, requesting, ask;
         if (type === 'requesting') {
             names = mock.req_names;
             subscription = 'none';
@@ -206,13 +177,13 @@
                 .createContacts(converse, 'pending');
             return this;
         } else {
-            throw "Need to specify the type of contact to create";
+            throw Error("Need to specify the type of contact to create");
         }
 
         if (typeof length === 'undefined') {
             length = names.length;
         }
-        for (i=0; i<length; i++) {
+        for (var i=0; i<length; i++) {
             jid = names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
             if (!converse.roster.get(jid)) {
                 converse.roster.create({

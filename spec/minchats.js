@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils"], factory);
+    define(["mock", "converse-core", "test-utils"], factory);
 } (this, function (mock, converse, test_utils) {
     var _ = converse.env._;
     var $msg = converse.env.$msg;

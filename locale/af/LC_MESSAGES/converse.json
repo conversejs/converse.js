@@ -4,23 +4,24 @@
       "converse": {
          "": {
             "domain": "converse",
+            "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "af"
          },
          "Bookmark this room": [
             null,
-            ""
+            "Boekmerk hierdie kletskamer"
          ],
          "The name for this bookmark:": [
             null,
-            ""
+            "Die naam vir hierdie boekmerk:"
          ],
          "Would you like this room to be automatically joined upon startup?": [
             null,
-            ""
+            "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
          ],
          "What should your nickname for this room be?": [
             null,
-            ""
+            "Wat sal u bynaam vir hierdie kletskamer wees?"
          ],
          "Save": [
             null,
@@ -30,9 +31,21 @@
             null,
             "Kanseleer"
          ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
+         ],
+         "Click to toggle the bookmarks list": [
+            null,
+            "Klik om die boekmerklys te skakel"
+         ],
          "Bookmarked Rooms": [
             null,
-            ""
+            "Kletskamerboekmerke"
+         ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
          ],
          "Click to open this room": [
             null,
@@ -44,7 +57,7 @@
          ],
          "Remove this bookmark": [
             null,
-            ""
+            "Verwyder hierdie boekmerk"
          ],
          "You have unread messages": [
             null,
@@ -64,11 +77,19 @@
          ],
          "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
             null,
+            "'n Baie groot boodskap is ontvang. Dit mag dalk 'n aanval wees om werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte weergawe vertoon."
+         ],
+         "Typing from another device": [
+            null,
             ""
          ],
          "is typing": [
             null,
             "tik tans"
+         ],
+         "Stopped typing on the other device": [
+            null,
+            ""
          ],
          "has stopped typing": [
             null,
@@ -124,7 +145,7 @@
          ],
          "Password:": [
             null,
-            "Wagwoord"
+            "Wagwoord:"
          ],
          "Click here to log in anonymously": [
             null,
@@ -252,7 +273,7 @@
          ],
          "The connection has dropped, attempting to reconnect.": [
             null,
-            ""
+            "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
          ],
          "Connection error": [
             null,
@@ -260,7 +281,7 @@
          ],
          "An error occurred while connecting to the chat server.": [
             null,
-            "A fout het voorgekom tydens verbinding met die kletsbediener"
+            "A fout het voorgekom tydens verbinding met die kletsbediener."
          ],
          "Connecting": [
             null,
@@ -284,7 +305,7 @@
          ],
          "Sorry, there was an error while trying to add ": [
             null,
-            ""
+            "Jammer, 'n ander fout het voorgekom tydens byvoeging. "
          ],
          "This client does not allow presence subscriptions": [
             null,
@@ -360,11 +381,39 @@
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
             null,
-            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie."
+            "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie"
          ],
          "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
             null,
             "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
+         ],
+         "%1$s has been banned": [
+            null,
+            "%1$s is verban"
+         ],
+         "%1$s's nickname has changed": [
+            null,
+            "%1$s se bynaam het verander"
+         ],
+         "%1$s has been kicked out": [
+            null,
+            "%1$s is uitgeskop"
+         ],
+         "%1$s has been removed because of an affiliation change": [
+            null,
+            "%1$s is verwyder a.g.v 'n verandering van affiliasie"
+         ],
+         "%1$s has been removed for not being a member": [
+            null,
+            "%1$s is nie 'n lid nie, en dus verwyder"
+         ],
+         "Your nickname has been automatically set to: %1$s": [
+            null,
+            "U bynaam is outomaties gestel na: %1$s"
+         ],
+         "Your nickname has been changed to: %1$s": [
+            null,
+            "U bynaam is verander na: %1$s"
          ],
          "Message": [
             null,
@@ -384,7 +433,7 @@
          ],
          "Error: the \"": [
             null,
-            ""
+            "Fout: die \""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -438,9 +487,13 @@
             null,
             "Herroep gebruiker se lidmaatskap"
          ],
+         "Set room subject": [
+            null,
+            "Stel onderwerp vir kletskamer"
+         ],
          "Set room subject (alias for /subject)": [
             null,
-            ""
+            "Verskaf kamer onderwerp (alias vir /subject)"
          ],
          "Allow muted user to post messages": [
             null,
@@ -448,7 +501,7 @@
          ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
-            ""
+            "Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. 'n ander een."
          ],
          "Please choose your nickname": [
             null,
@@ -468,19 +521,19 @@
          ],
          "Password: ": [
             null,
-            "Wagwoord:"
+            "Wagwoord: "
          ],
          "Submit": [
             null,
             "Dien in"
          ],
-         "This action was done by <strong>%1$s</strong>.": [
+         "This action was done by %1$s.": [
             null,
-            "Hierdie aksie is uitgevoer deur: <strong>%1$s</strong>"
+            "Hierdie aksie is uitgevoer deur: %1$s."
          ],
-         "The reason given is: <em>\"%1$s\"</em>.": [
+         "The reason given is: \"%1$s\".": [
             null,
-            "Die gegewe rede is: <em>\"%1$s\"</em>."
+            "Die gegewe rede is: \"%1$s\"."
          ],
          "The reason given is: \"": [
             null,
@@ -488,15 +541,19 @@
          ],
          " has left the room. \"": [
             null,
-            ""
+            " het die kamer verlaat.\""
+         ],
+         " has left the room": [
+            null,
+            " het die kletskamer verlaat"
          ],
          " has joined the room. \"": [
             null,
-            ""
+            " het die kamer binnegekom.\""
          ],
          " has joined the room.": [
             null,
-            ""
+            " het die kamer bygetree."
          ],
          "You are not on the member list of this room": [
             null,
@@ -526,17 +583,21 @@
             null,
             "Onderwerp deur %1$s bygewerk na: %2$s"
          ],
+         "Click to mention ": [
+            null,
+            "Klik om te noem "
+         ],
          "This user is a moderator.": [
             null,
-            "Hierdie gebruiker is 'n moderator"
+            "Hierdie gebruiker is 'n moderator."
          ],
          "This user can send messages in this room.": [
             null,
-            "Hierdie gebruiker kan boodskappe na die kamer stuur"
+            "Hierdie gebruiker kan boodskappe na die kamer stuur."
          ],
          "This user can NOT send messages in this room.": [
             null,
-            "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie"
+            "Hierdie gebruiker kan NIE boodskappe na die kamer stuur nie."
          ],
          "Occupants": [
             null,
@@ -546,17 +607,21 @@
             null,
             "Nooi uit"
          ],
+         "Features": [
+            null,
+            "Eienskappe"
+         ],
          "Hidden": [
             null,
             "Verskuil"
          ],
          "Message archiving": [
             null,
-            ""
+            "Boodskap-argivering"
          ],
          "Members only": [
             null,
-            ""
+            "Slegs lede"
          ],
          "Moderated": [
             null,
@@ -566,9 +631,17 @@
             null,
             "Nie-anoniem"
          ],
+         "Open": [
+            null,
+            "Oop kletskamer"
+         ],
+         "Password protected": [
+            null,
+            "Wagwoord"
+         ],
          "Persistent": [
             null,
-            ""
+            "Blywend"
          ],
          "Public": [
             null,
@@ -578,41 +651,61 @@
             null,
             "Deels anoniem"
          ],
+         "Temporary": [
+            null,
+            "Tydelike kamer"
+         ],
          "Unmoderated": [
             null,
             "Ongemodereer"
          ],
          "Unsecured": [
             null,
-            ""
+            "Onversekerd"
          ],
          "Messages are archived on the server": [
             null,
-            ""
+            "Boodskappe word op die bediener gestoor"
+         ],
+         "This room is restricted to members only": [
+            null,
+            "Hierdie kletskamer is slegs tot lede beperk"
+         ],
+         "This room is being moderated": [
+            null,
+            "Hierdie kletskamer word gemodereer"
          ],
          "All other room occupants can see your Jabber ID": [
             null,
-            ""
+            "Alle ander deelnemers can u Jabber ID sien"
          ],
-         "This room pesists even if it's unoccupied": [
+         "Anyone can join this room": [
             null,
-            ""
+            "Enige iemand kan hierdie kletskamer binnekom"
          ],
-         "This room is publically searchable": [
+         "This room requires a password before entry": [
             null,
-            ""
+            "Hierdie kletskamer benodig 'n wagwoord"
          ],
          "Only moderators can see your Jabber ID": [
             null,
-            ""
+            "Slegs moderators kan u Jabber ID sien"
          ],
          "This room will disappear once the last person leaves": [
             null,
-            ""
+            "Hierdie kletskamer sal verdwyn sodra die laaste persoon dit verlaat"
+         ],
+         "This room is not being moderated": [
+            null,
+            "Hierdie kletskamer word nie gemodereer nie"
+         ],
+         "This room does not require a password upon entry": [
+            null,
+            "Hiedie kletskamer benodig nie 'n wagwoord nie"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
-            "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi."
+            "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi. "
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
@@ -756,7 +849,7 @@
          ],
          "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [
             null,
-            "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer"
+            "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie kletskanaal \n\nU vingerafdruk, %2$s: %3$s\n\nVingerafdruk vir %1$s: %4$s\n\nIndien u die vingerafdrukke bevestig het, klik OK, andersinds klik Kanselleer."
          ],
          "You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [
             null,
@@ -832,7 +925,7 @@
          ],
          " e.g. conversejs.org": [
             null,
-            "bv. conversejs.org"
+            " bv. conversejs.org"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -881,6 +974,10 @@
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "Die verskaffer het u registrasieversoek verwerp. Kontrolleer asb. jou gegewe waardes vir korrektheid."
+         ],
+         "Retry": [
+            null,
+            ""
          ],
          "This contact is busy": [
             null,

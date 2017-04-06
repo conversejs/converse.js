@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -40,6 +40,7 @@
     "bootstrap": "^3.3.7",
     "bourbon": "^4.3.2",
     "clean-css": "^3.4.19",
+    "es6-promise": "^4.1.0",
     "eslint": "^3.16.1",
     "eslint-plugin-lodash": "^2.3.3",
     "font-awesome": "^4.7.0",
@@ -49,7 +50,7 @@
     "grunt-json": "^0.2.0",
     "http-server": "^0.9.0",
     "install": "^0.8.5",
-    "jasmine": "https://github.com/jcbrand/jasmine.git#439a7f805eeaec0cabe18a8ecf7e47da1a0afa33",
+    "jasmine": "2.5.3",
     "jed": "0.5.4",
     "jquery": "2.2.3",
     "jquery-easing": "0.0.1",
@@ -60,8 +61,7 @@
     "moment": "~2.13.0",
     "npm": "^4.1.1",
     "otr": "0.2.16",
-    "phantom-jasmine": "0.1.8",
-    "phantomjs": "~1.9.7-1",
+    "phantomjs-prebuilt": "~2.1.14",
     "pluggable.js": "1.0.0",
     "po2json": "^0.4.4",
     "requirejs": "2.3.3",
@@ -73,7 +73,8 @@
     "strophejs-plugin-register": "0.0.1",
     "strophejs-plugin-rsm": "0.0.1",
     "strophejs-plugin-vcard": "0.0.1",
-    "text": "requirejs/text#2.0.15"
+    "text": "requirejs/text#2.0.15",
+    "wait-until-promise": "^1.0.0"
   },
   "dependencies": {}
 }

@@ -182,7 +182,7 @@
                 },
 
                 addSpinner: function () {
-                    if (!this.$content.first().hasClass('spinner')) {
+                    if (_.isNull(this.el.querySelector('.spinner'))) {
                         this.$content.prepend('<span class="spinner"/>');
                     }
                 },

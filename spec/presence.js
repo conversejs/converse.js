@@ -5,7 +5,7 @@
         "jquery",
         "converse-core",
         "mock",
-        "test_utils",
+        "test-utils",
         "lodash"], factory);
 } (this, function ($, converse, mock, test_utils, _) {
     "use strict";

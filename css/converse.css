@@ -1185,23 +1185,6 @@
   #converse-embedded-chat .emoticon,
   #conversejs .emoticon {
     font-size: 14px; }
-  #converse-embedded-chat .left,
-  #conversejs .left {
-    float: left; }
-  #converse-embedded-chat .right,
-  #conversejs .right {
-    float: right; }
-  #converse-embedded-chat .centered,
-  #conversejs .centered {
-    text-align: center;
-    display: block;
-    margin: 5em auto; }
-  #converse-embedded-chat .hor_centered,
-  #conversejs .hor_centered {
-    text-align: center;
-    display: block;
-    margin: 0 auto;
-    clear: both; }
 @keyframes fadein {
   0% {
     opacity: 0; }
@@ -1265,12 +1248,30 @@
     animation: spin 2s infinite, linear;
     display: block;
     text-align: center;
-    margin: 5px; }
+    margin: 1em; }
     #converse-embedded-chat .spinner:before,
     #conversejs .spinner:before {
       font-size: 24px;
       font-family: 'Converse-js' !important;
       content: "\231b"; }
+  #converse-embedded-chat .left,
+  #conversejs .left {
+    float: left; }
+  #converse-embedded-chat .right,
+  #conversejs .right {
+    float: right; }
+  #converse-embedded-chat .centered,
+  #conversejs .centered {
+    text-align: center;
+    display: block;
+    margin: 0;
+    padding: 50% 0; }
+  #converse-embedded-chat .hor_centered,
+  #conversejs .hor_centered {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    clear: both; }
   #converse-embedded-chat .button-group,
   #converse-embedded-chat .input-button-group,
   #conversejs .button-group,
@@ -1441,13 +1442,13 @@
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;
-    font-size: 80%;
+    font-size: 75%;
     font-style: italic;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin: 0;
-    padding-top: 0.5em; }
+    padding-top: 0.2em; }
 #converse-embedded-chat .chatbox-btn,
 #conversejs .chatbox-btn {
   border-radius: 25%;

@@ -62,7 +62,15 @@
             null,
             ""
          ],
+         "Typing from another device": [
+            null,
+            ""
+         ],
          "is typing": [
+            null,
+            ""
+         ],
+         "Stopped typing on the other device": [
             null,
             ""
          ],
@@ -358,7 +366,7 @@
             null,
             "发送"
          ],
-         "The reason given is: <em>\"%1$s\"</em>.": [
+         "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
@@ -454,11 +462,7 @@
             null,
             ""
          ],
-         "This room pesists even if it's unoccupied": [
-            null,
-            ""
-         ],
-         "This room is publically searchable": [
+         "This room persists even if it's unoccupied": [
             null,
             ""
          ],
@@ -695,6 +699,10 @@
             ""
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            ""
+         ],
+         "Retry": [
             null,
             ""
          ],

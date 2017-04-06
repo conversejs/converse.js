@@ -2,8 +2,12 @@
 
 ## 3.0.2 (Unreleased)
 
-- Update Jasmine from 1.3.1 to 2.5.3 and Phantomjs from 1.9.7-1 to 2.1.14 [jcbrand]
-- Update moment.js to 2.18.1 [jcbrand]
+Dependency updates:
+- Jasmine 2.5.3
+- Phantomjs 2.1.14
+- moment 2.18.1
+- sinon 2.1.0
+
 
 ## 3.0.1 (2017-04-04)
 

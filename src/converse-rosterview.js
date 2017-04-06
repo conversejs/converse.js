@@ -166,12 +166,12 @@
                 },
 
                 renderClearButton: function () {
-                    var $roster_filter = this.$('.roster-filter');
-                    $roster_filter[this.tog($roster_filter.val())]('x');
+                    var roster_filter = this.el.querySelector('.roster-filter');
+                    roster_filter.classList[this.tog(roster_filter.value)]('x');
                 },
 
                 tog: function (v) {
-                    return v?'addClass':'removeClass';
+                    return v?'add':'remove';
                 },
 
                 toggleX: function (ev) {

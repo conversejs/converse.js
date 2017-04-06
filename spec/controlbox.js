@@ -115,15 +115,15 @@
                         });
                         _converse.rosterview.update(); // XXX: Will normally called as event handler
                     }
-                    test_utils.waitUntil(function () {
+                    return test_utils.waitUntil(function () {
                         if (_converse.rosterview.$roster.hasScrollBar()) {
                             return $filter.is(':visible');
                         } else {
                             return !$filter.is(':visible');
                         }
-                    }).then(function () {
-                        done();
-                    });
+                }).then(function () {
+                    done();
+                });
                 });
             }));
 

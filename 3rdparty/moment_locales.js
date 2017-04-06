@@ -9,22 +9,23 @@
 (function (root, factory) {
     define("moment_with_locales", [
         'moment',   // Everything below can be removed except for moment itself.
-        'moment_af',
-        'moment_de',
-        'moment_es',
-        'moment_fr',
-        'moment_he',
-        'moment_hu',
-        'moment_id',
-        'moment_it',
-        'moment_ja',
-        'moment_nb',
-        'moment_nl',
-        'moment_pl',
-        'moment_pt-br',
-        'moment_ru',
-        'moment_uk',
-        'moment_zh'
+        'moment/locale/af',
+        'moment/locale/de',
+        'moment/locale/es',
+        'moment/locale/fr',
+        'moment/locale/he',
+        'moment/locale/hu',
+        'moment/locale/id',
+        'moment/locale/it',
+        'moment/locale/ja',
+        'moment/locale/nb',
+        'moment/locale/nl',
+        'moment/locale/pl',
+        'moment/locale/pt-br',
+        'moment/locale/ru',
+        'moment/locale/uk',
+        // 'moment/locale/zh' (No longer in locales, now only with
+        // country codes, e.g. zh-cn.js zh-hk.js zh-tw.js).
         ], function (moment) {
             return moment;
         });

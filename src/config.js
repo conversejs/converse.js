@@ -26,7 +26,6 @@ require.config({
         "jquery-private":           "src/jquery-private",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
-        "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
@@ -91,22 +90,6 @@ require.config({
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
         "moment_with_locales": "3rdparty/moment_locales",
-        'moment_af':        "node_modules/moment/locale/af",
-        'moment_de':        "node_modules/moment/locale/de",
-        'moment_es':        "node_modules/moment/locale/es",
-        'moment_fr':        "node_modules/moment/locale/fr",
-        'moment_he':        "node_modules/moment/locale/he",
-        'moment_hu':        "node_modules/moment/locale/hu",
-        'moment_id':        "node_modules/moment/locale/id",
-        'moment_it':        "node_modules/moment/locale/it",
-        'moment_ja':        "node_modules/moment/locale/ja",
-        'moment_nb':        "node_modules/moment/locale/nb",
-        'moment_nl':        "node_modules/moment/locale/nl",
-        'moment_pl':        "node_modules/moment/locale/pl",
-        'moment_pt-br':     "node_modules/moment/locale/pt-br",
-        'moment_ru':        "node_modules/moment/locale/ru",
-        'moment_uk':        "node_modules/moment/locale/uk",
-        'moment_zh':        "node_modules/moment/locale/zh-cn",
 
         // Templates
         "action":                   "src/templates/action",
@@ -173,6 +156,14 @@ require.config({
         "toolbar_otr":              "src/templates/toolbar_otr",
         "trimmed_chat":             "src/templates/trimmed_chat"
     },
+
+    packages: [{
+        name: 'moment',
+        // This location is relative to baseUrl. Choose bower_components
+        // or node_modules, depending on how moment was installed.
+        location: 'node_modules/moment',
+        main: 'moment'
+    }],
 
     map: {
         // '*' means all modules will get 'jquery-private'

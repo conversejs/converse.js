@@ -409,10 +409,11 @@
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
                             .append(tpl_chatarea({
-                                    'unread_msgs': __('You have unread messages'),
-                                    'show_toolbar': _converse.show_toolbar,
                                     'label_message': __('Message'),
-                                    'show_send_button': _converse.show_send_button
+                                    'label_send': __('Send'),
+                                    'show_send_button': _converse.show_send_button,
+                                    'show_toolbar': _converse.show_toolbar,
+                                    'unread_msgs': __('You have unread messages')
                                 }))
                             .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
@@ -2098,7 +2099,7 @@
                             this.renderRoomFeatures, 100, {'leading': false}
                         );
                     }
-                    var changed_features = {}
+                    var changed_features = {};
                     _.each(_.keys(model.changed), function (k) {
                         if (!_.isNil(ROOM_FEATURES_MAP[k])) {
                             changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];

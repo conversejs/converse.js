@@ -125,7 +125,8 @@
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
-                                        label_personal_message: __('Personal message')
+                                        label_personal_message: __('Personal message'),
+                                        label_send: __('Send')
                                     }
                                 )
                             )

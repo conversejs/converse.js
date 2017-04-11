@@ -24,7 +24,7 @@ application, then putting it into a service is a good approach.
 
 This lets us avoid having a global ``converse`` API object (accessible via
 ``windows.converse``), and instead we can get hold of the converse API via
-angular's dependency injection, when we specify it as a dependency for our
+angular's dependency injection when we specify it as a dependency for our
 angular components.
 
 Below is an example code that wraps converse.js as an angular.js service.
@@ -33,27 +33,21 @@ Below is an example code that wraps converse.js as an angular.js service.
 
     angular.module('converse', []).service('converse', function() {
         // We create three promises, which will be resolved at various times
-        var loaded_deferred = new $.Deferred(), // Converse.js has been loaded
-            connected_deferred = new $.Deferred(), // An XMPP connection has been established
-            roster_deferred = new $.Deferred(); // The contacts roster has been fetched.
+        var loaded_deferred = new $.Deferred(),
+            connected_deferred = new $.Deferred();
 
-        var loaded_promise = loaded_deferred.promise(),
-            connected_promise = connected_deferred.promise(),
-            roster_promise = roster_deferred.promise();
-
-        // This is the API of the service.
         var service = {
-            'waitUntilLoaded': _.constant(loaded_promise),
+            'waitUntilLoaded': _.constant(loaded_deferred.promise()),
             'initialize': function initConverse(options) {
                 this.waitUntilLoaded().done(_.partial(this.api.initialize, options));
             },
-            'waitUntilConnected': _.constant(connected_promise),
-            'waitUntilRosterFetched': _.constant(roster_promise),
+            'waitUntilConnected': _.constant(connected_deferred.promise())
         };
 
         // Here we define the core components of converse.js that will be
         // loaded and used.
-        define(["converse-core",
+        define([
+            "converse-core",
             // START: Removable components
             // --------------------
             // Any of the following components may be removed if they're not needed.
@@ -79,7 +73,16 @@ Below is an example code that wraps converse.js as an angular.js service.
 
         ], function(converse) {
             service.api = converse;
-            return deferred.resolve();
+
+            // Register a plugin which resolves `waitUntilConnected` promise.
+            converse.plugins.add('conversejs-angular-service', {
+                initialize: function () {
+                    this._converse.api.listen.on('connected', connected_deferred.resolve);
+                }
+            });
+
+            // Converse.js has been loaded, so we can resolve the `waitUntilLoaded` promise.
+            return loaded_deferred.resolve();
         });
         require(["converse"]);
         return service;
@@ -120,6 +123,7 @@ your components, for example:
                 'jid': bare_jid,
                 'keepalive': true,
                 'credentials_url': credentials_url,
+                'whitelisted_plugins': ['conversejs-angular-service']
             });
 
         // More custom code could come here...
@@ -129,7 +133,7 @@ your components, for example:
 You might have noticed the ``waitUntilLoaded()`` method being called on the ``converse``
 service. This is a special method added to the service (see the implementation
 example above) that makes sure that converse.js is loaded and available. It
-returns a jQuery promise which resolves once converse.js is available.
+returns a promise which resolves once converse.js is available.
 
 This is necessary because with otherwise you might run into race-conditions
 when your angular application loads more quickly then converse.js.

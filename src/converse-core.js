@@ -382,12 +382,17 @@
             }
             _converse.idle_seconds = 0;
             _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.addEventListener('click', _converse.onUserActivity);
+            window.addEventListener('focus', _converse.onUserActivity);
+            window.addEventListener('keypress', _converse.onUserActivity);
+            window.addEventListener('mousemove', _converse.onUserActivity);
+            window.addEventListener(unloadevent, _converse.onUserActivity);
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            $('.conn-feedback').each(function (idx, el) {
+            var els = document.querySelectorAll('.conn-feedback');
+            _.forEach(els, function (el) {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {
@@ -1597,13 +1602,15 @@
                  * If the #conversejs element doesn't exist, create it.
                  */
                 if (!this.el) {
-                    var $el = $('#conversejs');
-                    if (!$el.length) {
-                        $el = $('<div id="conversejs">');
-                        $('body').append($el);
+                    var el = document.querySelector('#conversejs');
+                    if (_.isNull(el)) {
+                        el = document.createElement('div');
+                        el.setAttribute('id', 'conversejs');
+                        // Converse.js expects a <body> tag to be present.
+                        document.querySelector('body').appendChild(el);
                     }
-                    $el.html('');
-                    this.setElement($el, false);
+                    el.innerHTML = '';
+                    this.setElement(el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
                 }
@@ -1796,20 +1803,20 @@
             },
 
             onInfo: function (stanza) {
-                var $stanza = $(stanza);
-                if (($stanza.find('identity[category=server][type=im]').length === 0) &&
-                    ($stanza.find('identity[category=conference][type=text]').length === 0)) {
+                if ((sizzle('identity[category=server][type=im]', stanza).length === 0) &&
+                    (sizzle('identity[category=conference][type=text]', stanza).length === 0)) {
                     // This isn't an IM server component
                     return;
                 }
-                $stanza.find('feature').each(function (idx, feature) {
+                var that = this;
+                _.forEach(stanza.querySelectorAll('feature'), function (feature) {
                     var namespace = feature.getAttribute('var');
-                    this[namespace] = true;
-                    this.create({
+                    that[namespace] = true;
+                    that.create({
                         'var': namespace,
                         'from': stanza.getAttribute('from')
                     });
-                }.bind(this));
+                });
             }
         });
 
@@ -2014,7 +2021,11 @@
             if (this.features) {
                 this.features.reset();
             }
-            $(window).off('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.removeEventListener('click', _converse.onUserActivity);
+            window.removeEventListener('focus', _converse.onUserActivity);
+            window.removeEventListener('keypress', _converse.onUserActivity);
+            window.removeEventListener('mousemove', _converse.onUserActivity);
+            window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             return this;
         };

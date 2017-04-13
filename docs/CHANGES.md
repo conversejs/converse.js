@@ -2,12 +2,14 @@
 
 ## 3.0.2 (Unreleased)
 
-Dependency updates:
+*Dependency updates*:
 - Jasmine 2.5.3
 - Phantomjs 2.1.14
 - moment 2.18.1
 - sinon 2.1.0
 - eslint 3.19.0
+
+- #842 Persistent muc room creation not working [jcbrand]
 
 
 ## 3.0.1 (2017-04-04)

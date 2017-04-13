@@ -346,7 +346,7 @@
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .configure-chatroom-button': 'configureChatRoom',
+                    'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearChatRoomMessages',
@@ -1281,7 +1281,7 @@
                     return deferred.promise();
                 },
 
-                autoConfigureChatRoom: function (stanza) {
+                autoConfigureChatRoom: function () {
                     /* Automatically configure room based on the
                      * 'roomconfig' data on this view's model.
                      *
@@ -1292,34 +1292,44 @@
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var that = this, configArray = [],
-                        $fields = $(stanza).find('field'),
-                        count = $fields.length,
-                        config = this.model.get('roomconfig');
+                    var that = this,
+                        deferred = new $.Deferred();
 
-                    $fields.each(function () {
-                        var fieldname = this.getAttribute('var').replace('muc#roomconfig_', ''),
-                            type = this.getAttribute('type'),
-                            value;
-                        if (fieldname in config) {
-                            switch (type) {
-                                case 'boolean':
-                                    value = config[fieldname] ? 1 : 0;
-                                    break;
-                                case 'list-multi':
-                                    // TODO: we don't yet handle "list-multi" types
-                                    value = this.innerHTML;
-                                    break;
-                                default:
-                                    value = config[fieldname];
+                    this.fetchRoomConfiguration().then(function (stanza) {
+                        var configArray = [],
+                            fields = stanza.querySelectorAll('field'),
+                            count = fields.length,
+                            config = that.model.get('roomconfig');
+
+                        _.each(fields, function (field) {
+                            var fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
+                                type = field.getAttribute('type'),
+                                value;
+                            if (fieldname in config) {
+                                switch (type) {
+                                    case 'boolean':
+                                        value = config[fieldname] ? 1 : 0;
+                                        break;
+                                    case 'list-multi':
+                                        // TODO: we don't yet handle "list-multi" types
+                                        value = field.innerHTML;
+                                        break;
+                                    default:
+                                        value = config[fieldname];
+                                }
+                                field.innerHTML = $build('value').t(value);
                             }
-                            this.innerHTML = $build('value').t(value);
-                        }
-                        configArray.push(this);
-                        if (!--count) {
-                            that.sendConfiguration(configArray);
-                        }
+                            configArray.push(field);
+                            if (!--count) {
+                                that.sendConfiguration(
+                                    configArray,
+                                    deferred.resolve,
+                                    deferred.reject
+                                );
+                            }
+                        });
                     });
+                    return deferred;
                 },
 
                 cancelConfiguration: function () {
@@ -1409,7 +1419,7 @@
                     return deferred.promise();
                 },
 
-                configureChatRoom: function (ev) {
+                getAndRenderConfigurationForm: function (ev) {
                     /* Start the process of configuring a chat room, either by
                      * rendering a configuration form, or by auto-configuring
                      * based on the "roomconfig" data stored on the
@@ -1424,17 +1434,9 @@
                      *      case, auto-configure won't happen, regardless of
                      *      the settings.
                      */
-                    if (_.isUndefined(ev) && this.model.get('auto_configure')) {
-                        this.fetchRoomConfiguration().then(
-                            this.autoConfigureChatRoom.bind(this));
-                    } else {
-                        if (!_.isUndefined(ev) && ev.preventDefault) {
-                            ev.preventDefault();
-                        }
-                        this.showSpinner();
-                        this.fetchRoomConfiguration().then(
-                            this.renderConfigurationForm.bind(this));
-                    }
+                    this.showSpinner();
+                    this.fetchRoomConfiguration().then(
+                        this.renderConfigurationForm.bind(this));
                 },
 
                 submitNickname: function (ev) {
@@ -1824,13 +1826,48 @@
                     return this;
                 },
 
-                createInstantRoom: function () {
-                    /* Sends an empty IQ config stanza to inform the server that the
-                     * room should be created with its default configuration.
+                onOwnChatRoomPresence: function (pres) {
+                    /* Handles a received presence relating to the current
+                     * user.
                      *
-                     * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
+                     * For locked rooms (which are by definition "new"), the
+                     * room will either be auto-configured or created instantly
+                     * (with default config) or a configuration room will be
+                     * rendered.
+                     *
+                     * If the room is not locked, then the room will be
+                     * auto-configured only if applicable and if the current
+                     * user is the room's owner.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: The stanza
                      */
-                    this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                    this.saveAffiliationAndRole(pres);
+
+                    var locked_room = pres.querySelector("status[code='201']");
+                    if (locked_room) {
+                        if (this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else if (_converse.muc_instant_rooms) {
+                            // Accept default configuration
+                            this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getAndRenderConfigurationForm();
+                            return; // We haven't yet entered the room, so bail here.
+                        }
+                    } else if (!this.model.get('features_fetched')) {
+                        // The features for this room weren't fetched.
+                        // That must mean it's a new room without locking 
+                        // (in which case Prosody doesn't send a 201 status),
+                        // otherwise the features would have been fetched in
+                        // the "initialize" method already.
+                        if (this.model.get('affiliation') === 'owner' && this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getRoomFeatures();
+                        }
+                    }
+                    this.model.save('connection_status', ROOMSTATUS.ENTERED);
                 },
 
                 onChatRoomPresence: function (pres) {
@@ -1845,32 +1882,8 @@
                         return true;
                     }
                     var is_self = pres.querySelector("status[code='110']");
-                    var locked_room = pres.querySelector("status[code='201']");
-                    if (is_self) {
-                        this.saveAffiliationAndRole(pres);
-                        if (locked_room) {
-                            // This is a new room. It will now be configured
-                            // and the configuration cached on the Backbone.Model.
-                            if (_converse.muc_instant_rooms) {
-                                this.createInstantRoom(); // Accept default configuration
-                            } else {
-                                this.configureChatRoom();
-                                if (!this.model.get('auto_configure')) {
-                                    return;
-                                }
-                            }
-                        }
-                        this.model.save('connection_status', ROOMSTATUS.ENTERED);
-                        this.hideSpinner();
-                    }
-                    if (!locked_room && !this.model.get('features_fetched') &&
-                            this.model.get('connection_status') !== ROOMSTATUS.CONNECTED) {
-                        // The features for this room weren't fetched yet, perhaps
-                        // because it's a new room without locking (in which
-                        // case Prosody doesn't send a 201 status).
-                        // This is the first presence received for the room,
-                        // so a good time to fetch the features.
-                        this.getRoomFeatures();
+                    if (is_self && pres.getAttribute('type') !== 'unavailable') {
+                        this.onOwnChatRoomPresence(pres);
                     }
                     this.hideSpinner().showStatusMessages(pres);
                     // This must be called after showStatusMessages so that

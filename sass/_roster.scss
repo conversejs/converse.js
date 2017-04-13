@@ -105,9 +105,106 @@
             text-shadow: 0 1px 0 $text-shadow-color;
             line-height: $line-height;
             width: 100%;
+            height: 30px;
+            margin: 0;
+            padding: 0;
+
             .open-chat {
-                max-width: 90%;
+                margin: auto;
+                padding: 0.5em 0em 0 1em;
+                width: 88%;
+                .pulse {
+                    padding: 0;
+                    margin: 0;
+                }
+                &.unread-msgs {
+                    font-weight: bold;
+                    .contact-name {
+                        width: 70%;
+                    }
+                    .avatar {
+                        .pulse {
+                            border: 0.7em solid $link-color;
+                            background: transparent;
+                            border-radius: 60px;
+                            height: 30px;
+                            width: 30px;
+                            @include animation(pulse 3s ease-out);
+                            @include animation-iteration-count(infinite);
+                            margin: 0;
+                            padding: 0;
+                            margin-top: -7px;
+                            margin-left: -31px;
+                            z-index: 1;
+                            opacity: 0;
+                        }
+                        &.avatar-online {
+                            .pulse {
+                                border: 0.7em solid $online-color;
+                            }
+                        }
+                        @include keyframes(pulse) {
+                            0% {
+                                @include transform(scale(0));
+                                opacity: 0.0;
+                            }
+                            25% {
+                                @include transform(scale(0));
+                                opacity: 0.1;
+                            }
+                            50% {
+                                @include transform(scale(0.1));
+                                opacity: 0.3;
+                            }
+                            75% {
+                                @include transform(scale(0.5));
+                                opacity: 0.5;
+                            }
+                            100% {
+                                @include transform(scale(1));
+                                opacity: 0.0;
+                            }
+                        }
+                    }
+                }
+
+				.msgs-indicactor {
+					background-color: $warning-color;
+                    color: white;
+					border-radius: 10%;
+					float: right;
+					font-size: 11px;
+                    margin-left: -3em;
+					font-weight: normal;
+					padding: 2px 4px;
+                    text-shadow: none;
+				}
+
+                .contact-name {
+                    padding: 0;
+                    margin: 0;
+                    max-width: 80%;
+                    float: none;
+                    height: $roster-item-height;
+                    &.unread-msgs {
+                        max-width: 70%;
+                    }
+                }
+
+                .avatar {
+                    float: left;
+                    display: inline-block;
+                    height: $roster-item-height;
+
+                    .status-icon {
+                        color: $link-color;
+                        &.icon-online {
+                            color: $online-color;
+                        }
+                    }
+                }
             }
+
             &:hover {
                 background-color: $highlight-color;
                 .remove-xmpp-contact {
@@ -116,6 +213,8 @@
             }
             &.requesting-xmpp-contact {
                 .request-actions {
+                    padding-top: 0.5em;
+                    margin-right: 1em;
                     margin-left: 0.3em;
                     margin-bottom: 0.3em;
                     float: right;
@@ -136,7 +235,7 @@
                 font-size: 16px;
                 float: left;
                 color: $link-color;
-                padding-right: 0.5em;
+                margin-right: 0.5em;
             }
             &.odd {
                 background-color: #DCEAC5;
@@ -159,7 +258,9 @@
                 }
                 &.remove-xmpp-contact {
                     float: right;
+                    margin-right: 1em;
                     display: none;
+                    padding-top: 0.5em;
                     color: $text-color;
                 }
             }

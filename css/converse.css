@@ -2193,14 +2193,142 @@
       padding: 0.3em 1em;
       text-shadow: 0 1px 0 #FAFAFA;
       line-height: 16px;
-      width: 100%; }
+      width: 100%;
+      height: 30px;
+      margin: 0;
+      padding: 0; }
       #conversejs #converse-roster .roster-contacts dd .open-chat {
-        max-width: 90%; }
+        margin: auto;
+        padding: 0.5em 0em 0 1em;
+        width: 88%; }
+        #conversejs #converse-roster .roster-contacts dd .open-chat .pulse {
+          padding: 0;
+          margin: 0; }
+        #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs {
+          font-weight: bold; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .contact-name {
+            width: 70%; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar .pulse {
+            border: 0.7em solid #2A9D8F;
+            background: transparent;
+            border-radius: 60px;
+            height: 30px;
+            width: 30px;
+            -webkit-animation: pulse 3s ease-out;
+            -moz-animation: pulse 3s ease-out;
+            animation: pulse 3s ease-out;
+            -webkit-animation-iteration-count: infinite;
+            -moz-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            margin: 0;
+            padding: 0;
+            margin-top: -7px;
+            margin-left: -31px;
+            z-index: 1;
+            opacity: 0; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar.avatar-online .pulse {
+            border: 0.7em solid #1A9707; }
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(0);
+    opacity: 0.0; }
+  25% {
+    -webkit-transform: scale(0);
+    opacity: 0.1; }
+  50% {
+    -webkit-transform: scale(0.1);
+    opacity: 0.3; }
+  75% {
+    -webkit-transform: scale(0.5);
+    opacity: 0.5; }
+  100% {
+    -webkit-transform: scale(1);
+    opacity: 0.0; } }
+@-moz-keyframes pulse {
+  0% {
+    -moz-transform: scale(0);
+    opacity: 0.0; }
+  25% {
+    -moz-transform: scale(0);
+    opacity: 0.1; }
+  50% {
+    -moz-transform: scale(0.1);
+    opacity: 0.3; }
+  75% {
+    -moz-transform: scale(0.5);
+    opacity: 0.5; }
+  100% {
+    -moz-transform: scale(1);
+    opacity: 0.0; } }
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+    opacity: 0.0; }
+  25% {
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+    opacity: 0.1; }
+  50% {
+    -webkit-transform: scale(0.1);
+    -moz-transform: scale(0.1);
+    -ms-transform: scale(0.1);
+    -o-transform: scale(0.1);
+    transform: scale(0.1);
+    opacity: 0.3; }
+  75% {
+    -webkit-transform: scale(0.5);
+    -moz-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    -o-transform: scale(0.5);
+    transform: scale(0.5);
+    opacity: 0.5; }
+  100% {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+    opacity: 0.0; } }
+        #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicactor {
+          background-color: #D24E2B;
+          color: white;
+          border-radius: 10%;
+          float: right;
+          font-size: 11px;
+          margin-left: -3em;
+          font-weight: normal;
+          padding: 2px 4px;
+          text-shadow: none; }
+        #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name {
+          padding: 0;
+          margin: 0;
+          max-width: 80%;
+          float: none;
+          height: 60px; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name.unread-msgs {
+            max-width: 70%; }
+        #conversejs #converse-roster .roster-contacts dd .open-chat .avatar {
+          float: left;
+          display: inline-block;
+          height: 60px; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat .avatar .status-icon {
+            color: #2A9D8F; }
+            #conversejs #converse-roster .roster-contacts dd .open-chat .avatar .status-icon.icon-online {
+              color: #1A9707; }
       #conversejs #converse-roster .roster-contacts dd:hover {
         background-color: #DCF9F6; }
         #conversejs #converse-roster .roster-contacts dd:hover .remove-xmpp-contact {
           display: inline-block; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .request-actions {
+        padding-top: 0.5em;
+        margin-right: 1em;
         margin-left: 0.3em;
         margin-bottom: 0.3em;
         float: right; }
@@ -2216,7 +2344,7 @@
         font-size: 16px;
         float: left;
         color: #2A9D8F;
-        padding-right: 0.5em; }
+        margin-right: 0.5em; }
       #conversejs #converse-roster .roster-contacts dd.odd {
         background-color: #DCEAC5;
         /* Make this difference */ }
@@ -2233,7 +2361,9 @@
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
         float: right;
+        margin-right: 1em;
         display: none;
+        padding-top: 0.5em;
         color: #818479; }
   #conversejs #converse-roster span.pending-contact-name {
     line-height: 16px;

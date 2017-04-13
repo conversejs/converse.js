@@ -177,7 +177,7 @@
                 toggleX: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var el = ev.target;
-                    $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
+                    el.classList[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
                 },
 
                 changeChatStateFilter: function (ev) {

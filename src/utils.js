@@ -27,6 +27,7 @@
         tpl_form_captcha
     ) {
     "use strict";
+    locales = locales || {};
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -158,8 +159,8 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
-            if (typeof Jed === "undefined" || !utils.isConverseLocale(this.locale) || this.locale === 'en') {
-                return str;
+            if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
+                return Jed.sprintf.apply(Jed, arguments);
             }
             if (typeof this.jed === "undefined") {
                 this.jed = new Jed(window.JSON.parse(locales[this.locale]));

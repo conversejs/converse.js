@@ -699,7 +699,11 @@
                         this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
                     }
-                    this.model.destroy();
+                    try {
+                        this.model.destroy();
+                    } catch (e) {
+                        converse.log(e);
+                    }
                     this.remove();
                     _converse.emit('chatBoxClosed', this);
                     return this;

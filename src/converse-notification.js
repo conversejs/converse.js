@@ -131,7 +131,8 @@
                  * message was received.
                  */
                 var title, roster_item,
-                    from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    full_from_jid = message.getAttribute('from'),
+                    from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
                         title = __(___("Notification from %1$s"), from_jid);
@@ -142,7 +143,7 @@
                     // XXX: workaround for Prosody which doesn't give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
-                    title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                    title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log(

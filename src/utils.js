@@ -4,6 +4,8 @@
         "jquery-private",
         "jquery.browser",
         "lodash",
+        "locales",
+        "moment_with_locales",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -14,7 +16,7 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, dummy, _,
+        $, dummy, _, locales, moment,
         tpl_field,
         tpl_select_option,
         tpl_form_select,
@@ -156,15 +158,11 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
-            if (typeof Jed === "undefined" || _.isUndefined(this.i18n) || this.i18n === 'en') {
+            if (typeof Jed === "undefined" || !utils.isConverseLocale(this.locale) || this.locale === 'en') {
                 return str;
             }
-            // Translation factory
-            if (typeof this.i18n === "string") {
-                this.i18n = window.JSON.parse(this.i18n);
-            }
             if (typeof this.jed === "undefined") {
-                this.jed = new Jed(this.i18n);
+                this.jed = new Jed(window.JSON.parse(locales[this.locale]));
             }
             var t = this.jed.translate(str);
             if (arguments.length>1) {
@@ -199,34 +197,6 @@
                     return sublocale;
                 }
             }
-        },
-
-        detectLocale: function (library_check) {
-            /* Determine which locale is supported by the user's system as well
-             * as by the relevant library (e.g. converse.js or moment.js).
-             *
-             * Parameters:
-             *      (Function) library_check - returns a boolean indicating whether the locale is supported
-             */
-            var locale, i;
-            if (window.navigator.userLanguage) {
-                locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
-            }
-            if (window.navigator.languages && !locale) {
-                for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                    locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
-                }
-            }
-            if (window.navigator.browserLanguage && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-            }
-            if (window.navigator.language && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.language, library_check);
-            }
-            if (window.navigator.systemLanguage && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-            }
-            return locale || 'en';
         },
 
         fadeIn: function (el, callback) {
@@ -446,12 +416,63 @@
         }
     };
 
+    utils.detectLocale = function (library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - returns a boolean indicating whether
+         *          the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    };
+
+    utils.isConverseLocale = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return _.includes(_.keys(locales || {}), locale)
+    };
+
+    utils.isMomentLocale  = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return moment.locale() !== moment.locale(locale);
+    }
+
+    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+        if (isSupportedByLibrary(preferred_locale)) {
+            return preferred_locale;
+        } else if (_.isObject(preferred_locale)) {
+            try {
+                return preferred_locale.locale_data.converse[""].lang;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        return utils.detectLocale(isSupportedByLibrary) || 'en';
+    };
+
     utils.contains.not = function (attr, query) {
         return function (item) {
             return !(utils.contains(attr, query)(item));
         };
     };
-
 
     utils.createElementsFromString = function (element, html) {
         // http://stackoverflow.com/questions/9334645/create-node-from-markup-string

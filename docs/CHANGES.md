@@ -10,7 +10,7 @@
 - eslint 3.19.0
 
 - #842 Persistent muc room creation not working [jcbrand]
-
+- #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
 
 ## 3.0.1 (2017-04-04)
 

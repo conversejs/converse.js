@@ -10,7 +10,6 @@
             "jquery-private",
             "lodash",
             "polyfill",
-            "locales",
             "utils",
             "moment_with_locales",
             "strophe",
@@ -19,7 +18,7 @@
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, locales, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable) {
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
@@ -194,6 +193,16 @@
             'INACTIVE':   90000
         };
 
+        // Internationalization
+        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
+        if (!moment.locale) {
+            //moment.lang is deprecated after 2.8.1, use moment.locale instead
+            moment.locale = moment.lang;
+        }
+        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
+        var __ = _converse.__ = utils.__.bind(_converse);
+        _converse.___ = utils.___;
+
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
         this.INACTIVE = 'inactive';
@@ -201,28 +210,6 @@
         this.COMPOSING = 'composing';
         this.PAUSED = 'paused';
         this.GONE = 'gone';
-
-        // Detect support for the user's locale
-        // ------------------------------------
-        locales = _.isUndefined(locales) ? {} : locales;
-        this.isConverseLocale = function (locale) {
-            return !_.isUndefined(locales[locale]);
-        };
-        this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
-        if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.detectLocale(this.isMomentLocale));
-        if (_.includes(_.keys(locales), settings.i18n)) {
-            settings.i18n = locales[settings.i18n];
-        }
-        this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
-
-        // Translation machinery
-        // ---------------------
-        var __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
-        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
@@ -260,6 +247,7 @@
             rid: undefined,
             roster_groups: true,
             show_only_online_users: false,
+            show_send_button: false,
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
@@ -268,7 +256,6 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
-            show_send_button: false
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -1310,7 +1297,7 @@
         this.RosterGroup = Backbone.Model.extend({
             initialize: function (attributes) {
                 this.set(_.assignIn({
-                    description: DESC_GROUP_TOGGLE,
+                    description: __('Click to hide these contacts'),
                     state: _converse.OPENED
                 }, attributes));
                 // Collection of contacts belonging to this group.

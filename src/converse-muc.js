@@ -1146,7 +1146,11 @@
                 },
 
                 cleanup: function () {
-                    this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    if (_converse.connection.connected) {
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    } else {
+                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
+                    }
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },

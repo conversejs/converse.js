@@ -35,15 +35,15 @@ mutators::
 
 So for example, to get a contact, you would do the following::
 
-    _converse.contacts.get('jid@example.com');
+    _converse.api.contacts.get('jid@example.com');
 
 To get multiple contacts, just pass in an array of jids::
 
-    _converse.contacts.get(['jid1@example.com', 'jid2@example.com']);
+    _converse.api.contacts.get(['jid1@example.com', 'jid2@example.com']);
 
 To get all contacts, simply call ``get`` without any jids::
 
-    _converse.contacts.get();
+    _converse.api.contacts.get();
 
 
 Public API methods
@@ -159,7 +159,7 @@ For example, to send a message stanza:
                 to:'romeo@example.net',
                 type:'chat'
             });
-            this._converse.send(msg);
+            this._converse.api.send(msg);
 
         }
     });
@@ -251,7 +251,7 @@ the returned messages.
             var callback = function (messages) {
                 // Do something with the messages, like showing them in your webpage.
             }
-            this._converse.archive.query(callback, errback))
+            this._converse.api.archive.query(callback, errback))
 
         }
     });
@@ -279,9 +279,9 @@ For example:
         initialize: function () {
 
             var _converse = this._converse;
-            _converse.listen.on('serviceDiscovered', function (feature) {
+            _converse.api.listen.on('serviceDiscovered', function (feature) {
                 if (feature.get('var') === converse.env.Strophe.NS.MAM) {
-                    _converse.archive.query()
+                    _converse.api.archive.query()
                 }
             });
 
@@ -304,10 +304,10 @@ room under the  ``with`` key.
         initialize: function () {
 
             // For a particular user
-            this._converse.archive.query({'with': 'john@doe.net'}, callback, errback);)
+            this._converse.api.archive.query({'with': 'john@doe.net'}, callback, errback);)
 
             // For a particular room
-            this._converse.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+            this._converse.api.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
 
         }
     });
@@ -329,7 +329,7 @@ formatted date strings, or Javascript Date objects.
                 'start': '2010-06-07T00:00:00Z',
                 'end': '2010-07-07T13:23:54Z'
             };
-            this._converse.archive.query(options, callback, errback);
+            this._converse.api.archive.query(options, callback, errback);
 
         }
     });
@@ -346,7 +346,7 @@ By default, the messages are returned from oldest to newest.
         initialize: function () {
 
             // Return maximum 10 archived messages
-            this._converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+            this._converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
 
         }
     });
@@ -376,10 +376,10 @@ to limit your results.
                 // Do something with the messages, like showing them in your webpage.
                 // ...
                 // You can now use the returned "rsm" object, to fetch the next batch of messages:
-                _converse.archive.query(rsm.next(10), callback, errback))
+                _converse.api.archive.query(rsm.next(10), callback, errback))
 
             }
-            _converse.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+            _converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
 
         }
     });
@@ -397,14 +397,14 @@ message, pass in the ``before`` parameter with an empty string value ``''``.
         initialize: function () {
 
             var _converse = this._converse;
-            _converse.archive.query({'before': '', 'max':5}, function (message, rsm) {
+            _converse.api.archive.query({'before': '', 'max':5}, function (message, rsm) {
                 // Do something with the messages, like showing them in your webpage.
                 // ...
                 // You can now use the returned "rsm" object, to fetch the previous batch of messages:
                 rsm.previous(5); // Call previous method, to update the object's parameters,
                                 // passing in a limit value of 5.
                 // Now we query again, to get the previous batch.
-                _converse.archive.query(rsm, callback, errback);
+                _converse.api.archive.query(rsm, callback, errback);
             }
 
         }
@@ -442,7 +442,7 @@ Return's the current user's full JID (Jabber ID).
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            alert(this._converse.user.jid());
+            alert(this._converse.api.user.jid());
 
         }
     });
@@ -457,7 +457,7 @@ Logs the user in. This method can accept a map with the credentials, like this:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.user.login({
+            this._converse.api.user.login({
                 'jid': 'dummy@example.com',
                 'password': 'secret'
             });
@@ -479,7 +479,7 @@ Log the user out of the current XMPP session.
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.user.logout();
+            this._converse.api.user.logout();
 
         }
     });
@@ -500,7 +500,7 @@ Return the current user's availability status:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            alert(this._converse.user.status.get()); // For example "dnd"
+            alert(this._converse.api.user.status.get()); // For example "dnd"
 
         }
     });
@@ -524,7 +524,7 @@ For example:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.user.status.set('dnd');
+            this._converse.api.user.status.set('dnd');
 
         }
     });
@@ -538,7 +538,7 @@ second parameter:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.user.status.set('dnd', 'In a meeting');
+            this._converse.api.user.status.set('dnd', 'In a meeting');
 
         }
     });
@@ -553,9 +553,9 @@ retrieving the user's custom status message.
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.user.status.message.set('In a meeting');
+            this._converse.api.user.status.message.set('In a meeting');
             // Returns "In a meeting"
-            return this._converse.user.status.message.get();
+            return this._converse.api.user.status.message.get();
         }
     });
 
@@ -576,8 +576,8 @@ To get a single roster contact, call the method with the contact's JID (Jabber I
         initialize: function () {
 
             var _converse = this._converse;
-            _converse.on('rosterContactsFetched', function () {
-                var contact = _converse.contacts.get('buddy@example.com')
+            _converse.api.listen.on('rosterContactsFetched', function () {
+                var contact = _converse.api.contacts.get('buddy@example.com')
             });
 
         }
@@ -591,8 +591,8 @@ To get multiple contacts, pass in an array of JIDs:
         initialize: function () {
 
             var _converse = this._converse;
-            _converse.on('rosterContactsFetched', function () {
-                var contacts = _converse.contacts.get(
+            _converse.api.listen.on('rosterContactsFetched', function () {
+                var contacts = _converse.api.contacts.get(
                     ['buddy1@example.com', 'buddy2@example.com']
                 )
             });
@@ -608,8 +608,8 @@ To return all contacts, simply call ``get`` without any parameters:
         initialize: function () {
 
             var _converse = this._converse;
-            _converse.on('rosterContactsFetched', function () {
-                var contacts = _converse.contacts.get();
+            _converse.api.listen.on('rosterContactsFetched', function () {
+                var contacts = _converse.api.contacts.get();
             });
 
         }
@@ -661,13 +661,13 @@ Provide the JID of the contact you want to add:
 
 .. code-block:: javascript
 
-    _converse.contacts.add('buddy@example.com')
+    _converse.api.contacts.add('buddy@example.com')
 
 You may also provide the fullname. If not present, we use the jid as fullname:
 
 .. code-block:: javascript
 
-    _converse.contacts.add('buddy@example.com', 'Buddy')
+    _converse.api.contacts.add('buddy@example.com', 'Buddy')
 
 The **chats** grouping
 ----------------------
@@ -684,17 +684,17 @@ with in that chat box:
 
 .. code-block:: javascript
 
-    _converse.chats.get('buddy@example.com')
+    _converse.api.chats.get('buddy@example.com')
 
 To return an array of chat boxes, provide an array of JIDs:
 
 .. code-block:: javascript
 
-    _converse.chats.get(['buddy1@example.com', 'buddy2@example.com'])
+    _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
 To return all open chat boxes, call the method without any JIDs::
 
-    _converse.chats.get()
+    _converse.api.chats.get()
 
 open
 ~~~~
@@ -707,7 +707,7 @@ To open a single chat box, provide the JID of the contact:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.chats.open('buddy@example.com')
+            this._converse.api.chats.open('buddy@example.com')
         }
     });
 
@@ -717,7 +717,7 @@ To return an array of chat boxes, provide an array of JIDs:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            this._converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
         }
     });
 
@@ -780,7 +780,7 @@ It takes 3 parameters:
         initialize: function () {
             var nick = 'dread-pirate-roberts';
             var create_if_not_found = true;
-            this._converse.rooms.open(
+            this._converse.api.rooms.open(
                 'group@muc.example.com',
                 {'nick': nick},
                 create_if_not_found
@@ -808,7 +808,7 @@ To open a single multi user chat box, provide the JID of the room:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.rooms.open('group@muc.example.com')
+            this._converse.api.rooms.open('group@muc.example.com')
 
         }
     });
@@ -820,7 +820,7 @@ To return an array of rooms, provide an array of room JIDs:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
+            this._converse.api.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
 
         }
     });
@@ -832,7 +832,7 @@ To setup a custom nickname when joining the room, provide the optional nick argu
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+            this._converse.api.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
 
         }
     });
@@ -859,7 +859,7 @@ For example, opening a room with a specific default configuration:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.rooms.open(
+            this._converse.api.rooms.open(
                 'myroom@conference.example.org',
                 { 'nick': 'coolguy69',
                   'auto_configure': true,
@@ -904,7 +904,7 @@ Returns the value of a configuration settings. For example:
         initialize: function () {
 
             // default value would be false;
-            alert(this._converse.settings.get("play_sounds"));
+            alert(this._converse.api.settings.get("play_sounds"));
 
         }
     });
@@ -919,7 +919,7 @@ Set one or many configuration settings. For example:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.settings.set("play_sounds", true);
+            this._converse.api.settings.set("play_sounds", true);
 
         }
     });
@@ -931,7 +931,7 @@ or :
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            this._converse.settings.set({
+            this._converse.api.settings.set({
                 "play_sounds", true,
                 "hide_offline_users" true
             });
@@ -958,7 +958,7 @@ Example:
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            alert(this._converse.tokens.get('rid'));
+            alert(this._converse.api.tokens.get('rid'));
 
         }
     });
@@ -990,7 +990,7 @@ grouping:
 
 .. code-block:: javascript
 
-        _converse.listen.on('message', function (messageXML) { ... });
+        _converse.api.listen.on('message', function (messageXML) { ... });
 
 * **once(eventName, callback, [context])**:
 
@@ -1007,7 +1007,7 @@ grouping:
 
 .. code-block:: javascript
 
-        _converse.listen.once('message', function (messageXML) { ... });
+        _converse.api.listen.once('message', function (messageXML) { ... });
 
 * **not(eventName, callback)**
 
@@ -1022,5 +1022,5 @@ grouping:
 
 .. code-block:: javascript
 
-        _converse.listen.not('message', function (messageXML) { ... });
+        _converse.api.listen.not('message', function (messageXML) { ... });
 

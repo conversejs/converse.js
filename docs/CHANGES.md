@@ -13,6 +13,7 @@
 - Bugfix: OTR meta-messages were being shown in HTML5 notifications. [jcbrand]
 - CSS fix: Icon lock wasn't showing. [jcbrand]
 - #842 Persistent muc room creation not working [jcbrand]
+- #848 OTR doesn't start when `cache_otr_key` is set to `true`. [jcbrand]
 - #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
 
 ## 3.0.1 (2017-04-04)

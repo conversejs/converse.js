@@ -129,17 +129,20 @@
                 getSession: function (callback) {
                     var _converse = this.__super__._converse,
                         __ = _converse.__;
-                    var instance_tag, saved_key;
+                    var instance_tag, saved_key, encrypted_key;
                     if (_converse.cache_otr_key) {
-                        instance_tag = this.get('otr_instance_tag');
-                        saved_key = otr.DSA.parsePrivate(this.get('otr_priv_key'));
-                        if (saved_key && instance_tag) {
-                            this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
-                            callback({
-                                'key': saved_key,
-                                'instance_tag': instance_tag
-                            });
-                            return; // Our work is done here
+                        encrypted_key = this.get('otr_priv_key');
+                        if (_.isString(encrypted_key)) {
+                            instance_tag = this.get('otr_instance_tag');
+                            saved_key = otr.DSA.parsePrivate(encrypted_key)
+                            if (saved_key && instance_tag) {
+                                this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
+                                callback({
+                                    'key': saved_key,
+                                    'instance_tag': instance_tag
+                                });
+                                return; // Our work is done here
+                            }
                         }
                     }
                     // We need to generate a new key and instance tag
@@ -151,10 +154,9 @@
                     );
                     var that = this;
                     window.setTimeout(function () {
-                        var instance_tag = otr.OTR.makeInstanceTag();
                         callback({
                             'key': that.generatePrivateKey(instance_tag),
-                            'instance_tag': instance_tag
+                            'instance_tag': otr.OTR.makeInstanceTag()
                         });
                     }, 500);
                 },

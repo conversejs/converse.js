@@ -702,7 +702,7 @@
                     try {
                         this.model.destroy();
                     } catch (e) {
-                        converse.log(e);
+                        _converse.log(e);
                     }
                     this.remove();
                     _converse.emit('chatBoxClosed', this);

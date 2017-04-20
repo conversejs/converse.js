@@ -223,7 +223,7 @@
 
         isOTRMessage: function (message) {
             var body = message.querySelector('body'),
-                text = (!_.isNull(body) ? body.textNode : undefined);
+                text = (!_.isNull(body) ? body.textContent: undefined);
             return text && !!text.match(/^\?OTR/);
         },
 

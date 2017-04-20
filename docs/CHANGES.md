@@ -9,8 +9,9 @@
 - sinon 2.1.0
 - eslint 3.19.0
 
-- Bugfix. MUC user's nickname wasn't being shown in HTML5 notification messages. [jcbrand]
-- CSS fix. Icon lock wasn't showing. [jcbrand]
+- Bugfix: MUC user's nickname wasn't being shown in HTML5 notification messages. [jcbrand]
+- Bugfix: OTR meta-messages were being shown in HTML5 notifications. [jcbrand]
+- CSS fix: Icon lock wasn't showing. [jcbrand]
 - #842 Persistent muc room creation not working [jcbrand]
 - #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
 

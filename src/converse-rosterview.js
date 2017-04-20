@@ -30,6 +30,7 @@
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
         b64_sha1 = converse.env.b64_sha1,
+        sizzle = converse.env.sizzle,
         _ = converse.env._;
 
 
@@ -156,6 +157,7 @@
                             label_groups: LABEL_GROUPS,
                             label_state: __('State'),
                             label_any: __('Any'),
+                            label_unread_messages: __('Unread'),
                             label_online: __('Online'),
                             label_chatty: __('Chatty'),
                             label_busy: __('Busy'),
@@ -279,6 +281,8 @@
                     _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
+
+
                 },
 
                 render: function () {
@@ -622,17 +626,25 @@
                         ));
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.el.classList.add('current-xmpp-contact');
-                        this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
-                        this.$el.html(tpl_roster_item(
-                            _.extend(item.toJSON(), {
-                                'desc_status': STATUSES[chat_status||'offline'],
-                                'desc_chat': __('Click to chat with this contact'),
-                                'desc_remove': __('Click to remove this contact'),
-                                'title_fullname': __('Name'),
-                                'allow_contact_removal': _converse.allow_contact_removal
-                            })
-                        ));
+                        this.el.classList.remove(_.without(['both', 'to'], subscription)[0])
+                        this.el.classList.add(subscription);
+                        this.renderRosterItem(item);
                     }
+                    return this;
+                },
+
+                renderRosterItem: function (item) {
+                    var chat_status = item.get('chat_status');
+                    this.$el.html(tpl_roster_item(
+                        _.extend(item.toJSON(), {
+                            'desc_status': STATUSES[chat_status||'offline'],
+                            'desc_chat': __('Click to chat with this contact'),
+                            'desc_remove': __('Click to remove this contact'),
+                            'title_fullname': __('Name'),
+                            'allow_contact_removal': _converse.allow_contact_removal,
+                            'num_unread': item.get('num_unread') || 0
+                        })
+                    ));
                     return this;
                 },
 
@@ -677,6 +689,7 @@
 
                 openChat: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.model.save({'num_unread': 0});
                     return _converse.chatboxviews.showChat(this.model.attributes);
                 },
 
@@ -829,6 +842,8 @@
                                         return utils.contains.not('chat_status', q)(contact) && !contact.get('requesting');
                                     }
                                 );
+                            } else if (q === 'unread_messages') {
+                                matches = this.model.contacts.filter({'num_unread': 0});
                             } else {
                                 matches = this.model.contacts.filter(
                                     utils.contains.not('chat_status', q)
@@ -918,6 +933,32 @@
 
             /* -------- Event Handlers ----------- */
 
+            var onMessageReceived = function (data) {
+                /* Given a newly received message, update the unread counter on
+                 * the relevant roster contact (TODO: or chat room).
+                 */
+                var chatbox = data.chatbox;
+                if (_.isUndefined(chatbox)) {
+                    return;
+                }
+                if (_.isNull(data.stanza.querySelector('body'))) {
+                    return; // The message has no text
+                }
+                var new_message = !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', data.stanza).length);
+                var hidden_or_minimized_chatbox = chatbox.get('hidden') || chatbox.get('minimized');
+
+                if (hidden_or_minimized_chatbox && new_message) {
+                    if (chatbox.get('type') === 'chatroom') {
+                        // TODO
+                    } else {
+                        var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                        if (!_.isUndefined(contact)) {
+                            contact.save({'num_unread': contact.get('num_unread') + 1});
+                        }
+                    }
+                }
+            };
+
             var initRoster = function () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
@@ -927,8 +968,9 @@
                 });
                 _converse.rosterview.render();
             };
-            _converse.on('rosterInitialized', initRoster);
-            _converse.on('rosterReadyAfterReconnection', initRoster);
+            _converse.api.listen.on('rosterInitialized', initRoster);
+            _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+            _converse.api.listen.on('message', onMessageReceived);
         }
     });
 }));

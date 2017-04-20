@@ -4,6 +4,8 @@
            {[ if (filter_type === 'state') { ]}  style="display: none" {[ } ]} >
     <select class="state-type" {[ if (filter_type !== 'state') { ]}  style="display: none" {[ } ]} >
         <option value="">{{label_any}}</option>
+        <option {[ if (chat_state === 'unread_messages') { ]} selected="selected" {[ } ]}
+            value="unread_messages">{{label_unread_messages}}</option>
         <option {[ if (chat_state === 'online') { ]} selected="selected" {[ } ]}
             value="online">{{label_online}}</option>
         <option {[ if (chat_state === 'chat') { ]} selected="selected" {[ } ]}

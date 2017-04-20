@@ -140,7 +140,7 @@
                         }
                         &.avatar-online {
                             .pulse {
-                                border: 0.7em solid $online-color;
+                                border: 0.7em solid $link-color;
                             }
                         }
                         @include keyframes(pulse) {
@@ -176,7 +176,7 @@
 					font-size: 11px;
                     margin-left: -3em;
 					font-weight: normal;
-					padding: 2px 4px;
+					padding: 0 4px;
                     text-shadow: none;
 				}
 
@@ -186,9 +186,6 @@
                     max-width: 80%;
                     float: none;
                     height: $roster-item-height;
-                    &.unread-msgs {
-                        max-width: 70%;
-                    }
                 }
 
                 .avatar {
@@ -198,9 +195,6 @@
 
                     .status-icon {
                         color: $link-color;
-                        &.icon-online {
-                            color: $online-color;
-                        }
                     }
                 }
             }
@@ -242,7 +236,6 @@
                 /* Make this difference */
             }
             a, span {
-                text-shadow: 0 1px 0 $link-shadow-color;
                 display: inline-block;
                 overflow: hidden;
                 white-space: nowrap;

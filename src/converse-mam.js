@@ -27,9 +27,6 @@
     // XEP-0313 Message Archive Management
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-    Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
-    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-
     converse.plugins.add('converse-mam', {
 
         overrides: {

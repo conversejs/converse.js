@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.0 (Unreleased)
+
+- Show unread messages next to roster contacts. [jcbrand]
+- API change: the `message` event now returns a data object with `stanza` and
+  `chatbox` attributes, instead of just the stanza. [jcbrand]
+
 ## 3.0.2 (2017-04-23)
 
 *Dependency updates*:

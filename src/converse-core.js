@@ -183,9 +183,11 @@
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
         Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+        Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Instance level constants
@@ -786,7 +788,8 @@
                     'groups': [],
                     'image_type': DEFAULT_IMAGE_TYPE,
                     'image': DEFAULT_IMAGE,
-                    'status': ''
+                    'status': '',
+                    'num_unread': 0
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
@@ -1476,7 +1479,7 @@
                  */
                 var original_stanza = message,
                     contact_jid, forwarded, delay, from_bare_jid,
-                    from_resource, is_me, msgid,
+                    from_resource, is_me, msgid, messages,
                     chatbox, resource,
                     from_jid = message.getAttribute('from'),
                     to_jid = message.getAttribute('to'),
@@ -1517,7 +1520,6 @@
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid === _converse.bare_jid;
-                msgid = message.getAttribute('id');
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -1526,16 +1528,16 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                _converse.emit('message', original_stanza);
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
-                if (!chatbox) {
-                    return true;
+                msgid = message.getAttribute('id');
+                messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
+                if (chatbox && _.isEmpty(messages)) {
+                    // Only create the message when we're sure it's not a
+                    // duplicate
+                    chatbox.createMessage(message, delay, original_stanza);
                 }
-                if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
-                    return true; // We already have this message stored.
-                }
-                chatbox.createMessage(message, delay, original_stanza);
+                _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
                 return true;
             },
 

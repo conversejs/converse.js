@@ -1952,7 +1952,10 @@
                     this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
-                        _converse.emit('message', original_stanza);
+                        _converse.emit(
+                            'message',
+                            {'stanza': original_stanza, 'chatbox': this.model}
+                        );
                     }
                     return true;
                 }

@@ -144,6 +144,19 @@ The user has logged out.
 
 ``_converse.on('logout', function () { ... });``
 
+messageAdded
+~~~~~~~~~~~~
+
+Once a message has been added to a chat box. The passed in data object contains
+a `chatbox` attribute, referring to the chat box receiving the message, as well
+as a `message` attribute which refers to the Message model.
+
+.. code-block:: javascript
+    _converse.on('messageAdded', function (data) {
+        // The message is at `data.message`
+        // The original chat box is at `data.chatbox`.
+    });
+
 messageSend
 ~~~~~~~~~~~
 

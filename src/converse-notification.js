@@ -231,10 +231,11 @@
                 }
             };
 
-            _converse.handleMessageNotification = function (message) {
+            _converse.handleMessageNotification = function (data) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
+                var message = data.stanza;
                 if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }

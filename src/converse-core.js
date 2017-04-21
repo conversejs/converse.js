@@ -1531,11 +1531,13 @@
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
                 msgid = message.getAttribute('id');
-                messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
-                if (chatbox && _.isEmpty(messages)) {
-                    // Only create the message when we're sure it's not a
-                    // duplicate
-                    chatbox.createMessage(message, delay, original_stanza);
+                if (chatbox) {
+                    messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
+                    if (_.isEmpty(messages)) {
+                        // Only create the message when we're sure it's not a
+                        // duplicate
+                        chatbox.createMessage(message, delay, original_stanza);
+                    }
                 }
                 _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
                 return true;

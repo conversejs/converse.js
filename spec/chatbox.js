@@ -93,7 +93,7 @@
                     var online_contacts = _converse.rosterview.$el.find('dt.roster-group').siblings('dd.current-xmpp-contact').find('a.open-chat');
                     for (i=0; i<online_contacts.length; i++) {
                         $el = $(online_contacts[i]);
-                        jid = $el.text().replace(/ /g,'.').toLowerCase() + '@localhost';
+                        jid = _.trim($el.text()).replace(/ /g,'.').toLowerCase() + '@localhost';
                         $el.click();
                         expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
 
@@ -508,7 +508,7 @@
 
                             // onMessage is a handler for received XMPP messages
                             _converse.chatboxes.onMessage(msg);
-                            expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                             // Check that the chatbox and its view now exist
                             var chatbox = _converse.chatboxes.get(sender_jid);
@@ -533,38 +533,38 @@
                     }));
 
                     describe("who is not on the roster", function () {
-                        it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true", mock.initConverse(function (converse) {
-                            converse.allow_non_roster_messaging = false;
+                        it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true", mock.initConverse(function (_converse) {
+                            _converse.allow_non_roster_messaging = false;
 
-                            spyOn(converse, 'emit');
+                            spyOn(_converse, 'emit');
                             var message = 'This is a received message from someone not on the roster';
                             var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             var msg = $msg({
                                     from: sender_jid,
-                                    to: converse.connection.jid,
+                                    to: _converse.connection.jid,
                                     type: 'chat',
                                     id: (new Date()).getTime()
                                 }).c('body').t(message).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
                             // We don't already have an open chatbox for this user
-                            expect(converse.chatboxes.get(sender_jid)).not.toBeDefined();
+                            expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                             // onMessage is a handler for received XMPP messages
-                            converse.chatboxes.onMessage(msg);
-                            expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                            _converse.chatboxes.onMessage(msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
-                            var chatbox = converse.chatboxes.get(sender_jid);
+                            var chatbox = _converse.chatboxes.get(sender_jid);
                             expect(chatbox).not.toBeDefined();
 
                             // onMessage is a handler for received XMPP messages
-                            converse.allow_non_roster_messaging =true;
-                            converse.chatboxes.onMessage(msg);
-                            expect(converse.emit).toHaveBeenCalledWith('message', msg);
+                            _converse.allow_non_roster_messaging =true;
+                            _converse.chatboxes.onMessage(msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                             // Check that the chatbox and its view now exist
-                            chatbox = converse.chatboxes.get(sender_jid);
-                            var chatboxview = converse.chatboxviews.get(sender_jid);
+                            chatbox = _converse.chatboxes.get(sender_jid);
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
                             expect(chatbox).toBeDefined();
                             expect(chatboxview).toBeDefined();
                             // Check that the message was received and check the message parameters
@@ -917,10 +917,10 @@
                     expect(msg_txt).toEqual(msgtext);
                 }));
 
-                it("will be discarded if it's a malicious message meant to look like a carbon copy", mock.initConverse(function (converse) {
-                    test_utils.createContacts(converse, 'current');
+                it("will be discarded if it's a malicious message meant to look like a carbon copy", mock.initConverse(function (_converse) {
+                    test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
-                    test_utils.openContactsPanel(converse);
+                    test_utils.openContactsPanel(_converse);
                     /* <message from="mallory@evil.example" to="b@xmpp.example">
                      *    <received xmlns='urn:xmpp:carbons:2'>
                      *      <forwarded xmlns='urn:xmpp:forward:0'>
@@ -931,14 +931,14 @@
                      *    </received>
                      * </message>
                      */
-                    spyOn(converse, 'log');
+                    spyOn(_converse, 'log');
                     var msgtext = 'Please come to Creepy Valley tonight, alone!';
                     var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
                             'from': sender_jid,
                             'id': (new Date()).getTime(),
-                            'to': converse.connection.jid,
+                            'to': _converse.connection.jid,
                             'type': 'chat',
                             'xmlns': 'jabber:client'
                         }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
@@ -946,17 +946,17 @@
                           .c('message', {
                                 'xmlns': 'jabber:client',
                                 'from': impersonated_jid,
-                                'to': converse.connection.jid,
+                                'to': _converse.connection.jid,
                                 'type': 'chat'
                         }).c('body').t(msgtext).tree();
-                    converse.chatboxes.onMessage(msg);
+                    _converse.chatboxes.onMessage(msg);
 
                     // Check that chatbox for impersonated user is not created.
-                    var chatbox = converse.chatboxes.get(impersonated_jid);
+                    var chatbox = _converse.chatboxes.get(impersonated_jid);
                     expect(chatbox).not.toBeDefined();
 
                     // Check that the chatbox for the malicous user is not created
-                    chatbox = converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     expect(chatbox).not.toBeDefined();
                 }));
 
@@ -989,7 +989,7 @@
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var trimmed_chatboxes = _converse.minimized_chats;
                         var trimmedview = trimmed_chatboxes.get(contact_jid);
                         var $count = trimmedview.$el.find('.chat-head-message-count');
@@ -1050,7 +1050,7 @@
                         .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         expect(chatbox.messages.length).toEqual(1);
                         msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('message')).toEqual(message);
@@ -1077,7 +1077,7 @@
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         // Check that there is a <time> element, with the required
                         // props.
                         $time = $chat_content.find('time');
@@ -1299,7 +1299,7 @@
                             id: (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                 }));
 
                 describe("An active notification", function () {
@@ -1414,7 +1414,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         expect(chatboxview).toBeDefined();
                         // Check that the notification appears inside the chatbox in the DOM
@@ -1537,7 +1537,7 @@
                                     id: (new Date()).getTime()
                                 }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             _converse.chatboxes.onMessage(msg);
-                            expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                             var chatboxview = _converse.chatboxviews.get(sender_jid);
                             var $events = chatboxview.$el.find('.chat-event');
                             expect($events.text()).toEqual(mock.cur_names[1] + ' has stopped typing');
@@ -1697,7 +1697,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         expect(view.$el.find('.chat-event').length).toBe(0);
                     }));
 
@@ -1720,7 +1720,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         var $events = chatboxview.$el.find('.chat-event');
                         expect($events.text()).toEqual(mock.cur_names[1] + ' has gone away');
@@ -1789,7 +1789,7 @@
                 _converse.chatboxes.onMessage(msg);
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(1);
-                expect(_converse.emit).toHaveBeenCalledWith('message', msg);
+                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                 _converse.windowSate = previous_state;
             }));
 

@@ -96,13 +96,14 @@
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
-                    _converse.chatboxes.create({
+                    var chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
                         'fullname':  from_jid,
                         'type': 'headline'
-                    }).createMessage(message, undefined, message);
-                    _converse.emit('message', message);
+                    });
+                    chatbox.createMessage(message, undefined, message);
+                    _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
                 return true;
             };

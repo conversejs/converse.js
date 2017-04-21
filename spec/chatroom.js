@@ -1038,7 +1038,7 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-msg-content').text()).toBe(text);
-                expect(_converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
+                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
             }));
 
             it("shows sent groupchat messages", mock.initConverse(function (_converse) {

@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="chat-body">
-        <div class="chat-content"></div>
+        <div class="chat-content {[ if (show_send_button) { ]}chat-content-sendbutton{[ } ]}"></div>
         <div class="new-msgs-indicator hidden">▼ {{{ unread_msgs }}} ▼</div>
         {[ if (show_textarea) { ]}
         <form class="sendXMPPMessage" action="" method="post">
@@ -25,8 +25,12 @@
             {[ } ]}
         <textarea
             type="text"
-            class="chat-textarea"
+            class="chat-textarea {[ if (show_send_button) { ]}chat-textarea-send-button{[ } ]}"
             placeholder="{{{label_personal_message}}}"/>
+
+        {[ if (show_send_button) { ]}
+            <button type="submit" class="pure-button send-button">{{{ label_send }}}</button>
+        {[ } ]}
         </form>
         {[ } ]}
     </div>

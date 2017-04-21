@@ -1,4 +1,4 @@
-/* 
+/*
     Color scheme helpers:
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
     http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
@@ -13,6 +13,8 @@ $border-color: #CCC !default;
 $icon-color: #114327 !default;
 $save-button-color: #436F64 !default;
 $chat-textarea-height: 70px !default;
+$send-button-height: 27px !default;
+$send-button-margin: 3px !default;
 $message-them-color: #1A9707 !default;
 $roster-height: 194px !default;
 
@@ -66,8 +68,7 @@ $mobile-chat-width: 100% !default;
 $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
-/* $font-path: "../fonticons/fonts/" !default; */
-$font-path: "/fonticons/fonts/" !default;
+$font-path: "../fonticons/fonts/" !default;
 
 $chatroom-width: 300px !default;
 $chatroom-head-color: #E76F51 !default;

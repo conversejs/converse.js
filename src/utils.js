@@ -1,9 +1,11 @@
 /*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
-        "jquery",
+        "jquery.noconflict",
         "jquery.browser",
-        "lodash",
+        "lodash.noconflict",
+        "locales",
+        "moment_with_locales",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -14,7 +16,7 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, dummy, _,
+        $, dummy, _, locales, moment,
         tpl_field,
         tpl_select_option,
         tpl_form_select,
@@ -25,6 +27,7 @@
         tpl_form_captcha
     ) {
     "use strict";
+    locales = locales || {};
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -44,18 +47,35 @@
         }
     };
 
+    var unescapeHTML = function (htmlEscapedText) {
+        /* Helper method that replace HTML-escaped symbols with equivalent characters
+         * (e.g. transform occurrences of '&amp;' to '&')
+         *
+         * Parameters:
+         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         */
+        var div = document.createElement('div');
+        div.innerHTML = htmlEscapedText;
+        return div.innerText;
+    }
+
     var isImage = function (url) {
         var deferred = new $.Deferred();
-        $("<img>", {
-            src: url,
-            error: deferred.reject,
-            load: deferred.resolve
-        });
+        var img = new Image();
+        var timer = window.setTimeout(function () {
+            deferred.reject();
+            img = null;
+        }, 3000);
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            deferred.reject();
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            deferred.resolve(img);
+        };
+        img.src = url;
         return deferred.promise();
-    };
-
-    $.expr[':'].emptyVal = function(obj){
-        return obj.value === '';
     };
 
     $.fn.hasScrollBar = function() {
@@ -86,12 +106,12 @@
                 }
                 $obj.html(x);
                 _.forEach(list, function (url) {
-                    isImage(url).then(function (ev) {
+                    isImage(unescapeHTML(url)).then(function (img) {
                         var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
                         var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
                         var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
-                        ev.target.className = 'chat-image';
-                        x = x.replace(new_url, ev.target.outerHTML);
+                        img.className = 'chat-image';
+                        x = x.replace(new_url, img.outerHTML);
                         $obj.throttledHTML(x);
                     });
                 });
@@ -139,20 +159,11 @@
         // Translation machinery
         // ---------------------
         __: function (str) {
-            if (typeof Jed === "undefined") {
-                return str;
-            }
-            // FIXME: this can be refactored to take the i18n obj as a
-            // parameter.
-            // Translation factory
-            if (typeof this.i18n === "undefined") {
-                this.i18n = locales.en;
-            }
-            if (typeof this.i18n === "string") {
-                this.i18n = $.parseJSON(this.i18n);
+            if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
+                return Jed.sprintf.apply(Jed, arguments);
             }
             if (typeof this.jed === "undefined") {
-                this.jed = new Jed(this.i18n);
+                this.jed = new Jed(window.JSON.parse(locales[this.locale]));
             }
             var t = this.jed.translate(str);
             if (arguments.length>1) {
@@ -189,34 +200,6 @@
             }
         },
 
-        detectLocale: function (library_check) {
-            /* Determine which locale is supported by the user's system as well
-             * as by the relevant library (e.g. converse.js or moment.js).
-             *
-             * Parameters:
-             *      (Function) library_check - returns a boolean indicating whether the locale is supported
-             */
-            var locale, i;
-            if (window.navigator.userLanguage) {
-                locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
-            }
-            if (window.navigator.languages && !locale) {
-                for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                    locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
-                }
-            }
-            if (window.navigator.browserLanguage && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-            }
-            if (window.navigator.language && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.language, library_check);
-            }
-            if (window.navigator.systemLanguage && !locale) {
-                locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-            }
-            return locale || 'en';
-        },
-
         fadeIn: function (el, callback) {
             if ($.fx.off) {
                 el.classList.remove('hidden');
@@ -240,7 +223,7 @@
 
         isOTRMessage: function (message) {
             var body = message.querySelector('body'),
-                text = (!_.isNull(body) ? body.textNode : undefined);
+                text = (!_.isNull(body) ? body.textContent: undefined);
             return text && !!text.match(/^\?OTR/);
         },
 
@@ -434,10 +417,77 @@
         }
     };
 
+    utils.detectLocale = function (library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - returns a boolean indicating whether
+         *          the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    };
+
+    utils.isConverseLocale = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return _.includes(_.keys(locales || {}), locale)
+    };
+
+    utils.isMomentLocale  = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return moment.locale() !== moment.locale(locale);
+    }
+
+    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+        if (isSupportedByLibrary(preferred_locale)) {
+            return preferred_locale;
+        } else if (_.isObject(preferred_locale)) {
+            try {
+                return preferred_locale.locale_data.converse[""].lang;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        return utils.detectLocale(isSupportedByLibrary) || 'en';
+    };
+
     utils.contains.not = function (attr, query) {
         return function (item) {
             return !(utils.contains(attr, query)(item));
         };
     };
+
+    utils.createElementsFromString = function (element, html) {
+        // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
+        var frag = document.createDocumentFragment(),
+            tmp = document.createElement('body'), child;
+        tmp.innerHTML = html;
+        // Append elements in a loop to a DocumentFragment, so that the browser does
+        // not re-render the document for each node
+        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
+            frag.appendChild(child);
+        }
+        element.appendChild(frag); // Now, append all elements at once
+        frag = tmp = null;
+    }
+
     return utils;
 }));

@@ -11,13 +11,13 @@
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet" media="screen" href="node_modules/font-awesome/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/2.0.1/css/theme.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/2.0.1/css/converse.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/2.0.1/css/mobile.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/theme.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/converse.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/css/mobile.min.css" />
     <script type="text/javascript" src="analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <![if gte IE 9]>
-        <script src="https://cdn.conversejs.org/2.0.1/dist/converse-mobile.min.js"></script>
+        <script src="https://cdn.conversejs.org/dist/converse-mobile.min.js"></script>
     <![endif]>
 </head>
 
@@ -123,15 +123,15 @@
 </body>
 
 <script>
-    require(['converse'], function (converse) {
-        converse.initialize({
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            keepalive: true,
-            message_carbons: true,
-            play_sounds: true,
-            roster_groups: true,
-            show_controlbox_by_default: false
-        });
+    converse.initialize({
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        message_carbons: true,
+        // Whitelist non-core plugins that we need
+        whitelisted_plugins: ['converse-singleton'],
+        // Blacklist plugins which aren't being used for mobile, so that
+        // other code cannot register their own plugins under those names.
+        blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
+        show_controlbox_by_default: false,
     });
 </script>
 </html>

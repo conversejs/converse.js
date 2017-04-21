@@ -45,13 +45,13 @@
         }
         .user-custom-message {
             color: white;
-            font-size: 80%;
+            font-size: 75%;
             font-style: italic;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             margin: 0;
-            padding-top: 0.5em;
+            padding-top: 0.2em;
         }
     }
     .chatbox-btn {
@@ -219,6 +219,9 @@
             height: 206px;
             height: calc(100% - #{$toolbar-height + $chat-textarea-height +1px});
         }
+        .chat-content-sendbutton {
+            height: calc(100% - #{$toolbar-height + $chat-textarea-height + $send-button-height + 2*$send-button-margin});
+        }
 
         .dropdown { /* status dropdown styles */
             background-color: $light-background-color;
@@ -254,6 +257,17 @@
                 padding: 0.5em;
                 width: 100%;
                 resize: none;
+            }
+            .send-button {
+                position: absolute;
+                left: $send-button-margin;
+                @include calc(width, '100% - #{2*$send-button-margin}');
+                background-color: $chat-head-color;
+                color: $inverse-link-color;
+                font-size: 80%;
+                height: $send-button-height;
+                bottom: -$send-button-height - $send-button-margin;
+
             }
             .chat-toolbar {
                 box-sizing: border-box;
@@ -388,4 +402,3 @@
         }
     }
 }
-

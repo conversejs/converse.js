@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils"], factory);
+    define(["mock", "converse-core", "test-utils"], factory);
 } (this, function (mock, converse, test_utils) {
     var $ = converse.env.jQuery;
     var Strophe = converse.env.Strophe;
@@ -41,7 +41,7 @@
                 spyOn(_converse.connection, 'send');
                 chatbox.set('otr_status', 1); // Set OTR status to UNVERIFIED, to mock an encrypted session
                 chatbox.trigger('sendMessage', new _converse.Message({ message: msgtext }));
-                var $sent = $(_converse.connection.send.argsForCall[0][0].tree());
+                var $sent = $(_converse.connection.send.calls.argsFor(0)[0].tree());
                 expect($sent.find('body').siblings('private').length).toBe(1);
                 expect($sent.find('private').length).toBe(1);
                 expect($sent.find('private').attr('xmlns')).toBe('urn:xmpp:carbons:2');

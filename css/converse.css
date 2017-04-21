@@ -5,16 +5,15 @@
  * Copyright (c) 2012-2016, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
-/* 
+/*
     Color scheme helpers:
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
     http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
  */
-/* $font-path: "../fonticons/fonts/" !default; */
 @font-face {
   font-family: 'Converse-js';
-  src: url("/fonticons/fonts/icomoon.eot?wvi0ht");
-  src: url("/fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("/fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("/fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("/fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht");
+  src: url("../fonticons/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("../fonticons/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("../fonticons/fonts/icomoon.woff?wvi0ht") format("woff"), url("../fonticons/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 .icon-conversejs {
@@ -167,12 +166,9 @@
 #converse-embedded-chat .icon-legal:before,
 #conversejs .icon-legal:before {
   content: "\f0e3"; }
-#converse-embedded-chat .icon-lock-2:before,
-#conversejs .icon-lock-2:before {
-  content: "\e027"; }
 #converse-embedded-chat .icon-lock:before,
 #conversejs .icon-lock:before {
-  content: "\e026"; }
+  content: "\e027"; }
 #converse-embedded-chat .icon-logout:before,
 #conversejs .icon-logout:before {
   content: "\e601"; }
@@ -1164,6 +1160,9 @@
     #conversejs {
       width: 100%;
       width: 100vw; } }
+  #converse-embedded-chat ::placeholder,
+  #conversejs ::placeholder {
+    color: #BBB; }
   #converse-embedded-chat .circle,
   #conversejs .circle {
     border-radius: 50%; }
@@ -1183,23 +1182,6 @@
   #converse-embedded-chat .emoticon,
   #conversejs .emoticon {
     font-size: 14px; }
-  #converse-embedded-chat .left,
-  #conversejs .left {
-    float: left; }
-  #converse-embedded-chat .right,
-  #conversejs .right {
-    float: right; }
-  #converse-embedded-chat .centered,
-  #conversejs .centered {
-    text-align: center;
-    display: block;
-    margin: 5em auto; }
-  #converse-embedded-chat .hor_centered,
-  #conversejs .hor_centered {
-    text-align: center;
-    display: block;
-    margin: 0 auto;
-    clear: both; }
 @keyframes fadein {
   0% {
     opacity: 0; }
@@ -1263,12 +1245,30 @@
     animation: spin 2s infinite, linear;
     display: block;
     text-align: center;
-    margin: 5px; }
+    margin: 1em; }
     #converse-embedded-chat .spinner:before,
     #conversejs .spinner:before {
       font-size: 24px;
       font-family: 'Converse-js' !important;
       content: "\231b"; }
+  #converse-embedded-chat .left,
+  #conversejs .left {
+    float: left; }
+  #converse-embedded-chat .right,
+  #conversejs .right {
+    float: right; }
+  #converse-embedded-chat .centered,
+  #conversejs .centered {
+    text-align: center;
+    display: block;
+    margin: 0;
+    padding: 50% 0; }
+  #converse-embedded-chat .hor_centered,
+  #conversejs .hor_centered {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    clear: both; }
   #converse-embedded-chat .button-group,
   #converse-embedded-chat .input-button-group,
   #conversejs .button-group,
@@ -1439,13 +1439,13 @@
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;
-    font-size: 80%;
+    font-size: 75%;
     font-style: italic;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin: 0;
-    padding-top: 0.5em; }
+    padding-top: 0.2em; }
 #converse-embedded-chat .chatbox-btn,
 #conversejs .chatbox-btn {
   border-radius: 25%;
@@ -1617,6 +1617,9 @@
     line-height: 1.3em;
     height: 206px;
     height: calc(100% - 96px); }
+  #converse-embedded-chat .chatbox .chat-content-sendbutton,
+  #conversejs .chatbox .chat-content-sendbutton {
+    height: calc(100% - 128px); }
   #converse-embedded-chat .chatbox .dropdown,
   #conversejs .chatbox .dropdown {
     /* status dropdown styles */
@@ -1658,6 +1661,17 @@
       padding: 0.5em;
       width: 100%;
       resize: none; }
+    #converse-embedded-chat .chatbox form.sendXMPPMessage .send-button,
+    #conversejs .chatbox form.sendXMPPMessage .send-button {
+      position: absolute;
+      left: 3px;
+      width: -webkit-calc(100% - 6px);
+      width: calc(100% - 6px);
+      background-color: #F4A261;
+      color: white;
+      font-size: 80%;
+      height: 27px;
+      bottom: -30px; }
     #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar,
     #conversejs .chatbox form.sendXMPPMessage .chat-toolbar {
       box-sizing: border-box;
@@ -2294,6 +2308,9 @@
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-msg-room,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
         color: #1A9707; }
+      #converse-embedded-chat .chatroom .box-flyout .chatroom-body .disconnect-msg,
+      #conversejs .chatroom .box-flyout .chatroom-body .disconnect-msg {
+        padding: 2em 2em 0 2em; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         word-wrap: break-word;
@@ -2423,9 +2440,12 @@
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=button],
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container input[type=submit] {
           margin: 0 0.5em; }
-  #converse-embedded-chat .chatroom .chat-textarea,
-  #conversejs .chatroom .chat-textarea {
+  #converse-embedded-chat .chatroom form.sendXMPPMessage .chat-textarea,
+  #conversejs .chatroom form.sendXMPPMessage .chat-textarea {
     border-bottom-right-radius: 0; }
+  #converse-embedded-chat .chatroom form.sendXMPPMessage .send-button,
+  #conversejs .chatroom form.sendXMPPMessage .send-button {
+    background-color: #E76F51; }
   #converse-embedded-chat .chatroom .room-invite .invited-contact,
   #conversejs .chatroom .room-invite .invited-contact {
     margin: -1px 0 0 -1px;

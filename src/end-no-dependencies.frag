@@ -1,9 +1,10 @@
     
     define('jquery', [], function () { return jQuery; });
-    define('jquery-private', [], function () { return jQuery; });
+    define('jquery.noconflict', [], function () { return jQuery; });
     define('jquery.browser', [], function () { return jQuery; });
     define('awesomplete', [], function () { return jQuery; });
     define('lodash', [], function () { return _; });
+    define('lodash.noconflict', [], function () { return _; });
     define('moment_with_locales', [], function () { return moment; });
     define('strophe', [], function () {
         return {
@@ -26,7 +27,8 @@
     define('strophe.ping', ['strophe'], strophePlugin);
     define('strophe.rsm', ['strophe'], strophePlugin);
     define('strophe.vcard', ['strophe'], strophePlugin);
-    define('backbone', [], emptyFunction);
+    define('backbone', [], function () { return Backbone; });
+    define('backbone.noconflict', [], function () { return Backbone; });
     define('backbone.browserStorage', ['backbone'], emptyFunction);
     define('backbone.overview', ['backbone'], emptyFunction);
     define('otr', [], function () { return { 'DSA': DSA, 'OTR': OTR };});

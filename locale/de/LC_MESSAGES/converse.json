@@ -4,7 +4,7 @@
       "converse": {
          "": {
             "domain": "converse",
-            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "de"
          },
          "Bookmark this room": [
@@ -63,9 +63,17 @@
             null,
             ""
          ],
+         "Typing from another device": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "tippt"
+         ],
+         "Stopped typing on the other device": [
+            null,
+            ""
          ],
          "has stopped typing": [
             null,
@@ -113,7 +121,7 @@
          ],
          "XMPP Username:": [
             null,
-            "XMPP Benutzername"
+            "XMPP Benutzername:"
          ],
          "Password:": [
             null,
@@ -229,7 +237,7 @@
          ],
          "Reconnecting": [
             null,
-            "Verbindung wiederherstellen …"
+            "Verbindung wiederherstellen"
          ],
          "The connection has dropped, attempting to reconnect.": [
             null,
@@ -237,7 +245,7 @@
          ],
          "Connecting": [
             null,
-            "Verbindungsaufbau …"
+            "Verbindungsaufbau"
          ],
          "Authenticating": [
             null,
@@ -281,11 +289,11 @@
          ],
          "Room logging is now enabled": [
             null,
-            "Nachrichten in diesem Raum werden ab jetzt protokolliert."
+            "Nachrichten in diesem Raum werden ab jetzt protokolliert"
          ],
          "Room logging is now disabled": [
             null,
-            "Nachrichten in diesem Raum werden nicht mehr protokolliert."
+            "Nachrichten in diesem Raum werden nicht mehr protokolliert"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -313,11 +321,15 @@
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
             null,
-            "Sie wurden aus diesem Raum entfernt, da Sie kein Mitglied sind."
+            ""
          ],
          "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
             null,
             "Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst gerade heruntergefahren wird."
+         ],
+         "%1$s has been banned": [
+            null,
+            "%1$s ist verbannt worden"
          ],
          "Message": [
             null,
@@ -341,11 +353,11 @@
          ],
          "Ban user from room": [
             null,
-            "Verbanne einen Benutzer aus dem Raum."
+            "Verbanne einen Benutzer aus dem Raum"
          ],
          "Kick user from room": [
             null,
-            "Werfe einen Benutzer aus dem Raum."
+            "Werfe einen Benutzer aus dem Raum"
          ],
          "Write in 3rd person": [
             null,
@@ -499,11 +511,7 @@
             null,
             ""
          ],
-         "This room pesists even if it's unoccupied": [
-            null,
-            ""
-         ],
-         "This room is publically searchable": [
+         "This room persists even if it's unoccupied": [
             null,
             ""
          ],
@@ -553,11 +561,11 @@
          ],
          "Description:": [
             null,
-            "Beschreibung"
+            "Beschreibung:"
          ],
          "Occupants:": [
             null,
-            "Teilnehmer"
+            "Teilnehmer:"
          ],
          "Features:": [
             null,
@@ -733,7 +741,7 @@
          ],
          " e.g. conversejs.org": [
             null,
-            "z. B. conversejs.org"
+            " z. B. conversejs.org"
          ],
          "Your XMPP provider's domain name:": [
             null,
@@ -780,6 +788,10 @@
             "Zurück"
          ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
+            null,
+            ""
+         ],
+         "Retry": [
             null,
             ""
          ],

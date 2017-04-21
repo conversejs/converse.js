@@ -18,14 +18,15 @@ require.config({
         "almond":                   "node_modules/almond/almond",
         "awesomplete":              "node_modules/awesomplete/awesomplete",
         "backbone":                 "node_modules/backbone/backbone",
+        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
+        "es6-promise":              "node_modules/es6-promise/dist/es6-promise",
         "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery-private":           "src/jquery-private",
+        "jquery.noconflict":        "src/jquery.noconflict",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
-        "moment":                   "node_modules/moment/moment",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
@@ -38,6 +39,7 @@ require.config({
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
+        "lodash.noconflict":        "src/lodash.noconflict",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
 
@@ -74,7 +76,6 @@ require.config({
         "af":        "locale/af/LC_MESSAGES/converse.json",
         "ca":        "locale/ca/LC_MESSAGES/converse.json",
         "de":        "locale/de/LC_MESSAGES/converse.json",
-        "en":        "locale/en/LC_MESSAGES/converse.json",
         "es":        "locale/es/LC_MESSAGES/converse.json",
         "fr":        "locale/fr/LC_MESSAGES/converse.json",
         "he":        "locale/he/LC_MESSAGES/converse.json",
@@ -91,22 +92,6 @@ require.config({
         "zh":        "locale/zh/LC_MESSAGES/converse.json",
 
         "moment_with_locales": "3rdparty/moment_locales",
-        'moment_af':        "node_modules/moment/locale/af",
-        'moment_de':        "node_modules/moment/locale/de",
-        'moment_es':        "node_modules/moment/locale/es",
-        'moment_fr':        "node_modules/moment/locale/fr",
-        'moment_he':        "node_modules/moment/locale/he",
-        'moment_hu':        "node_modules/moment/locale/hu",
-        'moment_id':        "node_modules/moment/locale/id",
-        'moment_it':        "node_modules/moment/locale/it",
-        'moment_ja':        "node_modules/moment/locale/ja",
-        'moment_nb':        "node_modules/moment/locale/nb",
-        'moment_nl':        "node_modules/moment/locale/nl",
-        'moment_pl':        "node_modules/moment/locale/pl",
-        'moment_pt-br':     "node_modules/moment/locale/pt-br",
-        'moment_ru':        "node_modules/moment/locale/ru",
-        'moment_uk':        "node_modules/moment/locale/uk",
-        'moment_zh':        "node_modules/moment/locale/zh-cn",
 
         // Templates
         "action":                   "src/templates/action",
@@ -123,6 +108,7 @@ require.config({
         "chatroom":                 "src/templates/chatroom",
         "chatroom_bookmark_form":   "src/templates/chatroom_bookmark_form",
         "chatroom_bookmark_toggle": "src/templates/chatroom_bookmark_toggle",
+        "chatroom_disconnect":      "src/templates/chatroom_disconnect",
         "chatroom_features":        "src/templates/chatroom_features",
         "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_head":            "src/templates/chatroom_head",
@@ -147,6 +133,7 @@ require.config({
         "form_textarea":            "src/templates/form_textarea",
         "form_username":            "src/templates/form_username",
         "group_header":             "src/templates/group_header",
+        "help_message":             "src/templates/help_message",
         "info":                     "src/templates/info",
         "login_panel":              "src/templates/login_panel",
         "login_tab":                "src/templates/login_tab",
@@ -163,6 +150,7 @@ require.config({
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
         "roster":                   "src/templates/roster",
+        "roster_filter":            "src/templates/roster_filter",
         "roster_item":              "src/templates/roster_item",
         "search_contact":           "src/templates/search_contact",
         "select_option":            "src/templates/select_option",
@@ -173,19 +161,29 @@ require.config({
         "trimmed_chat":             "src/templates/trimmed_chat"
     },
 
+    packages: [{
+        name: 'moment',
+        // This location is relative to baseUrl. Choose bower_components
+        // or node_modules, depending on how moment was installed.
+        location: 'node_modules/moment',
+        main: 'moment'
+    }],
+
     map: {
-        // '*' means all modules will get 'jquery-private'
-        // for their 'jquery' dependency.
+        // '*' means all modules will get the '*.noconflict' version
+        // as their dependency.
         '*': {
-            'jquery': 'jquery-private',
+            'jquery': 'jquery.noconflict',
+            'backbone': 'backbone.noconflict',
+            'lodash': 'lodash.noconflict',
+            'underscore': 'lodash.noconflict'
          },
-        'backbone': {
-            "underscore": "lodash"
-         },
-        // 'jquery-private' wants the real jQuery module
-        // though. If this line was not here, there would
+        // '*.noconflict' wants the real module
+        // If this line was not here, there would
         // be an unresolvable cyclic dependency.
-        'jquery-private': { 'jquery': 'jquery' }
+        'backbone.noconflict': { 'backbone': 'backbone' },
+        'jquery.noconflict': { 'jquery': 'jquery' },
+        'lodash.noconflict': { 'lodash': 'lodash' }
     },
 
     lodashLoader: {

@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test_utils"], factory);
+    define(["mock", "converse-core", "test-utils"], factory);
 } (this, function (mock, converse, test_utils) {
     var $ = converse.env.jQuery;
     var Strophe = converse.env.Strophe;
@@ -8,44 +8,40 @@
     describe("The Registration Panel", function () {
 
         it("is not available unless allow_registration=true",  mock.initConverse(function (_converse) {
-            runs(test_utils.openControlBox);
-            waits(50);
-            runs(function () {
-                var cbview = _converse.chatboxviews.get('controlbox');
-                expect(cbview.$('#controlbox-tabs li').length).toBe(1);
-                expect(cbview.$('#controlbox-tabs li').text().trim()).toBe("Sign in");
-            });
-        }, { auto_login: false,
-              allow_registration: false,
-            }));
+            test_utils.openControlBox();
+            var cbview = _converse.chatboxviews.get('controlbox');
+            expect(cbview.$('#controlbox-tabs li').length).toBe(1);
+            expect(cbview.$('#controlbox-tabs li').text().trim()).toBe("Sign in");
+
+            }, { auto_login: false,
+                 allow_registration: false,
+        }));
 
         it("can be opened by clicking on the registration tab", mock.initConverse(function (_converse) {
             var cbview = _converse.chatboxviews.get('controlbox');
-            runs(test_utils.openControlBox);
-            waits(50);
-            runs(function () {
-                var $tabs = cbview.$('#controlbox-tabs');
-                var $panels = cbview.$('.controlbox-panes');
-                var $login = $panels.children().first();
-                var $registration = $panels.children().last();
-                expect($tabs.find('li').first().text()).toBe('Sign in');
-                expect($tabs.find('li').last().text()).toBe('Register');
+            test_utils.openControlBox();
+            var $tabs = cbview.$('#controlbox-tabs');
+            var $panels = cbview.$('.controlbox-panes');
+            var $login = $panels.children().first();
+            var $registration = $panels.children().last();
+            expect($tabs.find('li').first().text()).toBe('Sign in');
+            expect($tabs.find('li').last().text()).toBe('Register');
 
-                spyOn(cbview, 'switchTab').andCallThrough();
-                cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                $tabs.find('li').last().find('a').click(); // Click the Register tab
-                expect($login.is(':visible')).toBe(false);
-                expect($registration.is(':visible')).toBe(true);
-                expect(cbview.switchTab).toHaveBeenCalled();
-            });
-        }, { auto_login: false,
-              allow_registration: true,
-            }));
+            spyOn(cbview, 'switchTab').and.callThrough();
+            cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+            $tabs.find('li').last().find('a').click(); // Click the Register tab
+            expect($login.is(':visible')).toBe(false);
+            expect($registration.is(':visible')).toBe(true);
+            expect(cbview.switchTab).toHaveBeenCalled();
+
+            }, { auto_login: false,
+                 allow_registration: true,
+        }));
 
         it("allows the user to choose an XMPP provider's domain", mock.initConverse(function (_converse) {
             var cbview = _converse.chatboxviews.get('controlbox');
             var registerview = cbview.registerpanel;
-            spyOn(registerview, 'onProviderChosen').andCallThrough();
+            spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
             spyOn(_converse.connection, 'connect');
             var $tabs = cbview.$('#controlbox-tabs');
@@ -72,12 +68,12 @@
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
             var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
-            spyOn(registerview, 'onProviderChosen').andCallThrough();
-            spyOn(registerview, 'getRegistrationFields').andCallThrough();
-            spyOn(registerview, 'onRegistrationFields').andCallThrough();
-            spyOn(registerview, 'renderRegistrationForm').andCallThrough();
+            spyOn(registerview, 'onProviderChosen').and.callThrough();
+            spyOn(registerview, 'getRegistrationFields').and.callThrough();
+            spyOn(registerview, 'onRegistrationFields').and.callThrough();
+            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').andCallThrough();
+            spyOn(_converse.connection, 'connect').and.callThrough();
 
             expect(registerview._registering).toBeFalsy();
             expect(_converse.connection.connected).toBeFalsy();
@@ -96,7 +92,6 @@
             _converse.connection._connect_cb(test_utils.createRequest(stanza));
 
             expect(registerview.getRegistrationFields).toHaveBeenCalled();
-            expect(_converse.connection.connected).toBeTruthy();
 
             stanza = $iq({
                     'type': 'result',
@@ -121,12 +116,12 @@
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
             var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
-            spyOn(registerview, 'onProviderChosen').andCallThrough();
-            spyOn(registerview, 'getRegistrationFields').andCallThrough();
-            spyOn(registerview, 'onRegistrationFields').andCallThrough();
-            spyOn(registerview, 'renderRegistrationForm').andCallThrough();
+            spyOn(registerview, 'onProviderChosen').and.callThrough();
+            spyOn(registerview, 'getRegistrationFields').and.callThrough();
+            spyOn(registerview, 'onRegistrationFields').and.callThrough();
+            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').andCallThrough();
+            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.$('input[name=domain]').val('conversejs.org');
             registerview.$('input[type=submit]').click();
@@ -159,7 +154,7 @@
             registerview.$('input[type=submit]').click();
 
             expect(_converse.connection.send).toHaveBeenCalled();
-            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
+            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
             expect($stanza.children('query').children().length).toBe(3);
             expect($stanza.children('query').children()[0].tagName).toBe('username');
         }, { auto_login: false,
@@ -170,12 +165,12 @@
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
             var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
-            spyOn(registerview, 'onProviderChosen').andCallThrough();
-            spyOn(registerview, 'getRegistrationFields').andCallThrough();
-            spyOn(registerview, 'onRegistrationFields').andCallThrough();
-            spyOn(registerview, 'renderRegistrationForm').andCallThrough();
+            spyOn(registerview, 'onProviderChosen').and.callThrough();
+            spyOn(registerview, 'getRegistrationFields').and.callThrough();
+            spyOn(registerview, 'onRegistrationFields').and.callThrough();
+            spyOn(registerview, 'renderRegistrationForm').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
-            spyOn(_converse.connection, 'connect').andCallThrough();
+            spyOn(_converse.connection, 'connect').and.callThrough();
 
             registerview.$('input[name=domain]').val('conversejs.org');
             registerview.$('input[type=submit]').click();
@@ -210,7 +205,7 @@
             registerview.$('input[type=submit]').click();
 
             expect(_converse.connection.send).toHaveBeenCalled();
-            var $stanza = $(_converse.connection.send.argsForCall[0][0].tree());
+            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
             expect($stanza.children('query').children().length).toBe(1);
             expect($stanza.children('query').children().children().length).toBe(3);
             expect($stanza.children('query').children().children()[0].tagName).toBe('field');

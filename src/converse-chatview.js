@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 (function (root, factory) {
     define([
@@ -13,6 +13,7 @@
             "tpl!new_day",
             "tpl!action",
             "tpl!message",
+            "tpl!help_message",
             "tpl!toolbar",
             "tpl!avatar"
     ], factory);
@@ -22,16 +23,18 @@
             tpl_new_day,
             tpl_action,
             tpl_message,
+            tpl_help_message,
             tpl_toolbar,
             tpl_avatar
     ) {
     "use strict";
     var $ = converse.env.jQuery,
-        utils = converse.env.utils,
-        Strophe = converse.env.Strophe,
         $msg = converse.env.$msg,
+        Backbone = converse.env.Backbone,
+        Strophe = converse.env.Strophe,
         _ = converse.env._,
-        moment = converse.env.moment;
+        moment = converse.env.moment,
+        utils = converse.env.utils;
 
     var KEY = {
         ENTER: 13,
@@ -72,9 +75,10 @@
                 __ = _converse.__;
 
             this.updateSettings({
-                show_toolbar: true,
-                chatview_avatar_width: 32,
                 chatview_avatar_height: 32,
+                chatview_avatar_width: 32,
+                show_toolbar: true,
+                time_format: 'HH:mm',
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,
@@ -91,6 +95,7 @@
                 events: {
                     'click .close-chatbox-button': 'close',
                     'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onSendButtonClicked',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
@@ -119,10 +124,12 @@
                                 _.extend(this.model.toJSON(), {
                                         show_toolbar: _converse.show_toolbar,
                                         show_textarea: true,
+                                        show_send_button: _converse.show_send_button,
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
-                                        label_personal_message: __('Personal message')
+                                        label_personal_message: __('Personal message'),
+                                        label_send: __('Send')
                                     }
                                 )
                             )
@@ -179,7 +186,7 @@
                 },
 
                 addSpinner: function () {
-                    if (!this.$content.first().hasClass('spinner')) {
+                    if (_.isNull(this.el.querySelector('.spinner'))) {
                         this.$content.prepend('<span class="spinner"/>');
                     }
                 },
@@ -348,7 +355,7 @@
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,
                             'sender': attrs.sender,
-                            'time': msg_time.format('hh:mm'),
+                            'time': msg_time.format(_converse.time_format),
                             'isodate': msg_time.format(),
                             'username': username,
                             'extra_classes': this.getExtraMessageClasses(attrs)
@@ -367,7 +374,10 @@
                 showHelpMessages: function (msgs, type, spinner) {
                     var i, msgs_length = msgs.length;
                     for (i=0; i<msgs_length; i++) {
-                        this.$content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                        this.$content.append($(tpl_help_message({
+                            'type': type||'info',
+                            'message': msgs[i]
+                        })));
                     }
                     if (spinner === true) {
                         this.$content.append('<span class="spinner"/>');
@@ -379,10 +389,18 @@
 
                 handleChatStateMessage: function (message) {
                     if (message.get('chat_state') === _converse.COMPOSING) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                        if (message.get('sender') === 'me') {
+                            this.showStatusNotification(__('Typing from another device'));
+                        } else {
+                            this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
+                        }
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
                     } else if (message.get('chat_state') === _converse.PAUSED) {
-                        this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                        if (message.get('sender') === 'me') {
+                            this.showStatusNotification(__('Stopped typing on the other device'));
+                        } else {
+                            this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                        }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
                         this.$content.find('div.chat-event').remove();
                     } else if (message.get('chat_state') === _converse.GONE) {
@@ -592,6 +610,22 @@
                     }
                 },
 
+                onSendButtonClicked: function(ev) {
+                    /* Event handler for when a send button is clicked in a chat box textarea.
+                     */
+                    ev.preventDefault();
+                    var textarea = this.el.querySelector('.chat-textarea'),
+                        message = textarea.value;
+
+                    textarea.value = '';
+                    textarea.focus();
+                    if (message !== '') {
+                        this.onMessageSubmitted(message);
+                        _converse.emit('messageSend', message);
+                    }
+                    this.setChatState(_converse.ACTIVE);
+                },
+
                 clearMessages: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
@@ -674,7 +708,11 @@
                         this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
                     }
-                    this.model.destroy();
+                    try {
+                        this.model.destroy();
+                    } catch (e) {
+                        _converse.log(e);
+                    }
                     this.remove();
                     _converse.emit('chatBoxClosed', this);
                     return this;

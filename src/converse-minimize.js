@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window */
+/*global define, window */
 
 (function (root, factory) {
     define(["converse-core",
@@ -26,6 +26,7 @@
     "use strict";
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        Backbone = converse.env.Backbone,
         b64_sha1 = converse.env.b64_sha1,
         moment = converse.env.moment;
 

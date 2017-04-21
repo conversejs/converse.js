@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -14,6 +14,7 @@
             "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
+            "tpl!chatroom_disconnect",
             "tpl!chatroom_features",
             "tpl!chatroom_form",
             "tpl!chatroom_head",
@@ -35,6 +36,7 @@
             converse,
             tpl_chatarea,
             tpl_chatroom,
+            tpl_chatroom_disconnect,
             tpl_chatroom_features,
             tpl_chatroom_form,
             tpl_chatroom_head,
@@ -56,6 +58,7 @@
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
+        Backbone = converse.env.Backbone,
         $iq = converse.env.$iq,
         $build = converse.env.$build,
         $msg = converse.env.$msg,
@@ -81,19 +84,38 @@
         'temporary', 'nonanonymous', 'semianonymous',
         'moderated', 'unmoderated', 'mam_enabled'
     ];
+    var ROOM_FEATURES_MAP = {
+        'passwordprotected': 'unsecured',
+        'unsecured': 'passwordprotected',
+        'hidden': 'public',
+        'public': 'hidden',
+        'membersonly': 'open',
+        'open': 'membersonly',
+        'persistent': 'temporary',
+        'temporary': 'persistent',
+        'nonanonymous': 'semianonymous',
+        'semianonymous': 'nonanonymous',
+        'moderated': 'unmoderated',
+        'unmoderated': 'moderated'
+    };
     var ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
         NICKNAME_REQUIRED: 2,
-        DISCONNECTED: 3,
-        ENTERED: 4
+        PASSWORD_REQUIRED: 3,
+        DISCONNECTED: 4,
+        ENTERED: 5
     };
 
     converse.plugins.add('converse-muc', {
         /* Optional dependencies are other plugins which might be
-         * overridden or relied upon, if they exist, otherwise they're ignored.
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
          *
-         * However, if the setting "strict_plugin_dependencies" is set to true,
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          *
          * NB: These plugins need to have already been loaded via require.js.
@@ -327,7 +349,7 @@
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .configure-chatroom-button': 'configureChatRoom',
+                    'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearChatRoomMessages',
@@ -335,7 +357,8 @@
                     'click .toggle-occupants a': 'toggleOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
-                    'keypress .chat-textarea': 'keyPressed'
+                    'keypress .chat-textarea': 'keyPressed',
+                    'click .send-button': 'onSendButtonClicked'
                 },
 
                 initialize: function () {
@@ -366,10 +389,13 @@
                 },
 
                 render: function () {
-                    this.$el.attr('id', this.model.get('box_id'))
-                            .html(tpl_chatroom());
+                    this.el.setAttribute('id', this.model.get('box_id'));
+                    this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
                     this.renderChatArea();
+                    if (this.model.get('connection_status') !== ROOMSTATUS.ENTERED) {
+                        this.showSpinner();
+                    }
                     utils.refreshWebkit();
                     return this;
                 },
@@ -386,9 +412,11 @@
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
                             .append(tpl_chatarea({
-                                    'unread_msgs': __('You have unread messages'),
+                                    'label_message': __('Message'),
+                                    'label_send': __('Send'),
+                                    'show_send_button': _converse.show_send_button,
                                     'show_toolbar': _converse.show_toolbar,
-                                    'label_message': __('Message')
+                                    'unread_msgs': __('You have unread messages')
                                 }))
                             .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
@@ -1121,7 +1149,11 @@
                 },
 
                 cleanup: function () {
-                    this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    if (_converse.connection.connected) {
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    } else {
+                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
+                    }
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
@@ -1256,7 +1288,7 @@
                     return deferred.promise();
                 },
 
-                autoConfigureChatRoom: function (stanza) {
+                autoConfigureChatRoom: function () {
                     /* Automatically configure room based on the
                      * 'roomconfig' data on this view's model.
                      *
@@ -1267,34 +1299,44 @@
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var that = this, configArray = [],
-                        $fields = $(stanza).find('field'),
-                        count = $fields.length,
-                        config = this.model.get('roomconfig');
+                    var that = this,
+                        deferred = new $.Deferred();
 
-                    $fields.each(function () {
-                        var fieldname = this.getAttribute('var').replace('muc#roomconfig_', ''),
-                            type = this.getAttribute('type'),
-                            value;
-                        if (fieldname in config) {
-                            switch (type) {
-                                case 'boolean':
-                                    value = config[fieldname] ? 1 : 0;
-                                    break;
-                                case 'list-multi':
-                                    // TODO: we don't yet handle "list-multi" types
-                                    value = this.innerHTML;
-                                    break;
-                                default:
-                                    value = config[fieldname];
+                    this.fetchRoomConfiguration().then(function (stanza) {
+                        var configArray = [],
+                            fields = stanza.querySelectorAll('field'),
+                            count = fields.length,
+                            config = that.model.get('roomconfig');
+
+                        _.each(fields, function (field) {
+                            var fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
+                                type = field.getAttribute('type'),
+                                value;
+                            if (fieldname in config) {
+                                switch (type) {
+                                    case 'boolean':
+                                        value = config[fieldname] ? 1 : 0;
+                                        break;
+                                    case 'list-multi':
+                                        // TODO: we don't yet handle "list-multi" types
+                                        value = field.innerHTML;
+                                        break;
+                                    default:
+                                        value = config[fieldname];
+                                }
+                                field.innerHTML = $build('value').t(value);
                             }
-                            this.innerHTML = $build('value').t(value);
-                        }
-                        configArray.push(this);
-                        if (!--count) {
-                            that.sendConfiguration(configArray);
-                        }
+                            configArray.push(field);
+                            if (!--count) {
+                                that.sendConfiguration(
+                                    configArray,
+                                    deferred.resolve,
+                                    deferred.reject
+                                );
+                            }
+                        });
                     });
+                    return deferred;
                 },
 
                 cancelConfiguration: function () {
@@ -1384,7 +1426,7 @@
                     return deferred.promise();
                 },
 
-                configureChatRoom: function (ev) {
+                getAndRenderConfigurationForm: function (ev) {
                     /* Start the process of configuring a chat room, either by
                      * rendering a configuration form, or by auto-configuring
                      * based on the "roomconfig" data stored on the
@@ -1399,17 +1441,9 @@
                      *      case, auto-configure won't happen, regardless of
                      *      the settings.
                      */
-                    if (_.isUndefined(ev) && this.model.get('auto_configure')) {
-                        this.fetchRoomConfiguration().then(
-                            this.autoConfigureChatRoom.bind(this));
-                    } else {
-                        if (!_.isUndefined(ev) && ev.preventDefault) {
-                            ev.preventDefault();
-                        }
-                        this.showSpinner();
-                        this.fetchRoomConfiguration().then(
-                            this.renderConfigurationForm.bind(this));
-                    }
+                    this.showSpinner();
+                    this.fetchRoomConfiguration().then(
+                        this.renderConfigurationForm.bind(this));
                 },
 
                 submitNickname: function (ev) {
@@ -1554,6 +1588,7 @@
                             label_password: __('Password: '),
                             label_submit: __('Submit')
                         }));
+                    this.model.save('connection_status', ROOMSTATUS.PASSWORD_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
                 },
 
@@ -1561,7 +1596,9 @@
                     this.$('.chat-area').addClass('hidden');
                     this.$('.occupants').addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
+                    this.$('.chatroom-body').append(tpl_chatroom_disconnect({
+                        'disconnect_message': msg
+                    }));
                 },
 
                 getMessageFromStatus: function (stat, stanza, is_self) {
@@ -1663,10 +1700,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by <strong>%1$s</strong>.'), notification.actor));
+                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: <em>"%1$s"</em>.'), notification.reason));
+                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
                         }
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         return;
@@ -1740,32 +1777,27 @@
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
                         } else if (!_.isNull(error.querySelector('registration-required'))) {
-                            this.showDisconnectMessage(__('You are not on the member list of this room'));
+                            this.showDisconnectMessage(__('You are not on the member list of this room.'));
                         } else if (!_.isNull(error.querySelector('forbidden'))) {
-                            this.showDisconnectMessage(__('You have been banned from this room'));
+                            this.showDisconnectMessage(__('You have been banned from this room.'));
                         }
                     } else if (error.getAttribute('type') === 'modify') {
                         if (!_.isNull(error.querySelector('jid-malformed'))) {
-                            this.showDisconnectMessage(__('No nickname was specified'));
+                            this.showDisconnectMessage(__('No nickname was specified.'));
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessage(__('You are not allowed to create new rooms'));
+                            this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
+                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                            this.showDisconnectMessage(__("This room does not (yet) exist"));
+                            this.showDisconnectMessage(__("This room does not (yet) exist."));
                         } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
+                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
                         }
                     }
-                },
-
-                showSpinner: function () {
-                    this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
                 },
 
                 renderAfterTransition: function () {
@@ -1775,12 +1807,19 @@
                      */
                     if (this.model.get('connection_status') == ROOMSTATUS.NICKNAME_REQUIRED) {
                         this.renderNicknameForm();
+                    } else if (this.model.get('connection_status') == ROOMSTATUS.PASSWORD_REQUIRED) {
+                        this.renderPasswordForm();
                     } else {
                         this.$el.find('.chat-area').removeClass('hidden');
                         this.$el.find('.occupants').removeClass('hidden');
                         this.occupantsview.setOccupantsHeight();
                         this.scrollDown();
                     }
+                },
+
+                showSpinner: function () {
+                    this.$('.chatroom-body').children().addClass('hidden');
+                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
                 },
 
                 hideSpinner: function () {
@@ -1796,13 +1835,48 @@
                     return this;
                 },
 
-                createInstantRoom: function () {
-                    /* Sends an empty IQ config stanza to inform the server that the
-                     * room should be created with its default configuration.
+                onOwnChatRoomPresence: function (pres) {
+                    /* Handles a received presence relating to the current
+                     * user.
                      *
-                     * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
+                     * For locked rooms (which are by definition "new"), the
+                     * room will either be auto-configured or created instantly
+                     * (with default config) or a configuration room will be
+                     * rendered.
+                     *
+                     * If the room is not locked, then the room will be
+                     * auto-configured only if applicable and if the current
+                     * user is the room's owner.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: The stanza
                      */
-                    this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                    this.saveAffiliationAndRole(pres);
+
+                    var locked_room = pres.querySelector("status[code='201']");
+                    if (locked_room) {
+                        if (this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else if (_converse.muc_instant_rooms) {
+                            // Accept default configuration
+                            this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getAndRenderConfigurationForm();
+                            return; // We haven't yet entered the room, so bail here.
+                        }
+                    } else if (!this.model.get('features_fetched')) {
+                        // The features for this room weren't fetched.
+                        // That must mean it's a new room without locking 
+                        // (in which case Prosody doesn't send a 201 status),
+                        // otherwise the features would have been fetched in
+                        // the "initialize" method already.
+                        if (this.model.get('affiliation') === 'owner' && this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getRoomFeatures();
+                        }
+                    }
+                    this.model.save('connection_status', ROOMSTATUS.ENTERED);
                 },
 
                 onChatRoomPresence: function (pres) {
@@ -1817,31 +1891,8 @@
                         return true;
                     }
                     var is_self = pres.querySelector("status[code='110']");
-                    var locked_room = pres.querySelector("status[code='201']");
-                    if (is_self) {
-                        this.saveAffiliationAndRole(pres);
-                        if (locked_room) {
-                            // This is a new room. It will now be configured
-                            // and the configuration cached on the Backbone.Model.
-                            if (_converse.muc_instant_rooms) {
-                                this.createInstantRoom(); // Accept default configuration
-                            } else {
-                                this.configureChatRoom();
-                                if (!this.model.get('auto_configure')) {
-                                    return;
-                                }
-                            }
-                        }
-                        this.model.save('connection_status', ROOMSTATUS.ENTERED);
-                    }
-                    if (!locked_room && !this.model.get('features_fetched') &&
-                            this.model.get('connection_status') !== ROOMSTATUS.CONNECTED) {
-                        // The features for this room weren't fetched yet, perhaps
-                        // because it's a new room without locking (in which
-                        // case Prosody doesn't send a 201 status).
-                        // This is the first presence received for the room,
-                        // so a good time to fetch the features.
-                        this.getRoomFeatures();
+                    if (is_self && pres.getAttribute('type') !== 'unavailable') {
+                        this.onOwnChatRoomPresence(pres);
                     }
                     this.hideSpinner().showStatusMessages(pres);
                     // This must be called after showStatusMessages so that
@@ -1963,37 +2014,35 @@
 
                 initialize: function () {
                     this.model.on("add", this.onOccupantAdded, this);
-
                     this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
                     this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-
-                    var debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100);
-                    this.chatroomview.model.on('change:hidden', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:mam_enabled', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:membersonly', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:moderated', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:nonanonymous', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:open', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:passwordprotected', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:persistent', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:public', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:semianonymous', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:temporary', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:unmoderated', debouncedRenderRoomFeatures, this);
-                    this.chatroomview.model.on('change:unsecured', debouncedRenderRoomFeatures, this);
+                    this.chatroomview.model.on('change:hidden', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:mam_enabled', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:membersonly', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:moderated', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:nonanonymous', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:open', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:passwordprotected', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:persistent', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:public', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:semianonymous', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
                 },
 
                 render: function () {
-                    this.$el.html(
-                        tpl_chatroom_sidebar(
-                            _.extend(this.chatroomview.model.toJSON(), {
-                                'allow_muc_invitations': _converse.allow_muc_invitations,
-                                'label_occupants': __('Occupants')
-                            }))
+                    this.el.innerHTML = tpl_chatroom_sidebar(
+                        _.extend(this.chatroomview.model.toJSON(), {
+                            'allow_muc_invitations': _converse.allow_muc_invitations,
+                            'label_occupants': __('Occupants')
+                        })
                     );
                     if (_converse.allow_muc_invitations) {
-                        _converse.api.waitUntil('rosterContactsFetched').then(this.renderInviteWidget.bind(this));
+                        _converse.api.waitUntil('rosterContactsFetched').then(
+                            this.renderInviteWidget.bind(this)
+                        );
                     }
                     return this.renderRoomFeatures();
                 },
@@ -2039,15 +2088,15 @@
                                 'label_temporary': __('Temporary'),
                                 'label_unmoderated': __('Unmoderated'),
                                 'label_unsecured': __('Unsecured'),
-                                'tt_hidden': __('This room is not publically searchable'),
+                                'tt_hidden': __('This room is not publicly searchable'),
                                 'tt_mam_enabled': __('Messages are archived on the server'),
                                 'tt_membersonly': __('This room is restricted to members only'),
                                 'tt_moderated': __('This room is being moderated'),
                                 'tt_nonanonymous': __('All other room occupants can see your Jabber ID'),
                                 'tt_open': __('Anyone can join this room'),
                                 'tt_passwordprotected': __('This room requires a password before entry'),
-                                'tt_persistent': __('This room pesists even if it\'s unoccupied'),
-                                'tt_public': __('This room is publically searchable'),
+                                'tt_persistent': __('This room persists even if it\'s unoccupied'),
+                                'tt_public': __('This room is publicly searchable'),
                                 'tt_semianonymous': __('Only moderators can see your Jabber ID'),
                                 'tt_temporary': __('This room will disappear once the last person leaves'),
                                 'tt_unmoderated': __('This room is not being moderated'),
@@ -2056,6 +2105,32 @@
                     this.setOccupantsHeight();
                     return this;
                 },
+
+                onFeatureChanged: function (model) {
+                    /* When a feature has been changed, it's logical opposite
+                     * must be set to the opposite value.
+                     *
+                     * So for example, if "temporary" was set to "false", then
+                     * "persistent" will be set to "true" in this method.
+                     *
+                     * Additionally a debounced render method is called to make
+                     * sure the features widget gets updated.
+                     */
+                    if (_.isUndefined(this.debouncedRenderRoomFeatures)) {
+                        this.debouncedRenderRoomFeatures = _.debounce(
+                            this.renderRoomFeatures, 100, {'leading': false}
+                        );
+                    }
+                    var changed_features = {};
+                    _.each(_.keys(model.changed), function (k) {
+                        if (!_.isNil(ROOM_FEATURES_MAP[k])) {
+                            changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
+                        }
+                    });
+                    this.chatroomview.model.save(changed_features, {'silent': true});
+                    this.debouncedRenderRoomFeatures();
+                },
+
 
                 setOccupantsHeight: function () {
                     var el = this.el.querySelector('.chatroom-features');

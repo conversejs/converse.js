@@ -56,6 +56,8 @@ dist/converse.min.js
 dist/converse-no-jquery.js
 dist/converse-no-jquery.min.js
 dist/converse-mobile.min.js
+dist/converse-muc-embedded.js
+dist/converse-muc-embedded.min.js
 
 css/*.map
 css/*.min.css

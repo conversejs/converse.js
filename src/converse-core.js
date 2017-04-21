@@ -4,22 +4,22 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document */
+/*global Backbone, define, window, document, JSON */
 (function (root, factory) {
     define(["sizzle",
-            "jquery",
-            "lodash",
+            "jquery.noconflict",
+            "lodash.noconflict",
             "polyfill",
-            "locales",
             "utils",
             "moment_with_locales",
             "strophe",
             "pluggable",
+            "backbone.noconflict",
             "strophe.disco",
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, locales, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
@@ -194,6 +194,16 @@
             'INACTIVE':   90000
         };
 
+        // Internationalization
+        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
+        if (!moment.locale) {
+            //moment.lang is deprecated after 2.8.1, use moment.locale instead
+            moment.locale = moment.lang;
+        }
+        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
+        var __ = _converse.__ = utils.__.bind(_converse);
+        _converse.___ = utils.___;
+
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
         this.INACTIVE = 'inactive';
@@ -201,28 +211,6 @@
         this.COMPOSING = 'composing';
         this.PAUSED = 'paused';
         this.GONE = 'gone';
-
-        // Detect support for the user's locale
-        // ------------------------------------
-        locales = _.isUndefined(locales) ? {} : locales;
-        this.isConverseLocale = function (locale) {
-            return !_.isUndefined(locales[locale]);
-        };
-        this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
-        if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.detectLocale(this.isMomentLocale));
-        if (_.includes(_.keys(locales), settings.i18n)) {
-            settings.i18n = locales[settings.i18n];
-        }
-        this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
-
-        // Translation machinery
-        // ---------------------
-        var __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
-        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
@@ -256,9 +244,11 @@
             password: undefined,
             prebind_url: null,
             priority: 0,
+            registration_domain: '',
             rid: undefined,
             roster_groups: true,
             show_only_online_users: false,
+            show_send_button: false,
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
@@ -380,12 +370,17 @@
             }
             _converse.idle_seconds = 0;
             _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.addEventListener('click', _converse.onUserActivity);
+            window.addEventListener('focus', _converse.onUserActivity);
+            window.addEventListener('keypress', _converse.onUserActivity);
+            window.addEventListener('mousemove', _converse.onUserActivity);
+            window.addEventListener(unloadevent, _converse.onUserActivity);
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            $('.conn-feedback').each(function (idx, el) {
+            var els = document.querySelectorAll('.conn-feedback');
+            _.forEach(els, function (el) {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {
@@ -778,7 +773,7 @@
 
             initialize: function (attributes) {
                 var jid = attributes.jid;
-                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 var resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
@@ -887,7 +882,7 @@
                 resources[resource] = {
                     'priority': priority,
                     'status': chat_status,
-                    'timestamp': timestamp 
+                    'timestamp': timestamp
                 };
                 var changed = {'resources': resources};
                 var hpr = this.getHighestPriorityResource();
@@ -1151,10 +1146,11 @@
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
+                var that = this;
                 return _converse.connection.sendIQ(iq, function () {
-                        this.onReceivedFromServer.apply(this, arguments);
-                        callback.apply(this, arguments);
-                    }.bind(this));
+                    that.onReceivedFromServer.apply(that, arguments);
+                    callback.apply(that, arguments);
+                });
             },
 
             onReceivedFromServer: function (iq) {
@@ -1303,7 +1299,7 @@
         this.RosterGroup = Backbone.Model.extend({
             initialize: function (attributes) {
                 this.set(_.assignIn({
-                    description: DESC_GROUP_TOGGLE,
+                    description: __('Click to hide these contacts'),
                     state: _converse.OPENED
                 }, attributes));
                 // Collection of contacts belonging to this group.
@@ -1369,7 +1365,7 @@
             getMessageAttributes: function (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
                 var type = message.getAttribute('type'),
-                    body, stamp, time, sender, from;
+                    body, stamp, time, sender, from, fullname;
 
                 if (type === 'error') {
                     body = _.propertyOf(message.querySelector('error text'))('textContent');
@@ -1377,7 +1373,6 @@
                     body = _.propertyOf(message.querySelector('body'))('textContent');
                 }
                 var delayed = !_.isNull(delay),
-                    fullname = this.get('fullname'),
                     is_groupchat = type === 'groupchat',
                     chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                         message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
@@ -1390,9 +1385,6 @@
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-                if (_.isEmpty(fullname)) {
-                    fullname = from;
-                }
                 if (delayed) {
                     stamp = delay.getAttribute('stamp');
                     time = stamp;
@@ -1401,8 +1393,10 @@
                 }
                 if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
+                    fullname = _converse.xmppstatus.get('fullname') || from;
                 } else {
                     sender = 'them';
+                    fullname = this.get('fullname') || from;
                 }
                 return {
                     'type': type,
@@ -1601,13 +1595,15 @@
                  * If the #conversejs element doesn't exist, create it.
                  */
                 if (!this.el) {
-                    var $el = $('#conversejs');
-                    if (!$el.length) {
-                        $el = $('<div id="conversejs">');
-                        $('body').append($el);
+                    var el = document.querySelector('#conversejs');
+                    if (_.isNull(el)) {
+                        el = document.createElement('div');
+                        el.setAttribute('id', 'conversejs');
+                        // Converse.js expects a <body> tag to be present.
+                        document.querySelector('body').appendChild(el);
                     }
-                    $el.html('');
-                    this.setElement($el, false);
+                    el.innerHTML = '';
+                    this.setElement(el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
                 }
@@ -1724,11 +1720,10 @@
                 var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
-                    $.ajax({
-                        url:  this.xhr_custom_status_url,
-                        type: 'POST',
-                        data: {'msg': status_message}
-                    });
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', this.xhr_custom_status_url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    xhr.send({'msg': status_message});
                 }
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
@@ -1801,20 +1796,20 @@
             },
 
             onInfo: function (stanza) {
-                var $stanza = $(stanza);
-                if (($stanza.find('identity[category=server][type=im]').length === 0) &&
-                    ($stanza.find('identity[category=conference][type=text]').length === 0)) {
+                if ((sizzle('identity[category=server][type=im]', stanza).length === 0) &&
+                    (sizzle('identity[category=conference][type=text]', stanza).length === 0)) {
                     // This isn't an IM server component
                     return;
                 }
-                $stanza.find('feature').each(function (idx, feature) {
+                var that = this;
+                _.forEach(stanza.querySelectorAll('feature'), function (feature) {
                     var namespace = feature.getAttribute('var');
-                    this[namespace] = true;
-                    this.create({
+                    that[namespace] = true;
+                    that.create({
                         'var': namespace,
                         'from': stanza.getAttribute('from')
                     });
-                }.bind(this));
+                });
             }
         });
 
@@ -1830,44 +1825,48 @@
 
         this.fetchLoginCredentials = function () {
             var deferred = new $.Deferred();
-            $.ajax({
-                url:  _converse.credentials_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.credentials_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
                     deferred.resolve({
-                        'jid': response.jid,
-                        'password': response.password
+                        'jid': data.jid,
+                        'password': data.password
                     });
-                },
-                error: function (response) {
-                    delete _converse.connection;
-                    _converse.emit('noResumeableSession');
-                    deferred.reject(response);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+                deferred.reject(xhr.responseText);
+            };
+            xhr.send();
             return deferred.promise();
         };
 
         this.startNewBOSHSession = function () {
-            var that = this;
-            $.ajax({
-                url:  this.prebind_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
-                    that.connection.attach(
-                            response.jid,
-                            response.sid,
-                            response.rid,
-                            that.onConnectStatusChanged
-                    );
-                },
-                error: function (response) {
-                    delete that.connection;
-                    that.emit('noResumeableSession');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.prebind_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
+                    _converse.connection.attach(
+                            data.jid, data.sid, data.rid,
+                            _converse.onConnectStatusChanged);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+            };
+            xhr.send();
         };
 
         this.attemptPreboundSession = function (reconnecting) {
@@ -1911,6 +1910,7 @@
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _converse.connection.pass || this.password;
@@ -1929,6 +1929,7 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
+                this.connection.reset();
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };
@@ -2009,10 +2010,15 @@
                 this.roster.off().reset(); // Removes roster contacts
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+            delete this.chatboxes.browserStorage;
             if (this.features) {
                 this.features.reset();
             }
-            $(window).off('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.removeEventListener('click', _converse.onUserActivity);
+            window.removeEventListener('focus', _converse.onUserActivity);
+            window.removeEventListener('keypress', _converse.onUserActivity);
+            window.removeEventListener('mousemove', _converse.onUserActivity);
+            window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             return this;
         };
@@ -2022,21 +2028,6 @@
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         };
 
-        this._initialize = function () {
-            this.initChatBoxes();
-            this.initSession();
-            this.initConnection();
-            this.setUpXMLLogging();
-            this.logIn();
-            return this;
-        };
-
-        // Initialization
-        // --------------
-        // This is the end of the initialize method.
-        if (settings.connection) {
-            this.connection = settings.connection;
-        }
         var updateSettings = function (settings) {
             /* Helper method which gets put on the plugin and allows it to
              * add more user-facing config settings to converse.js.
@@ -2046,23 +2037,36 @@
             utils.applyUserSettings(_converse, settings, _converse.user_settings);
         };
 
-        // If initialize gets called a second time (e.g. during tests), then we
-        // need to re-apply all plugins (for a new converse instance), and we
-        // therefore need to clear this array that prevents plugins from being
-        // initialized twice.
-        // If initialize is called for the first time, then this array is empty
-        // in any case.
-        _converse.pluggable.initialized_plugins = [];
+        this.initPlugins = function () {
+            // If initialize gets called a second time (e.g. during tests), then we
+            // need to re-apply all plugins (for a new converse instance), and we
+            // therefore need to clear this array that prevents plugins from being
+            // initialized twice.
+            // If initialize is called for the first time, then this array is empty
+            // in any case.
+            _converse.pluggable.initialized_plugins = [];
+            var whitelist = _converse.core_plugins.concat(
+                _converse.whitelisted_plugins);
 
-        var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+            _converse.pluggable.initializePlugins({
+                'updateSettings': updateSettings,
+                '_converse': _converse
+            }, whitelist, _converse.blacklisted_plugins);
+            _converse.emit('pluginsInitialized');
+        };
 
-        _converse.pluggable.initializePlugins({
-            'updateSettings': updateSettings,
-            '_converse': _converse
-        }, whitelist, _converse.blacklisted_plugins);
-
-        _converse.emit('pluginsInitialized');
-        _converse._initialize();
+        // Initialization
+        // --------------
+        // This is the end of the initialize method.
+        if (settings.connection) {
+            this.connection = settings.connection;
+        }
+        _converse.initPlugins();
+        _converse.initChatBoxes();
+        _converse.initSession();
+        _converse.initConnection();
+        _converse.setUpXMLLogging();
+        _converse.logIn();
         _converse.registerGlobalEventHandlers();
 
         if (!_.isUndefined(_converse.connection) &&
@@ -2214,9 +2218,9 @@
             }
         },
         'listen': {
-            'once': _converse.once,
-            'on': _converse.on,
-            'not': _converse.off,
+            'once': _converse.once.bind(_converse),
+            'on': _converse.on.bind(_converse),
+            'not': _converse.off.bind(_converse),
             'stanza': function (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;
@@ -2269,12 +2273,13 @@
             '$iq': $iq,
             '$msg': $msg,
             '$pres': $pres,
+            'Backbone': Backbone,
             'Strophe': Strophe,
-            'b64_sha1':  b64_sha1,
             '_': _,
+            'b64_sha1':  b64_sha1,
             'jQuery': $,
-            'sizzle': sizzle,
             'moment': moment,
+            'sizzle': sizzle,
             'utils': utils
         }
     };

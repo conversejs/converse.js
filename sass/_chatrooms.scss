@@ -41,6 +41,10 @@
         @media screen and (max-width: $mobile-portrait-length) {
             width: $mobile-chat-width;
         }
+
+        .spinner {
+        }
+
         .box-flyout {
             min-width: $chatroom-width;
             width: $chatroom-width;
@@ -67,7 +71,9 @@
                 .chat-msg-room {
                     color: $message-them-color;
                 }
-
+                .disconnect-msg {
+                    padding: 2em 2em 0 2em;
+                }
                 .chat-area {
                     word-wrap: break-word; 
                     height: 100%;
@@ -201,8 +207,13 @@
             }
         }
 
-        .chat-textarea {
-            border-bottom-right-radius: 0;
+        form.sendXMPPMessage {
+            .chat-textarea {
+                border-bottom-right-radius: 0;
+            }
+            .send-button {
+                background-color: $chatroom-head-color;
+            }
         }
 
         .room-invite {

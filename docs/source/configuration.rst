@@ -286,7 +286,7 @@ If the value is negative or ``0``, the function is disabled.
 auto_reconnect
 --------------
 
-* Default:  ``true``
+* Default:  ``false``
 
 Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
@@ -482,6 +482,14 @@ For example, if ``default_domain`` is ``example.org``, then the user:
 JIDs with other domains are still allowed but need to be provided in full.
 To specify only one domain and disallow other domains, see the `locked_domain`_
 option.
+
+registration_domain
+-------------------
+
+* Default: ``''``
+
+Specify a domain name for which the registration form will be fetched automatically,
+without the user having to enter any XMPP server domain name.
 
 default_state
 -------------
@@ -968,6 +976,13 @@ show_only_online_users
 If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
+show_send_button
+----------------------
+
+* Default:  ``false``
+
+If set to ``true``, a button will be visible which can be clicked to send a message.
+
 sounds_path
 -----------
 
@@ -1035,6 +1050,7 @@ devices when the intent is to use converse.js as a web app. In this case
 it doesn't make sense to close the control box, as there's often then nothing
 "behind" it that's relevant to the user.
 
+.. _`strict_plugin_dependencies`:
 
 strict_plugin_dependencies
 --------------------------
@@ -1047,8 +1063,17 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-This allows plugins to have "soft" dependencies which aren't declared as
-as dependencies.
+The Converse.js plugins architecture can have an ``optional_dependencies``
+plugin attribute. This enables you to specify an array of optional, or
+"soft", dependencies. Converse.js (more specifically,
+`pluggable.js <https://jcbrand.github.io/pluggable.js/>`_) will try to first
+load the optional dependencies before executing the plugin's overrides and
+calling its ``initialize`` method.
+
+If ``strict_plugin_dependencies`` is set to ``false`` it won't raise an error
+if the optional dependencies aren't found. If set to ``true`` these optional
+dependencies are treated as normal non-optional ones, which means that an error
+will be raised.
 
 synchronize_availability
 ------------------------
@@ -1065,6 +1090,17 @@ If set to ``true``, converse.js will synchronize with all other clients you are 
 If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
+
+time_format
+-----------
+
+* Default: ``HH:mm``
+
+Examples: ``HH:mm``, ``hh:mm``, ``hh:mm a``.
+
+This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js <https://momentjs.com/>`_
+for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed
+description of time-format options available for `moment` you can check this `link <https://momentjs.com/docs/#/parsing/string-format/>`_.
 
 use_otr_by_default
 ------------------
@@ -1194,6 +1230,8 @@ An example from `the embedded room demo <https://conversejs.org/demo/embedded.ht
         });
     });
 
+
+.. _`whitelisted_plugins`:
 
 whitelisted_plugins
 -------------------

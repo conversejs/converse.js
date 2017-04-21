@@ -59,9 +59,17 @@
             null,
             ""
          ],
+         "Typing from another device": [
+            null,
+            ""
+         ],
          "is typing": [
             null,
             "מקליד(ה) כעת"
+         ],
+         "Stopped typing on the other device": [
+            null,
+            ""
          ],
          "has stopped typing": [
             null,
@@ -503,11 +511,7 @@
             null,
             ""
          ],
-         "This room pesists even if it's unoccupied": [
-            null,
-            ""
-         ],
-         "This room is publically searchable": [
+         "This room persists even if it's unoccupied": [
             null,
             ""
          ],
@@ -782,6 +786,10 @@
          "Return": [
             null,
             "חזור"
+         ],
+         "Retry": [
+            null,
+            ""
          ],
          "This contact is busy": [
             null,

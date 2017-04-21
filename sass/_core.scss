@@ -20,6 +20,10 @@
         width: 100vw;
     }
 
+    ::placeholder {
+        color: #BBB;
+    }
+
     .circle {
         border-radius: 50%;
     }
@@ -37,23 +41,6 @@
     }
     .emoticon {
         font-size: $font-size;
-    }
-    .left {
-        float: left;
-    }
-    .right {
-        float: right;
-    }
-    .centered {
-        text-align: center;
-        display: block;
-        margin: 5em auto;
-    }
-    .hor_centered {
-        text-align: center;
-        display: block;
-        margin: 0 auto;
-        clear: both;
     }
 
     @keyframes fadein {
@@ -95,12 +82,30 @@
         @include animation(spin 2s infinite, linear);
         display: block;
         text-align: center;
-        margin: 5px;
+        margin: 1em;
         &:before {
             font-size: 24px;
             font-family: 'Converse-js' !important;
             content: "\231b";
         }
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .centered {
+        text-align: center;
+        display: block;
+        margin: 0;
+        padding: 50% 0;
+    }
+    .hor_centered {
+        text-align: center;
+        display: block;
+        margin: 0 auto;
+        clear: both;
     }
 
     .button-group,

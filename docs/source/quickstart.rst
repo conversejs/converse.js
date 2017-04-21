@@ -22,15 +22,21 @@ The latest versions of these files are available at these URLs:
 
 To load a specific version of Converse.js you can put the version in the URL, like so:
 
-* https://cdn.conversejs.org/1.0.3/dist/converse.min.js
-* https://cdn.conversejs.org/1.0.3/css/converse.min.css
+* https://cdn.conversejs.org/3.0.3/dist/converse.min.js
+* https://cdn.conversejs.org/3.0.3/css/converse.min.css
 
-You can include these two URLs inside the *<head>* element of your website via the *script* and *link* tags:
+You can include these two URLs inside the *<head>* element of your website
+via the *script* and *link* tags:
 
 .. code-block:: html
 
     <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/css/converse.min.css">
     <script src="https://cdn.conversejs.org/dist/converse.min.js"></script>
+
+.. note:: Instead of always loading the latest version of Converse.js via the
+    CDN, it's generally better to load a specific version (preferably the
+    latest one), to avoid breakage when new backwards-incompatible versions are
+    released.
 
 Initializing Converse.js
 ------------------------
@@ -39,18 +45,13 @@ You'll then need to initialize Converse.js with configuration settings relevant 
 Refer to the :ref:`configuration-variables` section for info on all the available configuration settings.
 
 To quickly get started, you can put the following Javascript code at the
-bottom of your page (after the closing *</body>* element):
-
-.. code-block:: javascript
+bottom of your page (after the closing *</body>* element)::
 
     <script>
-    require(['converse'], function (converse) {
         converse.initialize({
             bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
-            show_controlbox_by_default: true,
-            play_sounds: true,
+            show_controlbox_by_default: true
         });
-    });
     </script>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the

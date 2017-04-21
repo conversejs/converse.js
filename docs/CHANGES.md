@@ -1,8 +1,51 @@
 # Changelog
 
+## 3.0.2 (Unreleased)
+
+*Dependency updates*:
+- Jasmine 2.5.3
+- Phantomjs 2.1.14
+- moment 2.18.1
+- sinon 2.1.0
+- eslint 3.19.0
+
+- Enable creation of `dist/converse-muc-embedded.js` build file for the
+  embedded MUC room demo. [jcbrand]
+- Use `noConflict` to avoid polluting globale namespace with lodash and Backbone. [jcbrand]
+- Bugfix: MUC user's nickname wasn't being shown in HTML5 notification messages. [jcbrand]
+- Bugfix: OTR meta-messages were being shown in HTML5 notifications. [jcbrand]
+- CSS fix: Icon lock wasn't showing. [jcbrand]
+- #842 Persistent muc room creation not working [jcbrand]
+- #848 OTR doesn't start when `cache_otr_key` is set to `true`. [jcbrand]
+- #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
+- #850 Roster not loading when group names are numbers. [jcbrand]
+
+## 3.0.1 (2017-04-04)
+
+- Bugfix. Endless spinner when trying to log in after rendering the registration form. [jcbrand]
+- #585 Duplicate contact created due to JID case sensivity [saganshul]
+- #628 Fixes the bug in displaying chat status during private chat. [saganshul]
+- #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]
+- #675 Time format made configurable.
+   See [time_format](https://conversejs.org/docs/html/configurations.html#time-format)
+   [smitbose]
+- #682 Add "Send" button to input box in chat dialog window.
+   See [show_send_button](https://conversejs.org/docs/html/configurations.html#show-send-button)
+   [saganshul]
+- #704 Automatic fetching of registration form when
+   [registration_domain](https://conversejs.org/docs/html/configurations.html#registration-domain)
+   is set. [smitbose]
+- #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
+- #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]
+- #811 jQuery wasn't being closured in builds. [jcbrand]
+- #814 Images from URLs with query strings aren't being rendered. [novokrest]
+- #820 Inconsistency in displaying room features. [jcbrand]
+
 ## 3.0.0 (2017-03-05)
 
 - **Breaking changes**:
+    * Plugins must now be whitelisted.
+      See the [whitelisted_plugins](https://conversejs.org/docs/html/configuration.html#whitelisted-plugins) setting.
     * Callbacks for `converse.on` now no longer receive an event object as first parameter.
     * The API has been split into public and private parts.
       The private API methods are now only available to plugins.

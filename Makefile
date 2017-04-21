@@ -3,26 +3,18 @@ BUILDDIR        = ./docs
 BUNDLE          ?= ./.bundle/bin/bundle
 GRUNT           ?= ./node_modules/.bin/grunt
 HTTPSERVE       ?= ./node_modules/.bin/http-server
-JSHINT          ?= ./node_modules/.bin/jshint
 ESLINT          ?= ./node_modules/.bin/eslint
 PAPER           =
 PHANTOMJS       ?= ./node_modules/.bin/phantomjs
 RJS             ?= ./node_modules/.bin/r.js
 PO2JSON         ?= ./node_modules/.bin/po2json
 SASS            ?= ./.bundle/bin/sass
-CLEANCSS        ?= ./node_modules/.bin/cleancss
+CLEANCSS        ?= ./node_modules/clean-css-cli/bin/cleancss
 SPHINXBUILD     ?= ./bin/sphinx-build
 SPHINXOPTS      =
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
-SOURCES    = $(wildcard *.js) $(wildcard spec/*.js) $(wildcard src/*.js)
-JSHINTEXCEPTIONS = $(GENERATED) \
-           src/build-mobile.js \
-           src/build-no-jquery.js \
-           src/build-no-dependencies.js \
-           src/build.js \
-CHECKSOURCES    = $(filter-out $(JSHINTEXCEPTIONS),$(SOURCES))
 
 .PHONY: all
 all: dev dist
@@ -61,7 +53,7 @@ serve: stamp-npm
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.0 -c
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.1 -c
 
 .PHONY: pot
 pot:
@@ -148,6 +140,8 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/converse-mobile.js \
          dist/converse-mobile.min.js \
+         dist/converse-muc-embedded.js \
+         dist/converse-muc-embedded.min.js \
          dist/converse-no-jquery.js \
  		 dist/converse-no-jquery.min.js \
 		 dist/converse-no-dependencies.min.js \
@@ -158,9 +152,9 @@ dist/converse.min.js: src locale node_modules *.js
 dist/converse.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
 dist/converse-no-jquery.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.min.js
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-jquery.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.js optimize=none 
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
 dist/converse-no-dependencies.min.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js
 dist/converse-no-dependencies.js: src locale node_modules *.js
@@ -169,6 +163,10 @@ dist/converse-mobile.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-mobile.js: src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
+dist/converse-muc-embedded.min.js: src locale node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
+dist/converse-muc-embedded.js: src locale node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
 
 .PHONY: jsmin
 jsmin: $(BUILDS)
@@ -177,16 +175,12 @@ jsmin: $(BUILDS)
 dist:: build
 
 .PHONY: build
-build:: stamp-bundler css
+build:: dev css
 	$(GRUNT) json
 	make jsmin
 
 ########################################################################
 ## Tests
-
-.PHONY: jshint
-jshint: stamp-npm
-	$(JSHINT) --config jshintrc $(CHECKSOURCES)
 
 .PHONY: eslint
 eslint: stamp-npm
@@ -194,8 +188,9 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: jshint eslint
-	$(PHANTOMJS) node_modules/phantom-jasmine/lib/run_jasmine_test.coffee tests.html
+check: eslint
+	$(PHANTOMJS) tests/run-jasmine2.js tests.html
+
 
 ########################################################################
 ## Documentation

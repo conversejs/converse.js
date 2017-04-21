@@ -145,7 +145,7 @@
 
                 initialize: function () {
                     this.model.on('change:filter_type', this.render, this);
-                    this.model.on('change:filter_text', this.render, this);
+                    this.model.on('change:filter_text', this.renderClearButton, this);
                 },
 
                 render: function () {
@@ -169,6 +169,9 @@
 
                 renderClearButton: function () {
                     var roster_filter = this.el.querySelector('.roster-filter');
+                    if (_.isNull(roster_filter)) {
+                        return;
+                    }
                     roster_filter.classList[this.tog(roster_filter.value)]('x');
                 },
 

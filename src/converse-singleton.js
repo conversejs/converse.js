@@ -51,19 +51,14 @@
             },
  
             ChatBoxViews: {
-                showChat: function (attrs) {
+                showChat: function (attrs, force) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
                     var _converse = this.__super__._converse;
-                    var chatbox = this.getChatBox(attrs);
-                    if (_.isUndefined(chatbox)) {
-                        // We don't show new chat boxes, but instead open them
-                        // in the background.
-                        attrs.hidden = true;
-                        chatbox = this.getChatBox(attrs, true);
-                    } else if (!attrs.hidden && _converse.connection.authenticated) {
+                    var chatbox = this.getChatBox(attrs, true);
+                    if ((force || !attrs.hidden) && _converse.connection.authenticated) {
                         _.each(_converse.chatboxviews.xget(chatbox.get('id')),
                             function (view) {
                                 if (view.model.get('id') === 'controlbox') {

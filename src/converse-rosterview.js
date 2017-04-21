@@ -690,7 +690,7 @@
                 openChat: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.model.save({'num_unread': 0});
-                    return _converse.chatboxviews.showChat(this.model.attributes);
+                    return _converse.chatboxviews.showChat(this.model.attributes, true);
                 },
 
                 removeContact: function (ev) {

@@ -2427,6 +2427,7 @@
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     $(el).find('span.spinner').replaceWith(
                         tpl_room_description({
+                            'server': Strophe.getDomainFromJid(stanza.getAttribute('from')),
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                             'hidden': $stanza.find('feature[var="muc_hidden"]').length,
@@ -2441,6 +2442,7 @@
                             'temporary': $stanza.find('feature[var="muc_temporary"]').length,
                             'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
                             'label_desc': __('Description:'),
+                            'label_server': __('Server:'),
                             'label_occ': __('Occupants:'),
                             'label_features': __('Features:'),
                             'label_requires_auth': __('Requires authentication'),

@@ -9,6 +9,7 @@
 - sinon 2.1.0
 - eslint 3.19.0
 
+- Show the MUC server in a bookmarked room's info view (in the bookmarks list). [jcbrand]
 - Enable creation of `dist/converse-muc-embedded.js` build file for the
   embedded MUC room demo. [jcbrand]
 - Use `noConflict` to avoid polluting globale namespace with lodash and Backbone. [jcbrand]

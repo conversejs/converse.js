@@ -133,6 +133,7 @@ require.config({
         "form_textarea":            "src/templates/form_textarea",
         "form_username":            "src/templates/form_username",
         "group_header":             "src/templates/group_header",
+        "help_message":             "src/templates/help_message",
         "info":                     "src/templates/info",
         "login_panel":              "src/templates/login_panel",
         "login_tab":                "src/templates/login_tab",

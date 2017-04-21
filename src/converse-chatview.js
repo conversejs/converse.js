@@ -13,6 +13,7 @@
             "tpl!new_day",
             "tpl!action",
             "tpl!message",
+            "tpl!help_message",
             "tpl!toolbar",
             "tpl!avatar"
     ], factory);
@@ -22,6 +23,7 @@
             tpl_new_day,
             tpl_action,
             tpl_message,
+            tpl_help_message,
             tpl_toolbar,
             tpl_avatar
     ) {
@@ -369,7 +371,10 @@
                 showHelpMessages: function (msgs, type, spinner) {
                     var i, msgs_length = msgs.length;
                     for (i=0; i<msgs_length; i++) {
-                        this.$content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                        this.$content.append($(tpl_help_message({
+                            'type': type||'info',
+                            'message': msgs[i]
+                        })));
                     }
                     if (spinner === true) {
                         this.$content.append('<span class="spinner"/>');

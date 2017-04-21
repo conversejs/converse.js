@@ -140,6 +140,8 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/converse-mobile.js \
          dist/converse-mobile.min.js \
+         dist/converse-muc-embedded.js \
+         dist/converse-muc-embedded.min.js \
          dist/converse-no-jquery.js \
  		 dist/converse-no-jquery.min.js \
 		 dist/converse-no-dependencies.min.js \
@@ -161,6 +163,10 @@ dist/converse-mobile.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-mobile.js: src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
+dist/converse-muc-embedded.min.js: src locale node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
+dist/converse-muc-embedded.js: src locale node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
 
 .PHONY: jsmin
 jsmin: $(BUILDS)

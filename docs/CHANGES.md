@@ -9,6 +9,8 @@
 - sinon 2.1.0
 - eslint 3.19.0
 
+- Enable creation of `dist/converse-muc-embedded.js` build file for the
+  embedded MUC room demo. [jcbrand]
 - Use `noConflict` to avoid polluting globale namespace with lodash and Backbone. [jcbrand]
 - Bugfix: MUC user's nickname wasn't being shown in HTML5 notification messages. [jcbrand]
 - Bugfix: OTR meta-messages were being shown in HTML5 notifications. [jcbrand]

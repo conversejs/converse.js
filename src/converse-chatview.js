@@ -82,7 +82,8 @@
                 visible_toolbar_buttons: {
                     'emoticons': true,
                     'call': false,
-                    'clear': true
+                    'clear': true,
+                    'spoilers': true
                 },
             });
 
@@ -100,7 +101,9 @@
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-call': 'toggleCall',
-                    'click .new-msgs-indicator': 'viewUnreadMessages'
+                    'click .toggle-spoiler': 'toggleSpoiler',
+                    'click .new-msgs-indicator': 'viewUnreadMessages',
+                    'click .spoiler-button' : 'showSpoiler'
                 },
 
                 initialize: function () {
@@ -361,13 +364,53 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    //Where the argument "attrs" come from? Could "attrs" have information from onMessage?
-                    //Could be possible (and would it be ok) to place a button instead of .text(text)?
-                    //Making the button to show the text set here onclick?
+                    //Spoiler logic
+                    if (typeof attrs.spoiler !== 'undefined' && attrs.spoiler) {
+                        var button = $("<button>"),
+                            container = $("<div>"), 
+                            content = $( "<div>" ),
+                            hint = $("<div>"),
+                            contentHidden = $("<div>");
+                            
+                            attrs.spoiler = attrs.spoiler == true ? __('Spoiler') : attrs.spoiler;
+                            hint.text(attrs.spoiler);
+                            
+                            contentHidden.text(text);
+                            contentHidden.addClass("hidden");
+                            contentHidden.addHyperlinks();
+                            contentHidden.addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+                            
+                            
+                        container.css("background-color", "Lavender");
+                        container.css("text-align", "center");
+
+
+                        //Spoiler's content
+                        content.addClass("spoiler-content");
+                        content.append(hint);
+                        content.append(contentHidden);
+
+                        //Spoiler's button
+                        button.addClass("spoiler-button icon-eye");
+                        button.attr("type", "button");
+                        button.text(__('Show '));
+                        button.css("width", "100%");
+                        button.attr("closed", "true");               
+
+                        container.append(button);
+                        container.append(content);
+
+
+                        $msg.find('.chat-msg-content').first()
+                        .append(container)
+
+                    } else {
+                        
                     $msg.find('.chat-msg-content').first()
                         .text(text)
                         .addHyperlinks()
                         .addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+                    }
                     return $msg;
                 },
 
@@ -477,13 +520,21 @@
                 },
 
                 createMessageStanza: function (message) {
-                    return $msg({
+                    var msg = $msg({
                                 from: _converse.connection.jid,
                                 to: this.model.get('jid'),
                                 type: 'chat',
                                 id: message.get('msgid')
                         }).c('body').t(message.get('message')).up()
                             .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                            
+                     if(message.get('spoiler')){
+                         msg.c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, __('Spoiler'));
+                         
+                     }
+                     
+                    
+                    return msg;
                 },
 
                 sendMessage: function (message) {
@@ -505,6 +556,11 @@
                             .cnode(messageStanza.tree())
                         );
                     }
+                },
+                
+                isSpoilerButtonActive: function(){
+                    return (this.$el.find('.toggle-spoiler').attr('active') == 'true');
+                    
                 },
 
                 onMessageSubmitted: function (text) {
@@ -542,7 +598,8 @@
                         fullname: fullname,
                         sender: 'me',
                         time: moment().format(),
-                        message: text
+                        message: text,
+                        spoiler: this.isSpoilerButtonActive()
                     });
                     this.sendMessage(message);
                 },
@@ -666,6 +723,26 @@
                         model: this.model
                     });
                 },
+                
+                toggleSpoiler: function (ev) {
+                    var $textbox = this.$el.find('textarea.chat-textarea');
+                    var button = ev.currentTarget;//Should everything be a jQuery object?
+                    var icon = ev.target;
+                    if(button.getAttribute("active") == "false"){ //The user clicked the button to send a spoiler
+                        button.setAttribute("active", "true");
+                        icon.classList.remove("icon-eye");
+                        icon.classList.add("icon-eye-blocked");
+                        $textbox.css("background-color", "#D5FFD2");
+                        $textbox.attr("placeholder", __("Write your spoiler's content here"));
+                    }else{//The user does not want to send the message as spoiler, back to normal
+                        button.setAttribute("active", "false");
+                        icon.classList.remove("icon-eye-blocked");
+                        icon.classList.add("icon-eye");
+                        $textbox.css("background-color", "");
+                        $textbox.attr("placeholder", __('Personal message'));
+                    }
+                    
+                },
 
                 onChatStatusChanged: function (item) {
                     var chat_status = item.get('chat_status'),
@@ -723,9 +800,11 @@
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
+                        'label_send_spoiler': __('Send message as spoiler'),
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_clear_button': _converse.visible_toolbar_buttons.clear,
                         'show_emoticons': _converse.visible_toolbar_buttons.emoticons,
+                        'show_send_spoilers_button': _converse.visible_toolbar_buttons.spoilers,
                     });
                 },
 
@@ -815,6 +894,38 @@
                     }
                     this.debouncedShow.apply(this, arguments);
                     return this;
+                },
+                
+                showSpoiler: function (ev) {
+                    var button = ev.target;
+                    var isClosed = button.getAttribute("closed");
+                    var content = button.nextElementSibling;
+                    var hint = content.children[0];
+                    var contentHidden = content.children[1];
+                    var container = button.parentElement;
+                    
+                    if(isClosed == "true"){//Show spoiler's content
+                        button.className = "spoiler-button icon-eye-blocked";
+                        button.setAttribute("closed", "false");
+                        button.textContent = __('Hide ');
+                        container.style.backgroundColor="#D5FFD2";
+
+                        hint.classList.add("hidden");
+                        contentHidden.classList.remove("hidden");
+                        
+                        
+                    }else{//Hide spoiler's content
+                        button.className = "spoiler-button icon-eye";
+                        button.setAttribute("closed", "true");
+                        button.textContent = __('Show ');
+                        container.style.backgroundColor="Lavender";
+                        
+                        hint.classList.remove("hidden");
+                        contentHidden.classList.add("hidden");
+                    }
+                   
+                    
+                    
                 },
 
                 hideNewMessagesIndicator: function () {

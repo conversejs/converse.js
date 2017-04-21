@@ -2308,6 +2308,9 @@
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-msg-room,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
         color: #1A9707; }
+      #converse-embedded-chat .chatroom .box-flyout .chatroom-body .disconnect-msg,
+      #conversejs .chatroom .box-flyout .chatroom-body .disconnect-msg {
+        padding: 2em 2em 0 2em; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         word-wrap: break-word;

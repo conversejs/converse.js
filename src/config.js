@@ -108,6 +108,7 @@ require.config({
         "chatroom":                 "src/templates/chatroom",
         "chatroom_bookmark_form":   "src/templates/chatroom_bookmark_form",
         "chatroom_bookmark_toggle": "src/templates/chatroom_bookmark_toggle",
+        "chatroom_disconnect":      "src/templates/chatroom_disconnect",
         "chatroom_features":        "src/templates/chatroom_features",
         "chatroom_form":            "src/templates/chatroom_form",
         "chatroom_head":            "src/templates/chatroom_head",

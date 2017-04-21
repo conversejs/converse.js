@@ -18,6 +18,7 @@
 - #842 Persistent muc room creation not working [jcbrand]
 - #848 OTR doesn't start when `cache_otr_key` is set to `true`. [jcbrand]
 - #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
+- #850 Roster not loading when group names are numbers. [jcbrand]
 
 ## 3.0.1 (2017-04-04)
 

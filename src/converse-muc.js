@@ -14,6 +14,7 @@
             "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
+            "tpl!chatroom_disconnect",
             "tpl!chatroom_features",
             "tpl!chatroom_form",
             "tpl!chatroom_head",
@@ -35,6 +36,7 @@
             converse,
             tpl_chatarea,
             tpl_chatroom,
+            tpl_chatroom_disconnect,
             tpl_chatroom_features,
             tpl_chatroom_form,
             tpl_chatroom_head,
@@ -1594,7 +1596,9 @@
                     this.$('.chat-area').addClass('hidden');
                     this.$('.occupants').addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
+                    this.$('.chatroom-body').append(tpl_chatroom_disconnect({
+                        'disconnect_message': msg
+                    }));
                 },
 
                 getMessageFromStatus: function (stat, stanza, is_self) {
@@ -1773,25 +1777,25 @@
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
                         } else if (!_.isNull(error.querySelector('registration-required'))) {
-                            this.showDisconnectMessage(__('You are not on the member list of this room'));
+                            this.showDisconnectMessage(__('You are not on the member list of this room.'));
                         } else if (!_.isNull(error.querySelector('forbidden'))) {
-                            this.showDisconnectMessage(__('You have been banned from this room'));
+                            this.showDisconnectMessage(__('You have been banned from this room.'));
                         }
                     } else if (error.getAttribute('type') === 'modify') {
                         if (!_.isNull(error.querySelector('jid-malformed'))) {
-                            this.showDisconnectMessage(__('No nickname was specified'));
+                            this.showDisconnectMessage(__('No nickname was specified.'));
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessage(__('You are not allowed to create new rooms'));
+                            this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
+                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                            this.showDisconnectMessage(__("This room does not (yet) exist"));
+                            this.showDisconnectMessage(__("This room does not (yet) exist."));
                         } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
+                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
                         }
                     }
                 },

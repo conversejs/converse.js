@@ -71,7 +71,9 @@
                 .chat-msg-room {
                     color: $message-them-color;
                 }
-
+                .disconnect-msg {
+                    padding: 2em 2em 0 2em;
+                }
                 .chat-area {
                     word-wrap: break-word; 
                     height: 100%;

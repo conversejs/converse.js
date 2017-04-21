@@ -4,11 +4,11 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone */
 (function (root, factory) {
     define(["converse-core", "converse-muc"], factory);
 }(this, function (converse) {
     "use strict";
+    var Backbone = converse.env.Backbone;
 
     converse.plugins.add('converse-muc-embedded', {
         overrides: {

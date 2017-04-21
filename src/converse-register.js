@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for in-band registration
  * as specified in XEP-0077.
@@ -30,6 +30,7 @@
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
+        Backbone = converse.env.Backbone,
         utils = converse.env.utils,
         $iq = converse.env.$iq;
     // Other necessary globals

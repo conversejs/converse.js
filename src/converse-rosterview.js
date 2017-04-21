@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 (function (root, factory) {
     define(["converse-core",
@@ -25,6 +25,7 @@
             tpl_roster_item) {
     "use strict";
     var $ = converse.env.jQuery,
+        Backbone = converse.env.Backbone,
         utils = converse.env.utils,
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,

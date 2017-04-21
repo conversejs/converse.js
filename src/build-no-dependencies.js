@@ -26,7 +26,7 @@
     exclude: [
         "awesomplete",
         "jquery",
-        "jquery-private",
+        "jquery.noconflict",
         "backbone.browserStorage",
         "backbone.overview",
         "moment_with_locales",

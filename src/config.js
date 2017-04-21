@@ -18,12 +18,13 @@ require.config({
         "almond":                   "node_modules/almond/almond",
         "awesomplete":              "node_modules/awesomplete/awesomplete",
         "backbone":                 "node_modules/backbone/backbone",
+        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise",
         "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery-private":           "src/jquery-private",
+        "jquery.noconflict":        "src/jquery.noconflict",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
         "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
@@ -38,6 +39,7 @@ require.config({
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
+        "lodash.noconflict":        "src/lodash.noconflict",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
 
@@ -166,18 +168,20 @@ require.config({
     }],
 
     map: {
-        // '*' means all modules will get 'jquery-private'
-        // for their 'jquery' dependency.
+        // '*' means all modules will get the '*.noconflict' version
+        // as their dependency.
         '*': {
-            'jquery': 'jquery-private',
+            'jquery': 'jquery.noconflict',
+            'backbone': 'backbone.noconflict',
+            'lodash': 'lodash.noconflict',
+            'underscore': 'lodash.noconflict'
          },
-        'backbone': {
-            "underscore": "lodash"
-         },
-        // 'jquery-private' wants the real jQuery module
-        // though. If this line was not here, there would
+        // '*.noconflict' wants the real module
+        // If this line was not here, there would
         // be an unresolvable cyclic dependency.
-        'jquery-private': { 'jquery': 'jquery' }
+        'backbone.noconflict': { 'backbone': 'backbone' },
+        'jquery.noconflict': { 'jquery': 'jquery' },
+        'lodash.noconflict': { 'lodash': 'lodash' }
     },
 
     lodashLoader: {

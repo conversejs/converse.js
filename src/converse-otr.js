@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, crypto, CryptoJS */
+/*global define, window, crypto, CryptoJS */
 
 /* This is a Converse.js plugin which add support Off-the-record (OTR)
  * encryption of one-on-one chat messages.

@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for bookmarks specified
  * in XEP-0048.
@@ -30,6 +30,7 @@
     ) {
 
     var $ = converse.env.jQuery,
+        Backbone = converse.env.Backbone,
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
         b64_sha1 = converse.env.b64_sha1,

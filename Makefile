@@ -150,9 +150,9 @@ dist/converse.min.js: src locale node_modules *.js
 dist/converse.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
 dist/converse-no-jquery.min.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.min.js
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-jquery.js: src locale node_modules *.js
-	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery-private out=dist/converse-no-jquery.js optimize=none 
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
 dist/converse-no-dependencies.min.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js
 dist/converse-no-dependencies.js: src locale node_modules *.js

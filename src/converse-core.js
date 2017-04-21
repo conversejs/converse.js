@@ -7,18 +7,19 @@
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
     define(["sizzle",
-            "jquery-private",
-            "lodash",
+            "jquery.noconflict",
+            "lodash.noconflict",
             "polyfill",
             "utils",
             "moment_with_locales",
             "strophe",
             "pluggable",
+            "backbone.noconflict",
             "strophe.disco",
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
@@ -2267,12 +2268,13 @@
             '$iq': $iq,
             '$msg': $msg,
             '$pres': $pres,
+            'Backbone': Backbone,
             'Strophe': Strophe,
-            'b64_sha1':  b64_sha1,
             '_': _,
+            'b64_sha1':  b64_sha1,
             'jQuery': $,
-            'sizzle': sizzle,
             'moment': moment,
+            'sizzle': sizzle,
             'utils': utils
         }
     };

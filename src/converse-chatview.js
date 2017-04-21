@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 (function (root, factory) {
     define([
@@ -27,11 +27,12 @@
     ) {
     "use strict";
     var $ = converse.env.jQuery,
-        utils = converse.env.utils,
-        Strophe = converse.env.Strophe,
         $msg = converse.env.$msg,
+        Backbone = converse.env.Backbone,
+        Strophe = converse.env.Strophe,
         _ = converse.env._,
-        moment = converse.env.moment;
+        moment = converse.env.moment,
+        utils = converse.env.utils;
 
     var KEY = {
         ENTER: 13,

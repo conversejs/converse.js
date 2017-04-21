@@ -1,9 +1,9 @@
 /*global define, escape, locales, Jed */
 (function (root, factory) {
     define([
-        "jquery-private",
+        "jquery.noconflict",
         "jquery.browser",
-        "lodash",
+        "lodash.noconflict",
         "locales",
         "moment_with_locales",
         "tpl!field",

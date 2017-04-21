@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -56,6 +56,7 @@
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
+        Backbone = converse.env.Backbone,
         $iq = converse.env.$iq,
         $build = converse.env.$build,
         $msg = converse.env.$msg,

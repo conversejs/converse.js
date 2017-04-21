@@ -32,6 +32,7 @@
         b64_sha1 = converse.env.b64_sha1,
         _ = converse.env._;
 
+
     converse.plugins.add('converse-rosterview', {
 
         overrides: {
@@ -643,7 +644,7 @@
                     // would simplify things by not having to check whether the
                     // group is collapsed or not.
                     var name = this.$el.prevAll('dt:first').data('group');
-                    var group = _converse.rosterview.model.where({'name': name})[0];
+                    var group = _.head(_converse.rosterview.model.where({'name': name.toString()}));
                     if (group.get('state') === _converse.CLOSED) {
                         return true;
                     }
@@ -742,13 +743,12 @@
 
                 render: function () {
                     this.el.setAttribute('data-group', this.model.get('name'));
-                    this.$el.html(
-                        $(tpl_group_header({
-                            label_group: this.model.get('name'),
-                            desc_group_toggle: this.model.get('description'),
-                            toggle_state: this.model.get('state')
-                        }))
-                    );
+                    var html = tpl_group_header({
+                        label_group: this.model.get('name'),
+                        desc_group_toggle: this.model.get('description'),
+                        toggle_state: this.model.get('state')
+                    });
+                    this.el.innerHTML = html;
                     return this;
                 },
 

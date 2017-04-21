@@ -151,7 +151,7 @@
                 }).then(function (contacts) {
                     expect($roster.find('dd:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
                     expect($roster.find('dt:visible').length).toBe(1);
-                    expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
+                    expect(_.trim($roster.find('dt:visible').eq(0).text())).toBe('colleagues');
                     $filter = _converse.rosterview.$('.roster-filter');
                     $filter.val("an");
                     $filter.trigger('keydown');
@@ -204,7 +204,7 @@
                         return $roster.find('dt:visible').length === 1;
                     }, 500);
                 }).then(function () {
-                    expect($roster.find('dt:visible').eq(0).text()).toBe('colleagues');
+                    expect(_.trim($roster.find('dt:visible').eq(0).text())).toBe('colleagues');
                     expect($roster.find('dd:visible').length).toBe(3);
                     // Check that all contacts under the group are shown
                     expect($roster.find('dt:visible').nextUntil('dt', 'dd:hidden').length).toBe(0);

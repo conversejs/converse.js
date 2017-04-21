@@ -1146,10 +1146,11 @@
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
+                var that = this;
                 return _converse.connection.sendIQ(iq, function () {
-                        this.onReceivedFromServer.apply(this, arguments);
-                        callback.apply(this, arguments);
-                    }.bind(this));
+                    that.onReceivedFromServer.apply(that, arguments);
+                    callback.apply(that, arguments);
+                });
             },
 
             onReceivedFromServer: function (iq) {

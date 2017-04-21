@@ -933,6 +933,21 @@
 
             /* -------- Event Handlers ----------- */
 
+            var onChatBoxMaximized = function (chatboxview) {
+                /* When a chat box gets maximized, the num_unread counter needs
+                 * to be cleared.
+                 */
+                var chatbox = chatboxview.model;
+                if (chatbox.get('type') === 'chatroom') {
+                    // TODO
+                } else {
+                    var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                    if (!_.isUndefined(contact)) {
+                        contact.save({'num_unread': 0});
+                    }
+                }
+            };
+
             var onMessageReceived = function (data) {
                 /* Given a newly received message, update the unread counter on
                  * the relevant roster contact (TODO: or chat room).
@@ -971,6 +986,7 @@
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
             _converse.api.listen.on('message', onMessageReceived);
+            _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
         }
     });
 }));

@@ -46,10 +46,10 @@ require.config({
         // Converse
         "converse":                 "src/converse",
 
-        "converse-core":            "src/converse-core",
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
+        "converse-core":            "src/converse-core",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-mam":             "src/converse-mam",
@@ -61,6 +61,7 @@ require.config({
         "converse-ping":            "src/converse-ping",
         "converse-register":        "src/converse-register",
         "converse-rosterview":      "src/converse-rosterview",
+        "converse-singleton":       "src/converse-singleton",
         "converse-vcard":           "src/converse-vcard",
 
         // Off-the-record-encryption

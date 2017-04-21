@@ -2,6 +2,10 @@
 
 ## 3.1.0 (Unreleased)
 
+- New non-core plugin `converse-singleton` which ensures that no more than
+  one chat is visible at any given time. Used in the mobile build:
+  `converse-mobile.js` and makes the unread messages counter possible there.
+  [jcbrand]
 - Show unread messages next to roster contacts. [jcbrand]
 - API change: the `message` event now returns a data object with `stanza` and
   `chatbox` attributes, instead of just the stanza. [jcbrand]

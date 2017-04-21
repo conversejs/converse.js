@@ -38,6 +38,17 @@
             // relevant objects or classes.
             //
             // new functions which don't exist yet can also be added.
+
+
+            ChatBoxes: {
+                createChatBox: function (jid, attrs) {
+                    /* Make sure new chat boxes are hidden by default.
+                     */
+                    attrs = attrs || {};
+                    attrs.hidden = true;
+                    return this.__super__.createChatBox.call(this, jid, attrs);
+                }
+            },
  
             ChatBoxViews: {
                 showChat: function (attrs) {
@@ -46,8 +57,13 @@
                      * chats are hidden.
                      */
                     var _converse = this.__super__._converse;
-                    var chatbox = this.getChatBox(attrs, true);
-                    if (!attrs.hidden && _converse.connection.authenticated) {
+                    var chatbox = this.getChatBox(attrs);
+                    if (_.isUndefined(chatbox)) {
+                        // We don't show new chat boxes, but instead open them
+                        // in the background.
+                        attrs.hidden = true;
+                        chatbox = this.getChatBox(attrs, true);
+                    } else if (!attrs.hidden && _converse.connection.authenticated) {
                         _.each(_converse.chatboxviews.xget(chatbox.get('id')),
                             function (view) {
                                 if (view.model.get('id') === 'controlbox') {
@@ -70,6 +86,9 @@
                      */
                     if (!this.model.get('hidden')) {
                         _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), function (view) {
+                            if (view.model.get('id') === 'controlbox') {
+                                return;
+                            }
                             view.hide();
                             view.model.set({'hidden': true});
                         });

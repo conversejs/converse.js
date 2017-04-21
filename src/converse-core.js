@@ -1543,6 +1543,39 @@
                 return true;
             },
 
+            createChatBox: function (jid, attrs) {
+                /* Creates a chat box
+                 *
+                 * Parameters:
+                 *    (String) jid - The JID of the user for whom a chat box
+                 *      gets created.
+                 *    (Object) attrs - Optional chat box atributes.
+                 */
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var roster_info = {};
+                var roster_item = _converse.roster.get(bare_jid);
+                if (! _.isUndefined(roster_item)) {
+                    roster_info = {
+                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                        'image_type': roster_item.get('image_type'),
+                        'image': roster_item.get('image'),
+                        'url': roster_item.get('url'),
+                    };
+                } else if (!_converse.allow_non_roster_messaging) {
+                    _converse.log('Could not get roster item for JID '+bare_jid+
+                        ' and allow_non_roster_messaging is set to false', 'error');
+                    return;
+                }
+                return this.create(_.assignIn({
+                        'id': bare_jid,
+                        'jid': bare_jid,
+                        'fullname': jid,
+                        'image_type': DEFAULT_IMAGE_TYPE,
+                        'image': DEFAULT_IMAGE,
+                        'url': '',
+                    }, roster_info, attrs || {}));
+            },
+
             getChatBox: function (jid, create, attrs) {
                 /* Returns a chat box or optionally return a newly
                  * created one if one doesn't exist.
@@ -1553,31 +1586,9 @@
                  *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var chatbox = this.get(bare_jid);
+                var chatbox = this.get(Strophe.getBareJidFromJid(jid));
                 if (!chatbox && create) {
-                    var roster_info = {};
-                    var roster_item = _converse.roster.get(bare_jid);
-                    if (! _.isUndefined(roster_item)) {
-                        roster_info = {
-                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                            'image_type': roster_item.get('image_type'),
-                            'image': roster_item.get('image'),
-                            'url': roster_item.get('url'),
-                        };
-                    } else if (!_converse.allow_non_roster_messaging) {
-                        _converse.log('Could not get roster item for JID '+bare_jid+
-                                    ' and allow_non_roster_messaging is set to false', 'error');
-                        return;
-                    }
-                    chatbox = this.create(_.assignIn({
-                        'id': bare_jid,
-                        'jid': bare_jid,
-                        'fullname': jid,
-                        'image_type': DEFAULT_IMAGE_TYPE,
-                        'image': DEFAULT_IMAGE,
-                        'url': '',
-                    }, roster_info, attrs || {}));
+                    chatbox = this.createChatBox(jid, attrs);
                 }
                 return chatbox;
             }

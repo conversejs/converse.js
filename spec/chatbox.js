@@ -122,6 +122,22 @@
                 });
             }));
 
+            it("can be opened in minimized mode initially", mock.initConverse(function(_converse) {
+                test_utils.createContacts(_converse, 'current');
+
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var chat = _converse.api.chats.open(sender_jid, {
+                    minimized: true
+                });
+
+                var chatBoxView = _converse.chatboxviews.get(sender_jid);
+                expect(chatBoxView.$el.is(':visible')).toBeFalsy();
+
+                var minimized_chat = _converse.minimized_chats.get(sender_jid);
+                expect(minimized_chat).toBeTruthy();
+                expect(minimized_chat.$el.is(':visible')).toBeTruthy();
+            }));
+
             it("is focused if its already open and you click on its corresponding roster item", mock.initConverseWithAsync(function (done, _converse) {
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();

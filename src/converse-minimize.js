@@ -96,9 +96,11 @@
 
                 _show: function () {
                     var _converse = this.__super__._converse;
-                    this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
+                        this.__super__._show.apply(this, arguments);
                         _converse.chatboxviews.trimChats(this);
+                    } else {
+                        this.minimize();
                     }
                 },
 

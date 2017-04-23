@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.2 (Unreleased)
+## 3.0.2 (2017-04-23)
 
 *Dependency updates*:
 - Jasmine 2.5.3

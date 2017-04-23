@@ -457,7 +457,7 @@
     }
 
     utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (isSupportedByLibrary(preferred_locale)) {
+        if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
             return preferred_locale;
         }
         try {

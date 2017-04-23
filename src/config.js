@@ -175,8 +175,7 @@ require.config({
         '*': {
             'jquery': 'jquery.noconflict',
             'backbone': 'backbone.noconflict',
-            'lodash': 'lodash.noconflict',
-            'underscore': 'lodash.noconflict'
+            'lodash': 'lodash.noconflict'
          },
         // '*.noconflict' wants the real module
         // If this line was not here, there would

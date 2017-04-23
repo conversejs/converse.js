@@ -1,4 +1,4 @@
 /*global define */
-define('underscore', ['lodash'], function (_) {
-    return _;
+define(['lodash'], function (_) {
+    return _.noConflict();
 });

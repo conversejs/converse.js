@@ -457,14 +457,16 @@
     }
 
     utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-            return preferred_locale;
-        }
-        try {
-            var obj = window.JSON.parse(preferred_locale);
-            return obj.locale_data.converse[""].lang;
-        } catch (e) {
-            console.log(e);
+        if (_.isString(preferred_locale)) {
+            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+                return preferred_locale;
+            }
+            try {
+                var obj = window.JSON.parse(preferred_locale);
+                return obj.locale_data.converse[""].lang;
+            } catch (e) {
+                console.log(e);
+            }
         }
         return utils.detectLocale(isSupportedByLibrary) || 'en';
     };

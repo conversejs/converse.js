@@ -54,6 +54,10 @@
             null,
             "私信"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "我"
@@ -385,26 +389,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "您并非此房间成员"
-         ],
-         "No nickname was specified": [
-            null,
-            "未指定昵称"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "您可此创建新房间了"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "您的昵称不符合此房间标准"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "此房间不存在"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

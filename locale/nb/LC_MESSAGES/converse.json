@@ -55,6 +55,10 @@
             null,
             "Personlig melding"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "meg"
@@ -219,10 +223,6 @@
             null,
             "Endre chatten"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Klikk for å skjule disse kontaktene"
-         ],
          "Reconnecting": [
             null,
             "Kobler til igjen"
@@ -250,6 +250,10 @@
          "This client does not allow presence subscriptions": [
             null,
             ""
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Klikk for å skjule disse kontaktene"
          ],
          "Minimize this chat box": [
             null,
@@ -410,26 +414,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Du er ikke på medlemslisten til dette rommet"
-         ],
-         "No nickname was specified": [
-            null,
-            "Ingen kallenavn var spesifisert"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Du har ikke tillatelse til å opprette nye rom"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Ditt kallenavn er ikke i samsvar med rommets regler"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Dette rommet eksisterer ikke (enda)"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

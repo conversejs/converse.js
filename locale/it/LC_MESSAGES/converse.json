@@ -71,6 +71,10 @@
             null,
             "Messaggio personale"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "me"
@@ -263,10 +267,6 @@
             null,
             "Attiva/disattiva chat"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Clicca per nascondere questi contatti"
-         ],
          "Reconnecting": [
             null,
             "Riconnessione"
@@ -310,6 +310,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Questo client non consente sottoscrizioni di presenza"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Clicca per nascondere questi contatti"
          ],
          "Close this box": [
             null,
@@ -546,30 +550,6 @@
          " has joined the room.": [
             null,
             " è entrato nella stanza."
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Non sei nella lista dei membri di questa stanza"
-         ],
-         "No nickname was specified": [
-            null,
-            "Nessun soprannome specificato"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Non ti è permesso creare nuove stanze"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Il tuo soprannome non è conforme alle regole di questa stanza"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Questa stanza non esiste (per ora)"
-         ],
-         "This room has reached its maximum number of occupants": [
-            null,
-            "Questa stanza ha raggiunto il limite massimo di occupanti"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

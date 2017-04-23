@@ -54,6 +54,10 @@
             null,
             "Személyes üzenet"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "Én"
@@ -238,10 +242,6 @@
             null,
             "Csevegőablak"
          ],
-         "Click to hide these contacts": [
-            null,
-            "A csevegő partnerek elrejtése"
-         ],
          "Reconnecting": [
             null,
             "Kapcsolódás"
@@ -269,6 +269,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Ez a kliens nem engedélyezi a jelenlét követését"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "A csevegő partnerek elrejtése"
          ],
          "Minimize this chat box": [
             null,
@@ -441,26 +445,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Nem szerepelsz a csevegőszoba taglistáján"
-         ],
-         "No nickname was specified": [
-            null,
-            "Nem lett megadva becenév"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Nem lehet új csevegőszobát létrehozni"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "A beceneved ütközik a csevegőszoba szabályzataival"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Ez a szoba (még) nem létezik"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

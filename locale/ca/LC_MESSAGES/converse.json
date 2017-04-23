@@ -55,6 +55,10 @@
             null,
             "Missatge personal"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "jo"
@@ -239,10 +243,6 @@
             null,
             "Canvia de xat"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Feu clic per amagar aquests contactes"
-         ],
          "The connection has dropped, attempting to reconnect.": [
             null,
             ""
@@ -266,6 +266,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Aquest client no admet les subscripcions de presència"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Feu clic per amagar aquests contactes"
          ],
          "Minimize this chat box": [
             null,
@@ -438,26 +442,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "No sou a la llista de membres d'aquesta sala"
-         ],
-         "No nickname was specified": [
-            null,
-            "No s'ha especificat cap àlies"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "No teniu permís per crear sales noves"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "El vostre àlies no s'ajusta a les polítiques d'aquesta sala"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Aquesta sala (encara) no existeix"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

@@ -51,6 +51,10 @@
             null,
             "הודעה אישית"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "אני"
@@ -235,10 +239,6 @@
             null,
             "הפעל שיח"
          ],
-         "Click to hide these contacts": [
-            null,
-            "לחץ כדי להסתיר את אנשי קשר אלה"
-         ],
          "Reconnecting": [
             null,
             "כעת מתחבר"
@@ -266,6 +266,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "לקוח זה לא מתיר הרשמות נוכחות"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "לחץ כדי להסתיר את אנשי קשר אלה"
          ],
          "Minimize this chat box": [
             null,
@@ -430,26 +434,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "אינך ברשימת החברים של חדר זה"
-         ],
-         "No nickname was specified": [
-            null,
-            "לא צוין שום שם כינוי"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "אין לך רשות ליצור חדרים חדשים"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "השם כינוי שלך לא תואם את המדינויות של חדר זה"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "חדר זה (עדיין) לא קיים"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

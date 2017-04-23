@@ -71,6 +71,10 @@
             null,
             "Message personnel"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "moi"
@@ -263,10 +267,6 @@
             null,
             "Ouvrir IM"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Cliquez pour cacher ces contacts"
-         ],
          "Reconnecting": [
             null,
             "Reconnexion"
@@ -310,6 +310,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Ce client ne permet pas les mises à jour de disponibilité"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Cliquez pour cacher ces contacts"
          ],
          "Close this box": [
             null,
@@ -554,30 +558,6 @@
          " has joined the room.": [
             null,
             " a rejoint le salon."
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Vous n’êtes pas dans la liste des membres de ce salon"
-         ],
-         "No nickname was specified": [
-            null,
-            "Aucun alias n’a été indiqué"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Vous n’êtes pas autorisé à créer des salons"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Votre alias n’est pas conforme à la politique de ce salon"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Ce salon n’existe pas encore"
-         ],
-         "This room has reached its maximum number of occupants": [
-            null,
-            "Ce salon a atteint la limite maximale d’occupants"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

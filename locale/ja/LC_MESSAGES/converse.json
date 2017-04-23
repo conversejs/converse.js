@@ -55,6 +55,10 @@
             null,
             "私信"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "私"
@@ -386,26 +390,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "この談話室のメンバー一覧にいません"
-         ],
-         "No nickname was specified": [
-            null,
-            "ニックネームがありません"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "新しい談話室を作成する権限がありません"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "ニックネームがこの談話室のポリシーに従っていません"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "この談話室は存在しません"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

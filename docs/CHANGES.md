@@ -9,6 +9,7 @@
 - Show unread messages next to roster contacts. [jcbrand]
 - API change: the `message` event now returns a data object with `stanza` and
   `chatbox` attributes, instead of just the stanza. [jcbrand]
+- #567 Unreaded message count reset on page load [novokrest]
 
 ## 3.0.2 (2017-04-23)
 

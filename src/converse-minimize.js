@@ -339,12 +339,12 @@
                 },
 
                 clearUnreadMessagesCounter: function () {
-                    this.model.set({'num_unread': 0});
+                    this.model.save({'num_unread': 0});
                     this.render();
                 },
 
                 updateUnreadMessagesCounter: function () {
-                    this.model.set({'num_unread': this.model.get('num_unread') + 1});
+                    this.model.save({'num_unread': this.model.get('num_unread') + 1});
                     this.render();
                 },
 
@@ -462,7 +462,7 @@
                     var ls = this.model.pluck('num_unread'),
                         count = 0, i;
                     for (i=0; i<ls.length; i++) { count += ls[i]; }
-                    this.toggleview.model.set({'num_unread': count});
+                    this.toggleview.model.save({'num_unread': count});
                     this.render();
                 }
             });

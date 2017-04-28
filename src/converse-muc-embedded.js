@@ -39,10 +39,15 @@
 
             ChatRoomView: {
                 insertIntoDOM: function () {
-                    converse.env.jQuery('#converse-embedded-chat').html(this.$el);
+                    if (!document.body.contains(this.el)) {
+                        var container = document.querySelector('#converse-embedded-chat');
+                        container.innerHTML = '';
+                        container.appendChild(this.el);
+                    }
                     return this;
                 }
             }
-        }
+        },
+
     });
 }));

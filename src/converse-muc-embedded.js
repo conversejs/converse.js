@@ -8,7 +8,8 @@
     define(["converse-core", "converse-muc"], factory);
 }(this, function (converse) {
     "use strict";
-    var Backbone = converse.env.Backbone;
+    var Backbone = converse.env.Backbone,
+        _ = converse.env._;
 
     converse.plugins.add('converse-muc-embedded', {
         overrides: {

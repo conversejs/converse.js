@@ -49,5 +49,20 @@
             }
         },
 
+        initialize: function () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            var _converse = this._converse;
+            if (!_.isArray(_converse.auto_join_rooms)) {
+                throw new Error("converse-muc-embedded: auto_join_rooms must be an Array");
+            }
+            if (_converse.auto_join_rooms.length !== 1) {
+                throw new Error("converse-muc-embedded: It doesn't make "+
+                    "sense to have the auto_join_rooms setting to zero or "+
+                    "more then one, since only one chat room can be open "+
+                    "at any time.")
+            }
+        }
     });
 }));

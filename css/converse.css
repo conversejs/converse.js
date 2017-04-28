@@ -1966,6 +1966,7 @@
       display: block;
       padding: 4px 7px 0 5px; }
   #conversejs #controlbox #select-xmpp-status {
+    display: none;
     float: right;
     margin-right: 0.5em; }
   #conversejs #controlbox #set-custom-xmpp-status {
@@ -2145,6 +2146,8 @@
       background-position: right 3px center; }
     #conversejs #converse-roster .roster-filter-form .roster-filter.onX {
       cursor: pointer; }
+    #conversejs #converse-roster .roster-filter-form .roster-filter-state {
+      display: none; }
     #conversejs #converse-roster .roster-filter-form .state-type {
       float: left;
       border: 1px solid #999;
@@ -2154,6 +2157,8 @@
       padding: 0;
       padding-left: 0.4em;
       width: 53%; }
+    #conversejs #converse-roster .roster-filter-form .state-type-state {
+      display: none; }
     #conversejs #converse-roster .roster-filter-form .filter-type {
       display: table-cell;
       float: right;
@@ -2167,7 +2172,8 @@
     margin: 0;
     height: 100%;
     overflow-x: hidden;
-    overflow-y: auto; }
+    overflow-y: auto;
+    display: none; }
     #conversejs #converse-roster .roster-contacts dt.roster-group {
       border: none;
       color: #818479;
@@ -2624,6 +2630,9 @@
     position: absolute;
     right: 116px;
     bottom: 10px; }
+  #conversejs #minimized-chats .unread-message-count-hidden,
+  #conversejs #minimized-chats .chat-head-message-count-hidden {
+    display: none; }
 
 #conversejs #controlbox #chatrooms .bookmarks-list {
   padding-top: 1em; }

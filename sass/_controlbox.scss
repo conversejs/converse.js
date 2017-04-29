@@ -114,61 +114,78 @@
                     width: 100%;
                 }
             }
-            dl.rooms-list {
-                margin: 0 1em;
-                padding: 0;
+            .rooms-list-container {
                 text-align: left;
-                dt {
-                    border: none;
-                    color: $text-color;
-                    font-weight: normal;
-                    padding: 0;
-                    padding-bottom: 0.5em;
-                    text-shadow: 0 1px 0 $text-shadow-color;
-                }
-                dd.available-chatroom {
-                    border: none;
-                    clear: both;
-                    color: $text-color;
+                margin: 0 1em;
+                .rooms-toggle {
                     display: block;
-                    overflow: hidden;
-                    padding: 0.1em;
-                    text-shadow: 0 1px 0 $text-shadow-color;
-                    word-wrap: break-word;
-                    &:hover {
-                        background-color: $highlight-color;
+                    font-weight: bold;
+                    color: $text-color;
+                    margin-top: 1em;
+                }
+                dl.rooms-list {
+                    margin: 0.5em 0;
+                    text-align: left;
+                    dt {
+                        border: none;
+                        color: $text-color;
+                        font-weight: normal;
+                        padding: 0;
+                        padding-bottom: 0.5em;
+                        text-shadow: 0 1px 0 $text-shadow-color;
                     }
-                    a {
-                        &.room-info {
-                            clear: right;
-                            display: block;
-                            &:before {
-                                font-size: 15px;
+                    dd.available-chatroom {
+                        border: none;
+                        clear: both;
+                        color: $text-color;
+                        display: block;
+                        overflow: hidden;
+                        padding: 0.3em 0;
+                        text-shadow: 0 1px 0 $text-shadow-color;
+                        word-wrap: break-word;
+                        &:hover {
+                            background-color: $highlight-color;
+                        }
+                        a {
+                            &.room-info {
+                                &:before {
+                                    font-size: 15px;
+                                }
+                            }
+                            &.open-room {
+                                float: left;
+                                width: 68%;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                padding-right: 0.5em;
                             }
                         }
-                        &.open-room {
-                            float: left;
-                            width: 85%;
+                        .remove-bookmark {
+                            &.button-on {
+                                color: $link-color;
+                            }
+                            color: $subdued-color;
                         }
-                    }
-                    .room-info {
-                        font-size: $font-size-small;
-                        font-style: normal;
-                        font-weight: normal;
-                    }
-                    li.room-info {
-                        display: block;
-                        margin-left: 5px;
-                    }
-                    p.room-info {
-                        margin: 0;
-                        padding: 0;
-                        display: block;
-                        white-space: normal;
-                    }
-                    div.room-info {
-                        clear: left;
-                        width: 100%;
+                        .room-info {
+                            font-size: $font-size-small;
+                            font-style: normal;
+                            font-weight: normal;
+                        }
+                        li.room-info {
+                            display: block;
+                            margin-left: 5px;
+                        }
+                        p.room-info {
+                            margin: 0;
+                            padding: 0;
+                            display: block;
+                            white-space: normal;
+                        }
+                        div.room-info {
+                            clear: left;
+                            width: 100%;
+                        }
                     }
                 }
             }

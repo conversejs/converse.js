@@ -10,7 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define([ "utils",
+    define(["utils",
             "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -352,7 +352,7 @@
 
             _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'bookmarks-list',
+                className: 'bookmarks-list, rooms-list-container',
                 events: {
                     'click .remove-bookmark': 'removeBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList'
@@ -378,7 +378,7 @@
                     this.$el.html(tpl_bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
-                        'label_bookmarks': __('Bookmarked Rooms')
+                        'label_bookmarks': __('Bookmarks')
                     })).hide();
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.$('.bookmarks').hide();
@@ -470,7 +470,7 @@
                 });
                 _converse.emit('bookmarksInitialized');
             };
-            _converse.on('chatBoxesFetched', initBookmarks);
+            _converse.on('roomsPanelRendered', initBookmarks);
 
             var afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

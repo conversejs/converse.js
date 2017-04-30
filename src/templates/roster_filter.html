@@ -1,8 +1,7 @@
 <form class="pure-form roster-filter-form input-button-group">
-    <input value="{{filter_text}}" class="roster-filter"
-           placeholder="{{placeholder}}"
-           {[ if (filter_type === 'state') { ]}  style="display: none" {[ } ]} >
-    <select class="state-type" {[ if (filter_type !== 'state') { ]}  style="display: none" {[ } ]} >
+    <input value="{{filter_text}}" class="roster-filter roster-filter-{{filter_type}}"
+           placeholder="{{placeholder}}">
+           <select class="state-type state-type-{{filter_type}}">
         <option value="">{{label_any}}</option>
         <option {[ if (chat_state === 'unread_messages') { ]} selected="selected" {[ } ]}
             value="unread_messages">{{label_unread_messages}}</option>

@@ -54,5 +54,9 @@
             right: 116px;
             bottom: 10px;
         }
+        .unread-message-count-hidden,
+        .chat-head-message-count-hidden {
+            display: none;
+        }
     }
 }

@@ -10,6 +10,7 @@
 - API change: the `message` event now returns a data object with `stanza` and
   `chatbox` attributes, instead of just the stanza. [jcbrand]
 - #567 Unreaded message count reset on page load [novokrest]
+- Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
 
 ## 3.0.2 (2017-04-23)
 

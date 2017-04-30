@@ -49,6 +49,9 @@
         .roster-filter.onX {
             cursor: pointer;
         }
+        .roster-filter-state {
+            display: none;
+        }
         .state-type {
             float: left;
             border: 1px solid #999;
@@ -58,6 +61,9 @@
             padding: 0;
             padding-left: 0.4em;
             width: 53%;
+        }
+        .state-type-state {
+            display: none;
         }
         .filter-type {
             display: table-cell;
@@ -76,6 +82,7 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
+        display: none;
         dt.roster-group {
             border: none;
             color: $text-color;

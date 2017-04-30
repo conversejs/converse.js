@@ -3,6 +3,7 @@
 }(this, function (converse_api, Promise, mock, waitUntilPromise) {
     var _ = converse_api.env._;
     var $ = converse_api.env.jQuery;
+    var $msg = converse_api.env.$msg;
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
     var Strophe = converse_api.env.Strophe;
@@ -215,6 +216,17 @@
             }
         }, converse));
     };
+
+    utils.createChatMessage = function (_converse, sender_jid, message) {
+        return $msg({
+                   from: sender_jid,
+                   to: _converse.connection.jid,
+                   type: 'chat',
+                   id: (new Date()).getTime()
+               })
+               .c('body').t(message).up()
+               .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+    }
 
     utils.sendMessage = function (chatboxview, message) {
         chatboxview.$el.find('.chat-textarea').val(message);

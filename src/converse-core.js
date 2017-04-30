@@ -519,26 +519,21 @@
             }
         };
 
-        this.updateMsgCounter = function () {
-            if (this.msg_counter > 0) {
-                if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                    document.title = "Messages (" + this.msg_counter + ") " + document.title;
-                } else {
-                    document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + this.msg_counter + ") ");
-                }
-            } else if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "");
-            }
-        };
-
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
-            this.updateMsgCounter();
+            var unreadMsgCount = this.msg_counter;
+            if (document.title.search(/^Messages \(\d+\) /) === -1) {
+                document.title = "Messages (" + unreadMsgCount + ") " + document.title;
+            } else {
+                document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + unreadMsgCount + ") ");
+            }
         };
 
         this.clearMsgCounter = function () {
             this.msg_counter = 0;
-            this.updateMsgCounter();
+            if (document.title.search(/^Messages \(\d+\) /) !== -1) {
+                document.title = document.title.replace(/^Messages \(\d+\) /, "");
+            }
         };
 
         this.initStatus = function () {
@@ -605,6 +600,7 @@
                 _converse.clearMsgCounter();
             }
             _converse.windowState = state;
+            _converse.emit('windowStateChanged', {state: state})
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -1415,6 +1411,19 @@
 
             createMessage: function (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+            },
+
+            incrementUnreadMsgCounter: function() {
+                this.save({'num_unread': this.get('num_unread') + 1});
+                _converse.incrementMsgCounter();
+            },
+
+            clearUnreadMsgCounter: function() {
+                this.save({'num_unread': 0});
+            },
+
+            isScrolledUp: function () {
+                return this.get('scrolled', true);
             }
         });
 

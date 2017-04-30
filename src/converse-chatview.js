@@ -86,6 +86,15 @@
                 },
             });
 
+            var onWindowStateChanged = function (data) {
+                var state = data.state;
+                _converse.chatboxviews.each(function (chatboxview) {
+                    chatboxview.onWindowStateChanged(state);
+                })
+            };
+
+            _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+
             _converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
@@ -422,10 +431,14 @@
                         if (this.model.get('scrolled', true)) {
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
-                        if (_converse.windowState === 'hidden' || this.model.get('scrolled', true)) {
-                            _converse.incrementMsgCounter();
+                        if (this.isNewMessageHidden()) {
+                            this.model.incrementUnreadMsgCounter();
                         }
                     }
+                },
+
+                isNewMessageHidden: function() {
+                    return _converse.windowState === 'hidden' || this.model.isScrolledUp();
                 },
 
                 handleTextMessage: function (message) {
@@ -844,8 +857,8 @@
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.hideNewMessagesIndicator();
                         this.model.save('scrolled', false);
+                        this.onScrolledDown();
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
@@ -862,9 +875,17 @@
                     /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
-                        this.hideNewMessagesIndicator();
+                        this.onScrolledDown();
                         this.model.save({'auto_scrolled': true});
                     }
+                },
+
+                onScrolledDown: function() {
+                    this.hideNewMessagesIndicator();
+                    if (_converse.windowState !== 'hidden') {
+                        this.model.clearUnreadMsgCounter();
+                    }
+                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
                 scrollDown: function () {
@@ -877,6 +898,12 @@
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
+                },
+
+                onWindowStateChanged: function (state) {
+                    if (this.model.get('num_unread', 0) && !this.isNewMessageHidden()) {
+                        this.model.clearUnreadMsgCounter();
+                    }
                 }
             });
         }

@@ -104,6 +104,11 @@
                     }
                 },
 
+                isNewMessageHidden: function () {
+                    return this.model.get('minimized') ||
+                        this.__super__.isNewMessageHidden.apply(this, arguments);
+                },
+
                 shouldShowOnTextMessage: function () {
                     return !this.model.get('minimized') &&
                         this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -133,6 +138,9 @@
                     // Restores a minimized chat box
                     var _converse = this.__super__._converse;
                     this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    if (!this.model.isScrolledUp()) {
+                        this.model.clearUnreadMsgCounter();
+                    }
                     this.show();
                     _converse.emit('chatBoxMaximized', this);
                     return this;
@@ -312,15 +320,7 @@
                 },
 
                 initialize: function () {
-                    this.model.messages.on('add', function (m) {
-                        if (m.get('message')) {
-                            this.updateUnreadMessagesCounter();
-                        }
-                    }, this);
-                    this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
-                    // OTR stuff, doesn't require this module to depend on OTR.
-                    this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
-                    this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
+                    this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
                 },
 
                 render: function () {
@@ -338,13 +338,7 @@
                     return this.$el.html(tpl_trimmed_chat(data));
                 },
 
-                clearUnreadMessagesCounter: function () {
-                    this.model.save({'num_unread': 0});
-                    this.render();
-                },
-
                 updateUnreadMessagesCounter: function () {
-                    this.model.save({'num_unread': this.model.get('num_unread') + 1});
                     this.render();
                 },
 
@@ -365,7 +359,7 @@
 
                 restore: _.debounce(function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.model.messages.off('add',null,this);
+                    this.model.off('change:num_unread', null, this);
                     this.remove();
                     this.model.maximize();
                 }, 200, {'leading': true})

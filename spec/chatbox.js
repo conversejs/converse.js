@@ -1825,6 +1825,48 @@
                 expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(0);
             }));
+
+            it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'current');
+
+                // initial state
+                expect(_converse.msg_counter).toBe(0);
+
+                var message = 'This message will always increment the message counter from zero',
+                    sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    msgFactory = function () { 
+                        return $msg({ 
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        })
+                        .c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'})
+                        .tree();
+                 };
+
+                // leave converse-chat page
+                _converse.windowState = 'hidden';
+                _converse.chatboxes.onMessage(msgFactory());
+                expect(_converse.msg_counter).toBe(1);
+
+                // come back to converse-chat page
+                _converse.saveWindowState(null, 'focus');
+                var view = _converse.chatboxviews.get(sender_jid);
+                expect(view.$el.is(':visible')).toBeTruthy();
+                expect(_converse.msg_counter).toBe(0);
+
+                // close chatbox and leave converse-chat page again
+                view.close();
+                _converse.windowState = 'hidden';
+
+                // check that msg_counter is incremented from zero again
+                _converse.chatboxes.onMessage(msgFactory());
+                view = _converse.chatboxviews.get(sender_jid);
+                expect(view.$el.is(':visible')).toBeTruthy();
+                expect(_converse.msg_counter).toBe(1);
+            }));
         });
     });
 }));

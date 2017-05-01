@@ -320,7 +320,7 @@
                 },
 
                 initialize: function () {
-                    this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                    this.model.on('change:num_unread', this.render, this);
                 },
 
                 render: function () {
@@ -336,10 +336,6 @@
                         this.$el.addClass('chat-head-chatbox');
                     }
                     return this.$el.html(tpl_trimmed_chat(data));
-                },
-
-                updateUnreadMessagesCounter: function () {
-                    this.render();
                 },
 
                 close: function (ev) {

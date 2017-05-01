@@ -225,7 +225,7 @@
                    id: (new Date()).getTime()
                })
                .c('body').t(message).up()
-               .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+               .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
     utils.sendMessage = function (chatboxview, message) {

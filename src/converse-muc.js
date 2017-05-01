@@ -161,6 +161,7 @@
                                 nick: Strophe.getNodeFromJid(_converse.bare_jid)
                             });
                         }
+                        _converse.emit('roomsPanelRendered');
                     }
                 },
 

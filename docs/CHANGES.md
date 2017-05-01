@@ -11,6 +11,7 @@
   `chatbox` attributes, instead of just the stanza. [jcbrand]
 - #567 Unreaded message count reset on page load [novokrest]
 - #591 Unread message counter is reset when the chatbox is closed [novokrest]
+- #873 Inconsistent unread messages count updating [novokrest]
 - Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
 
 ## 3.0.2 (2017-04-23)

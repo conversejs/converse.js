@@ -151,7 +151,7 @@
 
                 fetchMessages: function () {
                     this.model.messages.fetch({
-                        'add': true,
+                        'add': false,
                         'success': this.afterMessagesFetched.bind(this),
                         'error': this.afterMessagesFetched.bind(this),
                     });

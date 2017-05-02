@@ -283,3 +283,10 @@ serviceDiscovered
 When converse.js has learned of a service provided by the XMPP server. See XEP-0030.
 
 ``_converse.on('serviceDiscovered', function (service) { ... });``
+
+windowStateChanged
+~~~~~~~~~~~~~~~~~~
+
+When window state has changed. Used to determine when a user left the page and when came back.
+
+``_converse.on('windowStateChanged', function (data) { ... });``

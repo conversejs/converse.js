@@ -49,7 +49,7 @@
     "grunt-cli": "^1.1.0",
     "grunt-json": "^0.2.0",
     "http-server": "^0.9.0",
-    "install": "^0.8.5",
+    "install": "^0.9.4",
     "jasmine": "2.5.3",
     "jed": "0.5.4",
     "jquery": "2.2.3",

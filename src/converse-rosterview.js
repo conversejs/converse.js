@@ -689,7 +689,6 @@
 
                 openChat: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.model.save({'num_unread': 0});
                     return _converse.chatboxviews.showChat(this.model.attributes, true);
                 },
 
@@ -935,14 +934,14 @@
 
             var onChatBoxMaximized = function (chatboxview) {
                 /* When a chat box gets maximized, the num_unread counter needs
-                 * to be cleared.
+                 * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
                  */
                 var chatbox = chatboxview.model;
                 if (chatbox.get('type') === 'chatroom') {
                     // TODO
                 } else {
                     var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                    if (!_.isUndefined(contact)) {
+                    if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
                         contact.save({'num_unread': 0});
                     }
                 }
@@ -960,9 +959,9 @@
                     return; // The message has no text
                 }
                 var new_message = !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', data.stanza).length);
-                var hidden_or_minimized_chatbox = chatbox.get('hidden') || chatbox.get('minimized');
+                var is_new_message_hidden = chatbox.get('hidden') || chatbox.get('minimized') || chatbox.isScrolledUp();
 
-                if (hidden_or_minimized_chatbox && new_message) {
+                if (is_new_message_hidden && new_message) {
                     if (chatbox.get('type') === 'chatroom') {
                         // TODO
                     } else {
@@ -971,6 +970,17 @@
                             contact.save({'num_unread': contact.get('num_unread') + 1});
                         }
                     }
+                }
+            };
+
+            var onChatBoxScrolledDown = function (data) {
+                var chatbox = data.chatbox;
+                if (_.isUndefined(chatbox)) {
+                    return;
+                }
+                var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                if (!_.isUndefined(contact)) {
+                    contact.save({'num_unread': 0});
                 }
             };
 
@@ -987,6 +997,7 @@
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
             _converse.api.listen.on('message', onMessageReceived);
             _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
+            _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
         }
     });
 }));

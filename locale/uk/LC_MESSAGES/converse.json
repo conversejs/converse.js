@@ -55,6 +55,10 @@
             null,
             "Персональна вісточка"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "я"
@@ -231,10 +235,6 @@
             null,
             "Включити чат"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Клацніть, щоб приховати ці контакти"
-         ],
          "Reconnecting": [
             null,
             "Перепід'єднуюсь"
@@ -262,6 +262,10 @@
          "This client does not allow presence subscriptions": [
             null,
             ""
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Клацніть, щоб приховати ці контакти"
          ],
          "Minimize this chat box": [
             null,
@@ -426,26 +430,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Ви не є у списку членів цієї кімнати"
-         ],
-         "No nickname was specified": [
-            null,
-            "Не вказане прізвисько"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Вам не дозволено створювати нові кімнати"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Ваше прізвисько не відповідає політиці кімнати"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Такої кімнати (поки) не існує"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

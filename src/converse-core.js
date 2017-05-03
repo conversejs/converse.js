@@ -4,22 +4,22 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window, document */
+/*global Backbone, define, window, document, JSON */
 (function (root, factory) {
     define(["sizzle",
-            "jquery-private",
-            "lodash",
+            "jquery.noconflict",
+            "lodash.noconflict",
             "polyfill",
-            "locales",
             "utils",
             "moment_with_locales",
             "strophe",
             "pluggable",
+            "backbone.noconflict",
             "strophe.disco",
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, locales, utils, moment, Strophe, pluggable) {
+}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
@@ -183,9 +183,11 @@
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
         Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+        Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
         Strophe.addNamespace('XFORM', 'jabber:x:data');
 
         // Instance level constants
@@ -194,6 +196,16 @@
             'INACTIVE':   90000
         };
 
+        // Internationalization
+        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
+        if (!moment.locale) {
+            //moment.lang is deprecated after 2.8.1, use moment.locale instead
+            moment.locale = moment.lang;
+        }
+        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
+        var __ = _converse.__ = utils.__.bind(_converse);
+        _converse.___ = utils.___;
+
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
         this.INACTIVE = 'inactive';
@@ -201,28 +213,6 @@
         this.COMPOSING = 'composing';
         this.PAUSED = 'paused';
         this.GONE = 'gone';
-
-        // Detect support for the user's locale
-        // ------------------------------------
-        locales = _.isUndefined(locales) ? {} : locales;
-        this.isConverseLocale = function (locale) {
-            return !_.isUndefined(locales[locale]);
-        };
-        this.isMomentLocale = function (locale) { return moment.locale() !== moment.locale(locale); };
-        if (!moment.locale) { //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.detectLocale(this.isMomentLocale));
-        if (_.includes(_.keys(locales), settings.i18n)) {
-            settings.i18n = locales[settings.i18n];
-        }
-        this.i18n = settings.i18n ? settings.i18n : locales[utils.detectLocale(this.isConverseLocale)] || {};
-
-        // Translation machinery
-        // ---------------------
-        var __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
-        var DESC_GROUP_TOGGLE = __('Click to hide these contacts');
 
         // Default configuration values
         // ----------------------------
@@ -260,6 +250,7 @@
             rid: undefined,
             roster_groups: true,
             show_only_online_users: false,
+            show_send_button: false,
             sid: undefined,
             storage: 'session',
             strict_plugin_dependencies: false,
@@ -268,7 +259,6 @@
             whitelisted_plugins: [],
             xhr_custom_status: false,
             xhr_custom_status_url: '',
-            show_send_button: false
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -382,12 +372,17 @@
             }
             _converse.idle_seconds = 0;
             _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
-            $(window).on('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.addEventListener('click', _converse.onUserActivity);
+            window.addEventListener('focus', _converse.onUserActivity);
+            window.addEventListener('keypress', _converse.onUserActivity);
+            window.addEventListener('mousemove', _converse.onUserActivity);
+            window.addEventListener(unloadevent, _converse.onUserActivity);
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            $('.conn-feedback').each(function (idx, el) {
+            var els = document.querySelectorAll('.conn-feedback');
+            _.forEach(els, function (el) {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {
@@ -524,26 +519,21 @@
             }
         };
 
-        this.updateMsgCounter = function () {
-            if (this.msg_counter > 0) {
-                if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                    document.title = "Messages (" + this.msg_counter + ") " + document.title;
-                } else {
-                    document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + this.msg_counter + ") ");
-                }
-            } else if (document.title.search(/^Messages \(\d+\) /) !== -1) {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "");
-            }
-        };
-
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
-            this.updateMsgCounter();
+            var unreadMsgCount = this.msg_counter;
+            if (document.title.search(/^Messages \(\d+\) /) === -1) {
+                document.title = "Messages (" + unreadMsgCount + ") " + document.title;
+            } else {
+                document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + unreadMsgCount + ") ");
+            }
         };
 
         this.clearMsgCounter = function () {
             this.msg_counter = 0;
-            this.updateMsgCounter();
+            if (document.title.search(/^Messages \(\d+\) /) !== -1) {
+                document.title = document.title.replace(/^Messages \(\d+\) /, "");
+            }
         };
 
         this.initStatus = function () {
@@ -610,6 +600,7 @@
                 _converse.clearMsgCounter();
             }
             _converse.windowState = state;
+            _converse.emit('windowStateChanged', {state: state})
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -793,7 +784,8 @@
                     'groups': [],
                     'image_type': DEFAULT_IMAGE_TYPE,
                     'image': DEFAULT_IMAGE,
-                    'status': ''
+                    'status': '',
+                    'num_unread': 0
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
@@ -1153,10 +1145,11 @@
                 /* Get the roster from the XMPP server */
                 var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                         .c('query', {xmlns: Strophe.NS.ROSTER});
+                var that = this;
                 return _converse.connection.sendIQ(iq, function () {
-                        this.onReceivedFromServer.apply(this, arguments);
-                        callback.apply(this, arguments);
-                    }.bind(this));
+                    that.onReceivedFromServer.apply(that, arguments);
+                    callback.apply(that, arguments);
+                });
             },
 
             onReceivedFromServer: function (iq) {
@@ -1305,7 +1298,7 @@
         this.RosterGroup = Backbone.Model.extend({
             initialize: function (attributes) {
                 this.set(_.assignIn({
-                    description: DESC_GROUP_TOGGLE,
+                    description: __('Click to hide these contacts'),
                     state: _converse.OPENED
                 }, attributes));
                 // Collection of contacts belonging to this group.
@@ -1418,6 +1411,19 @@
 
             createMessage: function (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
+            },
+
+            incrementUnreadMsgCounter: function() {
+                this.save({'num_unread': this.get('num_unread') + 1});
+                _converse.incrementMsgCounter();
+            },
+
+            clearUnreadMsgCounter: function() {
+                this.save({'num_unread': 0});
+            },
+
+            isScrolledUp: function () {
+                return this.get('scrolled', true);
             }
         });
 
@@ -1482,7 +1488,7 @@
                  */
                 var original_stanza = message,
                     contact_jid, forwarded, delay, from_bare_jid,
-                    from_resource, is_me, msgid,
+                    from_resource, is_me, msgid, messages,
                     chatbox, resource,
                     from_jid = message.getAttribute('from'),
                     to_jid = message.getAttribute('to'),
@@ -1523,7 +1529,6 @@
                 from_bare_jid = Strophe.getBareJidFromJid(from_jid);
                 from_resource = Strophe.getResourceFromJid(from_jid);
                 is_me = from_bare_jid === _converse.bare_jid;
-                msgid = message.getAttribute('id');
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -1532,17 +1537,52 @@
                     contact_jid = from_bare_jid;
                     resource = from_resource;
                 }
-                _converse.emit('message', original_stanza);
                 // Get chat box, but only create a new one when the message has a body.
                 chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
-                if (!chatbox) {
-                    return true;
+                msgid = message.getAttribute('id');
+                if (chatbox) {
+                    messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
+                    if (_.isEmpty(messages)) {
+                        // Only create the message when we're sure it's not a
+                        // duplicate
+                        chatbox.createMessage(message, delay, original_stanza);
+                    }
                 }
-                if (msgid && chatbox.messages.findWhere({msgid: msgid})) {
-                    return true; // We already have this message stored.
-                }
-                chatbox.createMessage(message, delay, original_stanza);
+                _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
                 return true;
+            },
+
+            createChatBox: function (jid, attrs) {
+                /* Creates a chat box
+                 *
+                 * Parameters:
+                 *    (String) jid - The JID of the user for whom a chat box
+                 *      gets created.
+                 *    (Object) attrs - Optional chat box atributes.
+                 */
+                var bare_jid = Strophe.getBareJidFromJid(jid);
+                var roster_info = {};
+                var roster_item = _converse.roster.get(bare_jid);
+                if (! _.isUndefined(roster_item)) {
+                    roster_info = {
+                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                        'image_type': roster_item.get('image_type'),
+                        'image': roster_item.get('image'),
+                        'url': roster_item.get('url'),
+                    };
+                } else if (!_converse.allow_non_roster_messaging) {
+                    _converse.log('Could not get roster item for JID '+bare_jid+
+                        ' and allow_non_roster_messaging is set to false', 'error');
+                    return;
+                }
+                return this.create(_.assignIn({
+                        'id': bare_jid,
+                        'jid': bare_jid,
+                        'fullname': jid,
+                        'image_type': DEFAULT_IMAGE_TYPE,
+                        'image': DEFAULT_IMAGE,
+                        'url': '',
+                    }, roster_info, attrs || {}));
             },
 
             getChatBox: function (jid, create, attrs) {
@@ -1555,31 +1595,9 @@
                  *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var chatbox = this.get(bare_jid);
+                var chatbox = this.get(Strophe.getBareJidFromJid(jid));
                 if (!chatbox && create) {
-                    var roster_info = {};
-                    var roster_item = _converse.roster.get(bare_jid);
-                    if (! _.isUndefined(roster_item)) {
-                        roster_info = {
-                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                            'image_type': roster_item.get('image_type'),
-                            'image': roster_item.get('image'),
-                            'url': roster_item.get('url'),
-                        };
-                    } else if (!_converse.allow_non_roster_messaging) {
-                        _converse.log('Could not get roster item for JID '+bare_jid+
-                                    ' and allow_non_roster_messaging is set to false', 'error');
-                        return;
-                    }
-                    chatbox = this.create(_.assignIn({
-                        'id': bare_jid,
-                        'jid': bare_jid,
-                        'fullname': jid,
-                        'image_type': DEFAULT_IMAGE_TYPE,
-                        'image': DEFAULT_IMAGE,
-                        'url': '',
-                    }, roster_info, attrs || {}));
+                    chatbox = this.createChatBox(jid, attrs);
                 }
                 return chatbox;
             }
@@ -1597,13 +1615,15 @@
                  * If the #conversejs element doesn't exist, create it.
                  */
                 if (!this.el) {
-                    var $el = $('#conversejs');
-                    if (!$el.length) {
-                        $el = $('<div id="conversejs">');
-                        $('body').append($el);
+                    var el = document.querySelector('#conversejs');
+                    if (_.isNull(el)) {
+                        el = document.createElement('div');
+                        el.setAttribute('id', 'conversejs');
+                        // Converse.js expects a <body> tag to be present.
+                        document.querySelector('body').appendChild(el);
                     }
-                    $el.html('');
-                    this.setElement($el, false);
+                    el.innerHTML = '';
+                    this.setElement(el, false);
                 } else {
                     this.setElement(_.result(this, 'el'), false);
                 }
@@ -1720,11 +1740,10 @@
                 var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
-                    $.ajax({
-                        url:  this.xhr_custom_status_url,
-                        type: 'POST',
-                        data: {'msg': status_message}
-                    });
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', this.xhr_custom_status_url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    xhr.send({'msg': status_message});
                 }
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
@@ -1797,20 +1816,20 @@
             },
 
             onInfo: function (stanza) {
-                var $stanza = $(stanza);
-                if (($stanza.find('identity[category=server][type=im]').length === 0) &&
-                    ($stanza.find('identity[category=conference][type=text]').length === 0)) {
+                if ((sizzle('identity[category=server][type=im]', stanza).length === 0) &&
+                    (sizzle('identity[category=conference][type=text]', stanza).length === 0)) {
                     // This isn't an IM server component
                     return;
                 }
-                $stanza.find('feature').each(function (idx, feature) {
+                var that = this;
+                _.forEach(stanza.querySelectorAll('feature'), function (feature) {
                     var namespace = feature.getAttribute('var');
-                    this[namespace] = true;
-                    this.create({
+                    that[namespace] = true;
+                    that.create({
                         'var': namespace,
                         'from': stanza.getAttribute('from')
                     });
-                }.bind(this));
+                });
             }
         });
 
@@ -1826,44 +1845,48 @@
 
         this.fetchLoginCredentials = function () {
             var deferred = new $.Deferred();
-            $.ajax({
-                url:  _converse.credentials_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.credentials_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
                     deferred.resolve({
-                        'jid': response.jid,
-                        'password': response.password
+                        'jid': data.jid,
+                        'password': data.password
                     });
-                },
-                error: function (response) {
-                    delete _converse.connection;
-                    _converse.emit('noResumeableSession');
-                    deferred.reject(response);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+                deferred.reject(xhr.responseText);
+            };
+            xhr.send();
             return deferred.promise();
         };
 
         this.startNewBOSHSession = function () {
-            var that = this;
-            $.ajax({
-                url:  this.prebind_url,
-                type: 'GET',
-                dataType: "json",
-                success: function (response) {
-                    that.connection.attach(
-                            response.jid,
-                            response.sid,
-                            response.rid,
-                            that.onConnectStatusChanged
-                    );
-                },
-                error: function (response) {
-                    delete that.connection;
-                    that.emit('noResumeableSession');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', _converse.prebind_url, true);
+            xhr.setRequestHeader('Accept', "application/json, text/javascript");
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    var data = JSON.parse(xhr.responseText);
+                    _converse.connection.attach(
+                            data.jid, data.sid, data.rid,
+                            _converse.onConnectStatusChanged);
+                } else {
+                    xhr.onerror();
                 }
-            });
+            };
+            xhr.onerror = function () {
+                delete _converse.connection;
+                _converse.emit('noResumeableSession');
+            };
+            xhr.send();
         };
 
         this.attemptPreboundSession = function (reconnecting) {
@@ -2011,7 +2034,11 @@
             if (this.features) {
                 this.features.reset();
             }
-            $(window).off('click mousemove keypress focus'+unloadevent, _converse.onUserActivity);
+            window.removeEventListener('click', _converse.onUserActivity);
+            window.removeEventListener('focus', _converse.onUserActivity);
+            window.removeEventListener('keypress', _converse.onUserActivity);
+            window.removeEventListener('mousemove', _converse.onUserActivity);
+            window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             return this;
         };
@@ -2266,12 +2293,13 @@
             '$iq': $iq,
             '$msg': $msg,
             '$pres': $pres,
+            'Backbone': Backbone,
             'Strophe': Strophe,
-            'b64_sha1':  b64_sha1,
             '_': _,
+            'b64_sha1':  b64_sha1,
             'jQuery': $,
-            'sizzle': sizzle,
             'moment': moment,
+            'sizzle': sizzle,
             'utils': utils
         }
     };

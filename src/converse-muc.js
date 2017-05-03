@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 /* This is a Converse.js plugin which add support for multi-user chat rooms, as
  * specified in XEP-0045 Multi-user chat.
@@ -14,6 +14,7 @@
             "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
+            "tpl!chatroom_disconnect",
             "tpl!chatroom_features",
             "tpl!chatroom_form",
             "tpl!chatroom_head",
@@ -35,6 +36,7 @@
             converse,
             tpl_chatarea,
             tpl_chatroom,
+            tpl_chatroom_disconnect,
             tpl_chatroom_features,
             tpl_chatroom_form,
             tpl_chatroom_head,
@@ -56,6 +58,7 @@
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
+        Backbone = converse.env.Backbone,
         $iq = converse.env.$iq,
         $build = converse.env.$build,
         $msg = converse.env.$msg,
@@ -346,7 +349,7 @@
                 is_chatroom: true,
                 events: {
                     'click .close-chatbox-button': 'close',
-                    'click .configure-chatroom-button': 'configureChatRoom',
+                    'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
                     'click .toggle-smiley ul li': 'insertEmoticon',
                     'click .toggle-clear': 'clearChatRoomMessages',
@@ -409,10 +412,11 @@
                     if (!this.$('.chat-area').length) {
                         this.$('.chatroom-body').empty()
                             .append(tpl_chatarea({
-                                    'unread_msgs': __('You have unread messages'),
-                                    'show_toolbar': _converse.show_toolbar,
                                     'label_message': __('Message'),
-                                    'show_send_button': _converse.show_send_button
+                                    'label_send': __('Send'),
+                                    'show_send_button': _converse.show_send_button,
+                                    'show_toolbar': _converse.show_toolbar,
+                                    'unread_msgs': __('You have unread messages')
                                 }))
                             .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
@@ -1145,7 +1149,11 @@
                 },
 
                 cleanup: function () {
-                    this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    if (_converse.connection.connected) {
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    } else {
+                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
+                    }
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
@@ -1280,7 +1288,7 @@
                     return deferred.promise();
                 },
 
-                autoConfigureChatRoom: function (stanza) {
+                autoConfigureChatRoom: function () {
                     /* Automatically configure room based on the
                      * 'roomconfig' data on this view's model.
                      *
@@ -1291,34 +1299,44 @@
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var that = this, configArray = [],
-                        $fields = $(stanza).find('field'),
-                        count = $fields.length,
-                        config = this.model.get('roomconfig');
+                    var that = this,
+                        deferred = new $.Deferred();
 
-                    $fields.each(function () {
-                        var fieldname = this.getAttribute('var').replace('muc#roomconfig_', ''),
-                            type = this.getAttribute('type'),
-                            value;
-                        if (fieldname in config) {
-                            switch (type) {
-                                case 'boolean':
-                                    value = config[fieldname] ? 1 : 0;
-                                    break;
-                                case 'list-multi':
-                                    // TODO: we don't yet handle "list-multi" types
-                                    value = this.innerHTML;
-                                    break;
-                                default:
-                                    value = config[fieldname];
+                    this.fetchRoomConfiguration().then(function (stanza) {
+                        var configArray = [],
+                            fields = stanza.querySelectorAll('field'),
+                            count = fields.length,
+                            config = that.model.get('roomconfig');
+
+                        _.each(fields, function (field) {
+                            var fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
+                                type = field.getAttribute('type'),
+                                value;
+                            if (fieldname in config) {
+                                switch (type) {
+                                    case 'boolean':
+                                        value = config[fieldname] ? 1 : 0;
+                                        break;
+                                    case 'list-multi':
+                                        // TODO: we don't yet handle "list-multi" types
+                                        value = field.innerHTML;
+                                        break;
+                                    default:
+                                        value = config[fieldname];
+                                }
+                                field.innerHTML = $build('value').t(value);
                             }
-                            this.innerHTML = $build('value').t(value);
-                        }
-                        configArray.push(this);
-                        if (!--count) {
-                            that.sendConfiguration(configArray);
-                        }
+                            configArray.push(field);
+                            if (!--count) {
+                                that.sendConfiguration(
+                                    configArray,
+                                    deferred.resolve,
+                                    deferred.reject
+                                );
+                            }
+                        });
                     });
+                    return deferred;
                 },
 
                 cancelConfiguration: function () {
@@ -1408,7 +1426,7 @@
                     return deferred.promise();
                 },
 
-                configureChatRoom: function (ev) {
+                getAndRenderConfigurationForm: function (ev) {
                     /* Start the process of configuring a chat room, either by
                      * rendering a configuration form, or by auto-configuring
                      * based on the "roomconfig" data stored on the
@@ -1423,17 +1441,9 @@
                      *      case, auto-configure won't happen, regardless of
                      *      the settings.
                      */
-                    if (_.isUndefined(ev) && this.model.get('auto_configure')) {
-                        this.fetchRoomConfiguration().then(
-                            this.autoConfigureChatRoom.bind(this));
-                    } else {
-                        if (!_.isUndefined(ev) && ev.preventDefault) {
-                            ev.preventDefault();
-                        }
-                        this.showSpinner();
-                        this.fetchRoomConfiguration().then(
-                            this.renderConfigurationForm.bind(this));
-                    }
+                    this.showSpinner();
+                    this.fetchRoomConfiguration().then(
+                        this.renderConfigurationForm.bind(this));
                 },
 
                 submitNickname: function (ev) {
@@ -1586,7 +1596,9 @@
                     this.$('.chat-area').addClass('hidden');
                     this.$('.occupants').addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append($('<p>'+msg+'</p>'));
+                    this.$('.chatroom-body').append(tpl_chatroom_disconnect({
+                        'disconnect_message': msg
+                    }));
                 },
 
                 getMessageFromStatus: function (stat, stanza, is_self) {
@@ -1765,25 +1777,25 @@
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
                         } else if (!_.isNull(error.querySelector('registration-required'))) {
-                            this.showDisconnectMessage(__('You are not on the member list of this room'));
+                            this.showDisconnectMessage(__('You are not on the member list of this room.'));
                         } else if (!_.isNull(error.querySelector('forbidden'))) {
-                            this.showDisconnectMessage(__('You have been banned from this room'));
+                            this.showDisconnectMessage(__('You have been banned from this room.'));
                         }
                     } else if (error.getAttribute('type') === 'modify') {
                         if (!_.isNull(error.querySelector('jid-malformed'))) {
-                            this.showDisconnectMessage(__('No nickname was specified'));
+                            this.showDisconnectMessage(__('No nickname was specified.'));
                         }
                     } else if (error.getAttribute('type') === 'cancel') {
                         if (!_.isNull(error.querySelector('not-allowed'))) {
-                            this.showDisconnectMessage(__('You are not allowed to create new rooms'));
+                            this.showDisconnectMessage(__('You are not allowed to create new rooms.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
-                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies"));
+                            this.showDisconnectMessage(__("Your nickname doesn't conform to this room's policies."));
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
-                            this.showDisconnectMessage(__("This room does not (yet) exist"));
+                            this.showDisconnectMessage(__("This room does not (yet) exist."));
                         } else if (!_.isNull(error.querySelector('service-unavailable'))) {
-                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants"));
+                            this.showDisconnectMessage(__("This room has reached its maximum number of occupants."));
                         }
                     }
                 },
@@ -1823,13 +1835,48 @@
                     return this;
                 },
 
-                createInstantRoom: function () {
-                    /* Sends an empty IQ config stanza to inform the server that the
-                     * room should be created with its default configuration.
+                onOwnChatRoomPresence: function (pres) {
+                    /* Handles a received presence relating to the current
+                     * user.
                      *
-                     * See http://xmpp.org/extensions/xep-0045.html#createroom-instant
+                     * For locked rooms (which are by definition "new"), the
+                     * room will either be auto-configured or created instantly
+                     * (with default config) or a configuration room will be
+                     * rendered.
+                     *
+                     * If the room is not locked, then the room will be
+                     * auto-configured only if applicable and if the current
+                     * user is the room's owner.
+                     *
+                     * Parameters:
+                     *  (XMLElement) pres: The stanza
                      */
-                    this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                    this.saveAffiliationAndRole(pres);
+
+                    var locked_room = pres.querySelector("status[code='201']");
+                    if (locked_room) {
+                        if (this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else if (_converse.muc_instant_rooms) {
+                            // Accept default configuration
+                            this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getAndRenderConfigurationForm();
+                            return; // We haven't yet entered the room, so bail here.
+                        }
+                    } else if (!this.model.get('features_fetched')) {
+                        // The features for this room weren't fetched.
+                        // That must mean it's a new room without locking 
+                        // (in which case Prosody doesn't send a 201 status),
+                        // otherwise the features would have been fetched in
+                        // the "initialize" method already.
+                        if (this.model.get('affiliation') === 'owner' && this.model.get('auto_configure')) {
+                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                        } else {
+                            this.getRoomFeatures();
+                        }
+                    }
+                    this.model.save('connection_status', ROOMSTATUS.ENTERED);
                 },
 
                 onChatRoomPresence: function (pres) {
@@ -1844,32 +1891,8 @@
                         return true;
                     }
                     var is_self = pres.querySelector("status[code='110']");
-                    var locked_room = pres.querySelector("status[code='201']");
-                    if (is_self) {
-                        this.saveAffiliationAndRole(pres);
-                        if (locked_room) {
-                            // This is a new room. It will now be configured
-                            // and the configuration cached on the Backbone.Model.
-                            if (_converse.muc_instant_rooms) {
-                                this.createInstantRoom(); // Accept default configuration
-                            } else {
-                                this.configureChatRoom();
-                                if (!this.model.get('auto_configure')) {
-                                    return;
-                                }
-                            }
-                        }
-                        this.model.save('connection_status', ROOMSTATUS.ENTERED);
-                        this.hideSpinner();
-                    }
-                    if (!locked_room && !this.model.get('features_fetched') &&
-                            this.model.get('connection_status') !== ROOMSTATUS.CONNECTED) {
-                        // The features for this room weren't fetched yet, perhaps
-                        // because it's a new room without locking (in which
-                        // case Prosody doesn't send a 201 status).
-                        // This is the first presence received for the room,
-                        // so a good time to fetch the features.
-                        this.getRoomFeatures();
+                    if (is_self && pres.getAttribute('type') !== 'unavailable') {
+                        this.onOwnChatRoomPresence(pres);
                     }
                     this.hideSpinner().showStatusMessages(pres);
                     // This must be called after showStatusMessages so that
@@ -1929,7 +1952,10 @@
                     this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
-                        _converse.emit('message', original_stanza);
+                        _converse.emit(
+                            'message',
+                            {'stanza': original_stanza, 'chatbox': this.model}
+                        );
                     }
                     return true;
                 }
@@ -2098,7 +2124,7 @@
                             this.renderRoomFeatures, 100, {'leading': false}
                         );
                     }
-                    var changed_features = {}
+                    var changed_features = {};
                     _.each(_.keys(model.changed), function (k) {
                         if (!_.isNil(ROOM_FEATURES_MAP[k])) {
                             changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
@@ -2404,6 +2430,7 @@
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     $(el).find('span.spinner').replaceWith(
                         tpl_room_description({
+                            'server': Strophe.getDomainFromJid(stanza.getAttribute('from')),
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                             'hidden': $stanza.find('feature[var="muc_hidden"]').length,
@@ -2418,6 +2445,7 @@
                             'temporary': $stanza.find('feature[var="muc_temporary"]').length,
                             'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
                             'label_desc': __('Description:'),
+                            'label_server': __('Server:'),
                             'label_occ': __('Occupants:'),
                             'label_features': __('Features:'),
                             'label_requires_auth': __('Requires authentication'),

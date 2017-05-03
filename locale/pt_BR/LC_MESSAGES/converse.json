@@ -55,6 +55,10 @@
             null,
             "Mensagem pessoal"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "eu"
@@ -378,26 +382,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Você não é membro dessa sala"
-         ],
-         "No nickname was specified": [
-            null,
-            "Você não escolheu um apelido "
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Você não tem permitição de criar novas salas"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Seu apelido não está de acordo com as regras da sala"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "A sala não existe (ainda)"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 (function (root, factory) {
     define([
@@ -13,6 +13,7 @@
             "tpl!new_day",
             "tpl!action",
             "tpl!message",
+            "tpl!help_message",
             "tpl!toolbar",
             "tpl!avatar"
     ], factory);
@@ -22,16 +23,18 @@
             tpl_new_day,
             tpl_action,
             tpl_message,
+            tpl_help_message,
             tpl_toolbar,
             tpl_avatar
     ) {
     "use strict";
     var $ = converse.env.jQuery,
-        utils = converse.env.utils,
-        Strophe = converse.env.Strophe,
         $msg = converse.env.$msg,
+        Backbone = converse.env.Backbone,
+        Strophe = converse.env.Strophe,
         _ = converse.env._,
-        moment = converse.env.moment;
+        moment = converse.env.moment,
+        utils = converse.env.utils;
 
     var KEY = {
         ENTER: 13,
@@ -83,6 +86,15 @@
                 },
             });
 
+            var onWindowStateChanged = function (data) {
+                var state = data.state;
+                _converse.chatboxviews.each(function (chatboxview) {
+                    chatboxview.onWindowStateChanged(state);
+                })
+            };
+
+            _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+
             _converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
                 tagName: 'div',
@@ -125,7 +137,8 @@
                                         title: this.model.get('fullname'),
                                         unread_msgs: __('You have unread messages'),
                                         info_close: __('Close this chat box'),
-                                        label_personal_message: __('Personal message')
+                                        label_personal_message: __('Personal message'),
+                                        label_send: __('Send')
                                     }
                                 )
                             )
@@ -147,7 +160,7 @@
 
                 fetchMessages: function () {
                     this.model.messages.fetch({
-                        'add': true,
+                        'add': false,
                         'success': this.afterMessagesFetched.bind(this),
                         'error': this.afterMessagesFetched.bind(this),
                     });
@@ -367,7 +380,10 @@
                 showHelpMessages: function (msgs, type, spinner) {
                     var i, msgs_length = msgs.length;
                     for (i=0; i<msgs_length; i++) {
-                        this.$content.append($('<div class="chat-'+(type||'info')+'">'+msgs[i]+'</div>'));
+                        this.$content.append($(tpl_help_message({
+                            'type': type||'info',
+                            'message': msgs[i]
+                        })));
                     }
                     if (spinner === true) {
                         this.$content.append('<span class="spinner"/>');
@@ -415,10 +431,14 @@
                         if (this.model.get('scrolled', true)) {
                             this.$el.find('.new-msgs-indicator').removeClass('hidden');
                         }
-                        if (_converse.windowState === 'hidden' || this.model.get('scrolled', true)) {
-                            _converse.incrementMsgCounter();
+                        if (this.isNewMessageHidden()) {
+                            this.model.incrementUnreadMsgCounter();
                         }
                     }
+                },
+
+                isNewMessageHidden: function() {
+                    return _converse.windowState === 'hidden' || this.model.isScrolledUp();
                 },
 
                 handleTextMessage: function (message) {
@@ -464,6 +484,10 @@
                     } else {
                         this.handleTextMessage(message);
                     }
+                    _converse.emit('messageAdded', {
+                        'message': message,
+                        'chatbox': this.model
+                    });
                 },
 
                 createMessageStanza: function (message) {
@@ -698,7 +722,11 @@
                         this.model.set('chat_state', _converse.INACTIVE);
                         this.sendChatState();
                     }
-                    this.model.destroy();
+                    try {
+                        this.model.destroy();
+                    } catch (e) {
+                        _converse.log(e);
+                    }
                     this.remove();
                     _converse.emit('chatBoxClosed', this);
                     return this;
@@ -829,8 +857,8 @@
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.hideNewMessagesIndicator();
                         this.model.save('scrolled', false);
+                        this.onScrolledDown();
                     } else {
                         // We're not at the bottom of the chat area, so we mark
                         // that the box is in a scrolled-up state.
@@ -847,9 +875,17 @@
                     /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
-                        this.hideNewMessagesIndicator();
+                        this.onScrolledDown();
                         this.model.save({'auto_scrolled': true});
                     }
+                },
+
+                onScrolledDown: function() {
+                    this.hideNewMessagesIndicator();
+                    if (_converse.windowState !== 'hidden') {
+                        this.model.clearUnreadMsgCounter();
+                    }
+                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
                 scrollDown: function () {
@@ -862,6 +898,12 @@
                     }
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
+                },
+
+                onWindowStateChanged: function (state) {
+                    if (this.model.get('num_unread', 0) && !this.isNewMessageHidden()) {
+                        this.model.clearUnreadMsgCounter();
+                    }
                 }
             });
         }

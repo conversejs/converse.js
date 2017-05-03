@@ -9,11 +9,11 @@
          },
          "Bookmark this room": [
             null,
-            ""
+            "Lesezeichen setzen"
          ],
          "The name for this bookmark:": [
             null,
-            ""
+            "Der Name für das Lesezeichen:"
          ],
          "Would you like this room to be automatically joined upon startup?": [
             null,
@@ -33,11 +33,19 @@
          ],
          "Sorry, something went wrong while trying to save your bookmark.": [
             null,
-            ""
+            "Etwas ging beim Versuch des Abspeicherns des Lesezeichens schief."
+         ],
+         "Click to toggle the bookmarks list": [
+            null,
+            "Zum Aus-/Einklappen klicken"
          ],
          "Bookmarked Rooms": [
             null,
-            ""
+            "Gemerkte Zimmer"
+         ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Wollen Sie dieses Lesezeichen wirklich entfernen \"%1$s\"?"
          ],
          "Click to open this room": [
             null,
@@ -49,11 +57,23 @@
          ],
          "Remove this bookmark": [
             null,
-            ""
+            "Dieses Lesezeichen entfernen"
+         ],
+         "You have unread messages": [
+            null,
+            "Sie haben ungelesene Nachrichten"
+         ],
+         "Close this chat box": [
+            null,
+            "Das Chat-Fenster schließen"
          ],
          "Personal message": [
             null,
             "Persönliche Nachricht"
+         ],
+         "Send": [
+            null,
+            ""
          ],
          "me": [
             null,
@@ -99,6 +119,10 @@
             null,
             "Sind Sie sicher, dass Sie alle Nachrichten dieses Chats löschen möchten?"
          ],
+         "has gone offline": [
+            null,
+            "ist offline gegangen"
+         ],
          "is busy": [
             null,
             "ist beschäftigt"
@@ -135,9 +159,17 @@
             null,
             "Anmelden"
          ],
+         "Username": [
+            null,
+            "Benutzername"
+         ],
          "user@server": [
             null,
-            ""
+            "Benutzer@Server"
+         ],
+         "password": [
+            null,
+            "passwort"
          ],
          "Sign in": [
             null,
@@ -175,6 +207,10 @@
             null,
             "abwesend"
          ],
+         "offline": [
+            null,
+            "abgemeldet"
+         ],
          "Online": [
             null,
             "Online"
@@ -205,7 +241,7 @@
          ],
          "e.g. user@example.org": [
             null,
-            ""
+            "z.B. benutzer@example.org"
          ],
          "Add": [
             null,
@@ -231,10 +267,6 @@
             null,
             "Chat ein-/ausblenden"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Hier klicken um diese Kontakte zu verstecken"
-         ],
          "Reconnecting": [
             null,
             "Verbindung wiederherstellen"
@@ -242,6 +274,14 @@
          "The connection has dropped, attempting to reconnect.": [
             null,
             ""
+         ],
+         "Connection error": [
+            null,
+            "Verbindungsfehler"
+         ],
+         "An error occurred while connecting to the chat server.": [
+            null,
+            "Beim Speichern des Formulars ist ein Fehler aufgetreten."
          ],
          "Connecting": [
             null,
@@ -255,6 +295,14 @@
             null,
             "Authentifizierung gescheitert"
          ],
+         "Connection failed": [
+            null,
+            "Verbindung fehlgeschlagen"
+         ],
+         "An error occurred while connecting to the chat server: ": [
+            null,
+            ""
+         ],
          "Sorry, there was an error while trying to add ": [
             null,
             ""
@@ -262,6 +310,14 @@
          "This client does not allow presence subscriptions": [
             null,
             ""
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Hier klicken um diese Kontakte zu verstecken"
+         ],
+         "Close this box": [
+            null,
+            "Schließen"
          ],
          "Minimize this chat box": [
             null,
@@ -287,6 +343,10 @@
             null,
             "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"
          ],
+         "The room configuration has changed": [
+            null,
+            ""
+         ],
          "Room logging is now enabled": [
             null,
             "Nachrichten in diesem Raum werden ab jetzt protokolliert"
@@ -294,6 +354,10 @@
          "Room logging is now disabled": [
             null,
             "Nachrichten in diesem Raum werden nicht mehr protokolliert"
+         ],
+         "This room is now no longer anonymous": [
+            null,
+            "Dieses Zimmer ist jetzt nicht anonym"
          ],
          "This room is now semi-anonymous": [
             null,
@@ -331,9 +395,45 @@
             null,
             "%1$s ist verbannt worden"
          ],
+         "%1$s's nickname has changed": [
+            null,
+            "%1$s's Spitzname hat sich geändert"
+         ],
+         "%1$s has been kicked out": [
+            null,
+            "%1$s wurde hinausgeworfen"
+         ],
+         "%1$s has been removed because of an affiliation change": [
+            null,
+            "%1$s wurde wegen einer Zugehörigkeitsänderung entfernt"
+         ],
+         "%1$s has been removed for not being a member": [
+            null,
+            "%1$s ist kein Mitglied und wurde daher entfernt"
+         ],
+         "Your nickname has been automatically set to: %1$s": [
+            null,
+            "Ihr Spitzname wurde automatisiert geändert zu: %1$s"
+         ],
+         "Your nickname has been changed to: %1$s": [
+            null,
+            "Ihr Spitzname wurde geändert zu: %1$s"
+         ],
          "Message": [
             null,
             "Nachricht"
+         ],
+         "Close and leave this room": [
+            null,
+            ""
+         ],
+         "Configure this room": [
+            null,
+            ""
+         ],
+         "Hide the list of occupants": [
+            null,
+            "Teilnehmerliste ausblenden"
          ],
          "Error: the \"": [
             null,
@@ -354,6 +454,10 @@
          "Ban user from room": [
             null,
             "Verbanne einen Benutzer aus dem Raum"
+         ],
+         "Change user role to occupant": [
+            null,
+            "Benutzerrolle zu Teilnehmer ändern"
          ],
          "Kick user from room": [
             null,
@@ -387,6 +491,10 @@
             null,
             ""
          ],
+         "Set room subject": [
+            null,
+            "Chatraum Thema festlegen"
+         ],
          "Set room subject (alias for /subject)": [
             null,
             ""
@@ -415,6 +523,10 @@
             null,
             "Abschicken"
          ],
+         "The reason given is: \"%1$s\".": [
+            null,
+            "Die angegebene Begründung lautet: \"%1$s\"."
+         ],
          "The reason given is: \"": [
             null,
             "Die angegebene Begründung lautet: \""
@@ -431,29 +543,45 @@
             null,
             ""
          ],
-         "You are not on the member list of this room": [
+         "You are not on the member list of this room.": [
             null,
-            "Sie sind nicht auf der Mitgliederliste dieses Raums"
+            "Sie sind nicht auf der Mitgliederliste dieses Raums."
          ],
-         "No nickname was specified": [
+         "You have been banned from this room.": [
             null,
-            "Kein Spitzname festgelegt"
+            "Sie sind aus diesem Raum verbannt worden."
          ],
-         "You are not allowed to create new rooms": [
+         "No nickname was specified.": [
             null,
-            "Es ist Ihnen nicht erlaubt neue Räume anzulegen"
+            "Kein Spitzname festgelegt."
          ],
-         "Your nickname doesn't conform to this room's policies": [
+         "You are not allowed to create new rooms.": [
             null,
-            "Ungültiger Spitzname"
+            "Es ist Ihnen nicht erlaubt neue Räume anzulegen."
          ],
-         "This room does not (yet) exist": [
+         "This room does not (yet) exist.": [
             null,
-            "Dieser Raum existiert (noch) nicht"
+            "Dieser Raum existiert (noch) nicht."
+         ],
+         "This room has reached its maximum number of occupants.": [
+            null,
+            "Dieser Raum hat die maximale Mitgliederanzahl erreicht"
          ],
          "Topic set by %1$s to: %2$s": [
             null,
             "%1$s hat das Thema zu \"%2$s\" geändert"
+         ],
+         "This user is a moderator.": [
+            null,
+            "Dieser Benutzer ist ein Moderator."
+         ],
+         "This user can send messages in this room.": [
+            null,
+            "Dieser Benutzer kann Nachrichten in diesem Raum verschicken."
+         ],
+         "This user can NOT send messages in this room.": [
+            null,
+            "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken."
          ],
          "Occupants": [
             null,
@@ -462,6 +590,10 @@
          "Invite": [
             null,
             "Einladen"
+         ],
+         "Features": [
+            null,
+            "Funktionen"
          ],
          "Hidden": [
             null,

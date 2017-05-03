@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window */
+/*global define, window */
 
 (function (root, factory) {
     define(["converse-core",
@@ -26,6 +26,7 @@
     "use strict";
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        Backbone = converse.env.Backbone,
         b64_sha1 = converse.env.b64_sha1,
         moment = converse.env.moment;
 
@@ -95,10 +96,17 @@
 
                 _show: function () {
                     var _converse = this.__super__._converse;
-                    this.__super__._show.apply(this, arguments);
                     if (!this.model.get('minimized')) {
+                        this.__super__._show.apply(this, arguments);
                         _converse.chatboxviews.trimChats(this);
+                    } else {
+                        this.minimize();
                     }
+                },
+
+                isNewMessageHidden: function () {
+                    return this.model.get('minimized') ||
+                        this.__super__.isNewMessageHidden.apply(this, arguments);
                 },
 
                 shouldShowOnTextMessage: function () {
@@ -130,6 +138,9 @@
                     // Restores a minimized chat box
                     var _converse = this.__super__._converse;
                     this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    if (!this.model.isScrolledUp()) {
+                        this.model.clearUnreadMsgCounter();
+                    }
                     this.show();
                     _converse.emit('chatBoxMaximized', this);
                     return this;
@@ -309,15 +320,7 @@
                 },
 
                 initialize: function () {
-                    this.model.messages.on('add', function (m) {
-                        if (m.get('message')) {
-                            this.updateUnreadMessagesCounter();
-                        }
-                    }, this);
-                    this.model.on('change:minimized', this.clearUnreadMessagesCounter, this);
-                    // OTR stuff, doesn't require this module to depend on OTR.
-                    this.model.on('showReceivedOTRMessage', this.updateUnreadMessagesCounter, this);
-                    this.model.on('showSentOTRMessage', this.updateUnreadMessagesCounter, this);
+                    this.model.on('change:num_unread', this.render, this);
                 },
 
                 render: function () {
@@ -333,16 +336,6 @@
                         this.$el.addClass('chat-head-chatbox');
                     }
                     return this.$el.html(tpl_trimmed_chat(data));
-                },
-
-                clearUnreadMessagesCounter: function () {
-                    this.model.set({'num_unread': 0});
-                    this.render();
-                },
-
-                updateUnreadMessagesCounter: function () {
-                    this.model.set({'num_unread': this.model.get('num_unread') + 1});
-                    this.render();
                 },
 
                 close: function (ev) {
@@ -362,7 +355,7 @@
 
                 restore: _.debounce(function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.model.messages.off('add',null,this);
+                    this.model.off('change:num_unread', null, this);
                     this.remove();
                     this.model.maximize();
                 }, 200, {'leading': true})
@@ -459,7 +452,7 @@
                     var ls = this.model.pluck('num_unread'),
                         count = 0, i;
                     for (i=0; i<ls.length; i++) { count += ls[i]; }
-                    this.toggleview.model.set({'num_unread': count});
+                    this.toggleview.model.save({'num_unread': count});
                     this.render();
                 }
             });

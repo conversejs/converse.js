@@ -17,6 +17,7 @@ $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
 $message-them-color: #1A9707 !default;
 $roster-height: 194px !default;
+$roster-item-height: 60px !default;
 
 $chat-head-color: #F4A261 !default;
 $chat-head-text-color: white !default;
@@ -41,8 +42,8 @@ $toolbar-color: #FFF5EE !default;
 
 $moderator-color: #D24E2B !default;
 $online-color: #1A9707 !default;
-
 $error-color: #D24E2B !default;
+$subdued-color: #A8ABA1 !default;
 
 $chatbox-border-radius: 4px !default;
 $bottom-gutter-height: 35px !default;
@@ -59,6 +60,7 @@ $legend-font-size: 16px !default;
 
 $line-height:  16px !default;
 
+$controlbox-width: 200px !default;
 $chat-width: 200px !default;
 $chat-height: 450px !default;
 $chat-gutter: 0.5em !default;

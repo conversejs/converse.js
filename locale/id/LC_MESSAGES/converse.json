@@ -54,6 +54,10 @@
             null,
             "Pesan pribadi"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "saya"
@@ -385,26 +389,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Anda bukan anggota dari ruangan ini"
-         ],
-         "No nickname was specified": [
-            null,
-            "Nama panggilan belum ditentukan"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Anda tak diizinkan untuk membuat ruangan baru"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Nama panggilan anda tidak sesuai aturan ruangan ini"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Ruangan ini belum dibuat"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

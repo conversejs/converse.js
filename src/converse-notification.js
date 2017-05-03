@@ -131,7 +131,8 @@
                  * message was received.
                  */
                 var title, roster_item,
-                    from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    full_from_jid = message.getAttribute('from'),
+                    from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
                         title = __(___("Notification from %1$s"), from_jid);
@@ -142,7 +143,7 @@
                     // XXX: workaround for Prosody which doesn't give type "headline"
                     title = __(___("Notification from %1$s"), from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
-                    title = __(___("%1$s says"), Strophe.getResourceFromJid(from_jid));
+                    title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log(
@@ -163,7 +164,7 @@
                 }
                 var n = new Notification(title, {
                         body: message.querySelector('body').textContent,
-                        lang: _.isEmpty(converse.i18n) ? 'en' : _converse.i18n.locale_data.converse[""].lang,
+                        lang: _converse.locale,
                         icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
@@ -193,7 +194,7 @@
                 }
                 var n = new Notification(contact.fullname, {
                         body: message,
-                        lang: _converse.i18n.locale_data.converse[""].lang,
+                        lang: _converse.locale,
                         icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
@@ -202,7 +203,7 @@
             _converse.showContactRequestNotification = function (contact) {
                 var n = new Notification(contact.fullname, {
                         body: __('wants to be your contact'),
-                        lang: _converse.i18n.locale_data.converse[""].lang,
+                        lang: _converse.locale,
                         icon: _converse.notification_icon
                     });
                 setTimeout(n.close.bind(n), 5000);
@@ -212,7 +213,7 @@
                 if (data.klass === 'error' || data.klass === 'warn') {
                     var n = new Notification(data.subject, {
                             body: data.message,
-                            lang: _converse.i18n.locale_data.converse[""].lang,
+                            lang: _converse.locale,
                             icon: _converse.notification_icon
                         });
                     setTimeout(n.close.bind(n), 5000);
@@ -230,10 +231,11 @@
                 }
             };
 
-            _converse.handleMessageNotification = function (message) {
+            _converse.handleMessageNotification = function (data) {
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
+                var message = data.stanza;
                 if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }

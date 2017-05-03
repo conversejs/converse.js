@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define */
+/*global define */
 
 (function (root, factory) {
     define(["converse-core",
@@ -25,11 +25,14 @@
             tpl_roster_item) {
     "use strict";
     var $ = converse.env.jQuery,
+        Backbone = converse.env.Backbone,
         utils = converse.env.utils,
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
         b64_sha1 = converse.env.b64_sha1,
+        sizzle = converse.env.sizzle,
         _ = converse.env._;
+
 
     converse.plugins.add('converse-rosterview', {
 
@@ -143,7 +146,7 @@
 
                 initialize: function () {
                     this.model.on('change:filter_type', this.render, this);
-                    this.model.on('change:filter_text', this.render, this);
+                    this.model.on('change:filter_text', this.renderClearButton, this);
                 },
 
                 render: function () {
@@ -154,6 +157,7 @@
                             label_groups: LABEL_GROUPS,
                             label_state: __('State'),
                             label_any: __('Any'),
+                            label_unread_messages: __('Unread'),
                             label_online: __('Online'),
                             label_chatty: __('Chatty'),
                             label_busy: __('Busy'),
@@ -166,18 +170,21 @@
                 },
 
                 renderClearButton: function () {
-                    var $roster_filter = this.$('.roster-filter');
-                    $roster_filter[this.tog($roster_filter.val())]('x');
+                    var roster_filter = this.el.querySelector('.roster-filter');
+                    if (_.isNull(roster_filter)) {
+                        return;
+                    }
+                    roster_filter.classList[this.tog(roster_filter.value)]('x');
                 },
 
                 tog: function (v) {
-                    return v?'addClass':'removeClass';
+                    return v?'add':'remove';
                 },
 
                 toggleX: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     var el = ev.target;
-                    $(el)[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
+                    el.classList[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
                 },
 
                 changeChatStateFilter: function (ev) {
@@ -274,6 +281,8 @@
                     _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
+
+
                 },
 
                 render: function () {
@@ -617,17 +626,25 @@
                         ));
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.el.classList.add('current-xmpp-contact');
-                        this.$el.removeClass(_.without(['both', 'to'], subscription)[0]).addClass(subscription);
-                        this.$el.html(tpl_roster_item(
-                            _.extend(item.toJSON(), {
-                                'desc_status': STATUSES[chat_status||'offline'],
-                                'desc_chat': __('Click to chat with this contact'),
-                                'desc_remove': __('Click to remove this contact'),
-                                'title_fullname': __('Name'),
-                                'allow_contact_removal': _converse.allow_contact_removal
-                            })
-                        ));
+                        this.el.classList.remove(_.without(['both', 'to'], subscription)[0])
+                        this.el.classList.add(subscription);
+                        this.renderRosterItem(item);
                     }
+                    return this;
+                },
+
+                renderRosterItem: function (item) {
+                    var chat_status = item.get('chat_status');
+                    this.$el.html(tpl_roster_item(
+                        _.extend(item.toJSON(), {
+                            'desc_status': STATUSES[chat_status||'offline'],
+                            'desc_chat': __('Click to chat with this contact'),
+                            'desc_remove': __('Click to remove this contact'),
+                            'title_fullname': __('Name'),
+                            'allow_contact_removal': _converse.allow_contact_removal,
+                            'num_unread': item.get('num_unread') || 0
+                        })
+                    ));
                     return this;
                 },
 
@@ -642,7 +659,7 @@
                     // would simplify things by not having to check whether the
                     // group is collapsed or not.
                     var name = this.$el.prevAll('dt:first').data('group');
-                    var group = _converse.rosterview.model.where({'name': name})[0];
+                    var group = _.head(_converse.rosterview.model.where({'name': name.toString()}));
                     if (group.get('state') === _converse.CLOSED) {
                         return true;
                     }
@@ -672,7 +689,7 @@
 
                 openChat: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    return _converse.chatboxviews.showChat(this.model.attributes);
+                    return _converse.chatboxviews.showChat(this.model.attributes, true);
                 },
 
                 removeContact: function (ev) {
@@ -741,13 +758,12 @@
 
                 render: function () {
                     this.el.setAttribute('data-group', this.model.get('name'));
-                    this.$el.html(
-                        $(tpl_group_header({
-                            label_group: this.model.get('name'),
-                            desc_group_toggle: this.model.get('description'),
-                            toggle_state: this.model.get('state')
-                        }))
-                    );
+                    var html = tpl_group_header({
+                        label_group: this.model.get('name'),
+                        desc_group_toggle: this.model.get('description'),
+                        toggle_state: this.model.get('state')
+                    });
+                    this.el.innerHTML = html;
                     return this;
                 },
 
@@ -825,6 +841,8 @@
                                         return utils.contains.not('chat_status', q)(contact) && !contact.get('requesting');
                                     }
                                 );
+                            } else if (q === 'unread_messages') {
+                                matches = this.model.contacts.filter({'num_unread': 0});
                             } else {
                                 matches = this.model.contacts.filter(
                                     utils.contains.not('chat_status', q)
@@ -914,6 +932,58 @@
 
             /* -------- Event Handlers ----------- */
 
+            var onChatBoxMaximized = function (chatboxview) {
+                /* When a chat box gets maximized, the num_unread counter needs
+                 * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
+                 */
+                var chatbox = chatboxview.model;
+                if (chatbox.get('type') === 'chatroom') {
+                    // TODO
+                } else {
+                    var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                    if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
+                        contact.save({'num_unread': 0});
+                    }
+                }
+            };
+
+            var onMessageReceived = function (data) {
+                /* Given a newly received message, update the unread counter on
+                 * the relevant roster contact (TODO: or chat room).
+                 */
+                var chatbox = data.chatbox;
+                if (_.isUndefined(chatbox)) {
+                    return;
+                }
+                if (_.isNull(data.stanza.querySelector('body'))) {
+                    return; // The message has no text
+                }
+                var new_message = !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', data.stanza).length);
+                var is_new_message_hidden = chatbox.get('hidden') || chatbox.get('minimized') || chatbox.isScrolledUp();
+
+                if (is_new_message_hidden && new_message) {
+                    if (chatbox.get('type') === 'chatroom') {
+                        // TODO
+                    } else {
+                        var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                        if (!_.isUndefined(contact)) {
+                            contact.save({'num_unread': contact.get('num_unread') + 1});
+                        }
+                    }
+                }
+            };
+
+            var onChatBoxScrolledDown = function (data) {
+                var chatbox = data.chatbox;
+                if (_.isUndefined(chatbox)) {
+                    return;
+                }
+                var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                if (!_.isUndefined(contact)) {
+                    contact.save({'num_unread': 0});
+                }
+            };
+
             var initRoster = function () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
@@ -923,8 +993,11 @@
                 });
                 _converse.rosterview.render();
             };
-            _converse.on('rosterInitialized', initRoster);
-            _converse.on('rosterReadyAfterReconnection', initRoster);
+            _converse.api.listen.on('rosterInitialized', initRoster);
+            _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+            _converse.api.listen.on('message', onMessageReceived);
+            _converse.api.listen.on('chatBoxMaximized', onChatBoxMaximized);
+            _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
         }
     });
 }));

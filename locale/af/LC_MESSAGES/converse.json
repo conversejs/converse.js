@@ -71,6 +71,10 @@
             null,
             "Persoonlike boodskap"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "ek"
@@ -263,10 +267,6 @@
             null,
             "Klets"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Klik om hierdie kontakte te verskuil"
-         ],
          "Reconnecting": [
             null,
             "Herkonnekteer"
@@ -310,6 +310,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Klik om hierdie kontakte te verskuil"
          ],
          "Close this box": [
             null,
@@ -555,29 +559,33 @@
             null,
             " het die kamer bygetree."
          ],
-         "You are not on the member list of this room": [
+         "You are not on the member list of this room.": [
             null,
-            "Jy is nie op die ledelys van hierdie kamer nie"
+            "Jy is nie op die ledelys van hierdie kamer nie."
          ],
-         "No nickname was specified": [
+         "You have been banned from this room.": [
             null,
-            "Geen bynaam verskaf nie"
+            "Jy is uit die kamer verban."
          ],
-         "You are not allowed to create new rooms": [
+         "No nickname was specified.": [
             null,
-            "Jy word nie toegelaat om nog kletskamers te skep nie"
+            "Geen bynaam verskaf nie."
          ],
-         "Your nickname doesn't conform to this room's policies": [
+         "You are not allowed to create new rooms.": [
             null,
-            "Jou bynaam voldoen nie aan die kamer se beleid nie"
+            "Jy word nie toegelaat om nog kletskamers te skep nie."
          ],
-         "This room does not (yet) exist": [
+         "Your nickname doesn't conform to this room's policies.": [
             null,
-            "Hierdie kamer bestaan tans (nog) nie"
+            "Jou bynaam voldoen nie aan die kamer se beleid nie."
          ],
-         "This room has reached its maximum number of occupants": [
+         "This room does not (yet) exist.": [
             null,
-            "Hierdie kletskamer het sy maksimum aantal deelnemers bereik"
+            "Hierdie kamer bestaan tans (nog) nie."
+         ],
+         "This room has reached its maximum number of occupants.": [
+            null,
+            "Hierdie kletskamer het sy maksimum aantal deelnemers bereik."
          ],
          "Topic set by %1$s to: %2$s": [
             null,
@@ -663,6 +671,10 @@
             null,
             "Onversekerd"
          ],
+         "This room is not publicly searchable": [
+            null,
+            "Hierdie kletskamer is nie publiek opspoorbaar nie"
+         ],
          "Messages are archived on the server": [
             null,
             "Boodskappe word op die bediener gestoor"
@@ -686,6 +698,14 @@
          "This room requires a password before entry": [
             null,
             "Hierdie kletskamer benodig 'n wagwoord"
+         ],
+         "This room persists even if it's unoccupied": [
+            null,
+            "Hierdie kletskamer bestaan voort selfs al is dit leeg"
+         ],
+         "This room is publicly searchable": [
+            null,
+            "Hierdie kletskamer is publiek opspoorbaar"
          ],
          "Only moderators can see your Jabber ID": [
             null,
@@ -742,6 +762,10 @@
          "Description:": [
             null,
             "Beskrywing:"
+         ],
+         "Server:": [
+            null,
+            "Bediener:"
          ],
          "Occupants:": [
             null,

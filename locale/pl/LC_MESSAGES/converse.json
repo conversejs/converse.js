@@ -59,6 +59,10 @@
             null,
             "Wiadomość osobista"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "ja"
@@ -251,10 +255,6 @@
             null,
             "Przełącz rozmowę"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Kliknij aby schować te kontakty"
-         ],
          "Reconnecting": [
             null,
             "Przywracam połączenie"
@@ -282,6 +282,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Klient nie umożliwia subskrybcji obecności"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Kliknij aby schować te kontakty"
          ],
          "Close this box": [
             null,
@@ -466,30 +470,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Nie jesteś członkiem tego pokoju rozmów"
-         ],
-         "No nickname was specified": [
-            null,
-            "Nie podałeś ksywki"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Nie masz uprawnień do tworzenia nowych pokojów rozmów"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Twoja ksywka nie jest zgodna z regulaminem pokoju"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Ten pokój (jeszcze) nie istnieje"
-         ],
-         "This room has reached its maximum number of occupants": [
-            null,
-            "Pokój przekroczył dozwoloną ilość rozmówców"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

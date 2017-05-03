@@ -54,6 +54,10 @@
             null,
             "Ваше сообщение"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "Я"
@@ -234,10 +238,6 @@
             null,
             "Включить чат"
          ],
-         "Click to hide these contacts": [
-            null,
-            "Кликните, чтобы спрятать эти контакты"
-         ],
          "The connection has dropped, attempting to reconnect.": [
             null,
             ""
@@ -261,6 +261,10 @@
          "This client does not allow presence subscriptions": [
             null,
             "Программа не поддерживает уведомления о статусе"
+         ],
+         "Click to hide these contacts": [
+            null,
+            "Кликните, чтобы спрятать эти контакты"
          ],
          "Minimize this chat box": [
             null,
@@ -425,26 +429,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Вы не участник этого чата"
-         ],
-         "No nickname was specified": [
-            null,
-            "Вы не указали псевдоним"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Вы не имеете права создавать чаты"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Псевдоним запрещён правилами чата"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Этот чат не существует"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

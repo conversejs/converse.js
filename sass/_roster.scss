@@ -49,6 +49,9 @@
         .roster-filter.onX {
             cursor: pointer;
         }
+        .roster-filter-state {
+            display: none;
+        }
         .state-type {
             float: left;
             border: 1px solid #999;
@@ -58,6 +61,9 @@
             padding: 0;
             padding-left: 0.4em;
             width: 53%;
+        }
+        .state-type-state {
+            display: none;
         }
         .filter-type {
             display: table-cell;
@@ -76,6 +82,7 @@
         height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
+        display: none;
         dt.roster-group {
             border: none;
             color: $text-color;
@@ -105,23 +112,113 @@
             text-shadow: 0 1px 0 $text-shadow-color;
             line-height: $line-height;
             width: 100%;
+            height: 30px;
+            margin: 0;
+            padding: 0;
+
             .open-chat {
-                max-width: 90%;
+                margin: auto;
+                padding: 0.5em 0em 0 1em;
+                width: 85%;
+                .pulse {
+                    padding: 0;
+                    margin: 0;
+                }
+                &.unread-msgs {
+                    font-weight: bold;
+                    .contact-name {
+                        width: 70%;
+                    }
+                    .avatar {
+                        .pulse {
+                            border: 0.7em solid $link-color;
+                            background: transparent;
+                            border-radius: 60px;
+                            height: 30px;
+                            width: 30px;
+                            @include animation(pulse 3s ease-out);
+                            @include animation-iteration-count(infinite);
+                            margin: 0;
+                            padding: 0;
+                            margin-top: -7px;
+                            margin-left: -31px;
+                            z-index: 1;
+                            opacity: 0;
+                        }
+                        &.avatar-online {
+                            .pulse {
+                                border: 0.7em solid $link-color;
+                            }
+                        }
+                        @include keyframes(pulse) {
+                            0% {
+                                @include transform(scale(0));
+                                opacity: 0.0;
+                            }
+                            25% {
+                                @include transform(scale(0));
+                                opacity: 0.1;
+                            }
+                            50% {
+                                @include transform(scale(0.1));
+                                opacity: 0.3;
+                            }
+                            75% {
+                                @include transform(scale(0.5));
+                                opacity: 0.5;
+                            }
+                            100% {
+                                @include transform(scale(1));
+                                opacity: 0.0;
+                            }
+                        }
+                    }
+                }
+
+				.msgs-indicactor {
+					background-color: $warning-color;
+                    color: white;
+					border-radius: 10%;
+					float: right;
+					font-size: 11px;
+                    margin-left: -3em;
+					font-weight: normal;
+					padding: 0 4px;
+                    text-shadow: none;
+				}
+
+                .contact-name {
+                    padding: 0;
+                    margin: 0;
+                    max-width: 80%;
+                    float: none;
+                    height: $roster-item-height;
+                }
+
+                .avatar {
+                    float: left;
+                    display: inline-block;
+                    height: $roster-item-height;
+
+                    .status-icon {
+                        color: $link-color;
+                    }
+                }
             }
+
             &:hover {
                 background-color: $highlight-color;
-                .remove-xmpp-contact {
-                    display: inline-block;
-                }
             }
             &.requesting-xmpp-contact {
                 .request-actions {
+                    padding-top: 0.5em;
+                    margin-right: 1em;
                     margin-left: 0.3em;
                     margin-bottom: 0.3em;
                     float: right;
                 }
                 .open-chat {
-                    max-width: 75%;
+                    max-width: 70%;
                     .req-contact-name {
                         width: 100%;
                     }
@@ -136,14 +233,13 @@
                 font-size: 16px;
                 float: left;
                 color: $link-color;
-                padding-right: 0.5em;
+                margin-right: 0.5em;
             }
             &.odd {
                 background-color: #DCEAC5;
                 /* Make this difference */
             }
             a, span {
-                text-shadow: 0 1px 0 $link-shadow-color;
                 display: inline-block;
                 overflow: hidden;
                 white-space: nowrap;
@@ -159,8 +255,9 @@
                 }
                 &.remove-xmpp-contact {
                     float: right;
-                    display: none;
-                    color: $text-color;
+                    margin-right: 1em;
+                    padding-top: 0.5em;
+                    color: $subdued-color;
                 }
             }
         }

@@ -4,7 +4,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, Backbone */
+/*global define */
 
 (function (root, factory) {
     define(["converse-core",
@@ -45,6 +45,7 @@
     var USERS_PANEL_ID = 'users';
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
+        Backbone = converse.env.Backbone,
         utils = converse.env.utils;
     // Other necessary globals
     var $ = converse.env.jQuery,

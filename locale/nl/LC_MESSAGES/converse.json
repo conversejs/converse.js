@@ -55,6 +55,10 @@
             null,
             "Persoonlijk bericht"
          ],
+         "Send": [
+            null,
+            ""
+         ],
          "me": [
             null,
             "ikzelf"
@@ -390,26 +394,6 @@
          " has joined the room.": [
             null,
             ""
-         ],
-         "You are not on the member list of this room": [
-            null,
-            "Je bent niet een gebruiker van deze room"
-         ],
-         "No nickname was specified": [
-            null,
-            "Geen nickname ingegeven"
-         ],
-         "You are not allowed to create new rooms": [
-            null,
-            "Je bent niet toegestaan nieuwe rooms te maken"
-         ],
-         "Your nickname doesn't conform to this room's policies": [
-            null,
-            "Je nickname is niet conform policy"
-         ],
-         "This room does not (yet) exist": [
-            null,
-            "Deze room bestaat niet"
          ],
          "Topic set by %1$s to: %2$s": [
             null,

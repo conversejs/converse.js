@@ -4,11 +4,12 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone */
 (function (root, factory) {
     define(["converse-core", "converse-muc"], factory);
 }(this, function (converse) {
     "use strict";
+    var Backbone = converse.env.Backbone,
+        _ = converse.env._;
 
     converse.plugins.add('converse-muc-embedded', {
         overrides: {
@@ -39,9 +40,29 @@
 
             ChatRoomView: {
                 insertIntoDOM: function () {
-                    converse.env.jQuery('#converse-embedded-chat').html(this.$el);
+                    if (!document.body.contains(this.el)) {
+                        var container = document.querySelector('#converse-embedded-chat');
+                        container.innerHTML = '';
+                        container.appendChild(this.el);
+                    }
                     return this;
                 }
+            }
+        },
+
+        initialize: function () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            var _converse = this._converse;
+            if (!_.isArray(_converse.auto_join_rooms)) {
+                throw new Error("converse-muc-embedded: auto_join_rooms must be an Array");
+            }
+            if (_converse.auto_join_rooms.length !== 1) {
+                throw new Error("converse-muc-embedded: It doesn't make "+
+                    "sense to have the auto_join_rooms setting to zero or "+
+                    "more then one, since only one chat room can be open "+
+                    "at any time.")
             }
         }
     });

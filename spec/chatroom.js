@@ -1038,7 +1038,7 @@
                 var $chat_content = view.$el.find('.chat-content');
                 expect($chat_content.find('.chat-message').length).toBe(1);
                 expect($chat_content.find('.chat-msg-content').text()).toBe(text);
-                expect(_converse.emit).toHaveBeenCalledWith('message', message.nodeTree);
+                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
             }));
 
             it("shows sent groupchat messages", mock.initConverse(function (_converse) {
@@ -1441,11 +1441,11 @@
                 expect(view.$('.chat-area').is(':visible')).toBeFalsy();
                 expect(view.$('.occupants').is(':visible')).toBeFalsy();
                 var $chat_body = view.$('.chatroom-body');
-                expect($chat_body.html().trim().indexOf(
-                    '<p>You have been kicked from this room</p>'+
-                    '<p>This action was done by Fluellen.</p>'+
-                    '<p>The reason given is: "Avaunt, you cullion!".</p>'
-                )).not.toBe(-1);
+                expect($chat_body.find('.disconnect-msg').text()).toBe(
+                    'You have been kicked from this room'+
+                    'This action was done by Fluellen.'+
+                    'The reason given is: "Avaunt, you cullion!".'
+                );
             }));
 
             it("can be saved to, and retrieved from, browserStorage", mock.initConverse(function (_converse) {
@@ -1703,7 +1703,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not on the member list of this room.');
             }));
 
             it("will show an error message if the user has been banned", mock.initConverse(function (_converse) {
@@ -1719,7 +1719,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You have been banned from this room');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You have been banned from this room.');
             }));
 
             it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false", mock.initConverse(function (_converse) {
@@ -1804,7 +1804,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms');
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe('You are not allowed to create new rooms.');
             }));
 
             it("will show an error message if the user's nickname doesn't conform to room policy", mock.initConverse(function (_converse) {
@@ -1820,7 +1820,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("Your nickname doesn't conform to this room's policies.");
             }));
 
             it("will show an error message if the room doesn't yet exist", mock.initConverse(function (_converse) {
@@ -1836,7 +1836,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room does not (yet) exist.");
             }));
 
             it("will show an error message if the room has reached its maximum number of occupants", mock.initConverse(function (_converse) {
@@ -1852,7 +1852,7 @@
                 var view = _converse.chatboxviews.get('problematic@muc.localhost');
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 view.onChatRoomPresence(presence);
-                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants");
+                expect(view.$el.find('.chatroom-body p:last').text()).toBe("This room has reached its maximum number of occupants.");
             }));
         });
 

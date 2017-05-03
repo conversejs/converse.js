@@ -1063,8 +1063,17 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-This allows plugins to have "soft" dependencies which aren't declared as
-as dependencies.
+The Converse.js plugins architecture can have an ``optional_dependencies``
+plugin attribute. This enables you to specify an array of optional, or
+"soft", dependencies. Converse.js (more specifically,
+`pluggable.js <https://jcbrand.github.io/pluggable.js/>`_) will try to first
+load the optional dependencies before executing the plugin's overrides and
+calling its ``initialize`` method.
+
+If ``strict_plugin_dependencies`` is set to ``false`` it won't raise an error
+if the optional dependencies aren't found. If set to ``true`` these optional
+dependencies are treated as normal non-optional ones, which means that an error
+will be raised.
 
 synchronize_availability
 ------------------------

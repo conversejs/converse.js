@@ -1,8 +1,41 @@
 # Changelog
 
-## 3.0.2 (Unreleased)
+## 3.1.0 (Unreleased)
 
-- Update Jasmine from 1.3.1 to 2.5.3 and Phantomjs from 1.9.7-1 to 2.1.14 [jcbrand]
+- New non-core plugin `converse-singleton` which ensures that no more than
+  one chat is visible at any given time. Used in the mobile build:
+  `converse-mobile.js` and makes the unread messages counter possible there.
+  [jcbrand]
+- Show unread messages next to roster contacts. [jcbrand]
+- API change: the `message` event now returns a data object with `stanza` and
+  `chatbox` attributes, instead of just the stanza. [jcbrand]
+- #567 Unreaded message count reset on page load [novokrest]
+- #591 Unread message counter is reset when the chatbox is closed [novokrest]
+- #873 Inconsistent unread messages count updating [novokrest]
+- Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
+
+## 3.0.2 (2017-04-23)
+
+*Dependency updates*:
+- Jasmine 2.5.3
+- Phantomjs 2.1.14
+- moment 2.18.1
+- sinon 2.1.0
+- eslint 3.19.0
+
+- Don't rerender the text input when filtering contacts. [jcbrand]
+- Show the MUC server in a bookmarked room's info view (in the bookmarks list). [jcbrand]
+- Enable creation of `dist/converse-muc-embedded.js` build file for the
+  embedded MUC room demo. [jcbrand]
+- Use `noConflict` to avoid polluting globale namespace with lodash and Backbone. [jcbrand]
+- Bugfix: MUC user's nickname wasn't being shown in HTML5 notification messages. [jcbrand]
+- Bugfix: OTR meta-messages were being shown in HTML5 notifications. [jcbrand]
+- CSS fix: Icon lock wasn't showing. [jcbrand]
+- #626 Open chat minimised [novokrest]
+- #842 Persistent muc room creation not working [jcbrand]
+- #848 OTR doesn't start when `cache_otr_key` is set to `true`. [jcbrand]
+- #849 `TypeError: _converse.i18n.locale_data is undefined` when reconnecting. [jcbrand]
+- #850 Roster not loading when group names are numbers. [jcbrand]
 
 ## 3.0.1 (2017-04-04)
 

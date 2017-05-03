@@ -80,7 +80,7 @@
         window.localStorage.clear();
         window.sessionStorage.clear();
         var converse = converse_api.initialize(_.extend({
-            i18n: window.locales.en,
+            i18n: 'en',
             auto_subscribe: false,
             bosh_service_url: 'localhost',
             connection: mock.mock_connection(),

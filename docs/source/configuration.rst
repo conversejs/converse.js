@@ -250,7 +250,12 @@ soon as the page loads.
 It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
 
 If ``authentication`` is set to ``login``, then you will also need to provide a
-valid ``jid`` and ``password`` values.
+valid ``jid`` and ``password`` values, either manually by passing them in, or
+by the `credentials_url`_ setting. Setting a ``credentials_url`` is preferable
+to manually passing in ``jid`` and ``password`` values, because it allows
+better reconnection with ``auto_reconnect``. When the connection drops,
+converse.js will automatically fetch new login credentials from the
+``credentials_url`` and reconnect.
 
 If ``authentication`` is set to ``anonymous``, then you will also need to provide the
 server's domain via the `jid`_ setting.
@@ -436,6 +441,10 @@ This setting should be used in conjunction with ``authentication`` set to ``logi
 It allows you to specify a URL which converse.js will call when it needs to get
 the username and password (or authentication token) which converse.js will use
 to automatically log the user in.
+
+If ``auto_reconnect`` is also set to true, then converse.js will automatically
+fetch new credentials from the ``credentials_url`` whenever the connection or
+session drops, and then attempt to reconnect and establish a new session.
 
 The server behind ``credentials_url`` should return a JSON encoded object::
 

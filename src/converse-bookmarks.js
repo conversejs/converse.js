@@ -401,6 +401,12 @@
                 },
 
                 renderBookmarkListElement: function (item) {
+                    if (item instanceof _converse.ChatBox) {
+                        item = _.head(this.model.where({'jid': item.get('jid')}));
+                        if (_.isNil(item)) {
+                            return;
+                        }
+                    }
                     if (_converse.hide_open_bookmarks &&
                             _converse.chatboxes.where({'jid': item.get('jid')}).length) {
                         this.removeBookmarkListElement(item);

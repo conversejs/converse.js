@@ -1345,6 +1345,13 @@
 
         this.ChatBox = Backbone.Model.extend({
 
+            defaults: {
+                'bookmarked': false,
+                'chat_state': undefined,
+                'num_unread': 0,
+                'url': ''
+            },
+
             initialize: function () {
                 this.messages = new _converse.Messages();
                 this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
@@ -1353,10 +1360,7 @@
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                     'box_id' : b64_sha1(this.get('jid')),
-                    'chat_state': undefined,
-                    'num_unread': this.get('num_unread') || 0,
                     'time_opened': this.get('time_opened') || moment().valueOf(),
-                    'url': '',
                     'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                 });
             },

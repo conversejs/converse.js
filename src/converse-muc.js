@@ -470,7 +470,7 @@
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (_converse.connection.connected) {
+                    if (this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
@@ -1150,7 +1150,7 @@
                 },
 
                 cleanup: function () {
-                    if (_converse.connection.connected) {
+                    if (this.model.collection.browserStorage) {
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     } else {
                         this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);

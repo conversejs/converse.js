@@ -61,9 +61,10 @@
             padding: 0;
             padding-left: 0.4em;
             width: 53%;
+            display: none;
         }
         .state-type-state {
-            display: none;
+            display: inline-block;
         }
         .filter-type {
             display: table-cell;

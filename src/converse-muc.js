@@ -319,6 +319,10 @@
                 },
             });
 
+            _.extend(_converse.promises, {
+                'roomsPanelRendered': new $.Deferred()
+            });
+
             _converse.createChatRoom = function (settings) {
                 /* Creates a new chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
@@ -385,7 +389,7 @@
                         });
                     } else {
                         this.fetchMessages();
-                        _converse.emit('chatRoomOpened', that);
+                        _converse.emit('chatRoomOpened', this);
                     }
                 },
 

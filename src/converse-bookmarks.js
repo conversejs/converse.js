@@ -194,7 +194,8 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             this.updateSettings({
-                allow_bookmarks: true
+                allow_bookmarks: true,
+                hide_open_bookmarks: false
             });
 
             _converse.Bookmark = Backbone.Model;
@@ -360,6 +361,8 @@
                 initialize: function () {
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
+                    _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
+                    _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
                     var cachekey = 'converse.room-bookmarks'+_converse.bare_jid+'-list-model';
                     this.list_model = new _converse.BookmarksList();
@@ -398,6 +401,11 @@
                 },
 
                 renderBookmarkListElement: function (item) {
+                    if (_converse.hide_open_bookmarks &&
+                            _converse.chatboxes.where({'jid': item.get('jid')}).length) {
+                        this.removeBookmarkListElement(item);
+                        return;
+                    }
                     var div = document.createElement('div');
                     div.innerHTML = tpl_bookmark({
                         'bookmarked': true,
@@ -430,7 +438,7 @@
                     if (el) {
                         list_el.removeChild(el);
                     }
-                    if (this.model.length === 0) {
+                    if (list_el.childElementCount === 0) {
                         this.hide();
                     }
                 },
@@ -460,6 +468,7 @@
                         {'model': _converse.bookmarks}
                     );
                 });
+                _converse.emit('bookmarksInitialized');
             };
             _converse.on('chatBoxesFetched', initBookmarks);
 

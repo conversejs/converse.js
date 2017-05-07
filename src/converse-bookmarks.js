@@ -34,6 +34,7 @@
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
         b64_sha1 = converse.env.b64_sha1,
+        sizzle = converse.env.sizzle,
         _ = converse.env._;
 
     converse.plugins.add('converse-bookmarks', {
@@ -397,23 +398,40 @@
                 },
 
                 renderBookmarkListElement: function (item) {
-                    var $bookmark = $(tpl_bookmark({
-                            'name': item.get('name'),
-                            'jid': item.get('jid'),
-                            'open_title': __('Click to open this room'),
-                            'info_title': __('Show more information on this room'),
-                            'info_remove': __('Remove this bookmark')
-                        }));
-                    this.$('.bookmarks').append($bookmark);
+                    var div = document.createElement('div');
+                    div.innerHTML = tpl_bookmark({
+                        'bookmarked': true,
+                        'can_leave_room': false,
+                        'info_leave_room': __('Leave this room'),
+                        'info_remove': __('Remove this bookmark'),
+                        'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_title': __('Show more information on this room'),
+                        'jid': item.get('jid'),
+                        'name': item.get('name'),
+                        'open_title': __('Click to open this room')
+                    });
+                    this.el.querySelector('.bookmarks').appendChild(div.firstChild);
+                    this.show();
+                },
+
+                show: function () {
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
                     }
                 },
 
+                hide: function () {
+                    this.$el.hide();
+                },
+
                 removeBookmarkListElement: function (item) {
-                    this.$('[data-room-jid="'+item.get('jid')+'"]:first').parent().remove();
+                    var list_el = this.el.querySelector('.bookmarks');
+                    var el = _.head(sizzle('.available-chatroom[data-room-jid="'+item.get('jid')+'"]', list_el));
+                    if (el) {
+                        list_el.removeChild(el);
+                    }
                     if (this.model.length === 0) {
-                        this.$el.hide();
+                        this.hide();
                     }
                 },
 

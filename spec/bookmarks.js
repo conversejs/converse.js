@@ -292,15 +292,8 @@
              */
         }));
 
-        it("can be retrieved from the XMPP server", mock.initConverse(function (_converse) {
-            var sent_stanza, IQ_id,
-                sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
-            _converse.emit('chatBoxesFetched');
-
+        it("can be retrieved from the XMPP server",
+                mock.initConverseWithConnectionSpies(['send'], function (_converse) {
             /* Client requests all items
              * -------------------------
              *
@@ -310,13 +303,23 @@
              *  </pubsub>
              *  </iq>
              */
-            expect(sent_stanza.toLocaleString()).toBe(
-                "<iq from='dummy@localhost/resource' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
-                    "<items node='storage:bookmarks'/>"+
-                "</pubsub>"+
-                "</iq>"
-            );
+            var IQ_id;
+            expect(_.filter(_converse.connection.send.calls.all(), function (call) {
+                var stanza = call.args[0]
+                if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
+                    return;
+                }
+                if (stanza.outerHTML ===
+                    '<iq from="dummy@localhost/resource" type="get" '+
+                         'xmlns="jabber:client" id="'+stanza.getAttribute('id')+'">'+
+                    '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                        '<items node="storage:bookmarks"/>'+
+                    '</pubsub>'+
+                    '</iq>') {
+                    IQ_id = stanza.getAttribute('id');
+                    return true;
+                }
+            }).length).toBe(1);
 
             /*
              * Server returns all items

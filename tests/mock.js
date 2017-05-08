@@ -76,24 +76,39 @@
         };
     }();
 
-    function initConverse (settings) {
+    function initConverse (settings, spies) {
         window.localStorage.clear();
         window.sessionStorage.clear();
+
+        var connection = mock.mock_connection();
+        if (!_.isUndefined(spies)) {
+            _.forEach(spies, function (method) {
+                spyOn(connection, method);
+            });
+        }
+
         var converse = converse_api.initialize(_.extend({
-            i18n: 'en',
-            auto_subscribe: false,
-            bosh_service_url: 'localhost',
-            connection: mock.mock_connection(),
-            animate: false,
-            no_trimming: true,
-            auto_login: true,
-            jid: 'dummy@localhost',
-            password: 'secret',
-            debug: false
+            'i18n': 'en',
+            'auto_subscribe': false,
+            'bosh_service_url': 'localhost',
+            'connection': connection,
+            'animate': false,
+            'no_trimming': true,
+            'auto_login': true,
+            'jid': 'dummy@localhost',
+            'password': 'secret',
+            'debug': false
         }, settings || {}));
         converse.ChatBoxViews.prototype.trimChat = function () {};
         return converse;
     }
+
+    mock.initConverseWithConnectionSpies = function (spies, func, settings) {
+        return function () {
+            return func(initConverse(settings, spies));
+        };
+    };
+
     mock.initConverseWithAsync = function (func, settings) {
         return function (done) {
             return func(done, initConverse(settings));
@@ -101,7 +116,6 @@
     };
     mock.initConverse = function (func, settings) {
         return function () {
-            initConverse(settings);
             return func(initConverse(settings));
         };
     };

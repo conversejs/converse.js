@@ -2156,9 +2156,10 @@
       margin: 0;
       padding: 0;
       padding-left: 0.4em;
-      width: 53%; }
-    #conversejs #converse-roster .roster-filter-form .state-type-state {
+      width: 53%;
       display: none; }
+    #conversejs #converse-roster .roster-filter-form .state-type-state {
+      display: inline-block; }
     #conversejs #converse-roster .roster-filter-form .filter-type {
       display: table-cell;
       float: right;

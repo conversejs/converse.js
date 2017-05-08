@@ -36,7 +36,6 @@ require.config({
         "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
         "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
-        "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.noconflict":        "src/lodash.noconflict",
@@ -163,11 +162,15 @@ require.config({
     },
 
     packages: [{
-        name: 'moment',
+        'name': 'moment',
         // This location is relative to baseUrl. Choose bower_components
         // or node_modules, depending on how moment was installed.
-        location: 'node_modules/moment',
-        main: 'moment'
+        'location': 'node_modules/moment',
+        'main': 'moment'
+    }, {
+        'name': 'tpl',
+        'location': 'node_modules/lodash-template-loader',
+        'main': 'loader'
     }],
 
     map: {
@@ -198,6 +201,6 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
-        'awesomplete':          { exports: 'Awesomplete' },
+        'awesomplete':          { exports: 'Awesomplete' }
     }
 });

@@ -1956,6 +1956,7 @@
       #conversejs #controlbox .dropdown dd ul li:hover {
         background-color: #DCF9F6; }
     #conversejs #controlbox .dropdown dd.search-xmpp {
+      width: 100%
       display: none; }
     #conversejs #controlbox .dropdown dd.search-xmpp ul {
       box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
@@ -2045,7 +2046,8 @@
       float: right;
       clear: right;
       width: 12px;
-      margin-right: 0.3em;
+      margin-right: 5px;
+      margin-top: 5px;
       color: #2A9D8F; }
   #conversejs #controlbox .controlbox-pane {
     background-color: white;

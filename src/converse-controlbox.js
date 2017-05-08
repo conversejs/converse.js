@@ -459,12 +459,11 @@
 
 
             _converse.XMPPStatusView = Backbone.View.extend({
-                el: "span#xmpp-status-holder",
-
+                el: "form#set-xmpp-status",
                 events: {
                     "click a.choose-xmpp-status": "toggleOptions",
                     "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-                    "submit #set-custom-xmpp-status": "setStatusMessage",
+                    "submit": "setStatusMessage",
                     "click .dropdown dd ul li a": "setStatus"
                 },
 

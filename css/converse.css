@@ -1937,9 +1937,8 @@
   #conversejs #controlbox .dropdown {
     /* Custom addition for CSP */ }
     #conversejs #controlbox .dropdown a {
-      width: 148px;
-      display: inline-block;
-      line-height: 25px; }
+      width: 143px;
+      display: inline-block; }
     #conversejs #controlbox .dropdown li {
       list-style: none;
       padding-left: 0; }
@@ -1969,22 +1968,6 @@
     display: none;
     float: right;
     margin-right: 0.5em; }
-  #conversejs #controlbox #set-custom-xmpp-status {
-    float: left;
-    padding: 0; }
-    #conversejs #controlbox #set-custom-xmpp-status fieldset {
-      padding: 0;
-      margin-top: -1px; }
-    #conversejs #controlbox #set-custom-xmpp-status input {
-      height: 26px;
-      width: -webkit-calc(100% - 40px);
-      width: calc(100% - 40px);
-      padding: 0 0 0 0.5em; }
-    #conversejs #controlbox #set-custom-xmpp-status input[type=submit] {
-      height: 26px;
-      width: 40px;
-      padding: 1px;
-      float: right; }
   #conversejs #controlbox #controlbox-tabs {
     text-align: center;
     display: inline;
@@ -2025,8 +2008,7 @@
     height: 25px;
     border-radius: 4px;
     text-align: left;
-    padding: 0;
-    padding-left: 0.3em; }
+    padding: 0.3em 0.3em 0 0.3em; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status,
     #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
       text-shadow: 0 1px 0 #ffffff;
@@ -2036,17 +2018,28 @@
       display: inline-block; }
     #conversejs #controlbox .fancy-dropdown.no-border {
       border: 0; }
+  #conversejs #controlbox .xmpp-status {
+    padding: 0.3em 0.3em 0 0.3em; }
   #conversejs #controlbox #fancy-xmpp-status-select {
-    padding-left: 0; }
-    #conversejs #controlbox #fancy-xmpp-status-select .xmpp-status {
-      margin-left: 0.3em;
-      display: inline; }
+    padding: 0em; }
     #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message {
       float: right;
       clear: right;
       width: 12px;
-      margin-right: 0.3em;
       color: #2A9D8F; }
+    #conversejs #controlbox #fancy-xmpp-status-select fieldset {
+      padding: 0;
+      margin-top: -1px; }
+    #conversejs #controlbox #fancy-xmpp-status-select input {
+      height: 26px;
+      width: -webkit-calc(100% - 40px);
+      width: calc(100% - 40px);
+      padding: 0 0 0 0.5em; }
+    #conversejs #controlbox #fancy-xmpp-status-select input[type=submit] {
+      height: 26px;
+      width: 40px;
+      padding: 1px;
+      float: right; }
   #conversejs #controlbox .controlbox-pane {
     background-color: white;
     border-bottom-left-radius: 4px;
@@ -2075,7 +2068,7 @@
     overflow-y: hidden; }
   #conversejs #controlbox .add-xmpp-contact {
     background: none;
-    padding: 1em; }
+    padding: 1em 0.5em; }
     #conversejs #controlbox .add-xmpp-contact input {
       margin: 0 0 1rem;
       width: 100%; }
@@ -2088,7 +2081,7 @@
       padding: 2px; }
       #conversejs #controlbox .xmpp-status-menu li a {
         width: 100%;
-        padding: 0 8px; }
+        padding: 0.3em; }
   #conversejs #controlbox .xmpp-status-menu li a.logout,
   #conversejs #controlbox .xmpp-status-menu li a.logout span {
     color: #D24E2B; }

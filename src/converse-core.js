@@ -38,8 +38,9 @@
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
-        evaluate : /\{\[([\s\S]+?)\]\}/g,
-        interpolate : /\{\{([\s\S]+?)\}\}/g
+        'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
+        'evaluate': /\{\[([\s\S]+?)\]\}/g,
+        'interpolate': /\{\{([\s\S]+?)\}\}/g
     };
 
     var _converse = {};

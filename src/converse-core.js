@@ -1938,6 +1938,39 @@
             }
         };
 
+        this.attemptNonPreboundSession = function (credentials, reconnecting) {
+            /* Handle session resumption or initialization when prebind is not being used.
+             *
+             * Two potential options exist and are handled in this method:
+             *  1. keepalive
+             *  2. auto_login
+             */
+            if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
+                return;
+            }
+            if (this.auto_login) {
+                if (credentials) {
+                    // When credentials are passed in, they override prebinding
+                    // or credentials fetching via HTTP
+                    this.autoLogin(credentials);
+                } else if (this.credentials_url) {
+                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
+                } else if (!this.jid) {
+                    throw new Error(
+                        "attemptNonPreboundSession: If you use auto_login, "+
+                        "you also need to give either a jid value (and if "+
+                        "applicable a password) or you need to pass in a URL "+
+                        "from where the username and password can be fetched "+
+                        "(via credentials_url)."
+                    );
+                } else {
+                    this.autoLogin(); // Probably ANONYMOUS login
+                }
+            } else if (reconnecting) {
+                this.autoLogin();
+            }
+        };
+
         this.autoLogin = function (credentials) {
             if (credentials) {
                 // If passed in, then they come from credentials_url, so we
@@ -1973,39 +2006,6 @@
                 }
                 this.connection.reset();
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
-            }
-        };
-
-        this.attemptNonPreboundSession = function (credentials, reconnecting) {
-            /* Handle session resumption or initialization when prebind is not being used.
-             *
-             * Two potential options exist and are handled in this method:
-             *  1. keepalive
-             *  2. auto_login
-             */
-            if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
-                return;
-            }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
-                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
-                } else if (!this.jid) {
-                    throw new Error(
-                        "attemptNonPreboundSession: If you use auto_login, "+
-                        "you also need to give either a jid value (and if "+
-                        "applicable a password) or you need to pass in a URL "+
-                        "from where the username and password can be fetched "+
-                        "(via credentials_url)."
-                    );
-                } else {
-                    this.autoLogin(); // Probably ANONYMOUS login
-                }
-            } else if (reconnecting) {
-                this.autoLogin();
             }
         };
 

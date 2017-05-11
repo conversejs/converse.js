@@ -1973,10 +1973,9 @@
 
         this.autoLogin = function (credentials) {
             if (credentials) {
-                // If passed in, then they come from credentials_url, so we
-                // set them on the _converse object.
+                // If passed in, the credentials come from credentials_url,
+                // so we set them on the converse object.
                 this.jid = credentials.jid;
-                this.password = credentials.password;
             }
             if (this.authentication === _converse.ANONYMOUS) {
                 if (!this.jid) {
@@ -1988,9 +1987,9 @@
                 this.connection.reset();
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
-                var password = _converse.connection.pass || this.password;
+                var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
                 if (!password) {
-                    if (this.auto_login && !this.password) {
+                    if (this.auto_login) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }

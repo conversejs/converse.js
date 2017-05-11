@@ -1894,29 +1894,46 @@
             xhr.send();
         };
 
+        this.restoreBOSHSession = function () {
+            /* Tries to restore a cached BOSH session. */
+            if (!this.jid) {
+                throw new Error(
+                    "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                    "but we don't have the JID for the user!");
+            }
+            try {
+                this.connection.restore(this.jid, this.onConnectStatusChanged);
+                return true;
+            } catch (e) {
+                this.log(
+                    "Could not restore session for jid: "+
+                    this.jid+" Error message: "+e.message);
+                this.clearSession(); // If there's a roster, we want to clear it (see #555)
+                return false;
+            }
+        };
+
         this.attemptPreboundSession = function (reconnecting) {
-            /* Handle session resumption or initialization when prebind is being used.
+            /* Handle session resumption or initialization when prebind is
+             * being used.
              */
-            if (!reconnecting && this.keepalive) {
-                if (!this.jid) {
-                    throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
-                                    "you must supply the JID of the current user.");
+            if (!reconnecting) {
+                if (this.keepalive && this.restoreBOSHSession()) {
+                    return;
                 }
-                try {
-                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
-                } catch (e) {
-                    this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
-                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
+                // No keepalive, or session resumption has failed.
+                if (this.jid && this.sid && this.rid) {
+                    return this.connection.attach(
+                        this.jid, this.sid, this.rid,
+                        this.onConnectStatusChanged
+                    );
                 }
             }
-
-            // No keepalive, or session resumption has failed.
-            if (!reconnecting && this.jid && this.sid && this.rid) {
-                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
-            } else if (this.prebind_url) {
+            if (this.prebind_url) {
                 return this.startNewBOSHSession();
             } else {
-                throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
+                throw new Error(
+                    "attemptPreboundSession: If you use prebind and not keepalive, "+
                     "then you MUST supply JID, RID and SID values or a prebind_url.");
             }
         };
@@ -1966,13 +1983,8 @@
              *  1. keepalive
              *  2. auto_login
              */
-            if (this.keepalive && !reconnecting) {
-                try {
-                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
-                } catch (e) {
-                    this.log("Could not restore session. Error message: "+e.message);
-                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
-                }
+            if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
+                return;
             }
             if (this.auto_login) {
                 if (credentials) {
@@ -1983,14 +1995,14 @@
                     this.fetchLoginCredentials().done(this.autoLogin.bind(this));
                 } else if (!this.jid) {
                     throw new Error(
-                        "initConnection: If you use auto_login, you also need"+
-                        "to give either a jid value (and if applicable a "+
-                        "password) or you need to pass in a URL from where the "+
-                        "username and password can be fetched (via credentials_url)."
+                        "attemptNonPreboundSession: If you use auto_login, "+
+                        "you also need to give either a jid value (and if "+
+                        "applicable a password) or you need to pass in a URL "+
+                        "from where the username and password can be fetched "+
+                        "(via credentials_url)."
                     );
                 } else {
-                    // Probably ANONYMOUS login
-                    this.autoLogin();
+                    this.autoLogin(); // Probably ANONYMOUS login
                 }
             } else if (reconnecting) {
                 this.autoLogin();

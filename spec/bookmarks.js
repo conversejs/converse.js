@@ -405,7 +405,7 @@
                                     .c('conference', {
                                         'name': 'Bookmark with a very very long name that will be shortened',
                                         'autojoin': 'false',
-                                        'jid': 'theplay@conference.shakespeare.lit'
+                                        'jid': 'longname@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up()
                                     .c('conference', {
                                         'name': 'Another room',

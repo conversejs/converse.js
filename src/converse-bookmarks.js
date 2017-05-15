@@ -404,14 +404,20 @@
                     if (item instanceof _converse.ChatBox) {
                         item = _.head(this.model.where({'jid': item.get('jid')}));
                         if (_.isNil(item)) {
+                            // A chat box has been closed, but we don't have a
+                            // bookmark for it, so nothing further to do here.
                             return;
                         }
                     }
                     if (_converse.hide_open_bookmarks &&
                             _converse.chatboxes.where({'jid': item.get('jid')}).length) {
+                        // A chat box has been opened, and we don't show
+                        // bookmarks for open chats, so we remove it.
                         this.removeBookmarkListElement(item);
                         return;
                     }
+
+                    var list_el = this.el.querySelector('.bookmarks');
                     var div = document.createElement('div');
                     div.innerHTML = tpl_bookmark({
                         'bookmarked': true,
@@ -424,7 +430,15 @@
                         'name': item.get('name'),
                         'open_title': __('Click to open this room')
                     });
-                    this.el.querySelector('.bookmarks').appendChild(div.firstChild);
+                    var el = _.head(sizzle(
+                        '.available-chatroom[data-room-jid="'+item.get('jid')+'"]',
+                        list_el));
+
+                    if (el) {
+                        el.innerHTML = div.firstChild.innerHTML;
+                    } else {
+                        list_el.appendChild(div.firstChild);
+                    }
                     this.show();
                 },
 

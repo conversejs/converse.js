@@ -937,9 +937,7 @@
                  * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
                  */
                 var chatbox = chatboxview.model;
-                if (chatbox.get('type') === 'chatroom') {
-                    // TODO
-                } else {
+                if (chatbox.get('type') !== 'chatroom') {
                     var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                     if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
                         contact.save({'num_unread': 0});

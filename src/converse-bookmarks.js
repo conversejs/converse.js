@@ -421,7 +421,6 @@
                     var div = document.createElement('div');
                     div.innerHTML = tpl_bookmark({
                         'bookmarked': true,
-                        'can_leave_room': false,
                         'info_leave_room': __('Leave this room'),
                         'info_remove': __('Remove this bookmark'),
                         'info_remove_bookmark': __('Unbookmark this room'),

@@ -13,10 +13,10 @@
     define(["utils",
             "converse-core",
             "converse-muc",
-            "tpl!bookmark",
-            "tpl!rooms_list"
+            "tpl!rooms_list",
+            "tpl!rooms_list_item"
         ], factory);
-}(this, function (utils, converse, muc, tpl_bookmark, tpl_rooms_list) {
+}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
     var $ = converse.env.jQuery,
         Backbone = converse.env.Backbone,
         b64_sha1 = converse.env.b64_sha1,
@@ -50,6 +50,7 @@
                     this.model.on('add', this.renderRoomsListElement, this);
                     this.model.on('change:bookmarked', this.renderRoomsListElement, this);
                     this.model.on('change:name', this.renderRoomsListElement, this);
+                    this.model.on('change:num_unread', this.renderRoomsListElement, this);
                     this.model.on('remove', this.removeRoomsListElement, this);
 
                     var cachekey = 'converse.roomslist'+_converse.bare_jid;
@@ -117,8 +118,7 @@
                         name = item.get('name');
                     }
                     var div = document.createElement('div');
-                    div.innerHTML = tpl_bookmark(_.extend(item.toJSON(), {
-                        'can_leave_room': true,
+                    div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
                         'info_leave_room': __('Leave this room'),
                         'info_remove_bookmark': __('Unbookmark this room'),
                         'info_title': __('Show more information on this room'),
@@ -177,7 +177,7 @@
                     _converse.rooms_list_view.render();
                 }
             };
-            _converse.on('reconnected', afterReconnection);
+            _converse.api.listen.on('reconnected', afterReconnection);
         }
     });
 }));

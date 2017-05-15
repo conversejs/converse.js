@@ -151,6 +151,7 @@ require.config({
         "room_item":                "src/templates/room_item",
         "room_panel":               "src/templates/room_panel",
         "rooms_list":               "src/templates/rooms_list",
+        "rooms_list_item":          "src/templates/rooms_list_item",
         "roster":                   "src/templates/roster",
         "roster_filter":            "src/templates/roster_filter",
         "roster_item":              "src/templates/roster_item",

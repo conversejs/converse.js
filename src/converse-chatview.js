@@ -151,6 +151,7 @@
                 },
 
                 afterMessagesFetched: function () {
+                    this.model.set('fetching_messages', false);
                     this.insertIntoDOM();
                     this.scrollDown();
                     // We only start listening for the scroll event after
@@ -159,8 +160,9 @@
                 },
 
                 fetchMessages: function () {
+                    this.model.set('fetching_messages', true);
                     this.model.messages.fetch({
-                        'add': false,
+                        'add': true,
                         'success': this.afterMessagesFetched.bind(this),
                         'error': this.afterMessagesFetched.bind(this),
                     });
@@ -437,7 +439,12 @@
                     }
                 },
 
-                isNewMessageHidden: function() {
+                isNewMessageHidden: function () {
+                    if (this.model.get('fetching_messages')) {
+                        // We seem to be busy fetching sessionStorage archived
+                        // messages, so the message is not considered new.
+                        return false;
+                    }
                     return _converse.windowState === 'hidden' || this.model.isScrolledUp();
                 },
 

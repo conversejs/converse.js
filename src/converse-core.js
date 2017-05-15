@@ -770,6 +770,17 @@
 
         this.RosterContact = Backbone.Model.extend({
 
+            defaults: {
+                'bookmarked': false,
+                'chat_state': undefined,
+                'chat_status': 'offline',
+                'groups': [],
+                'image': DEFAULT_IMAGE,
+                'image_type': DEFAULT_IMAGE_TYPE,
+                'num_unread': 0,
+                'status': '',
+            },
+
             initialize: function (attributes) {
                 var jid = attributes.jid;
                 var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
@@ -779,14 +790,8 @@
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
-                    'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? {'resource':0} : {},
-                    'groups': [],
-                    'image_type': DEFAULT_IMAGE_TYPE,
-                    'image': DEFAULT_IMAGE,
-                    'status': '',
-                    'num_unread': 0
+                    'resources': resource ? {resource :0} : {},
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));

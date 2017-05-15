@@ -36,9 +36,6 @@
                 defaults: {
                     "toggle-state":  _converse.OPENED
                 },
-
-                initialize: function () {
-                }
             });
 
             _converse.RoomsListView = Backbone.View.extend({

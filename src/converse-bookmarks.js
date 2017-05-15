@@ -487,8 +487,8 @@
                     _converse.bookmarksview = new _converse.BookmarksView(
                         {'model': _converse.bookmarks}
                     );
+                    _converse.emit('bookmarksInitialized');
                 });
-                _converse.emit('bookmarksInitialized');
             };
             $.when(_converse.api.waitUntil('chatBoxesFetched'),
                    _converse.api.waitUntil('roomsPanelRendered')).then(initBookmarks);

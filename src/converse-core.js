@@ -1894,12 +1894,16 @@
             xhr.send();
         };
 
-        this.restoreBOSHSession = function () {
+        this.restoreBOSHSession = function (jid_is_required) {
             /* Tries to restore a cached BOSH session. */
             if (!this.jid) {
-                throw new Error(
-                    "restoreBOSHSession: tried to restore a \"keepalive\" session "+
-                    "but we don't have the JID for the user!");
+                var msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                        "but we don't have the JID for the user!";
+                if (jid_is_required) {
+                    throw new Error(msg);
+                } else {
+                    _converse.log(msg);
+                }
             }
             try {
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
@@ -1918,7 +1922,7 @@
              * being used.
              */
             if (!reconnecting) {
-                if (this.keepalive && this.restoreBOSHSession()) {
+                if (this.keepalive && this.restoreBOSHSession(true)) {
                     return;
                 }
                 // No keepalive, or session resumption has failed.

@@ -27,7 +27,7 @@
     }
 
     .roster-filter-form {
-        margin: 0 1em;
+        margin: 0 1em 0.5em 1em;
         width: 100%;
         padding-right: 1em + 2*$chat-gutter;
         .roster-filter {
@@ -255,6 +255,7 @@
                     margin-left: 5px;
                 }
                 &.remove-xmpp-contact {
+                    font-size: $font-size-tiny;
                     float: right;
                     margin-right: 1em;
                     padding-top: 0.5em;

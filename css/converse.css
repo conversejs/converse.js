@@ -229,6 +229,9 @@
 #converse-embedded-chat .icon-remove:before,
 #conversejs .icon-remove:before {
   content: "\2715"; }
+#converse-embedded-chat .icon-trash:before,
+#conversejs .icon-trash:before {
+  content: "\e02d"; }
 #converse-embedded-chat .icon-room-info:before,
 #conversejs .icon-room-info:before {
   content: "\e059"; }
@@ -1967,7 +1970,8 @@
       #conversejs #controlbox .dropdown dd ul li:hover {
         background-color: #DCF9F6; }
     #conversejs #controlbox .dropdown dd.search-xmpp {
-      display: none; }
+      display: none;
+      width: 100%; }
     #conversejs #controlbox .dropdown dd.search-xmpp ul {
       box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
       #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
@@ -2132,7 +2136,7 @@
   #conversejs #converse-roster .search-xmpp ul li.chat-info {
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-form {
-    margin: 0 1em;
+    margin: 0 1em 0.5em 1em;
     width: 100%;
     padding-right: 2em;
     /* (jQ addClass:) if input has value: */
@@ -2365,6 +2369,7 @@
       #conversejs #converse-roster .roster-contacts dd a.decline-xmpp-request {
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
+        font-size: 10px;
         float: right;
         margin-right: 1em;
         padding-top: 0.5em;

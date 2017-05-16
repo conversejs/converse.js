@@ -40,7 +40,7 @@
 
             _converse.RoomsListView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'open-rooms-list, rooms-list-container',
+                className: 'open-rooms-list rooms-list-container',
                 events: {
                     'click .close-room': 'closeRoom',
                     'click .open-rooms-toggle': 'toggleRoomsList'

@@ -143,25 +143,31 @@
             },
 
             ControlBoxView: {
+
+                renderRoomsPanel: function () {
+                    var _converse = this.__super__._converse;
+                    this.roomspanel = new _converse.RoomsPanel({
+                        '$parent': this.$el.find('.controlbox-panes'),
+                        'model': new (Backbone.Model.extend({
+                            id: b64_sha1('converse.roomspanel'+_converse.bare_jid), // Required by sessionStorage
+                            browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                                b64_sha1('converse.roomspanel'+_converse.bare_jid))
+                        }))()
+                    });
+                    this.roomspanel.render().model.fetch();
+                    if (!this.roomspanel.model.get('nick')) {
+                        this.roomspanel.model.save({
+                            nick: Strophe.getNodeFromJid(_converse.bare_jid)
+                        });
+                    }
+                    _converse.emit('roomsPanelRendered');
+                },
+
                 renderContactsPanel: function () {
                     var _converse = this.__super__._converse;
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
-                        this.roomspanel = new _converse.RoomsPanel({
-                            '$parent': this.$el.find('.controlbox-panes'),
-                            'model': new (Backbone.Model.extend({
-                                id: b64_sha1('converse.roomspanel'+_converse.bare_jid), // Required by sessionStorage
-                                browserStorage: new Backbone.BrowserStorage[_converse.storage](
-                                    b64_sha1('converse.roomspanel'+_converse.bare_jid))
-                            }))()
-                        });
-                        this.roomspanel.render().model.fetch();
-                        if (!this.roomspanel.model.get('nick')) {
-                            this.roomspanel.model.save({
-                                nick: Strophe.getNodeFromJid(_converse.bare_jid)
-                            });
-                        }
-                        _converse.emit('roomsPanelRendered');
+                        this.renderRoomsPanel();
                     }
                 },
 

@@ -109,12 +109,22 @@
         };
     };
 
-    mock.initConverseWithAsync = function (func, settings) {
+    mock.initConverseWithAsync = function (settings, func) {
+        if (_.isFunction(settings)) {
+            var _func = settings;
+            settings = func;
+            func = _func;
+        }
         return function (done) {
             return func(done, initConverse(settings));
         };
     };
-    mock.initConverse = function (func, settings) {
+    mock.initConverse = function (settings, func) {
+        if (_.isFunction(settings)) {
+            var _func = settings;
+            settings = func;
+            func = _func;
+        }
         return function () {
             return func(initConverse(settings));
         };

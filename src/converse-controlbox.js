@@ -242,14 +242,17 @@
                     } else {
                         this.hide();
                     }
-                    this.$el.html(tpl_controlbox(
+                    this.el.innerHTML = tpl_controlbox(
                         _.extend(this.model.toJSON(), {
-                            sticky_controlbox: _converse.sticky_controlbox
-                        }))
-                    );
-                    if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
+                            'sticky_controlbox': _converse.sticky_controlbox
+                        }));
+
+                    if (!_converse.connection.connected ||
+                            !_converse.connection.authenticated ||
+                            _converse.connection.disconnecting) {
                         this.renderLoginPanel();
-                    } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
+                    } else if (this.model.get('connected') &&
+                            (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
                         this.renderContactsPanel();
                     }
                     return this;

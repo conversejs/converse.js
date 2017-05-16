@@ -1423,9 +1423,34 @@
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            incrementUnreadMsgCounter: function() {
-                this.save({'num_unread': this.get('num_unread') + 1});
-                _converse.incrementMsgCounter();
+            isNewMessage: function (stanza) {
+                /* Given a message stanza, determine whether it's a new
+                 * message, i.e. not an archived one.
+                 */
+                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
+            },
+
+            newMessageWillBeHidden: function () {
+                /* Returns a boolean to indicate whether a newly received
+                 * message will be visible to the user or not.
+                 */
+                return this.get('hidden') ||
+                    this.get('minimized') ||
+                    this.isScrolledUp() ||
+                    _converse.windowState === 'hidden';
+            },
+
+            incrementUnreadMsgCounter: function (stanza) {
+                /* Given a newly received message, update the unread counter if
+                 * necessary.
+                 */
+                if (_.isNull(stanza.querySelector('body'))) {
+                    return; // The message has no text
+                }
+                if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    this.save({'num_unread': this.get('num_unread') + 1});
+                    _converse.incrementMsgCounter();
+                }
             },
 
             clearUnreadMsgCounter: function() {
@@ -1555,6 +1580,7 @@
                     if (_.isEmpty(messages)) {
                         // Only create the message when we're sure it's not a
                         // duplicate
+                        chatbox.incrementUnreadMsgCounter(original_stanza);
                         chatbox.createMessage(message, delay, original_stanza);
                     }
                 }

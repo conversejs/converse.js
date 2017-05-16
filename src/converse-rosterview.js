@@ -947,7 +947,7 @@
 
             var onMessageReceived = function (data) {
                 /* Given a newly received message, update the unread counter on
-                 * the relevant roster contact (TODO: or chat room).
+                 * the relevant roster contact.
                  */
                 var chatbox = data.chatbox;
                 if (_.isUndefined(chatbox)) {
@@ -956,17 +956,13 @@
                 if (_.isNull(data.stanza.querySelector('body'))) {
                     return; // The message has no text
                 }
-                var new_message = !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', data.stanza).length);
-                var is_new_message_hidden = chatbox.get('hidden') || chatbox.get('minimized') || chatbox.isScrolledUp();
+                if (chatbox.get('type') !== 'chatroom' &&
+                    chatbox.isNewMessage(data.stanza) &&
+                    chatbox.newMessageWillBeHidden()) {
 
-                if (is_new_message_hidden && new_message) {
-                    if (chatbox.get('type') === 'chatroom') {
-                        // TODO
-                    } else {
-                        var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
-                        if (!_.isUndefined(contact)) {
-                            contact.save({'num_unread': contact.get('num_unread') + 1});
-                        }
+                    var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
+                    if (!_.isUndefined(contact)) {
+                        contact.save({'num_unread': contact.get('num_unread') + 1});
                     }
                 }
             };

@@ -79,11 +79,9 @@
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.$el.find('a.change-xmpp-status-message').click();
                 expect(view.renderStatusChangeForm).toHaveBeenCalled();
-                // The async testing here is used only to provide time for
-                // visual feedback
                 var msg = 'I am happy';
-                view.$el.find('form input.custom-xmpp-status').val(msg);
-                view.$el.find('form#set-custom-xmpp-status').submit();
+                view.$el.find('input.custom-xmpp-status').val(msg);
+                view.$el.submit();
                 expect(view.setStatusMessage).toHaveBeenCalled();
                 expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);

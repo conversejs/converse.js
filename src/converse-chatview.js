@@ -160,7 +160,7 @@
 
                 fetchMessages: function () {
                     this.model.messages.fetch({
-                        'add': false,
+                        'add': true,
                         'success': this.afterMessagesFetched.bind(this),
                         'error': this.afterMessagesFetched.bind(this),
                     });
@@ -418,33 +418,12 @@
                     return !this.$el.is(':visible');
                 },
 
-                updateNewMessageIndicators: function (message) {
-                    /* We have two indicators of new messages. The unread messages
-                     * counter, which shows the number of unread messages in
-                     * the document.title, and the "new messages" indicator in
-                     * a chat area, if it's scrolled up so that new messages
-                     * aren't visible.
-                     *
-                     * In both cases we ignore MAM messages.
-                     */
-                    if (!message.get('archive_id')) {
-                        if (this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
-                        }
-                        if (this.isNewMessageHidden()) {
-                            this.model.incrementUnreadMsgCounter();
-                        }
-                    }
-                },
-
-                isNewMessageHidden: function() {
-                    return _converse.windowState === 'hidden' || this.model.isScrolledUp();
-                },
-
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
                     if (message.get('sender') !== 'me') {
-                        this.updateNewMessageIndicators(message);
+                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                        }
                     } else {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
@@ -901,7 +880,7 @@
                 },
 
                 onWindowStateChanged: function (state) {
-                    if (this.model.get('num_unread', 0) && !this.isNewMessageHidden()) {
+                    if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }
                 }

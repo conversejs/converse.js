@@ -143,24 +143,31 @@
             },
 
             ControlBoxView: {
+
+                renderRoomsPanel: function () {
+                    var _converse = this.__super__._converse;
+                    this.roomspanel = new _converse.RoomsPanel({
+                        '$parent': this.$el.find('.controlbox-panes'),
+                        'model': new (Backbone.Model.extend({
+                            id: b64_sha1('converse.roomspanel'+_converse.bare_jid), // Required by sessionStorage
+                            browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                                b64_sha1('converse.roomspanel'+_converse.bare_jid))
+                        }))()
+                    });
+                    this.roomspanel.render().model.fetch();
+                    if (!this.roomspanel.model.get('nick')) {
+                        this.roomspanel.model.save({
+                            nick: Strophe.getNodeFromJid(_converse.bare_jid)
+                        });
+                    }
+                    _converse.emit('roomsPanelRendered');
+                },
+
                 renderContactsPanel: function () {
                     var _converse = this.__super__._converse;
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
-                        this.roomspanel = new _converse.RoomsPanel({
-                            '$parent': this.$el.find('.controlbox-panes'),
-                            'model': new (Backbone.Model.extend({
-                                id: b64_sha1('converse.roomspanel'+_converse.bare_jid), // Required by sessionStorage
-                                browserStorage: new Backbone.BrowserStorage[_converse.storage](
-                                    b64_sha1('converse.roomspanel'+_converse.bare_jid))
-                            }))()
-                        });
-                        this.roomspanel.render().model.fetch();
-                        if (!this.roomspanel.model.get('nick')) {
-                            this.roomspanel.model.save({
-                                nick: Strophe.getNodeFromJid(_converse.bare_jid)
-                            });
-                        }
+                        this.renderRoomsPanel();
                     }
                 },
 
@@ -318,6 +325,10 @@
                 },
             });
 
+            _.extend(_converse.promises, {
+                'roomsPanelRendered': new $.Deferred()
+            });
+
             _converse.createChatRoom = function (settings) {
                 /* Creates a new chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
@@ -384,7 +395,7 @@
                         });
                     } else {
                         this.fetchMessages();
-                        _converse.emit('chatRoomOpened', that);
+                        _converse.emit('chatRoomOpened', this);
                     }
                 },
 
@@ -469,7 +480,7 @@
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (_converse.connection.connected) {
+                    if (this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
@@ -1149,7 +1160,7 @@
                 },
 
                 cleanup: function () {
-                    if (_converse.connection.connected) {
+                    if (this.model.collection.browserStorage) {
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     } else {
                         this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);

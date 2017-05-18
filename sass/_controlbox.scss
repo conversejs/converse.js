@@ -114,61 +114,78 @@
                     width: 100%;
                 }
             }
-            dl.rooms-list {
-                margin: 0 1em;
-                padding: 0;
+            .rooms-list-container {
                 text-align: left;
-                dt {
-                    border: none;
-                    color: $text-color;
-                    font-weight: normal;
-                    padding: 0;
-                    padding-bottom: 0.5em;
-                    text-shadow: 0 1px 0 $text-shadow-color;
-                }
-                dd.available-chatroom {
-                    border: none;
-                    clear: both;
-                    color: $text-color;
+                margin: 0 1em;
+                .rooms-toggle {
                     display: block;
-                    overflow: hidden;
-                    padding: 0.1em;
-                    text-shadow: 0 1px 0 $text-shadow-color;
-                    word-wrap: break-word;
-                    &:hover {
-                        background-color: $highlight-color;
+                    font-weight: bold;
+                    color: $text-color;
+                    margin-top: 1em;
+                }
+                dl.rooms-list {
+                    margin: 0.5em 0;
+                    text-align: left;
+                    dt {
+                        border: none;
+                        color: $text-color;
+                        font-weight: normal;
+                        padding: 0;
+                        padding-bottom: 0.5em;
+                        text-shadow: 0 1px 0 $text-shadow-color;
                     }
-                    a {
-                        &.room-info {
-                            clear: right;
-                            display: block;
-                            &:before {
-                                font-size: 15px;
+                    dd.available-chatroom {
+                        border: none;
+                        clear: both;
+                        color: $text-color;
+                        display: block;
+                        overflow: hidden;
+                        padding: 0.3em 0;
+                        text-shadow: 0 1px 0 $text-shadow-color;
+                        word-wrap: break-word;
+                        &:hover {
+                            background-color: $highlight-color;
+                        }
+                        a {
+                            &.room-info {
+                                &:before {
+                                    font-size: 15px;
+                                }
+                            }
+                            &.open-room {
+                                float: left;
+                                width: 68%;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                padding-right: 0.5em;
                             }
                         }
-                        &.open-room {
-                            float: left;
-                            width: 85%;
+                        .remove-bookmark {
+                            &.button-on {
+                                color: $link-color;
+                            }
+                            color: $subdued-color;
                         }
-                    }
-                    .room-info {
-                        font-size: $font-size-small;
-                        font-style: normal;
-                        font-weight: normal;
-                    }
-                    li.room-info {
-                        display: block;
-                        margin-left: 5px;
-                    }
-                    p.room-info {
-                        margin: 0;
-                        padding: 0;
-                        display: block;
-                        white-space: normal;
-                    }
-                    div.room-info {
-                        clear: left;
-                        width: 100%;
+                        .room-info {
+                            font-size: $font-size-small;
+                            font-style: normal;
+                            font-weight: normal;
+                        }
+                        li.room-info {
+                            display: block;
+                            margin-left: 5px;
+                        }
+                        p.room-info {
+                            margin: 0;
+                            padding: 0;
+                            display: block;
+                            white-space: normal;
+                        }
+                        div.room-info {
+                            clear: left;
+                            width: 100%;
+                        }
                     }
                 }
             }
@@ -176,9 +193,8 @@
 
         .dropdown {
             a {
-                width: 148px;
+                width: 143px;
                 display: inline-block;
-                line-height: $controlbox-dropdown-height;
             }
             li {
                 list-style: none;
@@ -204,6 +220,7 @@
             /* Custom addition for CSP */
             dd.search-xmpp {
                 display: none;
+                width: 100%;
             }
 
             dd.search-xmpp ul {
@@ -223,26 +240,6 @@
             display: none;
             float: right;
             margin-right: 0.5em;
-        }
-
-        #set-custom-xmpp-status {
-            float: left;
-            padding: 0;
-            fieldset {
-                padding: 0;
-                margin-top: -1px;
-            }
-            input {
-                height: $controlbox-dropdown-height + 1px;
-                @include calc(width, '100% - 40px');
-                padding: 0 0 0 0.5em;
-            }
-            input[type=submit] {
-                height: $controlbox-dropdown-height + 1px;
-                width: 40px;
-                padding: 1px;
-                float: right;
-            }
         }
 
         #controlbox-tabs {
@@ -293,8 +290,7 @@
             height: $controlbox-dropdown-height;
             border-radius: $chatbox-border-radius;
             text-align: left;
-            padding: 0;
-            padding-left: 0.3em;
+            padding: 0.3em 0.3em 0 0.3em;
             .choose-xmpp-status,
             .toggle-xmpp-contact-form {
                 text-shadow: 0 1px 0 #ffffff;
@@ -308,18 +304,31 @@
             }
 
         }
+        .xmpp-status {
+            padding: 0.3em 0.3em 0 0.3em;
+        }
         #fancy-xmpp-status-select {
-            padding-left: 0;
-            .xmpp-status {
-                margin-left: 0.3em;
-                display: inline;
-            }
+            padding: 0em;
             a.change-xmpp-status-message {
                 float: right;
                 clear: right;
                 width: 12px;
-                margin-right: 0.3em;
                 color: $link-color;
+            }
+            fieldset {
+                padding: 0;
+                margin-top: -1px;
+            }
+            input {
+                height: $controlbox-dropdown-height + 1px;
+                @include calc(width, '100% - 40px');
+                padding: 0 0 0 0.5em;
+            }
+            input[type=submit] {
+                height: $controlbox-dropdown-height + 1px;
+                width: 40px;
+                padding: 1px;
+                float: right;
             }
         }
 
@@ -357,7 +366,7 @@
 
         .add-xmpp-contact {
             background: none;
-            padding: 1em;
+            padding: 1em 0.5em;
             input {
                 margin: 0 0 1rem;
                 width: 100%;
@@ -374,7 +383,7 @@
                 padding: 2px;
                 a {
                     width: 100%;
-                    padding: 0 8px;
+                    padding: 0.3em;
                 }
             }
         }

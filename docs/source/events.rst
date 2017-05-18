@@ -212,6 +212,15 @@ After the user has sent out a direct invitation, to a roster contact, asking the
 
 ``_converse.on('roomInvite', function (data) { ... });``
 
+roomsPanelRendered
+~~~~~~~~~~~~~~~~~~
+
+Emitted once the "Rooms" panel in the control box has been rendered.
+Used by `converse-bookmarks` and `converse-roomslist` to know when they can
+render themselves in that panel.
+
+``_converse.on('roomsPanelRendered', function (data) { ... });``
+
 roster
 ~~~~~~
 

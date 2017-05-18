@@ -30,7 +30,9 @@
                     _converse.keepalive = true;
                     _converse.authentication = "prebind";
                     expect(_converse.logIn.bind(_converse)).toThrow(
-                        new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, you must supply the JID of the current user."));
+                        new Error(
+                            "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                            "but we don't have the JID for the user!"));
                     _converse.authentication= authentication;
                     _converse.jid = jid;
                     _converse.keepalive = false;

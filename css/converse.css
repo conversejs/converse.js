@@ -228,6 +228,9 @@
   content: "\2b25"; }
 #converse-embedded-chat .icon-remove:before,
 #conversejs .icon-remove:before {
+  content: "\2715"; }
+#converse-embedded-chat .icon-trash:before,
+#conversejs .icon-trash:before {
   content: "\e02d"; }
 #converse-embedded-chat .icon-room-info:before,
 #conversejs .icon-room-info:before {
@@ -1328,7 +1331,7 @@
   #converse-embedded-chat form.pure-form.converse-form,
   #conversejs form.pure-form.converse-form {
     background: white;
-    padding: 1em; }
+    padding: 0 1em; }
     #converse-embedded-chat form.pure-form.converse-form legend,
     #conversejs form.pure-form.converse-form legend {
       color: #818479; }
@@ -1889,57 +1892,68 @@
   #conversejs #controlbox #chatrooms form.add-chatroom input[type=submit],
   #conversejs #controlbox #chatrooms form.add-chatroom input[type=text] {
     width: 100%; }
-  #conversejs #controlbox #chatrooms dl.rooms-list {
-    margin: 0 1em;
-    padding: 0;
-    text-align: left; }
-    #conversejs #controlbox #chatrooms dl.rooms-list dt {
-      border: none;
-      color: #818479;
-      font-weight: normal;
-      padding: 0;
-      padding-bottom: 0.5em;
-      text-shadow: 0 1px 0 #FAFAFA; }
-    #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom {
-      border: none;
-      clear: both;
-      color: #818479;
+  #conversejs #controlbox #chatrooms .rooms-list-container {
+    text-align: left;
+    margin: 0 1em; }
+    #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle {
       display: block;
-      overflow: hidden;
-      padding: 0.1em;
-      text-shadow: 0 1px 0 #FAFAFA;
-      word-wrap: break-word; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom:hover {
-        background-color: #DCF9F6; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom a.room-info {
-        clear: right;
-        display: block; }
-        #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom a.room-info:before {
-          font-size: 15px; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom a.open-room {
-        float: left;
-        width: 85%; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom .room-info {
-        font-size: 12px;
-        font-style: normal;
-        font-weight: normal; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom li.room-info {
-        display: block;
-        margin-left: 5px; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom p.room-info {
-        margin: 0;
+      font-weight: bold;
+      color: #818479;
+      margin-top: 1em; }
+    #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list {
+      margin: 0.5em 0;
+      text-align: left; }
+      #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dt {
+        border: none;
+        color: #818479;
+        font-weight: normal;
         padding: 0;
+        padding-bottom: 0.5em;
+        text-shadow: 0 1px 0 #FAFAFA; }
+      #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom {
+        border: none;
+        clear: both;
+        color: #818479;
         display: block;
-        white-space: normal; }
-      #conversejs #controlbox #chatrooms dl.rooms-list dd.available-chatroom div.room-info {
-        clear: left;
-        width: 100%; }
+        overflow: hidden;
+        padding: 0.3em 0;
+        text-shadow: 0 1px 0 #FAFAFA;
+        word-wrap: break-word; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom:hover {
+          background-color: #DCF9F6; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom a.room-info:before {
+          font-size: 15px; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom a.open-room {
+          float: left;
+          width: 68%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding-right: 0.5em; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .remove-bookmark {
+          color: #BBB; }
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .remove-bookmark.button-on {
+            color: #2A9D8F; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .room-info {
+          font-size: 12px;
+          font-style: normal;
+          font-weight: normal; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom li.room-info {
+          display: block;
+          margin-left: 5px; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom p.room-info {
+          margin: 0;
+          padding: 0;
+          display: block;
+          white-space: normal; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom div.room-info {
+          clear: left;
+          width: 100%; }
   #conversejs #controlbox .dropdown {
     /* Custom addition for CSP */ }
     #conversejs #controlbox .dropdown a {
-      width: 148px;
-      display: inline-block;
-      line-height: 25px; }
+      width: 143px;
+      display: inline-block; }
     #conversejs #controlbox .dropdown li {
       list-style: none;
       padding-left: 0; }
@@ -1956,7 +1970,8 @@
       #conversejs #controlbox .dropdown dd ul li:hover {
         background-color: #DCF9F6; }
     #conversejs #controlbox .dropdown dd.search-xmpp {
-      display: none; }
+      display: none;
+      width: 100%; }
     #conversejs #controlbox .dropdown dd.search-xmpp ul {
       box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
       #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
@@ -1969,22 +1984,6 @@
     display: none;
     float: right;
     margin-right: 0.5em; }
-  #conversejs #controlbox #set-custom-xmpp-status {
-    float: left;
-    padding: 0; }
-    #conversejs #controlbox #set-custom-xmpp-status fieldset {
-      padding: 0;
-      margin-top: -1px; }
-    #conversejs #controlbox #set-custom-xmpp-status input {
-      height: 26px;
-      width: -webkit-calc(100% - 40px);
-      width: calc(100% - 40px);
-      padding: 0 0 0 0.5em; }
-    #conversejs #controlbox #set-custom-xmpp-status input[type=submit] {
-      height: 26px;
-      width: 40px;
-      padding: 1px;
-      float: right; }
   #conversejs #controlbox #controlbox-tabs {
     text-align: center;
     display: inline;
@@ -2025,8 +2024,7 @@
     height: 25px;
     border-radius: 4px;
     text-align: left;
-    padding: 0;
-    padding-left: 0.3em; }
+    padding: 0.3em 0.3em 0 0.3em; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status,
     #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
       text-shadow: 0 1px 0 #ffffff;
@@ -2036,17 +2034,28 @@
       display: inline-block; }
     #conversejs #controlbox .fancy-dropdown.no-border {
       border: 0; }
+  #conversejs #controlbox .xmpp-status {
+    padding: 0.3em 0.3em 0 0.3em; }
   #conversejs #controlbox #fancy-xmpp-status-select {
-    padding-left: 0; }
-    #conversejs #controlbox #fancy-xmpp-status-select .xmpp-status {
-      margin-left: 0.3em;
-      display: inline; }
+    padding: 0em; }
     #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message {
       float: right;
       clear: right;
       width: 12px;
-      margin-right: 0.3em;
       color: #2A9D8F; }
+    #conversejs #controlbox #fancy-xmpp-status-select fieldset {
+      padding: 0;
+      margin-top: -1px; }
+    #conversejs #controlbox #fancy-xmpp-status-select input {
+      height: 26px;
+      width: -webkit-calc(100% - 40px);
+      width: calc(100% - 40px);
+      padding: 0 0 0 0.5em; }
+    #conversejs #controlbox #fancy-xmpp-status-select input[type=submit] {
+      height: 26px;
+      width: 40px;
+      padding: 1px;
+      float: right; }
   #conversejs #controlbox .controlbox-pane {
     background-color: white;
     border-bottom-left-radius: 4px;
@@ -2075,7 +2084,7 @@
     overflow-y: hidden; }
   #conversejs #controlbox .add-xmpp-contact {
     background: none;
-    padding: 1em; }
+    padding: 1em 0.5em; }
     #conversejs #controlbox .add-xmpp-contact input {
       margin: 0 0 1rem;
       width: 100%; }
@@ -2088,7 +2097,7 @@
       padding: 2px; }
       #conversejs #controlbox .xmpp-status-menu li a {
         width: 100%;
-        padding: 0 8px; }
+        padding: 0.3em; }
   #conversejs #controlbox .xmpp-status-menu li a.logout,
   #conversejs #controlbox .xmpp-status-menu li a.logout span {
     color: #D24E2B; }
@@ -2127,7 +2136,7 @@
   #conversejs #converse-roster .search-xmpp ul li.chat-info {
     padding-left: 10px; }
   #conversejs #converse-roster .roster-filter-form {
-    margin: 0 1em;
+    margin: 0 1em 0.5em 1em;
     width: 100%;
     padding-right: 2em;
     /* (jQ addClass:) if input has value: */
@@ -2360,10 +2369,11 @@
       #conversejs #converse-roster .roster-contacts dd a.decline-xmpp-request {
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts dd a.remove-xmpp-contact {
+        font-size: 10px;
         float: right;
         margin-right: 1em;
         padding-top: 0.5em;
-        color: #A8ABA1; }
+        color: #BBB; }
   #conversejs #converse-roster span.pending-contact-name {
     line-height: 16px;
     width: 100%; }
@@ -2634,24 +2644,6 @@
   #conversejs #minimized-chats .unread-message-count-hidden,
   #conversejs #minimized-chats .chat-head-message-count-hidden {
     display: none; }
-
-#conversejs #controlbox #chatrooms .bookmarks-list {
-  padding-top: 1em; }
-  #conversejs #controlbox #chatrooms .bookmarks-list .bookmarks-toggle {
-    display: block;
-    font-weight: bold;
-    color: #818479;
-    margin-bottom: 0.5em; }
-  #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.room-info {
-    clear: none; }
-  #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
-    width: 75%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-right: 0.5em; }
-  #conversejs #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom .remove-bookmark {
-    float: right; }
 
 #converse-embedded-chat,
 #conversejs {

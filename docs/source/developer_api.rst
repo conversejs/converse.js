@@ -189,6 +189,7 @@ Converse.js has the following promises:
 * rosterGroupsFetched
 * rosterInitialized
 * statusInitialized
+* roomsPanelRendered (only via the `converse-muc` plugin)
 
 Below is an example from `converse-muc.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-muc.js>`_
 where the `rosterContactsFetched` promise is waited on. The method

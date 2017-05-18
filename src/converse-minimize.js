@@ -459,12 +459,10 @@
 
 
             _converse.MinimizedChatsToggle = Backbone.Model.extend({
-                initialize: function () {
-                    this.set({
-                        'collapsed': this.get('collapsed') || false,
-                        'num_minimized': this.get('num_minimized') || 0,
-                        'num_unread':  this.get('num_unread') || 0
-                    });
+                defaults: {
+                    'collapsed': false,
+                    'num_minimized': 0,
+                    'num_unread':  0
                 }
             });
 

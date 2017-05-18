@@ -10,7 +10,7 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define([ "utils",
+    define(["utils",
             "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -34,6 +34,7 @@
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
         b64_sha1 = converse.env.b64_sha1,
+        sizzle = converse.env.sizzle,
         _ = converse.env._;
 
     converse.plugins.add('converse-bookmarks', {
@@ -193,7 +194,8 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             this.updateSettings({
-                allow_bookmarks: true
+                allow_bookmarks: true,
+                hide_open_bookmarks: false
             });
 
             _converse.Bookmark = Backbone.Model;
@@ -350,7 +352,7 @@
 
             _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'bookmarks-list',
+                className: 'bookmarks-list, rooms-list-container',
                 events: {
                     'click .remove-bookmark': 'removeBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList'
@@ -359,6 +361,8 @@
                 initialize: function () {
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
+                    _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
+                    _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
                     var cachekey = 'converse.room-bookmarks'+_converse.bare_jid+'-list-model';
                     this.list_model = new _converse.BookmarksList();
@@ -374,7 +378,7 @@
                     this.$el.html(tpl_bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
-                        'label_bookmarks': __('Bookmarked Rooms')
+                        'label_bookmarks': __('Bookmarks')
                     })).hide();
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.$('.bookmarks').hide();
@@ -397,23 +401,64 @@
                 },
 
                 renderBookmarkListElement: function (item) {
-                    var $bookmark = $(tpl_bookmark({
-                            'name': item.get('name'),
-                            'jid': item.get('jid'),
-                            'open_title': __('Click to open this room'),
-                            'info_title': __('Show more information on this room'),
-                            'info_remove': __('Remove this bookmark')
-                        }));
-                    this.$('.bookmarks').append($bookmark);
+                    if (item instanceof _converse.ChatBox) {
+                        item = _.head(this.model.where({'jid': item.get('jid')}));
+                        if (_.isNil(item)) {
+                            // A chat box has been closed, but we don't have a
+                            // bookmark for it, so nothing further to do here.
+                            return;
+                        }
+                    }
+                    if (_converse.hide_open_bookmarks &&
+                            _converse.chatboxes.where({'jid': item.get('jid')}).length) {
+                        // A chat box has been opened, and we don't show
+                        // bookmarks for open chats, so we remove it.
+                        this.removeBookmarkListElement(item);
+                        return;
+                    }
+
+                    var list_el = this.el.querySelector('.bookmarks');
+                    var div = document.createElement('div');
+                    div.innerHTML = tpl_bookmark({
+                        'bookmarked': true,
+                        'info_leave_room': __('Leave this room'),
+                        'info_remove': __('Remove this bookmark'),
+                        'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_title': __('Show more information on this room'),
+                        'jid': item.get('jid'),
+                        'name': item.get('name'),
+                        'open_title': __('Click to open this room')
+                    });
+                    var el = _.head(sizzle(
+                        '.available-chatroom[data-room-jid="'+item.get('jid')+'"]',
+                        list_el));
+
+                    if (el) {
+                        el.innerHTML = div.firstChild.innerHTML;
+                    } else {
+                        list_el.appendChild(div.firstChild);
+                    }
+                    this.show();
+                },
+
+                show: function () {
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
                     }
                 },
 
+                hide: function () {
+                    this.$el.hide();
+                },
+
                 removeBookmarkListElement: function (item) {
-                    this.$('[data-room-jid="'+item.get('jid')+'"]:first').parent().remove();
-                    if (this.model.length === 0) {
-                        this.$el.hide();
+                    var list_el = this.el.querySelector('.bookmarks');
+                    var el = _.head(sizzle('.available-chatroom[data-room-jid="'+item.get('jid')+'"]', list_el));
+                    if (el) {
+                        list_el.removeChild(el);
+                    }
+                    if (list_el.childElementCount === 0) {
+                        this.hide();
                     }
                 },
 
@@ -441,9 +486,11 @@
                     _converse.bookmarksview = new _converse.BookmarksView(
                         {'model': _converse.bookmarks}
                     );
+                    _converse.emit('bookmarksInitialized');
                 });
             };
-            _converse.on('chatBoxesFetched', initBookmarks);
+            $.when(_converse.api.waitUntil('chatBoxesFetched'),
+                   _converse.api.waitUntil('roomsPanelRendered')).then(initBookmarks);
 
             var afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

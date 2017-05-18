@@ -6,13 +6,20 @@
   one chat is visible at any given time. Used in the mobile build:
   `converse-mobile.js` and makes the unread messages counter possible there.
   [jcbrand]
-- Show unread messages next to roster contacts. [jcbrand]
+- New non-core plugin `converse-roomslist`, which shows a list of open rooms
+  in the `Rooms` tab of the control box. [jcbrand]
+- New configuration setting for `converse-bookmarks`:
+  [hide_open_bookmarks](https://conversejs.org/docs/html/configurations.html#hide-open-bookmarks)
+  It is meant to be set to `true` when using `converse-roomslist` so that open
+  rooms aren't listed twice (in the rooms list and the bookmarks list).
+  [jcbrand]
 - API change: the `message` event now returns a data object with `stanza` and
   `chatbox` attributes, instead of just the stanza. [jcbrand]
+- Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
 - #567 Unreaded message count reset on page load [novokrest]
 - #591 Unread message counter is reset when the chatbox is closed [novokrest]
+- #754 Show unread messages next to roster contacts. [jcbrand]
 - #873 Inconsistent unread messages count updating [novokrest]
-- Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
 
 ## 3.0.2 (2017-04-23)
 

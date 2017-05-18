@@ -292,15 +292,8 @@
              */
         }));
 
-        it("can be retrieved from the XMPP server", mock.initConverse(function (_converse) {
-            var sent_stanza, IQ_id,
-                sendIQ = _converse.connection.sendIQ;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                IQ_id = sendIQ.bind(this)(iq, callback, errback);
-            });
-            _converse.emit('chatBoxesFetched');
-
+        it("can be retrieved from the XMPP server",
+                mock.initConverseWithConnectionSpies(['send'], function (_converse) {
             /* Client requests all items
              * -------------------------
              *
@@ -310,13 +303,26 @@
              *  </pubsub>
              *  </iq>
              */
-            expect(sent_stanza.toLocaleString()).toBe(
-                "<iq from='dummy@localhost/resource' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
-                    "<items node='storage:bookmarks'/>"+
-                "</pubsub>"+
-                "</iq>"
-            );
+            var IQ_id;
+            expect(_.filter(_converse.connection.send.calls.all(), function (call) {
+                var stanza = call.args[0]
+                if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
+                    return;
+                }
+                // XXX: Wrapping in a div is a workaround for PhantomJS
+                var div = document.createElement('div');
+                div.appendChild(stanza);
+                if (div.innerHTML ===
+                    '<iq from="dummy@localhost/resource" type="get" '+
+                         'xmlns="jabber:client" id="'+stanza.getAttribute('id')+'">'+
+                    '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                        '<items node="storage:bookmarks"></items>'+
+                    '</pubsub>'+
+                    '</iq>') {
+                    IQ_id = stanza.getAttribute('id');
+                    return true;
+                }
+            }).length).toBe(1);
 
             /*
              * Server returns all items
@@ -363,14 +369,29 @@
 
         describe("The rooms panel", function () {
 
-            it("shows a list of bookmarks", mock.initConverse(function (_converse) {
+            it("shows a list of bookmarks", mock.initConverseWithConnectionSpies(['send'], function (_converse) {
                 var IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
+                expect(_.filter(_converse.connection.send.calls.all(), function (call) {
+                    var stanza = call.args[0]
+                    if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
+                        return;
+                    }
+                    // XXX: Wrapping in a div is a workaround for PhantomJS
+                    var div = document.createElement('div');
+                    div.appendChild(stanza);
+                    if (div.innerHTML ===
+                        '<iq from="dummy@localhost/resource" type="get" '+
+                            'xmlns="jabber:client" id="'+stanza.getAttribute('id')+'">'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="storage:bookmarks"></items>'+
+                        '</pubsub>'+
+                        '</iq>') {
+                        IQ_id = stanza.getAttribute('id');
+                        return true;
+                    }
+                }).length).toBe(1);
+
                 _converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
-                _converse.emit('chatBoxesFetched');
                 var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
@@ -384,7 +405,7 @@
                                     .c('conference', {
                                         'name': 'Bookmark with a very very long name that will be shortened',
                                         'autojoin': 'false',
-                                        'jid': 'theplay@conference.shakespeare.lit'
+                                        'jid': 'longname@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up()
                                     .c('conference', {
                                         'name': 'Another room',
@@ -395,14 +416,42 @@
                 expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
             }));
 
-            it("remembers the toggle state of the bookmarks list", mock.initConverse(function (_converse) {
+            it("remembers the toggle state of the bookmarks list",
+                    mock.initConverseWithConnectionSpies(['send'], function (_converse) {
+                var IQ_id;
+                expect(_.filter(_converse.connection.send.calls.all(), function (call) {
+                    var stanza = call.args[0]
+                    if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
+                        return;
+                    }
+                    // XXX: Wrapping in a div is a workaround for PhantomJS
+                    var div = document.createElement('div');
+                    div.appendChild(stanza);
+                    if (div.innerHTML ===
+                        '<iq from="dummy@localhost/resource" type="get" '+
+                            'xmlns="jabber:client" id="'+stanza.getAttribute('id')+'">'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="storage:bookmarks"></items>'+
+                        '</pubsub>'+
+                        '</iq>') {
+                        IQ_id = stanza.getAttribute('id');
+                        return true;
+                    }
+                }).length).toBe(1);
+                _converse.chatboxviews.get('controlbox').$('#chatrooms dl.bookmarks').html('');
+                var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
+                    .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('items', {'node': 'storage:bookmarks'})
+                            .c('item', {'id': 'current'})
+                                .c('storage', {'xmlns': 'storage:bookmarks'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
                 _converse.bookmarks.create({
                     'jid': 'theplay@conference.shakespeare.lit',
                     'autojoin': false,
                     'name':  'The Play',
                     'nick': ''
                 });
-                _converse.emit('chatBoxesFetched');
                 test_utils.openControlBox().openRoomsPanel(_converse);
                 expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
                 expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);

@@ -242,14 +242,17 @@
                     } else {
                         this.hide();
                     }
-                    this.$el.html(tpl_controlbox(
+                    this.el.innerHTML = tpl_controlbox(
                         _.extend(this.model.toJSON(), {
-                            sticky_controlbox: _converse.sticky_controlbox
-                        }))
-                    );
-                    if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
+                            'sticky_controlbox': _converse.sticky_controlbox
+                        }));
+
+                    if (!_converse.connection.connected ||
+                            !_converse.connection.authenticated ||
+                            _converse.connection.disconnecting) {
                         this.renderLoginPanel();
-                    } else if (!this.contactspanel || !this.contactspanel.$el.is(':visible')) {
+                    } else if (this.model.get('connected') &&
+                            (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
                         this.renderContactsPanel();
                     }
                     return this;
@@ -459,12 +462,11 @@
 
 
             _converse.XMPPStatusView = Backbone.View.extend({
-                el: "span#xmpp-status-holder",
-
+                el: "form#set-xmpp-status",
                 events: {
                     "click a.choose-xmpp-status": "toggleOptions",
                     "click #fancy-xmpp-status-select a.change-xmpp-status-message": "renderStatusChangeForm",
-                    "submit #set-custom-xmpp-status": "setStatusMessage",
+                    "submit": "setStatusMessage",
                     "click .dropdown dd ul li a": "setStatus"
                 },
 

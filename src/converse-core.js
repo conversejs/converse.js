@@ -38,8 +38,9 @@
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
      */
     _.templateSettings = {
-        evaluate : /\{\[([\s\S]+?)\]\}/g,
-        interpolate : /\{\{([\s\S]+?)\}\}/g
+        'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
+        'evaluate': /\{\[([\s\S]+?)\]\}/g,
+        'interpolate': /\{\{([\s\S]+?)\}\}/g
     };
 
     var _converse = {};
@@ -769,6 +770,17 @@
 
         this.RosterContact = Backbone.Model.extend({
 
+            defaults: {
+                'bookmarked': false,
+                'chat_state': undefined,
+                'chat_status': 'offline',
+                'groups': [],
+                'image': DEFAULT_IMAGE,
+                'image_type': DEFAULT_IMAGE_TYPE,
+                'num_unread': 0,
+                'status': '',
+            },
+
             initialize: function (attributes) {
                 var jid = attributes.jid;
                 var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
@@ -778,14 +790,8 @@
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
-                    'chat_status': 'offline',
                     'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? {'resource':0} : {},
-                    'groups': [],
-                    'image_type': DEFAULT_IMAGE_TYPE,
-                    'image': DEFAULT_IMAGE,
-                    'status': '',
-                    'num_unread': 0
+                    'resources': resource ? {resource :0} : {},
                 }, attributes));
 
                 this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
@@ -1345,6 +1351,13 @@
 
         this.ChatBox = Backbone.Model.extend({
 
+            defaults: {
+                'bookmarked': false,
+                'chat_state': undefined,
+                'num_unread': 0,
+                'url': ''
+            },
+
             initialize: function () {
                 this.messages = new _converse.Messages();
                 this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
@@ -1353,10 +1366,7 @@
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                     'box_id' : b64_sha1(this.get('jid')),
-                    'chat_state': undefined,
-                    'num_unread': this.get('num_unread') || 0,
                     'time_opened': this.get('time_opened') || moment().valueOf(),
-                    'url': '',
                     'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                 });
             },
@@ -1413,9 +1423,34 @@
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            incrementUnreadMsgCounter: function() {
-                this.save({'num_unread': this.get('num_unread') + 1});
-                _converse.incrementMsgCounter();
+            isNewMessage: function (stanza) {
+                /* Given a message stanza, determine whether it's a new
+                 * message, i.e. not an archived one.
+                 */
+                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
+            },
+
+            newMessageWillBeHidden: function () {
+                /* Returns a boolean to indicate whether a newly received
+                 * message will be visible to the user or not.
+                 */
+                return this.get('hidden') ||
+                    this.get('minimized') ||
+                    this.isScrolledUp() ||
+                    _converse.windowState === 'hidden';
+            },
+
+            incrementUnreadMsgCounter: function (stanza) {
+                /* Given a newly received message, update the unread counter if
+                 * necessary.
+                 */
+                if (_.isNull(stanza.querySelector('body'))) {
+                    return; // The message has no text
+                }
+                if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    this.save({'num_unread': this.get('num_unread') + 1});
+                    _converse.incrementMsgCounter();
+                }
             },
 
             clearUnreadMsgCounter: function() {
@@ -1545,6 +1580,7 @@
                     if (_.isEmpty(messages)) {
                         // Only create the message when we're sure it's not a
                         // duplicate
+                        chatbox.incrementUnreadMsgCounter(original_stanza);
                         chatbox.createMessage(message, delay, original_stanza);
                     }
                 }
@@ -1889,39 +1925,92 @@
             xhr.send();
         };
 
-        this.attemptPreboundSession = function (reconnecting) {
-            /* Handle session resumption or initialization when prebind is being used.
-             */
-            if (!reconnecting && this.keepalive) {
-                if (!this.jid) {
-                    throw new Error("attemptPreboundSession: when using 'keepalive' with 'prebind, "+
-                                    "you must supply the JID of the current user.");
-                }
-                try {
-                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
-                } catch (e) {
-                    this.log("Could not restore session for jid: "+this.jid+" Error message: "+e.message);
-                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
+        this.restoreBOSHSession = function (jid_is_required) {
+            /* Tries to restore a cached BOSH session. */
+            if (!this.jid) {
+                var msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                        "but we don't have the JID for the user!";
+                if (jid_is_required) {
+                    throw new Error(msg);
+                } else {
+                    _converse.log(msg);
                 }
             }
+            try {
+                this.connection.restore(this.jid, this.onConnectStatusChanged);
+                return true;
+            } catch (e) {
+                this.log(
+                    "Could not restore session for jid: "+
+                    this.jid+" Error message: "+e.message);
+                this.clearSession(); // If there's a roster, we want to clear it (see #555)
+                return false;
+            }
+        };
 
-            // No keepalive, or session resumption has failed.
-            if (!reconnecting && this.jid && this.sid && this.rid) {
-                return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
-            } else if (this.prebind_url) {
+        this.attemptPreboundSession = function (reconnecting) {
+            /* Handle session resumption or initialization when prebind is
+             * being used.
+             */
+            if (!reconnecting) {
+                if (this.keepalive && this.restoreBOSHSession(true)) {
+                    return;
+                }
+                // No keepalive, or session resumption has failed.
+                if (this.jid && this.sid && this.rid) {
+                    return this.connection.attach(
+                        this.jid, this.sid, this.rid,
+                        this.onConnectStatusChanged
+                    );
+                }
+            }
+            if (this.prebind_url) {
                 return this.startNewBOSHSession();
             } else {
-                throw new Error("attemptPreboundSession: If you use prebind and not keepalive, "+
+                throw new Error(
+                    "attemptPreboundSession: If you use prebind and not keepalive, "+
                     "then you MUST supply JID, RID and SID values or a prebind_url.");
+            }
+        };
+
+        this.attemptNonPreboundSession = function (credentials, reconnecting) {
+            /* Handle session resumption or initialization when prebind is not being used.
+             *
+             * Two potential options exist and are handled in this method:
+             *  1. keepalive
+             *  2. auto_login
+             */
+            if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
+                return;
+            }
+            if (this.auto_login) {
+                if (credentials) {
+                    // When credentials are passed in, they override prebinding
+                    // or credentials fetching via HTTP
+                    this.autoLogin(credentials);
+                } else if (this.credentials_url) {
+                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
+                } else if (!this.jid) {
+                    throw new Error(
+                        "attemptNonPreboundSession: If you use auto_login, "+
+                        "you also need to give either a jid value (and if "+
+                        "applicable a password) or you need to pass in a URL "+
+                        "from where the username and password can be fetched "+
+                        "(via credentials_url)."
+                    );
+                } else {
+                    this.autoLogin(); // Probably ANONYMOUS login
+                }
+            } else if (reconnecting) {
+                this.autoLogin();
             }
         };
 
         this.autoLogin = function (credentials) {
             if (credentials) {
-                // If passed in, then they come from credentials_url, so we
-                // set them on the _converse object.
+                // If passed in, the credentials come from credentials_url,
+                // so we set them on the converse object.
                 this.jid = credentials.jid;
-                this.password = credentials.password;
             }
             if (this.authentication === _converse.ANONYMOUS) {
                 if (!this.jid) {
@@ -1933,9 +2022,9 @@
                 this.connection.reset();
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
-                var password = _converse.connection.pass || this.password;
+                var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
                 if (!password) {
-                    if (this.auto_login && !this.password) {
+                    if (this.auto_login) {
                         throw new Error("initConnection: If you use auto_login and "+
                             "authentication='login' then you also need to provide a password.");
                     }
@@ -1951,44 +2040,6 @@
                 }
                 this.connection.reset();
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
-            }
-        };
-
-        this.attemptNonPreboundSession = function (credentials, reconnecting) {
-            /* Handle session resumption or initialization when prebind is not being used.
-             *
-             * Two potential options exist and are handled in this method:
-             *  1. keepalive
-             *  2. auto_login
-             */
-            if (this.keepalive && !reconnecting) {
-                try {
-                    return this.connection.restore(this.jid, this.onConnectStatusChanged);
-                } catch (e) {
-                    this.log("Could not restore session. Error message: "+e.message);
-                    this.clearSession(); // If there's a roster, we want to clear it (see #555)
-                }
-            }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
-                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
-                } else if (!this.jid) {
-                    throw new Error(
-                        "initConnection: If you use auto_login, you also need"+
-                        "to give either a jid value (and if applicable a "+
-                        "password) or you need to pass in a URL from where the "+
-                        "username and password can be fetched (via credentials_url)."
-                    );
-                } else {
-                    // Probably ANONYMOUS login
-                    this.autoLogin();
-                }
-            } else if (reconnecting) {
-                this.autoLogin();
             }
         };
 

@@ -112,15 +112,6 @@ Registers a new plugin.
     }
     converse.plugins.add('myplugin', plugin);
 
-remove
-~~~~~~
-
-Removes a plugin from the registry.
-
-.. code-block:: javascript
-
-    converse.plugins.remove('myplugin');
-
 
 Private API methods
 ===================

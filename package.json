@@ -59,7 +59,6 @@
     "lodash": "^4.17.4",
     "lodash-template-loader": "^2.0.0",
     "moment": "~2.18.1",
-    "npm": "^4.1.1",
     "otr": "0.2.16",
     "phantomjs-prebuilt": "~2.1.14",
     "pluggable.js": "1.0.0",

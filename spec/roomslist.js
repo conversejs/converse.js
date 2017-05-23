@@ -2,6 +2,7 @@
     define(["mock", "converse-core", "converse-roomslist", "test-utils"], factory);
 } (this, function (mock, converse, roomslist, test_utils) {
     var _ = converse.env._;
+    var $msg = converse.env.$msg;
 
     describe("The converse-roomslist plugin", function () {
 
@@ -48,7 +49,37 @@
         ));
     });
 
-    describe("An open room shown in the rooms list", function () {
+    describe("An room shown in the rooms list", function () {
+
+        it("shows unread messages directed at the user", mock.initConverse(
+            { whitelisted_plugins: ['converse-roomslist'],
+              allow_bookmarks: false // Makes testing easier, otherwise we
+                                     // have to mock stanza traffic.
+            }, function (_converse) {
+
+            var room_jid = 'kitchen@conference.shakespeare.lit';
+            test_utils.openAndEnterChatRoom(
+                _converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
+            var view = _converse.chatboxviews.get(room_jid);
+            view.model.set({'minimized': true});
+
+            var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var message = 'romeo: Your attention is required';
+            var nick = mock.chatroom_names[0],
+                msg = $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t(message).tree();
+            view.handleMUCMessage(msg);
+
+            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
+            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
+
+            var room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            expect(_.includes(room_el.classList, 'unread-msgs'));
+        }));
 
         it("can be closed", mock.initConverse(
             { whitelisted_plugins: ['converse-roomslist'],
@@ -56,24 +87,24 @@
                                      // have to mock stanza traffic.
             },
             function (_converse) {
-                spyOn(window, 'confirm').and.callFake(function () {
-                    return true;
-                });
-                expect(_converse.chatboxes.length).toBe(1);
-                test_utils.openChatRoom(
-                    _converse, 'lounge', 'conference.shakespeare.lit', 'JC');
-                expect(_converse.chatboxes.length).toBe(2);
-                test_utils.openControlBox().openRoomsPanel(_converse);
-                var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(1);
-                var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
-                close_el.click();
-                expect(window.confirm).toHaveBeenCalledWith(
-                    'Are you sure you want to leave the room ""?');
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(0);
-                expect(_converse.chatboxes.length).toBe(1);
-            }
-        ));
+
+            spyOn(window, 'confirm').and.callFake(function () {
+                return true;
+            });
+            expect(_converse.chatboxes.length).toBe(1);
+            test_utils.openChatRoom(
+                _converse, 'lounge', 'conference.shakespeare.lit', 'JC');
+            expect(_converse.chatboxes.length).toBe(2);
+            test_utils.openControlBox().openRoomsPanel(_converse);
+            var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+            var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
+            close_el.click();
+            expect(window.confirm).toHaveBeenCalledWith(
+                'Are you sure you want to leave the room ""?');
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(0);
+            expect(_converse.chatboxes.length).toBe(1);
+        }));
     });
 }));

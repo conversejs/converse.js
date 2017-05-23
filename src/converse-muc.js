@@ -544,7 +544,7 @@
                             .getExtraMessageClasses.apply(this, arguments);
 
                     if (this.is_chatroom && attrs.sender === 'them' &&
-                            this.model.isUserMentioned(attrs.mentioned)) {
+                            this.model.isUserMentioned(attrs.message)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';

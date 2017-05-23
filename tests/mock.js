@@ -103,7 +103,12 @@
         return converse;
     }
 
-    mock.initConverseWithConnectionSpies = function (spies, func, settings) {
+    mock.initConverseWithConnectionSpies = function (spies, settings, func) {
+        if (_.isFunction(settings)) {
+            var _func = settings;
+            settings = func;
+            func = _func;
+        }
         return function () {
             return func(initConverse(settings, spies));
         };

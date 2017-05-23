@@ -142,8 +142,18 @@
                 }
             },
 
-            ControlBoxView: {
+            ChatBoxes: {
+                model: function (attrs, options) {
+                    var _converse = this.__super__._converse;
+                    if (attrs.type == 'chatroom') {
+                        return new _converse.ChatBox(attrs, options);
+                    } else {
+                        return this.__super__.model.apply(this, arguments);
+                    }
+                },
+            },
 
+            ControlBoxView: {
                 renderRoomsPanel: function () {
                     var _converse = this.__super__._converse;
                     this.roomspanel = new _converse.RoomsPanel({
@@ -1960,6 +1970,7 @@
                     if (sender === '') {
                         return true;
                     }
+                    this.model.incrementUnreadMsgCounter(original_stanza);
                     this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message

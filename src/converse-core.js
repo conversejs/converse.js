@@ -1463,8 +1463,11 @@
         });
 
         this.ChatBoxes = Backbone.Collection.extend({
-            model: _converse.ChatBox,
             comparator: 'time_opened',
+
+            model: function (attrs, options) {
+                return new _converse.ChatBox(attrs, options);
+            },
 
             registerMessageHandler: function () {
                 _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
@@ -1522,7 +1525,7 @@
                  * stanzas.
                  */
                 var original_stanza = message,
-                    contact_jid, forwarded, delay, from_bare_jid,
+                    contact_jid, delay, from_bare_jid,
                     from_resource, is_me, msgid, messages,
                     chatbox, resource,
                     from_jid = message.getAttribute('from'),
@@ -1546,7 +1549,7 @@
                     );
                     return true;
                 }
-                forwarded = message.querySelector('forwarded');
+                var forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
                     var forwarded_message = forwarded.querySelector('message');
                     var forwarded_from = forwarded_message.getAttribute('from');

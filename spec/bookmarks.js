@@ -464,4 +464,43 @@
             }));
         });
     });
+
+    describe("When hide_open_bookmarks is true and a bookmarked room is opened", function () {
+
+        it("can be closed", mock.initConverse({ hide_open_bookmarks: true }, function (_converse) {
+            test_utils.openControlBox().openRoomsPanel(_converse);
+
+            // XXX Create bookmarks view here, otherwise we need to mock stanza
+            // traffic for it to get created.
+            _converse.bookmarksview = new _converse.BookmarksView(
+                {'model': _converse.bookmarks}
+            );
+            _converse.emit('bookmarksInitialized');
+
+            // Check that it's there
+            var jid = 'room@conference.example.org';
+            _converse.bookmarks.create({
+                'jid': jid,
+                'autojoin': false,
+                'name':  'The Play',
+                'nick': ' Othello'
+            });
+
+            expect(_converse.bookmarks.length).toBe(1);
+            var room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+
+            // Check that it disappears once the room is opened
+            var bookmark = _converse.bookmarksview.el.querySelector(".open-room");
+            bookmark.click();
+            room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(0);
+
+            // Check that it reappears once the room is closed
+            var view = _converse.chatboxviews.get(jid);
+            view.close();
+            room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+        }));
+    });
 }));

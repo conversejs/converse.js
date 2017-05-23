@@ -146,7 +146,7 @@
                 model: function (attrs, options) {
                     var _converse = this.__super__._converse;
                     if (attrs.type == 'chatroom') {
-                        return new _converse.ChatBox(attrs, options);
+                        return new _converse.ChatRoom(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
                     }
@@ -360,6 +360,39 @@
                 );
             };
 
+            _converse.ChatRoom = _converse.ChatBox.extend({
+
+                isUserMentioned: function (message) {
+                    /* Returns a boolean to indicate whether the current user
+                     * was mentioned in a message.
+                     *
+                     * Parameters:
+                     *  (String): The text message
+                     */
+                    return (new RegExp("\\b"+this.get('nick')+"\\b")).test(message);
+                },
+
+                incrementUnreadMsgCounter: function (stanza) {
+                    /* Given a newly received message, update the unread counter if
+                     * necessary.
+                     *
+                     * Parameters:
+                     *  (XMLElement): The <messsage> stanza
+                     */
+                    var body = stanza.querySelector('body')
+                    if (_.isNull(body)) {
+                        return; // The message has no text
+                    }
+                    if (this.isNewMessage(stanza) &&
+                            this.newMessageWillBeHidden() &&
+                            this.isUserMentioned(body.textContent)) {
+
+                        this.save({'num_unread': this.get('num_unread') + 1});
+                        _converse.incrementMsgCounter();
+                    }
+                },
+            });
+
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
@@ -511,8 +544,7 @@
                             .getExtraMessageClasses.apply(this, arguments);
 
                     if (this.is_chatroom && attrs.sender === 'them' &&
-                            (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(attrs.message)
-                        ) {
+                            this.model.isUserMentioned(attrs.mentioned)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';

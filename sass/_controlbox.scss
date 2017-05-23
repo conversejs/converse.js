@@ -146,6 +146,13 @@
                         &:hover {
                             background-color: $highlight-color;
                         }
+                        &.unread-msgs {
+                            .open-room {
+                                max-width: 50%;
+                                width: auto;
+                                font-weight: bold;
+                            }
+                        }
                         a {
                             &.room-info {
                                 &:before {

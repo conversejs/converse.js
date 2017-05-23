@@ -151,28 +151,6 @@
                                 border: 0.7em solid $link-color;
                             }
                         }
-                        @include keyframes(pulse) {
-                            0% {
-                                @include transform(scale(0));
-                                opacity: 0.0;
-                            }
-                            25% {
-                                @include transform(scale(0));
-                                opacity: 0.1;
-                            }
-                            50% {
-                                @include transform(scale(0.1));
-                                opacity: 0.3;
-                            }
-                            75% {
-                                @include transform(scale(0.5));
-                                opacity: 0.5;
-                            }
-                            100% {
-                                @include transform(scale(1));
-                                opacity: 0.0;
-                            }
-                        }
                     }
                 }
 

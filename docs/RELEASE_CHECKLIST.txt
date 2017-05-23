@@ -1,8 +1,0 @@
-- Run tests
-    make check
-- make the release
-    make release VERSION=0.6.4
-- Tag
-    git tag -s v0.6.4 -m 'Release of version 0.6.4'
-- Push
-    git push origin master --tags

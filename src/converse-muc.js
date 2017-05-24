@@ -362,6 +362,18 @@
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
+                defaults: _.extend(_converse.ChatBox.prototype.defaults, {
+                    // For group chats, we distinguish between generally unread
+                    // messages and those ones that specifically mention the
+                    // user.
+                    //
+                    // To keep things simple, we reuse `num_unread` from
+                    // _converse.ChatBox to indicate unread messages which
+                    // mention the user and `num_unread_general` to indicate
+                    // generally unread messages (which *includes* mentions!).
+                    'num_unread_general': 0
+                }),
+
                 isUserMentioned: function (message) {
                     /* Returns a boolean to indicate whether the current user
                      * was mentioned in a message.
@@ -383,14 +395,19 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (this.isNewMessage(stanza) &&
-                            this.newMessageWillBeHidden() &&
-                            this.isUserMentioned(body.textContent)) {
-
-                        this.save({'num_unread': this.get('num_unread') + 1});
-                        _converse.incrementMsgCounter();
+                    if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                        this.save({'num_unread_general': this.get('num_unread_general') + 1});
+                        if (this.isUserMentioned(body.textContent)) {
+                            this.save({'num_unread': this.get('num_unread') + 1});
+                            _converse.incrementMsgCounter();
+                        }
                     }
                 },
+
+                clearUnreadMsgCounter: function() {
+                    this.save({'num_unread': 0});
+                    this.save({'num_unread_general': 0});
+                }
             });
 
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
@@ -1919,7 +1936,7 @@
                         }
                     } else if (!this.model.get('features_fetched')) {
                         // The features for this room weren't fetched.
-                        // That must mean it's a new room without locking 
+                        // That must mean it's a new room without locking
                         // (in which case Prosody doesn't send a 201 status),
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.

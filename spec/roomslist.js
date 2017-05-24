@@ -51,36 +51,6 @@
 
     describe("An room shown in the rooms list", function () {
 
-        it("shows unread messages directed at the user", mock.initConverse(
-            { whitelisted_plugins: ['converse-roomslist'],
-              allow_bookmarks: false // Makes testing easier, otherwise we
-                                     // have to mock stanza traffic.
-            }, function (_converse) {
-
-            var room_jid = 'kitchen@conference.shakespeare.lit';
-            test_utils.openAndEnterChatRoom(
-                _converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
-            var view = _converse.chatboxviews.get(room_jid);
-            view.model.set({'minimized': true});
-
-            var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var message = 'romeo: Your attention is required';
-            var nick = mock.chatroom_names[0],
-                msg = $msg({
-                    from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(message).tree();
-            view.handleMUCMessage(msg);
-
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
-
-            var room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
-            expect(_.includes(room_el.classList, 'unread-msgs'));
-        }));
-
         it("can be closed", mock.initConverse(
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
@@ -105,6 +75,46 @@
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);
+        }));
+
+        it("shows unread messages directed at the user", mock.initConverse(
+            { whitelisted_plugins: ['converse-roomslist'],
+              allow_bookmarks: false // Makes testing easier, otherwise we
+                                     // have to mock stanza traffic.
+            }, function (_converse) {
+
+            var room_jid = 'kitchen@conference.shakespeare.lit';
+            test_utils.openAndEnterChatRoom(
+                _converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
+            var view = _converse.chatboxviews.get(room_jid);
+            view.model.set({'minimized': true});
+
+
+            var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var nick = mock.chatroom_names[0];
+            view.handleMUCMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('foo').tree());
+
+            // If the user isn't mentioned, the counter doesn't get incremented, but the text of the room is bold
+            var room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            expect(_.includes(room_el.classList, 'unread-msgs'));
+
+            // If the user is mentioned, the counter also gets updated
+            view.handleMUCMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('romeo: Your attention is required').tree()
+            );
+            var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            expect(indicator_el.textContent).toBe('1');
         }));
     });
 }));

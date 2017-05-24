@@ -1498,10 +1498,7 @@
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */          
-                //How can I propagate an element found in message.childNodes until the message is displayed on the chat?
-                //I've seen in some functions, message's attributes are used. Should I setAttribute() to the message
-                //to be able to check the element's information later?
-                
+          
                 var original_stanza = message,
                     contact_jid, forwarded, delay, from_bare_jid,
                     from_resource, is_me, msgid,

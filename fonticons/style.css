@@ -150,13 +150,11 @@
 .icon-remove:before {
   content: "\e02d";
 }
-.icon-eye:after {
+.icon-eye:before {
   content: "\e030";
-  color: #5B78A8;
 }
-.icon-eye-blocked:after {
+.icon-eye-blocked:before {
   content: "\e031";
-  color: #A83C67;
 }
 .icon-attachment:before {
   content: "\e032";

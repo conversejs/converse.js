@@ -1521,14 +1521,14 @@
                      * chat room with it.
                      */
                     ev.preventDefault();
-                    var $nick = this.$el.find('input[name=nick]');
-                    var nick = $nick.val();
+                    var nick_el = ev.target.nick;
+                    var nick = nick_el.value;
                     if (!nick) {
-                        $nick.addClass('error');
+                        nick_el.classList.add('error');
                         return;
                     }
                     else {
-                        $nick.removeClass('error');
+                        nick_el.classList.remove('error');
                     }
                     this.$el.find('.chatroom-form-container')
                             .replaceWith('<span class="spinner centered"/>');
@@ -2632,7 +2632,6 @@
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.connection.jid)),
                         'type': 'chatroom',
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')

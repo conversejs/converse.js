@@ -8,7 +8,7 @@
   [jcbrand]
 - New non-core plugin `converse-roomslist`, which shows a list of open rooms
   in the `Rooms` tab of the control box. [jcbrand]
-- Show unread messages for minimized chat rooms. [jcbrand]
+- Show unread messages for minimized chats. [jcbrand]
 - New configuration setting for `converse-bookmarks`:
   [hide_open_bookmarks](https://conversejs.org/docs/html/configurations.html#hide-open-bookmarks)
   It is meant to be set to `true` when using `converse-roomslist` so that open

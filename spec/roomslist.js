@@ -89,7 +89,6 @@
             var view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
 
-
             var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
             var nick = mock.chatroom_names[0];
             view.handleMUCMessage(
@@ -115,6 +114,24 @@
             );
             var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
             expect(indicator_el.textContent).toBe('1');
+
+            view.handleMUCMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('romeo: and another thing...').tree()
+            );
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            expect(indicator_el.textContent).toBe('2');
+
+            // When the chat gets maximized again, the unread indicators are removed
+            view.model.set({'minimized': false});
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            expect(_.isNull(indicator_el));
+            room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();
         }));
     });
 }));

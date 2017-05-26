@@ -42,7 +42,7 @@
     "clean-css-cli": "^4.0.10",
     "es6-promise": "^4.1.0",
     "eslint": "^3.19.0",
-    "eslint-plugin-lodash": "^2.3.3",
+    "eslint-plugin-lodash": "^2.4.1",
     "font-awesome": "^4.7.0",
     "greenkeeper": "^4.1.0",
     "grunt": "^1.0.1",

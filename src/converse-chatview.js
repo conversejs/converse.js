@@ -370,6 +370,9 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
+                    //Where the argument "attrs" come from? Could "attrs" have information from onMessage?
+                    //Could be possible (and would it be ok) to place a button instead of .text(text)?
+                    //Making the button to show the text set here onclick?
                     $msg.find('.chat-msg-content').first()
                         .text(text)
                         .addHyperlinks()

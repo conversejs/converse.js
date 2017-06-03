@@ -488,7 +488,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
-                _converse.chatboxes.onMessage(msg);
+                view.handleMUCMessage(msg);
                 expect(view.$el.find('.chat-message').hasClass('mentioned')).toBeTruthy();
             }));
 
@@ -505,7 +505,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
-                _converse.chatboxes.onMessage(msg);
+                view.handleMUCMessage(msg);
                 expect(_.includes(view.$el.find('.chat-msg-author').text(), '**Dyon van de Wege')).toBeTruthy();
                 expect(view.$el.find('.chat-msg-content').text()).toBe(' is tired');
 
@@ -516,7 +516,7 @@
                     to: 'dummy@localhost',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-                _converse.chatboxes.onMessage(msg);
+                view.handleMUCMessage(msg);
                 expect(_.includes(view.$el.find('.chat-msg-author:last').text(), '**Max Mustermann')).toBeTruthy();
                 expect(view.$el.find('.chat-msg-content:last').text()).toBe(' is as well');
             }));
@@ -1077,7 +1077,7 @@
                  * scrollbar.
                  */
                 for (var i=0; i<20; i++) {
-                    _converse.chatboxes.onMessage(
+                    view.handleMUCMessage(
                         $msg({
                             from: 'lounge@localhost/someone',
                             to: 'dummy@localhost.com',
@@ -1088,7 +1088,7 @@
                 // Give enough time for `markScrolled` to have been called
                 setTimeout(function () {
                     view.$content.scrollTop(0);
-                    _converse.chatboxes.onMessage(
+                    view.handleMUCMessage(
                         $msg({
                             from: 'lounge@localhost/someone',
                             to: 'dummy@localhost.com',

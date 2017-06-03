@@ -40,7 +40,7 @@
 
             _converse.RoomsListView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'open-rooms-list, rooms-list-container',
+                className: 'open-rooms-list rooms-list-container',
                 events: {
                     'click .close-room': 'closeRoom',
                     'click .open-rooms-toggle': 'toggleRoomsList'
@@ -51,6 +51,7 @@
                     this.model.on('change:bookmarked', this.renderRoomsListElement, this);
                     this.model.on('change:name', this.renderRoomsListElement, this);
                     this.model.on('change:num_unread', this.renderRoomsListElement, this);
+                    this.model.on('change:num_unread_general', this.renderRoomsListElement, this);
                     this.model.on('remove', this.removeRoomsListElement, this);
 
                     var cachekey = 'converse.roomslist'+_converse.bare_jid;

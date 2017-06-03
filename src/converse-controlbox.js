@@ -163,10 +163,7 @@
             ChatBox: {
                 initialize: function () {
                     if (this.get('id') === 'controlbox') {
-                        this.set({
-                            'time_opened': moment(0).valueOf(),
-                            'num_unread': 0
-                        });
+                        this.set({'time_opened': moment(0).valueOf()});
                     } else {
                         this.__super__.initialize.apply(this, arguments);
                     }

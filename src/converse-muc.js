@@ -142,8 +142,18 @@
                 }
             },
 
-            ControlBoxView: {
+            ChatBoxes: {
+                model: function (attrs, options) {
+                    var _converse = this.__super__._converse;
+                    if (attrs.type == 'chatroom') {
+                        return new _converse.ChatRoom(attrs, options);
+                    } else {
+                        return this.__super__.model.apply(this, arguments);
+                    }
+                },
+            },
 
+            ControlBoxView: {
                 renderRoomsPanel: function () {
                     var _converse = this.__super__._converse;
                     this.roomspanel = new _converse.RoomsPanel({
@@ -350,6 +360,56 @@
                 );
             };
 
+            _converse.ChatRoom = _converse.ChatBox.extend({
+
+                defaults: _.extend(_converse.ChatBox.prototype.defaults, {
+                    // For group chats, we distinguish between generally unread
+                    // messages and those ones that specifically mention the
+                    // user.
+                    //
+                    // To keep things simple, we reuse `num_unread` from
+                    // _converse.ChatBox to indicate unread messages which
+                    // mention the user and `num_unread_general` to indicate
+                    // generally unread messages (which *includes* mentions!).
+                    'num_unread_general': 0
+                }),
+
+                isUserMentioned: function (message) {
+                    /* Returns a boolean to indicate whether the current user
+                     * was mentioned in a message.
+                     *
+                     * Parameters:
+                     *  (String): The text message
+                     */
+                    return (new RegExp("\\b"+this.get('nick')+"\\b")).test(message);
+                },
+
+                incrementUnreadMsgCounter: function (stanza) {
+                    /* Given a newly received message, update the unread counter if
+                     * necessary.
+                     *
+                     * Parameters:
+                     *  (XMLElement): The <messsage> stanza
+                     */
+                    var body = stanza.querySelector('body')
+                    if (_.isNull(body)) {
+                        return; // The message has no text
+                    }
+                    if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                        this.save({'num_unread_general': this.get('num_unread_general') + 1});
+                        if (this.isUserMentioned(body.textContent)) {
+                            this.save({'num_unread': this.get('num_unread') + 1});
+                            _converse.incrementMsgCounter();
+                        }
+                    }
+                },
+
+                clearUnreadMsgCounter: function() {
+                    this.save({'num_unread': 0});
+                    this.save({'num_unread_general': 0});
+                }
+            });
+
             _converse.ChatRoomView = _converse.ChatBoxView.extend({
                 /* Backbone View which renders a chat room, based upon the view
                  * for normal one-on-one chat boxes.
@@ -501,8 +561,7 @@
                             .getExtraMessageClasses.apply(this, arguments);
 
                     if (this.is_chatroom && attrs.sender === 'them' &&
-                            (new RegExp("\\b"+this.model.get('nick')+"\\b")).test(attrs.message)
-                        ) {
+                            this.model.isUserMentioned(attrs.message)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';
@@ -1462,14 +1521,14 @@
                      * chat room with it.
                      */
                     ev.preventDefault();
-                    var $nick = this.$el.find('input[name=nick]');
-                    var nick = $nick.val();
+                    var nick_el = ev.target.nick;
+                    var nick = nick_el.value;
                     if (!nick) {
-                        $nick.addClass('error');
+                        nick_el.classList.add('error');
                         return;
                     }
                     else {
-                        $nick.removeClass('error');
+                        nick_el.classList.remove('error');
                     }
                     this.$el.find('.chatroom-form-container')
                             .replaceWith('<span class="spinner centered"/>');
@@ -1877,7 +1936,7 @@
                         }
                     } else if (!this.model.get('features_fetched')) {
                         // The features for this room weren't fetched.
-                        // That must mean it's a new room without locking 
+                        // That must mean it's a new room without locking
                         // (in which case Prosody doesn't send a 201 status),
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
@@ -1960,6 +2019,7 @@
                     if (sender === '') {
                         return true;
                     }
+                    this.model.incrementUnreadMsgCounter(original_stanza);
                     this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
@@ -2572,7 +2632,6 @@
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'nick': Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.connection.jid)),
                         'type': 'chatroom',
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')

@@ -2064,6 +2064,71 @@
 
         describe("The \"Rooms\" Panel", function () {
 
+            it("is opened by clicking the 'Chatrooms' tab", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                var $tabs = cbview.$el.find('#controlbox-tabs');
+                var $panels = cbview.$el.find('.controlbox-panes');
+                var $contacts = $panels.children().first();
+                var $chatrooms = $panels.children().last();
+                spyOn(cbview, 'switchTab').and.callThrough();
+                cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
+                expect($contacts.is(':visible')).toBe(false);
+                expect($chatrooms.is(':visible')).toBe(true);
+                expect(cbview.switchTab).toHaveBeenCalled();
+            }));
+
+            it("contains a form through which a new chatroom can be created", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                var $input = roomspanel.$el.find('input.new-chatroom-name');
+                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
+                var $server = roomspanel.$el.find('input.new-chatroom-server');
+                expect($input.length).toBe(1);
+                expect($server.length).toBe(1);
+                expect($('.chatroom:visible').length).toBe(0); // There shouldn't be any chatrooms open currently
+                spyOn(roomspanel, 'createChatRoom').and.callThrough();
+                spyOn(_converse.ChatRoomView.prototype, 'getRoomFeatures').and.callFake(function () {
+                    var deferred = new $.Deferred();
+                    deferred.resolve();
+                    return deferred.promise();
+                });
+
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                $input.val('Lounge');
+                $nick.val('dummy');
+                $server.val('muc.localhost');
+                roomspanel.$el.find('form').submit();
+                expect(roomspanel.createChatRoom).toHaveBeenCalled();
+                expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+            }));
+
+            it("can list rooms publically available on the server", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var panel = _converse.chatboxviews.get('controlbox').roomspanel;
+                $(panel.tabs).find('li').last().find('a').click(); // Click the chatrooms tab
+                panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
+                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+                expect($('#available-chatrooms').children('dt').length).toBe(0);
+                expect($('#available-chatrooms').children('dd').length).toBe(0);
+
+                var iq = $iq({
+                    from:'muc.localhost',
+                    to:'dummy@localhost/pda',
+                    type:'result'
+                }).c('query')
+                  .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
+                  .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
+                  .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
+                  .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+
+                panel.onRoomsFound(iq);
+                expect(panel.$('#available-chatrooms').children('dt').length).toBe(1);
+                expect(panel.$('#available-chatrooms').children('dt').first().text()).toBe("Rooms on muc.localhost");
+                expect(panel.$('#available-chatrooms').children('dd').length).toBe(4);
+            }));
+
             it("shows the number of unread mentions received", mock.initConverse(function (_converse) {
                 var room_jid = 'kitchen@conference.shakespeare.lit';
                 test_utils.openAndEnterChatRoom(

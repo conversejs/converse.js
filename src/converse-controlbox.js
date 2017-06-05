@@ -285,7 +285,7 @@
                     this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });
-                    this.contactspanel.render();
+                    this.contactspanel.insertIntoDOM();
                     _converse.xmppstatusview = new _converse.XMPPStatusView({
                         'model': _converse.xmppstatus
                     });
@@ -582,12 +582,20 @@
                 },
 
                 initialize: function (cfg) {
-                    cfg.$parent.append(this.$el);
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                    this.parent_el = cfg.$parent[0];
+                    this.tab_el = document.createElement('li');
+                    _converse.chatboxes.on('change:num_unread', this.render, this);
                 },
 
                 render: function () {
-                    var markup;
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    var is_current = controlbox.get('active-panel') === USERS_PANEL_ID;
+                    this.tab_el.innerHTML = tpl_contacts_tab({
+                        'label_contacts': LABEL_CONTACTS,
+                        'is_current': is_current,
+                        'num_unread': _.sum(_converse.chatboxes.pluck('num_unread'))
+                    });
+
                     var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
@@ -597,34 +605,42 @@
                         include_offline_state: _converse.include_offline_state,
                         allow_logout: _converse.allow_logout
                     });
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(tpl_contacts_tab({
-                        'label_contacts': LABEL_CONTACTS,
-                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
-                    }));
-                    if (_converse.xhr_user_search) {
-                        markup = tpl_search_contact({
-                            label_contact_name: __('Contact name'),
-                            label_search: __('Search')
-                        });
-                    } else {
-                        markup = tpl_add_contact_form({
-                            label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add')
-                        });
-                    }
                     if (_converse.allow_contact_requests) {
                         widgets += tpl_add_contact_dropdown({
                             label_click_to_chat: __('Click to add new chat contacts'),
                             label_add_contact: __('Add a contact')
                         });
                     }
-                    this.$el.html(widgets);
-                    this.$el.find('.search-xmpp ul').append(markup);
-                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
+                    this.el.innerHTML = widgets;
+
+                    if (!is_current) {
                         this.$el.addClass('hidden');
                     }
                     return this;
+                },
+
+                insertIntoDOM: function () {
+                    this.parent_el.appendChild(this.render().el);
+                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
+                    this.tabs.appendChild(this.tab_el);
+                    this.$el.find('.search-xmpp ul').append(
+                        this.generateAddContactHTML()
+                    );
+                    return this;
+                },
+
+                generateAddContactHTML: function () {
+                    if (_converse.xhr_user_search) {
+                        return tpl_search_contact({
+                            label_contact_name: __('Contact name'),
+                            label_search: __('Search')
+                        });
+                    } else {
+                        return tpl_add_contact_form({
+                            label_contact_username: __('e.g. user@example.org'),
+                            label_add: __('Add')
+                        });
+                    }
                 },
 
                 toggleContactForm: function (ev) {

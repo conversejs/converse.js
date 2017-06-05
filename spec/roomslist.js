@@ -112,7 +112,7 @@
                     type: 'groupchat'
                 }).c('body').t('romeo: Your attention is required').tree()
             );
-            var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(indicator_el.textContent).toBe('1');
 
             view.handleMUCMessage(
@@ -123,12 +123,12 @@
                     type: 'groupchat'
                 }).c('body').t('romeo: and another thing...').tree()
             );
-            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(indicator_el.textContent).toBe('2');
 
             // When the chat gets maximized again, the unread indicators are removed
             view.model.set({'minimized': false});
-            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(_.isNull(indicator_el));
             room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
             expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();

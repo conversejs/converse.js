@@ -2061,5 +2061,44 @@
                 expect(delta.length).toBe(0);
             }));
         });
+
+        describe("The \"Rooms\" Panel", function () {
+
+            it("shows the number of unread mentions received", mock.initConverse(function (_converse) {
+                var room_jid = 'kitchen@conference.shakespeare.lit';
+                test_utils.openAndEnterChatRoom(
+                    _converse, 'kitchen', 'conference.shakespeare.lit', 'fires');
+                test_utils.openContactsPanel(_converse);
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                var view = _converse.chatboxviews.get(room_jid);
+                view.model.set({'minimized': true});
+
+                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var message = 'fires: Your attention is required';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: room_jid+'/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
+
+                expect(_.includes(roomspanel.tab_el.firstChild.classList, 'unread-msgs')).toBeTruthy();
+                expect(roomspanel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
+
+                msg = $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
+                expect(roomspanel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
+
+                view.model.set({'minimized': false});
+                expect(_.includes(roomspanel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+            }));
+        });
     });
 }));

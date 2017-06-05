@@ -164,7 +164,7 @@
                                 b64_sha1('converse.roomspanel'+_converse.bare_jid))
                         }))()
                     });
-                    this.roomspanel.render().model.fetch();
+                    this.roomspanel.insertIntoDOM().model.fetch();
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
                             nick: Strophe.getNodeFromJid(_converse.bare_jid)
@@ -2375,34 +2375,40 @@
                 },
 
                 initialize: function (cfg) {
-                    this.$parent = cfg.$parent;
+                    this.parent_el = cfg.$parent[0];
+                    this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
+                    _converse.chatboxes.on('change:num_unread', this.render, this);
                 },
 
                 render: function () {
-                    this.$parent.append(
-                        this.$el.html(
-                            tpl_room_panel({
-                                'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                                'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                                'label_room_name': __('Room name'),
-                                'label_nickname': __('Nickname'),
-                                'label_server': __('Server'),
-                                'label_join': __('Join Room'),
-                                'label_show_rooms': __('Show rooms')
-                            })
-                        ));
-                    this.$tabs = this.$parent.parent().find('#controlbox-tabs');
-
+                    this.el.innerHTML = tpl_room_panel({
+                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
+                        'label_room_name': __('Room name'),
+                        'label_nickname': __('Nickname'),
+                        'label_server': __('Server'),
+                        'label_join': __('Join Room'),
+                        'label_show_rooms': __('Show rooms')
+                    });
                     var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(tpl_chatrooms_tab({
+                    var is_current = controlbox.get('active-panel') === ROOMS_PANEL_ID;
+                    this.tab_el.innerHTML = tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
-                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
-                    }));
-                    if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
-                        this.$el.addClass('hidden');
+                        'is_current': is_current,
+                        'num_unread': _.sum(_converse.chatboxes.pluck('num_unread'))
+                    });
+                    if (!is_current) {
+                        this.el.classList.add('hidden');
                     }
+                    return this;
+                },
+
+                insertIntoDOM: function () {
+                    this.parent_el.appendChild(this.render().el);
+                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
+                    this.tabs.appendChild(this.tab_el);
                     return this;
                 },
 

@@ -1905,6 +1905,14 @@
     padding: 0 0 5px 5px; }
     #conversejs #controlbox form.search-xmpp-contact input {
       width: 8em; }
+  #conversejs #controlbox .msgs-indicator {
+    background-color: #D24E2B;
+    color: white;
+    font-size: 12px;
+    float: right;
+    font-weight: normal;
+    padding: 0 4px;
+    text-shadow: none; }
   #conversejs #controlbox a.subscribe-to-user {
     padding-left: 2em;
     font-weight: bold; }
@@ -2091,6 +2099,8 @@
           height: 55px;
           cursor: default;
           color: #818479; }
+        #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
+          border-top-right-radius: 4px; }
   #conversejs #controlbox .fancy-dropdown {
     border: 1px solid #B1BFC4;
     height: 25px;
@@ -2193,14 +2203,8 @@
 #conversejs #controlbox .available-chatroom .pulse {
   padding: 0;
   margin: 0; }
-#conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicactor {
-  background-color: #D24E2B;
-  color: white;
-  border-radius: 10%;
-  font-size: 12px;
-  font-weight: normal;
-  padding: 0 4px;
-  text-shadow: none; }
+#conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
+  border-radius: 10%; }
 
 #conversejs #converse-roster {
   text-align: left;
@@ -2328,16 +2332,9 @@
             opacity: 0; }
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar.avatar-online .pulse {
             border: 0.7em solid #2A9D8F; }
-        #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicactor {
-          background-color: #D24E2B;
-          color: white;
-          border-radius: 10%;
-          float: right;
-          font-size: 11px;
+        #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
           margin-left: -3em;
-          font-weight: normal;
-          padding: 0 4px;
-          text-shadow: none; }
+          border-radius: 10%; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name {
           padding: 0;
           margin: 0;

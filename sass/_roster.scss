@@ -154,16 +154,9 @@
                     }
                 }
 
-				.msgs-indicactor {
-					background-color: $warning-color;
-                    color: white;
-					border-radius: 10%;
-					float: right;
-					font-size: 11px;
+				.msgs-indicator {
                     margin-left: -3em;
-					font-weight: normal;
-					padding: 0 4px;
-                    text-shadow: none;
+                    border-radius: 10%;
 				}
 
                 .contact-name {

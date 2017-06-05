@@ -1172,7 +1172,7 @@
             it("can list rooms publically available on the server", mock.initConverse(function (_converse) {
                 test_utils.openControlBox();
                 var panel = _converse.chatboxviews.get('controlbox').roomspanel;
-                panel.$tabs.find('li').last().find('a').click(); // Click the chatrooms tab
+                $(panel.tabs).find('li').last().find('a').click(); // Click the chatrooms tab
                 panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
                 // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
                 expect($('#available-chatrooms').children('dt').length).toBe(0);

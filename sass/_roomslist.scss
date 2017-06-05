@@ -6,14 +6,8 @@
                 margin: 0;
             }
             &.unread-msgs {
-                .msgs-indicactor {
-                    background-color: $warning-color;
-                    color: white;
+                .msgs-indicator {
                     border-radius: 10%;
-                    font-size: $font-size-small;
-                    font-weight: normal;
-                    padding: 0 4px;
-                    text-shadow: none;
                 }
             }
         }

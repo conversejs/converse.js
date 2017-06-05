@@ -32,6 +32,17 @@
                 width: 8em;
             }
         }
+
+        .msgs-indicator {
+            background-color: $warning-color;
+            color: white;
+            font-size: $font-size-small;
+            float: right;
+            font-weight: normal;
+            padding: 0 4px;
+            text-shadow: none;
+        }
+
         a.subscribe-to-user {
             padding-left: 2em;
             font-weight: bold;
@@ -287,6 +298,9 @@
                         height: $chat-head-height;
                         cursor: default;
                         color: $text-color;
+                    }
+                    .msgs-indicator {
+                        border-top-right-radius: $chatbox-border-radius;
                     }
                 }
             }

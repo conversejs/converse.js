@@ -1134,6 +1134,9 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
 
+                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
                 var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, sender_jid);
                 var chatview = _converse.chatboxviews.get(sender_jid);
@@ -1147,7 +1150,6 @@
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
                 expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
 
                 msg = $msg({
@@ -1160,8 +1162,12 @@
                 _converse.chatboxes.onMessage(msg);
                 expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
 
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
                 chatview.model.set({'minimized': false});
                 expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
             }));
 
         });

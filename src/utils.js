@@ -471,6 +471,14 @@
         return utils.detectLocale(isSupportedByLibrary) || 'en';
     };
 
+    utils.isInstance = function (type, item) {
+        return item instanceof type;
+    };
+
+    utils.getAttribute = function (key, item) {
+        return item.get(key);
+    };
+
     utils.contains.not = function (attr, query) {
         return function (item) {
             return !(utils.contains(attr, query)(item));

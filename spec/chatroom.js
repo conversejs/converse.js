@@ -2135,6 +2135,8 @@
                     _converse, 'kitchen', 'conference.shakespeare.lit', 'fires');
                 test_utils.openContactsPanel(_converse);
                 var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
                 var view = _converse.chatboxviews.get(room_jid);
                 view.model.set({'minimized': true});
 
@@ -2161,8 +2163,12 @@
                 view.handleMUCMessage(msg);
                 expect(roomspanel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
 
+                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
                 view.model.set({'minimized': false});
                 expect(_.includes(roomspanel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
             }));
         });
     });

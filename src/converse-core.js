@@ -1352,6 +1352,7 @@
         this.ChatBox = Backbone.Model.extend({
 
             defaults: {
+                'type': 'chatbox',
                 'bookmarked': false,
                 'chat_state': undefined,
                 'num_unread': 0,

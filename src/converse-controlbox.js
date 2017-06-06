@@ -21,6 +21,7 @@
             "tpl!login_tab",
             "tpl!search_contact",
             "tpl!status_option",
+            "lodash.fp",
             "converse-chatview",
             "converse-rosterview"
     ], factory);
@@ -38,7 +39,8 @@
             tpl_login_panel,
             tpl_login_tab,
             tpl_search_contact,
-            tpl_status_option
+            tpl_status_option,
+            fp
         ) {
     "use strict";
 
@@ -590,10 +592,16 @@
                 render: function () {
                     var controlbox = _converse.chatboxes.get('controlbox');
                     var is_current = controlbox.get('active-panel') === USERS_PANEL_ID;
+
+                    var isChatBox = function (item) {
+                        return item.get('type') == 'chatbox';
+                    }
+                    var chatrooms = fp.filter(isChatBox, _converse.chatboxes.models);
+
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
                         'is_current': is_current,
-                        'num_unread': _.sum(_converse.chatboxes.pluck('num_unread'))
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
                     });
 
                     var widgets = tpl_contacts_panel({

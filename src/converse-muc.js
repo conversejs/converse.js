@@ -29,6 +29,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "lodash.fp",
             "awesomplete",
             "converse-chatview"
     ], factory);
@@ -51,10 +52,13 @@
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            fp,
             Awesomplete
     ) {
+
     "use strict";
     var ROOMS_PANEL_ID = 'chatrooms';
+    var CHATROOMS_TYPE = 'chatroom';
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
@@ -145,7 +149,7 @@
             ChatBoxes: {
                 model: function (attrs, options) {
                     var _converse = this.__super__._converse;
-                    if (attrs.type == 'chatroom') {
+                    if (attrs.type == CHATROOMS_TYPE) {
                         return new _converse.ChatRoom(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
@@ -223,7 +227,7 @@
                 onChatBoxAdded: function (item) {
                     var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
-                    if (!view && item.get('type') === 'chatroom') {
+                    if (!view && item.get('type') === CHATROOMS_TYPE) {
                         view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
@@ -355,7 +359,7 @@
                         'description': '',
                         'features_fetched': false,
                         'roomconfig': {},
-                        'type': 'chatroom',
+                        'type': CHATROOMS_TYPE,
                     }, settings)
                 );
             };
@@ -371,6 +375,7 @@
                     // _converse.ChatBox to indicate unread messages which
                     // mention the user and `num_unread_general` to indicate
                     // generally unread messages (which *includes* mentions!).
+                    'type': CHATROOMS_TYPE,
                     'num_unread_general': 0
                 }),
 
@@ -2394,10 +2399,12 @@
                     });
                     var controlbox = _converse.chatboxes.get('controlbox');
                     var is_current = controlbox.get('active-panel') === ROOMS_PANEL_ID;
+                    var isChatroom = fp.curry(utils.isInstance)(_converse.ChatRoom)
+                    var chatrooms = fp.filter(isChatroom, _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': is_current,
-                        'num_unread': _.sum(_converse.chatboxes.pluck('num_unread'))
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
                     });
                     if (!is_current) {
                         this.el.classList.add('hidden');
@@ -2584,7 +2591,7 @@
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                        'type': 'chatroom',
+                        'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(jid)
                     });
                 },
@@ -2638,7 +2645,7 @@
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'type': 'chatroom',
+                        'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
@@ -2684,7 +2691,7 @@
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                    'type': 'chatroom',
+                    'type': CHATROOMS_TYPE,
                     'box_id': b64_sha1(jid)
                 }, attrs)));
             };
@@ -2739,7 +2746,7 @@
                         if (_.isUndefined(jids)) {
                             var result = [];
                             _converse.chatboxes.each(function (chatbox) {
-                                if (chatbox.get('type') === 'chatroom') {
+                                if (chatbox.get('type') === CHATROOMS_TYPE) {
                                     result.push(_converse.getViewForChatBox(chatbox));
                                 }
                             });
@@ -2762,7 +2769,7 @@
                  * all the open chat rooms.
                  */
                 _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === 'chatroom') {
+                    if (view.model.get('type') === CHATROOMS_TYPE) {
                         view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         view.join();
                     }
@@ -2776,7 +2783,7 @@
                  * when fetched from session storage.
                  */
                 _converse.chatboxes.each(function (model) {
-                    if (model.get('type') === 'chatroom') {
+                    if (model.get('type') === CHATROOMS_TYPE) {
                         model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     }
                 });

@@ -1906,6 +1906,7 @@
     #conversejs #controlbox form.search-xmpp-contact input {
       width: 8em; }
   #conversejs #controlbox .msgs-indicator {
+    opacity: 0.6;
     background-color: #D24E2B;
     color: white;
     font-size: 12px;
@@ -2091,16 +2092,22 @@
         margin: 0;
         text-align: center;
         text-decoration: none; }
+        #conversejs #controlbox #controlbox-tabs li a.contacts-tab .msgs-indicator {
+          background-color: #F4A261; }
+        #conversejs #controlbox #controlbox-tabs li a.rooms-tab .msgs-indicator {
+          background-color: #E76F51; }
+        #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
+          border-top-right-radius: 4px; }
         #conversejs #controlbox #controlbox-tabs li a:hover {
           color: #818479; }
+          #conversejs #controlbox #controlbox-tabs li a:hover .msgs-indicator {
+            opacity: 0.8; }
         #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
           box-shadow: none;
           border-bottom: 0;
           height: 55px;
           cursor: default;
           color: #818479; }
-        #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
-          border-top-right-radius: 4px; }
   #conversejs #controlbox .fancy-dropdown {
     border: 1px solid #B1BFC4;
     height: 25px;
@@ -2204,7 +2211,8 @@
   padding: 0;
   margin: 0; }
 #conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
-  border-radius: 10%; }
+  border-radius: 10%;
+  opacity: 1; }
 
 #conversejs #converse-roster {
   text-align: left;
@@ -2333,6 +2341,7 @@
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar.avatar-online .pulse {
             border: 0.7em solid #2A9D8F; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
+          opacity: 1;
           margin-left: -3em;
           border-radius: 10%; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name {

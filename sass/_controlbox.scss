@@ -34,6 +34,7 @@
         }
 
         .msgs-indicator {
+            opacity: 0.6;
             background-color: $warning-color;
             color: white;
             font-size: $font-size-small;
@@ -288,8 +289,24 @@
                     margin: 0;
                     text-align: center;
                     text-decoration: none;
+                    &.contacts-tab {
+                        .msgs-indicator {
+                            background-color: $chat-head-color;
+                        }
+                    }
+                    &.rooms-tab {
+                        .msgs-indicator {
+                            background-color: $chatroom-head-color;
+                        }
+                    }
+                    .msgs-indicator {
+                        border-top-right-radius: $chatbox-border-radius;
+                    }
                     &:hover {
                         color: $text-color;
+                        .msgs-indicator {
+                            opacity: 0.8;
+                        }
                     }
                     &.current,
                     &.current:hover {
@@ -298,9 +315,6 @@
                         height: $chat-head-height;
                         cursor: default;
                         color: $text-color;
-                    }
-                    .msgs-indicator {
-                        border-top-right-radius: $chatbox-border-radius;
                     }
                 }
             }

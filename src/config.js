@@ -38,6 +38,8 @@ require.config({
         "text":                     "node_modules/text/text",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
+        "lodash.fpConverter":       "3rdparty/lodash.fp",
+        "lodash.fp":                "src/lodash.fp",
         "lodash.noconflict":        "src/lodash.noconflict",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",

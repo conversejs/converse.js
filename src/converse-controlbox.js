@@ -21,7 +21,6 @@
             "tpl!login_tab",
             "tpl!search_contact",
             "tpl!status_option",
-            "lodash.fp",
             "converse-chatview",
             "converse-rosterview"
     ], factory);
@@ -39,8 +38,7 @@
             tpl_login_panel,
             tpl_login_tab,
             tpl_search_contact,
-            tpl_status_option,
-            fp
+            tpl_status_option
         ) {
     "use strict";
 
@@ -52,6 +50,7 @@
     // Other necessary globals
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        fp = converse.env.fp,
         moment = converse.env.moment;
 
 

@@ -9,6 +9,7 @@
     define(["sizzle",
             "jquery.noconflict",
             "lodash.noconflict",
+            "lodash.converter",
             "polyfill",
             "utils",
             "moment_with_locales",
@@ -19,11 +20,17 @@
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (
+        sizzle, $, _, lodashConverter, polyfill,
+        utils, moment, Strophe, pluggable, Backbone) {
+
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
+
+    // Create the FP (functional programming) version of lodash
+    var fp = lodashConverter(_.runInContext());
 
     // Strophe globals
     var $build = Strophe.$build;
@@ -2351,6 +2358,7 @@
             'Backbone': Backbone,
             'Strophe': Strophe,
             '_': _,
+            'fp': fp,
             'b64_sha1':  b64_sha1,
             'jQuery': $,
             'moment': moment,

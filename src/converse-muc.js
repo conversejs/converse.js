@@ -365,19 +365,20 @@
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
-                defaults: _.extend(_converse.ChatBox.prototype.defaults, {
-                    // For group chats, we distinguish between generally unread
-                    // messages and those ones that specifically mention the
-                    // user.
-                    //
-                    // To keep things simple, we reuse `num_unread` from
-                    // _converse.ChatBox to indicate unread messages which
-                    // mention the user and `num_unread_general` to indicate
-                    // generally unread messages (which *includes* mentions!).
-                    // FIXME: figure out why this breaks tests.
-                    // 'type': CHATROOMS_TYPE,
-                    'num_unread_general': 0
-                }),
+                defaults: function () {
+                    return _.extend(_converse.ChatBox.prototype.defaults, {
+                        'type': CHATROOMS_TYPE,
+                        // For group chats, we distinguish between generally unread
+                        // messages and those ones that specifically mention the
+                        // user.
+                        //
+                        // To keep things simple, we reuse `num_unread` from
+                        // _converse.ChatBox to indicate unread messages which
+                        // mention the user and `num_unread_general` to indicate
+                        // generally unread messages (which *includes* mentions!).
+                        'num_unread_general': 0
+                    });
+                },
 
                 isUserMentioned: function (message) {
                     /* Returns a boolean to indicate whether the current user

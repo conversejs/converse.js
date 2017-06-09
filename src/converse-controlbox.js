@@ -43,6 +43,7 @@
     "use strict";
 
     var USERS_PANEL_ID = 'users';
+    var CHATBOX_TYPE = 'chatbox';
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
         Backbone = converse.env.Backbone,
@@ -287,6 +288,7 @@
                         '$parent': this.$el.find('.controlbox-panes')
                     });
                     this.contactspanel.insertIntoDOM();
+
                     _converse.xmppstatusview = new _converse.XMPPStatusView({
                         'model': _converse.xmppstatus
                     });
@@ -585,23 +587,11 @@
                 initialize: function (cfg) {
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
-                    _converse.chatboxes.on('change:num_unread', this.render, this);
+                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
                 },
 
                 render: function () {
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    var is_current = controlbox.get('active-panel') === USERS_PANEL_ID;
-
-                    var isChatBox = function (item) {
-                        return item.get('type') == 'chatbox';
-                    }
-                    var chatrooms = fp.filter(isChatBox, _converse.chatboxes.models);
-
-                    this.tab_el.innerHTML = tpl_contacts_tab({
-                        'label_contacts': LABEL_CONTACTS,
-                        'is_current': is_current,
-                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
-                    });
+                    this.renderTab();
 
                     var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
@@ -620,17 +610,28 @@
                     }
                     this.el.innerHTML = widgets;
 
-                    if (!is_current) {
-                        this.$el.addClass('hidden');
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
+                        this.el.classList.add('hidden');
                     }
                     return this;
+                },
+
+                renderTab: function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    var chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
+                    this.tab_el.innerHTML = tpl_contacts_tab({
+                        'label_contacts': LABEL_CONTACTS,
+                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chats))
+                    });
                 },
 
                 insertIntoDOM: function () {
                     this.parent_el.appendChild(this.render().el);
                     this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
                     this.tabs.appendChild(this.tab_el);
-                    this.$el.find('.search-xmpp ul').append(
+                    this.$('.search-xmpp ul').append(
                         this.generateAddContactHTML()
                     );
                     return this;

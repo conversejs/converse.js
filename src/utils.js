@@ -471,6 +471,10 @@
         return utils.detectLocale(isSupportedByLibrary) || 'en';
     };
 
+    utils.isOfType = function (type, item) {
+        return item.get('type') == type;
+    }
+
     utils.isInstance = function (type, item) {
         return item instanceof type;
     };

@@ -281,8 +281,6 @@
                     _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
-
-
                 },
 
                 render: function () {

@@ -2385,7 +2385,7 @@
                     this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
-                    _converse.chatboxes.on('change:num_unread', this.render, this);
+                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
                 },
 
                 render: function () {
@@ -2398,19 +2398,25 @@
                         'label_join': __('Join Room'),
                         'label_show_rooms': __('Show rooms')
                     });
+                    this.renderTab();
                     var controlbox = _converse.chatboxes.get('controlbox');
-                    var is_current = controlbox.get('active-panel') === ROOMS_PANEL_ID;
-                    var isChatroom = fp.curry(utils.isInstance)(_converse.ChatRoom)
-                    var chatrooms = fp.filter(isChatroom, _converse.chatboxes.models);
-                    this.tab_el.innerHTML = tpl_chatrooms_tab({
-                        'label_rooms': __('Rooms'),
-                        'is_current': is_current,
-                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
-                    });
-                    if (!is_current) {
+                    if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
                         this.el.classList.add('hidden');
                     }
                     return this;
+                },
+
+                renderTab: function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    var chatrooms = fp.filter(
+                        _.partial(utils.isOfType, CHATROOMS_TYPE),
+                        _converse.chatboxes.models
+                    );
+                    this.tab_el.innerHTML = tpl_chatrooms_tab({
+                        'label_rooms': __('Rooms'),
+                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
+                    });
                 },
 
                 insertIntoDOM: function () {

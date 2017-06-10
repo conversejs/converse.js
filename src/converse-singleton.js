@@ -24,6 +24,12 @@
     var _ = converse.env._,
         Strophe = converse.env.Strophe;
 
+    function hideChat (view) {
+        if (view.model.get('id') === 'controlbox') { return; }
+        view.model.save({'hidden': true});
+        view.hide();
+    }
+
     converse.plugins.add('converse-singleton', {
         // It's possible however to make optional dependencies non-optional.
         // If the setting "strict_plugin_dependencies" is set to true,
@@ -38,7 +44,6 @@
             // relevant objects or classes.
             //
             // new functions which don't exist yet can also be added.
-
 
             ChatBoxes: {
                 createChatBox: function (jid, attrs) {
@@ -59,14 +64,7 @@
                     var _converse = this.__super__._converse;
                     var chatbox = this.getChatBox(attrs, true);
                     if ((force || !attrs.hidden) && _converse.connection.authenticated) {
-                        _.each(_converse.chatboxviews.xget(chatbox.get('id')),
-                            function (view) {
-                                if (view.model.get('id') === 'controlbox') {
-                                    return;
-                                }
-                                view.model.save({'hidden': true});
-                            }
-                        );
+                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
                         chatbox.save({'hidden': false});
                     }
                     return this.__super__.showChat.apply(this, arguments);
@@ -80,13 +78,7 @@
                      * chats are hidden.
                      */
                     if (!this.model.get('hidden')) {
-                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), function (view) {
-                            if (view.model.get('id') === 'controlbox') {
-                                return;
-                            }
-                            view.hide();
-                            view.model.set({'hidden': true});
-                        });
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
                         return this.__super__._show.apply(this, arguments);
                     }
                 }
@@ -98,8 +90,7 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'),
-                        function (view) { view.model.save({'hidden': true}); });
+                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
                     this.model.save({'hidden': false});
                     return this.__super__.openChat.apply(this, arguments);
                 },

@@ -19,29 +19,29 @@
     "use strict";
 
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
+    const Strophe = converse.env.Strophe,
         utils = converse.env.utils,
         b64_sha1 = converse.env.b64_sha1;
     // Other necessary globals
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         _ = converse.env._;
 
-    var HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
+    const HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
         ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
     ));
 
-    var HAS_CRYPTO = HAS_CSPRNG && (
+    const HAS_CRYPTO = HAS_CSPRNG && (
         (!_.isUndefined(otr.OTR)) &&
         (!_.isUndefined(otr.DSA))
     );
 
-    var UNENCRYPTED = 0;
-    var UNVERIFIED= 1;
-    var VERIFIED= 2;
-    var FINISHED = 3;
+    const UNENCRYPTED = 0;
+    const UNVERIFIED= 1;
+    const VERIFIED= 2;
+    const FINISHED = 3;
 
-    var OTR_TRANSLATED_MAPPING  = {}; // Populated in initialize
-    var OTR_CLASS_MAPPING = {};
+    const OTR_TRANSLATED_MAPPING  = {}; // Populated in initialize
+    const OTR_CLASS_MAPPING = {};
     OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
     OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
@@ -132,7 +132,7 @@
                         encrypted_key = this.get('otr_priv_key');
                         if (_.isString(encrypted_key)) {
                             instance_tag = this.get('otr_instance_tag');
-                            saved_key = otr.DSA.parsePrivate(encrypted_key)
+                            saved_key = otr.DSA.parsePrivate(encrypted_key);
                             if (saved_key && instance_tag) {
                                 this.trigger('showHelpMessages', [__('Re-establishing encrypted session')]);
                                 callback({

@@ -42,14 +42,14 @@
         ) {
     "use strict";
 
-    var USERS_PANEL_ID = 'users';
-    var CHATBOX_TYPE = 'chatbox';
+    const USERS_PANEL_ID = 'users';
+    const CHATBOX_TYPE = 'chatbox';
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
+    const Strophe = converse.env.Strophe,
         Backbone = converse.env.Backbone,
         utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         _ = converse.env._,
         fp = converse.env.fp,
         moment = converse.env.moment;
@@ -188,7 +188,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
+            const _converse = this._converse,
                 __ = _converse.__;
 
             _converse.api.settings.update({
@@ -200,12 +200,13 @@
                 xhr_user_search_url: ''
             });
 
-            var LABEL_CONTACTS = __('Contacts');
+            const LABEL_CONTACTS = __('Contacts');
 
             _converse.addControlBox = function () {
                 return _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
+                    type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 });
             };

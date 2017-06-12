@@ -57,11 +57,11 @@
     ) {
 
     "use strict";
-    var ROOMS_PANEL_ID = 'chatrooms';
-    var CHATROOMS_TYPE = 'chatroom';
+    const ROOMS_PANEL_ID = 'chatrooms';
+    const CHATROOMS_TYPE = 'chatroom';
 
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
+    const Strophe = converse.env.Strophe,
         Backbone = converse.env.Backbone,
         $iq = converse.env.$iq,
         $build = converse.env.$build,
@@ -71,7 +71,7 @@
         sizzle = converse.env.sizzle,
         utils = converse.env.utils;
     // Other necessary globals
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         _ = converse.env._,
         fp = converse.env.fp,
         moment = converse.env.moment;
@@ -83,13 +83,13 @@
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    var ROOM_FEATURES = [
+    const ROOM_FEATURES = [
         'passwordprotected', 'unsecured', 'hidden',
         'public', 'membersonly', 'open', 'persistent',
         'temporary', 'nonanonymous', 'semianonymous',
         'moderated', 'unmoderated', 'mam_enabled'
     ];
-    var ROOM_FEATURES_MAP = {
+    const ROOM_FEATURES_MAP = {
         'passwordprotected': 'unsecured',
         'unsecured': 'passwordprotected',
         'hidden': 'public',
@@ -103,7 +103,7 @@
         'moderated': 'unmoderated',
         'unmoderated': 'moderated'
     };
-    var ROOMSTATUS = {
+    const ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
         NICKNAME_REQUIRED: 2,
@@ -144,7 +144,7 @@
 
             Features: {
                 addClientFeatures: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
                     if (_converse.allow_muc_invitations) {
                         _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
@@ -157,7 +157,7 @@
 
             ChatBoxes: {
                 model: function (attrs, options) {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     if (attrs.type == CHATROOMS_TYPE) {
                         return new _converse.ChatRoom(attrs, options);
                     } else {
@@ -168,7 +168,7 @@
 
             ControlBoxView: {
                 renderRoomsPanel: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     this.roomspanel = new _converse.RoomsPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': new (Backbone.Model.extend({
@@ -187,7 +187,7 @@
                 },
 
                 renderContactsPanel: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.renderRoomsPanel();
@@ -195,7 +195,7 @@
                 },
 
                 onConnected: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     this.__super__.onConnected.apply(this, arguments);
                     if (!this.model.get('connected')) {
                         return;
@@ -205,7 +205,7 @@
                         _converse.features.on('add', this.featureAdded, this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        var feature = _converse.features.findWhere({
+                        const feature = _converse.features.findWhere({
                             'var': Strophe.NS.MUC
                         });
                         if (feature) {
@@ -218,14 +218,14 @@
 
                 setMUCDomain: function (domain) {
                     this.roomspanel.model.save({'muc_domain': domain});
-                    var $server= this.$el.find('input.new-chatroom-server');
+                    const $server= this.$el.find('input.new-chatroom-server');
                     if (!$server.is(':focus')) {
                         $server.val(this.roomspanel.model.get('muc_domain'));
                     }
                 },
 
                 featureAdded: function (feature) {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
                         this.setMUCDomain(feature.get('from'));
                     }
@@ -234,8 +234,8 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
-                    var _converse = this.__super__._converse;
-                    var view = this.get(item.get('id'));
+                    const _converse = this.__super__._converse;
+                    let view = this.get(item.get('id'));
                     if (!view && item.get('type') === CHATROOMS_TYPE) {
                         view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
@@ -250,7 +250,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
+            const _converse = this._converse,
                 __ = _converse.__,
                 ___ = _converse.___;
             // XXX: Inside plugins, all calls to the translation machinery
@@ -402,7 +402,7 @@
                      * Parameters:
                      *  (XMLElement): The <messsage> stanza
                      */
-                    var body = stanza.querySelector('body')
+                    const body = stanza.querySelector('body');
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
@@ -446,7 +446,6 @@
                 },
 
                 initialize: function () {
-                    var that = this;
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -461,10 +460,10 @@
                     this.registerHandlers();
 
                     if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
-                        this.getRoomFeatures().always(function () {
-                            that.join();
-                            that.fetchMessages();
-                            _converse.emit('chatRoomOpened', that);
+                        this.getRoomFeatures().always(() => {
+                            this.join();
+                            this.fetchMessages();
+                            _converse.emit('chatRoomOpened', this);
                         });
                     } else {
                         this.fetchMessages();
@@ -513,10 +512,10 @@
                 createOccupantsView: function () {
                     /* Create the ChatRoomOccupantsView Backbone.View
                      */
-                    var model = new _converse.ChatRoomOccupants();
+                    const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
                     this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
-                    var id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
+                    const id = b64_sha1('converse.occupants'+_converse.bare_jid+this.model.get('jid'));
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({add:true});
@@ -527,7 +526,7 @@
                     if (document.querySelector('body').contains(this.el)) {
                         return;
                     }
-                    var view = _converse.chatboxviews.get("controlbox");
+                    const view = _converse.chatboxviews.get("controlbox");
                     if (view) {
                         this.$el.insertAfter(view.$el);
                     } else {
@@ -570,7 +569,7 @@
                 },
 
                 getExtraMessageClasses: function (attrs) {
-                    var extra_classes = _converse.ChatBoxView.prototype
+                    let extra_classes = _converse.ChatBoxView.prototype
                             .getExtraMessageClasses.apply(this, arguments);
 
                     if (this.is_chatroom && attrs.sender === 'them' &&
@@ -649,9 +648,9 @@
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
-                    var deferred = new $.Deferred();
+                    const deferred = new $.Deferred();
                     affiliation = affiliation || 'member';
-                    var iq = $iq({to: chatroom_jid, type: "get"})
+                    const iq = $iq({to: chatroom_jid, type: "get"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                             .c("item", {'affiliation': affiliation});
                     _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
@@ -700,17 +699,17 @@
                      *  (Array) new_list: Array containing the new affiliations
                      *  (Array) old_list: Array containing the old affiliations
                      */
-                    var new_jids = _.map(new_list, 'jid');
-                    var old_jids = _.map(old_list, 'jid');
+                    const new_jids = _.map(new_list, 'jid');
+                    const old_jids = _.map(old_list, 'jid');
 
                     // Get the new affiliations
-                    var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
+                    let delta = _.map(_.difference(new_jids, old_jids), function (jid) {
                         return new_list[_.indexOf(new_jids, jid)];
                     });
                     if (!exclude_existing) {
                         // Get the changed affiliations
                         delta = delta.concat(_.filter(new_list, function (item) {
-                            var idx = _.indexOf(old_jids, item.jid);
+                            const idx = _.indexOf(old_jids, item.jid);
                             if (idx >= 0) {
                                 return item.affiliation !== old_list[idx].affiliation;
                             }
@@ -736,8 +735,8 @@
                      *  (Object) member: Map containing the member's jid and
                      *      optionally a reason and affiliation.
                      */
-                    var deferred = new $.Deferred();
-                    var iq = $iq({to: chatroom_jid, type: "set"})
+                    const deferred = new $.Deferred();
+                    const iq = $iq({to: chatroom_jid, type: "set"})
                         .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                         .c("item", {
                             'affiliation': member.affiliation || affiliation,
@@ -779,7 +778,7 @@
                         return _.isUndefined(member.affiliation) ||
                                 member.affiliation === affiliation;
                     });
-                    var promises = _.map(
+                    const promises = _.map(
                         members,
                         _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
                     );
@@ -802,8 +801,8 @@
                         onSuccess(null);
                         return;
                     }
-                    var affiliations = _.uniq(_.map(members, 'affiliation'));
-                    var promises = _.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
+                    const affiliations = _.uniq(_.map(members, 'affiliation'));
+                    const promises = _.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
                     $.when.apply($, promises).done(onSuccess).fail(onError);
                 },
 
@@ -825,8 +824,8 @@
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    var deferred = new $.Deferred();
-                    var promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
+                    const deferred = new $.Deferred();
+                    const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
                     $.when.apply($, promises).always(
                         _.flow(this.marshallAffiliationIQs.bind(this), deferred.resolve)
                     );
@@ -851,10 +850,9 @@
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
-                    var that = this;
-                    var deferred = new $.Deferred();
-                    this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-                        that.setAffiliations(
+                    const deferred = new $.Deferred();
+                    this.getJidsWithAffiliations(affiliations).then((old_members) => {
+                        this.setAffiliations(
                             deltaFunc(members, old_members),
                             deferred.resolve,
                             deferred.reject
@@ -875,21 +873,21 @@
                         // the person to the member list by giving them an
                         // affiliation of 'member' (if they're not affiliated
                         // already), otherwise they won't be able to join.
-                        var map = {}; map[recipient] = 'member';
-                        var deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
+                        const map = {}; map[recipient] = 'member';
+                        const deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
                         this.updateMemberLists(
                             [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
                             ['member', 'owner', 'admin'],
                             deltaFunc
                         );
                     }
-                    var attrs = {
+                    const attrs = {
                         'xmlns': 'jabber:x:conference',
                         'jid': this.model.get('jid')
                     };
                     if (reason !== null) { attrs.reason = reason; }
                     if (this.model.get('password')) { attrs.password = this.model.get('password'); }
-                    var invitation = $msg({
+                    const invitation = $msg({
                         from: _converse.connection.jid,
                         to: recipient,
                         id: _converse.connection.getUniqueId()
@@ -928,7 +926,7 @@
                     if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
                         return;
                     }
-                    var chat_state = this.model.get('chat_state');
+                    const chat_state = this.model.get('chat_state');
                     if (chat_state === _converse.GONE) {
                         // <gone/> is not applicable within MUC context
                         return;
@@ -948,8 +946,8 @@
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
-                    var msgid = _converse.connection.getUniqueId();
-                    var msg = $msg({
+                    const msgid = _converse.connection.getUniqueId();
+                    const msg = $msg({
                         to: this.model.get('jid'),
                         from: _converse.connection.jid,
                         type: 'groupchat',
@@ -967,8 +965,8 @@
                 },
 
                 modifyRole: function(room, nick, role, reason, onSuccess, onError) {
-                    var item = $build("item", {nick: nick, role: role});
-                    var iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                    const item = $build("item", {nick: nick, role: role});
+                    const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return _converse.connection.sendIQ(iq.tree(), onSuccess, onError);
                 },
@@ -992,7 +990,7 @@
                     /* Remove all messages from the chat room UI.
                      */
                     if (!_.isUndefined(ev)) { ev.stopPropagation(); }
-                    var result = confirm(__("Are you sure you want to clear the messages from this room?"));
+                    const result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
                         this.$content.empty();
                     }
@@ -1013,7 +1011,7 @@
                     if (_converse.muc_disable_moderator_commands) {
                         return this.sendChatRoomMessage(text);
                     }
-                    var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [],
                         command = match[1].toLowerCase();
                     switch (command) {
@@ -1134,12 +1132,12 @@
                      * Parameters:
                      *  (XMLElement) stanza: The message stanza.
                      */
-                    var configuration_changed = stanza.querySelector("status[code='104']");
-                    var logging_enabled = stanza.querySelector("status[code='170']");
-                    var logging_disabled = stanza.querySelector("status[code='171']");
-                    var room_no_longer_anon = stanza.querySelector("status[code='172']");
-                    var room_now_semi_anon = stanza.querySelector("status[code='173']");
-                    var room_now_fully_anon = stanza.querySelector("status[code='173']");
+                    const configuration_changed = stanza.querySelector("status[code='104']");
+                    const logging_enabled = stanza.querySelector("status[code='170']");
+                    const logging_disabled = stanza.querySelector("status[code='171']");
+                    const room_no_longer_anon = stanza.querySelector("status[code='172']");
+                    const room_now_semi_anon = stanza.querySelector("status[code='173']");
+                    const room_now_fully_anon = stanza.querySelector("status[code='173']");
                     if (configuration_changed || logging_enabled || logging_disabled ||
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
                         this.getRoomFeatures();
@@ -1162,9 +1160,9 @@
                     } else {
                         nick = this.model.get('nick');
                     }
-                    var room = this.model.get('jid');
-                    var node = Strophe.getNodeFromJid(room);
-                    var domain = Strophe.getDomainFromJid(room);
+                    const room = this.model.get('jid');
+                    const node = Strophe.getNodeFromJid(room);
+                    const domain = Strophe.getDomainFromJid(room);
                     return node + "@" + domain + (nick !== null ? "/" + nick : "");
                 },
 
@@ -1172,7 +1170,7 @@
                     /* Register presence and message handlers for this chat
                      * room
                      */
-                    var room_jid = this.model.get('jid');
+                    const room_jid = this.model.get('jid');
                     this.removeHandlers();
                     this.presence_handler = _converse.connection.addHandler(
                         this.onChatRoomPresence.bind(this),
@@ -1218,7 +1216,7 @@
                         // so we don't send out a presence stanza again.
                         return this;
                     }
-                    var stanza = $pres({
+                    const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
                     }).c("x", {'xmlns': Strophe.NS.MUC})
@@ -1275,19 +1273,18 @@
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      config.
                      */
-                    var that = this,
-                        $body = this.$('.chatroom-body');
+                    const $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
                     $body.append(tpl_chatroom_form());
 
-                    var $form = $body.find('form.chatroom-form'),
-                        $fieldset = $form.children('fieldset:first'),
-                        $stanza = $(stanza),
-                        $fields = $stanza.find('field'),
-                        title = $stanza.find('title').text(),
-                        instructions = $stanza.find('instructions').text();
+                    const $form = $body.find('form.chatroom-form');
+                    let $fieldset = $form.children('fieldset:first');
+                    const $stanza = $(stanza),
+                          $fields = $stanza.find('field'),
+                          title = $stanza.find('title').text(),
+                          instructions = $stanza.find('instructions').text();
                     $fieldset.find('span.spinner').remove();
                     $fieldset.append($('<legend>').text(title));
                     if (instructions && instructions !== title) {
@@ -1300,13 +1297,13 @@
                     $fieldset = $form.children('fieldset:last');
                     $fieldset.append('<input type="submit" class="pure-button button-primary" value="'+__('Save')+'"/>');
                     $fieldset.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
-                    $fieldset.find('input[type=button]').on('click', function (ev) {
+                    $fieldset.find('input[type=button]').on('click', (ev) => {
                         ev.preventDefault();
-                        that.cancelConfiguration();
+                        this.cancelConfiguration();
                     });
-                    $form.on('submit', function (ev) {
+                    $form.on('submit', (ev) => {
                         ev.preventDefault();
-                        that.saveConfiguration(ev.target);
+                        this.saveConfiguration(ev.target);
                     });
                 },
 
@@ -1324,7 +1321,7 @@
                      *      room configuration.
                      *      The second is the response IQ from the server.
                      */
-                    var iq = $iq({to: this.model.get('jid'), type: "set"})
+                    const iq = $iq({to: this.model.get('jid'), type: "set"})
                         .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                         .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
                     _.each(config || [], function (node) { iq.cnode(node).up(); });
@@ -1343,9 +1340,8 @@
                      * Parameters:
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
-                    var deferred = new $.Deferred();
-                    var that = this;
-                    var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
+                    const deferred = new $.Deferred();
+                    const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                         configArray = [];
                     $inputs.each(function () {
                         configArray.push(utils.webForm2xForm(this));
@@ -1355,11 +1351,10 @@
                         deferred.resolve,
                         deferred.reject
                     );
-                    this.$el.find('div.chatroom-form-container').hide(
-                        function () {
-                            $(this).remove();
-                            that.renderAfterTransition();
-                        });
+                    this.$el.find('div.chatroom-form-container').hide((el) => {
+                        $(el).remove();
+                        this.renderAfterTransition();
+                    });
                     return deferred.promise();
                 },
 
@@ -1374,8 +1369,8 @@
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var that = this,
-                        deferred = new $.Deferred();
+                    var that = this;
+                    const deferred = new $.Deferred();
 
                     this.fetchRoomConfiguration().then(function (stanza) {
                         var configArray = [],
@@ -1418,11 +1413,10 @@
                     /* Remove the configuration form without submitting and
                      * return to the chat view.
                      */
-                    var that = this;
                     this.$el.find('div.chatroom-form-container').hide(
-                        function () {
-                            $(this).remove();
-                            that.renderAfterTransition();
+                        (el) => {
+                            $(el).remove();
+                            this.renderAfterTransition();
                         });
                 },
 
@@ -1434,16 +1428,15 @@
                      * Parameters:
                      *  (Function) handler: The handler for the response IQ
                      */
-                    var that = this;
-                    var deferred = new $.Deferred();
+                    const deferred = new $.Deferred();
                     _converse.connection.sendIQ(
                         $iq({
                             'to': this.model.get('jid'),
                             'type': "get"
                         }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
-                        function (iq) {
+                        (iq) => {
                             if (handler) {
-                                handler.apply(that, arguments);
+                                handler.apply(this, arguments);
                             }
                             deferred.resolve(iq);
                         },
@@ -1456,7 +1449,7 @@
                     /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
                      */
-                    var deferred = new $.Deferred();
+                    const deferred = new $.Deferred();
                     var that = this;
                     _converse.connection.disco.info(this.model.get('jid'), null,
                         function (iq) {
@@ -1475,11 +1468,11 @@
                              *  <feature var='muc_nonanonymous'/>
                              *  <feature var='urn:xmpp:mam:0'/>
                              */
-                            var features = {
+                            const features = {
                                 'features_fetched': true
                             };
                             _.each(iq.querySelectorAll('feature'), function (field) {
-                                var fieldname = field.getAttribute('var');
+                                const fieldname = field.getAttribute('var');
                                 if (!fieldname.startsWith('muc_')) {
                                     if (fieldname === Strophe.NS.MAM) {
                                         features.mam_enabled = true;
@@ -1488,7 +1481,7 @@
                                 }
                                 features[fieldname.replace('muc_', '')] = true;
                             });
-                            var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
+                            const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
                             if (!_.isNull(desc_field)) {
                                 features.description = desc_field.textContent;
                             }
@@ -1526,8 +1519,8 @@
                      * chat room with it.
                      */
                     ev.preventDefault();
-                    var nick_el = ev.target.nick;
-                    var nick = nick_el.value;
+                    const nick_el = ev.target.nick;
+                    const nick = nick_el.value;
                     if (!nick) {
                         nick_el.classList.add('error');
                         return;
@@ -1572,7 +1565,7 @@
                      * Parameters:
                      *  (XMLElement) iq: The received IQ stanza
                      */
-                    var nick = $(iq)
+                    const nick = $(iq)
                         .find('query[node="x-roomuser-item"] identity')
                         .attr('name');
                     if (!nick) {
@@ -1611,12 +1604,12 @@
                      * muc_nickname_from_jid.
                      */
                     if (_converse.muc_nickname_from_jid) {
-                        var nick = presence.getAttribute('from').split('/')[1];
+                        const nick = presence.getAttribute('from').split('/')[1];
                         if (nick === this.getDefaultNickName()) {
                             this.join(nick + '-2');
                         } else {
-                            var del= nick.lastIndexOf("-");
-                            var num = nick.substring(del+1, nick.length);
+                            const del= nick.lastIndexOf("-");
+                            const num = nick.substring(del+1, nick.length);
                             this.join(nick.substring(0, del+1) + String(Number(num)+1));
                         }
                     } else {
@@ -1649,7 +1642,7 @@
 
                 submitPassword: function (ev) {
                     ev.preventDefault();
-                    var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
+                    const password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                     this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
                     this.join(this.model.get('nick'), password);
                 },
@@ -1683,11 +1676,12 @@
                      *                     current user.
                      *  (XMLElement) stanza: The original stanza received.
                      */
-                    var code = stat.getAttribute('code'), nick;
+                    const code = stat.getAttribute('code');
                     if (code === '110') { return; }
                     if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
                     }
+                    let nick;
                     if (!is_self) {
                         if (code in _converse.muc.action_info_messages) {
                             nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
@@ -1711,11 +1705,11 @@
                      * Parameters:
                      *  (XMLElement) pres: A <presence> stanza.
                      */
-                    var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
-                    var is_self = pres.querySelector("status[code='110']");
+                    const item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
+                    const is_self = pres.querySelector("status[code='110']");
                     if (is_self && !_.isNil(item)) {
-                        var affiliation = item.getAttribute('affiliation');
-                        var role = item.getAttribute('role');
+                        const affiliation = item.getAttribute('affiliation');
+                        const role = item.getAttribute('role');
                         if (affiliation) {
                             this.model.save({'affiliation': affiliation});
                         }
@@ -1731,33 +1725,33 @@
                      * information.
                      */
                     // 1. Get notification messages based on the <status> elements.
-                    var statuses = x.querySelectorAll('status');
-                    var mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
-                    var notification = {};
-                    var messages = _.reject(_.map(statuses, mapper), _.isUndefined);
+                    const statuses = x.querySelectorAll('status');
+                    const mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
+                    const notification = {};
+                    const messages = _.reject(_.map(statuses, mapper), _.isUndefined);
                     if (messages.length) {
                         notification.messages = messages;
                     }
                     // 2. Get disconnection messages based on the <status> elements
-                    var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-                    var disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
-                    var disconnected = is_self && disconnection_codes.length > 0;
+                    const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
+                    const disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
+                    const disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
                         notification.disconnected = true;
                         notification.disconnection_message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                     }
                     // 3. Find the reason and actor from the <item> element
-                    var item = x.querySelector('item');
+                    const item = x.querySelector('item');
                     // By using querySelector above, we assume here there is
                     // one <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
                     // element. This appears to be a safe assumption, since
                     // each <x/> element pertains to a single user.
                     if (!_.isNull(item)) {
-                        var reason = item.querySelector('reason');
+                        const reason = item.querySelector('reason');
                         if (reason) {
                             notification.reason = reason ? reason.textContent : undefined;
                         }
-                        var actor = item.querySelector('actor');
+                        const actor = item.querySelector('actor');
                         if (actor) {
                             notification.actor = actor ? actor.getAttribute('nick') : undefined;
                         }
@@ -1770,7 +1764,6 @@
                      * parseXUserElement, display any relevant messages and
                      * information to the user.
                      */
-                    var that = this;
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
@@ -1782,8 +1775,8 @@
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         return;
                     }
-                    _.each(notification.messages, function (message) {
-                        that.$content.append(tpl_info({'message': message}));
+                    _.each(notification.messages, (message) => {
+                        this.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "'+notification.reason+'"'), true);
@@ -1800,8 +1793,8 @@
                     // XXX: some mangling required to make the returned
                     // result look like the structure returned by
                     // parseXUserElement. Not nice...
-                    var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                    var stat = stanza.querySelector('status');
+                    const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    const stat = stanza.querySelector('status');
                     if (stanza.getAttribute('type') === 'unavailable') {
                         if (!_.isNull(stat) && stat.textContent) {
                             return [{'messages': [__(nick+' has left the room. "'+stat.textContent+'"')]}];
@@ -1829,10 +1822,10 @@
                      *  (XMLElement) stanza: The message or presence stanza
                      *      containing the status codes.
                      */
-                    var elements = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"]', stanza);
-                    var is_self = stanza.querySelectorAll("status[code='110']").length;
-                    var iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
-                    var notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
+                    const elements = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"]', stanza);
+                    const is_self = stanza.querySelectorAll("status[code='110']").length;
+                    const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
+                    let notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
                     if (_.isEmpty(notifications) &&
                             _converse.muc_show_join_leave &&
                             stanza.nodeName === 'presence' &&
@@ -1846,7 +1839,7 @@
 
                 showErrorMessage: function (presence) {
                     // We didn't enter the room, so we must remove it from the MUC add-on
-                    var error = presence.querySelector('error');
+                    const error = presence.querySelector('error');
                     if (error.getAttribute('type') === 'auth') {
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
@@ -1901,7 +1894,7 @@
                      * Also make sure then that the chat area and occupants
                      * list are both visible.
                      */
-                    var spinner = this.el.querySelector('.spinner');
+                    const spinner = this.el.querySelector('.spinner');
                     if (!_.isNull(spinner)) {
                         spinner.parentNode.removeChild(spinner);
                         this.renderAfterTransition();
@@ -1927,7 +1920,7 @@
                      */
                     this.saveAffiliationAndRole(pres);
 
-                    var locked_room = pres.querySelector("status[code='201']");
+                    const locked_room = pres.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.model.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
@@ -1964,7 +1957,7 @@
                         this.showErrorMessage(pres);
                         return true;
                     }
-                    var is_self = pres.querySelector("status[code='110']");
+                    const is_self = pres.querySelector("status[code='110']");
                     if (is_self && pres.getAttribute('type') !== 'unavailable') {
                         this.onOwnChatRoomPresence(pres);
                     }
@@ -2052,8 +2045,8 @@
                 },
 
                 render: function () {
-                    var show = this.model.get('show') || 'online';
-                    var new_el = tpl_occupant(
+                    const show = this.model.get('show') || 'online';
+                    const new_el = tpl_occupant(
                         _.extend(
                             { 'jid': '',
                               'show': show,
@@ -2065,7 +2058,7 @@
                             }, this.model.toJSON()
                         )
                     );
-                    var $parents = this.$el.parents();
+                    const $parents = this.$el.parents();
                     if ($parents.length) {
                         this.$el.replaceWith(new_el);
                         this.setElement($parents.first().children('#'+this.model.get('id')), true);
@@ -2126,10 +2119,10 @@
                 },
 
                 renderInviteWidget: function () {
-                    var form = this.el.querySelector('form.room-invite');
+                    let form = this.el.querySelector('form.room-invite');
                     if (this.shouldInviteWidgetBeShown()) {
                         if (_.isNull(form)) {
-                            var heading = this.el.querySelector('.occupants-heading');
+                            const heading = this.el.querySelector('.occupants-heading');
                             form = tpl_chatroom_invite({
                                 'label_invitation': __('Invite'),
                             });
@@ -2145,7 +2138,7 @@
                 },
 
                 renderRoomFeatures: function () {
-                    var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
+                    const picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
                         iteratee = function (a, v) { return a || v; },
                         el = this.el.querySelector('.chatroom-features');
 
@@ -2199,7 +2192,7 @@
                             this.renderRoomFeatures, 100, {'leading': false}
                         );
                     }
-                    var changed_features = {};
+                    const changed_features = {};
                     _.each(_.keys(model.changed), function (k) {
                         if (!_.isNil(ROOM_FEATURES_MAP[k])) {
                             changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
@@ -2211,13 +2204,13 @@
 
 
                 setOccupantsHeight: function () {
-                    var el = this.el.querySelector('.chatroom-features');
+                    const el = this.el.querySelector('.chatroom-features');
                     this.el.querySelector('.occupant-list').style.cssText =
                         'height: calc(100% - '+el.offsetHeight+'px - 5em);';
                 },
 
                 onOccupantAdded: function (item) {
-                    var view = this.get(item.get('id'));
+                    let view = this.get(item.get('id'));
                     if (!view) {
                         view = this.add(
                             item.get('id'),
@@ -2232,8 +2225,8 @@
                 },
 
                 parsePresence: function (pres) {
-                    var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                    var data = {
+                    const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
+                    const data = {
                         nick: id,
                         type: pres.getAttribute("type"),
                         states: []
@@ -2276,7 +2269,7 @@
                      * otherwise we use the nick. We don't always have both,
                      * but should have at least one or the other.
                      */
-                    var jid = Strophe.getBareJidFromJid(data.jid);
+                    const jid = Strophe.getBareJidFromJid(data.jid);
                     if (jid !== null) {
                         return this.model.where({'jid': jid}).pop();
                     } else {
@@ -2291,31 +2284,29 @@
                      * Parameters:
                      *  (XMLElement) pres: The presence stanza
                      */
-                    var data = this.parsePresence(pres);
+                    const data = this.parsePresence(pres);
                     if (data.type === 'error') {
                         return true;
                     }
-                    var occupant = this.findOccupant(data);
-                    switch (data.type) {
-                        case 'unavailable':
-                            if (occupant) { occupant.destroy(); }
-                            break;
-                        default:
-                            var jid = Strophe.getBareJidFromJid(data.jid);
-                            var attributes = _.extend(data, {
-                                'jid': jid ? jid : undefined,
-                                'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
-                            });
-                            if (occupant) {
-                                occupant.save(attributes);
-                            } else {
-                                this.model.create(attributes);
-                            }
+                    const occupant = this.findOccupant(data);
+                    if (data.type === 'unavailable') {
+                        if (occupant) { occupant.destroy(); }
+                    } else {
+                        const jid = Strophe.getBareJidFromJid(data.jid);
+                        const attributes = _.extend(data, {
+                            'jid': jid ? jid : undefined,
+                            'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
+                        });
+                        if (occupant) {
+                            occupant.save(attributes);
+                        } else {
+                            this.model.create(attributes);
+                        }
                     }
                 },
 
                 promptForInvite: function (suggestion) {
-                    var reason = prompt(
+                    const reason = prompt(
                         __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
@@ -2327,7 +2318,7 @@
 
                 inviteFormSubmitted: function (evt) {
                     evt.preventDefault();
-                    var el = evt.target.querySelector('input.invited-contact');
+                    const el = evt.target.querySelector('input.invited-contact');
                     this.promptForInvite({
                         'target': el,
                         'text': {
@@ -2344,17 +2335,17 @@
                 },
 
                 initInviteWidget: function () {
-                    var form = this.el.querySelector('form.room-invite');
+                    const form = this.el.querySelector('form.room-invite');
                     if (_.isNull(form)) {
                         return;
                     }
                     form.addEventListener('submit', this.inviteFormSubmitted.bind(this));
-                    var el = this.el.querySelector('input.invited-contact');
-                    var list = _converse.roster.map(function (item) {
-                            var label = item.get('fullname') || item.get('jid');
+                    const el = this.el.querySelector('input.invited-contact');
+                    const list = _converse.roster.map(function (item) {
+                            const label = item.get('fullname') || item.get('jid');
                             return {'label': label, 'value':item.get('jid')};
                         });
-                    var awesomplete = new Awesomplete(el, {
+                    const awesomplete = new Awesomplete(el, {
                         'minChars': 1,
                         'list': list
                     });
@@ -2401,7 +2392,7 @@
                         'label_show_rooms': __('Show rooms')
                     });
                     this.renderTab();
-                    var controlbox = _converse.chatboxes.get('controlbox');
+                    const controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
                         this.el.classList.add('hidden');
                     }
@@ -2409,8 +2400,8 @@
                 },
 
                 renderTab: function () {
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    var chatrooms = fp.filter(
+                    const controlbox = _converse.chatboxes.get('controlbox');
+                    const chatrooms = fp.filter(
                         _.partial(utils.isOfType, CHATROOMS_TYPE),
                         _converse.chatboxes.models
                     );
@@ -2429,7 +2420,7 @@
                 },
 
                 onDomainChange: function (model) {
-                    var $server = this.$el.find('input.new-chatroom-server');
+                    const $server = this.$el.find('input.new-chatroom-server');
                     $server.val(model.get('muc_domain'));
                     if (_converse.auto_list_rooms) {
                         this.updateRoomsList();
@@ -2437,12 +2428,12 @@
                 },
 
                 onNickChange: function (model) {
-                    var $nick = this.$el.find('input.new-chatroom-nick');
+                    const $nick = this.$el.find('input.new-chatroom-nick');
                     $nick.val(model.get('nick'));
                 },
 
                 informNoRoomsFound: function () {
-                    var $available_chatrooms = this.$el.find('#available-chatrooms');
+                    const $available_chatrooms = this.$el.find('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
                     $available_chatrooms.html('<dt>'+__('No rooms on %1$s',this.model.get('muc_domain'))+'</dt>');
                     $('input#show-rooms').show().siblings('span.spinner').remove();
@@ -2495,9 +2486,9 @@
                 },
 
                 showRooms: function () {
-                    var $available_chatrooms = this.$el.find('#available-chatrooms');
-                    var $server = this.$el.find('input.new-chatroom-server');
-                    var server = $server.val();
+                    const $available_chatrooms = this.$el.find('#available-chatrooms');
+                    const $server = this.$el.find('input.new-chatroom-server');
+                    const server = $server.val();
                     if (!server) {
                         $server.addClass('error');
                         return;
@@ -2519,7 +2510,7 @@
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      info.
                      */
-                    var $stanza = $(stanza);
+                    const $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
                     $(el).find('span.spinner').replaceWith(
                         tpl_room_description({
@@ -2559,7 +2550,7 @@
                 toggleRoomInfo: function (ev) {
                     /* Show/hide extra information about a room in the listing.
                      */
-                    var target = ev.target,
+                    const target = ev.target,
                         $parent = $(target).parent('dd'),
                         $div = $parent.find('div.room-info');
                     if ($div.length) {
@@ -2579,9 +2570,9 @@
                         name = $(ev.target).text();
                         jid = $(ev.target).attr('data-room-jid');
                     } else {
-                        $name = this.$el.find('input.new-chatroom-name');
-                        $server= this.$el.find('input.new-chatroom-server');
-                        server = $server.val();
+                        const $name = this.$el.find('input.new-chatroom-name');
+                        const $server= this.$el.find('input.new-chatroom-server');
+                        const server = $server.val();
                         name = $name.val().trim();
                         $name.val(''); // Clear the input
                         if (name && server) {
@@ -2669,7 +2660,7 @@
             };
 
             if (_converse.allow_muc_invitations) {
-                var registerDirectInvitationHandler = function () {
+                const registerDirectInvitationHandler = function () {
                     _converse.connection.addHandler(
                         function (message) {
                             _converse.onDirectMUCInvitation(message);
@@ -2680,7 +2671,7 @@
                 _converse.on('reconnected', registerDirectInvitationHandler);
             }
 
-            var autoJoinRooms = function () {
+            function autoJoinRooms () {
                 /* Automatically join chat rooms, based on the
                  * "auto_join_rooms" configuration setting, which is an array
                  * of strings (room JIDs) or objects (with room JID and other
@@ -2697,7 +2688,7 @@
                             Strophe.LogLevel.ERROR);
                     }
                 });
-            };
+            }
             _converse.on('chatBoxesFetched', autoJoinRooms);
 
             _converse.getChatRoom = function (jid, attrs, fetcher) {
@@ -2724,11 +2715,11 @@
                                 }
                             });
                         } else if (_.isString(jids)) {
-                            var view = _converse.chatboxviews.get(jids);
+                            const view = _converse.chatboxviews.get(jids);
                             if (view) { view.close(); }
                         } else {
                             _.each(jids, function (jid) {
-                                var view = _converse.chatboxviews.get(jid);
+                                const view = _converse.chatboxviews.get(jid);
                                 if (view) { view.close(); }
                             });
                         }
@@ -2759,7 +2750,7 @@
                             attrs = {};
                         }
                         if (_.isUndefined(jids)) {
-                            var result = [];
+                            const result = [];
                             _converse.chatboxes.each(function (chatbox) {
                                 if (chatbox.get('type') === CHATROOMS_TYPE) {
                                     result.push(_converse.getViewForChatBox(chatbox));
@@ -2767,7 +2758,7 @@
                             });
                             return result;
                         }
-                        var fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
+                        const fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
                         if (!attrs.nick) {
                             attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
@@ -2779,7 +2770,7 @@
                 }
             });
 
-            var reconnectToChatRooms = function () {
+            function reconnectToChatRooms () {
                 /* Upon a reconnection event from converse, join again
                  * all the open chat rooms.
                  */
@@ -2791,10 +2782,10 @@
                         view.fetchMessages();
                     }
                 });
-            };
+            }
             _converse.on('reconnected', reconnectToChatRooms);
 
-            var disconnectChatRooms = function () {
+            function disconnectChatRooms () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
                  * when fetched from session storage.
@@ -2804,7 +2795,7 @@
                         model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     }
                 });
-            };
+            }
             _converse.on('reconnecting', disconnectChatRooms);
             _converse.on('disconnecting', disconnectChatRooms);
         }

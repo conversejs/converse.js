@@ -10,7 +10,7 @@
     define(["converse-core", "strophe.vcard"], factory);
 }(this, function (converse) {
     "use strict";
-    var Strophe = converse.env.Strophe,
+    const Strophe = converse.env.Strophe,
         $ = converse.env.jQuery,
         _ = converse.env._,
         moment = converse.env.moment;
@@ -26,7 +26,7 @@
 
             Features: {
                 addClientFeatures: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     this.__super__.addClientFeatures.apply(this, arguments);
                     if (_converse.use_vcards) {
                         _converse.connection.disco.addFeature(Strophe.NS.VCARD);
@@ -36,8 +36,8 @@
 
             RosterContacts: {
                 createRequestingContact: function (presence) {
-                    var _converse = this.__super__._converse;
-                    var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+                    const _converse = this.__super__._converse;
+                    const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                     _converse.getVCard(
                         bare_jid,
                         _.partial(_converse.createRequestingContactFromVCard, presence),
@@ -58,15 +58,15 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const _converse = this._converse;
             _converse.api.settings.update({
                 use_vcards: true,
             });
 
             _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var nick = $(presence).children('nick[xmlns="'+Strophe.NS.NICK+'"]').text();
-                var user_data = {
+                const bare_jid = Strophe.getBareJidFromJid(jid);
+                const nick = $(presence).children('nick[xmlns="'+Strophe.NS.NICK+'"]').text();
+                const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
@@ -82,7 +82,7 @@
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                var contact = _converse.roster.get(jid);
+                const contact = _converse.roster.get(jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }

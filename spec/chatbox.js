@@ -106,7 +106,7 @@
                     }
                     return test_utils.waitUntil(function () {
                             return _converse.chatboxviews.keys().length > 1;
-                        }, 500)
+                        }, 500);
                 }).then(function () {
                     var key = _converse.chatboxviews.keys()[1];
                     trimmedview = trimmed_chatboxes.get(key);
@@ -268,7 +268,7 @@
                     expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                     return test_utils.waitUntil(function () {
                         return chatview.$el.find('.chat-body').is(':visible');
-                    }, 500)
+                    }, 500);
                 }).then(function () {
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-minus')).toBeTruthy();
                     expect(chatview.$el.find('.toggle-chatbox-button').hasClass('icon-plus')).toBeFalsy();
@@ -715,12 +715,12 @@
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
-                            }, 300)
+                            }, 300);
                         }).then(function () {
                             chatboxview.$content.scrollTop(0);
                             return test_utils.waitUntil(function () {
                                 return chatboxview.model.get('scrolled');
-                            }, 900)
+                            }, 900);
                         }).then(function () {
                             _converse.chatboxes.onMessage($msg({
                                     from: sender_jid,
@@ -736,7 +736,7 @@
                             expect(msg_txt).toEqual(message);
                             return test_utils.waitUntil(function () {
                                 return chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300)
+                            }, 300);
                         }).then(function () {
                             expect(chatboxview.model.get('scrolled')).toBe(true);
                             expect(chatboxview.$content.scrollTop()).toBe(0);
@@ -745,7 +745,7 @@
                             chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300)
+                            }, 300);
                         }).then(done);
                     }));
 
@@ -1256,7 +1256,7 @@
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
                             return view.$el.find('.chat-content').find('.chat-message img').length === 2;
-                        }, 500)
+                        }, 500);
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
@@ -1351,7 +1351,7 @@
                             view.model.maximize();
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'active';
-                            }, 300)
+                            }, 300);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
@@ -1496,7 +1496,7 @@
                             expect($stanza.children().get(0).tagName).toBe('composing');
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'paused';
-                            }, 500)
+                            }, 500);
                     }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(_converse.connection.send.calls.argsFor(1)[0].tree());
@@ -1618,11 +1618,11 @@
                                     return true;
                                 }
                                 return false;
-                            }, 250)
+                            }, 250);
                         }).then(function () {
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'inactive';
-                            }, 250)
+                            }, 250);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var $stanza = $(_converse.connection.send.calls.first().args[0].tree());

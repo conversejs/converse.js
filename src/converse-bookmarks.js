@@ -29,7 +29,7 @@
         tpl_bookmarks_list
     ) {
 
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         Backbone = converse.env.Backbone,
         Strophe = converse.env.Strophe,
         $iq = converse.env.$iq,
@@ -66,7 +66,7 @@
                 },
 
                 generateHeadingHTML: function () {
-                    var _converse = this.__super__._converse,
+                    const _converse = this.__super__._converse,
                         __ = _converse.__,
                         html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     if (_converse.allow_bookmarks) {
@@ -92,11 +92,11 @@
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
-                    var model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
+                    const model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(model.get('nick'));
                     } else {

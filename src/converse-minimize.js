@@ -24,7 +24,8 @@
         tpl_chats_panel
     ) {
     "use strict";
-    var $ = converse.env.jQuery,
+
+    const $ = converse.env.jQuery,
         _ = converse.env._,
         utils = converse.env.utils,
         Backbone = converse.env.Backbone,
@@ -40,8 +41,8 @@
             // New functions which don't exist yet can also be added.
 
             initChatBoxes: function () {
-                var _converse = this.__super__._converse;
-                var result = this.__super__.initChatBoxes.apply(this, arguments);
+                const _converse = this.__super__._converse;
+                const result = this.__super__.initChatBoxes.apply(this, arguments);
                 _converse.minimized_chats = new _converse.MinimizedChats({
                     model: _converse.chatboxes
                 });
@@ -49,7 +50,7 @@
             },
 
             registerGlobalEventHandlers: function () {
-                var _converse = this.__super__._converse;
+                const _converse = this.__super__._converse;
                 $(window).on("resize", _.debounce(function (ev) {
                     if (_converse.connection.connected) {
                         _converse.chatboxviews.trimChats();
@@ -96,7 +97,7 @@
                 },
 
                 _show: function () {
-                    var _converse = this.__super__._converse;
+                    const _converse = this.__super__._converse;
                     if (!this.model.get('minimized')) {
                         this.__super__._show.apply(this, arguments);
                         _converse.chatboxviews.trimChats(this);

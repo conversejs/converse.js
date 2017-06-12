@@ -590,7 +590,7 @@
                         ));
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.el.classList.add('current-xmpp-contact');
-                        this.el.classList.remove(_.without(['both', 'to'], subscription)[0])
+                        this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
                         this.el.classList.add(subscription);
                         this.renderRosterItem(item);
                     }

@@ -43,4 +43,4 @@
         endFile: "end-no-dependencies.frag"
     },
     mainConfigFile: "config.js"
-})
+});

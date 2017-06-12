@@ -16,7 +16,7 @@
     ], factory);
 }(this, function (converse, tpl_dragresize) {
     "use strict";
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         _ = converse.env._;
 
     function renderDragResizeHandles (_converse, view) {

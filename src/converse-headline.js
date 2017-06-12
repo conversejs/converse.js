@@ -14,7 +14,7 @@
     ], factory);
 }(this, function (converse, tpl_chatbox) {
     "use strict";
-    var _ = converse.env._,
+    const _ = converse.env._,
         utils = converse.env.utils;
 
     converse.plugins.add('converse-headline', {
@@ -28,8 +28,8 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
-                    var _converse = this.__super__._converse;
-                    var view = this.get(item.get('id'));
+                    const _converse = this.__super__._converse;
+                    let view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
                         view = new _converse.HeadlinesBoxView({model: item});
                         this.add(item.get('id'), view);
@@ -45,7 +45,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
+            const _converse = this._converse,
                 __ = _converse.__;
 
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
@@ -89,14 +89,14 @@
                 }
             });
 
-            var onHeadlineMessage = function (message) {
+            function onHeadlineMessage (message) {
                 /* Handler method for all incoming messages of type "headline". */
-                var from_jid = message.getAttribute('from');
+                const from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(message)) {
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
-                    var chatbox = _converse.chatboxes.create({
+                    const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
                         'fullname':  from_jid,
@@ -106,12 +106,12 @@
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
                 return true;
-            };
+            }
 
-            var registerHeadlineHandler = function () {
+            function registerHeadlineHandler () {
                 _converse.connection.addHandler(
                         onHeadlineMessage, null, 'message');
-            };
+            }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);
         }

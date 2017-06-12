@@ -14,7 +14,7 @@
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
+    const Strophe = converse.env.Strophe,
         _ = converse.env._;
     
     converse.plugins.add('converse-ping', {
@@ -23,7 +23,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const _converse = this._converse;
 
             _converse.api.settings.update({
                 ping_interval: 180 //in seconds

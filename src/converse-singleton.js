@@ -72,9 +72,9 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    var _converse = this.__super__._converse;
-                    var chatbox = this.getChatBox(attrs, true);
-                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    const _converse = this.__super__._converse;
+                    const chatbox = this.getChatBox(attrs, true);
+                    const hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
                     if ((force || !hidden) && _converse.connection.authenticated) {
                         _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
                         chatbox.save({'hidden': false});

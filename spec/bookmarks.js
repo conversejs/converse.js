@@ -306,7 +306,7 @@
              */
             var IQ_id;
             expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                var stanza = call.args[0]
+                var stanza = call.args[0];
                 if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                     return;
                 }
@@ -373,7 +373,7 @@
             it("shows a list of bookmarks", mock.initConverseWithConnectionSpies(['send'], function (_converse) {
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                    var stanza = call.args[0]
+                    var stanza = call.args[0];
                     if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                         return;
                     }
@@ -421,7 +421,7 @@
                     mock.initConverseWithConnectionSpies(['send'], function (_converse) {
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                    var stanza = call.args[0]
+                    var stanza = call.args[0];
                     if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                         return;
                     }

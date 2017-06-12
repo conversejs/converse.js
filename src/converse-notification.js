@@ -10,7 +10,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    var utils = converse.env.utils,
+    const utils = converse.env.utils,
         Strophe = converse.env.Strophe,
         _ = converse.env._;
 
@@ -20,11 +20,11 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const _converse = this._converse;
 
             // For translations
-            var __ = _converse.__;
-            var ___ = _converse.___;
+            const __ = _converse.__;
+            const ___ = _converse.___;
 
             _converse.supports_html5_notification = "Notification" in window;
 

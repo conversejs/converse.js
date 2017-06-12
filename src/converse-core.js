@@ -30,14 +30,14 @@
     // "use strict";
 
     // Create the FP (functional programming) version of lodash
-    var fp = lodashConverter(_.runInContext());
+    const fp = lodashConverter(_.runInContext());
 
     // Strophe globals
-    var $build = Strophe.$build;
-    var $iq = Strophe.$iq;
-    var $msg = Strophe.$msg;
-    var $pres = Strophe.$pres;
-    var b64_sha1 = Strophe.SHA1.b64_sha1;
+    const $build = Strophe.$build;
+    const $iq = Strophe.$iq;
+    const $msg = Strophe.$msg;
+    const $pres = Strophe.$pres;
+    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
@@ -50,7 +50,7 @@
         'interpolate': /\{\{([\s\S]+?)\}\}/g
     };
 
-    var _converse = {};
+    const _converse = {};
     _converse.templates = {};
     _.extend(_converse, Backbone.Events);
     _converse.promises = {
@@ -66,7 +66,7 @@
     };
     _converse.emit = function (name) {
         _converse.trigger.apply(this, arguments);
-        var promise = _converse.promises[name];
+        const promise = _converse.promises[name];
         if (!_.isUndefined(promise)) {
             promise.resolve();
         }
@@ -121,7 +121,7 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    var PRETTY_CONNECTION_STATUS = {
+    const PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -134,11 +134,11 @@
         9: 'REDIRECT'
     };
 
-    var DEFAULT_IMAGE_TYPE = 'image/png';
-    var DEFAULT_IMAGE = "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";
+    const DEFAULT_IMAGE_TYPE = 'image/png';
+    const DEFAULT_IMAGE = "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";
 
     _converse.log = function (txt, level) {
-        var logger = _.assignIn({
+        const logger = _.assignIn({
                 'debug': _.noop,
                 'error': _.noop,
                 'info': _.noop,
@@ -170,7 +170,7 @@
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
-        var init_deferred = new $.Deferred();
+        const init_deferred = new $.Deferred();
 
         if (!_.isUndefined(_converse.chatboxes)) {
             // Looks like _converse.initialized was called again without logging
@@ -182,7 +182,7 @@
             _converse._tearDown();
         }
 
-        var unloadevent;
+        let unloadevent;
         if ('onpagehide' in window) {
             // Pagehide gets thrown in more cases than unload. Specifically it
             // gets thrown when the page is cached and not just
@@ -225,7 +225,7 @@
             moment.locale = moment.lang;
         }
         moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        var __ = _converse.__ = utils.__.bind(_converse);
+        const __ = _converse.__ = utils.__.bind(_converse);
         _converse.___ = utils.___;
 
         // XEP-0085 Chat states
@@ -364,7 +364,7 @@
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = _converse.xmppstatus.getStatus();
+            const stat = _converse.xmppstatus.getStatus();
             _converse.idle_seconds++;
             if (_converse.csi_waiting_time > 0 &&
                     _converse.idle_seconds > _converse.csi_waiting_time &&
@@ -403,7 +403,7 @@
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            var els = document.querySelectorAll('.conn-feedback');
+            const els = document.querySelectorAll('.conn-feedback');
             _.forEach(els, function (el) {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
@@ -428,7 +428,7 @@
              *      is being canceled.
              *    (String) message - An optional message to the user
              */
-            var pres = $pres({to: jid, type: "unsubscribed"});
+            const pres = $pres({to: jid, type: "unsubscribed"});
             if (message && message !== "") { pres.c("status").t(message); }
             _converse.connection.send(pres);
         };
@@ -543,7 +543,7 @@
 
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
-            var unreadMsgCount = this.msg_counter;
+            const unreadMsgCount = this.msg_counter;
             if (document.title.search(/^Messages \(\d+\) /) === -1) {
                 document.title = "Messages (" + unreadMsgCount + ") " + document.title;
             } else {
@@ -559,9 +559,9 @@
         };
 
         this.initStatus = function () {
-            var deferred = new $.Deferred();
+            const deferred = new $.Deferred();
             this.xmppstatus = new this.XMPPStatus();
-            var id = b64_sha1('converse.xmppstatus-'+_converse.bare_jid);
+            const id = b64_sha1('converse.xmppstatus-'+_converse.bare_jid);
             this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
             this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.xmppstatus.fetch({
@@ -574,7 +574,7 @@
 
         this.initSession = function () {
             this.session = new this.Session();
-            var id = b64_sha1('converse.bosh-session');
+            const id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
             this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.session.fetch();
@@ -606,16 +606,15 @@
             // XXX: eventually we should be able to just use
             // document.visibilityState (when we drop support for older
             // browsers).
-            var state;
-            var v = "visible", h = "hidden",
-                event_map = {
-                    'focus': v,
-                    'focusin': v,
-                    'pageshow': v,
-                    'blur': h,
-                    'focusout': h,
-                    'pagehide': h
-                };
+            let state;
+            const event_map = {
+                'focus': "visible",
+                'focusin': "visible",
+                'pageshow': "visible",
+                'blur': "hidden",
+                'focusout': "hidden",
+                'pagehide': "hidden"
+            };
             ev = ev || document.createEvent('Events');
             if (ev.type in event_map) {
                 state = event_map[ev.type];
@@ -626,13 +625,13 @@
                 _converse.clearMsgCounter();
             }
             _converse.windowState = state;
-            _converse.emit('windowStateChanged', {state: state})
+            _converse.emit('windowStateChanged', {state: state});
         };
 
         this.registerGlobalEventHandlers = function () {
             // Taken from:
             // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
-            var hidden = "hidden";
+            let hidden = "hidden";
             // Standards:
             if (hidden in document) {
                 document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
@@ -662,7 +661,7 @@
             if (!this.message_carbons || this.session.get('carbons_enabled')) {
                 return;
             }
-            var carbons_iq = new Strophe.Builder('iq', {
+            const carbons_iq = new Strophe.Builder('iq', {
                 from: this.connection.jid,
                 id: 'enablecarbons',
                 type: 'set'
@@ -811,9 +810,9 @@
             },
 
             initialize: function (attributes) {
-                var jid = attributes.jid;
-                var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-                var resource = Strophe.getResourceFromJid(jid);
+                const jid = attributes.jid;
+                const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
+                const resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
                     'id': bare_jid,
@@ -837,11 +836,11 @@
                  *      reason for the subscription request.
                  */
                 this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-                var pres = $pres({to: this.get('jid'), type: "subscribe"});
+                const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                var nick = _converse.xmppstatus.get('fullname');
+                const nick = _converse.xmppstatus.get('fullname');
                 if (nick && nick !== "") {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
@@ -888,7 +887,7 @@
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
                  */
-                var pres = $pres({to: this.get('jid'), type: "subscribed"});
+                const pres = $pres({to: this.get('jid'), type: "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
@@ -903,23 +902,23 @@
                  * Also updates the contact's chat_status if the presence has
                  * higher priority (and is newer).
                  */
-                var jid = presence.getAttribute('from'),
+                const jid = presence.getAttribute('from'),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                     resource = Strophe.getResourceFromJid(jid),
-                    priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
                     delay = presence.querySelector('delay[xmlns="'+Strophe.NS.DELAY+'"]'),
                     timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
+                let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
                 priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
 
-                var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
+                const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
                 resources[resource] = {
                     'priority': priority,
                     'status': chat_status,
                     'timestamp': timestamp
                 };
-                var changed = {'resources': resources};
-                var hpr = this.getHighestPriorityResource();
+                const changed = {'resources': resources};
+                const hpr = this.getHighestPriorityResource();
                 if (priority == hpr.priority && timestamp == hpr.timestamp) {
                     // Only set the chat status if this is the newest resource
                     // with the highest priority
@@ -935,7 +934,7 @@
                  * Also recomputes the chat_status given that there's one less
                  * resource.
                  */
-                var resources = this.get('resources');
+                let resources = this.get('resources');
                 if (!_.isObject(resources)) {
                     resources = {};
                 } else {
@@ -954,9 +953,9 @@
                  * If multiple resources have the same priority, take the
                  * newest one.
                  */
-                var resources = this.get('resources');
+                const resources = this.get('resources');
                 if (_.isObject(resources) && _.size(resources)) {
-                    var val = _.flow(
+                    const val = _.flow(
                             _.values,
                             _.partial(_.sortBy, _, ['priority', 'timestamp']),
                             _.reverse
@@ -972,7 +971,7 @@
                  * Parameters:
                  *   (Function) callback
                  */
-                var iq = $iq({type: 'set'})
+                const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
                 _converse.connection.sendIQ(iq, callback, callback);
@@ -985,12 +984,11 @@
             model: _converse.RosterContact,
 
             comparator: function (contact1, contact2) {
-                var name1, name2;
-                var status1 = contact1.get('chat_status') || 'offline';
-                var status2 = contact2.get('chat_status') || 'offline';
+                const status1 = contact1.get('chat_status') || 'offline';
+                const status2 = contact2.get('chat_status') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
-                    name1 = contact1.get('fullname').toLowerCase();
-                    name2 = contact2.get('fullname').toLowerCase();
+                    const name1 = contact1.get('fullname').toLowerCase();
+                    const name2 = contact2.get('fullname').toLowerCase();
                     return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
                 } else  {
                     return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
@@ -1044,7 +1042,7 @@
                  * Returns a promise which resolves once the contacts have been
                  * fetched.
                  */
-                var deferred = new $.Deferred();
+                const deferred = new $.Deferred();
                 this.fetch({
                     add: true,
                     success: function (collection) {
@@ -1112,7 +1110,7 @@
                  *    (Function) errback - A function to call if an error occured
                  */
                 name = _.isEmpty(name)? jid: name;
-                var iq = $iq({type: 'set'})
+                const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', { jid: jid, name: name });
                 _.each(groups, function (group) { iq.c('group').t(group).up(); });
@@ -1131,12 +1129,12 @@
                  *    (Array of Strings) groups - Any roster groups the user might belong to
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                var deferred = new $.Deferred();
+                const deferred = new $.Deferred();
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
                     function () {
-                        var contact = this.create(_.assignIn({
+                        const contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
                             groups: groups,
@@ -1156,7 +1154,7 @@
             },
 
             subscribeBack: function (bare_jid) {
-                var contact = this.get(bare_jid);
+                const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
@@ -1170,20 +1168,13 @@
             },
 
             getNumOnlineContacts: function () {
-                var count = 0,
-                    ignored = ['offline', 'unavailable'],
-                    models = this.models,
-                    models_length = models.length,
-                    i;
+                let ignored = ['offline', 'unavailable'];
                 if (_converse.show_only_online_users) {
                     ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                 }
-                for (i=0; i<models_length; i++) {
-                    if (!_.includes(ignored, models[i].get('chat_status'))) {
-                        count++;
-                    }
-                }
-                return count;
+                return _.sum(this.models.filter(function (model) {
+                    return !_.includes(ignored, model.get('chat_status'));
+                }));
             },
 
             onRosterPush: function (iq) {
@@ -1193,8 +1184,8 @@
                  * Parameters:
                  *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
                  */
-                var id = iq.getAttribute('id');
-                var from = iq.getAttribute('from');
+                const id = iq.getAttribute('id');
+                const from = iq.getAttribute('from');
                 if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     // XXX: Some naughty servers apparently send from a full
@@ -1208,8 +1199,7 @@
                     return true;
                 }
                 _converse.connection.send($iq({type: 'result', id: id, from: _converse.connection.jid}));
-                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
-                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                const items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('rosterPush', iq);
                 return true;
@@ -1217,12 +1207,11 @@
 
             fetchFromServer: function (callback) {
                 /* Get the roster from the XMPP server */
-                var iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
-                        .c('query', {xmlns: Strophe.NS.ROSTER});
-                var that = this;
-                return _converse.connection.sendIQ(iq, function () {
-                    that.onReceivedFromServer.apply(that, arguments);
-                    callback.apply(that, arguments);
+                const iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
+                    .c('query', {xmlns: Strophe.NS.ROSTER});
+                return _converse.connection.sendIQ(iq, (iq) => {
+                    this.onReceivedFromServer(iq);
+                    callback.apply(this, arguments);
                 });
             },
 
@@ -1230,8 +1219,7 @@
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                // var items = iq.querySelectorAll('query[xmlns="'+Strophe.NS.ROSTER+'"] item');
-                var items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                const items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('roster', iq);
             },
@@ -1240,12 +1228,14 @@
                 /* Update or create RosterContact models based on items
                  * received in the IQ from the server.
                  */
-                var jid = item.getAttribute('jid');
+                const jid = item.getAttribute('jid');
                 if (this.isSelf(jid)) { return; }
-                var groups = _.map(item.getElementsByTagName('group'), Strophe.getText),
-                    contact = this.get(jid),
-                    ask = item.getAttribute("ask"),
-                    subscription = item.getAttribute("subscription");
+
+                const contact = this.get(jid),
+                      subscription = item.getAttribute("subscription"),
+                      ask = item.getAttribute("ask"),
+                      groups = _.map(item.getElementsByTagName('group'), Strophe.getText);
+
                 if (!contact) {
                     if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
@@ -1279,9 +1269,9 @@
                  *
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
-                var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                var nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
-                var user_data = {
+                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
+                      nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
+                const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
@@ -1293,9 +1283,10 @@
             },
 
             handleIncomingSubscription: function (presence) {
-                var jid = presence.getAttribute('from');
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var contact = this.get(bare_jid);
+                const jid = presence.getAttribute('from'),
+                      bare_jid = Strophe.getBareJidFromJid(jid),
+                      contact = this.get(bare_jid);
+
                 if (!_converse.allow_contact_requests) {
                     _converse.rejectPresenceSubscription(
                         jid,
@@ -1315,16 +1306,17 @@
                         } else if (contact.get('ask') === "subscribe") {
                             contact.authorize();
                         }
-                    } else if (!contact) {
+                    } else {
                         this.createRequestingContact(presence);
                     }
                 }
             },
 
             presenceHandler: function (presence) {
-                var presence_type = presence.getAttribute('type');
+                const presence_type = presence.getAttribute('type');
                 if (presence_type === 'error') { return true; }
-                var jid = presence.getAttribute('from'),
+
+                const jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
@@ -1390,7 +1382,7 @@
                  * Returns a promise which resolves once the groups have been
                  * returned.
                  */
-                var deferred = new $.Deferred();
+                const deferred = new $.Deferred();
                 this.fetch({
                     silent: true, // We need to first have all groups before
                                   // we can start positioning them, so we set
@@ -1442,15 +1434,13 @@
 
             getMessageAttributes: function (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
-                var type = message.getAttribute('type'),
-                    body, stamp, time, sender, from, fullname;
+                const type = message.getAttribute('type');
 
-                if (type === 'error') {
-                    body = _.propertyOf(message.querySelector('error text'))('textContent');
-                } else {
-                    body = _.propertyOf(message.querySelector('body'))('textContent');
-                }
-                var delayed = !_.isNull(delay),
+                const body = (type === 'error') ?
+                    _.propertyOf(message.querySelector('error text'))('textContent') :
+                        _.propertyOf(message.querySelector('body'))('textContent');
+
+                const delayed = !_.isNull(delay),
                     is_groupchat = type === 'groupchat',
                     chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                         message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
@@ -1458,17 +1448,15 @@
                         message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                         message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
+                let from;
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-                if (delayed) {
-                    stamp = delay.getAttribute('stamp');
-                    time = stamp;
-                } else {
-                    time = moment().format();
-                }
+
+                const time = delayed ? delay.getAttribute('stamp') : moment().format();
+                let sender, fullname;
                 if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
                     fullname = _converse.xmppstatus.get('fullname') || from;
@@ -1546,9 +1534,8 @@
                  * This method gets overridden entirely in src/converse-controlbox.js
                  * if the controlbox plugin is active.
                  */
-                var that = this;
-                collection.each(function (chatbox) {
-                    if (that.chatBoxMayBeShown(chatbox)) {
+                collection.each((chatbox) => {
+                    if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
                 });
@@ -1569,12 +1556,12 @@
                 /* Handler method for all incoming error message stanzas
                  */
                 // TODO: we can likely just reuse "onMessage" below
-                var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
+                const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                 if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.
-                var chatbox = this.getChatBox(from_jid);
+                const chatbox = this.getChatBox(from_jid);
                 if (!chatbox) {
                     return true;
                 }
@@ -1586,14 +1573,14 @@
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
-                var original_stanza = message,
-                    contact_jid, delay, from_bare_jid,
-                    from_resource, is_me, msgid, messages,
-                    chatbox, resource,
+
+                let contact_jid, delay, resource,
                     from_jid = message.getAttribute('from'),
-                    to_jid = message.getAttribute('to'),
-                    to_resource = Strophe.getResourceFromJid(to_jid),
-                    is_carbon = !_.isNull(message.querySelector('received[xmlns="'+Strophe.NS.CARBONS+'"]'));
+                    to_jid = message.getAttribute('to');
+
+                const original_stanza = message,
+                      to_resource = Strophe.getResourceFromJid(to_jid),
+                      is_carbon = !_.isNull(message.querySelector('received[xmlns="'+Strophe.NS.CARBONS+'"]'));
 
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                     _converse.log(
@@ -1611,10 +1598,10 @@
                     );
                     return true;
                 }
-                var forwarded = message.querySelector('forwarded');
+                const forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
-                    var forwarded_message = forwarded.querySelector('message');
-                    var forwarded_from = forwarded_message.getAttribute('from');
+                    const forwarded_message = forwarded.querySelector('message');
+                    const forwarded_from = forwarded_message.getAttribute('from');
                     if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
                         //
@@ -1626,9 +1613,11 @@
                     from_jid = message.getAttribute('from');
                     to_jid = message.getAttribute('to');
                 }
-                from_bare_jid = Strophe.getBareJidFromJid(from_jid);
-                from_resource = Strophe.getResourceFromJid(from_jid);
-                is_me = from_bare_jid === _converse.bare_jid;
+
+                const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+                      from_resource = Strophe.getResourceFromJid(from_jid),
+                      is_me = from_bare_jid === _converse.bare_jid;
+
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
@@ -1638,10 +1627,11 @@
                     resource = from_resource;
                 }
                 // Get chat box, but only create a new one when the message has a body.
-                chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body')));
-                msgid = message.getAttribute('id');
+                const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
+                      msgid = message.getAttribute('id');
+
                 if (chatbox) {
-                    messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
+                    const messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
                     if (_.isEmpty(messages)) {
                         // Only create the message when we're sure it's not a
                         // duplicate
@@ -1661,9 +1651,10 @@
                  *      gets created.
                  *    (Object) attrs - Optional chat box atributes.
                  */
-                var bare_jid = Strophe.getBareJidFromJid(jid);
-                var roster_info = {};
-                var roster_item = _converse.roster.get(bare_jid);
+                const bare_jid = Strophe.getBareJidFromJid(jid),
+                      roster_item = _converse.roster.get(bare_jid);
+                let roster_info = {};
+
                 if (! _.isUndefined(roster_item)) {
                     roster_info = {
                         'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
@@ -1697,7 +1688,7 @@
                  *    (Object) attrs - Optional chat box atributes.
                  */
                 jid = jid.toLowerCase();
-                var chatbox = this.get(Strophe.getBareJidFromJid(jid));
+                let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                 if (!chatbox && create) {
                     chatbox = this.createChatBox(jid, attrs);
                 }
@@ -1717,7 +1708,7 @@
                  * If the #conversejs element doesn't exist, create it.
                  */
                 if (!this.el) {
-                    var el = document.querySelector('#conversejs');
+                    let el = document.querySelector('#conversejs');
                     if (_.isNull(el)) {
                         el = document.createElement('div');
                         el.setAttribute('id', 'conversejs');
@@ -1755,7 +1746,7 @@
             },
 
             getChatBox: function (attrs, create) {
-                var chatbox  = this.model.get(attrs.jid);
+                let chatbox  = this.model.get(attrs.jid);
                 if (!chatbox && create) {
                     chatbox = this.model.create(attrs, {
                         'error': function (model, response) {
@@ -1770,7 +1761,7 @@
                 /* Find the chat box and show it (if it may be shown).
                  * If it doesn't exist, create it.
                  */
-                var chatbox = this.getChatBox(attrs, true);
+                const chatbox = this.getChatBox(attrs, true);
                 if (this.chatBoxMayBeShown(chatbox)) {
                     chatbox.trigger('show', true);
                 }
@@ -1795,7 +1786,7 @@
             },
 
             constructPresence: function (type, status_message) {
-                var presence;
+                let presence;
                 type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
                 status_message = _.isString(status_message) ? status_message : undefined;
                 // Most of these presence types are actually not explicitly sent,
@@ -1839,14 +1830,14 @@
 
             setStatusMessage: function (status_message) {
                 this.sendPresence(this.getStatus(), status_message);
-                var prev_status = this.get('status_message');
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
-                    var xhr = new XMLHttpRequest();
+                    const xhr = new XMLHttpRequest();
                     xhr.open('POST', this.xhr_custom_status_url, true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
                     xhr.send({'msg': status_message});
                 }
+                const prev_status = this.get('status_message');
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
                 }
@@ -1908,12 +1899,11 @@
             },
 
             onItems: function (stanza) {
-                var that = this;
-                _.each(stanza.querySelectorAll('query item'), function (item) {
+                _.each(stanza.querySelectorAll('query item'), (item) => {
                     _converse.connection.disco.info(
                         item.getAttribute('jid'),
                         null,
-                        that.onInfo.bind(that));
+                        this.onInfo.bind(this));
                 });
             },
 
@@ -1923,11 +1913,10 @@
                     // This isn't an IM server component
                     return;
                 }
-                var that = this;
-                _.forEach(stanza.querySelectorAll('feature'), function (feature) {
-                    var namespace = feature.getAttribute('var');
-                    that[namespace] = true;
-                    that.create({
+                _.forEach(stanza.querySelectorAll('feature'), (feature) => {
+                    const namespace = feature.getAttribute('var');
+                    this[namespace] = true;
+                    this.create({
                         'var': namespace,
                         'from': stanza.getAttribute('from')
                     });
@@ -1950,13 +1939,13 @@
         };
 
         this.fetchLoginCredentials = function () {
-            var deferred = new $.Deferred();
-            var xhr = new XMLHttpRequest();
+            const deferred = new $.Deferred();
+            const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.credentials_url, true);
             xhr.setRequestHeader('Accept', "application/json, text/javascript");
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 400) {
-                    var data = JSON.parse(xhr.responseText);
+                    const data = JSON.parse(xhr.responseText);
                     deferred.resolve({
                         'jid': data.jid,
                         'password': data.password
@@ -1975,12 +1964,12 @@
         };
 
         this.startNewBOSHSession = function () {
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.prebind_url, true);
             xhr.setRequestHeader('Accept', "application/json, text/javascript");
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 400) {
-                    var data = JSON.parse(xhr.responseText);
+                    const data = JSON.parse(xhr.responseText);
                     _converse.connection.attach(
                             data.jid, data.sid, data.rid,
                             _converse.onConnectStatusChanged);
@@ -1998,8 +1987,8 @@
         this.restoreBOSHSession = function (jid_is_required) {
             /* Tries to restore a cached BOSH session. */
             if (!this.jid) {
-                var msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
-                        "but we don't have the JID for the user!";
+                const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                    "but we don't have the JID for the user!";
                 if (jid_is_required) {
                     throw new Error(msg);
                 } else {
@@ -2094,7 +2083,7 @@
                 }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
-                var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
+                const password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
                 if (!password) {
                     if (this.auto_login) {
                         throw new Error("initConnection: If you use auto_login and "+
@@ -2104,7 +2093,7 @@
                     _converse.disconnect();
                     return;
                 }
-                var resource = Strophe.getResourceFromJid(this.jid);
+                const resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {
                     this.jid = this.jid.toLowerCase() + _converse.generateResource();
                 } else {
@@ -2182,7 +2171,7 @@
             // If initialize is called for the first time, then this array is empty
             // in any case.
             _converse.pluggable.initialized_plugins = [];
-            var whitelist = _converse.core_plugins.concat(
+            const whitelist = _converse.core_plugins.concat(
                 _converse.whitelisted_plugins);
 
             _converse.pluggable.initializePlugins({
@@ -2250,7 +2239,7 @@
                     return _converse.xmppstatus.get('status');
                 },
                 'set': function (value, message) {
-                    var data = {'status': value};
+                    const data = {'status': value};
                     if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
@@ -2282,7 +2271,7 @@
                 }
             },
             'set': function (key, val) {
-                var o = {};
+                const o = {};
                 if (_.isObject(key)) {
                     _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
                 } else if (_.isString("string")) {
@@ -2301,8 +2290,8 @@
         },
         'contacts': {
             'get': function (jids) {
-                var _transform = function (jid) {
-                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
+                const _transform = function (jid) {
+                    const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
                         return contact.attributes;
                     }
@@ -2324,26 +2313,23 @@
         },
         'chats': {
             'open': function (jids, attrs) {
-                var chatbox;
                 if (_.isUndefined(jids)) {
                     _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                     return null;
                 } else if (_.isString(jids)) {
-                    chatbox = _converse.getViewForChatBox(
+                    return _converse.getViewForChatBox(
                         _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
                     );
-                    return chatbox;
                 }
                 return _.map(jids, function (jid) {
-                    chatbox = _converse.getViewForChatBox(
+                    return _converse.getViewForChatBox(
                         _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
                     );
-                    return chatbox;
                 });
             },
             'get': function (jids) {
                 if (_.isUndefined(jids)) {
-                    var result = [];
+                    const result = [];
                     _converse.chatboxes.each(function (chatbox) {
                         // FIXME: Leaky abstraction from MUC. We need to add a
                         // base type for chat boxes, and check for that.
@@ -2400,7 +2386,7 @@
             },
         },
         'waitUntil': function (name) {
-            var promise = _converse.promises[name];
+            const promise = _converse.promises[name];
             if (_.isUndefined(promise)) {
                 return null;
             }

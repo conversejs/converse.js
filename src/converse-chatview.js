@@ -30,7 +30,7 @@
             tpl_spinner
     ) {
     "use strict";
-    var $ = converse.env.jQuery,
+    const $ = converse.env.jQuery,
         $msg = converse.env.$msg,
         Backbone = converse.env.Backbone,
         Strophe = converse.env.Strophe,
@@ -38,7 +38,7 @@
         moment = converse.env.moment,
         utils = converse.env.utils;
 
-    var KEY = {
+    const KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47
     };
@@ -55,8 +55,8 @@
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
-                    var _converse = this.__super__._converse;
-                    var view = this.get(item.get('id'));
+                    const _converse = this.__super__._converse;
+                    let view = this.get(item.get('id'));
                     if (!view) {
                         view = new _converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
@@ -73,7 +73,7 @@
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
+            const _converse = this._converse,
                 __ = _converse.__;
 
             _converse.api.settings.update({
@@ -88,12 +88,11 @@
                 },
             });
 
-            var onWindowStateChanged = function (data) {
-                var state = data.state;
+            function onWindowStateChanged (data) {
                 _converse.chatboxviews.each(function (chatboxview) {
-                    chatboxview.onWindowStateChanged(state);
-                })
-            };
+                    chatboxview.onWindowStateChanged(data.state);
+                });
+            }
 
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
@@ -173,7 +172,7 @@
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */
-                    var container = document.querySelector('#conversejs');
+                    const container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
                         container.insertBefore(this.el, container.firstChild);
                     }
@@ -188,7 +187,7 @@
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    var $el = $('<div class="chat-info"></div>').text(message);
+                    const $el = $('<div class="chat-info"></div>').text(message);
                     if (!permanent) {
                         $el.addClass('chat-event');
                     }
@@ -216,8 +215,8 @@
                      * Parameters:
                      *  (String) date - An ISO8601 date string.
                      */
-                    var day_date = moment(date).startOf('day');
-                    var insert = prepend ? this.$content.prepend: this.$content.append;
+                    const day_date = moment(date).startOf('day');
+                    const insert = prepend ? this.$content.prepend: this.$content.append;
                     insert.call(this.$content, tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
@@ -232,11 +231,9 @@
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    var that = this;
-                    var insert = prepend ? this.$content.prepend : this.$content.append;
-                    _.flow(
-                        function ($el) {
-                            insert.call(that.$content, $el);
+                    const insert = prepend ? this.$content.prepend : this.$content.append;
+                    _.flow(($el) => {
+                            insert.call(this.$content, $el);
                             return $el;
                         },
                         this.scrollDown.bind(this)
@@ -255,11 +252,9 @@
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    var msg_dates,
-                        $first_msg = this.$content.find('.chat-message:first'),
-                        first_msg_date = $first_msg.data('isodate'),
-                        current_msg_date = moment(attrs.time) || moment,
-                        last_msg_date = this.$content.find('.chat-message:last').data('isodate');
+                    let current_msg_date = moment(attrs.time) || moment;
+                    const $first_msg = this.$content.find('.chat-message:first'),
+                          first_msg_date = $first_msg.data('isodate');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
@@ -268,6 +263,8 @@
                         this.insertMessage(attrs);
                         return;
                     }
+
+                    const last_msg_date = this.$content.find('.chat-message:last').data('isodate');
                     if (current_msg_date.isAfter(last_msg_date) ||
                             current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
@@ -294,16 +291,17 @@
                     }
                     // Find the correct place to position the message
                     current_msg_date = current_msg_date.format();
-                    msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
+                    const msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
                         return $(el).data('isodate');
                     });
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
-                    var idx = msg_dates.indexOf(current_msg_date)-1;
-                    var $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
-                    _.flow(
-                        function ($el) {
+
+                    const idx = msg_dates.indexOf(current_msg_date)-1;
+                    const $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
+                    _.flow(($el) => {
                             $el.insertAfter($latest_message);
+                            return $el;
                         },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
@@ -332,12 +330,11 @@
                      *  Returns:
                      *      The DOM element representing the message.
                      */
-                    var msg_time = moment(attrs.time) || moment,
-                        text = attrs.message,
-                        match = text.match(/^\/(.*?)(?: (.*))?$/),
+                    let text = attrs.message,
                         fullname = this.model.get('fullname') || attrs.fullname,
                         template, username;
 
+                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
                     if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
                         template = tpl_action;
@@ -361,7 +358,8 @@
                                "Output has been shortened."),
                             true, true);
                     }
-                    var $msg = $(template(
+                    const msg_time = moment(attrs.time) || moment;
+                    const $msg = $(template(
                         _.extend(this.getExtraMessageTemplateAttributes(attrs), {
                             'msgid': attrs.msgid,
                             'sender': attrs.sender,
@@ -379,13 +377,12 @@
                 },
 
                 showHelpMessages: function (msgs, type, spinner) {
-                    var i, msgs_length = msgs.length;
-                    for (i=0; i<msgs_length; i++) {
+                    _.each(msgs, (msg) => {
                         this.$content.append($(tpl_help_message({
                             'type': type||'info',
-                            'message': msgs[i]
+                            'message': msgs
                         })));
-                    }
+                    });
                     if (spinner === true) {
                         this.$content.append(tpl_spinner);
                     } else if (spinner === false) {
@@ -440,7 +437,7 @@
                 },
 
                 handleErrorMessage: function (message) {
-                    var $message = $('[data-msgid='+message.get('msgid')+']');
+                    const $message = $('[data-msgid='+message.get('msgid')+']');
                     if ($message.length) {
                         $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
                         this.scrollDown();
@@ -488,7 +485,7 @@
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    var messageStanza = this.createMessageStanza(message);
+                    const messageStanza = this.createMessageStanza(message);
                     _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
@@ -515,13 +512,13 @@
                             'error'
                         );
                     }
-                    var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/), msgs;
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
                         if (match[1] === "clear") {
                             return this.clearMessages();
                         }
                         else if (match[1] === "help") {
-                            msgs = [
+                            const msgs = [
                                 '<strong>/help</strong>:'+__('Show this menu')+'',
                                 '<strong>/me</strong>:'+__('Write in the third person')+'',
                                 '<strong>/clear</strong>:'+__('Remove messages')+''
@@ -530,9 +527,10 @@
                             return;
                         }
                     }
-                    var fullname = _converse.xmppstatus.get('fullname');
+                    let fullname = _converse.xmppstatus.get('fullname');
                     fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
-                    var message = this.model.messages.create({
+
+                    const message = this.model.messages.create({
                         fullname: fullname,
                         sender: 'me',
                         time: moment().format(),
@@ -586,10 +584,10 @@
                 keyPressed: function (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    var textarea = ev.target, message;
                     if (ev.keyCode === KEY.ENTER) {
                         ev.preventDefault();
-                        message = textarea.value;
+                        const  textarea = ev.target;
+                        const message = textarea.value;
                         textarea.value = '';
                         textarea.focus();
                         if (message !== '') {
@@ -608,7 +606,7 @@
                     /* Event handler for when a send button is clicked in a chat box textarea.
                      */
                     ev.preventDefault();
-                    var textarea = this.el.querySelector('.chat-textarea'),
+                    const textarea = this.el.querySelector('.chat-textarea'),
                         message = textarea.value;
 
                     textarea.value = '';
@@ -622,7 +620,7 @@
 
                 clearMessages: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
+                    const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                     if (result === true) {
                         this.$content.empty();
                         this.model.messages.reset();
@@ -632,8 +630,8 @@
                 },
 
                 insertIntoTextArea: function (value) {
-                    var $textbox = this.$el.find('textarea.chat-textarea');
-                    var existing = $textbox.val();
+                    const $textbox = this.$el.find('textarea.chat-textarea');
+                    let existing = $textbox.val();
                     if (existing && (existing[existing.length-1] !== ' ')) {
                         existing = existing + ' ';
                     }
@@ -643,7 +641,7 @@
                 insertEmoticon: function (ev) {
                     ev.stopPropagation();
                     this.$el.find('.toggle-smiley ul').slideToggle(200);
-                    var $target = $(ev.target);
+                    let $target = $(ev.target);
                     $target = $target.is('a') ? $target : $target.children('a');
                     this.insertIntoTextArea($target.data('emoticon'));
                 },
@@ -662,8 +660,8 @@
                 },
 
                 onChatStatusChanged: function (item) {
-                    var chat_status = item.get('chat_status'),
-                        fullname = item.get('fullname');
+                    const chat_status = item.get('chat_status');
+                    let fullname = item.get('fullname');
                     fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                     if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
@@ -738,9 +736,9 @@
                     if (!this.model.get('image')) {
                         return;
                     }
-                    var width = _converse.chatview_avatar_width;
-                    var height = _converse.chatview_avatar_height;
-                    var img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
+                    const width = _converse.chatview_avatar_width;
+                    const height = _converse.chatview_avatar_height;
+                    const img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
                         canvas = $(tpl_avatar({
                             'width': width,
                             'height': height
@@ -749,10 +747,10 @@
                     if (!(canvas.getContext && canvas.getContext('2d'))) {
                         return this;
                     }
-                    var ctx = canvas.getContext('2d');
-                    var img = new Image();   // Create new Image object
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();   // Create new Image object
                     img.onload = function () {
-                        var ratio = img.width/img.height;
+                        const ratio = img.width/img.height;
                         if (ratio < 1) {
                             ctx.drawImage(img, 0,0, width, height*(1/ratio));
                         } else {
@@ -810,7 +808,7 @@
                 },
 
                 hideNewMessagesIndicator: function () {
-                    var new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
+                    const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
                     if (!_.isNull(new_msgs_indicator)) {
                         new_msgs_indicator.classList.add('hidden');
                     }
@@ -831,8 +829,8 @@
                         });
                         return;
                     }
-                    var scrolled = true;
-                    var is_at_bottom =
+                    let scrolled = true;
+                    const is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {

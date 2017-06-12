@@ -70,7 +70,7 @@
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
                         'label_rooms': __('Open Rooms')
-                    })
+                    });
                     this.hide();
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
                         this.$('.open-rooms-list').hide();
@@ -111,7 +111,7 @@
                     }
                     this.removeRoomsListElement(item);
 
-                    var name, bookmark
+                    var name, bookmark;
                     if (item.get('bookmarked')) {
                         bookmark = _.head(_converse.bookmarksview.model.where({'jid': item.get('jid')}));
                         name = bookmark.get('name');

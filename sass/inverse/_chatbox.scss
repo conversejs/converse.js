@@ -1,0 +1,55 @@
+#conversejs {
+    .chatbox-btn {
+        font-size: $font-size-large;
+    }
+    .flyout {
+        border: 1em solid $chat-head-color;
+        border-top: 0.8em solid $chat-head-color;
+        border-radius: 0;
+        bottom: 0;
+        bottom: 0;
+    }
+    .chat-head {
+        font-size: 20px;
+        padding: 0;
+        .user-custom-message {
+            font-size: 66%;
+            height: auto;
+            line-height: $line-height;
+        }
+        .avatar {
+            border-radius: 25%;
+        }
+    }
+    .chatbox {
+        height: 100%;
+        margin: 0;
+        @include calc(width, '100% - #{$controlbox-width}');
+        margin: 0;
+        .box-flyout {
+            @include calc(width, '100% - #{$controlbox-width}');
+            box-shadow: none;
+            min-width: auto;
+        }
+        .chat-content {
+            padding: 0 $padding $padding $padding;
+        }
+        .chat-title {
+            line-height: 17px;
+        }
+
+        form.sendXMPPMessage {
+            ul {
+                width: 100%;
+            }
+            .toggle-smiley {
+                padding-left: 0.5em;
+                ul {
+                    li {
+                        padding: 0.5em;
+                    }
+                }
+            }
+        }
+    }
+}

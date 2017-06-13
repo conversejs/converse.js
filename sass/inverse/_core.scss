@@ -1,0 +1,223 @@
+body {
+  width: 100%;
+  height: 100%;
+  font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #ffffff;
+  background-color: $global-background-color;
+}
+
+div.content {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background-color: $global-background-color;
+
+    .inner-content {
+        text-align: center;
+        padding: 7%;
+        @include calc(padding-left, '5% + #{$controlbox-width}');
+
+        .brand-heading {
+            font-size: 600%;
+            margin-left: -10%;
+        }
+        p.no-chats {
+            padding-right: 10%;
+            font-size: 120%;
+        }
+    }
+}
+
+#conversejs {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    bottom: 0;
+    color: $text-color;
+    direction: ltr;
+    display: block;
+    font-size: $font-size;
+    right: 0;
+    z-index: 1031; // One more than bootstrap navbar
+    @media screen and (max-height: $mobile-landscape-height) {
+        width: 100%;
+        width: 100vw;
+    }
+    @media screen and (max-width: $mobile-portrait-length) {
+        width: 100%;
+        width: 100vw;
+    }
+
+    ::selection {
+        background-color: $highlight-color;
+    }
+    ::-moz-selection {
+        background-color: $highlight-color;
+    }
+    .circle {
+        border-radius: 50%;
+    }
+    .no-text-select {
+        -webkit-touch-callout: none;
+        @include user-select(none);
+    }
+    .emoticon {
+        font-size: $font-size;
+    }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .centered {
+        text-align: center;
+        display: block;
+        margin: 5em auto;
+    }
+    .hor_centered {
+        text-align: center;
+        display: block;
+        margin: 0 auto;
+        clear: both;
+    }
+    .hidden {
+        display: none;
+    }
+    .locked {
+        padding-right: 22px;
+    }
+
+    @include keyframes(spin) {
+        from {
+            @include transform(rotate(0deg));
+        }
+        to {
+            @include transform(rotate(359deg));
+        }
+    }
+
+    .spinner {
+        @include animation(spin 2s infinite, linear);
+        display: block;
+        text-align: center;
+        margin: 5px;
+        &:before {
+            font-size: 24px;
+            font-family: 'Converse-js' !important;
+            content: "\231b";
+        }
+    }
+
+    .button-group,
+    .input-button-group {
+        display: table;
+    }
+    .button-group {
+        width: 100%;
+    }
+    .input-button-group button,
+    .input-button-group input {
+        display: table-cell;
+    }
+
+    .error {
+        color: red;
+    }
+    .reg-feedback {
+        font-size: 85%;
+    }
+
+    .reg-feedback,
+    #converse-login .conn-feedback {
+        display: block;
+        text-align: center;
+        width: 100%;
+    }
+
+    a.restore-chat {
+        padding: 1px 0 1px 5px;
+        color: $chat-head-text-color;
+        line-height: 15px;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    a.restore-chat:visited {
+        color: $chat-head-text-color;
+    }
+
+    .activated {
+        display: block !important;
+    }
+    .pure-button {
+        border-radius: $button-border-radius;
+    }
+    .button-primary {
+        color: white;
+        background-color: $primary-color;
+    }
+    .button-secondary {
+        color: white;
+        background-color: $secondary-color;
+    }
+    .button-cancel {
+        color: white;
+        background-color: $warning-color;
+    }
+
+    form {
+        &.pure-form.converse-form {
+            background: white;
+            margin: 1em;
+            legend {
+                color: $text-color;
+            }
+            label {
+                margin-top: 1em;
+            }
+            input[type=text],
+            input[type=password],
+            input[type=number],
+            input[type=button],
+            input[type=submit] {
+                height: 2.2em;
+            }
+            input[type=button],
+            input[type=submit] {
+                padding-left: 1em;
+                padding-right: 1em;
+                margin-right: 1em;
+            }
+            input.error {
+                border: 1px solid red;
+                color: $text-color;
+            }
+            .form-help {
+                color: gray;
+                font-size: 85%;
+                padding-top: 0.5em;
+                &:hover {
+                    color: $text-color;
+                }
+            }
+        }
+    }
+
+    .chat-textarea-chatbox-selected {
+        border: 1px solid #578308;
+        margin: 0;
+    }
+    .chat-textarea-chatroom-selected {
+        border: 2px solid $link-color;
+        margin: 0;
+    }
+
+    .dropdown dt,
+    .dropdown ul {
+        margin: 0;
+        padding: 0;
+    }
+}

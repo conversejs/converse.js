@@ -1,4 +1,5 @@
 # You can set these variables from the command line.
+BOURBON_TEMPLATES = ./node_modules/bourbon/app/assets/stylesheets/ 
 BUILDDIR		= ./docs
 BUNDLE		  	?= ./.bundle/bin/bundle
 GRUNT		   	?= ./node_modules/.bin/grunt
@@ -116,18 +117,24 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
+
+css/inverse.css:: stamp-bundler sass
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
+
+css/inverse.min.css:: css/inverse.css
+	$(CLEANCSS) css/inverse.css > css/inverse.min.css
 
 css/converse-muc-embedded.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
 css/converse.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse.scss css/converse.css
 
-css/converse.min.css:: stamp-npm sass
+css/converse.min.css:: css/converse.css
 	$(CLEANCSS) css/converse.css > css/converse.min.css
 
 css/theme.min.css:: stamp-npm css/theme.css

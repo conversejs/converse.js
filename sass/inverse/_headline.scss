@@ -1,0 +1,14 @@
+#conversejs {
+    .chatbox.headlines {
+        .chat-head {
+            &.chat-head-chatbox {
+                background-color: $headline-head-color;
+            }
+        }
+        .flyout {
+            border: 1em solid $headline-head-color;
+            border-top: 0.8em solid $headline-head-color;
+        }
+    }
+}
+

@@ -1,0 +1,52 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>inVerse</title>
+    <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="css/inverse.css" />
+    <script src="node_modules/requirejs/require.js"></script>
+    <script src="src/config.js"></script>
+    <script src="inverse.js"></script>
+</head>
+<body>
+    <div class="content">
+        <div class="inner-content">
+        <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>
+        <p class="no-chats">
+            You don't have any chats open.<br/></br/>
+            Start a new conversation by clicking on a contact or a room in the left navigation.
+        </p>
+        </div>
+    </div>
+<script>
+    require(['inverse'], function (converse) {
+        converse.initialize({
+            auto_away: 300,
+            i18n: 'en',
+            notify_all_room_messages: [
+                'discuss@conference.conversejs.org'
+            ],
+            whitelisted_plugins: [
+                'converse-inverse',
+                'converse-roomslist',
+                'converse-singleton',
+            ],
+            hide_open_bookmarks: true,
+            blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
+            chatview_avatar_width: 42,
+            chatview_avatar_height: 42,
+            auto_reconnect: true,
+            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+            message_carbons: true,
+            message_archiving: 'always',
+            sticky_controlbox: true,
+            roster_groups: true,
+            show_controlbox_by_default: true,
+            debug: true
+        });
+    });
+</script>
+</body>
+</html>

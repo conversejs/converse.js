@@ -1,0 +1,17 @@
+#conversejs {
+    #controlbox {
+        #chatrooms {
+            .bookmarks-list {
+                dl.rooms-list.bookmarks {
+                    dd.available-chatroom {
+                        a {
+                            &.open-room {
+                                width: 80%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

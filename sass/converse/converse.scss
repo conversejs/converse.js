@@ -8,15 +8,15 @@
 
 @import "bourbon";
 @import "variables";
-@import "fonts";
-@import "normalize";
-@import "core";
-@import "chatbox";
-@import "controlbox";
-@import "roomslist";
-@import "roster";
-@import "chatrooms";
-@import "headline";
+@import "../fonts";
+@import "../normalize";
+@import "../core";
+@import "../chatbox";
+@import "../controlbox";
+@import "../roomslist";
+@import "../roster";
+@import "../chatrooms";
+@import "../headline";
 @import "minimized_chats";
-@import "bookmarks";
-@import "awesomplete"
+@import "../bookmarks";
+@import "../awesomplete"

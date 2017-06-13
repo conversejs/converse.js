@@ -132,7 +132,7 @@ css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
 css/converse.css:: stamp-bundler sass
-	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse.scss css/converse.css
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse/converse.scss css/converse.css
 
 css/converse.min.css:: css/converse.css
 	$(CLEANCSS) css/converse.css > css/converse.min.css

@@ -366,7 +366,7 @@
             _converse.ChatRoom = _converse.ChatBox.extend({
 
                 defaults: function () {
-                    return _.extend(_converse.ChatBox.prototype.defaults, {
+                    return _.extend(_.clone(_converse.ChatBox.prototype.defaults), {
                         'type': CHATROOMS_TYPE,
                         // For group chats, we distinguish between generally unread
                         // messages and those ones that specifically mention the

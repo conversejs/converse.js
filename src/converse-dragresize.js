@@ -19,6 +19,17 @@
     var $ = converse.env.jQuery,
         _ = converse.env._;
 
+    function renderDragResizeHandles (_converse, view) {
+        var flyout = view.el.querySelector('.box-flyout');
+        var div = document.createElement('div');
+        div.innerHTML = tpl_dragresize();
+        flyout.insertBefore(
+            div,
+            flyout.firstChild
+        );
+    }
+
+
     converse.plugins.add('converse-dragresize', {
         /* Optional dependencies are other plugins which might be
          * overridden or relied upon, and therefore need to be loaded before
@@ -102,6 +113,7 @@
 
                 render: function () {
                     var result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
                     this.setWidth();
                     return result;
                 },
@@ -257,8 +269,10 @@
                 },
 
                 render: function () {
-                    $(window).on('resize', _.debounce(this.setWidth.bind(this), 100));
-                    return this.__super__.render.apply(this, arguments);
+                    var result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
                 }
             },
 
@@ -272,6 +286,13 @@
                 initialize: function () {
                     $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
                     this.__super__.initialize.apply(this, arguments);
+                },
+
+                render: function () {
+                    var result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
                 },
 
                 renderLoginPanel: function () {
@@ -301,20 +322,9 @@
 
                 render: function () {
                     var result = this.__super__.render.apply(this, arguments);
-                    this.renderDragResizeHandles();
+                    renderDragResizeHandles(this.__super__._converse, this);
                     this.setWidth();
                     return result;
-                },
-
-                renderDragResizeHandles: function () {
-                    var _converse = this.__super__._converse;
-                    var flyout = this.el.querySelector('.box-flyout');
-                    var div = document.createElement('div');
-                    div.innerHTML = tpl_dragresize();
-                    flyout.insertBefore(
-                        div,
-                        flyout.firstChild
-                    );
                 }
             }
         },

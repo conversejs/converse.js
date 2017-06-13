@@ -72,11 +72,7 @@
                     return result;
                 },
 
-                renderLoginPanel: function () {
-                    /* Also render a registration panel, when rendering the
-                     * login panel.
-                     */
-                    this.__super__.renderLoginPanel.apply(this, arguments);
+                renderRegistrationPanel: function () {
                     var _converse = this.__super__._converse;
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
@@ -85,6 +81,15 @@
                         });
                         this.registerpanel.render().$el.addClass('hidden');
                     }
+                    return this;
+                },
+
+                renderLoginPanel: function () {
+                    /* Also render a registration panel, when rendering the
+                     * login panel.
+                     */
+                    this.__super__.renderLoginPanel.apply(this, arguments);
+                    this.renderRegistrationPanel();
                     return this;
                 }
             }

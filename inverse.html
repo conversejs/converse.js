@@ -28,22 +28,10 @@
             notify_all_room_messages: [
                 'discuss@conference.conversejs.org'
             ],
-            whitelisted_plugins: [
-                'converse-inverse',
-                'converse-roomslist',
-                'converse-singleton',
-            ],
-            hide_open_bookmarks: true,
-            blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
-            chatview_avatar_width: 42,
-            chatview_avatar_height: 42,
+            whitelisted_plugins: ['converse-inverse'],
             auto_reconnect: true,
             bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            message_carbons: true,
             message_archiving: 'always',
-            sticky_controlbox: true,
-            roster_groups: true,
-            show_controlbox_by_default: true,
             debug: true
         });
     });

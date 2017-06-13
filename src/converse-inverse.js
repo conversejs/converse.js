@@ -102,9 +102,15 @@
             var _converse = this._converse;
 
             this.updateSettings({
-                sticky_controlbox: true,
-                sounds_path: '/node_modules/converse.js/sounds/', // New default
+                blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
+                chatview_avatar_height: 42,
+                chatview_avatar_width: 42,
+                hide_open_bookmarks: true,
                 notification_icon: '/node_modules/converse.js/logo/conversejs128.png', // New default
+                show_controlbox_by_default: true,
+                sounds_path: '/node_modules/converse.js/sounds/', // New default
+                sticky_controlbox: true,
+                whitelisted_plugins: ['converse-roomslist', 'converse-singleton'],
             });
 
             _converse.isMessageToHiddenChat = function (message) {

@@ -342,7 +342,7 @@
                 'roomsPanelRendered': new $.Deferred()
             });
 
-            _converse.createChatRoom = function (settings) {
+            _converse.openChatRoom = function (settings) {
                 /* Creates a new chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
@@ -2372,9 +2372,9 @@
                 className: 'controlbox-pane',
                 id: 'chatrooms',
                 events: {
-                    'submit form.add-chatroom': 'createChatRoom',
+                    'submit form.add-chatroom': 'openChatRoom',
                     'click input#show-rooms': 'showRooms',
-                    'click a.open-room': 'createChatRoom',
+                    'click a.open-room': 'openChatRoom',
                     'click a.room-info': 'toggleRoomInfo',
                     'change input[name=server]': 'setDomain',
                     'change input[name=nick]': 'setNick'
@@ -2571,7 +2571,7 @@
                     }
                 },
 
-                createChatRoom: function (ev) {
+                openChatRoom: function (ev) {
                     ev.preventDefault();
                     var name, $name, server, $server, jid;
                     if (ev.type === 'click') {
@@ -2594,7 +2594,7 @@
                             return;
                         }
                     }
-                    _converse.createChatRoom({
+                    _converse.openChatRoom({
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
@@ -2648,7 +2648,7 @@
                     }
                 }
                 if (result === true) {
-                    var chatroom = _converse.createChatRoom({
+                    var chatroom = _converse.openChatRoom({
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
@@ -2740,9 +2740,9 @@
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.createChatRoom);
+                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.createChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
                     },
                     'get': function (jids, attrs, create) {
                         if (_.isString(attrs)) {

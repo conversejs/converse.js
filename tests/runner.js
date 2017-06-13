@@ -8,6 +8,7 @@ config.paths.sinon = "node_modules/sinon/pkg/sinon";
 config.paths.transcripts = "converse-logs/converse-logs";
 config.paths.jasmine = "node_modules/jasmine-core/lib/jasmine-core/jasmine";
 config.paths.boot = "node_modules/jasmine-core/lib/jasmine-core/boot";
+config.paths["jasmine-console"] = "node_modules/jasmine-core/lib/console/console";
 config.paths["jasmine-html"] = "node_modules/jasmine-core/lib/jasmine-core/jasmine-html";
 // config.paths["console-runner"] = "node_modules/phantom-jasmine/lib/console-runner";
 config.shim.jasmine = {
@@ -17,15 +18,15 @@ config.shim['jasmine-html'] = {
     deps: ['jasmine'],
     exports: 'window.jasmineRequire'
 };
-config.shim.boot = {
-    deps: ['jasmine', 'jasmine-html'],
+config.shim['jasmine-console'] = {
+    deps: ['jasmine'],
     exports: 'window.jasmineRequire'
 };
-/*
-config.shim['console-runner'] = {
-    deps: ['jasmine']
+config.shim.boot = {
+    deps: ['jasmine', 'jasmine-html', 'jasmine-console'],
+    exports: 'window.jasmine'
 };
-*/
+
 require.config(config);
 
 // Polyfill 'bind' which is not available in phantomjs < 2.0
@@ -79,11 +80,24 @@ require(['jquery', 'mock', 'boot', 'sinon', 'wait-until-promise'],
     window.localStorage.clear();
     window.sessionStorage.clear();
 
+    var jasmineEnv = jasmine.getEnv();
+    var ConsoleReporter = window.jasmineRequire.ConsoleReporter();
+    var consoleReporter = new ConsoleReporter({
+        print: function print(message) {
+            console.log(message + '\x03\b');
+        },
+        onComplete: function onComplete(isSuccess) {
+            var exitCode = isSuccess ? 0 : 1;
+            console.info('All tests completed!' + exitCode);
+        },
+        showColors: true
+    });
+    jasmineEnv.addReporter(consoleReporter);
+
     // Load the specs
     require(specs, function () {
-            // Initialize the HTML Reporter and execute the environment (setup by `boot.js`)
-            // http://stackoverflow.com/questions/19240302/does-jasmine-2-0-really-not-work-with-require-js
-            window.onload();
-        });
-    }
-);
+        // Initialize the HTML Reporter and execute the environment (setup by `boot.js`)
+        // http://stackoverflow.com/questions/19240302/does-jasmine-2-0-really-not-work-with-require-js
+        window.onload();
+    });
+});

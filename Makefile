@@ -1,17 +1,17 @@
 # You can set these variables from the command line.
-BUILDDIR        = ./docs
-BUNDLE          ?= ./.bundle/bin/bundle
-GRUNT           ?= ./node_modules/.bin/grunt
-HTTPSERVE       ?= ./node_modules/.bin/http-server
-ESLINT          ?= ./node_modules/.bin/eslint
-PAPER           =
-PHANTOMJS       ?= ./node_modules/.bin/phantomjs
-RJS             ?= ./node_modules/.bin/r.js
-PO2JSON         ?= ./node_modules/.bin/po2json
-SASS            ?= ./.bundle/bin/sass
-CLEANCSS        ?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
-SPHINXBUILD     ?= ./bin/sphinx-build
-SPHINXOPTS      =
+BUILDDIR		= ./docs
+BUNDLE		  	?= ./.bundle/bin/bundle
+GRUNT		   	?= ./node_modules/.bin/grunt
+HTTPSERVE	   	?= ./node_modules/.bin/http-server
+ESLINT		  	?= ./node_modules/.bin/eslint
+PAPER		   	=
+CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
+RJS			 	?= ./node_modules/.bin/r.js
+PO2JSON		 	?= ./node_modules/.bin/po2json
+SASS			?= ./.bundle/bin/sass
+CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
+SPHINXBUILD	 	?= ./bin/sphinx-build
+SPHINXOPTS	  	=
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -47,8 +47,12 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: stamp-npm
-	$(HTTPSERVE) -p 8000 -c -1
+serve: dev 
+	$(HTTPSERVE) -p 8000 -c-1
+
+.PHONY: serve_bg
+serve_bg: dev
+	$(HTTPSERVE) -p 8000 -c-1 -s &
 
 ########################################################################
 ## Translation machinery
@@ -189,7 +193,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	$(PHANTOMJS) tests/run-jasmine2.js tests.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:8000/tests.html
 
 
 ########################################################################

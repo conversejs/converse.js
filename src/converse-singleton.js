@@ -36,7 +36,7 @@
         // an error will be raised if the plugin is not found.
         //
         // NB: These plugins need to have already been loaded via require.js.
-        optional_dependencies: ['converse-muc', 'converse-controlbox'],
+        optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
 
         overrides: {
             // overrides mentioned here will be picked up by converse.js's

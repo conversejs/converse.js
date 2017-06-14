@@ -432,10 +432,15 @@
                     'click .toggle-clear': 'clearChatRoomMessages',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants a': 'toggleOccupants',
+                    'click .toggle-spoiler': 'toggleSpoiler',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant': 'onOccupantClicked',
                     'keypress .chat-textarea': 'keyPressed',
+<<<<<<< Updated upstream
                     'click .send-button': 'onSendButtonClicked'
+=======
+                    'click .spoiler-button' : 'showSpoiler'
+>>>>>>> Stashed changes
                 },
 
                 initialize: function () {
@@ -949,13 +954,17 @@
                         id: msgid
                     }).c("body").t(text).up()
                     .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
+                    if(this.isSpoilerButtonActive()){
+                        msg.root().c('spoiler',{'xmlns': 'urn:xmpp:spoiler:0'}, __('Spoiler'));
+                    }
                     _converse.connection.send(msg);
                     this.model.messages.create({
                         fullname: this.model.get('nick'),
                         sender: 'me',
                         time: moment().format(),
                         message: text,
-                        msgid: msgid
+                        msgid: msgid,
+                        spoiler: this.isSpoilerButtonActive()
                     });
                 },
 

@@ -1415,6 +1415,29 @@
                     sender = 'them';
                     fullname = this.get('fullname') || from;
                 }
+                
+                //Check if message is spoiler
+                var spoiler = null, i = 0, found = false;
+               
+                while (i < message.childNodes.length && !found) {
+                    if (message.childNodes[i].nodeName == "spoiler") {
+                        spoiler = message.childNodes[i];
+                        found = true;
+                    }
+                    
+                    i++;
+                    
+                }
+                /*
+                for (var element of message.childNodes) {
+                    if (element.nodeName == "spoiler") {
+                        spoiler = element;    
+                    }
+                    
+                }*/
+                
+                
+                
                 return {
                     'type': type,
                     'chat_state': chat_state,
@@ -1423,7 +1446,8 @@
                     'message': body || undefined,
                     'msgid': message.getAttribute('id'),
                     'sender': sender,
-                    'time': time
+                    'time': time,
+                    'spoiler': spoiler === null ? false : spoiler.textContent.length > 0 ? spoiler.textContent : __('Spoiler')
                 };
             },
 
@@ -1531,7 +1555,8 @@
             onMessage: function (message) {
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
-                 */
+                 */          
+          
                 var original_stanza = message,
                     contact_jid, delay, from_bare_jid,
                     from_resource, is_me, msgid, messages,

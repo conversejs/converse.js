@@ -15,7 +15,8 @@
             "tpl!message",
             "tpl!help_message",
             "tpl!toolbar",
-            "tpl!avatar"
+            "tpl!avatar",
+            "tpl!spinner"
     ], factory);
 }(this, function (
             converse,
@@ -25,7 +26,8 @@
             tpl_message,
             tpl_help_message,
             tpl_toolbar,
-            tpl_avatar
+            tpl_avatar,
+            tpl_spinner
     ) {
     "use strict";
     var $ = converse.env.jQuery,
@@ -196,7 +198,7 @@
 
                 addSpinner: function () {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
-                        this.$content.prepend('<span class="spinner"/>');
+                        this.$content.prepend(tpl_spinner);
                     }
                 },
 
@@ -385,7 +387,7 @@
                         })));
                     }
                     if (spinner === true) {
-                        this.$content.append('<span class="spinner"/>');
+                        this.$content.append(tpl_spinner);
                     } else if (spinner === false) {
                         this.$content.find('span.spinner').remove();
                     }

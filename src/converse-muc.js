@@ -29,6 +29,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!spinner",
             "awesomplete",
             "converse-chatview"
     ], factory);
@@ -51,6 +52,7 @@
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_spinner,
             Awesomplete
     ) {
 
@@ -401,7 +403,7 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                         this.save({'num_unread_general': this.get('num_unread_general') + 1});
                         if (this.isUserMentioned(body.textContent)) {
                             this.save({'num_unread': this.get('num_unread') + 1});
@@ -1537,7 +1539,7 @@
                         nick_el.classList.remove('error');
                     }
                     this.$el.find('.chatroom-form-container')
-                            .replaceWith('<span class="spinner centered"/>');
+                        .replaceWith(tpl_spinner);
                     this.join(nick);
                 },
 
@@ -1651,7 +1653,7 @@
                 submitPassword: function (ev) {
                     ev.preventDefault();
                     var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                    this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
                     this.join(this.model.get('nick'), password);
                 },
 
@@ -1895,7 +1897,7 @@
 
                 showSpinner: function () {
                     this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-body').prepend(tpl_spinner);
                 },
 
                 hideSpinner: function () {
@@ -2503,7 +2505,7 @@
                     this.$el.find('input.new-chatroom-name').removeClass('error');
                     $server.removeClass('error');
                     $available_chatrooms.empty();
-                    $('input#show-rooms').hide().after('<span class="spinner"/>');
+                    $('input#show-rooms').hide().after(tpl_spinner);
                     this.model.save({muc_domain: server});
                     this.updateRoomsList();
                 },
@@ -2564,7 +2566,7 @@
                         $div.remove();
                     } else {
                         $parent.find('span.spinner').remove();
-                        $parent.append('<span class="spinner hor_centered"/>');
+                        $parent.append(tpl_spinner);
                         _converse.connection.disco.info(
                             $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
                         );

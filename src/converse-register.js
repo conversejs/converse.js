@@ -16,6 +16,7 @@
             "tpl!register_tab",
             "tpl!registration_form",
             "tpl!registration_request",
+            "tpl!spinner",
             "converse-controlbox"
     ], factory);
 }(this, function (
@@ -24,7 +25,9 @@
             tpl_register_panel,
             tpl_register_tab,
             tpl_registration_form,
-            tpl_registration_request) {
+            tpl_registration_request,
+            tpl_spinner
+        ) {
 
     "use strict";
 
@@ -316,7 +319,7 @@
                         _converse.connection.reset();
                         that = this;
                         this.$('form').hide(function () {
-                            $(this).replaceWith('<span class="spinner centered"/>');
+                            $(this).replaceWith(tpl_spinner);
                             if (that.fields.password && that.fields.username) {
                                 // automatically log the user in
                                 _converse.connection.connect(

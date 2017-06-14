@@ -36,6 +36,7 @@ require.config({
         "strophe.rsm":              "node_modules/strophejs-plugin-rsm/strophe.rsm",
         "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
+        "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
@@ -104,10 +105,6 @@ require.config({
         // or node_modules, depending on how moment was installed.
         'location': 'node_modules/moment',
         'main': 'moment'
-    }, {
-        'name': 'tpl',
-        'location': 'node_modules/lodash-template-loader',
-        'main': 'loader'
     }],
 
     map: {

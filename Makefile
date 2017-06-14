@@ -149,6 +149,8 @@ watch: stamp-bundler
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
+         dist/inverse.js \
+		 dist/inverse.min.js \
          dist/converse-mobile.js \
          dist/converse-mobile.min.js \
          dist/converse-muc-embedded.js \
@@ -162,6 +164,10 @@ dist/converse.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
 dist/converse.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+dist/inverse.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
+dist/inverse.min.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.min.js
 dist/converse-no-jquery.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-jquery.js: src locale node_modules *.js

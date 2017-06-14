@@ -102,7 +102,6 @@
             var _converse = this._converse;
 
             this.updateSettings({
-                blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,
                 hide_open_bookmarks: true,

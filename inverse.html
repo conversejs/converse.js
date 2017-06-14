@@ -6,9 +6,9 @@
     <title>inVerse</title>
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="css/inverse.css" />
-    <script src="node_modules/requirejs/require.js"></script>
-    <script src="src/config.js"></script>
-    <script src="inverse.js"></script>
+    <![if gte IE 9]>
+	<script src="dist/inverse.min.js"></script>
+    <![endif]>
 </head>
 <body>
     <div class="content">
@@ -21,19 +21,20 @@
         </div>
     </div>
 <script>
-    require(['inverse'], function (converse) {
-        converse.initialize({
-            auto_away: 300,
-            i18n: 'en',
-            notify_all_room_messages: [
-                'discuss@conference.conversejs.org'
-            ],
-            whitelisted_plugins: ['converse-inverse', 'converse-singleton'],
-            auto_reconnect: true,
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            message_archiving: 'always',
-            debug: true
-        });
+    converse.initialize({
+        authentication: 'login',
+        auto_away: 300,
+        i18n: 'en',
+        auto_join_rooms: ['eee@conference.opkode.com'],
+        notify_all_room_messages: [
+            'discuss@conference.conversejs.org'
+        ],
+        blacklisted_plugins: ['converse-minimize', 'converse-dragresize', 'converse-otr'],
+        whitelisted_plugins: ['converse-inverse', 'converse-singleton'],
+        auto_reconnect: true,
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        message_archiving: 'always',
+        debug: true
     });
 </script>
 </body>

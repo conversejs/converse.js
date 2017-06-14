@@ -8,7 +8,7 @@
  */
 /*global define */
 (function (root, factory) {
-    define("locales", ['jed',
+    define(['jed',
         'text!af',
         'text!ca',
         'text!de',

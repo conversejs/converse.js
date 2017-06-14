@@ -419,16 +419,16 @@
 
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (message.get('sender') !== 'me') {
-                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
-                        }
-                    } else {
+                    if (utils.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
                         // when the user writes a message as opposed to when a
                         // message is received.
                         this.model.set('scrolled', false);
+                    } else {
+                        if (utils.isNewMessage(message) && this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                        }
                     }
                     if (this.shouldShowOnTextMessage()) {
                         this.show();

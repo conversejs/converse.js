@@ -18,7 +18,9 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, sizzle, dummy, _, locales, moment,
+        $, sizzle, dummy, _,
+        locales,
+        moment,
         Strophe,
         tpl_field,
         tpl_select_option,
@@ -225,11 +227,15 @@
             }
         },
 
-        isNewMessage: function (stanza) {
+        isNewMessage: function (message) {
             /* Given a stanza, determine whether it's a new
              * message, i.e. not a MAM archived one.
              */
-            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
+            if (message instanceof Element) {
+                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+            } else {
+                return !message.get('archive_id');
+            }
         },
 
         isOTRMessage: function (message) {

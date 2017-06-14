@@ -253,7 +253,7 @@
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    var msg_dates, idx,
+                    var msg_dates,
                         $first_msg = this.$content.find('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         current_msg_date = moment(attrs.time) || moment,
@@ -297,13 +297,12 @@
                     });
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
-                    idx = msg_dates.indexOf(current_msg_date)-1;
+                    var idx = msg_dates.indexOf(current_msg_date)-1;
+                    var $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
                     _.flow(
                         function ($el) {
-                            $el.insertAfter(
-                                this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                            return $el;
-                        }.bind(this),
+                            $el.insertAfter($latest_message);
+                        },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
                 },

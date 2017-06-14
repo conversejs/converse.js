@@ -1,6 +1,6 @@
 /*global define */
 define(['lodash'], function (_) {
-    if (!_.isUndefined(require)) {
+    if (!_.isUndefined(require) && !_.isUndefined(require.s)) {
         /* XXX: This is a hack to make sure that the compiled templates have
          * access to the _ object.
          *

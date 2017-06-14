@@ -63,6 +63,8 @@
         }
         .controlbox-pane {
             @include calc(height, '100% - #{$controlbox-head-height}');
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
         }
     }
 }

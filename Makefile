@@ -119,19 +119,19 @@ dev: stamp-bundler stamp-npm
 .PHONY: css
 css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
-css/inverse.css:: stamp-bundler sass
+css/inverse.css:: stamp-bundler sass sass/*
 	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
 
 css/inverse.min.css:: css/inverse.css
 	$(CLEANCSS) css/inverse.css > css/inverse.min.css
 
-css/converse-muc-embedded.css:: stamp-bundler sass
+css/converse-muc-embedded.css:: stamp-bundler sass/*
 	$(SASS) -I $(BOURBON_TEMPLATES) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
-css/converse.css:: stamp-bundler sass
+css/converse.css:: stamp-bundler sass/*
 	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse/converse.scss css/converse.css
 
 css/converse.min.css:: css/converse.css
@@ -140,7 +140,7 @@ css/converse.min.css:: css/converse.css
 css/theme.min.css:: stamp-npm css/theme.css
 	$(CLEANCSS) css/theme.css > css/theme.min.css
 
-css/mobile.min.css:: stamp-npm sass
+css/mobile.min.css:: stamp-npm sass/*
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
 
 .PHONY: watch

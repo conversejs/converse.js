@@ -1,0 +1,15 @@
+#converse-embedded-chat,
+#conversejs {
+    .chat-head {
+        border-top-left-radius: $chatbox-border-radius;
+        border-top-right-radius: $chatbox-border-radius;
+        @media screen and (max-height: $mobile-landscape-height) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+}

@@ -4,6 +4,8 @@
     http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
  */
 $link-color: #2A9D8F !default;
+$dark-link-color: #015158 !default;
+
 $inverse-link-color: white !default;
 $link-shadow-color: #FAFAFA !default;
 $text-shadow-color: #FAFAFA !default;
@@ -16,6 +18,7 @@ $chat-textarea-height: 70px !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
 $message-them-color: #1A9707 !default;
+
 $roster-height: 194px !default;
 $roster-item-height: 60px !default;
 
@@ -27,8 +30,14 @@ $chat-head-height: 55px !default;
 $input-focus-color: #1A9707 !default;
 $highlight-color: #DCF9F6 !default;
 
-$controlbox-head-color: #577BDD !default;
+$subdued-color: #A8ABA1 !default;
+$gray-color: #818479 !default;
+$dark-gray-color: #585B51!default;
+
 $controlbox-dropdown-height: 25px !default;
+$controlbox-head-color: #577BDD !default;
+$controlbox-head-height: 55px !default;
+$controlbox-pane-padding: 1em !default;
 
 $primary-color: #2AC611 !default;
 $secondary-color: #83A0D6 !default;
@@ -43,8 +52,8 @@ $toolbar-color: #FFF5EE !default;
 $moderator-color: #D24E2B !default;
 $online-color: #1A9707 !default;
 $error-color: #D24E2B !default;
-$subdued-color: #BBB !default;
 
+$button-border-radius: 5px !default;
 $chatbox-border-radius: 4px !default;
 $bottom-gutter-height: 35px !default;
 $chatbox-hover-height: 6px !default;

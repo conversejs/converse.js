@@ -114,7 +114,7 @@
         }
         #users {
             .add-converse-contact {
-                margin: 0 1em 0.75em 1em;
+                margin: 0 0 0.75em 0;
             }
         }
 
@@ -125,15 +125,19 @@
                 input[type=text] {
                     width: 100%;
                 }
+                margin: 0;
+                padding: 0;
             }
             .rooms-list-container {
                 text-align: left;
-                margin: 0 1em;
+                margin: 0;
                 .rooms-toggle {
                     display: block;
-                    font-weight: bold;
                     color: $text-color;
                     margin-top: 1em;
+                    &:hover {
+                        color: $dark-gray-color;
+                    }
                 }
                 dl.rooms-list {
                     margin: 0.5em 0;
@@ -155,8 +159,8 @@
                         padding: 0.3em 0;
                         text-shadow: 0 1px 0 $text-shadow-color;
                         word-wrap: break-word;
-                        &:hover {
-                            background-color: $highlight-color;
+                        a:hover {
+                            color: $dark-link-color;
                         }
                         &.unread-msgs {
                             .open-room {
@@ -183,6 +187,9 @@
                         .remove-bookmark {
                             &.button-on {
                                 color: $link-color;
+                                &:hover {
+                                    color: $dark-link-color;
+                                }
                             }
                             color: $subdued-color;
                         }
@@ -278,8 +285,8 @@
                 a {
                     background-color: white;
                     border-bottom: 1px solid $border-color;
-                    border-top-left-radius: $chatbox-border-radius;
-                    border-top-right-radius: $chatbox-border-radius;
+                    border-top-left-radius: $button-border-radius;
+                    border-top-right-radius: $button-border-radius;
                     box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
                     color: $text-color;
                     display: block;
@@ -300,7 +307,7 @@
                         }
                     }
                     .msgs-indicator {
-                        border-top-right-radius: $chatbox-border-radius;
+                        border-top-right-radius: $button-border-radius;
                     }
                     &:hover {
                         color: $text-color;
@@ -323,32 +330,43 @@
         .fancy-dropdown {
             border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
-            border-radius: $chatbox-border-radius;
+            border-radius: $button-border-radius;
             text-align: left;
-            padding: 0.3em 0.3em 0 0.3em;
+
             .choose-xmpp-status,
             .toggle-xmpp-contact-form {
+                line-height: $controlbox-dropdown-height;
                 text-shadow: 0 1px 0 #ffffff;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 display: inline-block;
+                &:hover {
+                    color: $dark-link-color;
+                }
+            }
+            .toggle-xmpp-contact-form {
+                padding: 0 0.5em;
+                width: 100%;
             }
             &.no-border {
                 border: 0;
             }
 
         }
-        .xmpp-status {
-            padding: 0.3em 0.3em 0 0.3em;
-        }
         #fancy-xmpp-status-select {
-            padding: 0em;
+            .xmpp-status {
+                padding: 0 0.5em;
+            }
             a.change-xmpp-status-message {
+                line-height: $controlbox-dropdown-height;
                 float: right;
                 clear: right;
                 width: 12px;
                 color: $link-color;
+                &:hover {
+                    color: $dark-link-color;
+                }
             }
             fieldset {
                 padding: 0;
@@ -368,16 +386,13 @@
         }
 
         .controlbox-pane {
+            padding: $controlbox-pane-padding;
             background-color: white;
-            border-bottom-left-radius: $chatbox-border-radius;
-            border-bottom-right-radius: $chatbox-border-radius;
             border: 0;
             font-size: $font-size;
             position: absolute;
             text-align: center;
             width: 100%;
-            height: 289px;
-            @include calc(height, '100% - #{$chat-head-height}');
             overflow-y: auto;
             overflow-x: hidden;
             label {
@@ -429,7 +444,7 @@
 
         .set-xmpp-status {
             background: none;
-            margin: 1em 1em 0.5em 1em;
+            margin: 1em 0 0.5em 0em;
             .dropdown dd ul {
                 z-index: 22;
             }
@@ -438,8 +453,8 @@
 
     .toggle-controlbox {
         background-color: $link-color;
-        border-top-left-radius: $chatbox-border-radius;
-        border-top-right-radius: $chatbox-border-radius;
+        border-top-left-radius: $button-border-radius;
+        border-top-right-radius: $button-border-radius;
         color: #0a0a0a;
         float: right;
         height: 100%;

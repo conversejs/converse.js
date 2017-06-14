@@ -1,12 +1,12 @@
 #conversejs {
     .chatbox-btn {
         font-size: $font-size-large;
+        margin: 0 0.3em;
     }
     .flyout {
         border: 1em solid $chat-head-color;
         border-top: 0.8em solid $chat-head-color;
         border-radius: 0;
-        bottom: 0;
         bottom: 0;
     }
     .chat-head {
@@ -16,6 +16,11 @@
             font-size: 66%;
             height: auto;
             line-height: $line-height;
+        }
+        &.chat-head-chatbox {
+            .close-chatbox-button {
+                display: none;
+            }
         }
         .avatar {
             border-radius: 25%;
@@ -27,15 +32,24 @@
         @include calc(width, '100% - #{$controlbox-width}');
         margin: 0;
         .box-flyout {
+            background-color: $chat-head-color;
             @include calc(width, '100% - #{$controlbox-width}');
             box-shadow: none;
             min-width: auto;
         }
+        .chat-body {
+            background-color: $chat-head-color;
+            border-top-left-radius: $chatbox-border-radius;
+            border-top-right-radius: $chatbox-border-radius;
+        }
         .chat-content {
             padding: 0 $padding $padding $padding;
+            border-top-left-radius: $chatbox-border-radius;
+            border-top-right-radius: $chatbox-border-radius;
         }
         .chat-title {
-            line-height: 17px;
+            font-size: $font-size-huge;
+            line-height: $font-size-huge;
         }
 
         form.sendXMPPMessage {

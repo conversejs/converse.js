@@ -20,8 +20,21 @@
         width: 100vw;
     }
 
+
+	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $subdued-color;
+	}
+	::-moz-placeholder { /* Firefox 19+ */
+        color: $subdued-color;
+	}
+	:-ms-input-placeholder { /* IE 10+ */
+        color: $subdued-color;
+	}
+	:-moz-placeholder { /* Firefox 18- */
+        color: $subdued-color;
+	}
     ::placeholder {
-        color: #BBB;
+        color: $subdued-color;
     }
 
     .circle {
@@ -144,7 +157,7 @@
     }
 
     .error {
-        color: red;
+        color: $error-color;
     }
     .reg-feedback {
         font-size: 85%;
@@ -216,7 +229,7 @@
                 border: none;
             }
             input.error {
-                border: 1px solid red;
+                border: 1px solid $error-color;
                 color: $text-color;
             }
             .form-help {

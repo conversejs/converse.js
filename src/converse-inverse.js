@@ -103,8 +103,8 @@
 
             this.updateSettings({
                 blacklisted_plugins: ['converse-minimize', 'converse-dragresize'],
-                chatview_avatar_height: 42,
-                chatview_avatar_width: 42,
+                chatview_avatar_height: 44,
+                chatview_avatar_width: 44,
                 hide_open_bookmarks: true,
                 notification_icon: '/node_modules/converse.js/logo/conversejs128.png', // New default
                 show_controlbox_by_default: true,

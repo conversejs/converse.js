@@ -15,6 +15,7 @@ eggs
 .Python
 
 dev-jc.html
+inverse-dev.html
 
 converse-logs/*.html
 

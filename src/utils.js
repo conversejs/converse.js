@@ -2,10 +2,12 @@
 (function (root, factory) {
     define([
         "jquery.noconflict",
+        "sizzle",
         "jquery.browser",
         "lodash.noconflict",
         "locales",
         "moment_with_locales",
+        "strophe",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -16,7 +18,8 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, dummy, _, locales, moment,
+        $, sizzle, dummy, _, locales, moment,
+        Strophe,
         tpl_field,
         tpl_select_option,
         tpl_form_select,
@@ -28,6 +31,7 @@
     ) {
     "use strict";
     locales = locales || {};
+    Strophe = Strophe.Strophe;
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -219,6 +223,13 @@
             } else {
                 afterAnimationEnd(el, callback);
             }
+        },
+
+        isNewMessage: function (stanza) {
+            /* Given a stanza, determine whether it's a new
+             * message, i.e. not a MAM archived one.
+             */
+            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
         },
 
         isOTRMessage: function (message) {

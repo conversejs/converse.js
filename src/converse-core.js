@@ -1432,13 +1432,6 @@
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            isNewMessage: function (stanza) {
-                /* Given a message stanza, determine whether it's a new
-                 * message, i.e. not an archived one.
-                 */
-                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
-            },
-
             newMessageWillBeHidden: function () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
@@ -1456,7 +1449,7 @@
                 if (_.isNull(stanza.querySelector('body'))) {
                     return; // The message has no text
                 }
-                if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                     this.save({'num_unread': this.get('num_unread') + 1});
                     _converse.incrementMsgCounter();
                 }

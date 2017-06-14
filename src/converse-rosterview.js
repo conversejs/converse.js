@@ -955,7 +955,7 @@
                     return; // The message has no text
                 }
                 if (chatbox.get('type') !== 'chatroom' &&
-                    chatbox.isNewMessage(data.stanza) &&
+                    utils.isNewMessage(data.stanza) &&
                     chatbox.newMessageWillBeHidden()) {
 
                     var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));

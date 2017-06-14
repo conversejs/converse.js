@@ -93,24 +93,22 @@
                     if ((!text) || (!_converse.allow_otr)) {
                         return this.__super__.createMessage.apply(this, arguments);
                     }
-                    if (text.match(/^\?OTRv23?/)) {
-                        this.initiateOTR(text);
-                    } else {
-                        if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                            this.otr.receiveMsg(text);
-                        } else {
-                            if (text.match(/^\?OTR/)) {
-                                if (!this.otr) {
-                                    this.initiateOTR(text);
-                                } else {
-                                    this.otr.receiveMsg(text);
-                                }
+
+                    if (utils.isNewMessage(original_stanza)) {
+                        if (text.match(/^\?OTRv23?/)) {
+                            return this.initiateOTR(text);
+                        } else if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                            return this.otr.receiveMsg(text);
+                        } else if (text.match(/^\?OTR/)) {
+                            if (!this.otr) {
+                                return this.initiateOTR(text);
                             } else {
-                                // Normal unencrypted message.
-                                return this.__super__.createMessage.apply(this, arguments);
+                                return this.otr.receiveMsg(text);
                             }
                         }
                     }
+                    // Normal unencrypted message (or archived message)
+                    return this.__super__.createMessage.apply(this, arguments);
                 },
 
                 generatePrivateKey: function (instance_tag) {

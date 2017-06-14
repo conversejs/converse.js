@@ -110,7 +110,6 @@
                 show_controlbox_by_default: true,
                 sounds_path: '/node_modules/converse.js/sounds/', // New default
                 sticky_controlbox: true,
-                whitelisted_plugins: ['converse-roomslist', 'converse-singleton'],
             });
 
             _converse.isMessageToHiddenChat = function (message) {

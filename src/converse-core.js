@@ -86,6 +86,7 @@
         'converse-otr',
         'converse-ping',
         'converse-register',
+        'converse-roomslist',
         'converse-rosterview',
         'converse-vcard'
     ];

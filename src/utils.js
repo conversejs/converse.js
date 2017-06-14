@@ -227,6 +227,11 @@
             }
         },
 
+        isSameBareJID: function (jid1, jid2) {
+            return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
+                   Strophe.getBareJidFromJid(jid2).toLowerCase();
+        },
+
         isNewMessage: function (message) {
             /* Given a stanza, determine whether it's a new
              * message, i.e. not a MAM archived one.

@@ -1717,7 +1717,7 @@
                     var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
                     if (_.isNil(item)) { return; }
                     var jid = item.getAttribute('jid');
-                    if (Strophe.getBareJidFromJid(jid).toLowerCase() === _converse.bare_jid.toLowerCase()) {
+                    if (utils.isSameBareJID(jid, _converse.bare_jid)) {
                         var affiliation = item.getAttribute('affiliation');
                         var role = item.getAttribute('role');
                         if (affiliation) {

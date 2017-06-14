@@ -1020,7 +1020,7 @@
             },
 
             isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(_converse.connection.jid));
+                return utils.isSameBareJID(jid, _converse.connection.jid);
             },
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
@@ -1510,7 +1510,7 @@
                  */
                 // TODO: we can likely just reuse "onMessage" below
                 var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (from_jid === _converse.bare_jid) {
+                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.

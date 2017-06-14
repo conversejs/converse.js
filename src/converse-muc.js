@@ -548,7 +548,7 @@
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();

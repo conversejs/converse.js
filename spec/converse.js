@@ -321,7 +321,10 @@
         });
 
         describe("The \"settings\" API", function() {
-            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(function (_converse) {
+            it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(
+                    {'play_sounds': true}, 
+                    function (_converse) {
+
                 expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
                 expect(_converse.api.settings.get("play_sounds")).toBe(true);
                 _converse.api.settings.set("play_sounds", false);

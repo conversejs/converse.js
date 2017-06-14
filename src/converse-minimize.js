@@ -150,7 +150,11 @@
                     var _converse = this.__super__._converse;
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     // save the scroll position to restore it on maximize
-                    this.model.save({'scroll': this.$content.scrollTop()});
+                    if (this.model.collection && this.model.collection.browserStorage) {
+                        this.model.save({'scroll': this.$content.scrollTop()});
+                    } else {
+                        this.model.set({'scroll': this.$content.scrollTop()});
+                    }
                     this.setChatState(_converse.INACTIVE).model.minimize();
                     this.hide();
                     _converse.emit('chatBoxMinimized', this);

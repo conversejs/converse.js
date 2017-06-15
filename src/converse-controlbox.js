@@ -92,8 +92,11 @@
 
             clearSession: function () {
                 this.__super__.clearSession.apply(this, arguments);
-                if (_.isUndefined(this.connection) && this.connection.connected) {
-                    this.chatboxes.get('controlbox').save({'connected': false});
+                var controlbox = this.chatboxes.get('controlbox');
+                if (controlbox &&
+                        controlbox.collection &&
+                        controlbox.collection.browserStorage) {
+                    controlbox.save({'connected': false});
                 }
             },
 

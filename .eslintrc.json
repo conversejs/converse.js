@@ -23,6 +23,7 @@
         "lodash/prefer-noop": "off",
         "lodash/prefer-lodash-typecheck": "off",
         "lodash/preferred-alias": "off",
+        "lodash/prefer-get": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",

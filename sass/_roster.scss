@@ -173,10 +173,6 @@
                     float: left;
                     display: inline-block;
                     height: $roster-item-height;
-
-                    .status-icon {
-                        color: $link-color;
-                    }
                 }
             }
             &.requesting-xmpp-contact {

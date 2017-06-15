@@ -2009,6 +2009,7 @@ div.content {
     #conversejs #controlbox form.search-xmpp-contact input {
       width: 8em; }
   #conversejs #controlbox .msgs-indicator {
+    border-radius: 3px;
     background-color: #E77051;
     color: white;
     font-size: 14px;
@@ -2204,13 +2205,14 @@ div.content {
         #conversejs #controlbox #controlbox-tabs li a.rooms-tab .msgs-indicator {
           background-color: #E77051; }
         #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
+          border: solid white 2px;
           opacity: 0.8;
           border-top-right-radius: 5px;
           float: right; }
         #conversejs #controlbox #controlbox-tabs li a:hover {
           color: #818479; }
           #conversejs #controlbox #controlbox-tabs li a:hover .msgs-indicator {
-            opacity: 0.8; }
+            opacity: 1; }
         #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
           box-shadow: none;
           border-bottom: 0;
@@ -2507,8 +2509,6 @@ div.content {
           float: left;
           display: inline-block;
           height: 30px; }
-          #conversejs #converse-roster .roster-contacts dd .open-chat .avatar .status-icon {
-            color: #578EA9; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .request-actions {
         padding: 0 0 0 0.3em;
         float: right; }

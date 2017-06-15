@@ -306,6 +306,7 @@
                         }
                     }
                     .msgs-indicator {
+                        border: solid white 2px;
                         opacity: 0.8;
                         border-top-right-radius: $button-border-radius;
                         float: right;
@@ -313,7 +314,7 @@
                     &:hover {
                         color: $text-color;
                         .msgs-indicator {
-                            opacity: 0.8;
+                            opacity: 1;
                         }
                     }
                     &.current,

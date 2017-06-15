@@ -597,6 +597,7 @@
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
+                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render: function () {

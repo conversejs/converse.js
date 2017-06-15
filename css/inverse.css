@@ -2036,7 +2036,7 @@ body {
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom a:hover {
           color: #206485; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom.unread-msgs .open-room {
-          max-width: 50%;
+          max-width: 55%;
           width: auto;
           font-weight: bold; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom a.room-info:before {
@@ -2405,16 +2405,22 @@ body {
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .contact-name {
             width: 70%; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
+          background-color: #E7A151;
           opacity: 1;
           border-radius: 10%;
           padding: 0 0.2em;
           font-size: 14px; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
           padding: 0;
           margin: 0;
           max-width: 80%;
           float: none;
           height: 30px; }
+          #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name.unread-msgs {
+            max-width: 60%; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .avatar {
           float: left;
           display: inline-block;

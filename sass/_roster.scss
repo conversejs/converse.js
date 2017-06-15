@@ -122,30 +122,10 @@
                 margin: auto;
                 padding: 0;
                 width: 85%;
-                .pulse {
-                    border: 0.5em solid $red;
-                    background: transparent;
-                    height: $font-size;
-                    width: 1.5*$font-size;
-                    @include animation(pulse 3s ease-out);
-                    @include animation-iteration-count(infinite);
-                    margin: 0;
-                    padding: 0;
-                    margin-left: -26px;
-                    z-index: 1;
-                    opacity: 0;
-                }
                 &.unread-msgs {
                     font-weight: bold;
                     .contact-name {
                         width: 70%;
-                    }
-                    .avatar {
-                        &.avatar-online {
-                            .pulse {
-                                border: 0.7em solid $link-color;
-                            }
-                        }
                     }
                 }
 

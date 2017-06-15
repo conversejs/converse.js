@@ -1260,61 +1260,6 @@
     -ms-transform: rotate(359deg);
     -o-transform: rotate(359deg);
     transform: rotate(359deg); } }
-@-webkit-keyframes pulse {
-  0% {
-    -webkit-transform: scale(0);
-    opacity: 0.0; }
-  50% {
-    -webkit-transform: scale(0.5);
-    opacity: 0.0; }
-  75% {
-    -webkit-transform: scale(0.8);
-    opacity: 0.5; }
-  100% {
-    -webkit-transform: scale(1);
-    opacity: 0.0; } }
-@-moz-keyframes pulse {
-  0% {
-    -moz-transform: scale(0);
-    opacity: 0.0; }
-  50% {
-    -moz-transform: scale(0.5);
-    opacity: 0.0; }
-  75% {
-    -moz-transform: scale(0.8);
-    opacity: 0.5; }
-  100% {
-    -moz-transform: scale(1);
-    opacity: 0.0; } }
-@keyframes pulse {
-  0% {
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0);
-    transform: scale(0);
-    opacity: 0.0; }
-  50% {
-    -webkit-transform: scale(0.5);
-    -moz-transform: scale(0.5);
-    -ms-transform: scale(0.5);
-    -o-transform: scale(0.5);
-    transform: scale(0.5);
-    opacity: 0.0; }
-  75% {
-    -webkit-transform: scale(0.8);
-    -moz-transform: scale(0.8);
-    -ms-transform: scale(0.8);
-    -o-transform: scale(0.8);
-    transform: scale(0.8);
-    opacity: 0.5; }
-  100% {
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1);
-    transform: scale(1);
-    opacity: 0.0; } }
   #converse-embedded-chat .spinner,
   #conversejs .spinner {
     -webkit-animation: spin 2s infinite, linear;
@@ -2455,28 +2400,10 @@ body {
         margin: auto;
         padding: 0;
         width: 85%; }
-        #conversejs #converse-roster .roster-contacts dd .open-chat .pulse {
-          border: 0.5em solid #E77051;
-          background: transparent;
-          height: 16px;
-          width: 24px;
-          -webkit-animation: pulse 3s ease-out;
-          -moz-animation: pulse 3s ease-out;
-          animation: pulse 3s ease-out;
-          -webkit-animation-iteration-count: infinite;
-          -moz-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-          margin: 0;
-          padding: 0;
-          margin-left: -26px;
-          z-index: 1;
-          opacity: 0; }
         #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs {
           font-weight: bold; }
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .contact-name {
             width: 70%; }
-          #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar.avatar-online .pulse {
-            border: 0.7em solid #578EA9; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
           opacity: 1;
           border-radius: 10%;

@@ -108,7 +108,7 @@
             height: 24px;
             overflow-y: hidden;
             text-shadow: 0 1px 0 $text-shadow-color;
-            line-height: $line-height;
+            line-height: $font-size;
             width: 100%;
             height: 30px;
             margin: 0;
@@ -123,8 +123,17 @@
                 padding: 0;
                 width: 85%;
                 .pulse {
-                    padding: 0;
+                    border: 0.5em solid $red;
+                    background: transparent;
+                    height: $font-size;
+                    width: 1.5*$font-size;
+                    @include animation(pulse 3s ease-out);
+                    @include animation-iteration-count(infinite);
                     margin: 0;
+                    padding: 0;
+                    margin-left: -26px;
+                    z-index: 1;
+                    opacity: 0;
                 }
                 &.unread-msgs {
                     font-weight: bold;
@@ -132,21 +141,6 @@
                         width: 70%;
                     }
                     .avatar {
-                        .pulse {
-                            border: 0.7em solid $link-color;
-                            background: transparent;
-                            border-radius: 60px;
-                            height: 30px;
-                            width: 30px;
-                            @include animation(pulse 3s ease-out);
-                            @include animation-iteration-count(infinite);
-                            margin: 0;
-                            padding: 0;
-                            margin-top: -7px;
-                            margin-left: -31px;
-                            z-index: 1;
-                            opacity: 0;
-                        }
                         &.avatar-online {
                             .pulse {
                                 border: 0.7em solid $link-color;
@@ -194,7 +188,7 @@
                 }
             }
             &.current-xmpp-contact span {
-                font-size: 16px;
+                font-size: $font-size;
                 float: left;
                 margin-right: 0.5em;
             }

@@ -96,16 +96,12 @@
             @include transform(scale(0));
             opacity: 0.0;
         }
-        25% {
-            @include transform(scale(0));
-            opacity: 0.1;
-        }
         50% {
-            @include transform(scale(0.1));
-            opacity: 0.3;
+            @include transform(scale(0.5));
+            opacity: 0.0;
         }
         75% {
-            @include transform(scale(0.5));
+            @include transform(scale(0.8));
             opacity: 0.5;
         }
         100% {

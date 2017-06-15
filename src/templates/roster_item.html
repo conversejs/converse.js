@@ -3,13 +3,11 @@
    href="#">
     <div class="avatar avatar-{{{chat_status}}}">
         <span class="status-icon icon-{{{chat_status}}}" title="{{{desc_status}}}"></span>
-        {[ if (num_unread) { ]}
-        <span class="pulse"></span>
-        {[ } ]}
     </div>
     <span class="contact-name unread-msgs">{{{fullname}}}</span>
     {[ if (num_unread) { ]}
     <span class="msgs-indicator">{{{ num_unread }}}</span>
+    <span class="pulse"></span>
     {[ } ]}
 </a>
 {[ if (allow_contact_removal) { ]}

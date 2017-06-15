@@ -101,9 +101,7 @@
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,
                 hide_open_bookmarks: true,
-                notification_icon: '/node_modules/converse.js/logo/conversejs128.png', // New default
                 show_controlbox_by_default: true,
-                sounds_path: '/node_modules/converse.js/sounds/', // New default
                 sticky_controlbox: true,
             });
         }

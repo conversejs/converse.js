@@ -157,8 +157,9 @@
 
 				.msgs-indicator {
                     opacity: 1;
-                    margin-left: -3em;
                     border-radius: 10%;
+                    padding: 0 0.2em;
+                    font-size: $font-size-small;
 				}
 
                 .contact-name {

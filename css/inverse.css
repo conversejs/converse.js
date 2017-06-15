@@ -2497,8 +2497,9 @@ body {
             border: 0.7em solid #578EA9; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
           opacity: 1;
-          margin-left: -3em;
-          border-radius: 10%; }
+          border-radius: 10%;
+          padding: 0 0.2em;
+          font-size: 14px; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .contact-name {
           padding: 0;
           margin: 0;

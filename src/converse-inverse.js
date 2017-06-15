@@ -41,20 +41,6 @@
             },
 
             ControlBoxView: {
-                close: function (ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    // The controlbox cannot be closed.
-                },
-
-                hide: function (ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    // The controlbox cannot be hidden
-                },
-
                 renderContactsPanel: function () {
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     this.el.classList.remove("fullscreen");

@@ -297,6 +297,9 @@
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
                     } else {
@@ -315,6 +318,9 @@
                 },
 
                 hide: function (callback) {
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     this.$el.addClass('hidden');
                     utils.refreshWebkit();
                     _converse.emit('chatBoxClosed', this);

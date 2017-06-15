@@ -34,11 +34,10 @@
         }
 
         .msgs-indicator {
-            opacity: 0.6;
-            background-color: $warning-color;
+            border-radius: 3px;
+            background-color: $red;
             color: white;
             font-size: $font-size-small;
-            float: right;
             font-weight: normal;
             padding: 0 4px;
             text-shadow: none;
@@ -307,7 +306,9 @@
                         }
                     }
                     .msgs-indicator {
+                        opacity: 0.8;
                         border-top-right-radius: $button-border-radius;
+                        float: right;
                     }
                     &:hover {
                         color: $text-color;

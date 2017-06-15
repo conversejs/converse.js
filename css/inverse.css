@@ -8,7 +8,7 @@
 /*
     Color scheme helpers:
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
-    http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
+    http://paletton.com/#uid=70a0u0kkNs+b4JOgryLpxqpsbkI
  */
 @font-face {
   font-family: 'Converse-js';
@@ -1140,7 +1140,7 @@
     margin: 0; }
   #conversejs a, #conversejs a:visited {
     text-decoration: none;
-    color: #2A9D8F;
+    color: #578EA9;
     text-shadow: none; }
 
 #converse-embedded-chat,
@@ -1374,7 +1374,7 @@
     display: table-cell; }
   #converse-embedded-chat .error,
   #conversejs .error {
-    color: #D24E2B; }
+    color: #A53214; }
   #converse-embedded-chat .reg-feedback,
   #conversejs .reg-feedback {
     font-size: 85%; }
@@ -1406,11 +1406,11 @@
   #converse-embedded-chat .button-primary,
   #conversejs .button-primary {
     color: white;
-    background-color: #2AC611; }
+    background-color: #3AA569; }
   #converse-embedded-chat .button-secondary,
   #conversejs .button-secondary {
     color: white;
-    background-color: #83A0D6; }
+    background-color: #387592; }
   #converse-embedded-chat .button-cancel,
   #conversejs .button-cancel {
     color: white;
@@ -1447,7 +1447,7 @@
       border: none; }
     #converse-embedded-chat form.pure-form.converse-form input.error,
     #conversejs form.pure-form.converse-form input.error {
-      border: 1px solid #D24E2B;
+      border: 1px solid #A53214;
       color: #818479; }
     #converse-embedded-chat form.pure-form.converse-form .form-help,
     #conversejs form.pure-form.converse-form .form-help {
@@ -1467,7 +1467,7 @@
     margin: 0; }
   #converse-embedded-chat .chat-textarea-chatroom-selected,
   #conversejs .chat-textarea-chatroom-selected {
-    border: 2px solid #2A9D8F;
+    border: 2px solid #578EA9;
     margin: 0; }
   #converse-embedded-chat .dropdown dt,
   #converse-embedded-chat .dropdown ul,
@@ -1481,13 +1481,13 @@ body {
   height: 100%;
   font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #ffffff;
-  background-color: #17818B; }
+  background-color: #578EA9; }
 
 div.content {
   height: 100vh;
   width: 100vw;
   position: fixed;
-  background-color: #17818B; }
+  background-color: #578EA9; }
   div.content .inner-content {
     text-align: center;
     padding: 7%;
@@ -1496,6 +1496,8 @@ div.content {
     div.content .inner-content .brand-heading {
       font-size: 600%;
       margin-left: -10%; }
+      div.content .inner-content .brand-heading .icon-conversejs {
+        font-size: 88%; }
     div.content .inner-content p.no-chats {
       padding-right: 10%;
       font-size: 120%; }
@@ -1558,7 +1560,7 @@ div.content {
     float: left; }
   #converse-embedded-chat .chat-head.chat-head-chatbox,
   #conversejs .chat-head.chat-head-chatbox {
-    background-color: #F4A261; }
+    background-color: #E7A151; }
   #converse-embedded-chat .chat-head .user-custom-message,
   #conversejs .chat-head .user-custom-message {
     color: white;
@@ -1588,7 +1590,7 @@ div.content {
   #converse-embedded-chat .chatbox-btn.button-on,
   #conversejs .chatbox-btn.button-on {
     background-color: white;
-    color: #F4A261; }
+    color: #E7A151; }
 #converse-embedded-chat .chatbox,
 #conversejs .chatbox {
   display: block;
@@ -1703,10 +1705,10 @@ div.content {
           overflow: hidden; }
         #converse-embedded-chat .chatbox .chat-body .chat-message span.chat-msg-them,
         #conversejs .chatbox .chat-body .chat-message span.chat-msg-them {
-          color: #1A9707; }
+          color: #3AA569; }
         #converse-embedded-chat .chatbox .chat-body .chat-message span.chat-msg-me,
         #conversejs .chatbox .chat-body .chat-message span.chat-msg-me {
-          color: #2A9D8F; }
+          color: #578EA9; }
         #converse-embedded-chat .chatbox .chat-body .chat-message span.chat-msg-content,
         #conversejs .chatbox .chat-body .chat-message span.chat-msg-content {
           max-width: 100%;
@@ -1722,7 +1724,7 @@ div.content {
     position: absolute;
     width: 100%;
     cursor: pointer;
-    background-color: #F4A261;
+    background-color: #E7A151;
     color: #FCFDFD;
     padding: 0.3em;
     font-size: 0.9em;
@@ -1790,7 +1792,7 @@ div.content {
       left: 3px;
       width: -webkit-calc(100% - 6px);
       width: calc(100% - 6px);
-      background-color: #F4A261;
+      background-color: #E7A151;
       color: white;
       font-size: 80%;
       height: 27px;
@@ -1807,7 +1809,7 @@ div.content {
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar a,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar a {
         font-size: 15px;
-        color: #2A9D8F;
+        color: #578EA9;
         text-decoration: none;
         text-shadow: none; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .chat-toolbar-text,
@@ -1870,7 +1872,7 @@ div.content {
         margin-left: 0; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley {
-        color: #2A9D8F;
+        color: #578EA9;
         padding-left: 5px; }
         #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul,
         #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul {
@@ -1931,8 +1933,8 @@ div.content {
   font-size: 18px;
   margin: 0 0.3em; }
 #conversejs .flyout {
-  border: 1em solid #F4A261;
-  border-top: 0.8em solid #F4A261;
+  border: 1em solid #E7A151;
+  border-top: 0.8em solid #E7A151;
   border-radius: 0;
   bottom: 0; }
 #conversejs .chat-head {
@@ -1953,13 +1955,13 @@ div.content {
   width: calc(100% - 250px);
   margin: 0; }
   #conversejs .chatbox .box-flyout {
-    background-color: #F4A261;
+    background-color: #E7A151;
     width: -webkit-calc(100% - 250px);
     width: calc(100% - 250px);
     box-shadow: none;
     min-width: auto; }
   #conversejs .chatbox .chat-body {
-    background-color: #F4A261;
+    background-color: #E7A151;
     border-top-left-radius: 7px;
     border-top-right-radius: 7px; }
   #conversejs .chatbox .chat-content {
@@ -1985,7 +1987,7 @@ div.content {
     #conversejs #controlbox {
       margin: 0; } }
   #conversejs #controlbox .controlbox-head {
-    background-color: #577BDD;
+    background-color: #578EA9;
     border-top-left-radius: 7px;
     border-top-right-radius: 7px;
     color: white;
@@ -2007,11 +2009,9 @@ div.content {
     #conversejs #controlbox form.search-xmpp-contact input {
       width: 8em; }
   #conversejs #controlbox .msgs-indicator {
-    opacity: 0.6;
-    background-color: #D24E2B;
+    background-color: #E77051;
     color: white;
     font-size: 14px;
-    float: right;
     font-weight: normal;
     padding: 0 4px;
     text-shadow: none; }
@@ -2037,7 +2037,7 @@ div.content {
       margin-bottom: 8px; }
     #conversejs #controlbox #converse-register .form-help .url {
       font-weight: bold;
-      color: #2A9D8F; }
+      color: #578EA9; }
     #conversejs #controlbox #converse-register .input-group {
       display: table;
       margin: auto;
@@ -2060,7 +2060,7 @@ div.content {
       height: auto;
       white-space: normal; }
     #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
-      color: #436F64; }
+      color: #3AA569; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
       margin: 0.5em 0; }
@@ -2102,7 +2102,7 @@ div.content {
         text-shadow: 0 1px 0 #FAFAFA;
         word-wrap: break-word; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom a:hover {
-          color: #015158; }
+          color: #206485; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom.unread-msgs .open-room {
           max-width: 50%;
           width: auto;
@@ -2119,9 +2119,9 @@ div.content {
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .remove-bookmark {
           color: #A8ABA1; }
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .remove-bookmark.button-on {
-            color: #2A9D8F; }
+            color: #578EA9; }
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .remove-bookmark.button-on:hover {
-              color: #015158; }
+              color: #206485; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list dd.available-chatroom .room-info {
           font-size: 14px;
           font-style: normal;
@@ -2200,11 +2200,13 @@ div.content {
         text-align: center;
         text-decoration: none; }
         #conversejs #controlbox #controlbox-tabs li a.contacts-tab .msgs-indicator {
-          background-color: #F4A261; }
+          background-color: #E7A151; }
         #conversejs #controlbox #controlbox-tabs li a.rooms-tab .msgs-indicator {
-          background-color: #E76F51; }
+          background-color: #E77051; }
         #conversejs #controlbox #controlbox-tabs li a .msgs-indicator {
-          border-top-right-radius: 5px; }
+          opacity: 0.8;
+          border-top-right-radius: 5px;
+          float: right; }
         #conversejs #controlbox #controlbox-tabs li a:hover {
           color: #818479; }
           #conversejs #controlbox #controlbox-tabs li a:hover .msgs-indicator {
@@ -2230,7 +2232,7 @@ div.content {
       display: inline-block; }
       #conversejs #controlbox .fancy-dropdown .choose-xmpp-status:hover,
       #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form:hover {
-        color: #015158; }
+        color: #206485; }
     #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
       padding: 0 0.5em;
       width: 100%; }
@@ -2243,9 +2245,9 @@ div.content {
     float: right;
     clear: right;
     width: 12px;
-    color: #2A9D8F; }
+    color: #578EA9; }
     #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message:hover {
-      color: #015158; }
+      color: #206485; }
   #conversejs #controlbox #fancy-xmpp-status-select fieldset {
     padding: 0;
     margin-top: -1px; }
@@ -2306,7 +2308,7 @@ div.content {
     #conversejs #controlbox .set-xmpp-status .dropdown dd ul {
       z-index: 22; }
 #conversejs .toggle-controlbox {
-  background-color: #2A9D8F;
+  background-color: #578EA9;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   color: #0a0a0a;
@@ -2324,8 +2326,7 @@ div.content {
   margin: 0; }
   #conversejs #controlbox #login-dialog .brand-heading, #conversejs #controlbox #register .brand-heading {
     margin: 10% 0 0 0;
-    font-size: 600%;
-    color: #577BDD; }
+    color: #387592; }
   #conversejs #controlbox #login-dialog .converse-form, #conversejs #controlbox #register .converse-form {
     margin-top: 4em; }
   #conversejs #controlbox.fullscreen {
@@ -2338,7 +2339,7 @@ div.content {
     min-width: 250px;
     width: 200px;
     z-index: 1;
-    background-color: #577BDD; }
+    background-color: #578EA9; }
   #conversejs #controlbox .controlbox-head {
     height: 63px;
     padding: 6px 0 6px 0;
@@ -2460,7 +2461,7 @@ div.content {
       margin: 0;
       padding: 0.5em 0 0 0; }
       #conversejs #converse-roster .roster-contacts dd a:hover {
-        color: #015158; }
+        color: #206485; }
       #conversejs #converse-roster .roster-contacts dd .open-chat {
         margin: auto;
         padding: 0;
@@ -2473,7 +2474,7 @@ div.content {
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .contact-name {
             width: 70%; }
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar .pulse {
-            border: 0.7em solid #2A9D8F;
+            border: 0.7em solid #578EA9;
             background: transparent;
             border-radius: 60px;
             height: 30px;
@@ -2491,7 +2492,7 @@ div.content {
             z-index: 1;
             opacity: 0; }
           #conversejs #converse-roster .roster-contacts dd .open-chat.unread-msgs .avatar.avatar-online .pulse {
-            border: 0.7em solid #2A9D8F; }
+            border: 0.7em solid #578EA9; }
         #conversejs #converse-roster .roster-contacts dd .open-chat .msgs-indicator {
           opacity: 1;
           margin-left: -3em;
@@ -2507,7 +2508,7 @@ div.content {
           display: inline-block;
           height: 30px; }
           #conversejs #converse-roster .roster-contacts dd .open-chat .avatar .status-icon {
-            color: #2A9D8F; }
+            color: #578EA9; }
       #conversejs #converse-roster .roster-contacts dd.requesting-xmpp-contact .request-actions {
         padding: 0 0 0 0.3em;
         float: right; }
@@ -2561,11 +2562,11 @@ div.content {
   margin: 0.3em 0; }
 #converse-embedded-chat .chat-head-chatroom,
 #conversejs .chat-head-chatroom {
-  background-color: #E76F51; }
+  background-color: #E77051; }
   #converse-embedded-chat .chat-head-chatroom .chatbox-btn.button-on,
   #conversejs .chat-head-chatroom .chatbox-btn.button-on {
     background-color: white;
-    color: #E76F51; }
+    color: #E77051; }
   #converse-embedded-chat .chat-head-chatroom .chatroom-description,
   #conversejs .chat-head-chatroom .chatroom-description {
     color: white;
@@ -2619,7 +2620,7 @@ div.content {
         font-weight: bold; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-msg-room,
       #conversejs .chatroom .box-flyout .chatroom-body .chat-msg-room {
-        color: #1A9707; }
+        color: #3AA569; }
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .disconnect-msg,
       #conversejs .chatroom .box-flyout .chatroom-body .disconnect-msg {
         padding: 2em 2em 0 2em; }
@@ -2632,7 +2633,7 @@ div.content {
         min-width: 100%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator,
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .new-msgs-indicator {
-          background-color: #E76F51;
+          background-color: #E77051;
           max-width: 70%; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
         #conversejs .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
@@ -2741,7 +2742,7 @@ div.content {
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .validation-message {
           font-size: 90%;
-          color: #D24E2B; }
+          color: #A53214; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form input[type=text],
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .chatroom-form label,
@@ -2757,7 +2758,7 @@ div.content {
     border-bottom-right-radius: 0; }
   #converse-embedded-chat .chatroom form.sendXMPPMessage .send-button,
   #conversejs .chatroom form.sendXMPPMessage .send-button {
-    background-color: #E76F51; }
+    background-color: #E77051; }
   #converse-embedded-chat .chatroom .room-invite .invited-contact,
   #conversejs .chatroom .room-invite .invited-contact {
     margin: -1px 0 0 -1px;
@@ -2776,9 +2777,9 @@ div.content {
   width: -webkit-calc(100% - 250px);
   width: calc(100% - 250px); }
   #conversejs .chatroom .box-flyout {
-    background-color: #E76F51;
-    border: 1em solid #E76F51;
-    border-top: 0.8em solid #E76F51;
+    background-color: #E77051;
+    border: 1em solid #E77051;
+    border-top: 0.8em solid #E77051;
     width: -webkit-calc(100% - 250px);
     width: calc(100% - 250px); }
     #conversejs .chatroom .box-flyout .chatroom-body {
@@ -2820,10 +2821,10 @@ div.content {
     margin: 0 0 0.5em -1px; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
-  background-color: #2A9D8F; }
+  background-color: #3AA569; }
 #conversejs .chatbox.headlines .flyout {
-  border: 1em solid #2A9D8F;
-  border-top: 0.8em solid #2A9D8F; }
+  border: 1em solid #3AA569;
+  border-top: 0.8em solid #3AA569; }
 
 #converse-embedded-chat,
 #conversejs {

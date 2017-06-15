@@ -1,12 +1,40 @@
 /*
     Color scheme helpers:
     https://coolors.co/app/264653-2a9d8f-e9c46a-f4a261-e76f51
-    http://paletton.com/#uid=53f0u0knsvIdILAj5Cftgu3uBmZ
+    http://paletton.com/#uid=70a0u0kkNs+b4JOgryLpxqpsbkI
  */
-$global-background-color: #17818B !default;
 
-$link-color: #2A9D8F !default;
-$dark-link-color: #015158 !default;
+$subdued-color: #A8ABA1 !default;
+$gray-color: #818479 !default;
+$dark-gray-color: #585B51!default;
+
+$lightest-blue: #89B7CD;
+$light-blue: #578EA9;
+$blue: #387592;
+$dark-blue: #206485;
+$darkest-blue: #114C68;
+
+$lightest-red: #FFB9A7;
+$light-red: #FF977C;
+$red: #E77051;
+$dark-red: #D24E2B;
+$darkest-red: #A53214;
+
+$lightest-orange: #FFD6A7;
+$light-orange: #E7A151;
+$orange: #E7A151;
+$dark-orange: #D2842B;
+$darkest-orange: #A56214;
+
+$lightest-green: #8DD8AE;
+$light-green: #5CBC86;
+$green: #3AA569;
+$dark-green: #1E9652;
+$darkest-green: #0E763B;
+
+$link-color: $light-blue !default;
+$dark-link-color: $dark-blue !default;
+$global-background-color: $light-blue !default;
 
 $inverse-link-color: white !default;
 $link-shadow-color: #FAFAFA !default;
@@ -14,17 +42,17 @@ $text-shadow-color: #FAFAFA !default;
 $text-color: #818479 !default;
 $light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
-$icon-color: #114327 !default;
-$save-button-color: #436F64 !default;
+$icon-color: $blue !default;
+$save-button-color: $green !default;
 $chat-textarea-height: 70px !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
-$message-them-color: #1A9707 !default;
+$message-them-color: $green !default;
 
 $roster-height: 194px !default;
 $roster-item-height: 30px !default;
 
-$chat-head-color: #F4A261 !default;
+$chat-head-color: $orange !default;
 $chat-head-text-color: white !default;
 $chat-head-inverse-text-color: white !default;
 $chat-head-height: 55px !default;
@@ -33,18 +61,14 @@ $chatroom-head-height: 55px !default;
 $input-focus-color: #1A9707 !default;
 $highlight-color: #DCF9F6 !default;
 
-$subdued-color: #A8ABA1 !default;
-$gray-color: #818479 !default;
-$dark-gray-color: #585B51!default;
-
 $controlbox-dropdown-height: 30px !default;
-$controlbox-head-color: #577BDD !default;
+$controlbox-head-color: $light-blue !default;
 $controlbox-head-height: 63px !default;
 $controlbox-pane-padding: 1.2em !default;
 
-$primary-color: #2AC611 !default;
-$secondary-color: #83A0D6 !default;
-$warning-color: #D24E2B !default;
+$primary-color: $green !default;
+$secondary-color: $blue !default;
+$warning-color: $dark-red !default;
 
 $light-background-border-color: #B1BFC4 !default;
 $light-background-color: #FCFDFD !default;
@@ -52,9 +76,9 @@ $light-background-color: #FCFDFD !default;
 $toolbar-height: 25px !default;
 $toolbar-color: #FFF5EE !default;
 
-$moderator-color: #D24E2B !default;
-$online-color: #1A9707 !default;
-$error-color: #D24E2B !default;
+$moderator-color: $dark-red !default;
+$online-color: $green !default;
+$error-color: $darkest-red !default;
 
 $button-border-radius: 5px !default;
 $chatbox-border-radius: 7px !default;
@@ -88,11 +112,11 @@ $small-mobile-chat-height: 300px !default;
 $font-path: "../fonticons/fonts/" !default;
 
 $chatroom-width: 300px !default;
-$chatroom-head-color: #E76F51 !default;
-$chatroom-color-light: #FF977C !default;
-$chatroom-color-dark: #D24E2B !default;
+$chatroom-head-color: $red !default;
+$chatroom-color-light: $light-red !default;
+$chatroom-color-dark: $darkest-red !default;
 
-$headline-head-color: #2A9D8F !default;
+$headline-head-color: $green !default;
 
 $box-close-button-padding-top: 4px !default;
 $box-close-button-padding-bottom: 4px !default;

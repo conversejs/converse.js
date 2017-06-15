@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?wvi0ht');
-  src:  url('fonts/icomoon.eot?wvi0ht#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?wvi0ht') format('truetype'),
-    url('fonts/icomoon.woff?wvi0ht') format('woff'),
-    url('fonts/icomoon.svg?wvi0ht#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?uikzla');
+  src:  url('fonts/icomoon.eot?uikzla#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?uikzla') format('truetype'),
+    url('fonts/icomoon.woff?uikzla') format('woff'),
+    url('fonts/icomoon.svg?uikzla#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -276,4 +276,3 @@
 .icon-exit:before {
   content: "\e601";
 }
-

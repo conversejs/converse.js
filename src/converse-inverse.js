@@ -4,20 +4,38 @@
 // Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global Backbone, define, window */
+/*global define */
 
 (function (root, factory) {
     define(["converse-core",
+            "tpl!brand_heading",
             "converse-chatview",
             "converse-controlbox",
             "converse-muc",
             "converse-singleton"
     ], factory);
-}(this, function (converse) {
+}(this, function (converse, tpl_brand_heading) {
     "use strict";
     var $ = converse.env.jQuery,
         Strophe = converse.env.Strophe,
         _ = converse.env._;
+
+    function createBrandHeadingElement () {
+        var div = document.createElement('div');
+        div.innerHTML = tpl_brand_heading();
+        return div.firstChild;
+    }
+
+     function isMessageToHiddenChat (_converse, message) {
+        var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+        var model = _converse.chatboxes.get(jid);
+        if (!_.isNil(model)) {
+            return model.get('hidden');
+        }
+        // Not having a chat box is assume to be practically the same
+        // as it being hidden.
+        return true;
+    }
 
     converse.plugins.add('converse-inverse', {
 
@@ -37,7 +55,7 @@
             shouldNotifyOfMessage: function (message) {
                 var _converse = this.__super__._converse;
                 var result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
-                return result && _converse.isMessageToHiddenChat(message);
+                return result && isMessageToHiddenChat(_converse, message);
             },
 
             ControlBoxView: {
@@ -50,11 +68,8 @@
                 renderRegistrationPanel: function () {
                     this.__super__.renderRegistrationPanel.apply(this, arguments);
 
-                    // TODO: put into template
-                    var div = document.createElement('div');
-                    div.innerHTML = '<h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>';
                     var el = document.getElementById('converse-register');
-                    el.parentNode.insertBefore(div.firstChild, el);
+                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;
                 },
 
@@ -62,11 +77,8 @@
                     this.__super__.renderLoginPanel.apply(this, arguments);
                     this.el.classList.add("fullscreen");
 
-                    // TODO: put into template
-                    var div = document.createElement('div');
-                    div.innerHTML = '<h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>';
                     var el = document.getElementById('converse-login');
-                    el.parentNode.insertBefore(div.firstChild, el);
+                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;
                 }
             },
@@ -85,8 +97,6 @@
         },
 
         initialize: function () {
-            var _converse = this._converse;
-
             this.updateSettings({
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,
@@ -96,17 +106,6 @@
                 sounds_path: '/node_modules/converse.js/sounds/', // New default
                 sticky_controlbox: true,
             });
-
-            _converse.isMessageToHiddenChat = function (message) {
-                var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                var model = _converse.chatboxes.get(jid);
-                if (!_.isNil(model)) {
-                    return model.get('hidden');
-                }
-                // Not having a chat box is assume to be practically the same
-                // as it being hidden.
-                return true;
-            }
         }
     });
 }));

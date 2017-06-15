@@ -1482,25 +1482,24 @@ body {
   font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #ffffff;
   background-color: #578EA9; }
-
-div.content {
-  height: 100vh;
-  width: 100vw;
-  position: fixed;
-  background-color: #578EA9; }
-  div.content .inner-content {
-    text-align: center;
-    padding: 7%;
-    padding-left: -webkit-calc(5% + 250px);
-    padding-left: calc(5% + 250px); }
-    div.content .inner-content .brand-heading {
-      font-size: 600%;
-      margin-left: -10%; }
-      div.content .inner-content .brand-heading .icon-conversejs {
-        font-size: 88%; }
-    div.content .inner-content p.no-chats {
-      padding-right: 10%;
-      font-size: 120%; }
+  body .brand-heading {
+    font-size: 600%;
+    margin-left: -10%; }
+    body .brand-heading .icon-conversejs {
+      font-size: 88%; }
+  body div.content {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background-color: #578EA9; }
+    body div.content .inner-content {
+      text-align: center;
+      padding: 7%;
+      padding-left: -webkit-calc(5% + 250px);
+      padding-left: calc(5% + 250px); }
+      body div.content .inner-content p.no-chats {
+        padding-right: 10%;
+        font-size: 120%; }
 
 #conversejs {
   width: 100vw;
@@ -2327,6 +2326,7 @@ div.content {
   float: left;
   margin: 0; }
   #conversejs #controlbox #login-dialog .brand-heading, #conversejs #controlbox #register .brand-heading {
+    font-size: 600%;
     margin: 10% 0 0 0;
     color: #387592; }
   #conversejs #controlbox #login-dialog .converse-form, #conversejs #controlbox #register .converse-form {

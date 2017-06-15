@@ -73,7 +73,8 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__;
+                __ = _converse.__,
+                ___ = _converse.___;
 
             this.updateSettings({
                 allow_chat_pending_contacts: true,
@@ -609,7 +610,7 @@
                         this.el.classList.add('pending-xmpp-contact');
                         this.$el.html(tpl_pending_contact(
                             _.extend(item.toJSON(), {
-                                'desc_remove': __('Click to remove this contact'),
+                                'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -617,8 +618,8 @@
                         this.el.classList.add('requesting-xmpp-contact');
                         this.$el.html(tpl_requesting_contact(
                             _.extend(item.toJSON(), {
-                                'desc_accept': __("Click to accept this contact request"),
-                                'desc_decline': __("Click to decline this contact request"),
+                                'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
+                                'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -637,7 +638,7 @@
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
-                            'desc_remove': __('Click to remove this contact'),
+                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                             'title_fullname': __('Name'),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0

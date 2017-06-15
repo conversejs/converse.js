@@ -1225,7 +1225,7 @@
                 },
 
                 cleanup: function () {
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     } else {
                         this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);

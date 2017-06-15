@@ -571,7 +571,6 @@
             if (!_.isUndefined(this.roster)) {
                 this.roster.browserStorage._clear();
             }
-            this.session.browserStorage._clear();
         };
 
         this.logOut = function () {
@@ -755,6 +754,7 @@
             // by browser.
             _converse.connection.flush();
 
+            _converse.initSession();
             _converse.setUserJid();
             _converse.enableCarbons();
 
@@ -2090,6 +2090,7 @@
             if (this.features) {
                 this.features.reset();
             }
+            this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -2139,7 +2140,6 @@
         }
         _converse.initPlugins();
         _converse.initChatBoxes();
-        _converse.initSession();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();

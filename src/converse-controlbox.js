@@ -64,9 +64,9 @@
             //
             // New functions which don't exist yet can also be added.
 
-            initSession: function () {
+            initChatBoxes: function () {
+                this.__super__.initChatBoxes.apply(this, arguments);
                 this.controlboxtoggle = new this.ControlBoxToggle();
-                this.__super__.initSession.apply(this, arguments);
             },
 
             initConnection: function () {

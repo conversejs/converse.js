@@ -16,6 +16,7 @@ eggs
 
 dev-jc.html
 inverse-dev.html
+inverse-dev-jc.html
 
 converse-logs/*.html
 

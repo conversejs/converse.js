@@ -54,6 +54,17 @@
                     return this.__super__.createChatBox.call(this, jid, attrs);
                 }
             },
+
+            RoomsPanel: {
+                parseRoomDataFromEvent: function (ev) {
+                    /* We set hidden to false for rooms opened manually by the
+                     * user. They should always be shown.
+                     */
+                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    result.hidden = false;
+                    return result;
+                }
+            },
  
             ChatBoxViews: {
                 showChat: function (attrs, force) {
@@ -63,7 +74,8 @@
                      */
                     var _converse = this.__super__._converse;
                     var chatbox = this.getChatBox(attrs, true);
-                    if ((force || !attrs.hidden) && _converse.connection.authenticated) {
+                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    if ((force || !hidden) && _converse.connection.authenticated) {
                         _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
                         chatbox.save({'hidden': false});
                     }

@@ -345,41 +345,39 @@
             });
 
             _converse.openChatRoom = function (settings) {
-                /* Creates a new chat room, making sure that certain attributes
+                /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings = _.extend(
-                    _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
-                    settings
-                );
-                return _converse.chatboxviews.showChat(
-                    _.extend({
-                        'affiliation': null,
-                        'connection_status': ROOMSTATUS.DISCONNECTED,
-                        'description': '',
-                        'features_fetched': false,
-                        'roomconfig': {},
-                        'type': CHATROOMS_TYPE,
-                    }, settings)
-                );
+                settings = _.assign({'type': CHATROOMS_TYPE}, settings);
+                return _converse.chatboxviews.showChat(settings);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
                 defaults: function () {
-                    return _.extend(_.clone(_converse.ChatBox.prototype.defaults), {
-                        'type': CHATROOMS_TYPE,
-                        // For group chats, we distinguish between generally unread
-                        // messages and those ones that specifically mention the
-                        // user.
-                        //
-                        // To keep things simple, we reuse `num_unread` from
-                        // _converse.ChatBox to indicate unread messages which
-                        // mention the user and `num_unread_general` to indicate
-                        // generally unread messages (which *includes* mentions!).
-                        'num_unread_general': 0
-                    });
+                    return _.assign(
+                        _.clone(_converse.ChatBox.prototype.defaults),
+                        _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
+                        {
+                          // For group chats, we distinguish between generally unread
+                          // messages and those ones that specifically mention the
+                          // user.
+                          //
+                          // To keep things simple, we reuse `num_unread` from
+                          // _converse.ChatBox to indicate unread messages which
+                          // mention the user and `num_unread_general` to indicate
+                          // generally unread messages (which *includes* mentions!).
+                          'num_unread_general': 0,
+
+                          'affiliation': null,
+                          'connection_status': ROOMSTATUS.DISCONNECTED,
+                          'description': '',
+                          'features_fetched': false,
+                          'roomconfig': {},
+                          'type': CHATROOMS_TYPE,
+                        }
+                    );
                 },
 
                 isUserMentioned: function (message) {
@@ -2574,8 +2572,7 @@
                     }
                 },
 
-                openChatRoom: function (ev) {
-                    ev.preventDefault();
+                parseRoomDataFromEvent: function (ev) {
                     var name, $name, server, $server, jid;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
@@ -2597,13 +2594,18 @@
                             return;
                         }
                     }
-                    _converse.openChatRoom({
+                    return {
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                         'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(jid)
-                    });
+                    }
+                },
+
+                openChatRoom: function (ev) {
+                    ev.preventDefault();
+                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
                 },
 
                 setDomain: function (ev) {

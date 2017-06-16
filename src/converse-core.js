@@ -727,6 +727,7 @@
             }
             // First set up chat boxes, before populating the roster, so that
             // the controlbox is properly set up and ready for the rosterview.
+            _converse.roster.onConnected();
             _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
@@ -974,6 +975,45 @@
                 } else  {
                     return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
+            },
+
+            onConnected: function () {
+                /* Called as soon as the connection has been established
+                 * (either after initial login, or after reconnection).
+                 *
+                 * Use the opportunity to register stanza handlers.
+                 */
+                this.registerRosterHandler();
+                this.registerRosterXHandler();
+            },
+
+            registerRosterHandler: function () {
+                /* Register a handler for roster IQ "set" stanzas, which update
+                 * roster contacts.
+                 */
+                _converse.connection.addHandler(
+                    _converse.roster.onRosterPush.bind(_converse.roster),
+                    Strophe.NS.ROSTER, 'iq', "set"
+                );
+            },
+
+            registerRosterXHandler: function () {
+                /* Register a handler for RosterX message stanzas, which are
+                 * used to suggest roster contacts to a user.
+                 */
+                var t = 0;
+                _converse.connection.addHandler(
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                _converse.connection.flush();
+                                _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                            }, t);
+                        t += $(msg).find('item').length*250;
+                        return true;
+                    },
+                    Strophe.NS.ROSTERX, 'message', null
+                );
             },
 
             fetchRosterContacts: function () {

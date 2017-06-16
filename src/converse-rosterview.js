@@ -43,7 +43,6 @@
             //
             // New functions which don't exist yet can also be added.
             afterReconnected: function () {
-                this.rosterview.registerRosterXHandler();
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
@@ -271,8 +270,6 @@
                 id: 'converse-roster',
 
                 initialize: function () {
-                    this.roster_handler_ref = this.registerRosterHandler();
-                    this.rosterx_handler_ref = this.registerRosterXHandler();
                     _converse.roster.on("add", this.onContactAdd, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
@@ -326,13 +323,6 @@
                     }
                 }, 100),
 
-                unregisterHandlers: function () {
-                    _converse.connection.deleteHandler(this.roster_handler_ref);
-                    delete this.roster_handler_ref;
-                    _converse.connection.deleteHandler(this.rosterx_handler_ref);
-                    delete this.rosterx_handler_ref;
-                },
-
                 update: _.debounce(function () {
                     if (_.isNull(this.roster.parentElement)) {
                         this.$el.append(this.$roster.show());
@@ -383,31 +373,6 @@
                     this.renderRoster();
                     this.render().update();
                     return this;
-                },
-
-                registerRosterHandler: function () {
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
-                },
-
-                registerRosterXHandler: function () {
-                    var t = 0;
-                    _converse.connection.addHandler(
-                        function (msg) {
-                            window.setTimeout(
-                                function () {
-                                    _converse.connection.flush();
-                                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
-                                },
-                                t
-                            );
-                            t += $(msg).find('item').length*250;
-                            return true;
-                        },
-                        Strophe.NS.ROSTERX, 'message', null
-                    );
                 },
 
                 onGroupAdd: function (group) {

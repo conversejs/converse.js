@@ -126,17 +126,6 @@
         return this;
     };
 
-    $.fn.addEmoticons = function (_converse, emojione, allowed) {
-        if (allowed) {
-            if (_converse.show_emojione) {
-                this.html(emojione.toImage(this.text()));
-            } else {
-                this.html(emojione.shortnameToUnicode(this.text()));
-            }
-        }
-        return this;
-    };
-
     var utils = {
         // Translation machinery
         // ---------------------
@@ -512,6 +501,10 @@
         }
         element.appendChild(frag); // Now, append all elements at once
         frag = tmp = null;
+    }
+
+    utils.addEmoticons = function (_converse, emojione, text) {
+        return emojione.shortnameToUnicode(text);
     }
 
     utils.marshallEmojis = function (emojione) {

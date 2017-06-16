@@ -93,8 +93,6 @@
             this.updateSettings({
                 chatview_avatar_height: 32,
                 chatview_avatartrue: 32,
-                show_emojione: false, // By default, use native emojis.
-                emojione_path: 'https://cdn.jsdelivr.net/emojione/assets/' + emojione.emojiVersion + '/png/' + emojione.emojiSize + '/',
                 show_toolbar: true,
                 time_format: 'HH:mm',
                 visible_toolbar_buttons: {
@@ -103,12 +101,6 @@
                     'clear': true
                 },
             });
-
-            if (_converse.show_emojione) {
-                // If using Emojione, we also convert ascii smileys into emoji.
-                emojione.ascii = true;
-                emojione.imagePathPNG = _converse.emojione_path
-            }
 
             var onWindowStateChanged = function (data) {
                 var state = data.state;
@@ -137,18 +129,11 @@
 
                 render: function () {
                     var emojis_by_category = utils.marshallEmojis(emojione);
-                    var converter;
-                    if (_converse.show_emojione) {
-                        converter = emojione.toImage
-                    } else {
-                        converter = emojione.shortnameToUnicode
-                    }
                     var emojis_html = tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
                                 'emojis_by_category': emojis_by_category,
-                                'emojione': emojione,
-                                'converter': converter
+                                'emojione': emojione
                             }
                         ));
                     this.el.innerHTML = emojis_html;
@@ -439,13 +424,10 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    $msg.find('.chat-msg-content').first()
-                        .text(text)
-                        .addHyperlinks()
-                        .addEmoticons(
-                            _converse,
-                            emojione,
-                            _converse.visible_toolbar_buttons.emoticons);
+                    if (_converse.visible_toolbar_buttons.emoticons) {
+                        text = utils.addEmoticons(_converse, emojione, text);
+                    }
+                    $msg.find('.chat-msg-content').first().text(text).addHyperlinks();
                     return $msg;
                 },
 

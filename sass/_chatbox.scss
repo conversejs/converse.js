@@ -309,7 +309,6 @@
                     background: #fff;
                     bottom: 100%;
                     box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                    display: none;
                     font-size: 12px;
                     margin: 0;
                     position: absolute;
@@ -330,6 +329,16 @@
                     color: $link-color;
                     padding-left: 5px;
                     ul {
+                        &.emoji-category-picker {
+                            z-index: 100;
+                            .picked {
+                                background-color: $highlight-color;
+                            }
+                        }
+                        &.emoji-picker {
+                            height: 250px;
+                            overflow: scroll;
+                        }
                         left: 0;
                         li {
                             font-size: $font-size;

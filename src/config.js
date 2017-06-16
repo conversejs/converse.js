@@ -21,6 +21,7 @@ require.config({
         "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "emojione":                 "node_modules/emojione/lib/js/emojione",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise",
         "jquery":                   "node_modules/jquery/dist/jquery",
@@ -136,6 +137,7 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
-        'awesomplete':          { exports: 'Awesomplete' }
+        'awesomplete':          { exports: 'Awesomplete'},
+        'emojione':             { exports: 'emojione'},
     }
 });

@@ -993,6 +993,14 @@ Notification will be shown in the following cases:
 
 Requires the `src/converse-notification.js` plugin.
 
+show_emojione
+-------------
+* Default: ``false``
+
+Determines whether `Emojione <https://www.emojione.com/>`_ should be used to
+render emojis. The default is not to do this, but to simply let the operating
+system or browser render emoji (if it has support for them).
+
 show_only_online_users
 ----------------------
 

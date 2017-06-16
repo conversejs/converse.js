@@ -58,12 +58,9 @@
  
             registerGlobalEventHandlers: function () {
                 this.__super__.registerGlobalEventHandlers();
-                $(document).click(function () {
+                document.addEventListener('click', function () {
                     if ($('.toggle-otr ul').is(':visible')) {
-                        $('.toggle-otr ul', this).slideUp();
-                    }
-                    if ($('.toggle-smiley ul').is(':visible')) {
-                        $('.toggle-smiley ul', this).slideUp();
+                        _.each($('.toggle-otr ul', this), utils.hideElement);
                     }
                 });
             },
@@ -400,7 +397,7 @@
 
                 toggleOTRMenu: function (ev) {
                     ev.stopPropagation();
-                    this.$el.find('.toggle-otr ul').slideToggle(200);
+                    utils.toggleElement(this.el.querySelector('.toggle-otr ul'));
                 },
                 
                 getOTRTooltip: function () {
@@ -444,9 +441,9 @@
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
                     this.$el.find('.chat-toolbar').append(
-                            tpl_toolbar_otr(
-                                _.extend(this.model.toJSON(), options || {})
-                            ));
+                        tpl_toolbar_otr(
+                            _.extend(this.model.toJSON(), options || {})
+                        ));
                     return this;
                 }
             }

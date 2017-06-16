@@ -115,7 +115,10 @@
                 _.forEach(list, function (url) {
                     isImage(unescapeHTML(url)).then(function (img) {
                         img.className = 'chat-image';
-                        throttledHTML(obj.querySelector('a'), img.outerHTML);
+                        var a = obj.querySelector('a');
+                        if (!_.isNull(a)) {
+                            throttledHTML(a, img.outerHTML);
+                        }
                     });
                 });
             });
@@ -123,36 +126,12 @@
         return this;
     };
 
-    $.fn.addEmoticons = function (allowed) {
+    $.fn.addEmoticons = function (_converse, emojione, allowed) {
         if (allowed) {
-            if (this.length > 0) {
-                this.each(function (i, obj) {
-                    var text = $(obj).html();
-                    text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
-                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
-                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
-                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/:\/ /g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/&gt;:\(/g, '<span class="emoticon icon-angry"></span>');
-                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
-                    text = text.replace(/&lt;3/g, '<span class="emoticon icon-heart"></span>');
-                    $(obj).html(text);
-                });
+            if (_converse.show_emojione) {
+                this.html(emojione.toImage(this.text()));
+            } else {
+                this.html(emojione.shortnameToUnicode(this.text()));
             }
         }
         return this;
@@ -200,6 +179,19 @@
                 if (sublocale !== locale && available(sublocale)) {
                     return sublocale;
                 }
+            }
+        },
+
+        hideElement: function (el) {
+            el.classList.add('hidden');
+        },
+
+        toggleElement: function (el) {
+            if (_.includes(el.classList, 'hidden')) {
+                // XXX: use fadeIn?
+                el.classList.remove('hidden');
+            } else {
+                this.hideElement (el);
             }
         },
 
@@ -522,5 +514,38 @@
         frag = tmp = null;
     }
 
+    utils.marshallEmojis = function (emojione) {
+        /* Return a dict of emojis with the categories as keys and
+         * lists of emojis in that category as values.
+         */
+        if (_.isUndefined(this.emojis_by_category)) {
+            var emojis = _.values(_.mapValues(emojione.emojioneList, function (value, key, o) {
+                value._shortname = key;
+                return value
+            }));
+            var tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
+            var categories = _.uniq(_.map(emojis, _.partial(_.get, _, 'category')));
+            var emojis_by_category = {};
+            _.forEach(categories, function (cat) {
+                var list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
+                list = _.filter(list, function (item) {
+                    return !_.includes(tones, item._shortname);
+                });
+                if (cat === 'people') {
+                    var idx = _.findIndex(list, ['uc_base', '1f600']);
+                    list = _.union(_.slice(list, idx), _.slice(list, 0, idx+1));
+                } else if (cat === 'activity') {
+                    list = _.union(_.slice(list, 27-1), _.slice(list, 0, 27));
+                } else if (cat === 'objects') {
+                    list = _.union(_.slice(list, 24-1), _.slice(list, 0, 24));
+                } else if (cat === 'travel') {
+                    list = _.union(_.slice(list, 17-1), _.slice(list, 0, 17));
+                }
+                emojis_by_category[cat] = list;
+            });
+            this.emojis_by_category = emojis_by_category;
+        }
+        return this.emojis_by_category;
+    }
     return utils;
 }));

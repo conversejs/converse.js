@@ -13,7 +13,7 @@
         {[ if (otr_status == FINISHED) { ]}
             <span class="icon-unlocked"></span>
         {[ } ]}
-        <ul>
+        <ul class="hidden">
             {[ if (otr_status == UNENCRYPTED) { ]}
                <li><a class="start-otr" href="#">{{{label_start_encrypted_conversation}}}</a></li>
             {[ } ]}

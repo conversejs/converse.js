@@ -9,9 +9,11 @@
 (function (root, factory) {
     define([
             "converse-core",
+            "emojione",
             "tpl!chatbox",
             "tpl!new_day",
             "tpl!action",
+            "tpl!emojis",
             "tpl!message",
             "tpl!help_message",
             "tpl!toolbar",
@@ -20,9 +22,11 @@
     ], factory);
 }(this, function (
             converse,
+            emojione,
             tpl_chatbox,
             tpl_new_day,
             tpl_action,
+            tpl_emojis,
             tpl_message,
             tpl_help_message,
             tpl_toolbar,
@@ -43,7 +47,6 @@
         FORWARD_SLASH: 47
     };
 
-
     converse.plugins.add('converse-chatview', {
 
         overrides: {
@@ -52,6 +55,18 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
+            //
+            registerGlobalEventHandlers: function () {
+                this.__super__.registerGlobalEventHandlers();
+                document.addEventListener('click', function () {
+                    if ($('.toggle-smiley ul').is(':visible')) {
+                        _.each(
+                            document.querySelectorAll('.toggle-smiley .emoji-picker-container'),
+                            utils.hideElement
+                        );
+                    }
+                });
+            },
 
             ChatBoxViews: {
                 onChatBoxAdded: function (item) {
@@ -68,7 +83,6 @@
             }
         },
 
-
         initialize: function () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -78,7 +92,9 @@
 
             this.updateSettings({
                 chatview_avatar_height: 32,
-                chatview_avatar_width: 32,
+                chatview_avatartrue: 32,
+                show_emojione: false, // By default, use native emojis.
+                emojione_path: 'https://cdn.jsdelivr.net/emojione/assets/' + emojione.emojiVersion + '/png/' + emojione.emojiSize + '/',
                 show_toolbar: true,
                 time_format: 'HH:mm',
                 visible_toolbar_buttons: {
@@ -88,14 +104,64 @@
                 },
             });
 
+            if (_converse.show_emojione) {
+                // If using Emojione, we also convert ascii smileys into emoji.
+                emojione.ascii = true;
+                emojione.imagePathPNG = _converse.emojione_path
+            }
+
             var onWindowStateChanged = function (data) {
                 var state = data.state;
                 _converse.chatboxviews.each(function (chatboxview) {
                     chatboxview.onWindowStateChanged(state);
                 })
             };
-
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+
+
+            _converse.EmojiPicker = Backbone.Model.extend({ 
+                defaults: {
+                    'current_category': 'people'
+                }
+            });
+
+            _converse.EmojiPickerView = Backbone.View.extend({
+                className: 'emoji-picker-container hidden',
+                events: {
+                    'click .emoji-category-picker li a': 'chooseCategory',
+                },
+
+                initialize: function () {
+                    this.model.on('change', this.render, this);
+                },
+
+                render: function () {
+                    var emojis_by_category = utils.marshallEmojis(emojione);
+                    var converter;
+                    if (_converse.show_emojione) {
+                        converter = emojione.toImage
+                    } else {
+                        converter = emojione.shortnameToUnicode
+                    }
+                    var emojis_html = tpl_emojis(
+                        _.extend(
+                            this.model.toJSON(), {
+                                'emojis_by_category': emojis_by_category,
+                                'emojione': emojione,
+                                'converter': converter
+                            }
+                        ));
+                    this.el.innerHTML = emojis_html;
+                    return this;
+                },
+
+                chooseCategory: function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    var category = ev.target.parentElement.getAttribute("data-category").trim();
+                    this.model.set({'current_category': category});
+                }
+            });
 
             _converse.ChatBoxView = Backbone.View.extend({
                 length: 200,
@@ -108,13 +174,15 @@
                     'keypress .chat-textarea': 'keyPressed',
                     'click .send-button': 'onSendButtonClicked',
                     'click .toggle-smiley': 'toggleEmoticonMenu',
-                    'click .toggle-smiley ul li': 'insertEmoticon',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoticon',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-call': 'toggleCall',
                     'click .new-msgs-indicator': 'viewUnreadMessages'
                 },
 
                 initialize: function () {
+                    this.emoji_picker_view = new _converse.EmojiPickerView({model: new _converse.EmojiPicker() });
+
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -374,7 +442,10 @@
                     $msg.find('.chat-msg-content').first()
                         .text(text)
                         .addHyperlinks()
-                        .addEmoticons(_converse.visible_toolbar_buttons.emoticons);
+                        .addEmoticons(
+                            _converse,
+                            emojione,
+                            _converse.visible_toolbar_buttons.emoticons);
                     return $msg;
                 },
 
@@ -642,15 +713,24 @@
 
                 insertEmoticon: function (ev) {
                     ev.stopPropagation();
-                    this.$el.find('.toggle-smiley ul').slideToggle(200);
-                    var $target = $(ev.target);
-                    $target = $target.is('a') ? $target : $target.children('a');
-                    this.insertIntoTextArea($target.data('emoticon'));
+                    this.toggleEmoticonMenu();
+                    var target;
+                    if (ev.target.nodeName === 'IMG') {
+                        target = ev.target.parentElement;
+                    } else {
+                        target = ev.target;
+                    }
+                    this.insertIntoTextArea(
+                        emojione.shortnameToUnicode(
+                            target.getAttribute('data-emoticon')
+                        ));
                 },
 
                 toggleEmoticonMenu: function (ev) {
-                    ev.stopPropagation();
-                    this.$el.find('.toggle-smiley ul').slideToggle(200);
+                    if (!_.isUndefined(ev)) {
+                        ev.stopPropagation();
+                    }
+                    utils.toggleElement(this.emoji_picker_view.el);
                 },
 
                 toggleCall: function (ev) {
@@ -726,11 +806,15 @@
                 renderToolbar: function (toolbar, options) {
                     if (!_converse.show_toolbar) { return; }
                     toolbar = toolbar || tpl_toolbar;
-                    options = _.extend(
+                    options = _.assign(
                         this.model.toJSON(),
                         this.getToolbarOptions(options || {})
                     );
-                    this.$el.find('.chat-toolbar').html(toolbar(options));
+                    this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
+
+                    var toggle = this.el.querySelector('.toggle-smiley');
+                    toggle.innerHTML = '';
+                    toggle.appendChild(this.emoji_picker_view.render().el);
                     return this;
                 },
 

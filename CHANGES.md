@@ -2,6 +2,7 @@
 
 ## 3.1.0 (Unreleased)
 
+- Add support for Emojis (uses <a href="https://www.emojione.com/">Emojione</a>).
 - New non-core plugin `converse-singleton` which ensures that no more than
   one chat is visible at any given time. Used in the mobile build:
   `converse-mobile.js` and makes the unread messages counter possible there.

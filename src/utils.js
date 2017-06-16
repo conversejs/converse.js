@@ -94,14 +94,15 @@
         return false;
     };
 
-    $.fn.throttledHTML = _.throttle($.fn.html, 500);
+    var throttledHTML = _.throttle(function (el, html) {
+        el.innerHTML = html;
+    }, 500);
 
     $.fn.addHyperlinks = function () {
         if (this.length > 0) {
             this.each(function (i, obj) {
                 var prot, escaped_url;
-                var $obj = $(obj);
-                var x = $obj.html();
+                var x = obj.innerHTML;
                 var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
                 if (list) {
                     for (i=0; i<list.length; i++) {
@@ -110,15 +111,11 @@
                         x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
                     }
                 }
-                $obj.html(x);
+                obj.innerHTML = x;
                 _.forEach(list, function (url) {
                     isImage(unescapeHTML(url)).then(function (img) {
-                        var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
                         img.className = 'chat-image';
-                        x = x.replace(new_url, img.outerHTML);
-                        $obj.throttledHTML(x);
+                        throttledHTML(obj.querySelector('a'), img.outerHTML);
                     });
                 });
             });

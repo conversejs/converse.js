@@ -1247,7 +1247,9 @@
                     }, 500).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual('<img src="'+message+'" class="chat-image">');
+                        expect(msg.html()).toEqual(
+                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg"><img src="' +
+                                message + '" class="chat-image"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
@@ -1256,7 +1258,10 @@
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual('<img src="'+message.replace(/&/g, '&amp;')+'" class="chat-image">');
+                        expect(msg.html()).toEqual(
+                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
+                                message.replace(/&/g, '&amp;') +
+                                '" class="chat-image"></a>')
                         done();
                     });
                 }));

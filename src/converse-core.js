@@ -571,6 +571,9 @@
             if (!_.isUndefined(this.roster)) {
                 this.roster.browserStorage._clear();
             }
+            if (!_.isUndefined(this.session) && this.session.browserStorage) {
+                this.session.browserStorage._clear();
+            }
         };
 
         this.logOut = function () {

@@ -45,14 +45,6 @@
                         width: 25%;
                         @include calc(width, '30% - 2em');
                     }
-                    .awesomplete {
-                        ul {
-                            padding: 0.5em;
-                            li {
-                                padding: 0.3em 0;
-                            }
-                        }
-                    }
                     ul {
                         &.occupant-list {
                             @include calc(height, '100% - 212px');

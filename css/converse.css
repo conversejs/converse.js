@@ -2469,7 +2469,10 @@
           width: calc(30% - 1em); }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
-          padding: 0.2em; }
+          padding: 0; }
+          #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul li,
+          #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul li {
+            padding: .5em; }
         #converse-embedded-chat .chatroom .box-flyout .chatroom-body .occupants ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants ul {
           padding: 0.3em 0;
@@ -2684,7 +2687,6 @@
     left: 1em;
     width: 0;
     height: 0;
-    padding: .4em;
     background: white;
     border: inherit;
     border-right: 0;
@@ -2696,22 +2698,22 @@
     text-overflow: ellipsis;
     overflow-x: hidden;
     position: relative;
-    padding: .2em .5em;
     cursor: pointer; }
   #converse-embedded-chat div.awesomplete > ul > li:hover,
   #conversejs div.awesomplete > ul > li:hover {
-    background: #b8d3e0;
-    color: black; }
+    background: #E77051;
+    color: white; }
   #converse-embedded-chat div.awesomplete > ul > li[aria-selected="true"],
   #conversejs div.awesomplete > ul > li[aria-selected="true"] {
     background: #3d6d8f;
     color: white; }
   #converse-embedded-chat div.awesomplete mark,
   #conversejs div.awesomplete mark {
-    background: #eaff00; }
+    background: #FFB9A7; }
   #converse-embedded-chat div.awesomplete li:hover mark,
   #conversejs div.awesomplete li:hover mark {
-    background: #b5d100; }
+    background: #A53214;
+    color: white; }
   #converse-embedded-chat div.awesomplete li[aria-selected="true"] mark,
   #conversejs div.awesomplete li[aria-selected="true"] mark {
     background: #3d6b00;

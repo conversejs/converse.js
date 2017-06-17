@@ -62,11 +62,16 @@
                 background-color: white;
                 border-top: 0;
                 width: 100%;
+                .chat-info {
+                    color: $chatroom-head-color;
+                }
                 .mentioned {
                     font-weight: bold;
                 }
-                .chat-msg-room {
-                    color: $message-them-color;
+                .chat-message {
+                    .chat-msg-them {
+                        color: $chatroom-message-them-color;
+                    }
                 }
                 .disconnect-msg {
                     padding: 2em 2em 0 2em;
@@ -175,8 +180,7 @@
                 }
                 .chatroom-form-container {
                     background-color: white;
-                    border-bottom-left-radius: $chatbox-border-radius;
-                    border-bottom-right-radius: $chatbox-border-radius;
+                    border-radius: $chatbox-border-radius;
                     border: 0;
                     color: $text-color;
                     font-size: $font-size;
@@ -200,11 +204,17 @@
                     input[type=submit] {
                         margin: 0 0.5em;
                     }
+                    .button-primary {
+                        background-color: $chatroom-head-color;
+                    }
                 }
             }
         }
 
         form.sendXMPPMessage {
+            .chat-toolbar {
+                background-color: $chatroom-head-color;
+            }
             .chat-textarea {
                 border-bottom-right-radius: 0;
             }

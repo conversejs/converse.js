@@ -131,7 +131,8 @@
                 padding: 5px;
             }
             .chat-info {
-                color: $warning-color;
+                color: $chat-head-color;
+                font-size: $font-size;
                 margin: 0.3em;
                 &.chat-event {
                     clear: left;
@@ -147,8 +148,7 @@
                 }
             }
             .chat-image {
-                max-width: 100%;
-                max-height: 100%;
+                max-height: 24em;
             }
             .chat-action {
                 font-style: italic;
@@ -156,9 +156,7 @@
             .chat-message {
                 margin: 0.3em;
                 span {
-                    display: inline-block;
                     &.chat-msg-author {
-                        max-width: 100%;
                         font-weight: bold;
                         white-space: nowrap;
                         float: left;
@@ -192,10 +190,11 @@
             cursor: pointer;
             background-color: $chat-head-color;
             color: $light-background-color;
-            padding: 0.3em;
+            padding: 0.5em;
             font-size: 0.9em;
             text-align: center;
             z-index: 20;
+            white-space: nowrap;
         }
         .chat-content {
             position: relative;
@@ -226,7 +225,6 @@
             -webkit-background-clip: padding-box;
             @include border-bottom-radius($chatbox-border-radius);
             background-clip: padding-box;
-            background: white;
             border-top: 1px solid #BBB;
             border: 0;
             margin: 0;
@@ -261,7 +259,6 @@
             }
             .chat-toolbar {
                 box-sizing: border-box;
-                font-size: $font-size;
                 margin: 0;
                 padding: 5px;
                 height: $toolbar-height;
@@ -269,18 +266,27 @@
                 background-color: $toolbar-color;
                 a {
                     font-size: $font-size;
-                    color: $link-color;
+                    color: $inverse-link-color;
                     text-decoration: none;
                     text-shadow: none;
+                }
+                .toolbar-picker-panel {
+                    a {
+                        color: $link-color;
+                    }
                 }
                 .chat-toolbar-text {
                     font-size: 12px;
                     padding-right: 3px;
-                    text-shadow: 0 1px 0 white
                 }
                 .unencrypted a,
                 .unencrypted {
-                    color: $warning-color;
+                    color: $inverse-link-color;
+                    .toolbar-picker-panel {
+                        a {
+                            color: $link-color;
+                        }
+                    }
                 }
                 .unverified a,
                 .unverified {
@@ -327,7 +333,7 @@
                     margin-left: 0;
                 }
                 .toggle-smiley {
-                    color: $link-color;
+                    color: $inverse-link-color;
                     padding-left: 5px;
                     ul {
                         left: 0;

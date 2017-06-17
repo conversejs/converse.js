@@ -4,7 +4,7 @@
         margin: 0 0.3em;
     }
     .flyout {
-        border: 1em solid $chat-head-color;
+        border: $flyout-padding solid $chat-head-color;
         border-top: 0.8em solid $chat-head-color;
         border-radius: 0;
         bottom: 0;
@@ -41,6 +41,12 @@
             background-color: $chat-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;
+
+            .chat-message {
+                font-size: $font-size;
+                line-height: $line-height;
+                margin: 0.8em 0;
+            }
         }
         .chat-content {
             padding: 0 $padding $padding $padding;

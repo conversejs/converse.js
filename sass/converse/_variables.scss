@@ -47,12 +47,12 @@ $save-button-color: $green !default;
 $chat-textarea-height: 70px !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
-$message-them-color: $green !default;
+$message-them-color: $red !default;
 
 $roster-height: 194px !default;
 $roster-item-height: 60px !default;
 
-$chat-head-color: $orange !default;
+$chat-head-color: $green !default;
 $chat-head-text-color: white !default;
 $chat-head-inverse-text-color: white !default;
 $chat-head-height: 55px !default;
@@ -72,9 +72,6 @@ $warning-color: $dark-red !default;
 $light-background-border-color: #B1BFC4 !default;
 $light-background-color: #FCFDFD !default;
 
-$toolbar-height: 25px !default;
-$toolbar-color: #FFF5EE !default;
-
 $moderator-color: $dark-red !default;
 $online-color: $green !default;
 $error-color: $darkest-red !default;
@@ -92,6 +89,9 @@ $font-size-small: 12px !default;
 $font-size: 14px !default;
 $font-size-large: 16px !default;
 $legend-font-size: 16px !default;
+
+$toolbar-height: 25px !default;
+$toolbar-color: $chat-head-color !default;
 
 $line-height:  16px !default;
 
@@ -111,6 +111,7 @@ $chatroom-width: 300px !default;
 $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
+$chatroom-message-them-color: $green !default;
 
 $headline-head-color: $green !default;
 

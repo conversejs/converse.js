@@ -44,19 +44,21 @@ $light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
 $icon-color: $blue !default;
 $save-button-color: $green !default;
-$chat-textarea-height: 70px !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
-$message-them-color: $green !default;
+$message-them-color: $red !default;
 
 $roster-height: 194px !default;
 $roster-item-height: 30px !default;
 
-$chat-head-color: $orange !default;
+$flyout-padding: 1.2em;
+
+$chat-head-color: $green !default;
 $chat-head-text-color: white !default;
 $chat-head-inverse-text-color: white !default;
-$chat-head-height: 55px !default;
-$chatroom-head-height: 55px !default;
+$chat-head-height: 62px !default;
+
+$chat-textarea-height: 70px !default;
 
 $input-focus-color: #1A9707 !default;
 $highlight-color: #DCF9F6 !default;
@@ -64,19 +66,16 @@ $highlight-color: #DCF9F6 !default;
 $controlbox-dropdown-height: 30px !default;
 $controlbox-head-color: $light-blue !default;
 $controlbox-head-height: 63px !default;
-$controlbox-pane-padding: 1.2em !default;
+$controlbox-pane-padding: $flyout-padding !default;
 
-$primary-color: $green !default;
+$primary-color: $orange !default;
 $secondary-color: $blue !default;
 $warning-color: $dark-red !default;
 
 $light-background-border-color: #B1BFC4 !default;
 $light-background-color: #FCFDFD !default;
 
-$toolbar-height: 25px !default;
-$toolbar-color: #FFF5EE !default;
-
-$moderator-color: $dark-red !default;
+$moderator-color: $red !default;
 $online-color: $green !default;
 $error-color: $darkest-red !default;
 
@@ -95,7 +94,10 @@ $font-size-large: 18px !default;
 $font-size-huge: 26px !default;
 $legend-font-size: 18px !default;
 
-$line-height:  16px !default;
+$toolbar-height: 29px !default;
+$toolbar-color: $chat-head-color !default;
+
+$line-height:  22px !default;
 
 $controlbox-width: 250px !default;
 $chat-width: 100% !default;
@@ -111,10 +113,12 @@ $small-mobile-chat-height: 300px !default;
 
 $font-path: "../fonticons/fonts/" !default;
 
+$chatroom-head-height: 62px !default;
 $chatroom-width: 300px !default;
 $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
+$chatroom-message-them-color: $green !default;
 
 $headline-head-color: $green !default;
 

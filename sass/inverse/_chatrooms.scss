@@ -15,7 +15,7 @@
         @include calc(width, '100% - #{$controlbox-width}');
         .box-flyout {
             background-color: $chatroom-head-color;
-            border: 1em solid $chatroom-head-color;
+            border: $flyout-padding solid $chatroom-head-color;
             border-top: 0.8em solid $chatroom-head-color;
             @include calc(width, '100% - #{$controlbox-width}');
             .chatroom-body {

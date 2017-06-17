@@ -1599,6 +1599,7 @@ body {
       padding: 5px; }
     #converse-embedded-chat .chatbox .chat-body .chat-info,
     #conversejs .chatbox .chat-body .chat-info {
+      line-height: 22px;
       color: #3AA569;
       font-size: 16px;
       margin: 0.3em; }
@@ -1898,9 +1899,9 @@ body {
     border-top-left-radius: 7px;
     border-top-right-radius: 7px; }
     #conversejs .chatbox .chat-body .chat-message {
-      font-size: 16px;
-      line-height: 22px;
-      margin: 0.8em 0; }
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0.5em 0; }
   #conversejs .chatbox .chat-content {
     padding: 0 1em 1em 1em;
     border-top-left-radius: 7px;

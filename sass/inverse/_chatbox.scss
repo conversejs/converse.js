@@ -43,9 +43,9 @@
             border-top-right-radius: $chatbox-border-radius;
 
             .chat-message {
-                font-size: $font-size;
-                line-height: $line-height;
-                margin: 0.8em 0;
+                font-size: $font-size-small;
+                line-height: $line-height-small;
+                margin: 0.5em 0;
             }
         }
         .chat-content {

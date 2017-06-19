@@ -1686,11 +1686,11 @@
       padding: 5px;
       height: 25px;
       display: block;
-      background-color: #3AA569; }
+      background-color: #E7FBF0; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar a,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar a {
         font-size: 14px;
-        color: white;
+        color: #818479;
         text-decoration: none;
         text-shadow: none; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toolbar-picker-panel a,
@@ -1704,7 +1704,7 @@
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted a,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted {
-        color: white; }
+        color: #818479; }
         #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted a .toolbar-picker-panel a,
         #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted .toolbar-picker-panel a,
         #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .unencrypted a .toolbar-picker-panel a,
@@ -1760,7 +1760,7 @@
         margin-left: 0; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley {
-        color: white;
+        color: #818479;
         padding-left: 5px; }
         #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul,
         #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul {
@@ -2560,7 +2560,7 @@
           background-color: #E77051; }
   #converse-embedded-chat .chatroom form.sendXMPPMessage .chat-toolbar,
   #conversejs .chatroom form.sendXMPPMessage .chat-toolbar {
-    background-color: #E77051; }
+    background-color: #FFECE7; }
   #converse-embedded-chat .chatroom form.sendXMPPMessage .chat-textarea,
   #conversejs .chatroom form.sendXMPPMessage .chat-textarea {
     border-bottom-right-radius: 0; }
@@ -2578,7 +2578,10 @@
 #conversejs .chatbox.headlines .chat-body {
   background-color: #E7A151;
   border-radius: 4px; }
+  #conversejs .chatbox.headlines .chat-body .chat-message span.chat-msg-them {
+    color: #D2842B; }
 #conversejs .chatbox.headlines .chat-content {
+  height: 100%;
   border-radius: 4px; }
 
 #conversejs #minimized-chats {

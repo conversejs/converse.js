@@ -522,5 +522,16 @@
         frag = tmp = null;
     }
 
+    utils.isPersistableModel = function (model) {
+        return model.collection && model.collection.browserStorage;
+    }
+
+    utils.saveWithFallback = function (model, attrs) {
+        if (utils.isPersistableModel(this)) {
+            model.save(attrs);
+        } else {
+            model.set(attrs);
+        }
+    }
     return utils;
 }));

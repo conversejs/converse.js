@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test-utils", "utils" ], factory);
-} (this, function (mock, converse, test_utils, utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils", "utils" ], factory);
+} (this, function (jasmine, mock, converse, test_utils, utils) {
     var _ = converse.env._;
     var $ = converse.env.jQuery;
     var $pres = converse.env.$pres;

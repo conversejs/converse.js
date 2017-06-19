@@ -1,9 +1,10 @@
 (function (root, factory) {
     define([
+        "jasmine",
         "converse-core",
         "mock",
         "test-utils"], factory);
-} (this, function (converse, mock, test_utils) {
+} (this, function (jasmine, converse, mock, test_utils) {
     var b64_sha1 = converse.env.b64_sha1;
     var _ = converse.env._;
     var $ = converse.env.jQuery;

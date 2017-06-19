@@ -1,12 +1,13 @@
 (function (root, factory) {
     define([
+        "jasmine",
         "jquery",
         "converse-core",
         "utils",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, converse, utils, mock, test_utils) {
+} (this, function (jasmine, $, converse, utils, mock, test_utils) {
     "use strict";
     var $msg = converse.env.$msg,
         _ = converse.env._;

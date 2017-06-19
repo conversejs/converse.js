@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define(["jasmine-html", "converse-core"], factory);
+    define(["jasmine", "converse-core"], factory);
 } (this, function (jasmine, converse) {
     var utils = converse.env.utils,
         _ = converse.env._;

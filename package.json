@@ -50,7 +50,7 @@
     "grunt-json": "^0.2.0",
     "http-server": "^0.10.0",
     "install": "^0.8.5",
-    "jasmine": "2.5.3",
+    "jasmine-core": "2.6.4",
     "jed": "0.5.4",
     "jquery": "2.2.3",
     "jquery-easing": "0.0.1",

@@ -833,17 +833,15 @@
                         });
                         return;
                     }
+                    var scrolled = true;
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.save('scrolled', false);
+                        scrolled = false;
                         this.onScrolledDown();
-                    } else {
-                        // We're not at the bottom of the chat area, so we mark
-                        // that the box is in a scrolled-up state.
-                        this.model.save('scrolled', true);
                     }
+                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {

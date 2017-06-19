@@ -26,6 +26,7 @@
     "use strict";
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        utils = converse.env.utils,
         Backbone = converse.env.Backbone,
         b64_sha1 = converse.env.b64_sha1,
         moment = converse.env.moment;
@@ -70,14 +71,14 @@
                 },
 
                 maximize: function () {
-                    this.save({
+                    utils.saveWithFallback(this,  {
                         'minimized': false,
                         'time_opened': moment().valueOf()
                     });
                 },
 
                 minimize: function () {
-                    this.save({
+                    utils.saveWithFallback(this,  {
                         'minimized': true,
                         'time_minimized': moment().format()
                     });

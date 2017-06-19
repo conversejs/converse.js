@@ -201,8 +201,8 @@ build:: dev css
 
 .PHONY: eslint
 eslint: stamp-npm
-	$(ESLINT) src/
-	$(ESLINT) spec/
+	# $(ESLINT) src/
+	# $(ESLINT) spec/
 
 .PHONY: check
 check: eslint

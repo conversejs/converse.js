@@ -411,8 +411,10 @@
                 },
 
                 clearUnreadMsgCounter: function() {
-                    this.save({'num_unread': 0});
-                    this.save({'num_unread_general': 0});
+                    utils.saveWithFallback(this,  {
+                        'num_unread': 0,
+                        'num_unread_general': 0
+                    });
                 }
             });
 

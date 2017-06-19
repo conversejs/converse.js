@@ -26,7 +26,10 @@ $orange: #E7A151;
 $dark-orange: #D2842B;
 $darkest-orange: #A56214;
 
-$lightest-green: #8DD8AE;
+$greenish-white: #E7FBF0;
+$reddish-white: #FFECE7;
+
+$lightest-green: #BCEDD1;
 $light-green: #5CBC86;
 $green: #3AA569;
 $dark-green: #1E9652;
@@ -91,7 +94,7 @@ $font-size-large: 16px !default;
 $legend-font-size: 16px !default;
 
 $toolbar-height: 25px !default;
-$toolbar-color: $chat-head-color !default;
+$toolbar-color: $greenish-white !default;
 
 $line-height:  16px !default;
 
@@ -112,6 +115,7 @@ $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
 $chatroom-message-them-color: $green !default;
+$chatroom-toolbar-color: $reddish-white !default;
 
 $headline-head-color: $orange !default;
 

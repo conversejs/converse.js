@@ -267,7 +267,7 @@
                 background-color: $toolbar-color;
                 a {
                     font-size: $font-size;
-                    color: $inverse-link-color;
+                    color: $text-color;
                     text-decoration: none;
                     text-shadow: none;
                 }
@@ -282,7 +282,7 @@
                 }
                 .unencrypted a,
                 .unencrypted {
-                    color: $inverse-link-color;
+                    color: $text-color;
                     .toolbar-picker-panel {
                         a {
                             color: $link-color;
@@ -334,7 +334,7 @@
                     margin-left: 0;
                 }
                 .toggle-smiley {
-                    color: $inverse-link-color;
+                    color: $text-color;
                     padding-left: 5px;
                     ul {
                         left: 0;

@@ -216,7 +216,7 @@
 
         form.sendXMPPMessage {
             .chat-toolbar {
-                background-color: $chatroom-head-color;
+                background-color: $chatroom-toolbar-color;
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;

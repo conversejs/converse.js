@@ -2751,10 +2751,23 @@ body {
     margin: 0 0 0.5em -1px; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
-  background-color: #3AA569; }
+  background-color: #E7A151; }
+#conversejs .chatbox.headlines .chat-body {
+  background-color: #E7A151;
+  border-radius: 7px; }
+  #conversejs .chatbox.headlines .chat-body .chat-message span.chat-msg-them {
+    color: #D2842B; }
+#conversejs .chatbox.headlines .chat-content {
+  height: 100%;
+  border-radius: 7px; }
+
+#conversejs .chatbox.headlines .box-flyout {
+  background-color: #E7A151; }
+#conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
+  background-color: #E7A151; }
 #conversejs .chatbox.headlines .flyout {
-  border: 1em solid #3AA569;
-  border-top: 0.8em solid #3AA569; }
+  border: 1.2em solid #E7A151;
+  border-top: 0.8em solid #E7A151; }
 
 #converse-embedded-chat,
 #conversejs {

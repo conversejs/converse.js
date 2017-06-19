@@ -2574,7 +2574,12 @@
     border: 1px solid #999; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
-  background-color: #3AA569; }
+  background-color: #E7A151; }
+#conversejs .chatbox.headlines .chat-body {
+  background-color: #E7A151;
+  border-radius: 4px; }
+#conversejs .chatbox.headlines .chat-content {
+  border-radius: 4px; }
 
 #conversejs #minimized-chats {
   border-top-left-radius: 4px;

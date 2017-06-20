@@ -1599,9 +1599,9 @@ body {
       padding: 5px; }
     #converse-embedded-chat .chatbox .chat-body .chat-info,
     #conversejs .chatbox .chat-body .chat-info {
-      line-height: 22px;
+      line-height: 20px;
       color: #3AA569;
-      font-size: 16px;
+      font-size: 14px;
       margin: 0.3em; }
       #converse-embedded-chat .chatbox .chat-body .chat-info.chat-event,
       #conversejs .chatbox .chat-body .chat-info.chat-event {

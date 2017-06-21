@@ -1,16 +1,17 @@
 # You can set these variables from the command line.
+BABEL			?= node_modules/.bin/babel
 BOURBON_TEMPLATES = ./node_modules/bourbon/app/assets/stylesheets/ 
 BUILDDIR		= ./docs
 BUNDLE		  	?= ./.bundle/bin/bundle
+CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
+CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
+ESLINT		  	?= ./node_modules/.bin/eslint
 GRUNT		   	?= ./node_modules/.bin/grunt
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-ESLINT		  	?= ./node_modules/.bin/eslint
 PAPER		   	=
-CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
-RJS			 	?= ./node_modules/.bin/r.js
 PO2JSON		 	?= ./node_modules/.bin/po2json
+RJS			 	?= ./node_modules/.bin/r.js
 SASS			?= ./.bundle/bin/sass
-CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 
@@ -147,6 +148,10 @@ css/mobile.min.css:: stamp-npm sass/*
 watch: stamp-bundler
 	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
 
+.PHONY: watchjs
+watchjs: stamp-npm
+	$(BABEL) --source-maps --watch=./src --out-dir=./build
+
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
          dist/inverse.js \
@@ -201,8 +206,8 @@ build:: dev css
 
 .PHONY: eslint
 eslint: stamp-npm
-	# $(ESLINT) src/
-	# $(ESLINT) spec/
+	$(ESLINT) src/
+	$(ESLINT) spec/
 
 .PHONY: check
 check: eslint

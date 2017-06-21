@@ -1,4 +1,9 @@
-<li><a class="s {[ if (is_current) { ]} current {[ } ]}"
+<a class="s rooms-tab
+   {[ if (is_current) { ]} current {[ } ]}
+   {[ if (num_unread) { ]} unread-msgs {[ } ]}"
        data-id="chatrooms" href="#chatrooms">
     {{label_rooms}}
-</a></li>
+    {[ if (num_unread) { ]}
+        <span class="msgs-indicator">{{{ num_unread }}}</span>
+    {[ } ]}
+</a>

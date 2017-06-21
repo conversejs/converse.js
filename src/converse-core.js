@@ -9,6 +9,7 @@
     define(["sizzle",
             "jquery.noconflict",
             "lodash.noconflict",
+            "lodash.converter",
             "polyfill",
             "utils",
             "moment_with_locales",
@@ -19,11 +20,17 @@
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, $, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (
+        sizzle, $, _, lodashConverter, polyfill,
+        utils, moment, Strophe, pluggable, Backbone) {
+
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
+
+    // Create the FP (functional programming) version of lodash
+    var fp = lodashConverter(_.runInContext());
 
     // Strophe globals
     var $build = Strophe.$build;
@@ -79,6 +86,7 @@
         'converse-otr',
         'converse-ping',
         'converse-register',
+        'converse-roomslist',
         'converse-rosterview',
         'converse-vcard'
     ];
@@ -563,7 +571,9 @@
             if (!_.isUndefined(this.roster)) {
                 this.roster.browserStorage._clear();
             }
-            this.session.browserStorage._clear();
+            if (!_.isUndefined(this.session) && this.session.browserStorage) {
+                this.session.browserStorage._clear();
+            }
         };
 
         this.logOut = function () {
@@ -720,6 +730,7 @@
             }
             // First set up chat boxes, before populating the roster, so that
             // the controlbox is properly set up and ready for the rosterview.
+            _converse.roster.onConnected();
             _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
@@ -747,6 +758,7 @@
             // by browser.
             _converse.connection.flush();
 
+            _converse.initSession();
             _converse.setUserJid();
             _converse.enableCarbons();
 
@@ -968,6 +980,45 @@
                 }
             },
 
+            onConnected: function () {
+                /* Called as soon as the connection has been established
+                 * (either after initial login, or after reconnection).
+                 *
+                 * Use the opportunity to register stanza handlers.
+                 */
+                this.registerRosterHandler();
+                this.registerRosterXHandler();
+            },
+
+            registerRosterHandler: function () {
+                /* Register a handler for roster IQ "set" stanzas, which update
+                 * roster contacts.
+                 */
+                _converse.connection.addHandler(
+                    _converse.roster.onRosterPush.bind(_converse.roster),
+                    Strophe.NS.ROSTER, 'iq', "set"
+                );
+            },
+
+            registerRosterXHandler: function () {
+                /* Register a handler for RosterX message stanzas, which are
+                 * used to suggest roster contacts to a user.
+                 */
+                var t = 0;
+                _converse.connection.addHandler(
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                _converse.connection.flush();
+                                _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                            }, t);
+                        t += $(msg).find('item').length*250;
+                        return true;
+                    },
+                    Strophe.NS.ROSTERX, 'message', null
+                );
+            },
+
             fetchRosterContacts: function () {
                 /* Fetches the roster contacts, first by trying the
                  * sessionStorage cache, and if that's empty, then by querying
@@ -1012,7 +1063,7 @@
             },
 
             isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(_converse.connection.jid));
+                return utils.isSameBareJID(jid, _converse.connection.jid);
             },
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
@@ -1352,6 +1403,7 @@
         this.ChatBox = Backbone.Model.extend({
 
             defaults: {
+                'type': 'chatbox',
                 'bookmarked': false,
                 'chat_state': undefined,
                 'num_unread': 0,
@@ -1423,13 +1475,6 @@
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            isNewMessage: function (stanza) {
-                /* Given a message stanza, determine whether it's a new
-                 * message, i.e. not an archived one.
-                 */
-                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
-            },
-
             newMessageWillBeHidden: function () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
@@ -1447,7 +1492,7 @@
                 if (_.isNull(stanza.querySelector('body'))) {
                     return; // The message has no text
                 }
-                if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                     this.save({'num_unread': this.get('num_unread') + 1});
                     _converse.incrementMsgCounter();
                 }
@@ -1508,7 +1553,7 @@
                  */
                 // TODO: we can likely just reuse "onMessage" below
                 var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (from_jid === _converse.bare_jid) {
+                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.
@@ -2088,6 +2133,7 @@
             if (this.features) {
                 this.features.reset();
             }
+            this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -2137,7 +2183,6 @@
         }
         _converse.initPlugins();
         _converse.initChatBoxes();
-        _converse.initSession();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();
@@ -2350,6 +2395,7 @@
             'Backbone': Backbone,
             'Strophe': Strophe,
             '_': _,
+            'fp': fp,
             'b64_sha1':  b64_sha1,
             'jQuery': $,
             'moment': moment,

@@ -90,6 +90,7 @@
         var converse = converse_api.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
+            'play_sounds': false,
             'bosh_service_url': 'localhost',
             'connection': connection,
             'animate': false,

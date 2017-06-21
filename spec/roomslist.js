@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "converse-roomslist", "test-utils"], factory);
-} (this, function (mock, converse, roomslist, test_utils) {
+    define(["jasmine", "mock", "converse-core", "converse-roomslist", "test-utils"], factory);
+} (this, function (jasmine, mock, converse, roomslist, test_utils) {
     var _ = converse.env._;
     var $msg = converse.env.$msg;
 
@@ -112,7 +112,7 @@
                     type: 'groupchat'
                 }).c('body').t('romeo: Your attention is required').tree()
             );
-            var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(indicator_el.textContent).toBe('1');
 
             view.handleMUCMessage(
@@ -123,12 +123,12 @@
                     type: 'groupchat'
                 }).c('body').t('romeo: and another thing...').tree()
             );
-            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(indicator_el.textContent).toBe('2');
 
             // When the chat gets maximized again, the unread indicators are removed
             view.model.set({'minimized': false});
-            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicactor");
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(_.isNull(indicator_el));
             room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
             expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();

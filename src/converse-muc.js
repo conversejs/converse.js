@@ -29,6 +29,7 @@
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!spinner",
             "awesomplete",
             "converse-chatview"
     ], factory);
@@ -51,10 +52,13 @@
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_spinner,
             Awesomplete
     ) {
+
     "use strict";
     var ROOMS_PANEL_ID = 'chatrooms';
+    var CHATROOMS_TYPE = 'chatroom';
 
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
@@ -69,6 +73,7 @@
     // Other necessary globals
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        fp = converse.env.fp,
         moment = converse.env.moment;
 
     // Add Strophe Namespaces
@@ -145,7 +150,7 @@
             ChatBoxes: {
                 model: function (attrs, options) {
                     var _converse = this.__super__._converse;
-                    if (attrs.type == 'chatroom') {
+                    if (attrs.type == CHATROOMS_TYPE) {
                         return new _converse.ChatRoom(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
@@ -164,7 +169,7 @@
                                 b64_sha1('converse.roomspanel'+_converse.bare_jid))
                         }))()
                     });
-                    this.roomspanel.render().model.fetch();
+                    this.roomspanel.insertIntoDOM().model.fetch();
                     if (!this.roomspanel.model.get('nick')) {
                         this.roomspanel.model.save({
                             nick: Strophe.getNodeFromJid(_converse.bare_jid)
@@ -223,7 +228,7 @@
                 onChatBoxAdded: function (item) {
                     var _converse = this.__super__._converse;
                     var view = this.get(item.get('id'));
-                    if (!view && item.get('type') === 'chatroom') {
+                    if (!view && item.get('type') === CHATROOMS_TYPE) {
                         view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
@@ -339,40 +344,41 @@
                 'roomsPanelRendered': new $.Deferred()
             });
 
-            _converse.createChatRoom = function (settings) {
-                /* Creates a new chat room, making sure that certain attributes
+            _converse.openChatRoom = function (settings) {
+                /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings = _.extend(
-                    _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
-                    settings
-                );
-                return _converse.chatboxviews.showChat(
-                    _.extend({
-                        'affiliation': null,
-                        'connection_status': ROOMSTATUS.DISCONNECTED,
-                        'description': '',
-                        'features_fetched': false,
-                        'roomconfig': {},
-                        'type': 'chatroom',
-                    }, settings)
-                );
+                settings = _.assign({'type': CHATROOMS_TYPE}, settings);
+                return _converse.chatboxviews.showChat(settings);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
-                defaults: _.extend(_converse.ChatBox.prototype.defaults, {
-                    // For group chats, we distinguish between generally unread
-                    // messages and those ones that specifically mention the
-                    // user.
-                    //
-                    // To keep things simple, we reuse `num_unread` from
-                    // _converse.ChatBox to indicate unread messages which
-                    // mention the user and `num_unread_general` to indicate
-                    // generally unread messages (which *includes* mentions!).
-                    'num_unread_general': 0
-                }),
+                defaults: function () {
+                    return _.assign(
+                        _.clone(_converse.ChatBox.prototype.defaults),
+                        _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
+                        {
+                          // For group chats, we distinguish between generally unread
+                          // messages and those ones that specifically mention the
+                          // user.
+                          //
+                          // To keep things simple, we reuse `num_unread` from
+                          // _converse.ChatBox to indicate unread messages which
+                          // mention the user and `num_unread_general` to indicate
+                          // generally unread messages (which *includes* mentions!).
+                          'num_unread_general': 0,
+
+                          'affiliation': null,
+                          'connection_status': ROOMSTATUS.DISCONNECTED,
+                          'description': '',
+                          'features_fetched': false,
+                          'roomconfig': {},
+                          'type': CHATROOMS_TYPE,
+                        }
+                    );
+                },
 
                 isUserMentioned: function (message) {
                     /* Returns a boolean to indicate whether the current user
@@ -395,7 +401,7 @@
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                         this.save({'num_unread_general': this.get('num_unread_general') + 1});
                         if (this.isUserMentioned(body.textContent)) {
                             this.save({'num_unread': this.get('num_unread') + 1});
@@ -405,8 +411,10 @@
                 },
 
                 clearUnreadMsgCounter: function() {
-                    this.save({'num_unread': 0});
-                    this.save({'num_unread_general': 0});
+                    utils.saveWithFallback(this,  {
+                        'num_unread': 0,
+                        'num_unread_general': 0
+                    });
                 }
             });
 
@@ -540,7 +548,7 @@
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
@@ -1219,7 +1227,7 @@
                 },
 
                 cleanup: function () {
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     } else {
                         this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
@@ -1531,7 +1539,7 @@
                         nick_el.classList.remove('error');
                     }
                     this.$el.find('.chatroom-form-container')
-                            .replaceWith('<span class="spinner centered"/>');
+                        .replaceWith(tpl_spinner);
                     this.join(nick);
                 },
 
@@ -1645,7 +1653,7 @@
                 submitPassword: function (ev) {
                     ev.preventDefault();
                     var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                    this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
                     this.join(this.model.get('nick'), password);
                 },
 
@@ -1709,7 +1717,7 @@
                     var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
                     if (_.isNil(item)) { return; }
                     var jid = item.getAttribute('jid');
-                    if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+                    if (utils.isSameBareJID(jid, _converse.bare_jid)) {
                         var affiliation = item.getAttribute('affiliation');
                         var role = item.getAttribute('role');
                         if (affiliation) {
@@ -1889,7 +1897,7 @@
 
                 showSpinner: function () {
                     this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-body').prepend(tpl_spinner);
                 },
 
                 hideSpinner: function () {
@@ -2366,43 +2374,58 @@
                 className: 'controlbox-pane',
                 id: 'chatrooms',
                 events: {
-                    'submit form.add-chatroom': 'createChatRoom',
+                    'submit form.add-chatroom': 'openChatRoom',
                     'click input#show-rooms': 'showRooms',
-                    'click a.open-room': 'createChatRoom',
+                    'click a.open-room': 'openChatRoom',
                     'click a.room-info': 'toggleRoomInfo',
                     'change input[name=server]': 'setDomain',
                     'change input[name=nick]': 'setNick'
                 },
 
                 initialize: function (cfg) {
-                    this.$parent = cfg.$parent;
+                    this.parent_el = cfg.$parent[0];
+                    this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
+                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
+                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render: function () {
-                    this.$parent.append(
-                        this.$el.html(
-                            tpl_room_panel({
-                                'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                                'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                                'label_room_name': __('Room name'),
-                                'label_nickname': __('Nickname'),
-                                'label_server': __('Server'),
-                                'label_join': __('Join Room'),
-                                'label_show_rooms': __('Show rooms')
-                            })
-                        ));
-                    this.$tabs = this.$parent.parent().find('#controlbox-tabs');
-
+                    this.el.innerHTML = tpl_room_panel({
+                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
+                        'label_room_name': __('Room name'),
+                        'label_nickname': __('Nickname'),
+                        'label_server': __('Server'),
+                        'label_join': __('Join Room'),
+                        'label_show_rooms': __('Show rooms')
+                    });
+                    this.renderTab();
                     var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(tpl_chatrooms_tab({
-                        'label_rooms': __('Rooms'),
-                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID
-                    }));
                     if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
-                        this.$el.addClass('hidden');
+                        this.el.classList.add('hidden');
                     }
+                    return this;
+                },
+
+                renderTab: function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    var chatrooms = fp.filter(
+                        _.partial(utils.isOfType, CHATROOMS_TYPE),
+                        _converse.chatboxes.models
+                    );
+                    this.tab_el.innerHTML = tpl_chatrooms_tab({
+                        'label_rooms': __('Rooms'),
+                        'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
+                    });
+                },
+
+                insertIntoDOM: function () {
+                    this.parent_el.appendChild(this.render().el);
+                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
+                    this.tabs.appendChild(this.tab_el);
                     return this;
                 },
 
@@ -2483,7 +2506,7 @@
                     this.$el.find('input.new-chatroom-name').removeClass('error');
                     $server.removeClass('error');
                     $available_chatrooms.empty();
-                    $('input#show-rooms').hide().after('<span class="spinner"/>');
+                    $('input#show-rooms').hide().after(tpl_spinner);
                     this.model.save({muc_domain: server});
                     this.updateRoomsList();
                 },
@@ -2544,15 +2567,14 @@
                         $div.remove();
                     } else {
                         $parent.find('span.spinner').remove();
-                        $parent.append('<span class="spinner hor_centered"/>');
+                        $parent.append(tpl_spinner);
                         _converse.connection.disco.info(
                             $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
                         );
                     }
                 },
 
-                createChatRoom: function (ev) {
-                    ev.preventDefault();
+                parseRoomDataFromEvent: function (ev) {
                     var name, $name, server, $server, jid;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
@@ -2574,13 +2596,18 @@
                             return;
                         }
                     }
-                    _converse.createChatRoom({
+                    return {
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                        'type': 'chatroom',
+                        'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(jid)
-                    });
+                    }
+                },
+
+                openChatRoom: function (ev) {
+                    ev.preventDefault();
+                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
                 },
 
                 setDomain: function (ev) {
@@ -2628,11 +2655,11 @@
                     }
                 }
                 if (result === true) {
-                    var chatroom = _converse.createChatRoom({
+                    var chatroom = _converse.openChatRoom({
                         'id': room_jid,
                         'jid': room_jid,
                         'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'type': 'chatroom',
+                        'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
@@ -2678,7 +2705,7 @@
                     'id': jid,
                     'jid': jid,
                     'name': Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                    'type': 'chatroom',
+                    'type': CHATROOMS_TYPE,
                     'box_id': b64_sha1(jid)
                 }, attrs)));
             };
@@ -2720,9 +2747,9 @@
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.createChatRoom);
+                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.createChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
                     },
                     'get': function (jids, attrs, create) {
                         if (_.isString(attrs)) {
@@ -2733,7 +2760,7 @@
                         if (_.isUndefined(jids)) {
                             var result = [];
                             _converse.chatboxes.each(function (chatbox) {
-                                if (chatbox.get('type') === 'chatroom') {
+                                if (chatbox.get('type') === CHATROOMS_TYPE) {
                                     result.push(_converse.getViewForChatBox(chatbox));
                                 }
                             });
@@ -2756,7 +2783,7 @@
                  * all the open chat rooms.
                  */
                 _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === 'chatroom') {
+                    if (view.model.get('type') === CHATROOMS_TYPE) {
                         view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                         view.join();
                     }
@@ -2770,7 +2797,7 @@
                  * when fetched from session storage.
                  */
                 _converse.chatboxes.each(function (model) {
-                    if (model.get('type') === 'chatroom') {
+                    if (model.get('type') === CHATROOMS_TYPE) {
                         model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     }
                 });

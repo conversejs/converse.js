@@ -18,10 +18,15 @@
   `chatbox` attributes, instead of just the stanza. [jcbrand]
 - Render nickname form when entering a room via invitation. [jcbrand]
 - #567 Unreaded message count reset on page load [novokrest]
+- #575 Logging out from converse.js doesn't clear the connection status from the
+  sessionStorage [jcbrand]
 - #591 Unread message counter is reset when the chatbox is closed [novokrest]
 - #754 Show unread messages next to roster contacts. [jcbrand]
 - #864 Remove all inline CSS to comply with strict Content-Security-Policy headers [mathiasertl]
 - #873 Inconsistent unread messages count updating [novokrest]
+- #887 Make embedded images clickabe [jcbrand]
+- #890 Message carbons not sent out after reconnection [jcbrand]
+- #894 Room affiliation lost when connection jid and room presence jid are of different case [Rayzen]
 
 ## 3.0.2 (2017-04-23)
 

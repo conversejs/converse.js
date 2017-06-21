@@ -14,7 +14,7 @@
     "rules": {
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
-                "find", "endsWith", "startsWith", "filter",
+                "find", "endsWith", "startsWith", "filter", "reduce",
                 "map", "replace", "toLower", "split", "trim"
             ]
         }],
@@ -23,6 +23,7 @@
         "lodash/prefer-noop": "off",
         "lodash/prefer-lodash-typecheck": "off",
         "lodash/preferred-alias": "off",
+        "lodash/prefer-get": "off",
         "accessor-pairs": "error",
         "array-bracket-spacing": "off",
         "array-callback-return": "error",

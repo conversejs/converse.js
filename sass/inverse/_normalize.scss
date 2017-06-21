@@ -1,0 +1,69 @@
+#conversejs {
+    @import "../pure/base";
+    @import "../pure/forms";
+    @import "../pure/buttons";
+
+    @include box-sizing(border-box);
+    *, *:before, *:after {
+        @include box-sizing(border-box);
+    }
+
+    @media screen and (max-width: $mobile-portrait-length) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+    @media screen and (max-height: $mobile-landscape-height) {
+        margin: 0;
+        right: 10px;
+        left: 10px;
+        bottom: 5px;
+    }
+
+    ul li { height: auto; }
+    div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
+    pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend, table, caption, tbody,
+    tfoot, thead, tr, th, td, article, aside, canvas, details,
+    embed, figure, figcaption, footer, header, hgroup, menu,
+    nav, output, ruby, section, summary, time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    textarea,
+    input[type=submit], input[type=button],
+    input[type=text], input[type=password],
+    button {
+        font-size: $font-size;
+        padding: 0.25em;
+        min-height: 0;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    ol, ul {
+        list-style: none;
+    }
+
+    li {
+        height: 10px;
+    }
+
+    ul, ol, dl {
+        font: inherit;
+        margin: 0;
+    }
+
+    a, a:visited {
+        text-decoration: none;
+        color: $link-color;
+        text-shadow: none;
+    }
+}

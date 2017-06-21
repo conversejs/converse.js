@@ -1,11 +1,12 @@
 (function (root, factory) {
     define([
+        "jasmine",
         "utils",
         "converse-core",
         "mock",
         "test-utils"
         ], factory);
-} (this, function (utils, converse, mock, test_utils) {
+} (this, function (jasmine, utils, converse, mock, test_utils) {
     "use strict";
     var _ = converse.env._;
     var $ = converse.env.jQuery;
@@ -1247,7 +1248,9 @@
                     }, 500).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual('<img src="'+message+'" class="chat-image">');
+                        expect(msg.html()).toEqual(
+                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg"><img src="' +
+                                message + '" class="chat-image"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
                         return test_utils.waitUntil(function () {
@@ -1256,7 +1259,10 @@
                     }).then(function () {
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual('<img src="'+message.replace(/&/g, '&amp;')+'" class="chat-image">');
+                        expect(msg.html()).toEqual(
+                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
+                                message.replace(/&/g, '&amp;') +
+                                '" class="chat-image"></a>')
                         done();
                     });
                 }));
@@ -1995,7 +2001,7 @@
                     var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
 
-                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicactor',
+                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
                         $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
 
                     expect($msgIndicator.text()).toBe('1');
@@ -2026,7 +2032,7 @@
                     var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
 
-                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicactor',
+                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
                         $msgIndicator = $(_converse.rosterview.$el.find(msgIndicatorSelector));
 
                     expect($msgIndicator.text()).toBe('1');
@@ -2052,7 +2058,7 @@
                     test_utils.openChatBoxFor(_converse, sender_jid);
                     var chatbox = _converse.chatboxes.get(sender_jid);
                     var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicactor';
+                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
                     var selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
                     var msgFactory = function () { 
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read'); 
@@ -2087,7 +2093,7 @@
                     var msgFactory = function () { 
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
-                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicactor',
+                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
                         selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
 
                     chatbox.save('scrolled', true);
@@ -2117,7 +2123,7 @@
                     var msgFactory = function () { 
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
-                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicactor',
+                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
                         selectMsgsIndicator = function () { return $(_converse.rosterview.$el.find(msgsIndicatorSelector)); };
 
                     chatbox.save('scrolled', true);

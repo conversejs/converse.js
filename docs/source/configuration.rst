@@ -582,7 +582,7 @@ If set to ``true``, then don't show offline users.
 hide_open_bookmarks
 -------------------
 
-* Default:  ``false``
+* Default:  ``false`` (``true`` for inVerse).
 
 This setting applies to the ``converse-bookmarks`` plugin and specfically the
 list of bookmarks shown in the ``Rooms`` tab of the control box.
@@ -961,7 +961,7 @@ Specifies whether chat state (online, dnd, away) HTML5 desktop notifications sho
 show_controlbox_by_default
 --------------------------
 
-* Default:  ``false``
+* Default:  ``false`` (``true`` for inVerse)
 
 The "controlbox" refers to the special chatbox containing your contacts roster,
 status widget, chatrooms and other controls.
@@ -1064,7 +1064,7 @@ data.
 sticky_controlbox
 -----------------
 
-* Default: ``false``
+* Default: ``false`` (``true`` for inVerse).
 
 If set to ``true``, the control box (which includes the login, registration,
 contacts and rooms tabs) will not be closeable. It won't have a close button at
@@ -1208,7 +1208,7 @@ support.
 blacklisted_plugins
 -------------------
 
-* Default: ``[]``
+* Default: ``[]`` (``['converse-minimize', 'converse-dragresize']`` for inVerse)
 
 A list of plugin names that are blacklisted and will therefore not be
 initialized once ``converse.initialize`` is called, even if the same plugin is

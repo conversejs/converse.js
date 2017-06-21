@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test-utils", "utils" ], factory);
-} (this, function (mock, converse, test_utils, utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils", "utils" ], factory);
+} (this, function (jasmine, mock, converse, test_utils, utils) {
     var _ = converse.env._;
     var $ = converse.env.jQuery;
     var $pres = converse.env.$pres;
@@ -2059,6 +2059,116 @@
                 old_list = [{'jid': 'wiccarocks@shakespeare.lit', 'affiliation': 'owner'}];
                 delta = roomview.computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list);
                 expect(delta.length).toBe(0);
+            }));
+        });
+
+        describe("The \"Rooms\" Panel", function () {
+
+            it("is opened by clicking the 'Chatrooms' tab", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                var $tabs = cbview.$el.find('#controlbox-tabs');
+                var $panels = cbview.$el.find('.controlbox-panes');
+                var $contacts = $panels.children().first();
+                var $chatrooms = $panels.children().last();
+                spyOn(cbview, 'switchTab').and.callThrough();
+                cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
+                expect($contacts.is(':visible')).toBe(false);
+                expect($chatrooms.is(':visible')).toBe(true);
+                expect(cbview.switchTab).toHaveBeenCalled();
+            }));
+
+            it("contains a form through which a new chatroom can be created", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                var $input = roomspanel.$el.find('input.new-chatroom-name');
+                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
+                var $server = roomspanel.$el.find('input.new-chatroom-server');
+                expect($input.length).toBe(1);
+                expect($server.length).toBe(1);
+                expect($('.chatroom:visible').length).toBe(0); // There shouldn't be any chatrooms open currently
+                spyOn(roomspanel, 'openChatRoom').and.callThrough();
+                spyOn(_converse.ChatRoomView.prototype, 'getRoomFeatures').and.callFake(function () {
+                    var deferred = new $.Deferred();
+                    deferred.resolve();
+                    return deferred.promise();
+                });
+
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                $input.val('Lounge');
+                $nick.val('dummy');
+                $server.val('muc.localhost');
+                roomspanel.$el.find('form').submit();
+                expect(roomspanel.openChatRoom).toHaveBeenCalled();
+                expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+            }));
+
+            it("can list rooms publically available on the server", mock.initConverse(function (_converse) {
+                test_utils.openControlBox();
+                var panel = _converse.chatboxviews.get('controlbox').roomspanel;
+                $(panel.tabs).find('li').last().find('a').click(); // Click the chatrooms tab
+                panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
+                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+                expect($('#available-chatrooms').children('dt').length).toBe(0);
+                expect($('#available-chatrooms').children('dd').length).toBe(0);
+
+                var iq = $iq({
+                    from:'muc.localhost',
+                    to:'dummy@localhost/pda',
+                    type:'result'
+                }).c('query')
+                  .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
+                  .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
+                  .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
+                  .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+
+                panel.onRoomsFound(iq);
+                expect(panel.$('#available-chatrooms').children('dt').length).toBe(1);
+                expect(panel.$('#available-chatrooms').children('dt').first().text()).toBe("Rooms on muc.localhost");
+                expect(panel.$('#available-chatrooms').children('dd').length).toBe(4);
+            }));
+
+            it("shows the number of unread mentions received", mock.initConverse(function (_converse) {
+                var room_jid = 'kitchen@conference.shakespeare.lit';
+                test_utils.openAndEnterChatRoom(
+                    _converse, 'kitchen', 'conference.shakespeare.lit', 'fires');
+                test_utils.openContactsPanel(_converse);
+                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
+                var view = _converse.chatboxviews.get(room_jid);
+                view.model.set({'minimized': true});
+
+                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var message = 'fires: Your attention is required';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: room_jid+'/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
+
+                expect(_.includes(roomspanel.tab_el.firstChild.classList, 'unread-msgs')).toBeTruthy();
+                expect(roomspanel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
+
+                msg = $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
+                expect(roomspanel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
+
+                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
+                view.model.set({'minimized': false});
+                expect(_.includes(roomspanel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
             }));
         });
     });

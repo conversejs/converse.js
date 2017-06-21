@@ -1,0 +1,75 @@
+#conversejs {
+    .chatbox-btn {
+        font-size: $font-size-large;
+        margin: 0 0.3em;
+    }
+    .flyout {
+        border: $flyout-padding solid $chat-head-color;
+        border-top: 0.8em solid $chat-head-color;
+        border-radius: 0;
+        bottom: 0;
+    }
+    .chat-head {
+        font-size: 20px;
+        padding: 0;
+        .user-custom-message {
+            font-size: 66%;
+            height: auto;
+            line-height: $line-height;
+        }
+        &.chat-head-chatbox {
+            .close-chatbox-button {
+                display: none;
+            }
+        }
+        .avatar {
+            border-radius: 25%;
+        }
+    }
+    .chatbox {
+        height: 100%;
+        margin: 0;
+        @include calc(width, '100% - #{$controlbox-width}');
+        margin: 0;
+        .box-flyout {
+            background-color: $chat-head-color;
+            @include calc(width, '100% - #{$controlbox-width}');
+            box-shadow: none;
+            min-width: auto;
+        }
+        .chat-body {
+            background-color: $chat-head-color;
+            border-top-left-radius: $chatbox-border-radius;
+            border-top-right-radius: $chatbox-border-radius;
+
+            .chat-message {
+                font-size: $font-size-small;
+                line-height: $line-height-small;
+                margin: 0.5em 0;
+            }
+        }
+        .chat-content {
+            padding: 0 $padding $padding $padding;
+            border-top-left-radius: $chatbox-border-radius;
+            border-top-right-radius: $chatbox-border-radius;
+        }
+        .chat-title {
+            font-size: $font-size-huge;
+            line-height: $font-size-huge;
+        }
+
+        form.sendXMPPMessage {
+            ul {
+                width: 100%;
+            }
+            .toggle-smiley {
+                padding-left: 0.5em;
+                ul {
+                    li {
+                        padding: 0.5em;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,9 +1,10 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test-utils"], factory);
-} (this, function (mock, converse, test_utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils"], factory);
+} (this, function (jasmine, mock, converse, test_utils) {
     var _ = converse.env._;
     var $ = converse.env.jQuery;
     var $pres = converse.env.$pres;
+    var $msg = converse.env.$msg;
     var $iq = converse.env.$iq;
 
     var checkHeaderToggling = function ($header) {
@@ -1127,72 +1128,48 @@
             expect(cbview.model.get('active-panel')).toBe('users');
         }));
 
-        describe("chatrooms panel", function () {
+        describe("The \"Contacts\" Panel", function () {
 
-            it("is opened by clicking the 'Chatrooms' tab", mock.initConverse(function (_converse) {
-                test_utils.openControlBox();
-                var cbview = _converse.chatboxviews.get('controlbox');
-                var $tabs = cbview.$el.find('#controlbox-tabs');
-                var $panels = cbview.$el.find('.controlbox-panes');
-                var $contacts = $panels.children().first();
-                var $chatrooms = $panels.children().last();
-                spyOn(cbview, 'switchTab').and.callThrough();
-                cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                $tabs.find('li').last().find('a').click(); // Clicks the chatrooms tab
-                expect($contacts.is(':visible')).toBe(false);
-                expect($chatrooms.is(':visible')).toBe(true);
-                expect(cbview.switchTab).toHaveBeenCalled();
-            }));
+            it("shows the number of unread mentions received", mock.initConverse(function (_converse) {
+                test_utils.createContacts(_converse, 'all').openControlBox();
+                test_utils.openContactsPanel(_converse);
 
-            it("contains a form through which a new chatroom can be created", mock.initConverse(function (_converse) {
-                test_utils.openControlBox();
+                var contacts_panel = _converse.chatboxviews.get('controlbox').contactspanel;
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+
+                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, sender_jid);
+                var chatview = _converse.chatboxviews.get(sender_jid);
+                chatview.model.set({'minimized': true});
+
+                var msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('1');
+
+                msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello again').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                expect(contacts_panel.tab_el.querySelector('.msgs-indicator').textContent).toBe('2');
+
                 var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-                var $input = roomspanel.$el.find('input.new-chatroom-name');
-                var $nick = roomspanel.$el.find('input.new-chatroom-nick');
-                var $server = roomspanel.$el.find('input.new-chatroom-server');
-                expect($input.length).toBe(1);
-                expect($server.length).toBe(1);
-                expect($('.chatroom:visible').length).toBe(0); // There shouldn't be any chatrooms open currently
-                spyOn(roomspanel, 'createChatRoom').and.callThrough();
-                spyOn(_converse.ChatRoomView.prototype, 'getRoomFeatures').and.callFake(function () {
-                    var deferred = new $.Deferred();
-                    deferred.resolve();
-                    return deferred.promise();
-                });
+                expect(_.isNull(roomspanel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
 
-                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                $input.val('Lounge');
-                $nick.val('dummy');
-                $server.val('muc.localhost');
-                roomspanel.$el.find('form').submit();
-                expect(roomspanel.createChatRoom).toHaveBeenCalled();
-                expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+                chatview.model.set({'minimized': false});
+                expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
+                expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
             }));
 
-            it("can list rooms publically available on the server", mock.initConverse(function (_converse) {
-                test_utils.openControlBox();
-                var panel = _converse.chatboxviews.get('controlbox').roomspanel;
-                panel.$tabs.find('li').last().find('a').click(); // Click the chatrooms tab
-                panel.model.set({'muc_domain': 'muc.localhost'}); // Make sure the domain is set
-                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
-                expect($('#available-chatrooms').children('dt').length).toBe(0);
-                expect($('#available-chatrooms').children('dd').length).toBe(0);
-
-                var iq = $iq({
-                    from:'muc.localhost',
-                    to:'dummy@localhost/pda',
-                    type:'result'
-                }).c('query')
-                  .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
-                  .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
-                  .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
-                  .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
-
-                panel.onRoomsFound(iq);
-                expect(panel.$('#available-chatrooms').children('dt').length).toBe(1);
-                expect(panel.$('#available-chatrooms').children('dt').first().text()).toBe("Rooms on muc.localhost");
-                expect(panel.$('#available-chatrooms').children('dd').length).toBe(4);
-            }));
         });
     });
 }));

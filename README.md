@@ -12,8 +12,19 @@ to, either your own, or a public one.
 
 ## Demo
 
-- A live demo is available at [https://conversejs.org](https://conversejs.org)
-- A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
+Converse.js is hosted and can be used at [https://conversejs.org](https://conversejs.org).
+
+A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
+and a demo which shows how you can embed a single chat room into a page is
+avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/demo/embedded.html).
+
+### Converse.js: As seen on the conversejs.org website
+
+![Screenshot of Converse.js](https://opkode.com/img/converse-screenshot.png)
+
+### inVerse: a full-screen version of converse.js
+
+![Screenshot of inVerse](https://opkode.com/img/inverse-screenshot.png)
 
 ## Documentation
 

@@ -2,10 +2,12 @@
 (function (root, factory) {
     define([
         "jquery.noconflict",
+        "sizzle",
         "jquery.browser",
         "lodash.noconflict",
         "locales",
         "moment_with_locales",
+        "strophe",
         "tpl!field",
         "tpl!select_option",
         "tpl!form_select",
@@ -16,7 +18,10 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, dummy, _, locales, moment,
+        $, sizzle, dummy, _,
+        locales,
+        moment,
+        Strophe,
         tpl_field,
         tpl_select_option,
         tpl_form_select,
@@ -28,6 +33,7 @@
     ) {
     "use strict";
     locales = locales || {};
+    Strophe = Strophe.Strophe;
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -88,14 +94,15 @@
         return false;
     };
 
-    $.fn.throttledHTML = _.throttle($.fn.html, 500);
+    var throttledHTML = _.throttle(function (el, html) {
+        el.innerHTML = html;
+    }, 500);
 
     $.fn.addHyperlinks = function () {
         if (this.length > 0) {
             this.each(function (i, obj) {
                 var prot, escaped_url;
-                var $obj = $(obj);
-                var x = $obj.html();
+                var x = obj.innerHTML;
                 var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
                 if (list) {
                     for (i=0; i<list.length; i++) {
@@ -104,15 +111,11 @@
                         x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
                     }
                 }
-                $obj.html(x);
+                obj.innerHTML = x;
                 _.forEach(list, function (url) {
                     isImage(unescapeHTML(url)).then(function (img) {
-                        var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
                         img.className = 'chat-image';
-                        x = x.replace(new_url, img.outerHTML);
-                        $obj.throttledHTML(x);
+                        throttledHTML(obj.querySelector('a'), img.outerHTML);
                     });
                 });
             });
@@ -218,6 +221,22 @@
                 el.classList.remove('hidden');
             } else {
                 afterAnimationEnd(el, callback);
+            }
+        },
+
+        isSameBareJID: function (jid1, jid2) {
+            return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
+                   Strophe.getBareJidFromJid(jid2).toLowerCase();
+        },
+
+        isNewMessage: function (message) {
+            /* Given a stanza, determine whether it's a new
+             * message, i.e. not a MAM archived one.
+             */
+            if (message instanceof Element) {
+                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+            } else {
+                return !message.get('archive_id');
             }
         },
 
@@ -471,6 +490,18 @@
         return utils.detectLocale(isSupportedByLibrary) || 'en';
     };
 
+    utils.isOfType = function (type, item) {
+        return item.get('type') == type;
+    }
+
+    utils.isInstance = function (type, item) {
+        return item instanceof type;
+    };
+
+    utils.getAttribute = function (key, item) {
+        return item.get(key);
+    };
+
     utils.contains.not = function (attr, query) {
         return function (item) {
             return !(utils.contains(attr, query)(item));
@@ -491,5 +522,16 @@
         frag = tmp = null;
     }
 
+    utils.isPersistableModel = function (model) {
+        return model.collection && model.collection.browserStorage;
+    }
+
+    utils.saveWithFallback = function (model, attrs) {
+        if (utils.isPersistableModel(this)) {
+            model.save(attrs);
+        } else {
+            model.set(attrs);
+        }
+    }
     return utils;
 }));

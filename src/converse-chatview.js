@@ -15,7 +15,8 @@
             "tpl!message",
             "tpl!help_message",
             "tpl!toolbar",
-            "tpl!avatar"
+            "tpl!avatar",
+            "tpl!spinner"
     ], factory);
 }(this, function (
             converse,
@@ -25,7 +26,8 @@
             tpl_message,
             tpl_help_message,
             tpl_toolbar,
-            tpl_avatar
+            tpl_avatar,
+            tpl_spinner
     ) {
     "use strict";
     var $ = converse.env.jQuery,
@@ -196,7 +198,7 @@
 
                 addSpinner: function () {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
-                        this.$content.prepend('<span class="spinner"/>');
+                        this.$content.prepend(tpl_spinner);
                     }
                 },
 
@@ -253,7 +255,7 @@
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    var msg_dates, idx,
+                    var msg_dates,
                         $first_msg = this.$content.find('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         current_msg_date = moment(attrs.time) || moment,
@@ -297,13 +299,12 @@
                     });
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
-                    idx = msg_dates.indexOf(current_msg_date)-1;
+                    var idx = msg_dates.indexOf(current_msg_date)-1;
+                    var $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
                     _.flow(
                         function ($el) {
-                            $el.insertAfter(
-                                this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                            return $el;
-                        }.bind(this),
+                            $el.insertAfter($latest_message);
+                        },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
                 },
@@ -386,7 +387,7 @@
                         })));
                     }
                     if (spinner === true) {
-                        this.$content.append('<span class="spinner"/>');
+                        this.$content.append(tpl_spinner);
                     } else if (spinner === false) {
                         this.$content.find('span.spinner').remove();
                     }
@@ -420,16 +421,16 @@
 
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (message.get('sender') !== 'me') {
-                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
-                        }
-                    } else {
+                    if (utils.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
                         // when the user writes a message as opposed to when a
                         // message is received.
                         this.model.set('scrolled', false);
+                    } else {
+                        if (utils.isNewMessage(message) && this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                        }
                     }
                     if (this.shouldShowOnTextMessage()) {
                         this.show();
@@ -777,7 +778,7 @@
                 },
 
                 afterShown: function (focus) {
-                    if (_converse.connection.connected) {
+                    if (this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
@@ -832,17 +833,15 @@
                         });
                         return;
                     }
+                    var scrolled = true;
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.save('scrolled', false);
+                        scrolled = false;
                         this.onScrolledDown();
-                    } else {
-                        // We're not at the bottom of the chat area, so we mark
-                        // that the box is in a scrolled-up state.
-                        this.model.save('scrolled', true);
                     }
+                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {

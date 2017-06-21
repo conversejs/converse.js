@@ -1,4 +1,9 @@
-<li><a class="s {[ if (is_current) { ]} current {[ } ]}"
+<a class="s contacts-tab
+   {[ if (is_current) { ]} current {[ } ]}
+   {[ if (num_unread) { ]} unread-msgs {[ } ]}"
        data-id="users" href="#users">
     {{{label_contacts}}}
-</a></li>
+    {[ if (num_unread) { ]}
+        <span class="msgs-indicator">{{{ num_unread }}}</span>
+    {[ } ]}
+</a>

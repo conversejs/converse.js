@@ -1,17 +1,19 @@
 # You can set these variables from the command line.
-BUILDDIR        = ./docs
-BUNDLE          ?= ./.bundle/bin/bundle
-GRUNT           ?= ./node_modules/.bin/grunt
-HTTPSERVE       ?= ./node_modules/.bin/http-server
-ESLINT          ?= ./node_modules/.bin/eslint
-PAPER           =
-PHANTOMJS       ?= ./node_modules/.bin/phantomjs
-RJS             ?= ./node_modules/.bin/r.js
-PO2JSON         ?= ./node_modules/.bin/po2json
-SASS            ?= ./.bundle/bin/sass
-CLEANCSS        ?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
-SPHINXBUILD     ?= ./bin/sphinx-build
-SPHINXOPTS      =
+BABEL			?= node_modules/.bin/babel
+BOURBON_TEMPLATES = ./node_modules/bourbon/app/assets/stylesheets/ 
+BUILDDIR		= ./docs
+BUNDLE		  	?= ./.bundle/bin/bundle
+CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
+CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
+ESLINT		  	?= ./node_modules/.bin/eslint
+GRUNT		   	?= ./node_modules/.bin/grunt
+HTTPSERVE	   	?= ./node_modules/.bin/http-server
+PAPER		   	=
+PO2JSON		 	?= ./node_modules/.bin/po2json
+RJS			 	?= ./node_modules/.bin/r.js
+SASS			?= ./.bundle/bin/sass
+SPHINXBUILD	 	?= ./bin/sphinx-build
+SPHINXOPTS	  	=
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -47,8 +49,12 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: stamp-npm
-	$(HTTPSERVE) -p 8000 -c -1
+serve: dev 
+	$(HTTPSERVE) -p 8000 -c-1
+
+.PHONY: serve_bg
+serve_bg: dev
+	$(HTTPSERVE) -p 8000 -c-1 -s &
 
 ########################################################################
 ## Translation machinery
@@ -112,32 +118,44 @@ dev: stamp-bundler stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css
+css: sass/*.scss css/converse.css css/converse.min.css css/mobile.min.css css/theme.min.css css/converse-muc-embedded.min.css css/inverse.css css/inverse.min.css
 
-css/converse-muc-embedded.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/_muc_embedded.scss css/converse-muc-embedded.css
+css/inverse.css:: stamp-bundler sass sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/inverse/inverse.scss css/inverse.css
+
+css/inverse.min.css:: css/inverse.css
+	$(CLEANCSS) css/inverse.css > css/inverse.min.css
+
+css/converse-muc-embedded.css:: stamp-bundler sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/_muc_embedded.scss css/converse-muc-embedded.css
 
 css/converse-muc-embedded.min.css:: stamp-bundler sass css/converse-muc-embedded.css
 	$(CLEANCSS) css/converse-muc-embedded.css > css/converse-muc-embedded.min.css
 
-css/converse.css:: stamp-bundler sass
-	$(SASS) -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss css/converse.css
+css/converse.css:: stamp-bundler sass/*
+	$(SASS) -I $(BOURBON_TEMPLATES) sass/converse/converse.scss css/converse.css
 
-css/converse.min.css:: stamp-npm sass
+css/converse.min.css:: css/converse.css
 	$(CLEANCSS) css/converse.css > css/converse.min.css
 
 css/theme.min.css:: stamp-npm css/theme.css
 	$(CLEANCSS) css/theme.css > css/theme.min.css
 
-css/mobile.min.css:: stamp-npm sass
+css/mobile.min.css:: stamp-npm sass/*
 	$(CLEANCSS) css/mobile.css > css/mobile.min.css
 
 .PHONY: watch
 watch: stamp-bundler
 	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
 
+.PHONY: watchjs
+watchjs: stamp-npm
+	$(BABEL) --source-maps --watch=./src --out-dir=./build
+
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
+         dist/inverse.js \
+		 dist/inverse.min.js \
          dist/converse-mobile.js \
          dist/converse-mobile.min.js \
          dist/converse-muc-embedded.js \
@@ -151,6 +169,10 @@ dist/converse.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
 dist/converse.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+dist/inverse.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
+dist/inverse.min.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.min.js
 dist/converse-no-jquery.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-jquery.js: src locale node_modules *.js
@@ -189,7 +211,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
-	$(PHANTOMJS) tests/run-jasmine2.js tests.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) http://localhost:8000/tests.html
 
 
 ########################################################################

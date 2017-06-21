@@ -43,7 +43,6 @@
             //
             // New functions which don't exist yet can also be added.
             afterReconnected: function () {
-                this.rosterview.registerRosterXHandler();
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
@@ -73,7 +72,8 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__;
+                __ = _converse.__,
+                ___ = _converse.___;
 
             this.updateSettings({
                 allow_chat_pending_contacts: true,
@@ -270,8 +270,6 @@
                 id: 'converse-roster',
 
                 initialize: function () {
-                    this.roster_handler_ref = this.registerRosterHandler();
-                    this.rosterx_handler_ref = this.registerRosterXHandler();
                     _converse.roster.on("add", this.onContactAdd, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
@@ -281,8 +279,6 @@
                     _converse.on('rosterGroupsFetched', this.positionFetchedGroups, this);
                     _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
-
-
                 },
 
                 render: function () {
@@ -326,13 +322,6 @@
                         this.filter(this.filter_view.model.get('filter_text'), type);
                     }
                 }, 100),
-
-                unregisterHandlers: function () {
-                    _converse.connection.deleteHandler(this.roster_handler_ref);
-                    delete this.roster_handler_ref;
-                    _converse.connection.deleteHandler(this.rosterx_handler_ref);
-                    delete this.rosterx_handler_ref;
-                },
 
                 update: _.debounce(function () {
                     if (_.isNull(this.roster.parentElement)) {
@@ -384,31 +373,6 @@
                     this.renderRoster();
                     this.render().update();
                     return this;
-                },
-
-                registerRosterHandler: function () {
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
-                },
-
-                registerRosterXHandler: function () {
-                    var t = 0;
-                    _converse.connection.addHandler(
-                        function (msg) {
-                            window.setTimeout(
-                                function () {
-                                    _converse.connection.flush();
-                                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
-                                },
-                                t
-                            );
-                            t += $(msg).find('item').length*250;
-                            return true;
-                        },
-                        Strophe.NS.ROSTERX, 'message', null
-                    );
                 },
 
                 onGroupAdd: function (group) {
@@ -611,7 +575,7 @@
                         this.el.classList.add('pending-xmpp-contact');
                         this.$el.html(tpl_pending_contact(
                             _.extend(item.toJSON(), {
-                                'desc_remove': __('Click to remove this contact'),
+                                'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -619,8 +583,8 @@
                         this.el.classList.add('requesting-xmpp-contact');
                         this.$el.html(tpl_requesting_contact(
                             _.extend(item.toJSON(), {
-                                'desc_accept': __("Click to accept this contact request"),
-                                'desc_decline': __("Click to decline this contact request"),
+                                'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
+                                'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -639,7 +603,7 @@
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
-                            'desc_remove': __('Click to remove this contact'),
+                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                             'title_fullname': __('Name'),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0
@@ -957,7 +921,7 @@
                     return; // The message has no text
                 }
                 if (chatbox.get('type') !== 'chatroom' &&
-                    chatbox.isNewMessage(data.stanza) &&
+                    utils.isNewMessage(data.stanza) &&
                     chatbox.newMessageWillBeHidden()) {
 
                     var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));

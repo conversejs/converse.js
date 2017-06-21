@@ -43,6 +43,7 @@
     "use strict";
 
     var USERS_PANEL_ID = 'users';
+    var CHATBOX_TYPE = 'chatbox';
     // Strophe methods for building stanzas
     var Strophe = converse.env.Strophe,
         Backbone = converse.env.Backbone,
@@ -50,6 +51,7 @@
     // Other necessary globals
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        fp = converse.env.fp,
         moment = converse.env.moment;
 
 
@@ -62,9 +64,9 @@
             //
             // New functions which don't exist yet can also be added.
 
-            initSession: function () {
+            initChatBoxes: function () {
+                this.__super__.initChatBoxes.apply(this, arguments);
                 this.controlboxtoggle = new this.ControlBoxToggle();
-                this.__super__.initSession.apply(this, arguments);
             },
 
             initConnection: function () {
@@ -77,7 +79,6 @@
             _tearDown: function () {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
-                    this.rosterview.unregisterHandlers();
                     // Removes roster groups
                     this.rosterview.model.off().reset();
                     this.rosterview.each(function (groupview) {
@@ -90,8 +91,11 @@
 
             clearSession: function () {
                 this.__super__.clearSession.apply(this, arguments);
-                if (_.isUndefined(this.connection) && this.connection.connected) {
-                    this.chatboxes.get('controlbox').save({'connected': false});
+                var controlbox = this.chatboxes.get('controlbox');
+                if (controlbox &&
+                        controlbox.collection &&
+                        controlbox.collection.browserStorage) {
+                    controlbox.save({'connected': false});
                 }
             },
 
@@ -285,7 +289,8 @@
                     this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
                     });
-                    this.contactspanel.render();
+                    this.contactspanel.insertIntoDOM();
+
                     _converse.xmppstatusview = new _converse.XMPPStatusView({
                         'model': _converse.xmppstatus
                     });
@@ -294,6 +299,9 @@
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
                     } else {
@@ -312,6 +320,9 @@
                 },
 
                 hide: function (callback) {
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     this.$el.addClass('hidden');
                     utils.refreshWebkit();
                     _converse.emit('chatBoxClosed', this);
@@ -582,12 +593,15 @@
                 },
 
                 initialize: function (cfg) {
-                    cfg.$parent.append(this.$el);
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                    this.parent_el = cfg.$parent[0];
+                    this.tab_el = document.createElement('li');
+                    _converse.chatboxes.on('change:num_unread', this.renderTab, this);
+                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render: function () {
-                    var markup;
+                    this.renderTab();
+
                     var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
@@ -597,34 +611,53 @@
                         include_offline_state: _converse.include_offline_state,
                         allow_logout: _converse.allow_logout
                     });
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    this.$tabs.append(tpl_contacts_tab({
-                        'label_contacts': LABEL_CONTACTS,
-                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID
-                    }));
-                    if (_converse.xhr_user_search) {
-                        markup = tpl_search_contact({
-                            label_contact_name: __('Contact name'),
-                            label_search: __('Search')
-                        });
-                    } else {
-                        markup = tpl_add_contact_form({
-                            label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add')
-                        });
-                    }
                     if (_converse.allow_contact_requests) {
                         widgets += tpl_add_contact_dropdown({
                             label_click_to_chat: __('Click to add new chat contacts'),
                             label_add_contact: __('Add a contact')
                         });
                     }
-                    this.$el.html(widgets);
-                    this.$el.find('.search-xmpp ul').append(markup);
+                    this.el.innerHTML = widgets;
+
+                    var controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
-                        this.$el.addClass('hidden');
+                        this.el.classList.add('hidden');
                     }
                     return this;
+                },
+
+                renderTab: function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    var chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
+                    this.tab_el.innerHTML = tpl_contacts_tab({
+                        'label_contacts': LABEL_CONTACTS,
+                        'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
+                        'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chats))
+                    });
+                },
+
+                insertIntoDOM: function () {
+                    this.parent_el.appendChild(this.render().el);
+                    this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
+                    this.tabs.appendChild(this.tab_el);
+                    this.$('.search-xmpp ul').append(
+                        this.generateAddContactHTML()
+                    );
+                    return this;
+                },
+
+                generateAddContactHTML: function () {
+                    if (_converse.xhr_user_search) {
+                        return tpl_search_contact({
+                            label_contact_name: __('Contact name'),
+                            label_search: __('Search')
+                        });
+                    } else {
+                        return tpl_add_contact_form({
+                            label_contact_username: __('e.g. user@example.org'),
+                            label_add: __('Add')
+                        });
+                    }
                 },
 
                 toggleContactForm: function (ev) {

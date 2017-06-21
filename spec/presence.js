@@ -2,12 +2,13 @@
 /*eslint dot-notation: "off"*/
 (function (root, factory) {
     define([
+        "jasmine",
         "jquery",
         "converse-core",
         "mock",
         "test-utils",
         "lodash"], factory);
-} (this, function ($, converse, mock, test_utils, _) {
+} (this, function (jasmine, $, converse, mock, test_utils, _) {
     "use strict";
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;

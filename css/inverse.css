@@ -2273,7 +2273,7 @@ body {
   #conversejs #controlbox.fullscreen {
     width: 100%; }
     #conversejs #controlbox.fullscreen .controlbox-pane {
-      height: 100%; }
+      height: auto; }
     #conversejs #controlbox.fullscreen .box-flyout {
       width: 100%; }
   #conversejs #controlbox .box-flyout {

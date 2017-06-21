@@ -2272,6 +2272,8 @@ body {
     margin-top: 4em; }
   #conversejs #controlbox.fullscreen {
     width: 100%; }
+    #conversejs #controlbox.fullscreen .controlbox-pane {
+      height: 100%; }
     #conversejs #controlbox.fullscreen .box-flyout {
       width: 100%; }
   #conversejs #controlbox .box-flyout {

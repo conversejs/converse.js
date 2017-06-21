@@ -38267,875 +38267,6 @@ return uk;
         });
 })(this);
 
-/* Lo-Dash Template Loader v1.0.1
- * Copyright 2015, Tim Branyen (@tbranyen).
- * loader.js may be freely distributed under the MIT license.
- */
-(function(global) {
-"use strict";
-
-// Cache used to map configuration options between load and write.
-var buildMap = {};
-
-// Alias the correct `nodeRequire` method.
-var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
-
-// Strips trailing `/` from url fragments.
-var stripTrailing = function(prop) {
-  return prop.replace(/(\/$)/, '');
-};
-
-// Define the plugin using the CommonJS syntax.
-define('tpl',['require','exports','module','lodash'],function(require, exports) {
-  var _ = require("lodash");
-
-  exports.version = "1.0.1";
-
-  // Invoked by the AMD builder, passed the path to resolve, the require
-  // function, done callback, and the configuration options.
-  exports.load = function(name, req, load, config) {
-    var isDojo;
-
-    // Dojo provides access to the config object through the req function.
-    if (!config) {
-      config = require.rawConfig;
-      isDojo = true;
-    }
-
-    var contents = "";
-    var settings = configure(config);
-
-    // If the baseUrl and root are the same, just null out the root.
-    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
-      settings.root = '';
-    }
-
-    var url = require.toUrl(settings.root + name + settings.ext);
-
-    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
-      url = stripTrailing(config.baseUrl) + url;
-    }
-
-    // Builds with r.js require Node.js to be installed.
-    if (config.isBuild) {
-      // If in Node, get access to the filesystem.
-      var fs = nodeRequire("fs");
-
-      try {
-        // First try reading the filepath as-is.
-        contents = String(fs.readFileSync(url));
-      } catch(ex) {
-        // If it failed, it's most likely because of a leading `/` and not an
-        // absolute path.  Remove the leading slash and try again.
-        if (url.slice(0, 1) === "/") {
-          url = url.slice(1);
-        }
-
-        // Try reading again with the leading `/`.
-        contents = String(fs.readFileSync(url));
-      }
-
-      // Read in the file synchronously, as RequireJS expects, and return the
-      // contents.  Process as a Lo-Dash template.
-      buildMap[name] = _.template(contents);
-
-      return load();
-    }
-
-    // Create a basic XHR.
-    var xhr = new XMLHttpRequest();
-
-    // Wait for it to load.
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        var templateSettings = _.clone(settings.templateSettings);
-
-        // Attach the sourceURL.
-        templateSettings.sourceURL = url;
-
-        // Process as a Lo-Dash template and cache.
-        buildMap[name] = _.template(xhr.responseText, templateSettings);
-
-        // Return the compiled template.
-        load(buildMap[name]);
-      }
-    };
-
-    // Initiate the fetch.
-    xhr.open("GET", url, true);
-    xhr.send(null);
-  };
-
-  // Also invoked by the AMD builder, this writes out a compatible define
-  // call that will work with loaders such as almond.js that cannot read
-  // the configuration data.
-  exports.write = function(pluginName, moduleName, write) {
-    var template = buildMap[moduleName].source;
-
-    // Write out the actual definition
-    write(strDefine(pluginName, moduleName, template));
-  };
-
-  // This is for curl.js/cram.js build-time support.
-  exports.compile = function(pluginName, moduleName, req, io, config) {
-    configure(config);
-
-    // Ask cram to fetch the template file (resId) and pass it to `write`.
-    io.read(moduleName, write, io.error);
-
-    function write(template) {
-      // Write-out define(id,function(){return{/* template */}});
-      io.write(strDefine(pluginName, moduleName, template));
-    }
-  };
-
-  // Crafts the written definition form of the module during a build.
-  function strDefine(pluginName, moduleName, template) {
-    return [
-      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
-        [
-          "function(_) {",
-            "return ", template, ";",
-          "}"
-        ].join(""),
-      ");\n"
-    ].join("");
-  }
-
-  function configure(config) {
-    // Default settings point to the project root and using html files.
-    var settings = _.extend({
-      ext: ".html",
-      root: config.baseUrl,
-      templateSettings: {}
-    }, config.lodashLoader);
-
-    // Ensure the root has been properly configured with a trailing slash,
-    // unless it's an empty string or undefined, in which case work off the
-    // baseUrl.
-    if (settings.root && settings.root.slice(-1) !== "/") {
-      settings.root += "/";
-    }
-
-    // Set the custom passed in template settings.
-    _.extend(_.templateSettings, settings.templateSettings);
-
-    return settings;
-  }
-});
-
-})(typeof global === "object" ? global : this);
-
-
-define('tpl!field', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<field var="' +
-__e(name) +
-'">';
- if (_.isArray(value)) { ;
-__p += '\n    ';
- _.each(value,function(arrayValue) { ;
-__p += '<value>' +
-__e(arrayValue) +
-'</value>';
- }); ;
-__p += '\n';
- } else { ;
-__p += '\n    <value>' +
-__e(value) +
-'</value>\n';
- } ;
-__p += '</field>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<option value="' +
-__e(value) +
-'" ';
- if (selected) { ;
-__p += ' selected="selected" ';
- } ;
-__p += ' >' +
-__e(label) +
-'</option>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<select name="' +
-__e(name) +
-'"  ';
- if (multiple) { ;
-__p += ' multiple="multiple" ';
- } ;
-__p += '>' +
-((__t = (options)) == null ? '' : __t) +
-'</select>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label class="label-ta">' +
-__e(label) +
-'</label>\n<textarea name="' +
-__e(name) +
-'">' +
-__e(value) +
-'</textarea>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" ' +
-__e(checked) +
-'>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<div class="input-group">\n    <input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'"\n        ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n        ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' />\n    <span title="' +
-__e(domain) +
-'">' +
-__e(domain) +
-'</span>\n</div>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" \n    ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n    ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<img src="data:' +
-__e(type) +
-';base64,' +
-__e(data) +
-'">\n<input name="' +
-__e(name) +
-'" type="text" ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n\n\n';
-
-}
-return __p
-};});
-
-/*global define, escape, locales, Jed */
-(function (root, factory) {
-    define('utils',[
-        "jquery.noconflict",
-        "jquery.browser",
-        "lodash.noconflict",
-        "locales",
-        "moment_with_locales",
-        "tpl!field",
-        "tpl!select_option",
-        "tpl!form_select",
-        "tpl!form_textarea",
-        "tpl!form_checkbox",
-        "tpl!form_username",
-        "tpl!form_input",
-        "tpl!form_captcha"
-    ], factory);
-}(this, function (
-        $, dummy, _, locales, moment,
-        tpl_field,
-        tpl_select_option,
-        tpl_form_select,
-        tpl_form_textarea,
-        tpl_form_checkbox,
-        tpl_form_username,
-        tpl_form_input,
-        tpl_form_captcha
-    ) {
-    "use strict";
-    locales = locales || {};
-
-    var XFORM_TYPE_MAP = {
-        'text-private': 'password',
-        'text-single': 'text',
-        'fixed': 'label',
-        'boolean': 'checkbox',
-        'hidden': 'hidden',
-        'jid-multi': 'textarea',
-        'list-single': 'dropdown',
-        'list-multi': 'dropdown'
-    };
-
-    var afterAnimationEnd = function (el, callback) {
-        el.classList.remove('visible');
-        if (_.isFunction(callback)) {
-            callback();
-        }
-    };
-
-    var unescapeHTML = function (htmlEscapedText) {
-        /* Helper method that replace HTML-escaped symbols with equivalent characters
-         * (e.g. transform occurrences of '&amp;' to '&')
-         *
-         * Parameters:
-         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
-         */
-        var div = document.createElement('div');
-        div.innerHTML = htmlEscapedText;
-        return div.innerText;
-    }
-
-    var isImage = function (url) {
-        var deferred = new $.Deferred();
-        var img = new Image();
-        var timer = window.setTimeout(function () {
-            deferred.reject();
-            img = null;
-        }, 3000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            deferred.reject();
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            deferred.resolve(img);
-        };
-        img.src = url;
-        return deferred.promise();
-    };
-
-    $.fn.hasScrollBar = function() {
-        if (!$.contains(document, this.get(0))) {
-            return false;
-        }
-        if(this.parent().height() < this.get(0).scrollHeight) {
-            return true;
-        }
-        return false;
-    };
-
-    $.fn.throttledHTML = _.throttle($.fn.html, 500);
-
-    $.fn.addHyperlinks = function () {
-        if (this.length > 0) {
-            this.each(function (i, obj) {
-                var prot, escaped_url;
-                var $obj = $(obj);
-                var x = $obj.html();
-                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
-                if (list) {
-                    for (i=0; i<list.length; i++) {
-                        prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
-                    }
-                }
-                $obj.html(x);
-                _.forEach(list, function (url) {
-                    isImage(unescapeHTML(url)).then(function (img) {
-                        var prot = url.indexOf('http://') === 0 || url.indexOf('https://') === 0 ? '' : 'http://';
-                        var escaped_url = encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        var new_url = '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ url + '</a>';
-                        img.className = 'chat-image';
-                        x = x.replace(new_url, img.outerHTML);
-                        $obj.throttledHTML(x);
-                    });
-                });
-            });
-        }
-        return this;
-    };
-
-    $.fn.addEmoticons = function (allowed) {
-        if (allowed) {
-            if (this.length > 0) {
-                this.each(function (i, obj) {
-                    var text = $(obj).html();
-                    text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
-                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
-                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
-                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
-                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
-                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
-                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
-                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/:\/ /g, '<span class="emoticon icon-wondering"></span>');
-                    text = text.replace(/&gt;:\(/g, '<span class="emoticon icon-angry"></span>');
-                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
-                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
-                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
-                    text = text.replace(/&lt;3/g, '<span class="emoticon icon-heart"></span>');
-                    $(obj).html(text);
-                });
-            }
-        }
-        return this;
-    };
-
-    var utils = {
-        // Translation machinery
-        // ---------------------
-        __: function (str) {
-            if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
-                return Jed.sprintf.apply(Jed, arguments);
-            }
-            if (typeof this.jed === "undefined") {
-                this.jed = new Jed(window.JSON.parse(locales[this.locale]));
-            }
-            var t = this.jed.translate(str);
-            if (arguments.length>1) {
-                return t.fetch.apply(t, [].slice.call(arguments,1));
-            } else {
-                return t.fetch();
-            }
-        },
-
-        ___: function (str) {
-            /* XXX: This is part of a hack to get gettext to scan strings to be
-             * translated. Strings we cannot send to the function above because
-             * they require variable interpolation and we don't yet have the
-             * variables at scan time.
-             *
-             * See actionInfoMessages in src/converse-muc.js
-             */
-            return str;
-        },
-
-        isLocaleAvailable: function (locale, available) {
-            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-             *
-             * Parameters:
-             *      (Function) available - returns a boolean indicating whether the locale is supported
-             */
-            if (available(locale)) {
-                return locale;
-            } else {
-                var sublocale = locale.split("-")[0];
-                if (sublocale !== locale && available(sublocale)) {
-                    return sublocale;
-                }
-            }
-        },
-
-        fadeIn: function (el, callback) {
-            if ($.fx.off) {
-                el.classList.remove('hidden');
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-                return;
-            }
-            if (_.includes(el.classList, 'hidden')) {
-                /* XXX: This doesn't appear to be working...
-                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
-                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
-                */
-                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
-                el.classList.add('visible');
-                el.classList.remove('hidden');
-            } else {
-                afterAnimationEnd(el, callback);
-            }
-        },
-
-        isOTRMessage: function (message) {
-            var body = message.querySelector('body'),
-                text = (!_.isNull(body) ? body.textContent: undefined);
-            return text && !!text.match(/^\?OTR/);
-        },
-
-        isHeadlineMessage: function (message) {
-            var from_jid = message.getAttribute('from');
-            if (message.getAttribute('type') === 'headline') {
-                return true;
-            }
-            if (message.getAttribute('type') !== 'error' &&
-                    !_.isNil(from_jid) &&
-                    !_.includes(from_jid, '@')) {
-                // Some servers (I'm looking at you Prosody) don't set the message
-                // type to "headline" when sending server messages. For now we
-                // check if an @ signal is included, and if not, we assume it's
-                // a headline message.
-                return true;
-            }
-            return false;
-        },
-
-        merge: function merge (first, second) {
-            /* Merge the second object into the first one.
-             */
-            for (var k in second) {
-                if (_.isObject(first[k])) {
-                    merge(first[k], second[k]);
-                } else {
-                    first[k] = second[k];
-                }
-            }
-        },
-
-        applyUserSettings: function applyUserSettings (context, settings, user_settings) {
-            /* Configuration settings might be nested objects. We only want to
-             * add settings which are whitelisted.
-             */
-            for (var k in settings) {
-                if (_.isUndefined(user_settings[k])) {
-                    continue;
-                }
-                if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
-                    applyUserSettings(context[k], settings[k], user_settings[k]);
-                } else {
-                    context[k] = user_settings[k];
-                }
-            }
-        },
-
-        refreshWebkit: function () {
-            /* This works around a webkit bug. Refreshes the browser's viewport,
-             * otherwise chatboxes are not moved along when one is closed.
-             */
-            if ($.browser.webkit && window.requestAnimationFrame) {
-                window.requestAnimationFrame(function () {
-                    var conversejs = document.getElementById('conversejs');
-                    conversejs.style.display = 'none';
-                    var tmp = conversejs.offsetHeight; // jshint ignore:line
-                    conversejs.style.display = 'block';
-                });
-            }
-        },
-
-        webForm2xForm: function (field) {
-            /* Takes an HTML DOM and turns it into an XForm field.
-            *
-            * Parameters:
-            *      (DOMElement) field - the field to convert
-            */
-            var $input = $(field), value;
-            if ($input.is('[type=checkbox]')) {
-                value = $input.is(':checked') && 1 || 0;
-            } else if ($input.is('textarea')) {
-                value = [];
-                var lines = $input.val().split('\n');
-                for( var vk=0; vk<lines.length; vk++) {
-                    var val = $.trim(lines[vk]);
-                    if (val === '')
-                        continue;
-                    value.push(val);
-                }
-            } else {
-                value = $input.val();
-            }
-            return $(tpl_field({
-                name: $input.attr('name'),
-                value: value
-            }))[0];
-        },
-
-        contains: function (attr, query) {
-            return function (item) {
-                if (typeof attr === 'object') {
-                    var value = false;
-                    _.forEach(attr, function (a) {
-                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
-                    });
-                    return value;
-                } else if (typeof attr === 'string') {
-                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
-                } else {
-                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
-                }
-            };
-        },
-
-        xForm2webForm: function ($field, $stanza) {
-            /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-            * and turns it into a HTML DOM field.
-            *
-            *  Parameters:
-            *      (XMLElement) field - the field to convert
-            */
-
-            // FIXME: take <required> into consideration
-            var options = [], j, $options, $values, value, values;
-
-            if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
-                values = [];
-                $values = $field.children('value');
-                for (j=0; j<$values.length; j++) {
-                    values.push($($values[j]).text());
-                }
-                $options = $field.children('option');
-                for (j=0; j<$options.length; j++) {
-                    value = $($options[j]).find('value').text();
-                    options.push(tpl_select_option({
-                        value: value,
-                        label: $($options[j]).attr('label'),
-                        selected: _.startsWith(values, value),
-                        required: $field.find('required').length
-                    }));
-                }
-                return tpl_form_select({
-                    name: $field.attr('var'),
-                    label: $field.attr('label'),
-                    options: options.join(''),
-                    multiple: ($field.attr('type') === 'list-multi'),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') === 'fixed') {
-                return $('<p class="form-help">').text($field.find('value').text());
-            } else if ($field.attr('type') === 'jid-multi') {
-                return tpl_form_textarea({
-                    name: $field.attr('var'),
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') === 'boolean') {
-                return tpl_form_checkbox({
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    checked: $field.find('value').text() === "1" && 'checked="1"' || '',
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') && $field.attr('var') === 'username') {
-                return tpl_form_username({
-                    domain: ' @'+this.domain,
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type')) {
-                return tpl_form_input({
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else {
-                if ($field.attr('var') === 'ocr') { // Captcha
-                    return _.reduce(_.map($field.find('uri'),
-                            $.proxy(function (uri) {
-                                return tpl_form_captcha({
-                                    label: this.$field.attr('label'),
-                                    name: this.$field.attr('var'),
-                                    data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
-                                    type: uri.getAttribute('type'),
-                                    required: this.$field.find('required').length
-                                });
-                            }, {'$stanza': $stanza, '$field': $field})
-                        ),
-                        function (memo, num) { return memo + num; }, ''
-                    );
-                }
-            }
-        }
-    };
-
-    utils.detectLocale = function (library_check) {
-        /* Determine which locale is supported by the user's system as well
-         * as by the relevant library (e.g. converse.js or moment.js).
-         *
-         * Parameters:
-         *      (Function) library_check - returns a boolean indicating whether
-         *          the locale is supported.
-         */
-        var locale, i;
-        if (window.navigator.userLanguage) {
-            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
-        }
-        if (window.navigator.languages && !locale) {
-            for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
-            }
-        }
-        if (window.navigator.browserLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-        }
-        if (window.navigator.language && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
-        }
-        if (window.navigator.systemLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-        }
-        return locale || 'en';
-    };
-
-    utils.isConverseLocale = function (locale) {
-        if (!_.isString(locale)) { return false; }
-        return _.includes(_.keys(locales || {}), locale)
-    };
-
-    utils.isMomentLocale  = function (locale) {
-        if (!_.isString(locale)) { return false; }
-        return moment.locale() !== moment.locale(locale);
-    }
-
-    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (_.isString(preferred_locale)) {
-            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-                return preferred_locale;
-            }
-            try {
-                var obj = window.JSON.parse(preferred_locale);
-                return obj.locale_data.converse[""].lang;
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        return utils.detectLocale(isSupportedByLibrary) || 'en';
-    };
-
-    utils.isOfType = function (type, item) {
-        return item.get('type') == type;
-    }
-
-    utils.isInstance = function (type, item) {
-        return item instanceof type;
-    };
-
-    utils.getAttribute = function (key, item) {
-        return item.get(key);
-    };
-
-    utils.contains.not = function (attr, query) {
-        return function (item) {
-            return !(utils.contains(attr, query)(item));
-        };
-    };
-
-    utils.createElementsFromString = function (element, html) {
-        // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
-        var frag = document.createDocumentFragment(),
-            tmp = document.createElement('body'), child;
-        tmp.innerHTML = html;
-        // Append elements in a loop to a DocumentFragment, so that the browser does
-        // not re-render the document for each node
-        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
-            frag.appendChild(child);
-        }
-        element.appendChild(frag); // Now, append all elements at once
-        frag = tmp = null;
-    }
-
-    return utils;
-}));
-
 /** File: strophe.js
  *  A JavaScript library for writing XMPP clients.
  *
@@ -39615,7 +38746,7 @@ var requirejs, require, define;
     };
 }());
 
-define("bower_components/almond/almond.js", function(){});
+define("node_modules/almond/almond.js", function(){});
 
 /*
     This program is distributed under the terms of the MIT license.
@@ -40415,7 +39546,7 @@ function $pres(attrs) { return new Strophe.Builder("presence", attrs); }
  */
 Strophe = {
     /** Constant: VERSION */
-    VERSION: "1.2.13",
+    VERSION: "1.2.14",
 
     /** Constants: XMPP Namespace Constants
      *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -40536,6 +39667,7 @@ Strophe = {
      *  Status.DISCONNECTED - The connection has been terminated
      *  Status.DISCONNECTING - The connection is currently being terminated
      *  Status.ATTACHED - The connection has been attached
+     *  Status.REDIRECT - The connection has been redirected
      *  Status.CONNTIMEOUT - The connection has timed out
      */
     Status: {
@@ -42070,7 +41202,7 @@ Strophe.Connection.prototype = {
      *  Patches that handle websocket errors would be very welcome.
      *
      *  Parameters:
-     *    (String) protocol - 'HTTP' or 'websocket' 
+     *    (String) protocol - 'HTTP' or 'websocket'
      *    (Integer) status_code - Error status code (e.g 500, 400 or 404)
      *    (Function) callback - Function that will fire on Http error
      *
@@ -42106,8 +41238,9 @@ Strophe.Connection.prototype = {
      *
      *  Parameters:
      *    (String) jid - The user's JID.  This may be a bare JID,
-     *      or a full JID.  If a node is not supplied, SASL ANONYMOUS
-     *      authentication will be attempted.
+     *      or a full JID.  If a node is not supplied, SASL OAUTHBEARER or
+     *      SASL ANONYMOUS authentication will be attempted (OAUTHBEARER will
+     *      process the provided password value as an access token).
      *    (String) pass - The user's password.
      *    (Function) callback - The connect callback function.
      *    (Integer) wait - The optional HTTPBIND wait value.  This is the
@@ -43907,18 +43040,21 @@ Strophe.SASLOAuthBearer = function() {};
 Strophe.SASLOAuthBearer.prototype = new Strophe.SASLMechanism("OAUTHBEARER", true, 60);
 
 Strophe.SASLOAuthBearer.prototype.test = function(connection) {
-    return connection.authcid !== null;
+    return connection.pass !== null;
 };
 
 Strophe.SASLOAuthBearer.prototype.onChallenge = function(connection) {
-    var auth_str = 'n,a=';
-    auth_str = auth_str + connection.authzid;
+    var auth_str = 'n,';
+    if (connection.authcid !== null) {
+      auth_str = auth_str + 'a=' + connection.authzid;
+    }
     auth_str = auth_str + ',';
     auth_str = auth_str + "\u0001";
     auth_str = auth_str + 'auth=Bearer ';
     auth_str = auth_str + connection.pass;
     auth_str = auth_str + "\u0001";
     auth_str = auth_str + "\u0001";
+
     return utils.utf16to8(auth_str);
 };
 
@@ -44598,7 +43734,9 @@ Strophe.Bosh.prototype = {
             return;
         }
 
-        if ((reqStatus > 0 && reqStatus < 500) || req.sends > 5) {
+        var valid_request = reqStatus > 0 && reqStatus < 500;
+        var too_many_retries = req.sends > this._conn.maxRetries;
+        if (valid_request || too_many_retries) {
             // remove from internal queue
             this._removeRequest(req);
             Strophe.debug("request id "+req.id+" should now be removed");
@@ -44635,8 +43773,11 @@ Strophe.Bosh.prototype = {
         } else {
             Strophe.error("request id "+req.id+"."+req.sends+" error "+reqStatus+" happened");
         }
-        if (!(reqStatus > 0 && reqStatus < 500) || req.sends > 5) {
+
+        if (!valid_request && !too_many_retries) {
             this._throttledRequestHandler();
+        } else if (too_many_retries && !this._conn.connected) {
+            this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "giving-up");
         }
     },
 
@@ -44698,7 +43839,7 @@ Strophe.Bosh.prototype = {
                     req.xhr.withCredentials = true;
                 }
             } catch (e2) {
-                Strophe.error("XHR open failed.");
+                Strophe.error("XHR open failed: " + e2.toString());
                 if (!this._conn.connected) {
                     this._conn._changeConnectStatus(
                             Strophe.Status.CONNFAIL, "bad-service");
@@ -45144,17 +44285,23 @@ Strophe.Websocket.prototype = {
                 //_connect_cb will check for stream:error and disconnect on error
                 this._connect_cb(streamStart);
             }
-        } else if (message.data.indexOf("<close ") === 0) { //'<close xmlns="urn:ietf:params:xml:ns:xmpp-framing />') {
+        } else if (message.data.indexOf("<close ") === 0) { // <close xmlns="urn:ietf:params:xml:ns:xmpp-framing />
             this._conn.rawInput(message.data);
             this._conn.xmlInput(message);
             var see_uri = message.getAttribute("see-other-uri");
             if (see_uri) {
-                this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
+                this._conn._changeConnectStatus(
+                    Strophe.Status.REDIRECT,
+                    "Received see-other-uri, resetting connection"
+                );
                 this._conn.reset();
                 this._conn.service = see_uri;
                 this._connect();
             } else {
-                this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "Received closing stream");
+                this._conn._changeConnectStatus(
+                    Strophe.Status.CONNFAIL,
+                    "Received closing stream"
+                );
                 this._conn._doDisconnect();
             }
         } else {
@@ -45237,9 +44384,20 @@ Strophe.Websocket.prototype = {
      *
      * Nothing to do here for WebSockets
      */
-    _onClose: function() {
+    _onClose: function(e) {
         if(this._conn.connected && !this._conn.disconnecting) {
             Strophe.error("Websocket closed unexpectedly");
+            this._conn._doDisconnect();
+        } else if (e && e.code === 1006 && !this._conn.connected && this.socket) {
+            // in case the onError callback was not called (Safari 10 does not
+            // call onerror when the initial connection fails) we need to
+            // dispatch a CONNFAIL status update to be consistent with the
+            // behavior on other browsers.
+            Strophe.error("Websocket closed unexcectedly");
+            this._conn._changeConnectStatus(
+                Strophe.Status.CONNFAIL,
+                "The WebSocket connection could not be established or was disconnected."
+            );
             this._conn._doDisconnect();
         } else {
             Strophe.info("Websocket closed");
@@ -45253,7 +44411,10 @@ Strophe.Websocket.prototype = {
      */
     _no_auth_received: function (_callback) {
         Strophe.error("Server did not send any auth methods");
-        this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "Server did not send any auth methods");
+        this._conn._changeConnectStatus(
+            Strophe.Status.CONNFAIL,
+            "Server did not send any auth methods"
+        );
         if (_callback) {
             _callback = _callback.bind(this._conn);
             _callback();
@@ -45281,7 +44442,10 @@ Strophe.Websocket.prototype = {
      */
     _onError: function(error) {
         Strophe.error("Websocket error " + error);
-        this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "The WebSocket connection could not be established or was disconnected.");
+        this._conn._changeConnectStatus(
+            Strophe.Status.CONNFAIL,
+            "The WebSocket connection could not be established or was disconnected."
+        );
         this._disconnect();
     },
 
@@ -45447,6 +44611,905 @@ require(["strophe-polyfill"]);
 }));
 /* jshint ignore:end */
 ;
+/* Lo-Dash Template Loader v1.0.1
+ * Copyright 2015, Tim Branyen (@tbranyen).
+ * loader.js may be freely distributed under the MIT license.
+ */
+(function(global) {
+"use strict";
+
+// Cache used to map configuration options between load and write.
+var buildMap = {};
+
+// Alias the correct `nodeRequire` method.
+var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
+
+// Strips trailing `/` from url fragments.
+var stripTrailing = function(prop) {
+  return prop.replace(/(\/$)/, '');
+};
+
+// Define the plugin using the CommonJS syntax.
+define('tpl',['require','exports','module','lodash'],function(require, exports) {
+  var _ = require("lodash");
+
+  exports.version = "1.0.1";
+
+  // Invoked by the AMD builder, passed the path to resolve, the require
+  // function, done callback, and the configuration options.
+  exports.load = function(name, req, load, config) {
+    var isDojo;
+
+    // Dojo provides access to the config object through the req function.
+    if (!config) {
+      config = require.rawConfig;
+      isDojo = true;
+    }
+
+    var contents = "";
+    var settings = configure(config);
+
+    // If the baseUrl and root are the same, just null out the root.
+    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
+      settings.root = '';
+    }
+
+    var url = require.toUrl(settings.root + name + settings.ext);
+
+    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
+      url = stripTrailing(config.baseUrl) + url;
+    }
+
+    // Builds with r.js require Node.js to be installed.
+    if (config.isBuild) {
+      // If in Node, get access to the filesystem.
+      var fs = nodeRequire("fs");
+
+      try {
+        // First try reading the filepath as-is.
+        contents = String(fs.readFileSync(url));
+      } catch(ex) {
+        // If it failed, it's most likely because of a leading `/` and not an
+        // absolute path.  Remove the leading slash and try again.
+        if (url.slice(0, 1) === "/") {
+          url = url.slice(1);
+        }
+
+        // Try reading again with the leading `/`.
+        contents = String(fs.readFileSync(url));
+      }
+
+      // Read in the file synchronously, as RequireJS expects, and return the
+      // contents.  Process as a Lo-Dash template.
+      buildMap[name] = _.template(contents);
+
+      return load();
+    }
+
+    // Create a basic XHR.
+    var xhr = new XMLHttpRequest();
+
+    // Wait for it to load.
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var templateSettings = _.clone(settings.templateSettings);
+
+        // Attach the sourceURL.
+        templateSettings.sourceURL = url;
+
+        // Process as a Lo-Dash template and cache.
+        buildMap[name] = _.template(xhr.responseText, templateSettings);
+
+        // Return the compiled template.
+        load(buildMap[name]);
+      }
+    };
+
+    // Initiate the fetch.
+    xhr.open("GET", url, true);
+    xhr.send(null);
+  };
+
+  // Also invoked by the AMD builder, this writes out a compatible define
+  // call that will work with loaders such as almond.js that cannot read
+  // the configuration data.
+  exports.write = function(pluginName, moduleName, write) {
+    var template = buildMap[moduleName].source;
+
+    // Write out the actual definition
+    write(strDefine(pluginName, moduleName, template));
+  };
+
+  // This is for curl.js/cram.js build-time support.
+  exports.compile = function(pluginName, moduleName, req, io, config) {
+    configure(config);
+
+    // Ask cram to fetch the template file (resId) and pass it to `write`.
+    io.read(moduleName, write, io.error);
+
+    function write(template) {
+      // Write-out define(id,function(){return{/* template */}});
+      io.write(strDefine(pluginName, moduleName, template));
+    }
+  };
+
+  // Crafts the written definition form of the module during a build.
+  function strDefine(pluginName, moduleName, template) {
+    return [
+      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
+        [
+          "function(_) {",
+            "return ", template, ";",
+          "}"
+        ].join(""),
+      ");\n"
+    ].join("");
+  }
+
+  function configure(config) {
+    // Default settings point to the project root and using html files.
+    var settings = _.extend({
+      ext: ".html",
+      root: config.baseUrl,
+      templateSettings: {}
+    }, config.lodashLoader);
+
+    // Ensure the root has been properly configured with a trailing slash,
+    // unless it's an empty string or undefined, in which case work off the
+    // baseUrl.
+    if (settings.root && settings.root.slice(-1) !== "/") {
+      settings.root += "/";
+    }
+
+    // Set the custom passed in template settings.
+    _.extend(_.templateSettings, settings.templateSettings);
+
+    return settings;
+  }
+});
+
+})(typeof global === "object" ? global : this);
+
+
+define('tpl!field', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<field var="' +
+__e(name) +
+'">';
+ if (_.isArray(value)) { ;
+__p += '\n    ';
+ _.each(value,function(arrayValue) { ;
+__p += '<value>' +
+__e(arrayValue) +
+'</value>';
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
+__e(value) +
+'</value>\n';
+ } ;
+__p += '</field>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<option value="' +
+__e(value) +
+'" ';
+ if (selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
+__e(label) +
+'</option>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>' +
+__e(label) +
+'</label>\n<select name="' +
+__e(name) +
+'"  ';
+ if (multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
+((__t = (options)) == null ? '' : __t) +
+'</select>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="label-ta">' +
+__e(label) +
+'</label>\n<textarea name="' +
+__e(name) +
+'">' +
+__e(value) +
+'</textarea>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label>' +
+__e(label) +
+'</label>\n<input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" ' +
+__e(checked) +
+'>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'"\n        ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span title="' +
+__e(domain) +
+'">' +
+__e(domain) +
+'</span>\n</div>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" \n    ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n    ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<img src="data:' +
+__e(type) +
+';base64,' +
+__e(data) +
+'">\n<input name="' +
+__e(name) +
+'" type="text" ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
+
+}
+return __p
+};});
+
+/*global define, escape, locales, Jed */
+(function (root, factory) {
+    define('utils',[
+        "jquery.noconflict",
+        "sizzle",
+        "jquery.browser",
+        "lodash.noconflict",
+        "locales",
+        "moment_with_locales",
+        "strophe",
+        "tpl!field",
+        "tpl!select_option",
+        "tpl!form_select",
+        "tpl!form_textarea",
+        "tpl!form_checkbox",
+        "tpl!form_username",
+        "tpl!form_input",
+        "tpl!form_captcha"
+    ], factory);
+}(this, function (
+        $, sizzle, dummy, _,
+        locales,
+        moment,
+        Strophe,
+        tpl_field,
+        tpl_select_option,
+        tpl_form_select,
+        tpl_form_textarea,
+        tpl_form_checkbox,
+        tpl_form_username,
+        tpl_form_input,
+        tpl_form_captcha
+    ) {
+    "use strict";
+    locales = locales || {};
+    Strophe = Strophe.Strophe;
+
+    var XFORM_TYPE_MAP = {
+        'text-private': 'password',
+        'text-single': 'text',
+        'fixed': 'label',
+        'boolean': 'checkbox',
+        'hidden': 'hidden',
+        'jid-multi': 'textarea',
+        'list-single': 'dropdown',
+        'list-multi': 'dropdown'
+    };
+
+    var afterAnimationEnd = function (el, callback) {
+        el.classList.remove('visible');
+        if (_.isFunction(callback)) {
+            callback();
+        }
+    };
+
+    var unescapeHTML = function (htmlEscapedText) {
+        /* Helper method that replace HTML-escaped symbols with equivalent characters
+         * (e.g. transform occurrences of '&amp;' to '&')
+         *
+         * Parameters:
+         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         */
+        var div = document.createElement('div');
+        div.innerHTML = htmlEscapedText;
+        return div.innerText;
+    }
+
+    var isImage = function (url) {
+        var deferred = new $.Deferred();
+        var img = new Image();
+        var timer = window.setTimeout(function () {
+            deferred.reject();
+            img = null;
+        }, 3000);
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            deferred.reject();
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            deferred.resolve(img);
+        };
+        img.src = url;
+        return deferred.promise();
+    };
+
+    $.fn.hasScrollBar = function() {
+        if (!$.contains(document, this.get(0))) {
+            return false;
+        }
+        if(this.parent().height() < this.get(0).scrollHeight) {
+            return true;
+        }
+        return false;
+    };
+
+    var throttledHTML = _.throttle(function (el, html) {
+        el.innerHTML = html;
+    }, 500);
+
+    $.fn.addHyperlinks = function () {
+        if (this.length > 0) {
+            this.each(function (i, obj) {
+                var prot, escaped_url;
+                var x = obj.innerHTML;
+                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
+                if (list) {
+                    for (i=0; i<list.length; i++) {
+                        prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
+                        escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
+                    }
+                }
+                obj.innerHTML = x;
+                _.forEach(list, function (url) {
+                    isImage(unescapeHTML(url)).then(function (img) {
+                        img.className = 'chat-image';
+                        throttledHTML(obj.querySelector('a'), img.outerHTML);
+                    });
+                });
+            });
+        }
+        return this;
+    };
+
+    $.fn.addEmoticons = function (allowed) {
+        if (allowed) {
+            if (this.length > 0) {
+                this.each(function (i, obj) {
+                    var text = $(obj).html();
+                    text = text.replace(/&gt;:\)/g, '<span class="emoticon icon-evil"></span>');
+                    text = text.replace(/:\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/:\-\)/g, '<span class="emoticon icon-smiley"></span>');
+                    text = text.replace(/;\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/;\-\)/g, '<span class="emoticon icon-wink"></span>');
+                    text = text.replace(/:D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:\-D/g, '<span class="emoticon icon-grin"></span>');
+                    text = text.replace(/:P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-P/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/:\-p/g, '<span class="emoticon icon-tongue"></span>');
+                    text = text.replace(/8\)/g, '<span class="emoticon icon-cool"></span>');
+                    text = text.replace(/:S/g, '<span class="emoticon icon-confused"></span>');
+                    text = text.replace(/:\\/g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/:\/ /g, '<span class="emoticon icon-wondering"></span>');
+                    text = text.replace(/&gt;:\(/g, '<span class="emoticon icon-angry"></span>');
+                    text = text.replace(/:\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:\-\(/g, '<span class="emoticon icon-sad"></span>');
+                    text = text.replace(/:O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/:\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\=\-O/g, '<span class="emoticon icon-shocked"></span>');
+                    text = text.replace(/\(\^.\^\)b/g, '<span class="emoticon icon-thumbs-up"></span>');
+                    text = text.replace(/&lt;3/g, '<span class="emoticon icon-heart"></span>');
+                    $(obj).html(text);
+                });
+            }
+        }
+        return this;
+    };
+
+    var utils = {
+        // Translation machinery
+        // ---------------------
+        __: function (str) {
+            if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
+                return Jed.sprintf.apply(Jed, arguments);
+            }
+            if (typeof this.jed === "undefined") {
+                this.jed = new Jed(window.JSON.parse(locales[this.locale]));
+            }
+            var t = this.jed.translate(str);
+            if (arguments.length>1) {
+                return t.fetch.apply(t, [].slice.call(arguments,1));
+            } else {
+                return t.fetch();
+            }
+        },
+
+        ___: function (str) {
+            /* XXX: This is part of a hack to get gettext to scan strings to be
+             * translated. Strings we cannot send to the function above because
+             * they require variable interpolation and we don't yet have the
+             * variables at scan time.
+             *
+             * See actionInfoMessages in src/converse-muc.js
+             */
+            return str;
+        },
+
+        isLocaleAvailable: function (locale, available) {
+            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+             *
+             * Parameters:
+             *      (Function) available - returns a boolean indicating whether the locale is supported
+             */
+            if (available(locale)) {
+                return locale;
+            } else {
+                var sublocale = locale.split("-")[0];
+                if (sublocale !== locale && available(sublocale)) {
+                    return sublocale;
+                }
+            }
+        },
+
+        fadeIn: function (el, callback) {
+            if ($.fx.off) {
+                el.classList.remove('hidden');
+                if (_.isFunction(callback)) {
+                    callback();
+                }
+                return;
+            }
+            if (_.includes(el.classList, 'hidden')) {
+                /* XXX: This doesn't appear to be working...
+                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
+                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
+                */
+                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
+                el.classList.add('visible');
+                el.classList.remove('hidden');
+            } else {
+                afterAnimationEnd(el, callback);
+            }
+        },
+
+        isSameBareJID: function (jid1, jid2) {
+            return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
+                   Strophe.getBareJidFromJid(jid2).toLowerCase();
+        },
+
+        isNewMessage: function (message) {
+            /* Given a stanza, determine whether it's a new
+             * message, i.e. not a MAM archived one.
+             */
+            if (message instanceof Element) {
+                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+            } else {
+                return !message.get('archive_id');
+            }
+        },
+
+        isOTRMessage: function (message) {
+            var body = message.querySelector('body'),
+                text = (!_.isNull(body) ? body.textContent: undefined);
+            return text && !!text.match(/^\?OTR/);
+        },
+
+        isHeadlineMessage: function (message) {
+            var from_jid = message.getAttribute('from');
+            if (message.getAttribute('type') === 'headline') {
+                return true;
+            }
+            if (message.getAttribute('type') !== 'error' &&
+                    !_.isNil(from_jid) &&
+                    !_.includes(from_jid, '@')) {
+                // Some servers (I'm looking at you Prosody) don't set the message
+                // type to "headline" when sending server messages. For now we
+                // check if an @ signal is included, and if not, we assume it's
+                // a headline message.
+                return true;
+            }
+            return false;
+        },
+
+        merge: function merge (first, second) {
+            /* Merge the second object into the first one.
+             */
+            for (var k in second) {
+                if (_.isObject(first[k])) {
+                    merge(first[k], second[k]);
+                } else {
+                    first[k] = second[k];
+                }
+            }
+        },
+
+        applyUserSettings: function applyUserSettings (context, settings, user_settings) {
+            /* Configuration settings might be nested objects. We only want to
+             * add settings which are whitelisted.
+             */
+            for (var k in settings) {
+                if (_.isUndefined(user_settings[k])) {
+                    continue;
+                }
+                if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
+                    applyUserSettings(context[k], settings[k], user_settings[k]);
+                } else {
+                    context[k] = user_settings[k];
+                }
+            }
+        },
+
+        refreshWebkit: function () {
+            /* This works around a webkit bug. Refreshes the browser's viewport,
+             * otherwise chatboxes are not moved along when one is closed.
+             */
+            if ($.browser.webkit && window.requestAnimationFrame) {
+                window.requestAnimationFrame(function () {
+                    var conversejs = document.getElementById('conversejs');
+                    conversejs.style.display = 'none';
+                    var tmp = conversejs.offsetHeight; // jshint ignore:line
+                    conversejs.style.display = 'block';
+                });
+            }
+        },
+
+        webForm2xForm: function (field) {
+            /* Takes an HTML DOM and turns it into an XForm field.
+            *
+            * Parameters:
+            *      (DOMElement) field - the field to convert
+            */
+            var $input = $(field), value;
+            if ($input.is('[type=checkbox]')) {
+                value = $input.is(':checked') && 1 || 0;
+            } else if ($input.is('textarea')) {
+                value = [];
+                var lines = $input.val().split('\n');
+                for( var vk=0; vk<lines.length; vk++) {
+                    var val = $.trim(lines[vk]);
+                    if (val === '')
+                        continue;
+                    value.push(val);
+                }
+            } else {
+                value = $input.val();
+            }
+            return $(tpl_field({
+                name: $input.attr('name'),
+                value: value
+            }))[0];
+        },
+
+        contains: function (attr, query) {
+            return function (item) {
+                if (typeof attr === 'object') {
+                    var value = false;
+                    _.forEach(attr, function (a) {
+                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
+                    });
+                    return value;
+                } else if (typeof attr === 'string') {
+                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
+                } else {
+                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
+                }
+            };
+        },
+
+        xForm2webForm: function ($field, $stanza) {
+            /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+            * and turns it into a HTML DOM field.
+            *
+            *  Parameters:
+            *      (XMLElement) field - the field to convert
+            */
+
+            // FIXME: take <required> into consideration
+            var options = [], j, $options, $values, value, values;
+
+            if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
+                values = [];
+                $values = $field.children('value');
+                for (j=0; j<$values.length; j++) {
+                    values.push($($values[j]).text());
+                }
+                $options = $field.children('option');
+                for (j=0; j<$options.length; j++) {
+                    value = $($options[j]).find('value').text();
+                    options.push(tpl_select_option({
+                        value: value,
+                        label: $($options[j]).attr('label'),
+                        selected: _.startsWith(values, value),
+                        required: $field.find('required').length
+                    }));
+                }
+                return tpl_form_select({
+                    name: $field.attr('var'),
+                    label: $field.attr('label'),
+                    options: options.join(''),
+                    multiple: ($field.attr('type') === 'list-multi'),
+                    required: $field.find('required').length
+                });
+            } else if ($field.attr('type') === 'fixed') {
+                return $('<p class="form-help">').text($field.find('value').text());
+            } else if ($field.attr('type') === 'jid-multi') {
+                return tpl_form_textarea({
+                    name: $field.attr('var'),
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
+                });
+            } else if ($field.attr('type') === 'boolean') {
+                return tpl_form_checkbox({
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    checked: $field.find('value').text() === "1" && 'checked="1"' || '',
+                    required: $field.find('required').length
+                });
+            } else if ($field.attr('type') && $field.attr('var') === 'username') {
+                return tpl_form_username({
+                    domain: ' @'+this.domain,
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
+                });
+            } else if ($field.attr('type')) {
+                return tpl_form_input({
+                    name: $field.attr('var'),
+                    type: XFORM_TYPE_MAP[$field.attr('type')],
+                    label: $field.attr('label') || '',
+                    value: $field.find('value').text(),
+                    required: $field.find('required').length
+                });
+            } else {
+                if ($field.attr('var') === 'ocr') { // Captcha
+                    return _.reduce(_.map($field.find('uri'),
+                            $.proxy(function (uri) {
+                                return tpl_form_captcha({
+                                    label: this.$field.attr('label'),
+                                    name: this.$field.attr('var'),
+                                    data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
+                                    type: uri.getAttribute('type'),
+                                    required: this.$field.find('required').length
+                                });
+                            }, {'$stanza': $stanza, '$field': $field})
+                        ),
+                        function (memo, num) { return memo + num; }, ''
+                    );
+                }
+            }
+        }
+    };
+
+    utils.detectLocale = function (library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - returns a boolean indicating whether
+         *          the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    };
+
+    utils.isConverseLocale = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return _.includes(_.keys(locales || {}), locale)
+    };
+
+    utils.isMomentLocale  = function (locale) {
+        if (!_.isString(locale)) { return false; }
+        return moment.locale() !== moment.locale(locale);
+    }
+
+    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+        if (_.isString(preferred_locale)) {
+            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+                return preferred_locale;
+            }
+            try {
+                var obj = window.JSON.parse(preferred_locale);
+                return obj.locale_data.converse[""].lang;
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        return utils.detectLocale(isSupportedByLibrary) || 'en';
+    };
+
+    utils.isOfType = function (type, item) {
+        return item.get('type') == type;
+    }
+
+    utils.isInstance = function (type, item) {
+        return item instanceof type;
+    };
+
+    utils.getAttribute = function (key, item) {
+        return item.get(key);
+    };
+
+    utils.contains.not = function (attr, query) {
+        return function (item) {
+            return !(utils.contains(attr, query)(item));
+        };
+    };
+
+    utils.createElementsFromString = function (element, html) {
+        // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
+        var frag = document.createDocumentFragment(),
+            tmp = document.createElement('body'), child;
+        tmp.innerHTML = html;
+        // Append elements in a loop to a DocumentFragment, so that the browser does
+        // not re-render the document for each node
+        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
+            frag.appendChild(child);
+        }
+        element.appendChild(frag); // Now, append all elements at once
+        frag = tmp = null;
+    }
+
+    utils.isPersistableModel = function (model) {
+        return model.collection && model.collection.browserStorage;
+    }
+
+    utils.saveWithFallback = function (model, attrs) {
+        if (utils.isPersistableModel(this)) {
+            model.save(attrs);
+        } else {
+            model.set(attrs);
+        }
+    }
+    return utils;
+}));
+
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define('pluggable',['exports', 'lodash'], factory);
@@ -48858,7 +48921,9 @@ return Backbone.BrowserStorage;
             if (!_.isUndefined(this.roster)) {
                 this.roster.browserStorage._clear();
             }
-            this.session.browserStorage._clear();
+            if (!_.isUndefined(this.session) && this.session.browserStorage) {
+                this.session.browserStorage._clear();
+            }
         };
 
         this.logOut = function () {
@@ -49015,6 +49080,7 @@ return Backbone.BrowserStorage;
             }
             // First set up chat boxes, before populating the roster, so that
             // the controlbox is properly set up and ready for the rosterview.
+            _converse.roster.onConnected();
             _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
@@ -49042,6 +49108,7 @@ return Backbone.BrowserStorage;
             // by browser.
             _converse.connection.flush();
 
+            _converse.initSession();
             _converse.setUserJid();
             _converse.enableCarbons();
 
@@ -49263,6 +49330,45 @@ return Backbone.BrowserStorage;
                 }
             },
 
+            onConnected: function () {
+                /* Called as soon as the connection has been established
+                 * (either after initial login, or after reconnection).
+                 *
+                 * Use the opportunity to register stanza handlers.
+                 */
+                this.registerRosterHandler();
+                this.registerRosterXHandler();
+            },
+
+            registerRosterHandler: function () {
+                /* Register a handler for roster IQ "set" stanzas, which update
+                 * roster contacts.
+                 */
+                _converse.connection.addHandler(
+                    _converse.roster.onRosterPush.bind(_converse.roster),
+                    Strophe.NS.ROSTER, 'iq', "set"
+                );
+            },
+
+            registerRosterXHandler: function () {
+                /* Register a handler for RosterX message stanzas, which are
+                 * used to suggest roster contacts to a user.
+                 */
+                var t = 0;
+                _converse.connection.addHandler(
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                _converse.connection.flush();
+                                _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                            }, t);
+                        t += $(msg).find('item').length*250;
+                        return true;
+                    },
+                    Strophe.NS.ROSTERX, 'message', null
+                );
+            },
+
             fetchRosterContacts: function () {
                 /* Fetches the roster contacts, first by trying the
                  * sessionStorage cache, and if that's empty, then by querying
@@ -49307,7 +49413,7 @@ return Backbone.BrowserStorage;
             },
 
             isSelf: function (jid) {
-                return (Strophe.getBareJidFromJid(jid) === Strophe.getBareJidFromJid(_converse.connection.jid));
+                return utils.isSameBareJID(jid, _converse.connection.jid);
             },
 
             addAndSubscribe: function (jid, name, groups, message, attributes) {
@@ -49719,13 +49825,6 @@ return Backbone.BrowserStorage;
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            isNewMessage: function (stanza) {
-                /* Given a message stanza, determine whether it's a new
-                 * message, i.e. not an archived one.
-                 */
-                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', stanza).length);
-            },
-
             newMessageWillBeHidden: function () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
@@ -49743,7 +49842,7 @@ return Backbone.BrowserStorage;
                 if (_.isNull(stanza.querySelector('body'))) {
                     return; // The message has no text
                 }
-                if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                     this.save({'num_unread': this.get('num_unread') + 1});
                     _converse.incrementMsgCounter();
                 }
@@ -49804,7 +49903,7 @@ return Backbone.BrowserStorage;
                  */
                 // TODO: we can likely just reuse "onMessage" below
                 var from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (from_jid === _converse.bare_jid) {
+                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                     return true;
                 }
                 // Get chat box, but only create a new one when the message has a body.
@@ -50384,6 +50483,7 @@ return Backbone.BrowserStorage;
             if (this.features) {
                 this.features.reset();
             }
+            this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -50433,7 +50533,6 @@ return Backbone.BrowserStorage;
         }
         _converse.initPlugins();
         _converse.initChatBoxes();
-        _converse.initSession();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();
@@ -50792,7 +50891,7 @@ with (obj) {
  if (show_emoticons)  { ;
 __p += '\n    <li class="toggle-smiley icon-happy" title="' +
 __e(label_insert_smiley) +
-'">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
+'">\n        <ul class="toolbar-picker-panel">\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
  } ;
 __p += '\n';
  if (show_call_button)  { ;
@@ -50827,6 +50926,17 @@ __p += '<canvas height="' +
 return __p
 };});
 
+
+define('tpl!spinner', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="spinner centered"/>\n';
+
+}
+return __p
+};});
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -50844,7 +50954,8 @@ return __p
             "tpl!message",
             "tpl!help_message",
             "tpl!toolbar",
-            "tpl!avatar"
+            "tpl!avatar",
+            "tpl!spinner"
     ], factory);
 }(this, function (
             converse,
@@ -50854,7 +50965,8 @@ return __p
             tpl_message,
             tpl_help_message,
             tpl_toolbar,
-            tpl_avatar
+            tpl_avatar,
+            tpl_spinner
     ) {
     "use strict";
     var $ = converse.env.jQuery,
@@ -51025,7 +51137,7 @@ return __p
 
                 addSpinner: function () {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
-                        this.$content.prepend('<span class="spinner"/>');
+                        this.$content.prepend(tpl_spinner);
                     }
                 },
 
@@ -51082,7 +51194,7 @@ return __p
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    var msg_dates, idx,
+                    var msg_dates,
                         $first_msg = this.$content.find('.chat-message:first'),
                         first_msg_date = $first_msg.data('isodate'),
                         current_msg_date = moment(attrs.time) || moment,
@@ -51126,13 +51238,12 @@ return __p
                     });
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
-                    idx = msg_dates.indexOf(current_msg_date)-1;
+                    var idx = msg_dates.indexOf(current_msg_date)-1;
+                    var $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
                     _.flow(
                         function ($el) {
-                            $el.insertAfter(
-                                this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]'));
-                            return $el;
-                        }.bind(this),
+                            $el.insertAfter($latest_message);
+                        },
                         this.scrollDown.bind(this)
                     )(this.renderMessage(attrs));
                 },
@@ -51215,7 +51326,7 @@ return __p
                         })));
                     }
                     if (spinner === true) {
-                        this.$content.append('<span class="spinner"/>');
+                        this.$content.append(tpl_spinner);
                     } else if (spinner === false) {
                         this.$content.find('span.spinner').remove();
                     }
@@ -51249,16 +51360,16 @@ return __p
 
                 handleTextMessage: function (message) {
                     this.showMessage(_.clone(message.attributes));
-                    if (message.get('sender') !== 'me') {
-                        if (!message.get('archive_id') && this.model.get('scrolled', true)) {
-                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
-                        }
-                    } else {
+                    if (utils.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
                         // gets scrolled down. We always want to scroll down
                         // when the user writes a message as opposed to when a
                         // message is received.
                         this.model.set('scrolled', false);
+                    } else {
+                        if (utils.isNewMessage(message) && this.model.get('scrolled', true)) {
+                            this.$el.find('.new-msgs-indicator').removeClass('hidden');
+                        }
                     }
                     if (this.shouldShowOnTextMessage()) {
                         this.show();
@@ -51661,17 +51772,15 @@ return __p
                         });
                         return;
                     }
+                    var scrolled = true;
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.save('scrolled', false);
+                        scrolled = false;
                         this.onScrolledDown();
-                    } else {
-                        // We're not at the bottom of the chat area, so we mark
-                        // that the box is in a scrolled-up state.
-                        this.model.save('scrolled', true);
                     }
+                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {
@@ -52179,19 +52288,19 @@ __e(chat_status) +
 __e(chat_status) +
 '" title="' +
 __e(desc_status) +
-'"></span>\n        ';
- if (num_unread) { ;
-__p += '\n        <span class="pulse"></span>\n        ';
- } ;
-__p += '\n    </div>\n    <span class="contact-name unread-msgs">' +
-__e(fullname) +
-'</span>\n    ';
+'"></span>\n    </div>\n    ';
  if (num_unread) { ;
 __p += '\n    <span class="msgs-indicator">' +
 __e( num_unread ) +
 '</span>\n    ';
  } ;
-__p += '\n</a>\n';
+__p += '\n    <span class="contact-name ';
+ if (num_unread) { ;
+__p += ' unread-msgs ';
+ } ;
+__p += '">' +
+__e(fullname) +
+'</span>\n</a>\n';
  if (allow_contact_removal) { ;
 __p += '\n<a class="remove-xmpp-contact icon-remove" title="' +
 __e(desc_remove) +
@@ -52248,7 +52357,6 @@ return __p
             //
             // New functions which don't exist yet can also be added.
             afterReconnected: function () {
-                this.rosterview.registerRosterXHandler();
                 this.__super__.afterReconnected.apply(this, arguments);
             },
 
@@ -52278,7 +52386,8 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__;
+                __ = _converse.__,
+                ___ = _converse.___;
 
             this.updateSettings({
                 allow_chat_pending_contacts: true,
@@ -52475,8 +52584,6 @@ return __p
                 id: 'converse-roster',
 
                 initialize: function () {
-                    this.roster_handler_ref = this.registerRosterHandler();
-                    this.rosterx_handler_ref = this.registerRosterXHandler();
                     _converse.roster.on("add", this.onContactAdd, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
@@ -52530,13 +52637,6 @@ return __p
                     }
                 }, 100),
 
-                unregisterHandlers: function () {
-                    _converse.connection.deleteHandler(this.roster_handler_ref);
-                    delete this.roster_handler_ref;
-                    _converse.connection.deleteHandler(this.rosterx_handler_ref);
-                    delete this.rosterx_handler_ref;
-                },
-
                 update: _.debounce(function () {
                     if (_.isNull(this.roster.parentElement)) {
                         this.$el.append(this.$roster.show());
@@ -52587,31 +52687,6 @@ return __p
                     this.renderRoster();
                     this.render().update();
                     return this;
-                },
-
-                registerRosterHandler: function () {
-                    _converse.connection.addHandler(
-                        _converse.roster.onRosterPush.bind(_converse.roster),
-                        Strophe.NS.ROSTER, 'iq', "set"
-                    );
-                },
-
-                registerRosterXHandler: function () {
-                    var t = 0;
-                    _converse.connection.addHandler(
-                        function (msg) {
-                            window.setTimeout(
-                                function () {
-                                    _converse.connection.flush();
-                                    _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
-                                },
-                                t
-                            );
-                            t += $(msg).find('item').length*250;
-                            return true;
-                        },
-                        Strophe.NS.ROSTERX, 'message', null
-                    );
                 },
 
                 onGroupAdd: function (group) {
@@ -52814,7 +52889,7 @@ return __p
                         this.el.classList.add('pending-xmpp-contact');
                         this.$el.html(tpl_pending_contact(
                             _.extend(item.toJSON(), {
-                                'desc_remove': __('Click to remove this contact'),
+                                'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -52822,8 +52897,8 @@ return __p
                         this.el.classList.add('requesting-xmpp-contact');
                         this.$el.html(tpl_requesting_contact(
                             _.extend(item.toJSON(), {
-                                'desc_accept': __("Click to accept this contact request"),
-                                'desc_decline': __("Click to decline this contact request"),
+                                'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
+                                'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
                                 'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                             })
                         ));
@@ -52842,7 +52917,7 @@ return __p
                         _.extend(item.toJSON(), {
                             'desc_status': STATUSES[chat_status||'offline'],
                             'desc_chat': __('Click to chat with this contact'),
-                            'desc_remove': __('Click to remove this contact'),
+                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
                             'title_fullname': __('Name'),
                             'allow_contact_removal': _converse.allow_contact_removal,
                             'num_unread': item.get('num_unread') || 0
@@ -53160,7 +53235,7 @@ return __p
                     return; // The message has no text
                 }
                 if (chatbox.get('type') !== 'chatroom' &&
-                    chatbox.isNewMessage(data.stanza) &&
+                    utils.isNewMessage(data.stanza) &&
                     chatbox.newMessageWillBeHidden()) {
 
                     var contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
@@ -53265,9 +53340,9 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            initSession: function () {
+            initChatBoxes: function () {
+                this.__super__.initChatBoxes.apply(this, arguments);
                 this.controlboxtoggle = new this.ControlBoxToggle();
-                this.__super__.initSession.apply(this, arguments);
             },
 
             initConnection: function () {
@@ -53280,7 +53355,6 @@ return __p
             _tearDown: function () {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
-                    this.rosterview.unregisterHandlers();
                     // Removes roster groups
                     this.rosterview.model.off().reset();
                     this.rosterview.each(function (groupview) {
@@ -53293,8 +53367,11 @@ return __p
 
             clearSession: function () {
                 this.__super__.clearSession.apply(this, arguments);
-                if (_.isUndefined(this.connection) && this.connection.connected) {
-                    this.chatboxes.get('controlbox').save({'connected': false});
+                var controlbox = this.chatboxes.get('controlbox');
+                if (controlbox &&
+                        controlbox.collection &&
+                        controlbox.collection.browserStorage) {
+                    controlbox.save({'connected': false});
                 }
             },
 
@@ -53498,6 +53575,9 @@ return __p
 
                 close: function (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
                         this.model.save({'closed': true});
                     } else {
@@ -53516,6 +53596,9 @@ return __p
                 },
 
                 hide: function (callback) {
+                    if (_converse.sticky_controlbox) {
+                        return;
+                    }
                     this.$el.addClass('hidden');
                     utils.refreshWebkit();
                     _converse.emit('chatBoxClosed', this);
@@ -53789,6 +53872,7 @@ return __p
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
+                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render: function () {
@@ -54307,7 +54391,7 @@ with (obj) {
  if (show_emoticons)  { ;
 __p += '\n    <li class="toggle-smiley icon-happy" title="' +
 __e(label_insert_smiley) +
-'">\n        <ul>\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
+'">\n        <ul class="toolbar-picker-panel">\n            <li><a class="icon-smiley" href="#" data-emoticon=":)"></a></li>\n            <li><a class="icon-wink" href="#" data-emoticon=";)"></a></li>\n            <li><a class="icon-grin" href="#" data-emoticon=":D"></a></li>\n            <li><a class="icon-tongue" href="#" data-emoticon=":P"></a></li>\n            <li><a class="icon-cool" href="#" data-emoticon="8)"></a></li>\n            <li><a class="icon-evil" href="#" data-emoticon=">:)"></a></li>\n            <li><a class="icon-confused" href="#" data-emoticon=":S"></a></li>\n            <li><a class="icon-wondering" href="#" data-emoticon=":\\"></a></li>\n            <li><a class="icon-angry" href="#" data-emoticon=">:("></a></li>\n            <li><a class="icon-sad" href="#" data-emoticon=":("></a></li>\n            <li><a class="icon-shocked" href="#" data-emoticon=":O"></a></li>\n            <li><a class="icon-thumbs-up" href="#" data-emoticon="(^.^)b"></a></li>\n            <li><a class="icon-heart" href="#" data-emoticon="<3"></a></li>\n        </ul>\n    </li>\n';
  } ;
 __p += '\n';
  if (show_call_button)  { ;
@@ -55061,6 +55145,7 @@ define("awesomplete", (function (global) {
             "tpl!room_description",
             "tpl!room_item",
             "tpl!room_panel",
+            "tpl!spinner",
             "awesomplete",
             "converse-chatview"
     ], factory);
@@ -55083,6 +55168,7 @@ define("awesomplete", (function (global) {
             tpl_room_description,
             tpl_room_item,
             tpl_room_panel,
+            tpl_spinner,
             Awesomplete
     ) {
 
@@ -55375,41 +55461,39 @@ define("awesomplete", (function (global) {
             });
 
             _converse.openChatRoom = function (settings) {
-                /* Creates a new chat room, making sure that certain attributes
+                /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings = _.extend(
-                    _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
-                    settings
-                );
-                return _converse.chatboxviews.showChat(
-                    _.extend({
-                        'affiliation': null,
-                        'connection_status': ROOMSTATUS.DISCONNECTED,
-                        'description': '',
-                        'features_fetched': false,
-                        'roomconfig': {},
-                        'type': CHATROOMS_TYPE,
-                    }, settings)
-                );
+                settings = _.assign({'type': CHATROOMS_TYPE}, settings);
+                return _converse.chatboxviews.showChat(settings);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
                 defaults: function () {
-                    return _.extend(_.clone(_converse.ChatBox.prototype.defaults), {
-                        'type': CHATROOMS_TYPE,
-                        // For group chats, we distinguish between generally unread
-                        // messages and those ones that specifically mention the
-                        // user.
-                        //
-                        // To keep things simple, we reuse `num_unread` from
-                        // _converse.ChatBox to indicate unread messages which
-                        // mention the user and `num_unread_general` to indicate
-                        // generally unread messages (which *includes* mentions!).
-                        'num_unread_general': 0
-                    });
+                    return _.assign(
+                        _.clone(_converse.ChatBox.prototype.defaults),
+                        _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
+                        {
+                          // For group chats, we distinguish between generally unread
+                          // messages and those ones that specifically mention the
+                          // user.
+                          //
+                          // To keep things simple, we reuse `num_unread` from
+                          // _converse.ChatBox to indicate unread messages which
+                          // mention the user and `num_unread_general` to indicate
+                          // generally unread messages (which *includes* mentions!).
+                          'num_unread_general': 0,
+
+                          'affiliation': null,
+                          'connection_status': ROOMSTATUS.DISCONNECTED,
+                          'description': '',
+                          'features_fetched': false,
+                          'roomconfig': {},
+                          'type': CHATROOMS_TYPE,
+                        }
+                    );
                 },
 
                 isUserMentioned: function (message) {
@@ -55433,7 +55517,7 @@ define("awesomplete", (function (global) {
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
-                    if (this.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
+                    if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
                         this.save({'num_unread_general': this.get('num_unread_general') + 1});
                         if (this.isUserMentioned(body.textContent)) {
                             this.save({'num_unread': this.get('num_unread') + 1});
@@ -55443,8 +55527,10 @@ define("awesomplete", (function (global) {
                 },
 
                 clearUnreadMsgCounter: function() {
-                    this.save({'num_unread': 0});
-                    this.save({'num_unread_general': 0});
+                    utils.saveWithFallback(this,  {
+                        'num_unread': 0,
+                        'num_unread_general': 0
+                    });
                 }
             });
 
@@ -55578,7 +55664,7 @@ define("awesomplete", (function (global) {
                      *
                      * This is instead done in `afterConnected` below.
                      */
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         // Without a connection, we haven't yet initialized
                         // localstorage
                         this.model.save();
@@ -56257,7 +56343,7 @@ define("awesomplete", (function (global) {
                 },
 
                 cleanup: function () {
-                    if (this.model.collection.browserStorage) {
+                    if (this.model.collection && this.model.collection.browserStorage) {
                         this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
                     } else {
                         this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
@@ -56569,7 +56655,7 @@ define("awesomplete", (function (global) {
                         nick_el.classList.remove('error');
                     }
                     this.$el.find('.chatroom-form-container')
-                            .replaceWith('<span class="spinner centered"/>');
+                        .replaceWith(tpl_spinner);
                     this.join(nick);
                 },
 
@@ -56683,7 +56769,7 @@ define("awesomplete", (function (global) {
                 submitPassword: function (ev) {
                     ev.preventDefault();
                     var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
-                    this.$el.find('.chatroom-form-container').replaceWith('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
                     this.join(this.model.get('nick'), password);
                 },
 
@@ -56747,7 +56833,7 @@ define("awesomplete", (function (global) {
                     var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
                     if (_.isNil(item)) { return; }
                     var jid = item.getAttribute('jid');
-                    if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+                    if (utils.isSameBareJID(jid, _converse.bare_jid)) {
                         var affiliation = item.getAttribute('affiliation');
                         var role = item.getAttribute('role');
                         if (affiliation) {
@@ -56927,7 +57013,7 @@ define("awesomplete", (function (global) {
 
                 showSpinner: function () {
                     this.$('.chatroom-body').children().addClass('hidden');
-                    this.$el.find('.chatroom-body').prepend('<span class="spinner centered"/>');
+                    this.$el.find('.chatroom-body').prepend(tpl_spinner);
                 },
 
                 hideSpinner: function () {
@@ -57418,6 +57504,7 @@ define("awesomplete", (function (global) {
                     this.model.on('change:muc_domain', this.onDomainChange, this);
                     this.model.on('change:nick', this.onNickChange, this);
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
+                    _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
 
                 render: function () {
@@ -57535,7 +57622,7 @@ define("awesomplete", (function (global) {
                     this.$el.find('input.new-chatroom-name').removeClass('error');
                     $server.removeClass('error');
                     $available_chatrooms.empty();
-                    $('input#show-rooms').hide().after('<span class="spinner"/>');
+                    $('input#show-rooms').hide().after(tpl_spinner);
                     this.model.save({muc_domain: server});
                     this.updateRoomsList();
                 },
@@ -57596,15 +57683,14 @@ define("awesomplete", (function (global) {
                         $div.remove();
                     } else {
                         $parent.find('span.spinner').remove();
-                        $parent.append('<span class="spinner hor_centered"/>');
+                        $parent.append(tpl_spinner);
                         _converse.connection.disco.info(
                             $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
                         );
                     }
                 },
 
-                openChatRoom: function (ev) {
-                    ev.preventDefault();
+                parseRoomDataFromEvent: function (ev) {
                     var name, $name, server, $server, jid;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
@@ -57626,13 +57712,18 @@ define("awesomplete", (function (global) {
                             return;
                         }
                     }
-                    _converse.openChatRoom({
+                    return {
                         'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
                         'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(jid)
-                    });
+                    }
+                },
+
+                openChatRoom: function (ev) {
+                    ev.preventDefault();
+                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
                 },
 
                 setDomain: function (ev) {
@@ -59400,7 +59491,7 @@ __p += '\n        ';
  if (otr_status == FINISHED) { ;
 __p += '\n            <span class="icon-unlocked"></span>\n        ';
  } ;
-__p += '\n        <ul>\n            ';
+__p += '\n        <ul class="toolbar-picker-panel">\n            ';
  if (otr_status == UNENCRYPTED) { ;
 __p += '\n               <li><a class="start-otr" href="#">' +
 __e(label_start_encrypted_conversation) +
@@ -66766,24 +66857,22 @@ CryptoJS.mode.CTR = (function () {
                     if ((!text) || (!_converse.allow_otr)) {
                         return this.__super__.createMessage.apply(this, arguments);
                     }
-                    if (text.match(/^\?OTRv23?/)) {
-                        this.initiateOTR(text);
-                    } else {
-                        if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
-                            this.otr.receiveMsg(text);
-                        } else {
-                            if (text.match(/^\?OTR/)) {
-                                if (!this.otr) {
-                                    this.initiateOTR(text);
-                                } else {
-                                    this.otr.receiveMsg(text);
-                                }
+
+                    if (utils.isNewMessage(original_stanza)) {
+                        if (text.match(/^\?OTRv23?/)) {
+                            return this.initiateOTR(text);
+                        } else if (_.includes([UNVERIFIED, VERIFIED], this.get('otr_status'))) {
+                            return this.otr.receiveMsg(text);
+                        } else if (text.match(/^\?OTR/)) {
+                            if (!this.otr) {
+                                return this.initiateOTR(text);
                             } else {
-                                // Normal unencrypted message.
-                                return this.__super__.createMessage.apply(this, arguments);
+                                return this.otr.receiveMsg(text);
                             }
                         }
                     }
+                    // Normal unencrypted message (or archived message)
+                    return this.__super__.createMessage.apply(this, arguments);
                 },
 
                 generatePrivateKey: function (instance_tag) {
@@ -67213,11 +67302,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<p class="provider-title">' +
 __e(domain) +
-'</p>\n<a href=\'https://xmpp.net/result.php?domain=' +
-__e(domain) +
-'&amp;type=client\'>\n    <img class="provider-score" src=\'https://xmpp.net/badge.php?domain=' +
-__e(domain) +
-'\' alt=\'xmpp.net score\' />\n</a>\n<p class="title">' +
+'</p>\n<p class="title">' +
 __e(title) +
 '</p>\n<p class="instructions">' +
 __e(instructions) +
@@ -67265,6 +67350,7 @@ return __p
             "tpl!register_tab",
             "tpl!registration_form",
             "tpl!registration_request",
+            "tpl!spinner",
             "converse-controlbox"
     ], factory);
 }(this, function (
@@ -67273,7 +67359,9 @@ return __p
             tpl_register_panel,
             tpl_register_tab,
             tpl_registration_form,
-            tpl_registration_request) {
+            tpl_registration_request,
+            tpl_spinner
+        ) {
 
     "use strict";
 
@@ -67565,7 +67653,7 @@ return __p
                         _converse.connection.reset();
                         that = this;
                         this.$('form').hide(function () {
-                            $(this).replaceWith('<span class="spinner centered"/>');
+                            $(this).replaceWith(tpl_spinner);
                             if (that.fields.password && that.fields.username) {
                                 // automatically log the user in
                                 _converse.connection.connect(
@@ -68395,6 +68483,7 @@ return __p
     "use strict";
     var $ = converse.env.jQuery,
         _ = converse.env._,
+        utils = converse.env.utils,
         Backbone = converse.env.Backbone,
         b64_sha1 = converse.env.b64_sha1,
         moment = converse.env.moment;
@@ -68439,14 +68528,14 @@ return __p
                 },
 
                 maximize: function () {
-                    this.save({
+                    utils.saveWithFallback(this,  {
                         'minimized': false,
                         'time_opened': moment().valueOf()
                     });
                 },
 
                 minimize: function () {
-                    this.save({
+                    utils.saveWithFallback(this,  {
                         'minimized': true,
                         'time_minimized': moment().format()
                     });
@@ -68519,7 +68608,11 @@ return __p
                     var _converse = this.__super__._converse;
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     // save the scroll position to restore it on maximize
-                    this.model.save({'scroll': this.$content.scrollTop()});
+                    if (this.model.collection && this.model.collection.browserStorage) {
+                        this.model.save({'scroll': this.$content.scrollTop()});
+                    } else {
+                        this.model.set({'scroll': this.$content.scrollTop()});
+                    }
                     this.setChatState(_converse.INACTIVE).model.minimize();
                     this.hide();
                     _converse.emit('chatBoxMinimized', this);

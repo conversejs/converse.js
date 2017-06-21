@@ -18,6 +18,9 @@
 
         &.fullscreen {
             width: 100%;
+            .controlbox-pane {
+                height: 100%;
+            }
             .box-flyout {
                 width: 100%;
             }

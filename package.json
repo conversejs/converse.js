@@ -67,7 +67,7 @@
     "run-headless-chromium": "^0.1.1",
     "sinon": "^2.1.0",
     "snyk": "^1.21.2",
-    "strophe.js": "1.2.13",
+    "strophe.js": "1.2.14",
     "strophejs-plugin-disco": "0.0.1",
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",

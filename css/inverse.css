@@ -1617,7 +1617,8 @@ body {
         margin-top: 1em; }
     #converse-embedded-chat .chatbox .chat-body .chat-image,
     #conversejs .chatbox .chat-body .chat-image {
-      max-height: 24em; }
+      max-height: 24em;
+      max-width: 100%; }
     #converse-embedded-chat .chatbox .chat-body .chat-action,
     #conversejs .chatbox .chat-body .chat-action {
       font-style: italic; }

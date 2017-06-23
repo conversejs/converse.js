@@ -577,13 +577,15 @@
         };
 
         this.logOut = function () {
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.clearSession();
+
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
+            } else {
+                _converse._tearDown();
             }
-            _converse.chatboxviews.closeAllChatBoxes();
-            _converse.clearSession();
-            _converse._tearDown();
             _converse.emit('logout');
         };
 

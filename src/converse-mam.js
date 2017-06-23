@@ -125,6 +125,23 @@
             },
 
             ChatRoomView: {
+
+                initialize: function () {
+                    var _converse = this.__super__._converse;
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:mam_enabled', function () {
+                        // Fetch messages again if we find out that mam has
+                        // been enabled (because the first attempt would then
+                        // have failed.
+                        this.fetchArchivedMessages({
+                            'before': '', // Page backwards from the most recent message
+                            'with': this.model.get('jid'),
+                            'max': _converse.archived_messages_page_size
+                        });
+                        this.model.save({'mam_initialized': true});
+                    }, this);
+                },
+
                 render: function () {
                     var result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
@@ -150,7 +167,6 @@
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
-                    var that = this;
                     var _converse = this.__super__._converse;
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         _converse.log(
@@ -162,6 +178,8 @@
                         return;
                     }
                     this.addSpinner();
+
+                    var that = this;
                     _converse.api.archive.query(_.extend(options, {'groupchat': true}),
                         function (messages) {
                             that.clearSpinner();
@@ -216,18 +234,13 @@
                     callback = options;
                     errback = callback;
                 }
-                /*
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.log('This server does not support XEP-0313, Message Archive Management');
-                    errback(null);
-                    return;
-                }
-                */
                 var queryid = _converse.connection.getUniqueId();
                 var attrs = {'type':'set'};
                 if (!_.isUndefined(options) && options.groupchat) {
                     if (!options['with']) {
-                        throw new Error('You need to specify a "with" value containing the chat room JID, when querying groupchat messages.');
+                        throw new Error(
+                            'You need to specify a "with" value containing '+
+                            'the chat room JID, when querying groupchat messages.');
                     }
                     attrs.to = options['with'];
                 }
@@ -258,23 +271,31 @@
                     }
                 }
 
-                if (_.isFunction(callback)) {
-                    _converse.connection.addHandler(function (message) {
-                        var $msg = $(message), rsm,
-                            $fin = $msg.find('fin[xmlns="'+Strophe.NS.MAM+'"]');
-                        if ($fin.length && $fin.attr('queryid') === queryid) {
-                            rsm = new Strophe.RSM({xml: $fin.find('set')[0]});
-                            _.extend(rsm, _.pick(options, ['max']));
-                            _.extend(rsm, _.pick(options, MAM_ATTRIBUTES));
+                var message_handler = _converse.connection.addHandler(function (message) {
+                    var result = message.querySelector('result');
+                    if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
+                        messages.push(message);
+                    }
+                    return true;
+                }, Strophe.NS.MAM);
+
+                _converse.connection.sendIQ(
+                    stanza,
+                    function (iq) {
+                        _converse.connection.deleteHandler(message_handler);
+                        if (_.isFunction(callback)) {
+                            var set = iq.querySelector('set');
+                            var rsm = new Strophe.RSM({xml: set});
+                            _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
                             callback(messages, rsm);
-                            return false; // We've received all messages, decommission this handler
-                        } else if (queryid === $msg.find('result').attr('queryid')) {
-                            messages.push(message);
                         }
-                        return true;
-                    }, Strophe.NS.MAM);
-                }
-                _converse.connection.sendIQ(stanza, null, errback, _converse.message_archiving_timeout);
+                    },
+                    function () {
+                        _converse.connection.deleteHandler(message_handler);
+                        if (_.isFunction(errback)) { errback.apply(this, arguments); }
+                    },
+                    _converse.message_archiving_timeout
+                );
             };
 
             _.extend(_converse.api, {

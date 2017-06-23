@@ -778,9 +778,7 @@
                 },
 
                 afterShown: function (focus) {
-                    if (this.model.collection.browserStorage) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                    if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);

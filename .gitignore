@@ -10,6 +10,7 @@
 .project
 .pydevproject
 analytics.js
+inverse-analytics.js
 .idea
 eggs
 .Python

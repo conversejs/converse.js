@@ -134,6 +134,14 @@
             //
             // New functions which don't exist yet can also be added.
 
+            _tearDown: function () {
+                var rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
+                _.each(rooms, function (room) {
+                    room.save({'connection_status': ROOMSTATUS.DISCONNECTED});
+                });
+                this.__super__._tearDown.call(this, arguments);
+            },
+
             Features: {
                 addClientFeatures: function () {
                     var _converse = this.__super__._converse;
@@ -1226,14 +1234,16 @@
                     return this;
                 },
 
-                cleanup: function () {
-                    if (this.model.collection && this.model.collection.browserStorage) {
-                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
-                    } else {
-                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
+                sendUnavailablePresence: function (exit_msg) {
+                    var presence = $pres({
+                        type: "unavailable",
+                        from: _converse.connection.jid,
+                        to: this.getRoomJIDAndNick()
+                    });
+                    if (exit_msg !== null) {
+                        presence.c("status", exit_msg);
                     }
-                    this.removeHandlers();
-                    _converse.ChatBoxView.prototype.close.apply(this, arguments);
+                    _converse.connection.sendPresence(presence);
                 },
 
                 leave: function(exit_msg) {
@@ -1246,26 +1256,16 @@
                     this.hide();
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
-                    if (!_converse.connection.connected ||
-                            this.model.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
-                        // Don't send out a stanza if we're not connected.
-                        this.cleanup();
-                        return;
+                    if (_converse.connection.connected) {
+                        this.sendUnavailablePresence(exit_msg);
                     }
-                    var presence = $pres({
-                        type: "unavailable",
-                        from: _converse.connection.jid,
-                        to: this.getRoomJIDAndNick()
-                    });
-                    if (exit_msg !== null) {
-                        presence.c("status", exit_msg);
+                    if (utils.isPersistableModel(this.model)) {
+                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                    } else {
+                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
                     }
-                    _converse.connection.sendPresence(
-                        presence,
-                        this.cleanup.bind(this),
-                        this.cleanup.bind(this),
-                        2000
-                    );
+                    this.removeHandlers();
+                    _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 renderConfigurationForm: function (stanza) {

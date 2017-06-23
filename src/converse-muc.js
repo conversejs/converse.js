@@ -2785,7 +2785,9 @@
                 _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === CHATROOMS_TYPE) {
                         view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        view.registerHandlers();
                         view.join();
+                        view.fetchMessages();
                     }
                 });
             };

@@ -2069,7 +2069,9 @@
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
@@ -2088,7 +2090,9 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };

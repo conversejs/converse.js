@@ -526,11 +526,11 @@
         return model.collection && model.collection.browserStorage;
     }
 
-    utils.saveWithFallback = function (model, attrs) {
-        if (utils.isPersistableModel(this)) {
-            model.save(attrs);
+    utils.safeSave = function (model, attributes) {
+        if (utils.isPersistableModel(model)) {
+            model.save(attributes);
         } else {
-            model.set(attrs);
+            model.set(attributes);
         }
     }
     return utils;

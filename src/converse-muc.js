@@ -137,7 +137,7 @@
             _tearDown: function () {
                 var rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
-                    room.save({'connection_status': ROOMSTATUS.DISCONNECTED});
+                    utils.safeSave(room, {'connection_status': ROOMSTATUS.DISCONNECTED});
                 });
                 this.__super__._tearDown.call(this, arguments);
             },
@@ -419,7 +419,7 @@
                 },
 
                 clearUnreadMsgCounter: function() {
-                    utils.saveWithFallback(this,  {
+                    utils.safeSave(this, {
                         'num_unread': 0,
                         'num_unread_general': 0
                     });
@@ -1259,11 +1259,10 @@
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
-                    if (utils.isPersistableModel(this.model)) {
-                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
-                    } else {
-                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
-                    }
+                    utils.safeSave(
+                        this.model,
+                        {'connection_status': ROOMSTATUS.DISCONNECTED}
+                    );
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
@@ -1276,7 +1275,8 @@
                      * either submitted the form, or canceled it.
                      *
                      * Parameters:
-                     *  (XMLElement) stanza: The IQ stanza containing the room config.
+                     *  (XMLElement) stanza: The IQ stanza containing the room
+                     *      config.
                      */
                     var that = this,
                         $body = this.$('.chatroom-body');

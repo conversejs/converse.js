@@ -839,7 +839,7 @@
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
+                    utils.safeSave(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {

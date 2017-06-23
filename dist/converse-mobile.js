@@ -45500,11 +45500,11 @@ return __p
         return model.collection && model.collection.browserStorage;
     }
 
-    utils.saveWithFallback = function (model, attrs) {
-        if (utils.isPersistableModel(this)) {
-            model.save(attrs);
+    utils.safeSave = function (model, attributes) {
+        if (utils.isPersistableModel(model)) {
+            model.save(attributes);
         } else {
-            model.set(attrs);
+            model.set(attributes);
         }
     }
     return utils;
@@ -48927,13 +48927,15 @@ return Backbone.BrowserStorage;
         };
 
         this.logOut = function () {
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.clearSession();
+
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
+            } else {
+                _converse._tearDown();
             }
-            _converse.chatboxviews.closeAllChatBoxes();
-            _converse.clearSession();
-            _converse._tearDown();
             _converse.emit('logout');
         };
 
@@ -50417,7 +50419,9 @@ return Backbone.BrowserStorage;
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
@@ -50436,7 +50440,9 @@ return Backbone.BrowserStorage;
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };
@@ -52729,9 +52735,7 @@ return __p
                 },
 
                 afterShown: function (focus) {
-                    if (this.model.collection.browserStorage) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                    if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -52792,7 +52796,7 @@ return __p
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
+                    utils.safeSave(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {
@@ -52976,6 +52980,14 @@ return __p
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
+
+            _tearDown: function () {
+                var rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
+                _.each(rooms, function (room) {
+                    utils.safeSave(room, {'connection_status': ROOMSTATUS.DISCONNECTED});
+                });
+                this.__super__._tearDown.call(this, arguments);
+            },
 
             Features: {
                 addClientFeatures: function () {
@@ -53254,7 +53266,7 @@ return __p
                 },
 
                 clearUnreadMsgCounter: function() {
-                    utils.saveWithFallback(this,  {
+                    utils.safeSave(this, {
                         'num_unread': 0,
                         'num_unread_general': 0
                     });
@@ -54069,14 +54081,16 @@ return __p
                     return this;
                 },
 
-                cleanup: function () {
-                    if (this.model.collection && this.model.collection.browserStorage) {
-                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
-                    } else {
-                        this.model.set('connection_status', ROOMSTATUS.DISCONNECTED);
+                sendUnavailablePresence: function (exit_msg) {
+                    var presence = $pres({
+                        type: "unavailable",
+                        from: _converse.connection.jid,
+                        to: this.getRoomJIDAndNick()
+                    });
+                    if (exit_msg !== null) {
+                        presence.c("status", exit_msg);
                     }
-                    this.removeHandlers();
-                    _converse.ChatBoxView.prototype.close.apply(this, arguments);
+                    _converse.connection.sendPresence(presence);
                 },
 
                 leave: function(exit_msg) {
@@ -54089,26 +54103,15 @@ return __p
                     this.hide();
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
-                    if (!_converse.connection.connected ||
-                            this.model.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
-                        // Don't send out a stanza if we're not connected.
-                        this.cleanup();
-                        return;
+                    if (_converse.connection.connected) {
+                        this.sendUnavailablePresence(exit_msg);
                     }
-                    var presence = $pres({
-                        type: "unavailable",
-                        from: _converse.connection.jid,
-                        to: this.getRoomJIDAndNick()
-                    });
-                    if (exit_msg !== null) {
-                        presence.c("status", exit_msg);
-                    }
-                    _converse.connection.sendPresence(
-                        presence,
-                        this.cleanup.bind(this),
-                        this.cleanup.bind(this),
-                        2000
+                    utils.safeSave(
+                        this.model,
+                        {'connection_status': ROOMSTATUS.DISCONNECTED}
                     );
+                    this.removeHandlers();
+                    _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
 
                 renderConfigurationForm: function (stanza) {
@@ -54119,7 +54122,8 @@ return __p
                      * either submitted the form, or canceled it.
                      *
                      * Parameters:
-                     *  (XMLElement) stanza: The IQ stanza containing the room config.
+                     *  (XMLElement) stanza: The IQ stanza containing the room
+                     *      config.
                      */
                     var that = this,
                         $body = this.$('.chatroom-body');
@@ -55628,7 +55632,9 @@ return __p
                 _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === CHATROOMS_TYPE) {
                         view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        view.registerHandlers();
                         view.join();
+                        view.fetchMessages();
                     }
                 });
             };

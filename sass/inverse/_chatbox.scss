@@ -65,8 +65,11 @@
             .toggle-smiley {
                 padding-left: 0.5em;
                 ul {
-                    li {
-                        padding: 0.5em;
+                    &.emoji-category-picker {
+                        .emoji-category {
+                            padding-left: 10px;
+                            padding-right: 10px;
+                        }
                     }
                 }
             }

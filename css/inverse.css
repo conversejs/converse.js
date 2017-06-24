@@ -1926,8 +1926,9 @@ body {
     width: 100%; }
   #conversejs .chatbox form.sendXMPPMessage .toggle-smiley {
     padding-left: 0.5em; }
-    #conversejs .chatbox form.sendXMPPMessage .toggle-smiley ul li {
-      padding: 0.5em; }
+    #conversejs .chatbox form.sendXMPPMessage .toggle-smiley ul.emoji-category-picker .emoji-category {
+      padding-left: 10px;
+      padding-right: 10px; }
 
 #conversejs #controlbox {
   margin-right: 1em; }

@@ -355,6 +355,11 @@
                             font-size: $font-size;
                             padding: 5px;
                             z-index: 98;
+                            &.emoji {
+                                a {
+                                    font-size: $font-size-huge;
+                                }
+                            }
                         }
                         li:hover {
                             background-color: $highlight-color;

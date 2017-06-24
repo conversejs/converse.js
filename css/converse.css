@@ -1786,6 +1786,9 @@
             font-size: 14px;
             padding: 5px;
             z-index: 98; }
+            #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul li.emoji a,
+            #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul li.emoji a {
+              font-size: 20px; }
           #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul li:hover,
           #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toggle-smiley ul li:hover {
             background-color: #DCF9F6; }

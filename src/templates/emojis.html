@@ -1,0 +1,16 @@
+<ul class="emoji-category-picker">
+    {[ _.forEach(emojis_by_category, function (obj, category) { ]}
+        <li data-category="{{{category}}}" class="emoji-category {[ if (current_category === category) { ]} picked {[ } ]}">
+            <a href="#" data-category="{{{category}}}"> {{ emojione.shortnameToUnicode(emojis_by_category[category][0]._shortname) }} </a>
+        </li>
+    {[ }); ]}
+</ul>
+{[ _.forEach(emojis_by_category, function (obj, category) { ]}
+    <ul class="emoji-picker emoji-picker-{{{category}}} {[ if (current_category !== category) { ]} hidden {[ } ]}">
+        {[ _.forEach(emojis_by_category[category], function (emoji) { ]}
+            <li class="emoji" data-emoticon="{{{emoji._shortname}}}">
+                <a href="#" data-emoticon="{{{emoji._shortname}}}"> {{ emojione.shortnameToUnicode(emoji._shortname) }}  </a>
+        </li>
+        {[ }); ]}
+    </ul>
+{[ }); ]}

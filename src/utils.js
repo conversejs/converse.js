@@ -517,14 +517,15 @@
                 return value
             }));
             var tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
+            var excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
+            var excluded_substrings = [':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'];
             var categories = _.uniq(_.map(emojis, _.partial(_.get, _, 'category')));
             var emojis_by_category = {};
             _.forEach(categories, function (cat) {
                 var list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
                 list = _.filter(list, function (item) {
-                    return !_.includes(tones, item._shortname) &&
-                        !item._shortname.startsWith(':woman_') &&
-                            !item._shortname.startsWith(':man_');
+                    return !_.includes(_.concat(tones, excluded), item._shortname) &&
+                        !_.some(excluded_substrings, _.partial(_.includes, item._shortname));
                 });
                 if (cat === 'people') {
                     var idx = _.findIndex(list, ['uc_base', '1f600']);

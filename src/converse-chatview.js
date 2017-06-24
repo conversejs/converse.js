@@ -703,15 +703,17 @@
                     } else {
                         target = ev.target;
                     }
-                    this.insertIntoTextArea(
-                        emojione.shortnameToUnicode(
-                            target.getAttribute('data-emoticon')
-                        ));
+                    var shortname = target.getAttribute('data-emoticon');
+                    this.insertIntoTextArea( emojione.shortnameToUnicode(shortname));
                 },
 
                 toggleEmoticonMenu: function (ev) {
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
+                        if (ev.target.classList.contains('emoji-category-picker') ||
+                                ev.target.classList.contains('emoji-category')) {
+                            return;
+                        }
                     }
                     utils.toggleElement(this.emoji_picker_view.el);
                 },

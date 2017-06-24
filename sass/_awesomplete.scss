@@ -61,7 +61,6 @@
         top: -.43em;
         left: 1em;
         width: 0; height: 0;
-        padding: .4em;
         background: white;
         border: inherit;
         border-right: 0;
@@ -74,13 +73,12 @@
         text-overflow: ellipsis;
         overflow-x: hidden;
         position: relative;
-        padding: .2em .5em;
         cursor: pointer;
     }
     
     div.awesomplete > ul > li:hover {
-        background: hsl(200, 40%, 80%);
-        color: black;
+        background: $red;
+        color: $inverse-link-color;
     }
     
     div.awesomplete > ul > li[aria-selected="true"] {
@@ -89,11 +87,12 @@
     }
     
     div.awesomplete mark {
-        background: hsl(65, 100%, 50%);
+        background: $lightest-red;
     }
     
     div.awesomplete li:hover mark {
-        background: hsl(68, 100%, 41%);
+        background: $darkest-red;
+        color: $inverse-link-color;
     }
     
     div.awesomplete li[aria-selected="true"] mark {

@@ -68414,975 +68414,6 @@ return __p
     });
 }));
 
-
-define('tpl!chatbox_minimize', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
-__e(info_minimize) +
-'"></a>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!toggle_chats', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p +=
-__e(Minimized) +
-' <span id="minimized-count">(' +
-__e(num_minimized) +
-')</span>\n<span class="unread-message-count\n    ';
- if (!num_unread) { ;
-__p += ' unread-message-count-hidden ';
- } ;
-__p += '\n    href="#">' +
-__e(num_unread) +
-'</span>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!trimmed_chat', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count\n    ';
- if (!num_unread) { ;
-__p += ' chat-head-message-count-hidden ';
- } ;
-__p += '"\n    href="#">' +
-__e(num_unread) +
-'</a>\n<a href="#" class="restore-chat" title="' +
-__e(tooltip) +
-'">\n    ' +
-__e( title ) +
-'\n</a>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!chats_panel', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
-
-}
-return __p
-};});
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define, window */
-
-(function (root, factory) {
-    define('converse-minimize',["converse-core",
-            "tpl!chatbox_minimize",
-            "tpl!toggle_chats",
-            "tpl!trimmed_chat",
-            "tpl!chats_panel",
-            "converse-controlbox",
-            "converse-chatview",
-            "converse-muc"
-    ], factory);
-}(this, function (
-        converse,
-        tpl_chatbox_minimize,
-        tpl_toggle_chats,
-        tpl_trimmed_chat,
-        tpl_chats_panel
-    ) {
-    "use strict";
-    var $ = converse.env.jQuery,
-        _ = converse.env._,
-        utils = converse.env.utils,
-        Backbone = converse.env.Backbone,
-        b64_sha1 = converse.env.b64_sha1,
-        moment = converse.env.moment;
-
-    converse.plugins.add('converse-minimize', {
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            initChatBoxes: function () {
-                var _converse = this.__super__._converse;
-                var result = this.__super__.initChatBoxes.apply(this, arguments);
-                _converse.minimized_chats = new _converse.MinimizedChats({
-                    model: _converse.chatboxes
-                });
-                return result;
-            },
-
-            registerGlobalEventHandlers: function () {
-                var _converse = this.__super__._converse;
-                $(window).on("resize", _.debounce(function (ev) {
-                    if (_converse.connection.connected) {
-                        _converse.chatboxviews.trimChats();
-                    }
-                }, 200));
-                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
-            },
-
-            ChatBox: {
-                initialize: function () {
-                    this.__super__.initialize.apply(this, arguments);
-                    if (this.get('id') === 'controlbox') {
-                        return;
-                    }
-                    this.save({
-                        'minimized': this.get('minimized') || false,
-                        'time_minimized': this.get('time_minimized') || moment(),
-                    });
-                },
-
-                maximize: function () {
-                    utils.safeSave(this, {
-                        'minimized': false,
-                        'time_opened': moment().valueOf()
-                    });
-                },
-
-                minimize: function () {
-                    utils.safeSave(this, {
-                        'minimized': true,
-                        'time_minimized': moment().format()
-                    });
-                },
-            },
-
-            ChatBoxView: {
-                events: {
-                    'click .toggle-chatbox-button': 'minimize',
-                },
-
-                initialize: function () {
-                    this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    return this.__super__.initialize.apply(this, arguments);
-                },
-
-                _show: function () {
-                    var _converse = this.__super__._converse;
-                    if (!this.model.get('minimized')) {
-                        this.__super__._show.apply(this, arguments);
-                        _converse.chatboxviews.trimChats(this);
-                    } else {
-                        this.minimize();
-                    }
-                },
-
-                isNewMessageHidden: function () {
-                    return this.model.get('minimized') ||
-                        this.__super__.isNewMessageHidden.apply(this, arguments);
-                },
-
-                shouldShowOnTextMessage: function () {
-                    return !this.model.get('minimized') &&
-                        this.__super__.shouldShowOnTextMessage.apply(this, arguments);
-                },
-
-                setChatBoxHeight: function (height) {
-                    if (!this.model.get('minimized')) {
-                        return this.__super__.setChatBoxHeight.apply(this, arguments);
-                    }
-                },
-
-                setChatBoxWidth: function (width) {
-                    if (!this.model.get('minimized')) {
-                        return this.__super__.setChatBoxWidth.apply(this, arguments);
-                    }
-                },
-
-                onMinimizedChanged: function (item) {
-                    if (item.get('minimized')) {
-                        this.minimize();
-                    } else {
-                        this.maximize();
-                    }
-                },
-
-                maximize: function () {
-                    // Restores a minimized chat box
-                    var _converse = this.__super__._converse;
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
-                    if (!this.model.isScrolledUp()) {
-                        this.model.clearUnreadMsgCounter();
-                    }
-                    this.show();
-                    _converse.emit('chatBoxMaximized', this);
-                    return this;
-                },
-
-                minimize: function (ev) {
-                    var _converse = this.__super__._converse;
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    // save the scroll position to restore it on maximize
-                    if (this.model.collection && this.model.collection.browserStorage) {
-                        this.model.save({'scroll': this.$content.scrollTop()});
-                    } else {
-                        this.model.set({'scroll': this.$content.scrollTop()});
-                    }
-                    this.setChatState(_converse.INACTIVE).model.minimize();
-                    this.hide();
-                    _converse.emit('chatBoxMinimized', this);
-                },
-            },
-
-            ChatRoomView: {
-                events: {
-                    'click .toggle-chatbox-button': 'minimize',
-                },
-
-                initialize: function () {
-                    this.model.on('change:minimized', function (item) {
-                        if (item.get('minimized')) {
-                            this.hide();
-                        } else {
-                            this.maximize();
-                        }
-                    }, this);
-                    var result = this.__super__.initialize.apply(this, arguments);
-                    if (this.model.get('minimized')) {
-                        this.hide();
-                    }
-                    return result;
-                },
-
-                generateHeadingHTML: function () {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
-                    var html = this.__super__.generateHeadingHTML.apply(this, arguments);
-                    var div = document.createElement('div');
-                    div.innerHTML = html;
-                    var el = tpl_chatbox_minimize(
-                        {info_minimize: __('Minimize this chat box')}
-                    );
-                    var button = div.querySelector('.close-chatbox-button');
-                    button.insertAdjacentHTML('afterend', el);
-                    return div.innerHTML;
-                }
-            },
-
-            ChatBoxes: {
-                chatBoxMayBeShown: function (chatbox) {
-                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
-                           !chatbox.get('minimized');
-                },
-            },
-
-            ChatBoxViews: {
-                showChat: function (attrs) {
-                    /* Find the chat box and show it. If it doesn't exist, create it.
-                     */
-                    var chatbox = this.__super__.showChat.apply(this, arguments);
-                    var maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
-                    if (chatbox.get('minimized') && maximize) {
-                        chatbox.maximize();
-                    }
-                    return chatbox;
-                },
-
-                getChatBoxWidth: function (view) {
-                    if (!view.model.get('minimized') && view.$el.is(':visible')) {
-                        return view.$el.outerWidth(true);
-                    }
-                    return 0;
-                },
-
-                getShownChats: function () {
-                    return this.filter(function (view) {
-                        // The controlbox can take a while to close,
-                        // so we need to check its state. That's why we checked
-                        // the 'closed' state.
-                        return (
-                            !view.model.get('minimized') &&
-                            !view.model.get('closed') &&
-                            view.$el.is(':visible')
-                        );
-                    });
-                },
-
-                trimChats: function (newchat) {
-                    /* This method is called when a newly created chat box will
-                     * be shown.
-                     *
-                     * It checks whether there is enough space on the page to show
-                     * another chat box. Otherwise it minimizes the oldest chat box
-                     * to create space.
-                     */
-                    var _converse = this.__super__._converse;
-                    var shown_chats = this.getShownChats();
-                    if (_converse.no_trimming || shown_chats.length <= 1) {
-                        return;
-                    }
-                    if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
-                        // If the chats shown are the same width as the body,
-                        // then we're in responsive mode and the chats are
-                        // fullscreen. In this case we don't trim.
-                        return;
-                    }
-                    var oldest_chat, boxes_width, view,
-                        $minimized = _converse.minimized_chats.$el,
-                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
-                        new_id = newchat ? newchat.model.get('id') : null;
-
-                    boxes_width = _.reduce(this.xget(new_id), function (memo, view) {
-                        return memo + this.getChatBoxWidth(view);
-                    }.bind(this), newchat ? newchat.$el.outerWidth(true) : 0);
-
-                    if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
-                        oldest_chat = this.getOldestMaximizedChat([new_id]);
-                        if (oldest_chat) {
-                            // We hide the chat immediately, because waiting
-                            // for the event to fire (and letting the
-                            // ChatBoxView hide it then) causes race
-                            // conditions.
-                            view = this.get(oldest_chat.get('id'));
-                            if (view) {
-                                view.hide();
-                            }
-                            oldest_chat.minimize();
-                        }
-                    }
-                },
-
-                getOldestMaximizedChat: function (exclude_ids) {
-                    // Get oldest view (if its id is not excluded)
-                    exclude_ids.push('controlbox');
-                    var i = 0;
-                    var model = this.model.sort().at(i);
-                    while (_.includes(exclude_ids, model.get('id')) ||
-                        model.get('minimized') === true) {
-                        i++;
-                        model = this.model.at(i);
-                        if (!model) {
-                            return null;
-                        }
-                    }
-                    return model;
-                }
-            }
-        },
-
-
-        initialize: function () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by Converse.js's plugin machinery.
-             */
-            var _converse = this._converse,
-                __ = _converse.__;
-
-            // Add new HTML templates.
-            _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
-            _converse.templates.toggle_chats = tpl_toggle_chats;
-            _converse.templates.trimmed_chat = tpl_trimmed_chat;
-            _converse.templates.chats_panel = tpl_chats_panel;
-
-            this.updateSettings({
-                no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
-            });
-
-            _converse.MinimizedChatBoxView = Backbone.View.extend({
-                tagName: 'div',
-                className: 'chat-head',
-                events: {
-                    'click .close-chatbox-button': 'close',
-                    'click .restore-chat': 'restore'
-                },
-
-                initialize: function () {
-                    this.model.on('change:num_unread', this.render, this);
-                },
-
-                render: function () {
-                    var data = _.extend(
-                        this.model.toJSON(),
-                        { 'tooltip': __('Click to restore this chat') }
-                    );
-                    if (this.model.get('type') === 'chatroom') {
-                        data.title = this.model.get('name');
-                        this.$el.addClass('chat-head-chatroom');
-                    } else {
-                        data.title = this.model.get('fullname');
-                        this.$el.addClass('chat-head-chatbox');
-                    }
-                    return this.$el.html(tpl_trimmed_chat(data));
-                },
-
-                close: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.remove();
-                    var view = _converse.chatboxviews.get(this.model.get('id'));
-                    if (view) {
-                        // This will call model.destroy(), removing it from the
-                        // collection and will also emit 'chatBoxClosed'
-                        view.close();
-                    } else {
-                        this.model.destroy();
-                        _converse.emit('chatBoxClosed', this);
-                    }
-                    return this;
-                },
-
-                restore: _.debounce(function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.model.off('change:num_unread', null, this);
-                    this.remove();
-                    this.model.maximize();
-                }, 200, {'leading': true})
-            });
-
-
-            _converse.MinimizedChats = Backbone.Overview.extend({
-                tagName: 'div',
-                id: "minimized-chats",
-                className: 'hidden',
-                events: {
-                    "click #toggle-minimized-chats": "toggle"
-                },
-
-                initialize: function () {
-                    this.render();
-                    this.initToggle();
-                    this.model.on("add", this.onChanged, this);
-                    this.model.on("destroy", this.removeChat, this);
-                    this.model.on("change:minimized", this.onChanged, this);
-                    this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
-                },
-
-                tearDown: function () {
-                    this.model.off("add", this.onChanged);
-                    this.model.off("destroy", this.removeChat);
-                    this.model.off("change:minimized", this.onChanged);
-                    this.model.off('change:num_unread', this.updateUnreadMessagesCounter);
-                    return this;
-                },
-
-                initToggle: function () {
-                    this.toggleview = new _converse.MinimizedChatsToggleView({
-                        model: new _converse.MinimizedChatsToggle()
-                    });
-                    var id = b64_sha1('converse.minchatstoggle'+_converse.bare_jid);
-                    this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
-                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-                    this.toggleview.model.fetch();
-                },
-
-                render: function () {
-                    if (!this.el.parentElement) {
-                        this.el.innerHTML = tpl_chats_panel();
-                        _converse.chatboxviews.el.appendChild(this.el);
-                    }
-                    if (this.keys().length === 0) {
-                        this.el.classList.add('hidden');
-                        _converse.chatboxviews.trimChats.bind(_converse.chatboxviews);
-                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
-                        this.el.classList.remove('hidden');
-                        _converse.chatboxviews.trimChats();
-                    }
-                    return this.$el;
-                },
-
-                toggle: function (ev) {
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
-                    this.$('.minimized-chats-flyout').toggle();
-                },
-
-                onChanged: function (item) {
-                    if (item.get('id') === 'controlbox')  {
-                        // The ControlBox has it's own minimize toggle
-                        return;
-                    }
-                    if (item.get('minimized')) {
-                        this.addChat(item);
-                    } else if (this.get(item.get('id'))) {
-                        this.removeChat(item);
-                    }
-                },
-
-                addChat: function (item) {
-                    var existing = this.get(item.get('id'));
-                    if (existing && existing.$el.parent().length !== 0) {
-                        return;
-                    }
-                    var view = new _converse.MinimizedChatBoxView({model: item});
-                    this.$('.minimized-chats-flyout').append(view.render());
-                    this.add(item.get('id'), view);
-                    this.toggleview.model.set({'num_minimized': this.keys().length});
-                    this.render();
-                },
-
-                removeChat: function (item) {
-                    this.remove(item.get('id'));
-                    this.toggleview.model.set({'num_minimized': this.keys().length});
-                    this.render();
-                },
-
-                updateUnreadMessagesCounter: function () {
-                    var ls = this.model.pluck('num_unread'),
-                        count = 0, i;
-                    for (i=0; i<ls.length; i++) { count += ls[i]; }
-                    this.toggleview.model.save({'num_unread': count});
-                    this.render();
-                }
-            });
-
-
-            _converse.MinimizedChatsToggle = Backbone.Model.extend({
-                defaults: {
-                    'collapsed': false,
-                    'num_minimized': 0,
-                    'num_unread':  0
-                }
-            });
-
-
-            _converse.MinimizedChatsToggleView = Backbone.View.extend({
-                el: '#toggle-minimized-chats',
-
-                initialize: function () {
-                    this.model.on('change:num_minimized', this.render, this);
-                    this.model.on('change:num_unread', this.render, this);
-                    this.$flyout = this.$el.siblings('.minimized-chats-flyout');
-                },
-
-                render: function () {
-                    this.$el.html(tpl_toggle_chats(
-                        _.extend(this.model.toJSON(), {
-                            'Minimized': __('Minimized')
-                        })
-                    ));
-                    if (this.model.get('collapsed')) {
-                        this.$flyout.hide();
-                    } else {
-                        this.$flyout.show();
-                    }
-                    return this.$el;
-                }
-            });
-
-            var renderMinimizeButton = function (view) {
-                // Inserts a "minimize" button in the chatview's header
-                var $el = view.$el.find('.toggle-chatbox-button');
-                var $new_el = tpl_chatbox_minimize(
-                    {info_minimize: __('Minimize this chat box')}
-                );
-                if ($el.length) {
-                    $el.replaceWith($new_el);
-                } else {
-                    view.$el.find('.close-chatbox-button').after($new_el);
-                }
-            };
-            _converse.on('chatBoxOpened', renderMinimizeButton);
-
-            _converse.on('controlBoxOpened', function (chatbox) {
-                // Wrapped in anon method because at scan time, chatboxviews
-                // attr not set yet.
-                if (_converse.connection.connected) {
-                    _converse.chatboxviews.trimChats(chatbox);
-                }
-            });
-
-            var logOut = function () {
-                _converse.minimized_chats.remove();
-            };
-            _converse.on('logout', logOut);
-        }
-    });
-}));
-
-
-define('tpl!dragresize', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<div class="dragresize dragresize-top"></div>\n<div class="dragresize dragresize-topleft"></div>\n<div class="dragresize dragresize-left"></div>\n';
-
-}
-return __p
-};});
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-/*global define, window */
-
-(function (root, factory) {
-    define('converse-dragresize',[
-            "converse-core",
-            "tpl!dragresize",
-            "converse-chatview",
-            "converse-muc", // XXX: would like to remove this
-            "converse-controlbox"
-    ], factory);
-}(this, function (converse, tpl_dragresize) {
-    "use strict";
-    var $ = converse.env.jQuery,
-        _ = converse.env._;
-
-    function renderDragResizeHandles (_converse, view) {
-        var flyout = view.el.querySelector('.box-flyout');
-        var div = document.createElement('div');
-        div.innerHTML = tpl_dragresize();
-        flyout.insertBefore(
-            div,
-            flyout.firstChild
-        );
-    }
-
-
-    converse.plugins.add('converse-dragresize', {
-        /* Optional dependencies are other plugins which might be
-         * overridden or relied upon, and therefore need to be loaded before
-         * this plugin. They are called "optional" because they might not be
-         * available, in which case any overrides applicable to them will be
-         * ignored.
-         *
-         * It's possible however to make optional dependencies non-optional.
-         * If the setting "strict_plugin_dependencies" is set to true,
-         * an error will be raised if the plugin is not found.
-         *
-         * NB: These plugins need to have already been loaded via require.js.
-         */
-        optional_dependencies: ["converse-headline"],
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
-            registerGlobalEventHandlers: function () {
-                var that = this;
-                
-                $(document).on('mousemove', function (ev) {
-                    if (!that.resizing || !that.allow_dragresize) { return true; }
-                    ev.preventDefault();
-                    that.resizing.chatbox.resizeChatBox(ev);
-                });
-
-                $(document).on('mouseup', function (ev) {
-                    if (!that.resizing || !that.allow_dragresize) { return true; }
-                    ev.preventDefault();
-                    var height = that.applyDragResistance(
-                            that.resizing.chatbox.height,
-                            that.resizing.chatbox.model.get('default_height')
-                    );
-                    var width = that.applyDragResistance(
-                            that.resizing.chatbox.width,
-                            that.resizing.chatbox.model.get('default_width')
-                    );
-                    if (that.connection.connected) {
-                        that.resizing.chatbox.model.save({'height': height});
-                        that.resizing.chatbox.model.save({'width': width});
-                    } else {
-                        that.resizing.chatbox.model.set({'height': height});
-                        that.resizing.chatbox.model.set({'width': width});
-                    }
-                    that.resizing = null;
-                });
-
-                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
-            },
-
-            ChatBox: {
-                initialize: function () {
-                    var _converse = this.__super__._converse;
-                    var result = this.__super__.initialize.apply(this, arguments),
-                        height = this.get('height'), width = this.get('width'),
-                        save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
-                    save({
-                        'height': _converse.applyDragResistance(height, this.get('default_height')),
-                        'width': _converse.applyDragResistance(width, this.get('default_width')),
-                    });
-                    return result;
-                }
-            },
-
-            ChatBoxView: {
-                events: {
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-                },
-
-                initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this.__super__.initialize.apply(this, arguments);
-                },
-
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
-                    renderDragResizeHandles(this.__super__._converse, this);
-                    this.setWidth();
-                    return result;
-                },
-
-                setWidth: function () {
-                    // If a custom width is applied (due to drag-resizing),
-                    // then we need to set the width of the .chatbox element as well.
-                    if (this.model.get('width')) {
-                        this.$el.css('width', this.model.get('width'));
-                    }
-                },
-
-                _show: function () {
-                    this.initDragResize().setDimensions();
-                    this.__super__._show.apply(this, arguments);
-                },
-
-                initDragResize: function () {
-                    /* Determine and store the default box size.
-                     * We need this information for the drag-resizing feature.
-                     */
-                    var _converse = this.__super__._converse;
-                    var $flyout = this.$el.find('.box-flyout');
-                    if (_.isUndefined(this.model.get('height'))) {
-                        var height = $flyout.height();
-                        var width = $flyout.width();
-                        this.model.set('height', height);
-                        this.model.set('default_height', height);
-                        this.model.set('width', width);
-                        this.model.set('default_width', width);
-                    }
-                    var min_width = $flyout.css('min-width');
-                    var min_height = $flyout.css('min-height');
-                    this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
-                    this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
-                    // Initialize last known mouse position
-                    this.prev_pageY = 0;
-                    this.prev_pageX = 0;
-                    if (_converse.connection.connected) {
-                        this.height = this.model.get('height');
-                        this.width = this.model.get('width');
-                    }
-                    return this;
-                },
-
-                setDimensions: function () {
-                    // Make sure the chat box has the right height and width.
-                    this.adjustToViewport();
-                    this.setChatBoxHeight(this.model.get('height'));
-                    this.setChatBoxWidth(this.model.get('width'));
-                },
-
-                setChatBoxHeight: function (height) {
-                    var _converse = this.__super__._converse;
-                    if (height) {
-                        height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
-                    } else {
-                        height = "";
-                    }
-                    this.$el.children('.box-flyout')[0].style.height = height;
-                },
-
-                setChatBoxWidth: function (width) {
-                    var _converse = this.__super__._converse;
-                    if (width) {
-                        width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
-                    } else {
-                        width = "";
-                    }
-                    this.$el[0].style.width = width;
-                    this.$el.children('.box-flyout')[0].style.width = width;
-                },
-
-
-                adjustToViewport: function () {
-                    /* Event handler called when viewport gets resized. We remove
-                     * custom width/height from chat boxes.
-                     */
-                    var viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-                    var viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                    if (viewport_width <= 480) {
-                        this.model.set('height', undefined);
-                        this.model.set('width', undefined);
-                    } else if (viewport_width <= this.model.get('width')) {
-                        this.model.set('width', undefined);
-                    } else if (viewport_height <= this.model.get('height')) {
-                        this.model.set('height', undefined);
-                    }
-                },
-
-                onStartVerticalResize: function (ev) {
-                    var _converse = this.__super__._converse;
-                    if (!_converse.allow_dragresize) { return true; }
-                    // Record element attributes for mouseMove().
-                    this.height = this.$el.children('.box-flyout').height();
-                    _converse.resizing = {
-                        'chatbox': this,
-                        'direction': 'top'
-                    };
-                    this.prev_pageY = ev.pageY;
-                },
-
-                onStartHorizontalResize: function (ev) {
-                    var _converse = this.__super__._converse;
-                    if (!_converse.allow_dragresize) { return true; }
-                    this.width = this.$el.children('.box-flyout').width();
-                    _converse.resizing = {
-                        'chatbox': this,
-                        'direction': 'left'
-                    };
-                    this.prev_pageX = ev.pageX;
-                },
-
-                onStartDiagonalResize: function (ev) {
-                    var _converse = this.__super__._converse;
-                    this.onStartHorizontalResize(ev);
-                    this.onStartVerticalResize(ev);
-                    _converse.resizing.direction = 'topleft';
-                },
-
-                resizeChatBox: function (ev) {
-                    var diff;
-                    var _converse = this.__super__._converse;
-                    if (_converse.resizing.direction.indexOf('top') === 0) {
-                        diff = ev.pageY - this.prev_pageY;
-                        if (diff) {
-                            this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
-                            this.prev_pageY = ev.pageY;
-                            this.setChatBoxHeight(this.height);
-                        }
-                    }
-                    if (_.includes(_converse.resizing.direction, 'left')) {
-                        diff = this.prev_pageX - ev.pageX;
-                        if (diff) {
-                            this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
-                            this.prev_pageX = ev.pageX;
-                            this.setChatBoxWidth(this.width);
-                        }
-                    }
-                }
-            },
-
-            HeadlinesBoxView: {
-                events: {
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-                },
-
-                initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    return this.__super__.initialize.apply(this, arguments);
-                },
-
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
-                    renderDragResizeHandles(this.__super__._converse, this);
-                    this.setWidth();
-                    return result;
-                }
-            },
-
-            ControlBoxView: {
-                events: {
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-                },
-
-                initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this.__super__.initialize.apply(this, arguments);
-                },
-
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
-                    renderDragResizeHandles(this.__super__._converse, this);
-                    this.setWidth();
-                    return result;
-                },
-
-                renderLoginPanel: function () {
-                    var result = this.__super__.renderLoginPanel.apply(this, arguments);
-                    this.initDragResize().setDimensions();
-                    return result;
-                },
-
-                renderContactsPanel: function () {
-                    var result = this.__super__.renderContactsPanel.apply(this, arguments);
-                    this.initDragResize().setDimensions();
-                    return result;
-                }
-            },
-
-            ChatRoomView: {
-                events: {
-                    'mousedown .dragresize-top': 'onStartVerticalResize',
-                    'mousedown .dragresize-left': 'onStartHorizontalResize',
-                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
-                },
-
-                initialize: function () {
-                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
-                    this.__super__.initialize.apply(this, arguments);
-                },
-
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
-                    renderDragResizeHandles(this.__super__._converse, this);
-                    this.setWidth();
-                    return result;
-                }
-            }
-        },
-
-        initialize: function () {
-            /* The initialize function gets called as soon as the plugin is
-             * loaded by converse.js's plugin machinery.
-             */
-            var _converse = this._converse;
-
-            this.updateSettings({
-                allow_dragresize: true,
-            });
-
-            _converse.applyDragResistance = function (value, default_value) {
-                /* This method applies some resistance around the
-                * default_value. If value is close enough to
-                * default_value, then default_value is returned instead.
-                */
-                if (_.isUndefined(value)) {
-                    return undefined;
-                } else if (_.isUndefined(default_value)) {
-                    return value;
-                }
-                var resistance = 10;
-                if ((value !== default_value) &&
-                    (Math.abs(value- default_value) < resistance)) {
-                    return default_value;
-                }
-                return value;
-            };
-        }
-    });
-}));
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -69503,15 +68534,249 @@ return __p
     });
 }));
 
+
+define('tpl!brand_heading', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span>\n    <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>\n    <p><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n<span>\n';
+
+}
+return __p
+};});
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global Backbone, define, window, document, JSON */
+
+/* converse-singleton
+/* ******************
+ *
+ * A non-core plugin which ensures that only one chat, private or group, is
+ * visible at any one time. All other ongoing chats are hidden and kept in the
+ * background.
+ *
+ * This plugin makes sense in mobile or fullscreen chat environments.
+ */
+(function (root, factory) {
+    define(
+        'converse-singleton',["converse-core", "converse-chatview"],
+        factory);
+}(this, function (converse) {
+    "use strict";
+    var _ = converse.env._,
+        Strophe = converse.env.Strophe;
+
+    function hideChat (view) {
+        if (view.model.get('id') === 'controlbox') { return; }
+        view.model.save({'hidden': true});
+        view.hide();
+    }
+
+    converse.plugins.add('converse-singleton', {
+        // It's possible however to make optional dependencies non-optional.
+        // If the setting "strict_plugin_dependencies" is set to true,
+        // an error will be raised if the plugin is not found.
+        //
+        // NB: These plugins need to have already been loaded via require.js.
+        optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            ChatBoxes: {
+                createChatBox: function (jid, attrs) {
+                    /* Make sure new chat boxes are hidden by default.
+                     */
+                    attrs = attrs || {};
+                    attrs.hidden = true;
+                    return this.__super__.createChatBox.call(this, jid, attrs);
+                }
+            },
+
+            RoomsPanel: {
+                parseRoomDataFromEvent: function (ev) {
+                    /* We set hidden to false for rooms opened manually by the
+                     * user. They should always be shown.
+                     */
+                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    result.hidden = false;
+                    return result;
+                }
+            },
+ 
+            ChatBoxViews: {
+                showChat: function (attrs, force) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    var _converse = this.__super__._converse;
+                    var chatbox = this.getChatBox(attrs, true);
+                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    if ((force || !hidden) && _converse.connection.authenticated) {
+                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
+                        chatbox.save({'hidden': false});
+                    }
+                    return this.__super__.showChat.apply(this, arguments);
+                }
+            },
+
+            ChatBoxView: {
+                _show: function (focus) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        return this.__super__._show.apply(this, arguments);
+                    }
+                }
+            },
+
+            RosterContactView: {
+                openChat: function (ev) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
+                    this.model.save({'hidden': false});
+                    return this.__super__.openChat.apply(this, arguments);
+                },
+            }
+        }
+    });
+}));
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
 /*global define */
+
+(function (root, factory) {
+    define('converse-inverse',["converse-core",
+            "tpl!brand_heading",
+            "converse-chatview",
+            "converse-controlbox",
+            "converse-muc",
+            "converse-singleton"
+    ], factory);
+}(this, function (converse, tpl_brand_heading) {
+    "use strict";
+    var $ = converse.env.jQuery,
+        Strophe = converse.env.Strophe,
+        _ = converse.env._;
+
+    function createBrandHeadingElement () {
+        var div = document.createElement('div');
+        div.innerHTML = tpl_brand_heading();
+        return div.firstChild;
+    }
+
+     function isMessageToHiddenChat (_converse, message) {
+        var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+        var model = _converse.chatboxes.get(jid);
+        if (!_.isNil(model)) {
+            return model.get('hidden');
+        }
+        // Not having a chat box is assume to be practically the same
+        // as it being hidden.
+        return true;
+    }
+
+    converse.plugins.add('converse-inverse', {
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            areDesktopNotificationsEnabled: function () {
+                // Call with "ignore_hidden" as true, so that it doesn't check
+                // if the windowState is hidden.
+                return this.__super__.areDesktopNotificationsEnabled.call(this, true);
+            },
+
+            shouldNotifyOfMessage: function (message) {
+                var _converse = this.__super__._converse;
+                var result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
+                return result && isMessageToHiddenChat(_converse, message);
+            },
+
+            ControlBoxView: {
+                renderContactsPanel: function () {
+                    this.__super__.renderContactsPanel.apply(this, arguments);
+                    this.el.classList.remove("fullscreen");
+                    return this;
+                },
+
+                renderRegistrationPanel: function () {
+                    this.__super__.renderRegistrationPanel.apply(this, arguments);
+
+                    var el = document.getElementById('converse-register');
+                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    return this;
+                },
+
+                renderLoginPanel: function () {
+                    this.__super__.renderLoginPanel.apply(this, arguments);
+                    this.el.classList.add("fullscreen");
+
+                    var el = document.getElementById('converse-login');
+                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    return this;
+                }
+            },
+
+            ChatRoomView: {
+                afterShown: function (focus) {
+                    /* Make sure chat rooms are scrolled down when opened
+                     */
+                    this.scrollDown();
+                    if (focus) {
+                        this.focus();
+                    }
+                    return this.__super__.afterShown.apply(this, arguments);
+                }
+            }
+        },
+
+        initialize: function () {
+            this.updateSettings({
+                chatview_avatar_height: 44,
+                chatview_avatar_width: 44,
+                hide_open_bookmarks: true,
+                show_controlbox_by_default: true,
+                sticky_controlbox: true,
+            });
+        }
+    });
+}));
+
+/* Inverse.js components configuration
+ *
+ * This file is used to tell require.js which components (or plugins) to load
+ * when it generates a build of inverse.js (in dist/inverse.js)
+ */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
-    define('converse',[
+    define('inverse',[
         "converse-core",
-        // PLEASE NOTE: By default all translations are included.
-        // You can modify the file src/locales.js to include only those
-        // translations that you care about.
-
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
@@ -69527,11 +68792,11 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
-        "converse-minimize",    // Allows chat boxes to be minimized
-        "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
-    ], function (converse) {
+
+        "converse-inverse",     // Inverse plugin for converse.js
+    ], function(converse) {
         return converse;
     });
 }
@@ -69541,6 +68806,6 @@ if (typeof define !== 'undefined') {
     //this snippet. Ask almond to synchronously require the
     //module value for 'converse' here and return it as the
     //value to use for the public API for the built file.
-    return require('converse');
+    return require('inverse');
 }));
 /* jshint ignore:end */

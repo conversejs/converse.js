@@ -202,12 +202,13 @@
                             margin-left: 5px;
                         }
                         p.room-info {
+                            line-height: $line-height;
                             margin: 0;
-                            padding: 0;
                             display: block;
                             white-space: normal;
                         }
                         div.room-info {
+                            padding: 0.3em 0;
                             clear: left;
                             width: 100%;
                         }
@@ -271,7 +272,6 @@
             text-align: center;
             display: inline;
             overflow: hidden;
-            font-size: 12px;
             list-style-type: none;
 
             /* single tab */

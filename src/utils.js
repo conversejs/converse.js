@@ -540,5 +540,17 @@
         }
         return this.emojis_by_category;
     }
+
+    utils.isPersistableModel = function (model) {
+        return model.collection && model.collection.browserStorage;
+    }
+
+    utils.safeSave = function (model, attributes) {
+        if (utils.isPersistableModel(model)) {
+            model.save(attributes);
+        } else {
+            model.set(attributes);
+        }
+    }
     return utils;
 }));

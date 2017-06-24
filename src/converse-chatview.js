@@ -96,6 +96,7 @@
                 show_toolbar: true,
                 time_format: 'HH:mm',
                 visible_toolbar_buttons: {
+                    'emoji': true,
                     'emoticons': true,
                     'call': false,
                     'clear': true
@@ -782,6 +783,7 @@
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_clear_button': _converse.visible_toolbar_buttons.clear,
                         'show_emoticons': _converse.visible_toolbar_buttons.emoticons,
+                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
 
@@ -844,9 +846,7 @@
                 },
 
                 afterShown: function (focus) {
-                    if (this.model.collection.browserStorage) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                    if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -899,17 +899,15 @@
                         });
                         return;
                     }
+                    var scrolled = true;
                     var is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
                     if (is_at_bottom) {
-                        this.model.save('scrolled', false);
+                        scrolled = false;
                         this.onScrolledDown();
-                    } else {
-                        // We're not at the bottom of the chat area, so we mark
-                        // that the box is in a scrolled-up state.
-                        this.model.save('scrolled', true);
                     }
+                    utils.safeSave(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {

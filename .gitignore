@@ -10,6 +10,7 @@
 .project
 .pydevproject
 analytics.js
+inverse-analytics.js
 .idea
 eggs
 .Python
@@ -49,19 +50,7 @@ develop-eggs
 .DS_Store
 
 # Builds
-dist/converse-no-dependencies.min.js
-dist/converse-no-locales-no-otr.js
-dist/converse-no-locales-no-otr.min.js
-dist/converse-no-otr.js
-dist/converse-no-otr.min.js
-dist/converse.min.js
-dist/inverse.min.js
-dist/converse-no-jquery.js
-dist/converse-no-jquery.min.js
-dist/converse-mobile.min.js
-dist/converse-muc-embedded.js
-dist/converse-muc-embedded.min.js
-
+dist/*
 css/*.map
 css/*.min.css
 .sv?

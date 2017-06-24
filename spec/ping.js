@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test-utils", "converse-ping"], factory);
-} (this, function (mock, test_utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils", "converse-ping"], factory);
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
 
     describe("XMPP Ping", function () {

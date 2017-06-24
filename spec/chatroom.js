@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["mock", "converse-core", "test-utils", "utils" ], factory);
-} (this, function (mock, converse, test_utils, utils) {
+    define(["jasmine", "mock", "converse-core", "test-utils", "utils" ], factory);
+} (this, function (jasmine, mock, converse, test_utils, utils) {
     var _ = converse.env._;
     var $ = converse.env.jQuery;
     var $pres = converse.env.$pres;
@@ -996,8 +996,7 @@
                 });
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                view.close();
-                view.model.destroy(); // Manually calling this, otherwise we have to mock stanzas.
+                view.close(); // Hack, otherwise we have to mock stanzas.
 
                 var name = mock.cur_names[0];
                 var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';

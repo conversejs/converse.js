@@ -522,7 +522,9 @@
             _.forEach(categories, function (cat) {
                 var list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
                 list = _.filter(list, function (item) {
-                    return !_.includes(tones, item._shortname);
+                    return !_.includes(tones, item._shortname) &&
+                        !item._shortname.startsWith(':woman_') &&
+                            !item._shortname.startsWith(':man_');
                 });
                 if (cat === 'people') {
                     var idx = _.findIndex(list, ['uc_base', '1f600']);

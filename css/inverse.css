@@ -1743,6 +1743,9 @@ body {
         color: #818479;
         text-decoration: none;
         text-shadow: none; }
+      #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .emoji-picker,
+      #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .emoji-picker {
+        margin-bottom: 34px; }
       #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar .toolbar-picker-panel a,
       #conversejs .chatbox form.sendXMPPMessage .chat-toolbar .toolbar-picker-panel a {
         color: #578EA9; }

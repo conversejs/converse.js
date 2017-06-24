@@ -272,6 +272,9 @@
                     text-decoration: none;
                     text-shadow: none;
                 }
+                .emoji-picker {
+                    margin-bottom: $toolbar-height + 5px;
+                }
                 .toolbar-picker-panel {
                     a {
                         color: $link-color;

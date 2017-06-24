@@ -12,22 +12,18 @@
                 color: $blue;
             }
             .converse-form {
-                margin-top: 4em;
+                margin: 4em 30% 0 30%;
             }
         }
 
         &.fullscreen {
             width: 100%;
-            .controlbox-pane {
-                height: auto;
-            }
             .box-flyout {
                 width: 100%;
             }
         }
         .box-flyout {
             border: 0;
-            background-color: white;
             min-width: $controlbox-width;
             width: 200px;
             z-index: 1;

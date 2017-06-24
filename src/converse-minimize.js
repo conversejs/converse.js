@@ -71,14 +71,14 @@
                 },
 
                 maximize: function () {
-                    utils.saveWithFallback(this,  {
+                    utils.safeSave(this, {
                         'minimized': false,
                         'time_opened': moment().valueOf()
                     });
                 },
 
                 minimize: function () {
-                    utils.saveWithFallback(this,  {
+                    utils.safeSave(this, {
                         'minimized': true,
                         'time_minimized': moment().format()
                     });

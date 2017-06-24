@@ -1617,7 +1617,8 @@ body {
         margin-top: 1em; }
     #converse-embedded-chat .chatbox .chat-body .chat-image,
     #conversejs .chatbox .chat-body .chat-image {
-      max-height: 24em; }
+      max-height: 24em;
+      max-width: 100%; }
     #converse-embedded-chat .chatbox .chat-body .chat-action,
     #conversejs .chatbox .chat-body .chat-action {
       font-style: italic; }
@@ -2269,16 +2270,13 @@ body {
     margin: 10% 0 0 0;
     color: #387592; }
   #conversejs #controlbox #login-dialog .converse-form, #conversejs #controlbox #register .converse-form {
-    margin-top: 4em; }
+    margin: 4em 30% 0 30%; }
   #conversejs #controlbox.fullscreen {
     width: 100%; }
-    #conversejs #controlbox.fullscreen .controlbox-pane {
-      height: auto; }
     #conversejs #controlbox.fullscreen .box-flyout {
       width: 100%; }
   #conversejs #controlbox .box-flyout {
     border: 0;
-    background-color: white;
     min-width: 250px;
     width: 200px;
     z-index: 1;

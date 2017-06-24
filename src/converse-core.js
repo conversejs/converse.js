@@ -192,7 +192,7 @@
         Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
         Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
         Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:0');
+        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
         Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
         Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
         Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
@@ -577,13 +577,15 @@
         };
 
         this.logOut = function () {
+            _converse.chatboxviews.closeAllChatBoxes();
+            _converse.clearSession();
+
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
+            } else {
+                _converse._tearDown();
             }
-            _converse.chatboxviews.closeAllChatBoxes();
-            _converse.clearSession();
-            _converse._tearDown();
             _converse.emit('logout');
         };
 
@@ -2067,7 +2069,9 @@
                         "Either when calling converse.initialize, or when calling " +
                         "_converse.api.user.login.");
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
                 var password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
@@ -2086,7 +2090,9 @@
                 } else {
                     this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
-                this.connection.reset();
+                if (!this.connection.reconnecting) {
+                    this.connection.reset();
+                }
                 this.connection.connect(this.jid, password, this.onConnectStatusChanged);
             }
         };

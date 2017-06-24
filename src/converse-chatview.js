@@ -778,9 +778,7 @@
                 },
 
                 afterShown: function (focus) {
-                    if (this.model.collection.browserStorage) {
-                        // Without a connection, we haven't yet initialized
-                        // localstorage
+                    if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
                     this.setChatState(_converse.ACTIVE);
@@ -841,7 +839,7 @@
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.saveWithFallback(this.model, {'scrolled': scrolled});
+                    utils.safeSave(this.model, {'scrolled': scrolled});
                 }, 150),
 
                 viewUnreadMessages: function () {

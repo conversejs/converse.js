@@ -344,7 +344,7 @@
                     window.sessionStorage.setItem(this.cached_flag, true);
                     _converse.log('Error while fetching bookmarks');
                     _converse.log(iq);
-                    if (!_.isUndefined(deferred)) {
+                    if (!_.isNil(deferred)) {
                         return deferred.reject();
                     }
                 }

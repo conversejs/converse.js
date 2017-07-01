@@ -1715,9 +1715,8 @@
                      *  (XMLElement) pres: A <presence> stanza.
                      */
                     var item = sizzle('x[xmlns="'+Strophe.NS.MUC_USER+'"] item', pres).pop();
-                    if (_.isNil(item)) { return; }
-                    var jid = item.getAttribute('jid');
-                    if (utils.isSameBareJID(jid, _converse.bare_jid)) {
+                    var is_self = pres.querySelector("status[code='110']");
+                    if (is_self && !_.isNil(item)) {
                         var affiliation = item.getAttribute('affiliation');
                         var role = item.getAttribute('role');
                         if (affiliation) {

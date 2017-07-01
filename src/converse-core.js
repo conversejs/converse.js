@@ -760,8 +760,8 @@
             // by browser.
             _converse.connection.flush();
 
-            _converse.initSession();
             _converse.setUserJid();
+            _converse.initSession();
             _converse.enableCarbons();
 
             // If there's no xmppstatus obj, then we were never connected to

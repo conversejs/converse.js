@@ -48,6 +48,7 @@
             clearSession: function () {
                 this.__super__.clearSession.apply(this, arguments);
                 if (!_.isUndefined(this.bookmarks)) {
+                    this.bookmarks.reset();
                     this.bookmarks.browserStorage._clear();
                 }
             },

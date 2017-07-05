@@ -24,7 +24,7 @@ avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/
 
 ### inVerse: a fullscreen version of converse.js
 
-Converse.js is also available in a fullscreen version, called
+Converse.js is also available in a fullscreen version, called [inVerse](https://inverse.chat)
 
 ![Screenshot of inVerse](https://opkode.com/img/inverse-screenshot.png)
 

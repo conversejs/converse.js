@@ -31,21 +31,21 @@
             null,
             "Anuluj"
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Kliknij aby wejść do pokoju"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Pokaż więcej informacji o pokoju"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Kliknij aby wejść do pokoju"
          ],
          "You have unread messages": [
             null,
@@ -219,6 +219,14 @@
             null,
             "Wyloguj się"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Kliknij aby dodać nowe kontakty"
+         ],
+         "Add a contact": [
+            null,
+            "Dodaj kontakt"
+         ],
          "Contact name": [
             null,
             "Nazwa kontaktu"
@@ -234,14 +242,6 @@
          "Add": [
             null,
             "Dodaj"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Kliknij aby dodać nowe kontakty"
-         ],
-         "Add a contact": [
-            null,
-            "Dodaj kontakt"
          ],
          "No users found": [
             null,
@@ -887,6 +887,10 @@
             null,
             "Dowolny"
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             "Gotowy do rozmowy"
@@ -894,18 +898,6 @@
          "Extended Away": [
             null,
             "Dłuższa nieobecność"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Kliknij aby usunąć kontakt"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Klknij aby zaakceptować życzenie nawiązania kontaktu"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Kliknij aby odrzucić życzenie nawiązania kontaktu"
          ],
          "Click to chat with this contact": [
             null,

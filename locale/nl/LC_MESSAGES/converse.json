@@ -35,21 +35,21 @@
             null,
             ""
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Klik om room te openen"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Toon meer informatie over deze room"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Klik om room te openen"
          ],
          "Personal message": [
             null,
@@ -167,6 +167,14 @@
             null,
             ""
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Klik om nieuwe contacten toe te voegen"
+         ],
+         "Add a contact": [
+            null,
+            "Voeg contact toe"
+         ],
          "Contact name": [
             null,
             "Contact naam"
@@ -182,14 +190,6 @@
          "Add": [
             null,
             "Toevoegen"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Klik om nieuwe contacten toe te voegen"
-         ],
-         "Add a contact": [
-            null,
-            "Voeg contact toe"
          ],
          "No users found": [
             null,
@@ -763,6 +763,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -770,10 +774,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Klik om contact te verwijderen"
          ],
          "Click to chat with this contact": [
             null,

@@ -39,25 +39,21 @@
             null,
             "Klik om die boekmerklys te skakel"
          ],
-         "Bookmarked Rooms": [
-            null,
-            "Kletskamerboekmerke"
-         ],
          "Are you sure you want to remove the bookmark \"%1$s\"?": [
             null,
             "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Klik om hierdie kletskamer te open"
+            "Verwyder hierdie boekmerk"
          ],
          "Show more information on this room": [
             null,
             "Wys meer inligting aangaande hierdie kletskamer"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            "Verwyder hierdie boekmerk"
+            "Klik om hierdie kletskamer te open"
          ],
          "You have unread messages": [
             null,
@@ -231,6 +227,14 @@
             null,
             "Meld af"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Klik om nuwe kletskontakte by te voeg"
+         ],
+         "Add a contact": [
+            null,
+            "Voeg 'n kontak by"
+         ],
          "Contact name": [
             null,
             "Kontaknaam"
@@ -246,14 +250,6 @@
          "Add": [
             null,
             "Voeg by"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Klik om nuwe kletskontakte by te voeg"
-         ],
-         "Add a contact": [
-            null,
-            "Voeg 'n kontak by"
          ],
          "No users found": [
             null,
@@ -1059,6 +1055,10 @@
             null,
             "Enige"
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             "Geselserig"
@@ -1066,18 +1066,6 @@
          "Extended Away": [
             null,
             "Weg vir langer"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Klik om hierdie kontak te verwyder"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Klik om hierdie kontakversoek te aanvaar"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Klik om hierdie kontakversoek te weier"
          ],
          "Click to chat with this contact": [
             null,

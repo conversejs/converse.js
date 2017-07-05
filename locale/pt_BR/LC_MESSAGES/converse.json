@@ -35,21 +35,21 @@
             null,
             ""
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "CLique para abrir a sala"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Mostrar mais informações nessa sala"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "CLique para abrir a sala"
          ],
          "Personal message": [
             null,
@@ -167,6 +167,14 @@
             null,
             "Offline"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Clique para adicionar novos contatos ao chat"
+         ],
+         "Add a contact": [
+            null,
+            "Adicionar contato"
+         ],
          "Contact name": [
             null,
             "Nome do contato"
@@ -182,14 +190,6 @@
          "Add": [
             null,
             "Adicionar"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Clique para adicionar novos contatos ao chat"
-         ],
-         "Add a contact": [
-            null,
-            "Adicionar contato"
          ],
          "No users found": [
             null,
@@ -739,6 +739,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -746,10 +750,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Clique para remover o contato"
          ],
          "Click to chat with this contact": [
             null,

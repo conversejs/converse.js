@@ -59,7 +59,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.0.2 -c
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.1.0 -c
 
 .PHONY: pot
 pot:
@@ -87,7 +87,7 @@ release:
 	sed -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
 	sed -ri s/version\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
 	sed -ri s/release\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	sed -ri "s/(Unreleased)/(`date +%Y-%m-%d`)/" docs/CHANGES.md
+	sed -ri "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.md
 	make pot
 	make po
 	make po2json

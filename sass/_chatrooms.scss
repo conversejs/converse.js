@@ -183,7 +183,8 @@
                 }
                 .chatroom-form-container {
                     background-color: white;
-                    border-radius: $chatbox-border-radius;
+                    border-bottom-left-radius: $chatbox-border-radius;
+                    border-bottom-right-radius: $chatbox-border-radius;
                     border: 0;
                     color: $text-color;
                     font-size: $font-size;

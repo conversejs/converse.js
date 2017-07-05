@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.0 (Unreleased)
+## 3.1.0 ((2017-07-05))
 
 ### API changes
 - Deprecate the `updateSettings` method in favour of

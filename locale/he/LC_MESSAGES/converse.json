@@ -31,21 +31,21 @@
             null,
             "ביטול"
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "לחץ כדי לפתוח את חדר זה"
+            ""
          ],
          "Show more information on this room": [
             null,
             "הצג עוד מידע אודות חדר זה"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "לחץ כדי לפתוח את חדר זה"
          ],
          "Personal message": [
             null,
@@ -207,6 +207,14 @@
             null,
             "התנתקות"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "לחץ כדי להוסיף אנשי קשר שיחה חדשים"
+         ],
+         "Add a contact": [
+            null,
+            "הוסף איש קשר"
+         ],
          "Contact name": [
             null,
             "שם איש קשר"
@@ -218,14 +226,6 @@
          "Add": [
             null,
             "הוסף"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "לחץ כדי להוסיף אנשי קשר שיחה חדשים"
-         ],
-         "Add a contact": [
-            null,
-            "הוסף איש קשר"
          ],
          "No users found": [
             null,
@@ -831,6 +831,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -838,18 +842,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "לחץ כדי להסיר את איש קשר זה"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "לחץ כדי לקבל את בקשת איש קשר זה"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "לחץ כדי לסרב את בקשת איש קשר זה"
          ],
          "Click to chat with this contact": [
             null,

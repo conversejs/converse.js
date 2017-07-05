@@ -30,21 +30,21 @@
             null,
             "Отменить"
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Зайти в чат"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Показать больше информации об этом чате"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Зайти в чат"
          ],
          "Close this chat box": [
             null,
@@ -206,6 +206,14 @@
             null,
             "Выйти"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Добавить новый чат"
+         ],
+         "Add a contact": [
+            null,
+            "Добавть контакт"
+         ],
          "Contact name": [
             null,
             "Имя контакта"
@@ -217,14 +225,6 @@
          "Add": [
             null,
             "Добавить"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Добавить новый чат"
-         ],
-         "Add a contact": [
-            null,
-            "Добавть контакт"
          ],
          "No users found": [
             null,
@@ -814,6 +814,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -821,18 +825,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Удалить контакт"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Кликните, чтобы принять запрос этого контакта"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Кликните, чтобы отклонить запрос этого контакта"
          ],
          "Click to chat with this contact": [
             null,

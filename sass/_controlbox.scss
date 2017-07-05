@@ -1,5 +1,8 @@
 #conversejs {
     #controlbox {
+        .pure-form.converse-form {
+            padding: 0;
+        }
         margin-right: 2*$chat-gutter;
         @media screen and (max-width: $mobile-portrait-length) {
             margin: 0;

@@ -2722,6 +2722,8 @@ body {
     #conversejs .chatroom .box-flyout .chatroom-body {
       border-top-left-radius: 7px;
       border-top-right-radius: 7px; }
+      #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+        border-radius: 7px; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         border-top-left-radius: 7px;
         min-width: auto; }

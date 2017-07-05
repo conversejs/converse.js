@@ -194,10 +194,12 @@
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_bookmarks: true,
                 hide_open_bookmarks: false
             });
+            // Promises exposed by this plugin
+            _converse.api.promises.add('bookmarksInitialized');
 
             _converse.Bookmark = Backbone.Model;
 

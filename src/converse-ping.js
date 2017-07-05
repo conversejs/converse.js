@@ -25,7 +25,7 @@
              */
             var _converse = this._converse;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 ping_interval: 180 //in seconds
             });
 

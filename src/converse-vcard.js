@@ -56,7 +56,7 @@
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-            this.updateSettings({
+            _converse.api.settings.update({
                 use_vcards: true,
             });
 

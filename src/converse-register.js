@@ -112,7 +112,7 @@
             _converse.templates.registration_form = tpl_registration_form;
             _converse.templates.registration_request = tpl_registration_request;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page

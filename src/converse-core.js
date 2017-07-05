@@ -2154,15 +2154,6 @@
             this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         };
 
-        var updateSettings = function (settings) {
-            /* Helper method which gets put on the plugin and allows it to
-             * add more user-facing config settings to converse.js.
-             */
-            utils.merge(_converse.default_settings, settings);
-            utils.merge(_converse, settings);
-            utils.applyUserSettings(_converse, settings, _converse.user_settings);
-        };
-
         this.initPlugins = function () {
             // If initialize gets called a second time (e.g. during tests), then we
             // need to re-apply all plugins (for a new converse instance), and we
@@ -2175,7 +2166,7 @@
                 _converse.whitelisted_plugins);
 
             _converse.pluggable.initializePlugins({
-                'updateSettings': updateSettings,
+                'updateSettings': _converse.api.settings.update,
                 '_converse': _converse
             }, whitelist, _converse.blacklisted_plugins);
             _converse.emit('pluginsInitialized');
@@ -2211,6 +2202,9 @@
             'disconnect': function () {
                 _converse.connection.disconnect();
             },
+        },
+        'emit': function () {
+            _converse.emit.apply(_converse, arguments);
         },
         'user': {
             'jid': function () {
@@ -2249,6 +2243,11 @@
             },
         },
         'settings': {
+            'update': function (settings) {
+                utils.merge(_converse.default_settings, settings);
+                utils.merge(_converse, settings);
+                utils.applyUserSettings(_converse, settings, _converse.user_settings);
+            },
             'get': function (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
                     return _converse[key];
@@ -2262,6 +2261,14 @@
                     o[key] = val;
                     _.assignIn(_converse, _.pick(o, _.keys(_converse.default_settings)));
                 }
+            }
+        },
+        'promises': {
+            'add': function (promises) {
+                promises = _.isArray(promises) ? promises : [promises]
+                _.each(promises, function (promise) {
+                    _converse.promises[promise] = new $.Deferred();
+                });
             }
         },
         'contacts': {

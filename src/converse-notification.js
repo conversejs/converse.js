@@ -28,7 +28,7 @@
 
             _converse.supports_html5_notification = "Notification" in window;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 notify_all_room_messages: false,
                 show_desktop_notifications: true,
                 show_chatstate_notifications: false,

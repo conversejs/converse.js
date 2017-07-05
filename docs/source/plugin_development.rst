@@ -126,7 +126,6 @@ Here's an example of the plugin shown above wrapped inside a UMD module:
     });
 
 
-
 Accessing 3rd party libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -198,10 +197,35 @@ If the setting :ref:`strict_plugin_dependencies` is set to true,
 an error will be raised if the plugin is not found, thereby making them
 non-optional.
 
+Extending converse.js's configuration settings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Converse.js comes with various :ref:`configuration-settings`_ that can be used to
+modify its functionality and behavior.
+
+All configuration settings have default values which can be overridden when
+`converse.initialize` (see :ref:`initialize`_) gets called.
+
+Plugins often need their own additional configuration settings and you can add
+these settings with the `_converse.api.settings.update` method (see
+:ref:`settings-update`_).
+
+Exposing promises
+~~~~~~~~~~~~~~~~~
+
+Converse.js has a ``waitUntil`` API method (see :ref:`waituntil-grouping`_)
+which allows you to wait for various promises to resolve before executing a
+piece of code.
+
+You can add new promises for your plugin by calling
+``_converse.api.promises.add`` (see :ref:`promises-grouping`_).
+
+Generally, your plugin will then also be responsible for making sure these
+promises are resolved. You do this by calling ``_converse.api.emit``, which not
+only resolves the plugin but will also emit an event with the same name.
 
 A full example plugin
 ---------------------
-
 
 .. code-block:: javascript
 
@@ -237,20 +261,58 @@ A full example plugin
                 // method on any plugin (if it exists) as soon as the plugin has
                 // been loaded.
 
+                var _converse = this._converse;
+
                 // Inside this method, you have access to the closured
                 // _converse object, from which you can get any configuration
                 // options that the user might have passed in via
                 // converse.initialize. These values are stored in the
                 // "user_settings" attribute.
 
-                // Let's assume the user might pass in a custom setting, like so:
+                // We can also specify new configuration settings for this
+                // plugin, or override the default values of existing
+                // configuration settings. This is done like so:
+
+                _converse.api.settings.update({
+                    'initialize_message': 'Initialized', // New configuration setting
+                    'auto_subscribe': true, // New default value for an
+                                            // existing "core" configuration setting
+                });
+
+                // The user can then pass in values for the configuration
+                // settings when `converse.initialize` gets called.
+                // For example:
                 //
                 // converse.initialize({
                 //      "initialize_message": "My plugin has been initialized"
                 // });
                 //
-                // Then we can alert that message, like so:
-                alert(this._converse.user_settings.initialize_message);
+                // And the configuration setting is then available via the
+                // `user_settings` attribute:
+
+                // alert(this._converse.user_settings.initialize_message);
+
+                // Besides `_converse.api.settings.update`, there is also a
+                // `_converse.api.promises.add` method, which allows you to
+                // add new promises that your plugin is obligated to fulfill.
+
+                // This method takes a string or a list of strings which
+                // represent the promise names.
+
+                _converse.api.promises.add('operationCompleted');
+
+                // Your plugin should then, when appropriate, resolve the
+                // promise by calling `_converse.api.emit`, which will also
+                // emit an event with the same name as the promise.
+                // For example:
+                // _converse.api.emit('operationCompleted');
+                //
+                // Other plugins can then either listen for the event
+                // `operationCompleted` like so:
+                // `_converse.api.listen.on('operationCompleted', function { ... });`
+                //
+                // or they can wait for the promise to be fulfilled like so:
+                // `_converse.api.waitUntil('operationCompleted', function { ... });`
             },
 
             // Optional dependencies are other plugins which might be

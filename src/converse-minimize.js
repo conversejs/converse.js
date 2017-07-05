@@ -312,7 +312,7 @@
             _converse.templates.trimmed_chat = tpl_trimmed_chat;
             _converse.templates.chats_panel = tpl_chats_panel;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });
 

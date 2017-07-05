@@ -75,7 +75,7 @@
                 __ = _converse.__,
                 ___ = _converse.___;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_chat_pending_contacts: true,
                 allow_contact_removal: true,
                 show_toolbar: true,

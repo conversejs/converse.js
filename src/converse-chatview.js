@@ -76,7 +76,7 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 chatview_avatar_height: 32,
                 chatview_avatar_width: 32,
                 show_toolbar: true,

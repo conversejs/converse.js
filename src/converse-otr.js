@@ -459,7 +459,7 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_otr: true,
                 cache_otr_key: false,
                 use_otr_by_default: false

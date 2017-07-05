@@ -326,7 +326,7 @@
                     {'play_sounds': true}, 
                     function (_converse) {
 
-                expect(_.keys(_converse.api.settings)).toEqual(["get", "set"]);
+                expect(_.keys(_converse.api.settings)).toEqual(["update", "get", "set"]);
                 expect(_converse.api.settings.get("play_sounds")).toBe(true);
                 _converse.api.settings.set("play_sounds", false);
                 expect(_converse.api.settings.get("play_sounds")).toBe(false);

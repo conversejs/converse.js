@@ -97,7 +97,7 @@
         },
 
         initialize: function () {
-            this.updateSettings({
+            this._converse.api.settings.update({
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,
                 hide_open_bookmarks: true,

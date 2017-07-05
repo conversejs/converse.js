@@ -191,7 +191,7 @@
             var _converse = this._converse,
                 __ = _converse.__;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_logout: true,
                 default_domain: undefined,
                 show_controlbox_by_default: false,

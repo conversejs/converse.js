@@ -335,7 +335,7 @@
              */
             var _converse = this._converse;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_dragresize: true,
             });
 

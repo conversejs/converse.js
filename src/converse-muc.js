@@ -330,7 +330,7 @@
             // ====================================
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_muc: true,
                 allow_muc_invitations: true,
                 auto_join_on_invite: false,
@@ -347,10 +347,7 @@
                     'toggle_occupants': true
                 },
             });
-
-            _.extend(_converse.promises, {
-                'roomsPanelRendered': new $.Deferred()
-            });
+            _converse.api.promises.add('roomsPanelRendered');
 
             _converse.openChatRoom = function (settings) {
                 /* Opens a chat room, making sure that certain attributes

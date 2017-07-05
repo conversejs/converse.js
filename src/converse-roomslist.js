@@ -163,13 +163,16 @@
                     {'model': _converse.chatboxes}
                 );
             };
-            _converse.on('bookmarksInitialized', initRoomsListView);
-            _converse.on('roomsPanelRendered', function () {
-                if (_converse.allow_bookmarks) {
-                    return;
-                }
-                initRoomsListView();
-            });
+
+            $.when(_converse.api.waitUntil('chatBoxesFetched'),
+                   _converse.api.waitUntil('roomsPanelRendered')).then(
+                function () {
+                    if (_converse.allow_bookmarks) {
+                        _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
+                    } else {
+                        initRoomsListView();
+                    }
+                });
 
             var afterReconnection = function () {
                 if (_.isUndefined(_converse.rooms_list_view)) {

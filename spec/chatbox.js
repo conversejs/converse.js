@@ -1250,7 +1250,7 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg"><img src="' +
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg"><img src="' +
                                 message + '" class="chat-image"></a>');
                         message += "?param1=val1&param2=val2";
                         test_utils.sendMessage(view, message);
@@ -1261,7 +1261,7 @@
                         expect(view.sendMessage).toHaveBeenCalled();
                         var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
                         expect(msg.html()).toEqual(
-                            '<a target="_blank" rel="noopener" href="http://localhost:8000/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
+                            '<a target="_blank" rel="noopener" href="'+base_url+'/logo/conversejs.svg?param1=val1&amp;param2=val2"><img src="'+
                                 message.replace(/&/g, '&amp;') +
                                 '" class="chat-image"></a>')
                         done();

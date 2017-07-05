@@ -671,7 +671,7 @@
                             }.bind(this),
                             function (err) {
                                 alert(__("Sorry, there was an error while trying to remove "+name+" as a contact."));
-                                _converse.log(err);
+                                _converse.log(err, Strophe.LogLevel.ERROR);
                             }
                         );
                     }

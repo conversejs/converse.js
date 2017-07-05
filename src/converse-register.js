@@ -304,7 +304,10 @@
                                 Strophe.Status.CONFLICT
                             ], status)) {
 
-                        _converse.log('Problem during registration: Strophe.Status is: '+status);
+                        _converse.log(
+                            'Problem during registration: Strophe.Status is: '+status,
+                            Strophe.LogLevel.ERROR
+                        );
                         this.cancelRegistration();
                         if (error) {
                             this.giveFeedback(error, 'error');
@@ -534,7 +537,7 @@
                             this.fields[_var.toLowerCase()] = $(field).children('value').text();
                         } else {
                             // TODO: other option seems to be type="fixed"
-                            _converse.log("WARNING: Found field we couldn't parse");
+                            _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
                         }
                     }.bind(this));
                     this.form_type = 'xform';
@@ -554,7 +557,7 @@
                         query = query[0];
                     }
                     if (stanza.getAttribute("type") === "error") {
-                        _converse.log("Registration failed.");
+                        _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
                         error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");

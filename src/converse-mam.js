@@ -90,7 +90,8 @@
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
-                            "user's server doesn't support XEP-0313");
+                            "user's server doesn't support XEP-0313",
+                            Strophe.LogLevel.WARN);
                         return;
                     }
                     if (this.disable_mam) {
@@ -107,7 +108,7 @@
                             this.clearSpinner();
                             _converse.log(
                                 "Error or timeout while trying to fetch "+
-                                "archived messages", "error");
+                                "archived messages", Strophe.LogLevel.ERROR);
                         }.bind(this)
                     );
                 },
@@ -171,7 +172,8 @@
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
-                            "user's server doesn't support XEP-0313");
+                            "user's server doesn't support XEP-0313",
+                            Strophe.LogLevel.WARN);
                         return;
                     }
                     if (!this.model.get('mam_enabled')) {
@@ -191,7 +193,7 @@
                             that.clearSpinner();
                             _converse.log(
                                 "Error while trying to fetch archived messages",
-                                "error");
+                                Strophe.LogLevel.WARN);
                         }
                     );
                 }
@@ -308,9 +310,13 @@
 
             _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
-                    _converse.log("Message Archive Management (XEP-0313) not supported by this browser");
+                    _converse.log(
+                        "Message Archive Management (XEP-0313) not supported by this server",
+                        Strophe.LogLevel.WARN);
                 } else {
-                    _converse.log("An error occured while trying to set archiving preferences.");
+                    _converse.log(
+                        "An error occured while trying to set archiving preferences.",
+                        Strophe.LogLevel.ERROR);
                     _converse.log(iq);
                 }
             };

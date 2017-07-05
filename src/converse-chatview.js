@@ -705,7 +705,7 @@
                     try {
                         this.model.destroy();
                     } catch (e) {
-                        _converse.log(e);
+                        _converse.log(e, Strophe.LogLevel.ERROR);
                     }
                     this.remove();
                     _converse.emit('chatBoxClosed', this);

@@ -289,7 +289,7 @@
                 },
 
                 onBookmarkError: function (iq) {
-                    _converse.log("Error while trying to add bookmark", "error");
+                    _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
                     _converse.log(iq);
                     // We remove all locally cached bookmarks and fetch them
                     // again from the server.
@@ -345,7 +345,7 @@
 
                 onBookmarksReceivedError: function (deferred, iq) {
                     window.sessionStorage.setItem(this.cached_flag, true);
-                    _converse.log('Error while fetching bookmarks');
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
                     _converse.log(iq);
                     if (!_.isNil(deferred)) {
                         return deferred.reject();

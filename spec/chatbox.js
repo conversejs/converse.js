@@ -775,7 +775,8 @@
                             _converse.chatboxes.onMessage(msg);
                             
                             expect(_converse.log).toHaveBeenCalledWith(
-                                    "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource", "info");
+                                    "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource",
+                                    Strophe.LogLevel.INFO);
                             expect(_converse.chatboxes.getChatBox).not.toHaveBeenCalled();
                             _converse.filter_by_resource = false;
 
@@ -819,7 +820,7 @@
                     _converse.chatboxes.onMessage(msg);
                     expect(_converse.log.calledWith(
                         "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: localhost",
-                        "info"
+                        Strophe.LogLevel.INFO
                     )).toBeTruthy();
                     expect(utils.isHeadlineMessage.called).toBeTruthy();
                     expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();

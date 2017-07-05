@@ -351,7 +351,7 @@
                     } else {
                         this.showHelpMessages(['Encryption error occured: '+msg], 'error');
                     }
-                    _converse.log("OTR ERROR:"+msg);
+                    _converse.log("OTR ERROR:"+msg, Strophe.LogLevel.ERROR);
                 },
 
                 startOTRFromToolbar: function (ev) {

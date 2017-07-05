@@ -148,7 +148,7 @@
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log(
                             "Could not send notification, because roster is undefined",
-                            "error");
+                            Strophe.LogLevel.ERROR);
                         return;
                     }
                     roster_item = _converse.roster.get(from_jid);

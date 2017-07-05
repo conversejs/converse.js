@@ -2689,7 +2689,9 @@
                     } else if (_.isObject(room)) {
                         _converse.api.rooms.open(room.jid, room.nick);
                     } else {
-                        _converse.log('Invalid room criteria specified for "auto_join_rooms"', 'error');
+                        _converse.log(
+                            'Invalid room criteria specified for "auto_join_rooms"',
+                            Strophe.LogLevel.ERROR);
                     }
                 });
             };

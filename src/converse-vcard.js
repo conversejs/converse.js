@@ -42,7 +42,10 @@
                         bare_jid,
                         _.partial(_converse.createRequestingContactFromVCard, presence),
                         function (iq, jid) {
-                            _converse.log("Error while retrieving vcard for "+jid);
+                            _converse.log(
+                                "Error while retrieving vcard for "+jid,
+                                Strophe.LogLevel.ERROR
+                            );
                             _converse.createRequestingContactFromVCard(presence, iq, jid);
                         }
                     );
@@ -148,7 +151,8 @@
                         },
                         function () {
                             _converse.log(
-                                "updateVCardForChatBox: Error occured while fetching vcard"
+                                "updateVCardForChatBox: Error occured while fetching vcard",
+                                Strophe.LogLevel.ERROR
                             );
                         }
                     );

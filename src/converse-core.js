@@ -144,15 +144,20 @@
         } else {
             logger = console;
         }
-        if (_converse.debug) {
-            if (level === 'error') {
-                logger.log('ERROR: '+txt);
-            } else {
-                logger.log(txt);
+        if (level === Strophe.LogLevel.ERROR) {
+            logger.log('ERROR: '+txt);
+        } else if (level === Strophe.LogLevel.WARN) {
+            logger.log('WARNING: '+txt);
+        } else if (level === Strophe.LogLevel.FATAL) {
+            logger.log('FATAL: '+txt);
+        } else if (_converse.debug) {
+            if (level === Strophe.LogLevel.DEBUG) {
+                logger.log('DEBUG: '+txt);
+            } else if (level === Strophe.LogLevel.INFO) {
+                logger.log('INFO: '+txt);
             }
         }
     };
-
 
     _converse.initialize = function (settings, callback) {
         "use strict";
@@ -184,7 +189,7 @@
 
         // Logging
         Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
-        Strophe.error = function (msg) { _converse.log(msg, 'error'); };
+        Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
@@ -657,7 +662,9 @@
               .c('enable', {xmlns: Strophe.NS.CARBONS});
             this.connection.addHandler(function (iq) {
                 if (iq.querySelectorAll('error').length > 0) {
-                    _converse.log('ERROR: An error occured while trying to enable message carbons.');
+                    _converse.log(
+                        'An error occured while trying to enable message carbons.',
+                        Strophe.LogLevel.ERROR);
                 } else {
                     this.session.save({carbons_enabled: true});
                     _converse.log('Message carbons have been enabled.');
@@ -1133,7 +1140,7 @@
                     }.bind(this),
                     function (err) {
                         alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
-                        _converse.log(err);
+                        _converse.log(err, Strophe.LogLevel.ERROR);
                         deferred.resolve(err);
                     }
                 );
@@ -1583,7 +1590,7 @@
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                     _converse.log(
                         'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
-                        'info'
+                        Strophe.LogLevel.INFO
                     );
                     return true;
                 } else if (utils.isHeadlineMessage(message)) {
@@ -1592,7 +1599,7 @@
                     // wrong type ('chat'), so we need to filter them out here.
                     _converse.log(
                         "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
-                        'info'
+                        Strophe.LogLevel.INFO
                     );
                     return true;
                 }
@@ -1658,7 +1665,8 @@
                     };
                 } else if (!_converse.allow_non_roster_messaging) {
                     _converse.log('Could not get roster item for JID '+bare_jid+
-                        ' and allow_non_roster_messaging is set to false', 'error');
+                        ' and allow_non_roster_messaging is set to false',
+                        Strophe.LogLevel.ERROR);
                     return;
                 }
                 return this.create(_.assignIn({
@@ -2166,7 +2174,15 @@
                 _converse.whitelisted_plugins);
 
             _converse.pluggable.initializePlugins({
-                'updateSettings': _converse.api.settings.update,
+                'updateSettings': function () {
+                    _converse.log(
+                        "(DEPRECATION) "+
+                        "The `updateSettings` method has been deprecated. "+
+                        "Please use `_converse.api.settings.update` instead.",
+                        Strophe.LogLevel.WARN
+                    )
+                    _converse.api.settings.update.apply(_converse, arguments);
+                },
                 '_converse': _converse
             }, whitelist, _converse.blacklisted_plugins);
             _converse.emit('pluginsInitialized');
@@ -2298,7 +2314,7 @@
             'open': function (jids, attrs) {
                 var chatbox;
                 if (_.isUndefined(jids)) {
-                    _converse.log("chats.open: You need to provide at least one JID", "error");
+                    _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                     return null;
                 } else if (_.isString(jids)) {
                     chatbox = _converse.getViewForChatBox(

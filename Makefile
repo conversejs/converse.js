@@ -150,7 +150,11 @@ watch: stamp-bundler
 
 .PHONY: watchjs
 watchjs: stamp-npm
-	$(BABEL) --source-maps --watch=./src --out-dir=./build
+	$(BABEL) --source-maps --watch=./src --out-dir=./builds
+
+.PHONY: transpile
+transpile: stamp-npm
+	$(BABEL) --source-maps --out-dir=./builds ./src
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
@@ -169,6 +173,14 @@ dist/converse.min.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
 dist/converse.js: src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
+dist/converse-esnext.min.js: src locale node_modules *.js transpile
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
+dist/converse-esnext.js: src locale node_modules *.js transpile
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
+dist/inverse-esnext.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse-esnext.js include=inverse out=dist/inverse-esnext.js optimize=none 
+dist/inverse-esnext.min.js: src locale node_modules *.js
+	$(RJS) -o src/build-inverse-esnext.js include=inverse out=dist/inverse-esnext.min.js
 dist/inverse.js: src locale node_modules *.js
 	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
 dist/inverse.min.js: src locale node_modules *.js

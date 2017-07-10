@@ -1,6 +1,10 @@
 # Changelog
 
-## 3.1.0 ((2017-07-05))
+## 3.2.0 (Unreleased)
+
+- #866 Add babel in order to support ES2015 syntax
+
+## 3.1.0 (2017-07-05)
 
 ### API changes
 - Deprecate the `updateSettings` method in favour of

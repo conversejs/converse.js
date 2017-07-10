@@ -77,6 +77,7 @@
     "strophejs-plugin-rsm": "0.0.1",
     "strophejs-plugin-vcard": "0.0.1",
     "text": "requirejs/text#2.0.15",
+    "uglify-es": "^3.0.24",
     "wait-until-promise": "^1.0.0"
   },
   "dependencies": {}

@@ -50,6 +50,7 @@
                 if (!_.isUndefined(this.bookmarks)) {
                     this.bookmarks.reset();
                     this.bookmarks.browserStorage._clear();
+                    window.sessionStorage.removeItem(this.bookmarks.fetched_flag);
                 }
             },
 
@@ -218,7 +219,7 @@
                     this.on('remove', this.sendBookmarkStanza, this);
 
                     var cache_key = 'converse.room-bookmarks'+_converse.bare_jid;
-                    this.cached_flag = b64_sha1(cache_key+'fetched');
+                    this.fetched_flag = b64_sha1(cache_key+'fetched');
                     this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(cache_key)
                     );
@@ -234,16 +235,16 @@
                 fetchBookmarks: function () {
                     var deferred = new $.Deferred();
                     var promise = deferred.promise();
-                    if (window.sessionStorage.getItem(this.browserStorage.name)) {
+                    if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
                             'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
                         });
-                    } else if (! window.sessionStorage.getItem(this.cached_flag)) {
-                        // There aren't any cached bookmarks, and the cache is
-                        // not set to null. So we query the XMPP server.
+                    } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
+                        // There aren't any cached bookmarks and the
+                        // `fetched_flag` is off, so we query the XMPP server.
                         // If nothing is returned from the XMPP server, we set
-                        // the cache to null to avoid calling the server again.
+                        // the `fetched_flag` to avoid calling the server again.
                         this.fetchBookmarksFromServer(deferred);
                     } else {
                         deferred.resolve();
@@ -344,9 +345,9 @@
                 },
 
                 onBookmarksReceivedError: function (deferred, iq) {
-                    window.sessionStorage.setItem(this.cached_flag, true);
+                    window.sessionStorage.setItem(this.fetched_flag, true);
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.log(iq);
+                    _converse.log(iq, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
                         return deferred.reject();
                     }

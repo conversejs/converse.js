@@ -2219,7 +2219,10 @@
                 onOccupantAdded: function (item) {
                     var view = this.get(item.get('id'));
                     if (!view) {
-                        view = this.add(item.get('id'), new _converse.ChatRoomOccupantView({model: item}));
+                        view = this.add(
+                            item.get('id'),
+                            new _converse.ChatRoomOccupantView({model: item})
+                        );
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;

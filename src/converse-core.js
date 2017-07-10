@@ -7,7 +7,7 @@
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
     define(["sizzle",
-            "jquery.noconflict",
+            "es6-promise",
             "lodash.noconflict",
             "lodash.converter",
             "polyfill",
@@ -21,7 +21,7 @@
             "backbone.overview",
     ], factory);
 }(this, function (
-        sizzle, $, _, lodashConverter, polyfill,
+        sizzle, Promise, _, lodashConverter, polyfill,
         utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
@@ -47,20 +47,29 @@
         'interpolate': /\{\{([\s\S]+?)\}\}/g
     };
 
-    const _converse = {};
-    _converse.templates = {};
+    const _converse = {
+        'templates': {},
+        'promises': {}
+    }
     _.extend(_converse, Backbone.Events);
-    _converse.promises = {
-        'cachedRoster': new $.Deferred(),
-        'chatBoxesFetched': new $.Deferred(),
-        'connected': new $.Deferred(),
-        'pluginsInitialized': new $.Deferred(),
-        'roster': new $.Deferred(),
-        'rosterContactsFetched': new $.Deferred(),
-        'rosterGroupsFetched': new $.Deferred(),
-        'rosterInitialized': new $.Deferred(),
-        'statusInitialized': new $.Deferred()
-    };
+
+    const PROMISES = [
+        'cachedRoster',
+        'chatBoxesFetched',
+        'connected',
+        'pluginsInitialized',
+        'roster',
+        'rosterContactsFetched',
+        'rosterGroupsFetched',
+        'rosterInitialized',
+        'statusInitialized'
+    ];
+
+    function addPromise (promise) {
+        _converse.promises[promise] = utils.getWrappedPromise();
+    }
+    _.each(PROMISES, addPromise);
+
     _converse.emit = function (name) {
         _converse.trigger.apply(this, arguments);
         const promise = _converse.promises[name];
@@ -167,7 +176,7 @@
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
-        const init_deferred = new $.Deferred();
+        const init_promise = utils.getWrappedPromise();
 
         if (!_.isUndefined(_converse.chatboxes)) {
             // Looks like _converse.initialized was called again without logging
@@ -290,8 +299,6 @@
                       "authentication with auto_login.");
             }
         }
-
-        $.fx.off = !this.animate;
 
         // Module-level variables
         // ----------------------
@@ -555,19 +562,19 @@
             }
         };
 
-        this.initStatus = function () {
-            const deferred = new $.Deferred();
-            this.xmppstatus = new this.XMPPStatus();
-            const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
-            this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-            this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-            this.xmppstatus.fetch({
-                success: deferred.resolve,
-                error: deferred.resolve
+        this.initStatus = () => 
+            new Promise((resolve, reject) => {
+                const promise = new utils.getWrappedPromise();
+                this.xmppstatus = new this.XMPPStatus();
+                const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
+                this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
+                this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                this.xmppstatus.fetch({
+                    success: resolve,
+                    error: resolve
+                });
+                _converse.emit('statusInitialized');
             });
-            _converse.emit('statusInitialized');
-            return deferred.promise();
-        };
 
         this.initSession = function () {
             this.session = new this.Session();
@@ -751,7 +758,7 @@
             if (reconnecting) {
                 _converse.xmppstatus.sendPresence();
             } else {
-                init_deferred.resolve();
+                init_promise.resolve();
                 _converse.emit('initialized');
             }
         };
@@ -788,7 +795,10 @@
                 // close them now.
                 _converse.chatboxviews.closeAllChatBoxes();
                 _converse.features = new _converse.Features();
-                _converse.initStatus().done(_.partial(_converse.onStatusInitialized, false));
+                _converse.initStatus().then(
+                    _.partial(_converse.onStatusInitialized, false),
+                    _.partial(_converse.onStatusInitialized, false)
+                );
                 _converse.emit('connected');
             }
         };
@@ -1026,7 +1036,7 @@
                                 _converse.connection.flush();
                                 _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
                             }, t);
-                        t += $(msg).find('item').length*250;
+                        t += msg.querySelectorAll('item').length*250;
                         return true;
                     },
                     Strophe.NS.ROSTERX, 'message', null
@@ -1041,26 +1051,26 @@
                  * Returns a promise which resolves once the contacts have been
                  * fetched.
                  */
-                const deferred = new $.Deferred();
-                this.fetch({
-                    add: true,
-                    success (collection) {
-                        if (collection.length === 0) {
-                            /* We don't have any roster contacts stored in sessionStorage,
-                             * so lets fetch the roster from the XMPP server. We pass in
-                             * 'sendPresence' as callback method, because after initially
-                             * fetching the roster we are ready to receive presence
-                             * updates from our contacts.
-                             */
-                            _converse.send_initial_presence = true;
-                            _converse.roster.fetchFromServer(deferred.resolve);
-                        } else {
-                            _converse.emit('cachedRoster', collection);
-                            deferred.resolve();
+                return new Promise((resolve, reject) => {
+                    this.fetch({
+                        add: true,
+                        success (collection) {
+                            if (collection.length === 0) {
+                                /* We don't have any roster contacts stored in sessionStorage,
+                                * so lets fetch the roster from the XMPP server. We pass in
+                                * 'sendPresence' as callback method, because after initially
+                                * fetching the roster we are ready to receive presence
+                                * updates from our contacts.
+                                */
+                                _converse.send_initial_presence = true;
+                                _converse.roster.fetchFromServer(resolve);
+                            } else {
+                                _converse.emit('cachedRoster', collection);
+                                resolve();
+                            }
                         }
-                    }
+                    });
                 });
-                return deferred.promise();
             },
 
             subscribeToSuggestedItems (msg) {
@@ -1091,11 +1101,12 @@
                  *      reason for the subscription request.
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                this.addContact(jid, name, groups, attributes).done(function (contact) {
+                const handler = (contact) => {
                     if (contact instanceof _converse.RosterContact) {
                         contact.subscribe(message);
                     }
-                });
+                }
+                this.addContact(jid, name, groups, attributes).then(handler, handler);
             },
 
             sendContactAddIQ (jid, name, groups, callback, errback) {
@@ -1128,28 +1139,28 @@
                  *    (Array of Strings) groups - Any roster groups the user might belong to
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                const deferred = new $.Deferred();
-                groups = groups || [];
-                name = _.isEmpty(name)? jid: name;
-                this.sendContactAddIQ(jid, name, groups,
-                    () => {
-                        const contact = this.create(_.assignIn({
-                            ask: undefined,
-                            fullname: name,
-                            groups,
-                            jid,
-                            requesting: false,
-                            subscription: 'none'
-                        }, attributes), {sort: false});
-                        deferred.resolve(contact);
-                    },
-                    function (err) {
-                        alert(__(`Sorry, there was an error while trying to add ${name} as a contact.`));
-                        _converse.log(err, Strophe.LogLevel.ERROR);
-                        deferred.resolve(err);
-                    }
-                );
-                return deferred.promise();
+                return new Promise((resolve, reject) => {
+                    groups = groups || [];
+                    name = _.isEmpty(name)? jid: name;
+                    this.sendContactAddIQ(jid, name, groups,
+                        () => {
+                            const contact = this.create(_.assignIn({
+                                ask: undefined,
+                                fullname: name,
+                                groups,
+                                jid,
+                                requesting: false,
+                                subscription: 'none'
+                            }, attributes), {sort: false});
+                            resolve(contact);
+                        },
+                        function (err) {
+                            alert(__(`Sorry, there was an error while trying to add ${name} as a contact.`));
+                            _converse.log(err, Strophe.LogLevel.ERROR);
+                            resolve(err);
+                        }
+                    );
+                });
             },
 
             subscribeBack (bare_jid) {
@@ -1158,11 +1169,12 @@
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
-                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).done(function (contact) {
+                    const handler = (contact) => {
                         if (contact instanceof _converse.RosterContact) {
                             contact.authorize().subscribe();
                         }
-                    });
+                    }
+                    this.addContact(bare_jid, '', [], { 'subscription': 'from' }).then(handler, handler);
                 }
             },
 
@@ -1379,14 +1391,14 @@
                  * Returns a promise which resolves once the groups have been
                  * returned.
                  */
-                const deferred = new $.Deferred();
-                this.fetch({
-                    silent: true, // We need to first have all groups before
-                                  // we can start positioning them, so we set
-                                  // 'silent' to true.
-                    success: deferred.resolve
+                return new Promise((resolve, reject) => {
+                    this.fetch({
+                        silent: true, // We need to first have all groups before
+                                    // we can start positioning them, so we set
+                                    // 'silent' to true.
+                        success: resolve
+                    });
                 });
-                return deferred.promise();
             }
         });
 
@@ -1935,30 +1947,29 @@
             }
         };
 
-        this.fetchLoginCredentials = function () {
-            const deferred = new $.Deferred();
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', _converse.credentials_url, true);
-            xhr.setRequestHeader('Accept', "application/json, text/javascript");
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    const data = JSON.parse(xhr.responseText);
-                    deferred.resolve({
-                        'jid': data.jid,
-                        'password': data.password
-                    });
-                } else {
-                    xhr.onerror();
-                }
-            };
-            xhr.onerror = function () {
-                delete _converse.connection;
-                _converse.emit('noResumeableSession');
-                deferred.reject(xhr.responseText);
-            };
-            xhr.send();
-            return deferred.promise();
-        };
+        this.fetchLoginCredentials = () =>
+            new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', _converse.credentials_url, true);
+                xhr.setRequestHeader('Accept', "application/json, text/javascript");
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const data = JSON.parse(xhr.responseText);
+                        resolve({
+                            'jid': data.jid,
+                            'password': data.password
+                        });
+                    } else {
+                        xhr.onerror();
+                    }
+                };
+                xhr.onerror = function () {
+                    delete _converse.connection;
+                    _converse.emit('noResumeableSession');
+                    reject(xhr.responseText);
+                };
+                xhr.send();
+            });
 
         this.startNewBOSHSession = function () {
             const xhr = new XMLHttpRequest();
@@ -2045,7 +2056,10 @@
                     // or credentials fetching via HTTP
                     this.autoLogin(credentials);
                 } else if (this.credentials_url) {
-                    this.fetchLoginCredentials().done(this.autoLogin.bind(this));
+                    this.fetchLoginCredentials().then(
+                        this.autoLogin.bind(this),
+                        this.autoLogin.bind(this)
+                    );
                 } else if (!this.jid) {
                     throw new Error(
                         "attemptNonPreboundSession: If you use auto_login, "+
@@ -2203,7 +2217,7 @@
             _converse.connection.service === 'jasmine tests') {
             return _converse;
         } else {
-            return init_deferred.promise();
+            return init_promise.promise;
         }
     };
 
@@ -2280,9 +2294,7 @@
         'promises': {
             'add' (promises) {
                 promises = _.isArray(promises) ? promises : [promises]
-                _.each(promises, function (promise) {
-                    _converse.promises[promise] = new $.Deferred();
-                });
+                _.each(promises, addPromise);
             }
         },
         'contacts': {
@@ -2387,7 +2399,7 @@
             if (_.isUndefined(promise)) {
                 return null;
             }
-            return _converse.promises[name].promise();
+            return promise.promise;
         },
         'send' (stanza) {
             _converse.connection.send(stanza);
@@ -2417,11 +2429,11 @@
             '$msg': $msg,
             '$pres': $pres,
             'Backbone': Backbone,
+            'Promise': Promise,
             'Strophe': Strophe,
             '_': _,
-            'fp': fp,
             'b64_sha1':  b64_sha1,
-            'jQuery': $,
+            'fp': fp,
             'moment': moment,
             'sizzle': sizzle,
             'utils': utils

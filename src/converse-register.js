@@ -10,7 +10,8 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["converse-core",
+    define(["jquery.noconflict",
+            "converse-core",
             "tpl!form_username",
             "tpl!register_panel",
             "tpl!register_tab",
@@ -20,6 +21,7 @@
             "converse-controlbox"
     ], factory);
 }(this, function (
+            $,
             converse,
             tpl_form_username,
             tpl_register_panel,
@@ -33,7 +35,6 @@
 
     // Strophe methods for building stanzas
     const { Strophe, Backbone, utils, $iq, _ } = converse.env;
-    const $ = converse.env.jQuery;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');

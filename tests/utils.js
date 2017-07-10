@@ -1,8 +1,7 @@
 (function (root, factory) {
-    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function (converse_api, Promise, mock, waitUntilPromise) {
+    define(['jquery.noconflict', 'converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function ($, converse_api, Promise, mock, waitUntilPromise) {
     var _ = converse_api.env._;
-    var $ = converse_api.env.jQuery;
     var $msg = converse_api.env.$msg;
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;

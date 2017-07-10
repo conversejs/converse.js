@@ -10,7 +10,8 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define(["utils",
+    define(["jquery.noconflict",
+            "utils",
             "converse-core",
             "converse-muc",
             "tpl!chatroom_bookmark_form",
@@ -20,6 +21,7 @@
         ],
         factory);
 }(this, function (
+        $,
         utils,
         converse,
         muc,
@@ -29,8 +31,7 @@
         tpl_bookmarks_list
     ) {
 
-    const $ = converse.env.jQuery,
-          { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+    const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-bookmarks', {
         overrides: {
@@ -488,8 +489,11 @@
                     _converse.emit('bookmarksInitialized');
                 });
             };
-            $.when(_converse.api.waitUntil('chatBoxesFetched'),
-                   _converse.api.waitUntil('roomsPanelRendered')).then(initBookmarks);
+
+            Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('roomsPanelRendered')
+            ]).then(initBookmarks);
 
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

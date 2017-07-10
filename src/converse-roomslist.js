@@ -10,15 +10,15 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define(["utils",
+    define(["jquery.noconflict",
+            "utils",
             "converse-core",
             "converse-muc",
             "tpl!rooms_list",
             "tpl!rooms_list_item"
         ], factory);
-}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-    const $ = converse.env.jQuery,
-          { Backbone, b64_sha1, sizzle, _ } = converse.env;
+}(this, function ($, utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+    const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-roomslist', {
         initialize () {
@@ -161,15 +161,18 @@
                 );
             };
 
-            $.when(_converse.api.waitUntil('chatBoxesFetched'),
-                   _converse.api.waitUntil('roomsPanelRendered')).then(
-                function () {
-                    if (_converse.allow_bookmarks) {
-                        _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
-                    } else {
-                        initRoomsListView();
-                    }
-                });
+            Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('roomsPanelRendered')
+            ]).then(() => {
+                if (_converse.allow_bookmarks) {
+                    _converse.api.waitUntil('bookmarksInitialized').then(
+                        initRoomsListView
+                    );
+                } else {
+                    initRoomsListView();
+                }
+            });
 
             const afterReconnection = function () {
                 if (_.isUndefined(_converse.rooms_list_view)) {

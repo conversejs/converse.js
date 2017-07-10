@@ -9,16 +9,15 @@
 // XEP-0059 Result Set Management
 
 (function (root, factory) {
-    define([
+    define(["jquery.noconflict",
             "converse-core",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
-}(this, function (converse) {
+}(this, function ($, converse) {
     "use strict";
-    const $ = converse.env.jQuery,
-          { Strophe, $iq, _, moment } = converse.env;
+    const { Strophe, $iq, _, moment } = converse.env;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management

@@ -7,7 +7,8 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["jquery.noconflict",
+            "converse-core",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!change_status_message",
@@ -25,6 +26,7 @@
             "converse-rosterview"
     ], factory);
 }(this, function (
+            $,
             converse,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
@@ -44,13 +46,7 @@
 
     const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
-    // Strophe methods for building stanzas
-    const { Strophe } = converse.env,
-        { Backbone } = converse.env,
-        { utils } = converse.env;
-    // Other necessary globals
-    const $ = converse.env.jQuery,
-         { _, fp, moment } = converse.env;
+    const { Strophe, Backbone, utils, _, fp, moment } = converse.env;
 
 
     converse.plugins.add('converse-controlbox', {

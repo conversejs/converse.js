@@ -8,6 +8,7 @@
 
 (function (root, factory) {
     define([
+            "jquery.noconflict",
             "converse-core",
             "tpl!chatbox",
             "tpl!new_day",
@@ -19,6 +20,7 @@
             "tpl!spinner"
     ], factory);
 }(this, function (
+            $,
             converse,
             tpl_chatbox,
             tpl_new_day,
@@ -30,8 +32,7 @@
             tpl_spinner
     ) {
     "use strict";
-    const $ = converse.env.jQuery,
-          { $msg, Backbone, Strophe, _, moment, utils } = converse.env;
+    const { $msg, Backbone, Strophe, _, moment, utils } = converse.env;
 
     const KEY = {
         ENTER: 13,

@@ -7,17 +7,16 @@
 /*global define, window */
 
 (function (root, factory) {
-    define([
+    define(["jquery.noconflict",
             "converse-core",
             "tpl!dragresize",
             "converse-chatview",
             "converse-muc", // XXX: would like to remove this
             "converse-controlbox"
     ], factory);
-}(this, function (converse, tpl_dragresize) {
+}(this, function ($, converse, tpl_dragresize) {
     "use strict";
-    const $ = converse.env.jQuery,
-        { _ } = converse.env;
+    const { _ } = converse.env;
 
     function renderDragResizeHandles (_converse, view) {
         const flyout = view.el.querySelector('.box-flyout');

@@ -7,7 +7,8 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["jquery.noconflict",
+            "converse-core",
             "tpl!group_header",
             "tpl!pending_contact",
             "tpl!requesting_contact",
@@ -16,6 +17,7 @@
             "tpl!roster_item"
     ], factory);
 }(this, function (
+            $,
             converse, 
             tpl_group_header,
             tpl_pending_contact,
@@ -24,8 +26,7 @@
             tpl_roster_filter,
             tpl_roster_item) {
     "use strict";
-    const $ = converse.env.jQuery,
-          { Backbone, utils, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+    const { Backbone, utils, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
 
     converse.plugins.add('converse-rosterview', {

@@ -11,15 +11,15 @@
  */
 (function (root, factory) {
 
-    define(["converse-chatview",
+    define(["jquery.noconflict",
+            "converse-chatview",
             "tpl!toolbar_otr",
             'otr'
     ], factory);
-}(this, function (converse, tpl_toolbar_otr, otr) {
+}(this, function ($, converse, tpl_toolbar_otr, otr) {
     "use strict";
 
     const { Strophe, utils, b64_sha1, _ } = converse.env;
-    const $ = converse.env.jQuery;
 
     const HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
         ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))

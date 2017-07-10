@@ -7,11 +7,10 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core", "strophe.vcard"], factory);
-}(this, function (converse) {
+    define(["jquery.noconflict", "converse-core", "strophe.vcard"], factory);
+}(this, function ($, converse) {
     "use strict";
-    const { Strophe, _, moment } = converse.env,
-          $ = converse.env.jQuery;
+    const { Strophe, _, moment } = converse.env;
 
     converse.plugins.add('converse-vcard', {
 

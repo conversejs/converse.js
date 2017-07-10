@@ -11,6 +11,7 @@
  */
 (function (root, factory) {
     define([
+            "jquery.noconflict",
             "converse-core",
             "tpl!chatarea",
             "tpl!chatroom",
@@ -34,6 +35,7 @@
             "converse-chatview"
     ], factory);
 }(this, function (
+            $,
             converse,
             tpl_chatarea,
             tpl_chatroom,
@@ -61,7 +63,6 @@
     const CHATROOMS_TYPE = 'chatroom';
 
     const { Strophe, Backbone, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, fp, moment } = converse.env;
-    const $ = converse.env.jQuery;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");

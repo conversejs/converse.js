@@ -3,6 +3,7 @@
     define([
         "jquery.noconflict",
         "sizzle",
+        "es6-promise",
         "jquery.browser",
         "lodash.noconflict",
         "locales",
@@ -18,7 +19,9 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, sizzle, dummy, _,
+        $, sizzle,
+        Promise,
+        dummy, _,
         locales,
         moment,
         Strophe,
@@ -524,7 +527,16 @@
 
     utils.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
-    }
+    };
+
+    utils.getWrappedPromise = function () {
+        const wrapper = {};
+        wrapper.promise = new Promise((resolve, reject) => {
+            wrapper.resolve = resolve;
+            wrapper.reject = reject;
+        })
+        return wrapper;
+    };
 
     utils.safeSave = function (model, attributes) {
         if (utils.isPersistableModel(model)) {

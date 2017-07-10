@@ -16,8 +16,7 @@
     ], factory);
 }(this, function (converse, tpl_brand_heading) {
     "use strict";
-    const $ = converse.env.jQuery,
-        { Strophe, _ } = converse.env;
+    const { Strophe, _ } = converse.env;
 
     function createBrandHeadingElement () {
         const div = document.createElement('div');

@@ -7,7 +7,8 @@
 /*global define, window */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["jquery.noconflict",
+            "converse-core",
             "tpl!chatbox_minimize",
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
@@ -17,6 +18,7 @@
             "converse-muc"
     ], factory);
 }(this, function (
+        $,
         converse,
         tpl_chatbox_minimize,
         tpl_toggle_chats,
@@ -25,8 +27,7 @@
     ) {
     "use strict";
 
-    const $ = converse.env.jQuery,
-          { _ , utils, Backbone, b64_sha1, moment } = converse.env;
+    const { _ , utils, Backbone, b64_sha1, moment } = converse.env;
 
     converse.plugins.add('converse-minimize', {
         overrides: {

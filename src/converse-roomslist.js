@@ -17,20 +17,17 @@
             "tpl!rooms_list_item"
         ], factory);
 }(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-    var $ = converse.env.jQuery,
-        Backbone = converse.env.Backbone,
-        b64_sha1 = converse.env.b64_sha1,
-        sizzle = converse.env.sizzle,
-        _ = converse.env._;
+    const $ = converse.env.jQuery,
+          { Backbone, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-roomslist', {
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+            const { _converse } = this,
+                { __,
+                ___ } = _converse;
 
             _converse.RoomsList = Backbone.Model.extend({
                 defaults: {
@@ -46,7 +43,7 @@
                     'click .open-rooms-toggle': 'toggleRoomsList'
                 },
 
-                initialize: function () {
+                initialize () {
                     this.model.on('add', this.renderRoomsListElement, this);
                     this.model.on('change:bookmarked', this.renderRoomsListElement, this);
                     this.model.on('change:name', this.renderRoomsListElement, this);
@@ -54,7 +51,7 @@
                     this.model.on('change:num_unread_general', this.renderRoomsListElement, this);
                     this.model.on('remove', this.removeRoomsListElement, this);
 
-                    var cachekey = 'converse.roomslist'+_converse.bare_jid;
+                    const cachekey = `converse.roomslist${_converse.bare_jid}`;
                     this.list_model = new _converse.RoomsList();
                     this.list_model.id = cachekey;
                     this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
@@ -64,7 +61,7 @@
                     this.render();
                 },
 
-                render: function () {
+                render () {
                     this.el.innerHTML =
                         tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
@@ -76,11 +73,11 @@
                         this.$('.open-rooms-list').hide();
                     }
                     this.model.each(this.renderRoomsListElement.bind(this));
-                    var controlboxview = _converse.chatboxviews.get('controlbox');
+                    const controlboxview = _converse.chatboxviews.get('controlbox');
 
                     if (!_.isUndefined(controlboxview) &&
                             !document.body.contains(this.el)) {
-                        var container = controlboxview.el.querySelector('#chatrooms');
+                        const container = controlboxview.el.querySelector('#chatrooms');
                         if (!_.isNull(container)) {
                             container.insertBefore(this.el, container.firstChild);
                         }
@@ -88,37 +85,37 @@
                     return this.el;
                 },
 
-                hide: function () {
+                hide () {
                     this.el.classList.add('hidden');
                 },
 
-                show: function () {
+                show () {
                     this.el.classList.remove('hidden');
                 },
 
-                closeRoom: function (ev) {
+                closeRoom (ev) {
                     ev.preventDefault();
-                    var name = $(ev.target).data('roomName');
-                    var jid = $(ev.target).data('roomJid');
+                    const name = $(ev.target).data('roomName');
+                    const jid = $(ev.target).data('roomJid');
                     if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
 
-                renderRoomsListElement: function (item) {
+                renderRoomsListElement (item) {
                     if (item.get('type') !== 'chatroom') {
                         return;
                     }
                     this.removeRoomsListElement(item);
 
-                    var name, bookmark;
+                    let name, bookmark;
                     if (item.get('bookmarked')) {
                         bookmark = _.head(_converse.bookmarksview.model.where({'jid': item.get('jid')}));
                         name = bookmark.get('name');
                     } else {
                         name = item.get('name');
                     }
-                    var div = document.createElement('div');
+                    const div = document.createElement('div');
                     div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
                         'info_leave_room': __('Leave this room'),
                         'info_remove_bookmark': __('Unbookmark this room'),
@@ -130,9 +127,9 @@
                     this.show();
                 },
 
-                removeRoomsListElement: function (item) {
-                    var list_el = this.el.querySelector('.open-rooms-list');
-                    var el = _.head(sizzle('.available-chatroom[data-room-jid="'+item.get('jid')+'"]', list_el));
+                removeRoomsListElement (item) {
+                    const list_el = this.el.querySelector('.open-rooms-list');
+                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
                     if (el) {
                         list_el.removeChild(el);
                     }
@@ -141,9 +138,9 @@
                     }
                 },
 
-                toggleRoomsList: function (ev) {
+                toggleRoomsList (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var el = ev.target;
+                    const el = ev.target;
                     if (el.classList.contains("icon-opened")) {
                         this.$('.open-rooms-list').slideUp('fast');
                         this.list_model.save({'toggle-state': _converse.CLOSED});
@@ -158,7 +155,7 @@
                 }
             });
 
-            var initRoomsListView = function () {
+            const initRoomsListView = function () {
                 _converse.rooms_list_view = new _converse.RoomsListView(
                     {'model': _converse.chatboxes}
                 );
@@ -174,7 +171,7 @@
                     }
                 });
 
-            var afterReconnection = function () {
+            const afterReconnection = function () {
                 if (_.isUndefined(_converse.rooms_list_view)) {
                     initRoomsListView();
                 } else {

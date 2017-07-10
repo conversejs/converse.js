@@ -17,15 +17,12 @@
     ], factory);
 }(this, function (converse) {
     "use strict";
-    var $ = converse.env.jQuery,
-        Strophe = converse.env.Strophe,
-        $iq = converse.env.$iq,
-        _ = converse.env._,
-        moment = converse.env.moment;
+    const $ = converse.env.jQuery,
+          { Strophe, $iq, _, moment } = converse.env;
 
-    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+    const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
-    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+    const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
     converse.plugins.add('converse-mam', {
 
@@ -37,32 +34,32 @@
             // New functions which don't exist yet can also be added.
 
             Features: {
-                addClientFeatures: function () {
-                    var _converse = this.__super__._converse;
+                addClientFeatures () {
+                    const { _converse } = this.__super__;
                     _converse.connection.disco.addFeature(Strophe.NS.MAM);
                     return this.__super__.addClientFeatures.apply(this, arguments);
                 }
             },
 
             ChatBox: {
-                getMessageAttributes: function ($message, $delay, original_stanza) {
-                    var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    attrs.archive_id = $(original_stanza).find('result[xmlns="'+Strophe.NS.MAM+'"]').attr('id');
+                getMessageAttributes ($message, $delay, original_stanza) {
+                    const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
+                    attrs.archive_id = $(original_stanza).find(`result[xmlns="${Strophe.NS.MAM}"]`).attr('id');
                     return attrs;
                 }
             },
 
             ChatBoxView: {
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
 
-                afterMessagesFetched: function () {
-                    var _converse = this.__super__._converse;
+                afterMessagesFetched () {
+                    const { _converse } = this.__super__;
                     if (this.disable_mam ||
                             !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
@@ -80,13 +77,13 @@
                     return this.__super__.afterMessagesFetched.apply(this, arguments);
                 },
 
-                fetchArchivedMessages: function (options) {
+                fetchArchivedMessages (options) {
                     /* Fetch archived chat messages from the XMPP server.
                      *
                      * Then, upon receiving them, call onMessage on the chat
                      * box, so that they are displayed inside it.
                      */
-                    var _converse = this.__super__._converse;
+                    const { _converse } = this.__super__;
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
@@ -98,23 +95,25 @@
                         return;
                     }
                     this.addSpinner();
-                    _converse.queryForArchivedMessages(options, function (messages) {
+                    _converse.queryForArchivedMessages(
+                        options,
+                        (messages) => { // Success
                             this.clearSpinner();
                             if (messages.length) {
                                 _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
                             }
-                        }.bind(this),
-                        function () {
+                        },
+                        () => { // Error
                             this.clearSpinner();
                             _converse.log(
                                 "Error or timeout while trying to fetch "+
                                 "archived messages", Strophe.LogLevel.ERROR);
-                        }.bind(this)
+                        }
                     );
                 },
 
-                onScroll: function (ev) {
-                    var _converse = this.__super__._converse;
+                onScroll (ev) {
+                    const { _converse } = this.__super__;
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id'),
@@ -127,8 +126,8 @@
 
             ChatRoomView: {
 
-                initialize: function () {
-                    var _converse = this.__super__._converse;
+                initialize () {
+                    const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:mam_enabled', function () {
                         // Fetch messages again if we find out that mam has
@@ -143,32 +142,32 @@
                     }, this);
                 },
 
-                render: function () {
-                    var result = this.__super__.render.apply(this, arguments);
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
 
-                handleMUCMessage: function (stanza) {
+                handleMUCMessage (stanza) {
                     /* MAM (message archive management XEP-0313) messages are
                      * ignored, since they're handled separately.
                      */
-                    var is_mam = $(stanza).find('[xmlns="'+Strophe.NS.MAM+'"]').length > 0;
+                    const is_mam = $(stanza).find(`[xmlns="${Strophe.NS.MAM}"]`).length > 0;
                     if (is_mam) {
                         return true;
                     }
                     return this.__super__.handleMUCMessage.apply(this, arguments);
                 },
 
-                fetchArchivedMessages: function (options) {
+                fetchArchivedMessages (options) {
                     /* Fetch archived chat messages from the XMPP server.
                      *
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
-                    var _converse = this.__super__._converse;
+                    const { _converse } = this.__super__;
                     if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
@@ -181,7 +180,7 @@
                     }
                     this.addSpinner();
 
-                    var that = this;
+                    const that = this;
                     _converse.api.archive.query(_.extend(options, {'groupchat': true}),
                         function (messages) {
                             that.clearSpinner();
@@ -201,11 +200,11 @@
         },
 
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by Converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
             _converse.api.settings.update({
                 archived_messages_page_size: '50',
@@ -231,13 +230,13 @@
                  * can be called before passing it in again to this method, to
                  * get the next or previous page in the result set.
                  */
-                var date, messages = [];
+                let date;
                 if (_.isFunction(options)) {
                     callback = options;
                     errback = callback;
                 }
-                var queryid = _converse.connection.getUniqueId();
-                var attrs = {'type':'set'};
+                const queryid = _converse.connection.getUniqueId();
+                const attrs = {'type':'set'};
                 if (!_.isUndefined(options) && options.groupchat) {
                     if (!options['with']) {
                         throw new Error(
@@ -246,7 +245,7 @@
                     }
                     attrs.to = options['with'];
                 }
-                var stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
+                const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (!_.isUndefined(options)) {
                     stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                             .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
@@ -261,7 +260,7 @@
                             if (date.isValid()) {
                                 stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
                             } else {
-                                throw new TypeError('archive.query: invalid date provided for: '+t);
+                                throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                             }
                         }
                     });
@@ -273,8 +272,9 @@
                     }
                 }
 
-                var message_handler = _converse.connection.addHandler(function (message) {
-                    var result = message.querySelector('result');
+                const messages = [];
+                const message_handler = _converse.connection.addHandler(function (message) {
+                    const result = message.querySelector('result');
                     if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
                         messages.push(message);
                     }
@@ -286,8 +286,8 @@
                     function (iq) {
                         _converse.connection.deleteHandler(message_handler);
                         if (_.isFunction(callback)) {
-                            var set = iq.querySelector('set');
-                            var rsm = new Strophe.RSM({xml: set});
+                            const set = iq.querySelector('set');
+                            const rsm = new Strophe.RSM({xml: set});
                             _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
                             callback(messages, rsm);
                         }
@@ -332,9 +332,9 @@
                  * Per JID preferences will be set in chat boxes, so it'll
                  * probbaly be handled elsewhere in any case.
                  */
-                var $prefs = $(iq).find('prefs[xmlns="'+Strophe.NS.MAM+'"]');
-                var default_pref = $prefs.attr('default');
-                var stanza;
+                const $prefs = $(iq).find(`prefs[xmlns="${Strophe.NS.MAM}"]`);
+                const default_pref = $prefs.attr('default');
+                let stanza;
                 if (default_pref !== _converse.message_archiving) {
                     stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
                     $prefs.children().each(function (idx, child) {
@@ -354,8 +354,8 @@
             };
 
 
-            var onFeatureAdded = function (feature) {
-                var prefs = feature.get('preferences') || {};
+            const onFeatureAdded = function (feature) {
+                const prefs = feature.get('preferences') || {};
                 if (feature.get('var') === Strophe.NS.MAM &&
                         prefs['default'] !== _converse.message_archiving &&
                         !_.isUndefined(_converse.message_archiving) ) {

@@ -10,10 +10,8 @@
     define(["converse-core", "strophe.vcard"], factory);
 }(this, function (converse) {
     "use strict";
-    const Strophe = converse.env.Strophe,
-        $ = converse.env.jQuery,
-        _ = converse.env._,
-        moment = converse.env.moment;
+    const { Strophe, _, moment } = converse.env,
+          $ = converse.env.jQuery;
 
     converse.plugins.add('converse-vcard', {
 
@@ -25,8 +23,8 @@
             // New functions which don't exist yet can also be added.
 
             Features: {
-                addClientFeatures: function () {
-                    const _converse = this.__super__._converse;
+                addClientFeatures () {
+                    const { _converse } = this.__super__;
                     this.__super__.addClientFeatures.apply(this, arguments);
                     if (_converse.use_vcards) {
                         _converse.connection.disco.addFeature(Strophe.NS.VCARD);
@@ -35,15 +33,15 @@
             },
 
             RosterContacts: {
-                createRequestingContact: function (presence) {
-                    const _converse = this.__super__._converse;
+                createRequestingContact (presence) {
+                    const { _converse } = this.__super__;
                     const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                     _converse.getVCard(
                         bare_jid,
                         _.partial(_converse.createRequestingContactFromVCard, presence),
                         function (iq, jid) {
                             _converse.log(
-                                "Error while retrieving vcard for "+jid,
+                                `Error while retrieving vcard for ${jid}`,
                                 Strophe.LogLevel.ERROR
                             );
                             _converse.createRequestingContactFromVCard(presence, iq, jid);
@@ -54,18 +52,18 @@
         },
 
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const _converse = this._converse;
+            const { _converse } = this;
             _converse.api.settings.update({
                 use_vcards: true,
             });
 
             _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
                 const bare_jid = Strophe.getBareJidFromJid(jid);
-                const nick = $(presence).children('nick[xmlns="'+Strophe.NS.NICK+'"]').text();
+                const nick = $(presence).children(`nick[xmlns="${Strophe.NS.NICK}"]`).text();
                 const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
@@ -74,7 +72,7 @@
                     fullname: fullname || nick || bare_jid,
                     image: img,
                     image_type: img_type,
-                    url: url,
+                    url,
                     vcard_updated: moment().format()
                 };
                 _converse.roster.create(user_data);
@@ -90,13 +88,14 @@
             };
 
             _converse.onVCardData = function (jid, iq, callback) {
-                var $vcard = $(iq).find('vCard'),
-                    fullname = $vcard.find('FN').text(),
-                    img = $vcard.find('BINVAL').text(),
+                const $vcard = $(iq).find('vCard'),
                     img_type = $vcard.find('TYPE').text(),
+                    img = $vcard.find('BINVAL').text(),
                     url = $vcard.find('URL').text();
+
+                let fullname = $vcard.find('FN').text();
                 if (jid) {
-                    var contact = _converse.roster.get(jid);
+                    const contact = _converse.roster.get(jid);
                     if (contact) {
                         fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
                         contact.save({
@@ -134,9 +133,9 @@
                 }
             };
 
-            var updateVCardForChatBox = function (chatbox) {
+            const updateVCardForChatBox = function (chatbox) {
                 if (!_converse.use_vcards) { return; }
-                var jid = chatbox.model.get('jid'),
+                const jid = chatbox.model.get('jid'),
                     contact = _converse.roster.get(jid);
                 if ((contact) && (!contact.get('vcard_updated'))) {
                     _converse.getVCard(
@@ -161,7 +160,7 @@
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
 
-            var onContactAdd = function (contact) {
+            const onContactAdd = function (contact) {
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
                     // request which will rerender the roster contact.
@@ -172,7 +171,7 @@
                 _converse.roster.on("add", onContactAdd);
             });
 
-            var fetchOwnVCard = function () {
+            const fetchOwnVCard = function () {
                 if (_converse.xmppstatus.get('fullname') === undefined) {
                     _converse.getVCard(
                         null, // No 'to' attr when getting one's own vCard

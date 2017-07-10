@@ -14,8 +14,7 @@
     ], factory);
 }(this, function (converse, tpl_chatbox) {
     "use strict";
-    const _ = converse.env._,
-        utils = converse.env.utils;
+    const { _, utils } = converse.env;
 
     converse.plugins.add('converse-headline', {
 
@@ -27,8 +26,8 @@
             // New functions which don't exist yet can also be added.
 
             ChatBoxViews: {
-                onChatBoxAdded: function (item) {
-                    const _converse = this.__super__._converse;
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
                     let view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
                         view = new _converse.HeadlinesBoxView({model: item});
@@ -41,12 +40,12 @@
             }
         },
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const _converse = this._converse,
-                __ = _converse.__;
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
@@ -57,7 +56,7 @@
                     'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
-                initialize: function () {
+                initialize () {
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -67,7 +66,7 @@
                     _converse.emit('chatBoxInitialized', this);
                 },
 
-                render: function () {
+                render () {
                     this.$el.attr('id', this.model.get('box_id'))
                         .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {

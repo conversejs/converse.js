@@ -16,19 +16,18 @@
     ], factory);
 }(this, function (converse, tpl_brand_heading) {
     "use strict";
-    var $ = converse.env.jQuery,
-        Strophe = converse.env.Strophe,
-        _ = converse.env._;
+    const $ = converse.env.jQuery,
+        { Strophe, _ } = converse.env;
 
     function createBrandHeadingElement () {
-        var div = document.createElement('div');
+        const div = document.createElement('div');
         div.innerHTML = tpl_brand_heading();
         return div.firstChild;
     }
 
      function isMessageToHiddenChat (_converse, message) {
-        var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-        var model = _converse.chatboxes.get(jid);
+        const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+        const model = _converse.chatboxes.get(jid);
         if (!_.isNil(model)) {
             return model.get('hidden');
         }
@@ -46,45 +45,45 @@
             //
             // new functions which don't exist yet can also be added.
 
-            areDesktopNotificationsEnabled: function () {
+            areDesktopNotificationsEnabled () {
                 // Call with "ignore_hidden" as true, so that it doesn't check
                 // if the windowState is hidden.
                 return this.__super__.areDesktopNotificationsEnabled.call(this, true);
             },
 
-            shouldNotifyOfMessage: function (message) {
-                var _converse = this.__super__._converse;
-                var result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
+            shouldNotifyOfMessage (message) {
+                const { _converse } = this.__super__;
+                const result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
                 return result && isMessageToHiddenChat(_converse, message);
             },
 
             ControlBoxView: {
-                renderContactsPanel: function () {
+                renderContactsPanel () {
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     this.el.classList.remove("fullscreen");
                     return this;
                 },
 
-                renderRegistrationPanel: function () {
+                renderRegistrationPanel () {
                     this.__super__.renderRegistrationPanel.apply(this, arguments);
 
-                    var el = document.getElementById('converse-register');
+                    const el = document.getElementById('converse-register');
                     el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;
                 },
 
-                renderLoginPanel: function () {
+                renderLoginPanel () {
                     this.__super__.renderLoginPanel.apply(this, arguments);
                     this.el.classList.add("fullscreen");
 
-                    var el = document.getElementById('converse-login');
+                    const el = document.getElementById('converse-login');
                     el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;
                 }
             },
 
             ChatRoomView: {
-                afterShown: function (focus) {
+                afterShown (focus) {
                     /* Make sure chat rooms are scrolled down when opened
                      */
                     this.scrollDown();
@@ -96,7 +95,7 @@
             }
         },
 
-        initialize: function () {
+        initialize () {
             this._converse.api.settings.update({
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,

@@ -33,12 +33,9 @@
     const fp = lodashConverter(_.runInContext());
 
     // Strophe globals
-    const $build = Strophe.$build;
-    const $iq = Strophe.$iq;
-    const $msg = Strophe.$msg;
-    const $pres = Strophe.$pres;
-    const b64_sha1 = Strophe.SHA1.b64_sha1;
-    Strophe = Strophe.Strophe;
+    const { $build, $iq, $msg, $pres } = Strophe;
+    const { b64_sha1 } = Strophe.SHA1;
+    ({ Strophe } = Strophe);
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
@@ -146,23 +143,23 @@
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
-                logger.trace('ERROR: '+txt);
+                logger.trace(`ERROR: ${txt}`);
             } else {
-                logger.error('ERROR: '+txt);
+                logger.error(`ERROR: ${txt}`);
             }
         } else if (level === Strophe.LogLevel.WARN) {
-            logger.warn('WARNING: '+txt);
+            logger.warn(`WARNING: ${txt}`);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace('FATAL: '+txt);
+                logger.trace(`FATAL: ${txt}`);
             } else {
-                logger.error('FATAL: '+txt);
+                logger.error(`FATAL: ${txt}`);
             }
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
-                logger.debug('DEBUG: '+txt);
+                logger.debug(`DEBUG: ${txt}`);
             } else {
-                logger.info('INFO: '+txt);
+                logger.info(`INFO: ${txt}`);
             }
         }
     };
@@ -318,9 +315,7 @@
             return _converse.chatboxviews.get(chatbox.get('id'));
         };
 
-        this.generateResource = function () {
-            return '/converse.js-' + Math.floor(Math.random()*139749825).toString();
-        };
+        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
 
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352)
@@ -497,7 +492,7 @@
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log("Status changed to: "+PRETTY_CONNECTION_STATUS[status]);
+            _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
@@ -533,7 +528,7 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 _converse.giveFeedback(
                     __('Connection failed'), 'error',
-                    __('An error occurred while connecting to the chat server: '+condition)
+                    __(`An error occurred while connecting to the chat server: ${condition}`)
                 );
                 _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
@@ -545,9 +540,11 @@
             this.msg_counter += 1;
             const unreadMsgCount = this.msg_counter;
             if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                document.title = "Messages (" + unreadMsgCount + ") " + document.title;
+                document.title = `Messages (${unreadMsgCount}) ${document.title}`;
             } else {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + unreadMsgCount + ") ");
+                document.title = document.title.replace(
+                    /^Messages \(\d+\) /, `Messages (${unreadMsgCount}) `
+                );
             }
         };
 
@@ -561,7 +558,7 @@
         this.initStatus = function () {
             const deferred = new $.Deferred();
             this.xmppstatus = new this.XMPPStatus();
-            const id = b64_sha1('converse.xmppstatus-'+_converse.bare_jid);
+            const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
             this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
             this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             this.xmppstatus.fetch({
@@ -625,7 +622,7 @@
                 _converse.clearMsgCounter();
             }
             _converse.windowState = state;
-            _converse.emit('windowStateChanged', {state: state});
+            _converse.emit('windowStateChanged', {state});
         };
 
         this.registerGlobalEventHandlers = function () {
@@ -667,7 +664,7 @@
                 type: 'set'
               })
               .c('enable', {xmlns: Strophe.NS.CARBONS});
-            this.connection.addHandler(function (iq) {
+            this.connection.addHandler((iq) => {
                 if (iq.querySelectorAll('error').length > 0) {
                     _converse.log(
                         'An error occured while trying to enable message carbons.',
@@ -676,7 +673,7 @@
                     this.session.save({carbons_enabled: true});
                     _converse.log('Message carbons have been enabled.');
                 }
-            }.bind(this), null, "iq", null, "enablecarbons");
+            }, null, "iq", null, "enablecarbons");
             this.connection.send(carbons_iq);
         };
 
@@ -686,10 +683,10 @@
              */
             _converse.roster = new _converse.RosterContacts();
             _converse.roster.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.contacts-'+_converse.bare_jid));
+                b64_sha1(`converse.contacts-${_converse.bare_jid}`));
             _converse.rostergroups = new _converse.RosterGroups();
             _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
-                b64_sha1('converse.roster.groups'+_converse.bare_jid));
+                b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
             _converse.emit('rosterInitialized');
         };
 
@@ -809,8 +806,8 @@
                 'status': '',
             },
 
-            initialize: function (attributes) {
-                const jid = attributes.jid;
+            initialize (attributes) {
+                const { jid } = attributes;
                 const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
                 const resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
@@ -822,13 +819,13 @@
                     'resources': resource ? {resource :0} : {},
                 }, attributes));
 
-                this.on('destroy', function () { this.removeFromRoster(); }.bind(this));
+                this.on('destroy', () => { this.removeFromRoster(); });
                 this.on('change:chat_status', function (item) {
                     _converse.emit('contactStatusChanged', item.attributes);
                 });
             },
 
-            subscribe: function (message) {
+            subscribe (message) {
                 /* Send a presence subscription request to this roster contact
                  *
                  * Parameters:
@@ -848,7 +845,7 @@
                 return this;
             },
 
-            ackSubscribe: function () {
+            ackSubscribe () {
                 /* Upon receiving the presence stanza of type "subscribed",
                  * the user SHOULD acknowledge receipt of that subscription
                  * state notification by sending a presence stanza of type
@@ -860,7 +857,7 @@
                 }));
             },
 
-            ackUnsubscribe: function () {
+            ackUnsubscribe () {
                 /* Upon receiving the presence stanza of type "unsubscribed",
                  * the user SHOULD acknowledge receipt of that subscription state
                  * notification by sending a presence stanza of type "unsubscribe"
@@ -873,7 +870,7 @@
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
 
-            unauthorize: function (message) {
+            unauthorize (message) {
                 /* Unauthorize this contact's presence subscription
                  * Parameters:
                  *   (String) message - Optional message to send to the person being unauthorized
@@ -882,7 +879,7 @@
                 return this;
             },
 
-            authorize: function (message) {
+            authorize (message) {
                 /* Authorize presence subscription
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
@@ -895,7 +892,7 @@
                 return this;
             },
 
-            addResource: function (presence) {
+            addResource (presence) {
                 /* Adds a new resource and it's associated attributes as taken
                  * from the passed in presence stanza.
                  *
@@ -905,7 +902,9 @@
                 const jid = presence.getAttribute('from'),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                     resource = Strophe.getResourceFromJid(jid),
-                    delay = presence.querySelector('delay[xmlns="'+Strophe.NS.DELAY+'"]'),
+                    delay = presence.querySelector(
+                        `delay[xmlns="${Strophe.NS.DELAY}"]`
+                    ),
                     timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
                 let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
@@ -928,7 +927,7 @@
                 return resources;
             },
 
-            removeResource: function (resource) {
+            removeResource (resource) {
                 /* Remove the passed in resource from the contact's resources map.
                  *
                  * Also recomputes the chat_status given that there's one less
@@ -947,7 +946,7 @@
                 });
             },
 
-            getHighestPriorityResource: function () {
+            getHighestPriorityResource () {
                 /* Return the resource with the highest priority.
                  *
                  * If multiple resources have the same priority, take the
@@ -966,7 +965,7 @@
                 }
             },
 
-            removeFromRoster: function (callback) {
+            removeFromRoster (callback) {
                 /* Instruct the XMPP server to remove this contact from our roster
                  * Parameters:
                  *   (Function) callback
@@ -983,7 +982,7 @@
         this.RosterContacts = Backbone.Collection.extend({
             model: _converse.RosterContact,
 
-            comparator: function (contact1, contact2) {
+            comparator (contact1, contact2) {
                 const status1 = contact1.get('chat_status') || 'offline';
                 const status2 = contact2.get('chat_status') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
@@ -995,7 +994,7 @@
                 }
             },
 
-            onConnected: function () {
+            onConnected () {
                 /* Called as soon as the connection has been established
                  * (either after initial login, or after reconnection).
                  *
@@ -1005,7 +1004,7 @@
                 this.registerRosterXHandler();
             },
 
-            registerRosterHandler: function () {
+            registerRosterHandler () {
                 /* Register a handler for roster IQ "set" stanzas, which update
                  * roster contacts.
                  */
@@ -1015,11 +1014,11 @@
                 );
             },
 
-            registerRosterXHandler: function () {
+            registerRosterXHandler () {
                 /* Register a handler for RosterX message stanzas, which are
                  * used to suggest roster contacts to a user.
                  */
-                var t = 0;
+                let t = 0;
                 _converse.connection.addHandler(
                     function (msg) {
                         window.setTimeout(
@@ -1034,7 +1033,7 @@
                 );
             },
 
-            fetchRosterContacts: function () {
+            fetchRosterContacts () {
                 /* Fetches the roster contacts, first by trying the
                  * sessionStorage cache, and if that's empty, then by querying
                  * the XMPP server.
@@ -1045,7 +1044,7 @@
                 const deferred = new $.Deferred();
                 this.fetch({
                     add: true,
-                    success: function (collection) {
+                    success (collection) {
                         if (collection.length === 0) {
                             /* We don't have any roster contacts stored in sessionStorage,
                              * so lets fetch the roster from the XMPP server. We pass in
@@ -1064,7 +1063,7 @@
                 return deferred.promise();
             },
 
-            subscribeToSuggestedItems: function (msg) {
+            subscribeToSuggestedItems (msg) {
                 _.each(msg.querySelectorAll('item'), function (item) {
                     if (item.getAttribute('action') === 'add') {
                         _converse.roster.addAndSubscribe(
@@ -1077,11 +1076,11 @@
                 return true;
             },
 
-            isSelf: function (jid) {
+            isSelf (jid) {
                 return utils.isSameBareJID(jid, _converse.connection.jid);
             },
 
-            addAndSubscribe: function (jid, name, groups, message, attributes) {
+            addAndSubscribe (jid, name, groups, message, attributes) {
                 /* Add a roster contact and then once we have confirmation from
                  * the XMPP server we subscribe to that contact's presence updates.
                  *  Parameters:
@@ -1099,7 +1098,7 @@
                 });
             },
 
-            sendContactAddIQ: function (jid, name, groups, callback, errback) {
+            sendContactAddIQ (jid, name, groups, callback, errback) {
                 /*  Send an IQ stanza to the XMPP server to add a new roster contact.
                  *
                  *  Parameters:
@@ -1112,12 +1111,12 @@
                 name = _.isEmpty(name)? jid: name;
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
-                    .c('item', { jid: jid, name: name });
+                    .c('item', { jid, name });
                 _.each(groups, function (group) { iq.c('group').t(group).up(); });
                 _converse.connection.sendIQ(iq, callback, errback);
             },
 
-            addContact: function (jid, name, groups, attributes) {
+            addContact (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
@@ -1133,19 +1132,19 @@
                 groups = groups || [];
                 name = _.isEmpty(name)? jid: name;
                 this.sendContactAddIQ(jid, name, groups,
-                    function () {
+                    () => {
                         const contact = this.create(_.assignIn({
                             ask: undefined,
                             fullname: name,
-                            groups: groups,
-                            jid: jid,
+                            groups,
+                            jid,
                             requesting: false,
                             subscription: 'none'
                         }, attributes), {sort: false});
                         deferred.resolve(contact);
-                    }.bind(this),
+                    },
                     function (err) {
-                        alert(__("Sorry, there was an error while trying to add "+name+" as a contact."));
+                        alert(__(`Sorry, there was an error while trying to add ${name} as a contact.`));
                         _converse.log(err, Strophe.LogLevel.ERROR);
                         deferred.resolve(err);
                     }
@@ -1153,7 +1152,7 @@
                 return deferred.promise();
             },
 
-            subscribeBack: function (bare_jid) {
+            subscribeBack (bare_jid) {
                 const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
@@ -1167,17 +1166,15 @@
                 }
             },
 
-            getNumOnlineContacts: function () {
+            getNumOnlineContacts () {
                 let ignored = ['offline', 'unavailable'];
                 if (_converse.show_only_online_users) {
                     ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                 }
-                return _.sum(this.models.filter(function (model) {
-                    return !_.includes(ignored, model.get('chat_status'));
-                }));
+                return _.sum(this.models.filter((model) => !_.includes(ignored, model.get('chat_status'))));
             },
 
-            onRosterPush: function (iq) {
+            onRosterPush (iq) {
                 /* Handle roster updates from the XMPP server.
                  * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
                  *
@@ -1192,20 +1189,20 @@
                     // JID so we need to explicitly compare bare jids here.
                     // https://github.com/jcbrand/converse.js/issues/493
                     _converse.connection.send(
-                        $iq({type: 'error', id: id, from: _converse.connection.jid})
+                        $iq({type: 'error', id, from: _converse.connection.jid})
                             .c('error', {'type': 'cancel'})
                             .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
                     );
                     return true;
                 }
-                _converse.connection.send($iq({type: 'result', id: id, from: _converse.connection.jid}));
-                const items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
+                const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('rosterPush', iq);
                 return true;
             },
 
-            fetchFromServer: function (callback) {
+            fetchFromServer (callback) {
                 /* Get the roster from the XMPP server */
                 const iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
                     .c('query', {xmlns: Strophe.NS.ROSTER});
@@ -1215,16 +1212,16 @@
                 });
             },
 
-            onReceivedFromServer: function (iq) {
+            onReceivedFromServer (iq) {
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                const items = sizzle('query[xmlns="'+Strophe.NS.ROSTER+'"] item', iq);
+                const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('roster', iq);
             },
 
-            updateContact: function (item) {
+            updateContact (item) {
                 /* Update or create RosterContact models based on items
                  * received in the IQ from the server.
                  */
@@ -1241,11 +1238,11 @@
                         return; // We're lazy when adding contacts.
                     }
                     this.create({
-                        ask: ask,
+                        ask,
                         fullname: item.getAttribute("name") || jid,
-                        groups: groups,
-                        jid: jid,
-                        subscription: subscription
+                        groups,
+                        jid,
+                        subscription
                     }, {sort: false});
                 } else {
                     if (subscription === "remove") {
@@ -1256,21 +1253,21 @@
                     // here, we know they aren't requesting anymore.
                     // see docs/DEVELOPER.rst
                     contact.save({
-                        subscription: subscription,
-                        ask: ask,
+                        subscription,
+                        ask,
                         requesting: null,
-                        groups: groups
+                        groups
                     });
                 }
             },
 
-            createRequestingContact: function (presence) {
+            createRequestingContact (presence) {
                 /* Creates a Requesting Contact.
                  *
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                      nick_el = presence.querySelector('nick[xmlns="'+Strophe.NS.NICK+'"]');
+                      nick_el = presence.querySelector(`nick[xmlns="${Strophe.NS.NICK}"]`);
                 const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
@@ -1282,7 +1279,7 @@
                 _converse.emit('contactRequest', user_data);
             },
 
-            handleIncomingSubscription: function (presence) {
+            handleIncomingSubscription (presence) {
                 const jid = presence.getAttribute('from'),
                       bare_jid = Strophe.getBareJidFromJid(jid),
                       contact = this.get(bare_jid);
@@ -1312,7 +1309,7 @@
                 }
             },
 
-            presenceHandler: function (presence) {
+            presenceHandler (presence) {
                 const presence_type = presence.getAttribute('type');
                 if (presence_type === 'error') { return true; }
 
@@ -1337,7 +1334,7 @@
                         }
                     }
                     return;
-                } else if (sizzle('query[xmlns="'+Strophe.NS.MUC+'"]', presence).length) {
+                } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                     return; // Ignore MUC
                 }
                 if (contact && (status_message !== contact.get('status'))) {
@@ -1362,7 +1359,7 @@
 
 
         this.RosterGroup = Backbone.Model.extend({
-            initialize: function (attributes) {
+            initialize (attributes) {
                 this.set(_.assignIn({
                     description: __('Click to hide these contacts'),
                     state: _converse.OPENED
@@ -1376,7 +1373,7 @@
         this.RosterGroups = Backbone.Collection.extend({
             model: _converse.RosterGroup,
 
-            fetchRosterGroups: function () {
+            fetchRosterGroups () {
                 /* Fetches all the roster groups from sessionStorage.
                  *
                  * Returns a promise which resolves once the groups have been
@@ -1395,7 +1392,7 @@
 
 
         this.Message = Backbone.Model.extend({
-            defaults: function(){
+            defaults(){
                 return {
                     msgid: _converse.connection.getUniqueId()
                 };
@@ -1419,10 +1416,10 @@
                 'url': ''
             },
 
-            initialize: function () {
+            initialize () {
                 this.messages = new _converse.Messages();
                 this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
-                    b64_sha1('converse.messages'+this.get('jid')+_converse.bare_jid));
+                    b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                 this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
@@ -1432,7 +1429,7 @@
                 });
             },
 
-            getMessageAttributes: function (message, delay, original_stanza) {
+            getMessageAttributes (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
                 const type = message.getAttribute('type');
 
@@ -1476,11 +1473,11 @@
                 };
             },
 
-            createMessage: function (message, delay, original_stanza) {
+            createMessage (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
 
-            newMessageWillBeHidden: function () {
+            newMessageWillBeHidden () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
                  */
@@ -1490,7 +1487,7 @@
                     _converse.windowState === 'hidden';
             },
 
-            incrementUnreadMsgCounter: function (stanza) {
+            incrementUnreadMsgCounter (stanza) {
                 /* Given a newly received message, update the unread counter if
                  * necessary.
                  */
@@ -1503,11 +1500,11 @@
                 }
             },
 
-            clearUnreadMsgCounter: function() {
+            clearUnreadMsgCounter() {
                 this.save({'num_unread': 0});
             },
 
-            isScrolledUp: function () {
+            isScrolledUp () {
                 return this.get('scrolled', true);
             }
         });
@@ -1515,20 +1512,20 @@
         this.ChatBoxes = Backbone.Collection.extend({
             comparator: 'time_opened',
 
-            model: function (attrs, options) {
+            model (attrs, options) {
                 return new _converse.ChatBox(attrs, options);
             },
 
-            registerMessageHandler: function () {
+            registerMessageHandler () {
                 _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
                 _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
             },
 
-            chatBoxMayBeShown: function (chatbox) {
+            chatBoxMayBeShown (chatbox) {
                 return true;
             },
 
-            onChatBoxesFetched: function (collection) {
+            onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage
                  *
                  * This method gets overridden entirely in src/converse-controlbox.js
@@ -1542,9 +1539,9 @@
                 _converse.emit('chatBoxesFetched');
             },
 
-            onConnected: function () {
+            onConnected () {
                 this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1('converse.chatboxes-'+_converse.bare_jid));
+                    b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
                 this.registerMessageHandler();
                 this.fetch({
                     add: true,
@@ -1552,7 +1549,7 @@
                 });
             },
 
-            onErrorMessage: function (message) {
+            onErrorMessage (message) {
                 /* Handler method for all incoming error message stanzas
                  */
                 // TODO: we can likely just reuse "onMessage" below
@@ -1569,7 +1566,7 @@
                 return true;
             },
 
-            onMessage: function (message) {
+            onMessage (message) {
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
@@ -1580,11 +1577,11 @@
 
                 const original_stanza = message,
                       to_resource = Strophe.getResourceFromJid(to_jid),
-                      is_carbon = !_.isNull(message.querySelector('received[xmlns="'+Strophe.NS.CARBONS+'"]'));
+                      is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
                 if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
                     _converse.log(
-                        'onMessage: Ignoring incoming message intended for a different resource: '+to_jid,
+                        `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
                         Strophe.LogLevel.INFO
                     );
                     return true;
@@ -1593,7 +1590,7 @@
                     // messages, but Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
                     _converse.log(
-                        "onMessage: Ignoring incoming headline message sent with type 'chat' from JID: "+from_jid,
+                        `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
                         Strophe.LogLevel.INFO
                     );
                     return true;
@@ -1631,7 +1628,7 @@
                       msgid = message.getAttribute('id');
 
                 if (chatbox) {
-                    const messages = msgid && chatbox.messages.findWhere({msgid: msgid}) || [];
+                    const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
                     if (_.isEmpty(messages)) {
                         // Only create the message when we're sure it's not a
                         // duplicate
@@ -1643,7 +1640,7 @@
                 return true;
             },
 
-            createChatBox: function (jid, attrs) {
+            createChatBox (jid, attrs) {
                 /* Creates a chat box
                  *
                  * Parameters:
@@ -1663,7 +1660,7 @@
                         'url': roster_item.get('url'),
                     };
                 } else if (!_converse.allow_non_roster_messaging) {
-                    _converse.log('Could not get roster item for JID '+bare_jid+
+                    _converse.log(`Could not get roster item for JID ${bare_jid}`+
                         ' and allow_non_roster_messaging is set to false',
                         Strophe.LogLevel.ERROR);
                     return;
@@ -1678,7 +1675,7 @@
                     }, roster_info, attrs || {}));
             },
 
-            getChatBox: function (jid, create, attrs) {
+            getChatBox (jid, create, attrs) {
                 /* Returns a chat box or optionally return a newly
                  * created one if one doesn't exist.
                  *
@@ -1698,12 +1695,12 @@
 
         this.ChatBoxViews = Backbone.Overview.extend({
 
-            initialize: function () {
+            initialize () {
                 this.model.on("add", this.onChatBoxAdded, this);
                 this.model.on("destroy", this.removeChat, this);
             },
 
-            _ensureElement: function () {
+            _ensureElement () {
                 /* Override method from backbone.js
                  * If the #conversejs element doesn't exist, create it.
                  */
@@ -1722,18 +1719,18 @@
                 }
             },
 
-            onChatBoxAdded: function (item) {
+            onChatBoxAdded (item) {
                 // Views aren't created here, since the core code doesn't
                 // contain any views. Instead, they're created in overrides in
                 // plugins, such as in converse-chatview.js and converse-muc.js
                 return this.get(item.get('id'));
             },
 
-            removeChat: function (item) {
+            removeChat (item) {
                 this.remove(item.get('id'));
             },
 
-            closeAllChatBoxes: function () {
+            closeAllChatBoxes () {
                 /* This method gets overridden in src/converse-controlbox.js if
                  * the controlbox plugin is active.
                  */
@@ -1741,15 +1738,15 @@
                 return this;
             },
 
-            chatBoxMayBeShown: function (chatbox) {
+            chatBoxMayBeShown (chatbox) {
                 return this.model.chatBoxMayBeShown(chatbox);
             },
 
-            getChatBox: function (attrs, create) {
+            getChatBox (attrs, create) {
                 let chatbox  = this.model.get(attrs.jid);
                 if (!chatbox && create) {
                     chatbox = this.model.create(attrs, {
-                        'error': function (model, response) {
+                        'error' (model, response) {
                             _converse.log(response.responseText);
                         }
                     });
@@ -1757,7 +1754,7 @@
                 return chatbox;
             },
 
-            showChat: function (attrs) {
+            showChat (attrs) {
                 /* Find the chat box and show it (if it may be shown).
                  * If it doesn't exist, create it.
                  */
@@ -1771,21 +1768,21 @@
 
 
         this.XMPPStatus = Backbone.Model.extend({
-            initialize: function () {
+            initialize () {
                 this.set({
                     'status' : this.getStatus()
                 });
-                this.on('change', function (item) {
+                this.on('change', (item) => {
                     if (_.has(item.changed, 'status')) {
                         _converse.emit('statusChanged', this.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
                         _converse.emit('statusMessageChanged', this.get('status_message'));
                     }
-                }.bind(this));
+                });
             },
 
-            constructPresence: function (type, status_message) {
+            constructPresence (type, status_message) {
                 let presence;
                 type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
                 status_message = _.isString(status_message) ? status_message : undefined;
@@ -1815,20 +1812,20 @@
                 return presence;
             },
 
-            sendPresence: function (type, status_message) {
+            sendPresence (type, status_message) {
                 _converse.connection.send(this.constructPresence(type, status_message));
             },
 
-            setStatus: function (value) {
+            setStatus (value) {
                 this.sendPresence(value);
                 this.save({'status': value});
             },
 
-            getStatus: function () {
+            getStatus () {
                 return this.get('status') || _converse.default_state;
             },
 
-            setStatusMessage: function (status_message) {
+            setStatusMessage (status_message) {
                 this.sendPresence(this.getStatus(), status_message);
                 this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
@@ -1855,10 +1852,10 @@
              * All features are shown here: http://xmpp.org/registrar/disco-features.html
              */
             model: _converse.Feature,
-            initialize: function () {
+            initialize () {
                 this.addClientIdentities().addClientFeatures();
                 this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1('converse.features'+_converse.bare_jid)
+                    b64_sha1(`converse.features${_converse.bare_jid}`)
                 );
                 this.on('add', this.onFeatureAdded, this);
                 if (this.browserStorage.records.length === 0) {
@@ -1871,18 +1868,18 @@
                 }
             },
 
-            onFeatureAdded: function (feature) {
+            onFeatureAdded (feature) {
                 _converse.emit('serviceDiscovered', feature);
             },
 
-            addClientIdentities: function () {
+            addClientIdentities () {
                 /* See http://xmpp.org/registrar/disco-categories.html
                  */
                  _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
                  return this;
             },
 
-            addClientFeatures: function () {
+            addClientFeatures () {
                 /* The strophe.disco.js plugin keeps a list of features which
                  * it will advertise to any #info queries made to it.
                  *
@@ -1898,7 +1895,7 @@
                 return this;
             },
 
-            onItems: function (stanza) {
+            onItems (stanza) {
                 _.each(stanza.querySelectorAll('query item'), (item) => {
                     _converse.connection.disco.info(
                         item.getAttribute('jid'),
@@ -1907,7 +1904,7 @@
                 });
             },
 
-            onInfo: function (stanza) {
+            onInfo (stanza) {
                 if ((sizzle('identity[category=server][type=im]', stanza).length === 0) &&
                     (sizzle('identity[category=conference][type=text]', stanza).length === 0)) {
                     // This isn't an IM server component
@@ -2175,7 +2172,7 @@
                 _converse.whitelisted_plugins);
 
             _converse.pluggable.initializePlugins({
-                'updateSettings': function () {
+                'updateSettings' () {
                     _converse.log(
                         "(DEPRECATION) "+
                         "The `updateSettings` method has been deprecated. "+
@@ -2213,32 +2210,32 @@
     // API methods only available to plugins
     _converse.api = {
         'connection': {
-            'connected': function () {
+            'connected' () {
                 return _converse.connection && _converse.connection.connected || false;
             },
-            'disconnect': function () {
+            'disconnect' () {
                 _converse.connection.disconnect();
             },
         },
-        'emit': function () {
+        'emit' () {
             _converse.emit.apply(_converse, arguments);
         },
         'user': {
-            'jid': function () {
+            'jid' () {
                 return _converse.connection.jid;
             },
-            'login': function (credentials) {
+            'login' (credentials) {
                 _converse.initConnection();
                 _converse.logIn(credentials);
             },
-            'logout': function () {
+            'logout' () {
                 _converse.logOut();
             },
             'status': {
-                'get': function () {
+                'get' () {
                     return _converse.xmppstatus.get('status');
                 },
-                'set': function (value, message) {
+                'set' (value, message) {
                     const data = {'status': value};
                     if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
@@ -2250,27 +2247,27 @@
                     _converse.xmppstatus.save(data);
                 },
                 'message': {
-                    'get': function () {
+                    'get' () {
                         return _converse.xmppstatus.get('status_message');
                     },
-                    'set': function (stat) {
+                    'set' (stat) {
                         _converse.xmppstatus.save({'status_message': stat});
                     }
                 }
             },
         },
         'settings': {
-            'update': function (settings) {
+            'update' (settings) {
                 utils.merge(_converse.default_settings, settings);
                 utils.merge(_converse, settings);
                 utils.applyUserSettings(_converse, settings, _converse.user_settings);
             },
-            'get': function (key) {
+            'get' (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
                     return _converse[key];
                 }
             },
-            'set': function (key, val) {
+            'set' (key, val) {
                 const o = {};
                 if (_.isObject(key)) {
                     _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
@@ -2281,7 +2278,7 @@
             }
         },
         'promises': {
-            'add': function (promises) {
+            'add' (promises) {
                 promises = _.isArray(promises) ? promises : [promises]
                 _.each(promises, function (promise) {
                     _converse.promises[promise] = new $.Deferred();
@@ -2289,7 +2286,7 @@
             }
         },
         'contacts': {
-            'get': function (jids) {
+            'get' (jids) {
                 const _transform = function (jid) {
                     const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
@@ -2304,7 +2301,7 @@
                 }
                 return _.map(jids, _transform);
             },
-            'add': function (jid, name) {
+            'add' (jid, name) {
                 if (!_.isString(jid) || !_.includes(jid, '@')) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
@@ -2312,7 +2309,7 @@
             }
         },
         'chats': {
-            'open': function (jids, attrs) {
+            'open' (jids, attrs) {
                 if (_.isUndefined(jids)) {
                     _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                     return null;
@@ -2321,13 +2318,13 @@
                         _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
                     );
                 }
-                return _.map(jids, function (jid) {
-                    return _converse.getViewForChatBox(
+                return _.map(jids, (jid) =>
+                    _converse.getViewForChatBox(
                         _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
-                    );
-                });
+                    )
+                );
             },
-            'get': function (jids) {
+            'get' (jids) {
                 if (_.isUndefined(jids)) {
                     const result = [];
                     _converse.chatboxes.each(function (chatbox) {
@@ -2352,7 +2349,7 @@
             }
         },
         'tokens': {
-            'get': function (id) {
+            'get' (id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                     return null;
                 }
@@ -2367,7 +2364,7 @@
             'once': _converse.once.bind(_converse),
             'on': _converse.on.bind(_converse),
             'not': _converse.off.bind(_converse),
-            'stanza': function (name, options, handler) {
+            'stanza' (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;
                     options = {};
@@ -2385,29 +2382,29 @@
                 );
             },
         },
-        'waitUntil': function (name) {
+        'waitUntil' (name) {
             const promise = _converse.promises[name];
             if (_.isUndefined(promise)) {
                 return null;
             }
             return _converse.promises[name].promise();
         },
-        'send': function (stanza) {
+        'send' (stanza) {
             _converse.connection.send(stanza);
         },
     };
 
     // The public API
     return {
-        'initialize': function (settings, callback) {
+        'initialize' (settings, callback) {
             return _converse.initialize(settings, callback);
         },
         'plugins': {
-            'add': function (name, plugin) {
+            'add' (name, plugin) {
                 plugin.__name__ = name;
                 if (!_.isUndefined(_converse.pluggable.plugins[name])) {
                     throw new TypeError(
-                        'Error: plugin with name "'+name+'" has already been '+
+                        `Error: plugin with name "${name}" has already been `+
                         'registered!');
                 } else {
                     _converse.pluggable.plugins[name] = plugin;

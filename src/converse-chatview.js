@@ -31,12 +31,7 @@
     ) {
     "use strict";
     const $ = converse.env.jQuery,
-        $msg = converse.env.$msg,
-        Backbone = converse.env.Backbone,
-        Strophe = converse.env.Strophe,
-        _ = converse.env._,
-        moment = converse.env.moment,
-        utils = converse.env.utils;
+          { $msg, Backbone, Strophe, _, moment, utils } = converse.env;
 
     const KEY = {
         ENTER: 13,
@@ -54,8 +49,8 @@
             // New functions which don't exist yet can also be added.
 
             ChatBoxViews: {
-                onChatBoxAdded: function (item) {
-                    const _converse = this.__super__._converse;
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
                     let view = this.get(item.get('id'));
                     if (!view) {
                         view = new _converse.ChatBoxView({model: item});
@@ -69,12 +64,12 @@
         },
 
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const _converse = this._converse,
-                __ = _converse.__;
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.settings.update({
                 chatview_avatar_height: 32,
@@ -113,7 +108,7 @@
                     'click .new-msgs-indicator': 'viewUnreadMessages'
                 },
 
-                initialize: function () {
+                initialize () {
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -128,7 +123,7 @@
                     _converse.emit('chatBoxInitialized', this);
                 },
 
-                render: function () {
+                render () {
                     this.$el.attr('id', this.model.get('box_id'))
                         .html(tpl_chatbox(
                                 _.extend(this.model.toJSON(), {
@@ -151,7 +146,7 @@
                     return this.showStatusMessage();
                 },
 
-                afterMessagesFetched: function () {
+                afterMessagesFetched () {
                     this.insertIntoDOM();
                     this.scrollDown();
                     // We only start listening for the scroll event after
@@ -159,7 +154,7 @@
                     this.$content.on('scroll', this.markScrolled.bind(this));
                 },
 
-                fetchMessages: function () {
+                fetchMessages () {
                     this.model.messages.fetch({
                         'add': true,
                         'success': this.afterMessagesFetched.bind(this),
@@ -168,7 +163,7 @@
                     return this;
                 },
 
-                insertIntoDOM: function () {
+                insertIntoDOM () {
                     /* This method gets overridden in src/converse-controlbox.js if
                      * the controlbox plugin is active.
                      */
@@ -179,11 +174,11 @@
                     return this;
                 },
 
-                clearStatusNotification: function () {
+                clearStatusNotification () {
                     this.$content.find('div.chat-event').remove();
                 },
 
-                showStatusNotification: function (message, keep_old, permanent) {
+                showStatusNotification (message, keep_old, permanent) {
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
@@ -195,19 +190,19 @@
                     this.scrollDown();
                 },
 
-                addSpinner: function () {
+                addSpinner () {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
                         this.$content.prepend(tpl_spinner);
                     }
                 },
 
-                clearSpinner: function () {
+                clearSpinner () {
                     if (this.$content.children(':first').is('span.spinner')) {
                         this.$content.children(':first').remove();
                     }
                 },
 
-                insertDayIndicator: function (date, prepend) {
+                insertDayIndicator (date, prepend) {
                     /* Appends (or prepends if "prepend" is truthy) an indicator
                      * into the chat area, showing the day as given by the
                      * passed in date.
@@ -223,7 +218,7 @@
                     }));
                 },
 
-                insertMessage: function (attrs, prepend) {
+                insertMessage (attrs, prepend) {
                     /* Helper method which appends a message (or prepends if the
                      * 2nd parameter is set to true) to the end of the chat box's
                      * content area.
@@ -240,7 +235,7 @@
                     )(this.renderMessage(attrs));
                 },
 
-                showMessage: function (attrs) {
+                showMessage (attrs) {
                     /* Inserts a chat message into the content area of the chat box.
                      * Will also insert a new day indicator if the message is on a
                      * different day.
@@ -291,14 +286,15 @@
                     }
                     // Find the correct place to position the message
                     current_msg_date = current_msg_date.format();
-                    const msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
-                        return $(el).data('isodate');
-                    });
+                    const msg_dates = _.map(
+                        this.$content.find('.chat-message'),
+                        (el) => $(el).data('isodate')
+                    );
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
 
                     const idx = msg_dates.indexOf(current_msg_date)-1;
-                    const $latest_message = this.$content.find('.chat-message[data-isodate="'+msg_dates[idx]+'"]:last');
+                    const $latest_message = this.$content.find(`.chat-message[data-isodate="${msg_dates[idx]}"]:last`);
                     _.flow(($el) => {
                             $el.insertAfter($latest_message);
                             return $el;
@@ -307,7 +303,7 @@
                     )(this.renderMessage(attrs));
                 },
 
-                getExtraMessageTemplateAttributes: function () {
+                getExtraMessageTemplateAttributes () {
                     /* Provides a hook for sending more attributes to the
                      * message template.
                      *
@@ -317,11 +313,11 @@
                     return {};
                 },
 
-                getExtraMessageClasses: function (attrs) {
+                getExtraMessageClasses (attrs) {
                     return attrs.delayed && 'delayed' || '';
                 },
 
-                renderMessage: function (attrs) {
+                renderMessage (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
                      * Parameters:
@@ -376,7 +372,7 @@
                     return $msg;
                 },
 
-                showHelpMessages: function (msgs, type, spinner) {
+                showHelpMessages (msgs, type, spinner) {
                     _.each(msgs, (msg) => {
                         this.$content.append($(tpl_help_message({
                             'type': type||'info',
@@ -391,7 +387,7 @@
                     return this.scrollDown();
                 },
 
-                handleChatStateMessage: function (message) {
+                handleChatStateMessage (message) {
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Typing from another device'));
@@ -412,11 +408,11 @@
                     }
                 },
 
-                shouldShowOnTextMessage: function () {
+                shouldShowOnTextMessage () {
                     return !this.$el.is(':visible');
                 },
 
-                handleTextMessage: function (message) {
+                handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
                     if (utils.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
@@ -436,15 +432,15 @@
                     }
                 },
 
-                handleErrorMessage: function (message) {
-                    const $message = $('[data-msgid='+message.get('msgid')+']');
+                handleErrorMessage (message) {
+                    const $message = $(`[data-msgid=${message.get('msgid')}]`);
                     if ($message.length) {
                         $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
                         this.scrollDown();
                     }
                 },
 
-                onMessageAdded: function (message) {
+                onMessageAdded (message) {
                     /* Handler that gets called when a new message object is created.
                      *
                      * Parameters:
@@ -467,7 +463,7 @@
                     });
                 },
 
-                createMessageStanza: function (message) {
+                createMessageStanza (message) {
                     return $msg({
                                 from: _converse.connection.jid,
                                 to: this.model.get('jid'),
@@ -477,7 +473,7 @@
                             .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
                 },
 
-                sendMessage: function (message) {
+                sendMessage (message) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -498,7 +494,7 @@
                     }
                 },
 
-                onMessageSubmitted: function (text) {
+                onMessageSubmitted (text) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -519,9 +515,9 @@
                         }
                         else if (match[1] === "help") {
                             const msgs = [
-                                '<strong>/help</strong>:'+__('Show this menu')+'',
-                                '<strong>/me</strong>:'+__('Write in the third person')+'',
-                                '<strong>/clear</strong>:'+__('Remove messages')+''
+                                `<strong>/help</strong>:${__('Show this menu')}`,
+                                `<strong>/me</strong>:${__('Write in the third person')}`,
+                                `<strong>/clear</strong>:${__('Remove messages')}`
                                 ];
                             this.showHelpMessages(msgs);
                             return;
@@ -531,7 +527,7 @@
                     fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
 
                     const message = this.model.messages.create({
-                        fullname: fullname,
+                        fullname,
                         sender: 'me',
                         time: moment().format(),
                         message: text
@@ -539,7 +535,7 @@
                     this.sendMessage(message);
                 },
 
-                sendChatState: function () {
+                sendChatState () {
                     /* Sends a message with the status of the user in this chat session
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
@@ -552,7 +548,7 @@
                     );
                 },
 
-                setChatState: function (state, no_save) {
+                setChatState (state, no_save) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
                      * setting new ones if necessary.
@@ -581,7 +577,7 @@
                     return this;
                 },
 
-                keyPressed: function (ev) {
+                keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
                     if (ev.keyCode === KEY.ENTER) {
@@ -602,7 +598,7 @@
                     }
                 },
 
-                onSendButtonClicked: function(ev) {
+                onSendButtonClicked(ev) {
                     /* Event handler for when a send button is clicked in a chat box textarea.
                      */
                     ev.preventDefault();
@@ -618,7 +614,7 @@
                     this.setChatState(_converse.ACTIVE);
                 },
 
-                clearMessages: function (ev) {
+                clearMessages (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                     if (result === true) {
@@ -629,7 +625,7 @@
                     return this;
                 },
 
-                insertIntoTextArea: function (value) {
+                insertIntoTextArea (value) {
                     const $textbox = this.$el.find('textarea.chat-textarea');
                     let existing = $textbox.val();
                     if (existing && (existing[existing.length-1] !== ' ')) {
@@ -638,7 +634,7 @@
                     $textbox.focus().val(existing+value+' ');
                 },
 
-                insertEmoticon: function (ev) {
+                insertEmoticon (ev) {
                     ev.stopPropagation();
                     this.$el.find('.toggle-smiley ul').slideToggle(200);
                     let $target = $(ev.target);
@@ -646,12 +642,12 @@
                     this.insertIntoTextArea($target.data('emoticon'));
                 },
 
-                toggleEmoticonMenu: function (ev) {
+                toggleEmoticonMenu (ev) {
                     ev.stopPropagation();
                     this.$el.find('.toggle-smiley ul').slideToggle(200);
                 },
 
-                toggleCall: function (ev) {
+                toggleCall (ev) {
                     ev.stopPropagation();
                     _converse.emit('callButtonClicked', {
                         connection: _converse.connection,
@@ -659,7 +655,7 @@
                     });
                 },
 
-                onChatStatusChanged: function (item) {
+                onChatStatusChanged (item) {
                     const chat_status = item.get('chat_status');
                     let fullname = item.get('fullname');
                     fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
@@ -676,7 +672,7 @@
                     }
                 },
 
-                onStatusChanged: function (item) {
+                onStatusChanged (item) {
                     this.showStatusMessage();
                     _converse.emit('contactStatusMessageChanged', {
                         'contact': item.attributes,
@@ -684,7 +680,7 @@
                     });
                 },
 
-                showStatusMessage: function (msg) {
+                showStatusMessage (msg) {
                     msg = msg || this.model.get('status');
                     if (_.isString(msg)) {
                         this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
@@ -692,7 +688,7 @@
                     return this;
                 },
 
-                close: function (ev) {
+                close (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
@@ -710,7 +706,7 @@
                     return this;
                 },
 
-                getToolbarOptions: function (options) {
+                getToolbarOptions (options) {
                     return _.extend(options || {}, {
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
@@ -721,7 +717,7 @@
                     });
                 },
 
-                renderToolbar: function (toolbar, options) {
+                renderToolbar (toolbar, options) {
                     if (!_converse.show_toolbar) { return; }
                     toolbar = toolbar || tpl_toolbar;
                     options = _.extend(
@@ -732,13 +728,13 @@
                     return this;
                 },
 
-                renderAvatar: function () {
+                renderAvatar () {
                     if (!this.model.get('image')) {
                         return;
                     }
                     const width = _converse.chatview_avatar_width;
                     const height = _converse.chatview_avatar_height;
-                    const img_src = 'data:'+this.model.get('image_type')+';base64,'+this.model.get('image'),
+                    const img_src = `data:${this.model.get('image_type')};base64,${this.model.get('image')}`,
                         canvas = $(tpl_avatar({
                             'width': width,
                             'height': height
@@ -763,19 +759,19 @@
                     return this;
                 },
 
-                focus: function () {
+                focus () {
                     this.$el.find('.chat-textarea').focus();
                     _converse.emit('chatBoxFocused', this);
                     return this;
                 },
 
-                hide: function () {
+                hide () {
                     this.el.classList.add('hidden');
                     utils.refreshWebkit();
                     return this;
                 },
 
-                afterShown: function (focus) {
+                afterShown (focus) {
                     if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
@@ -786,7 +782,7 @@
                     }
                 },
 
-                _show: function (focus) {
+                _show (focus) {
                     /* Inner show method that gets debounced */
                     if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
                         if (focus) { this.focus(); }
@@ -795,7 +791,7 @@
                     utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
 
-                show: function (focus) {
+                show (focus) {
                     if (_.isUndefined(this.debouncedShow)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
@@ -807,7 +803,7 @@
                     return this;
                 },
 
-                hideNewMessagesIndicator: function () {
+                hideNewMessagesIndicator () {
                     const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
                     if (!_.isNull(new_msgs_indicator)) {
                         new_msgs_indicator.classList.add('hidden');
@@ -840,12 +836,12 @@
                     utils.safeSave(this.model, {'scrolled': scrolled});
                 }, 150),
 
-                viewUnreadMessages: function () {
+                viewUnreadMessages () {
                     this.model.save('scrolled', false);
                     this.scrollDown();
                 },
 
-                _scrollDown: function () {
+                _scrollDown () {
                     /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
@@ -854,7 +850,7 @@
                     }
                 },
 
-                onScrolledDown: function() {
+                onScrolledDown() {
                     this.hideNewMessagesIndicator();
                     if (_converse.windowState !== 'hidden') {
                         this.model.clearUnreadMsgCounter();
@@ -862,7 +858,7 @@
                     _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
 
-                scrollDown: function () {
+                scrollDown () {
                     if (_.isUndefined(this.debouncedScrollDown)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
@@ -874,7 +870,7 @@
                     return this;
                 },
 
-                onWindowStateChanged: function (state) {
+                onWindowStateChanged (state) {
                     if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }

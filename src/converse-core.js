@@ -34,8 +34,8 @@
 
     // Strophe globals
     const { $build, $iq, $msg, $pres } = Strophe;
-    const { b64_sha1 } = Strophe.SHA1;
-    ({ Strophe } = Strophe);
+    const b64_sha1 = Strophe.SHA1.b64_sha1;
+    Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
@@ -51,32 +51,8 @@
         'templates': {},
         'promises': {}
     }
+
     _.extend(_converse, Backbone.Events);
-
-    const PROMISES = [
-        'cachedRoster',
-        'chatBoxesFetched',
-        'connected',
-        'pluginsInitialized',
-        'roster',
-        'rosterContactsFetched',
-        'rosterGroupsFetched',
-        'rosterInitialized',
-        'statusInitialized'
-    ];
-
-    function addPromise (promise) {
-        _converse.promises[promise] = utils.getWrappedPromise();
-    }
-    _.each(PROMISES, addPromise);
-
-    _converse.emit = function (name) {
-        _converse.trigger.apply(this, arguments);
-        const promise = _converse.promises[name];
-        if (!_.isUndefined(promise)) {
-            promise.resolve();
-        }
-    };
 
     _converse.core_plugins = [
         'converse-bookmarks',
@@ -173,10 +149,40 @@
         }
     };
 
+    const PROMISES = [
+        'cachedRoster',
+        'chatBoxesFetched',
+        'connected',
+        'pluginsInitialized',
+        'roster',
+        'rosterContactsFetched',
+        'rosterGroupsFetched',
+        'rosterInitialized',
+        'statusInitialized'
+    ];
+
+    function addPromise (promise) {
+        /* Private function, used to add a new promise to the ones already
+         * available via the `waitUntil` api method.
+         */
+        _converse.promises[promise] = utils.getWrappedPromise();
+    }
+
+    _converse.emit = function (name) {
+        /* Event emitter and promise resolver */
+        _converse.trigger.apply(this, arguments);
+        const promise = _converse.promises[name];
+        if (!_.isUndefined(promise)) {
+            promise.resolve();
+        }
+    };
+
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
         const init_promise = utils.getWrappedPromise();
+
+        _.each(PROMISES, addPromise);
 
         if (!_.isUndefined(_converse.chatboxes)) {
             // Looks like _converse.initialized was called again without logging

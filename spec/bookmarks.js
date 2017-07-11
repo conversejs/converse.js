@@ -430,8 +430,13 @@
                                         'jid': 'another@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up();
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
-                done();
+
+                test_utils.waitUntil(function () {
+                    return $('#chatrooms dl.bookmarks dd').length;
+                }, 300).then(function () {
+                    expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
+                    done();
+                });
             }));
 
             it("remembers the toggle state of the bookmarks list", mock.initConverseWithPromises(
@@ -472,15 +477,20 @@
                     'nick': ''
                 });
                 test_utils.openControlBox().openRoomsPanel(_converse);
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-                $('#chatrooms .bookmarks-toggle').click();
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
-                $('#chatrooms .bookmarks-toggle').click();
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-                done();
+
+                test_utils.waitUntil(function () {
+                    return $('#chatrooms dl.bookmarks dd:visible').length;
+                }, 300).then(function () {
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+                    done();
+                });
             }));
         });
     });

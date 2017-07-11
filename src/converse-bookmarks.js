@@ -229,8 +229,7 @@
                 },
 
                 fetchBookmarks () {
-                    const deferred = new $.Deferred();
-                    const promise = deferred.promise();
+                    const deferred = utils.getWrappedPromise();
                     if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
@@ -245,7 +244,7 @@
                     } else {
                         deferred.resolve();
                     }
-                    return promise;
+                    return deferred.promise;
                 },
 
                 onCachedBookmarksFetched (deferred) {
@@ -482,7 +481,7 @@
                     return;
                 }
                 _converse.bookmarks = new _converse.Bookmarks();
-                _converse.bookmarks.fetchBookmarks().always(function () {
+                _converse.bookmarks.fetchBookmarks().then(function () {
                     _converse.bookmarksview = new _converse.BookmarksView(
                         {'model': _converse.bookmarks}
                     );

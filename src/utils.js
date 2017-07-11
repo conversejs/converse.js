@@ -69,22 +69,22 @@
     };
 
     var isImage = function (url) {
-        var deferred = new $.Deferred();
-        var img = new Image();
-        var timer = window.setTimeout(function () {
-            deferred.reject();
-            img = null;
-        }, 3000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            deferred.reject();
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            deferred.resolve(img);
-        };
-        img.src = url;
-        return deferred.promise();
+        return new Promise((resolve, reject) => {
+            var img = new Image();
+            var timer = window.setTimeout(function () {
+                reject(new Error("Could not determine whether it's an image"));
+                img = null;
+            }, 3000);
+            img.onerror = img.onabort = function () {
+                clearTimeout(timer);
+                reject(new Error("Could not determine whether it's an image"));
+            };
+            img.onload = function () {
+                clearTimeout(timer);
+                resolve(img);
+            };
+            img.src = url;
+        });
     };
 
     $.fn.hasScrollBar = function() {

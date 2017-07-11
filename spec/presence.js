@@ -49,7 +49,11 @@
 
     describe("A received presence stanza", function () {
 
-        it("has its priority taken into account", mock.initConverse(function (_converse) {
+        it("has its priority taken into account",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.openControlBox();
             test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
             var contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -218,6 +222,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).get('chat_status')).toBe('offline');
             expect(_.keys(contact.get('resources')).length).toBe(0);
+            done();
         }));
     });
 }));

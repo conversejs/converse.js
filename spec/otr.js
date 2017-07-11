@@ -1,13 +1,16 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function (jasmine, mock, converse, test_utils) {
-    var $ = converse.env.jQuery;
+    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+} (this, function ($, jasmine, mock, converse, test_utils) {
     var Strophe = converse.env.Strophe;
     var b64_sha1 = converse.env.b64_sha1;
 
     return describe("The OTR module", function() {
 
-        it("will add processing hints to sent out encrypted <message> stanzas", mock.initConverse(function (_converse) {
+        it("will add processing hints to sent out encrypted <message> stanzas",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.openControlBox();
             test_utils.openContactsPanel(_converse);
             test_utils.createContacts(_converse, 'current');
@@ -25,11 +28,16 @@
             expect($hints.get(1).tagName).toBe('no-permanent-store');
             expect($hints.get(2).tagName).toBe('no-copy');
             chatview.model.set('otr_status', UNENCRYPTED); // Reset again to UNENCRYPTED
+            done();
         }));
 
         describe("An OTR Chat Message", function () {
 
-            it("will not be carbon copied when it's sent out", mock.initConverse(function (_converse) {
+            it("will not be carbon copied when it's sent out",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.createContacts(_converse, 'current');
@@ -46,6 +54,7 @@
                 expect($sent.find('private').length).toBe(1);
                 expect($sent.find('private').attr('xmlns')).toBe('urn:xmpp:carbons:2');
                 chatbox.set('otr_status', 0); // Reset again to UNENCRYPTED
+                done();
             }));
         });
     });

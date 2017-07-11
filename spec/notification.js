@@ -12,7 +12,11 @@
             describe("And the desktop is not focused", function () {
                 describe("an HTML5 Notification", function () {
 
-                    it("is shown when a new private message is received", mock.initConverse(function (_converse) {
+                    it("is shown when a new private message is received",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
+
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification');
@@ -30,9 +34,14 @@
                         _converse.chatboxes.onMessage(msg); // This will emit 'message'
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
+                        done();
                     }));
 
-                    it("is shown when you are mentioned in a chat room", mock.initConverse(function (_converse) {
+                    it("is shown when you are mentioned in a chat room",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
+
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                         var view = _converse.chatboxviews.get('lounge@localhost');
@@ -63,9 +72,14 @@
                         if (no_notification) {
                             delete window.Notification;
                         }
+                        done();
                     }));
 
-                    it("is shown for headline messages", mock.initConverse(function (_converse) {
+                    it("is shown for headline messages",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
+
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         var stanza = $msg({
@@ -84,6 +98,7 @@
                                 'notify.example.com')
                             ).toBeTruthy();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
+                        done();
                     }));
 
                     it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
@@ -137,7 +152,11 @@
         describe("When play_sounds is set to true", function () {
             describe("A notification sound", function () {
 
-                it("is played when the current user is mentioned in a chat room", mock.initConverse(function (_converse) {
+                it("is played when the current user is mentioned in a chat room",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                     _converse.play_sounds = true;
@@ -175,6 +194,7 @@
                     view.onChatRoomMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
+                    done();
                 }));
             });
         });

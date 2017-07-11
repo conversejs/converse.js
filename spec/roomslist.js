@@ -7,12 +7,13 @@
 
     describe("The converse-roomslist plugin", function () {
 
-        it("is shown under a list of open rooms in the \"Rooms\" panel", mock.initConverse(
+        it("is shown under a list of open rooms in the \"Rooms\" panel", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
             },
-            function (_converse) {
+            function (done, _converse) {
                 test_utils.openControlBox().openRoomsPanel(_converse);
                 var controlbox = _converse.chatboxviews.get('controlbox');
 
@@ -46,18 +47,20 @@
 
                 list = controlbox.el.querySelector('div.rooms-list-container');
                 expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+                done();
             }
         ));
     });
 
     describe("An room shown in the rooms list", function () {
 
-        it("can be closed", mock.initConverse(
+        it("can be closed", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
             },
-            function (_converse) {
+            function (done, _converse) {
 
             spyOn(window, 'confirm').and.callFake(function () {
                 return true;
@@ -76,6 +79,7 @@
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);
+            done();
         }));
 
         it("shows unread messages directed at the user", mock.initConverseWithAsync(

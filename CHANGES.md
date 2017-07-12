@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.1 (Unreleased)
+## 3.1.1 ((2017-07-12))
 
 - Use a patched version of [awesomplete](https://github.com/LeaVerou/awesomplete)
   which doesn't render suggestions as HTML (possible XSS attack vector). [jcbrand]

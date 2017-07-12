@@ -43,36 +43,37 @@
                             function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
-                        test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                        var view = _converse.chatboxviews.get('lounge@localhost');
-                        if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                        var no_notification = false;
-                        if (typeof window.Notification === 'undefined') {
-                            no_notification = true;
-                            window.Notification = function () {
-                                return {
-                                    'close': function () {}
+                        test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                            var view = _converse.chatboxviews.get('lounge@localhost');
+                            if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                            var no_notification = false;
+                            if (typeof window.Notification === 'undefined') {
+                                no_notification = true;
+                                window.Notification = function () {
+                                    return {
+                                        'close': function () {}
+                                    };
                                 };
-                            };
-                        }
-                        spyOn(_converse, 'showMessageNotification').and.callThrough();
-                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                        
-                        var message = 'dummy: This message will show a desktop notification';
-                        var nick = mock.chatroom_names[0],
-                            msg = $msg({
-                                from: 'lounge@localhost/'+nick,
-                                id: (new Date()).getTime(),
-                                to: 'dummy@localhost',
-                                type: 'groupchat'
-                            }).c('body').t(message).tree();
-                        _converse.chatboxes.onMessage(msg); // This will emit 'message'
-                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                        expect(_converse.showMessageNotification).toHaveBeenCalled();
-                        if (no_notification) {
-                            delete window.Notification;
-                        }
-                        done();
+                            }
+                            spyOn(_converse, 'showMessageNotification').and.callThrough();
+                            spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                            
+                            var message = 'dummy: This message will show a desktop notification';
+                            var nick = mock.chatroom_names[0],
+                                msg = $msg({
+                                    from: 'lounge@localhost/'+nick,
+                                    id: (new Date()).getTime(),
+                                    to: 'dummy@localhost',
+                                    type: 'groupchat'
+                                }).c('body').t(message).tree();
+                            _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                            expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                            expect(_converse.showMessageNotification).toHaveBeenCalled();
+                            if (no_notification) {
+                                delete window.Notification;
+                            }
+                            done();
+                        });
                     }));
 
                     it("is shown for headline messages",
@@ -158,43 +159,44 @@
                         function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
-                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                    _converse.play_sounds = true;
-                    spyOn(_converse, 'playSoundNotification');
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
-                    var text = 'This message will play a sound because it mentions dummy';
-                    var message = $msg({
-                        from: 'lounge@localhost/otheruser',
-                        id: '1',
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t(text);
-                    view.onChatRoomMessage(message.nodeTree);
-                    expect(_converse.playSoundNotification).toHaveBeenCalled();
+                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                        _converse.play_sounds = true;
+                        spyOn(_converse, 'playSoundNotification');
+                        var view = _converse.chatboxviews.get('lounge@localhost');
+                        if (!view.$el.find('.chat-area').length) { view.renderChatArea(); }
+                        var text = 'This message will play a sound because it mentions dummy';
+                        var message = $msg({
+                            from: 'lounge@localhost/otheruser',
+                            id: '1',
+                            to: 'dummy@localhost',
+                            type: 'groupchat'
+                        }).c('body').t(text);
+                        view.onChatRoomMessage(message.nodeTree);
+                        expect(_converse.playSoundNotification).toHaveBeenCalled();
 
-                    text = "This message won't play a sound";
-                    message = $msg({
-                        from: 'lounge@localhost/otheruser',
-                        id: '2',
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t(text);
-                    view.onChatRoomMessage(message.nodeTree);
-                    expect(_converse.playSoundNotification, 1);
-                    _converse.play_sounds = false;
+                        text = "This message won't play a sound";
+                        message = $msg({
+                            from: 'lounge@localhost/otheruser',
+                            id: '2',
+                            to: 'dummy@localhost',
+                            type: 'groupchat'
+                        }).c('body').t(text);
+                        view.onChatRoomMessage(message.nodeTree);
+                        expect(_converse.playSoundNotification, 1);
+                        _converse.play_sounds = false;
 
-                    text = "This message won't play a sound because it is sent by dummy";
-                    message = $msg({
-                        from: 'lounge@localhost/dummy',
-                        id: '3',
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t(text);
-                    view.onChatRoomMessage(message.nodeTree);
-                    expect(_converse.playSoundNotification, 1);
-                    _converse.play_sounds = false;
-                    done();
+                        text = "This message won't play a sound because it is sent by dummy";
+                        message = $msg({
+                            from: 'lounge@localhost/dummy',
+                            id: '3',
+                            to: 'dummy@localhost',
+                            type: 'groupchat'
+                        }).c('body').t(text);
+                        view.onChatRoomMessage(message.nodeTree);
+                        expect(_converse.playSoundNotification, 1);
+                        _converse.play_sounds = false;
+                        done();
+                    });
                 }));
             });
         });

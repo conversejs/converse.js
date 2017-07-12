@@ -2,7 +2,9 @@
 
 ## 3.2.0 (Unreleased)
 
-- #866 Add babel in order to support ES2015 syntax
+- All promises are now native (or polyfilled) ES2015 Promises
+  instead of jQuery's Deferred. [jcbrand]
+- #866 Add babel in order to support ES2015 syntax [jcbrand]
 
 ## 3.1.0 (2017-07-05)
 

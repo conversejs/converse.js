@@ -62,7 +62,7 @@
     const ROOMS_PANEL_ID = 'chatrooms';
     const CHATROOMS_TYPE = 'chatroom';
 
-    const { Strophe, Backbone, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, fp, moment } = converse.env;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, fp, moment } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -448,11 +448,12 @@
                     this.registerHandlers();
 
                     if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
-                        this.getRoomFeatures().always(() => {
+                        const handler = () => {
                             this.join();
                             this.fetchMessages();
                             _converse.emit('chatRoomOpened', this);
-                        });
+                        }
+                        this.getRoomFeatures().then(handler, handler);
                     } else {
                         this.fetchMessages();
                         _converse.emit('chatRoomOpened', this);
@@ -636,13 +637,13 @@
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
-                    const deferred = new $.Deferred();
-                    affiliation = affiliation || 'member';
-                    const iq = $iq({to: chatroom_jid, type: "get"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                            .c("item", {'affiliation': affiliation});
-                    _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
-                    return deferred.promise();
+                    return new Promise((resolve, reject) => {
+                        affiliation = affiliation || 'member';
+                        const iq = $iq({to: chatroom_jid, type: "get"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                                .c("item", {'affiliation': affiliation});
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
                 },
 
                 parseMemberListIQ (iq) {
@@ -725,18 +726,18 @@
                      *  (Object) member: Map containing the member's jid and
                      *      optionally a reason and affiliation.
                      */
-                    const deferred = new $.Deferred();
-                    const iq = $iq({to: chatroom_jid, type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                        .c("item", {
-                            'affiliation': member.affiliation || affiliation,
-                            'jid': member.jid
-                        });
-                    if (!_.isUndefined(member.reason)) {
-                        iq.c("reason", member.reason);
-                    }
-                    _converse.connection.sendIQ(iq, deferred.resolve, deferred.reject);
-                    return deferred;
+                    return new Promise((resolve, reject) => {
+                        const iq = $iq({to: chatroom_jid, type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {
+                                'affiliation': member.affiliation || affiliation,
+                                'jid': member.jid
+                            });
+                        if (!_.isUndefined(member.reason)) {
+                            iq.c("reason", member.reason);
+                        }
+                        _converse.connection.sendIQ(iq, resolve, reject);
+                    });
                 },
 
                 setAffiliation (affiliation, members) {
@@ -772,10 +773,10 @@
                         members,
                         _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
                     );
-                    return $.when.apply($, promises);
+                    return Promise.all(promises);
                 },
 
-                setAffiliations (members, onSuccess, onError) {
+                setAffiliations (members) {
                     /* Send IQ stanzas to the server to modify the
                      * affiliations in this room.
                      *
@@ -786,14 +787,8 @@
                      *  (Function) onSuccess: callback for a succesful response
                      *  (Function) onError: callback for an error response
                      */
-                    if (_.isEmpty(members)) {
-                        // Succesfully updated with zero affilations :)
-                        onSuccess(null);
-                        return;
-                    }
                     const affiliations = _.uniq(_.map(members, 'affiliation'));
-                    const promises = _.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
-                    $.when.apply($, promises).done(onSuccess).fail(onError);
+                    _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
                 },
 
                 marshallAffiliationIQs () {
@@ -814,12 +809,13 @@
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    const deferred = new $.Deferred();
-                    const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
-                    $.when.apply($, promises).always(
-                        _.flow(this.marshallAffiliationIQs.bind(this), deferred.resolve)
-                    );
-                    return deferred.promise();
+                    return new Promise((resolve, reject) => {
+                        const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
+                        Promise.all(promises).then(
+                            _.flow(this.marshallAffiliationIQs.bind(this), resolve),
+                            _.flow(this.marshallAffiliationIQs.bind(this), resolve)
+                        );
+                    });
                 },
 
                 updateMemberLists (members, affiliations, deltaFunc) {
@@ -840,15 +836,9 @@
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
-                    const deferred = new $.Deferred();
                     this.getJidsWithAffiliations(affiliations).then((old_members) => {
-                        this.setAffiliations(
-                            deltaFunc(members, old_members),
-                            deferred.resolve,
-                            deferred.reject
-                        );
+                        this.setAffiliations(deltaFunc(members, old_members));
                     });
-                    return deferred.promise();
                 },
 
                 directInvite (recipient, reason) {
@@ -1010,14 +1000,14 @@
                             this.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).fail(this.onCommandError.bind(this));
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'ban':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
                             this.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).fail(this.onCommandError.bind(this));
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'clear':
                             this.clearChatRoomMessages();
@@ -1065,7 +1055,7 @@
                             this.setAffiliation('member',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).fail(this.onCommandError.bind(this));
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'nick':
                             _converse.connection.send($pres({
@@ -1079,7 +1069,7 @@
                             this.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).fail(this.onCommandError.bind(this));
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'op':
                             if (!this.validateRoleChangeCommand(command, args)) { break; }
@@ -1092,7 +1082,7 @@
                             this.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
-                                    }]).fail(this.onCommandError.bind(this));
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'topic':
                         case 'subject':
@@ -1330,22 +1320,18 @@
                      * Parameters:
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
-                    const deferred = new $.Deferred();
-                    const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
-                        configArray = [];
-                    $inputs.each(function () {
-                        configArray.push(utils.webForm2xForm(this));
+                    return new Promise((resolve, reject) => {
+                        const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
+                            configArray = [];
+                        $inputs.each(function () {
+                            configArray.push(utils.webForm2xForm(this));
+                        });
+                        this.sendConfiguration(configArray, resolve, reject);
+                        this.$el.find('div.chatroom-form-container').hide((el) => {
+                            $(el).remove();
+                            this.renderAfterTransition();
+                        });
                     });
-                    this.sendConfiguration(
-                        configArray,
-                        deferred.resolve,
-                        deferred.reject
-                    );
-                    this.$el.find('div.chatroom-form-container').hide((el) => {
-                        $(el).remove();
-                        this.renderAfterTransition();
-                    });
-                    return deferred.promise();
                 },
 
                 autoConfigureChatRoom () {
@@ -1360,44 +1346,38 @@
                      *       containing the configuration.
                      */
                     const that = this;
-                    const deferred = new $.Deferred();
+                    return new Promise((resolve, reject) => {
+                        this.fetchRoomConfiguration().then(function (stanza) {
+                            const configArray = [],
+                                fields = stanza.querySelectorAll('field'),
+                                config = that.model.get('roomconfig');
+                            let count = fields.length;
 
-                    this.fetchRoomConfiguration().then(function (stanza) {
-                        const configArray = [],
-                            fields = stanza.querySelectorAll('field'),
-                            config = that.model.get('roomconfig');
-                        
-                        let count = fields.length;
-
-                        _.each(fields, function (field) {
-                            const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                                type = field.getAttribute('type');
-                            let value;
-                            if (fieldname in config) {
-                                switch (type) {
-                                    case 'boolean':
-                                        value = config[fieldname] ? 1 : 0;
-                                        break;
-                                    case 'list-multi':
-                                        // TODO: we don't yet handle "list-multi" types
-                                        value = field.innerHTML;
-                                        break;
-                                    default:
-                                        value = config[fieldname];
+                            _.each(fields, function (field) {
+                                const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
+                                    type = field.getAttribute('type');
+                                let value;
+                                if (fieldname in config) {
+                                    switch (type) {
+                                        case 'boolean':
+                                            value = config[fieldname] ? 1 : 0;
+                                            break;
+                                        case 'list-multi':
+                                            // TODO: we don't yet handle "list-multi" types
+                                            value = field.innerHTML;
+                                            break;
+                                        default:
+                                            value = config[fieldname];
+                                    }
+                                    field.innerHTML = $build('value').t(value);
                                 }
-                                field.innerHTML = $build('value').t(value);
-                            }
-                            configArray.push(field);
-                            if (!--count) {
-                                that.sendConfiguration(
-                                    configArray,
-                                    deferred.resolve,
-                                    deferred.reject
-                                );
-                            }
+                                configArray.push(field);
+                                if (!--count) {
+                                    that.sendConfiguration(configArray, resolve, reject);
+                                }
+                            });
                         });
                     });
-                    return deferred;
                 },
 
                 cancelConfiguration () {
@@ -1419,70 +1399,72 @@
                      * Parameters:
                      *  (Function) handler: The handler for the response IQ
                      */
-                    const deferred = new $.Deferred();
-                    _converse.connection.sendIQ(
-                        $iq({
-                            'to': this.model.get('jid'),
-                            'type': "get"
-                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
-                        (iq) => {
-                            if (handler) {
-                                handler.apply(this, arguments);
+                    return new Promise((resolve, reject) => {
+                        _converse.connection.sendIQ(
+                            $iq({
+                                'to': this.model.get('jid'),
+                                'type': "get"
+                            }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
+                            (iq) => {
+                                if (handler) {
+                                    handler.apply(this, arguments);
+                                }
+                                resolve(iq);
+                            },
+                            reject // errback
+                        );
+                    });
+                },
+
+                parseRoomFeatures (iq) {
+                    /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
+                     *
+                     *  <identity
+                     *      category='conference'
+                     *      name='A Dark Cave'
+                     *      type='text'/>
+                     *  <feature var='http://jabber.org/protocol/muc'/>
+                     *  <feature var='muc_passwordprotected'/>
+                     *  <feature var='muc_hidden'/>
+                     *  <feature var='muc_temporary'/>
+                     *  <feature var='muc_open'/>
+                     *  <feature var='muc_unmoderated'/>
+                     *  <feature var='muc_nonanonymous'/>
+                     *  <feature var='urn:xmpp:mam:0'/>
+                     */
+                    const features = {
+                        'features_fetched': true
+                    };
+                    _.each(iq.querySelectorAll('feature'), function (field) {
+                        const fieldname = field.getAttribute('var');
+                        if (!fieldname.startsWith('muc_')) {
+                            if (fieldname === Strophe.NS.MAM) {
+                                features.mam_enabled = true;
                             }
-                            deferred.resolve(iq);
-                        },
-                        deferred.reject // errback
-                    );
-                    return deferred.promise();
+                            return;
+                        }
+                        features[fieldname.replace('muc_', '')] = true;
+                    });
+                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
+                    if (!_.isNull(desc_field)) {
+                        features.description = desc_field.textContent;
+                    }
+                    this.model.save(features);
                 },
 
                 getRoomFeatures () {
                     /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
                      */
-                    const deferred = new $.Deferred();
-                    const that = this;
-                    _converse.connection.disco.info(this.model.get('jid'), null,
-                        function (iq) {
-                            /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-                             *
-                             *  <identity
-                             *      category='conference'
-                             *      name='A Dark Cave'
-                             *      type='text'/>
-                             *  <feature var='http://jabber.org/protocol/muc'/>
-                             *  <feature var='muc_passwordprotected'/>
-                             *  <feature var='muc_hidden'/>
-                             *  <feature var='muc_temporary'/>
-                             *  <feature var='muc_open'/>
-                             *  <feature var='muc_unmoderated'/>
-                             *  <feature var='muc_nonanonymous'/>
-                             *  <feature var='urn:xmpp:mam:0'/>
-                             */
-                            const features = {
-                                'features_fetched': true
-                            };
-                            _.each(iq.querySelectorAll('feature'), function (field) {
-                                const fieldname = field.getAttribute('var');
-                                if (!fieldname.startsWith('muc_')) {
-                                    if (fieldname === Strophe.NS.MAM) {
-                                        features.mam_enabled = true;
-                                    }
-                                    return;
-                                }
-                                features[fieldname.replace('muc_', '')] = true;
-                            });
-                            const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-                            if (!_.isNull(desc_field)) {
-                                features.description = desc_field.textContent;
-                            }
-                            that.model.save(features);
-                            return deferred.resolve();
-                        },
-                        deferred.reject,
-                        5000
-                    );
-                    return deferred.promise();
+                    return new Promise((resolve, reject) => {
+                        _converse.connection.disco.info(
+                            this.model.get('jid'),
+                            null,
+                            _.flow(this.parseRoomFeatures.bind(this), resolve),
+                            () => { reject(new Error("Could not parse the room features")) },
+                            5000
+                        );
+                    });
                 },
 
                 getAndRenderConfigurationForm (ev) {

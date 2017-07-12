@@ -144,24 +144,25 @@
 
             var room_jid = 'kitchen@conference.shakespeare.lit';
             test_utils.openAndEnterChatRoom(
-                _converse, 'kitchen', 'conference.shakespeare.lit', 'fires');
-            var view = _converse.chatboxviews.get(room_jid);
-            view.model.set({'minimized': true});
+                _converse, 'kitchen', 'conference.shakespeare.lit', 'fires').then(function () {
+                var view = _converse.chatboxviews.get(room_jid);
+                view.model.set({'minimized': true});
 
-            var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var message = 'fires: Your attention is required';
-            var nick = mock.chatroom_names[0],
-                msg = $msg({
-                    from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(message).tree();
-            view.handleMUCMessage(msg);
+                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var message = 'fires: Your attention is required';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: room_jid+'/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
 
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
-            done();
+                expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
+                expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
+                done();
+            });
         }));
     });
 }));

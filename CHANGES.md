@@ -1,6 +1,13 @@
 # Changelog
 
-## 3.1.0 ((2017-07-05))
+## 3.1.1 (Unreleased)
+
+- Use a patched version of [awesomplete](https://github.com/LeaVerou/awesomplete)
+  which doesn't render suggestions as HTML (possible XSS attack vector). [jcbrand]
+
+More info here: https://github.com/LeaVerou/awesomplete/pull/17082
+
+## 3.1.0 (2017-07-05)
 
 ### API changes
 - Deprecate the `updateSettings` method in favour of

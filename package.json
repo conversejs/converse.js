@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "almond": "~0.3.3",
-    "awesomplete": "^1.1.1",
+    "awesomplete-avoid-xss": "^1.1.2",
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.3",

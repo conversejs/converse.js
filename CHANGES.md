@@ -6,6 +6,13 @@
   instead of jQuery's Deferred. [jcbrand]
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
+## 3.1.1 (2017-07-12)
+
+- Use a patched version of [awesomplete](https://github.com/LeaVerou/awesomplete)
+  which doesn't render suggestions as HTML (possible XSS attack vector). [jcbrand]
+
+More info here: https://github.com/LeaVerou/awesomplete/pull/17082
+
 ## 3.1.0 (2017-07-05)
 
 ### API changes

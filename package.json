@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Browser based XMPP instant messaging client",
   "main": "main.js",
   "directories": {
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "almond": "~0.3.3",
-    "awesomplete": "^1.1.1",
+    "awesomplete-avoid-xss": "^1.1.2",
     "babel-cli": "^6.18.0",
     "babel-preset-env": "^1.5.2",
     "babel-preset-latest": "^6.16.0",

@@ -16,7 +16,7 @@ require.config({
     baseUrl: '.',
     paths: {
         "almond":                   "node_modules/almond/almond",
-        "awesomplete":              "node_modules/awesomplete/awesomplete",
+        "awesomplete":              "node_modules/awesomplete-avoid-xss/awesomplete",
         "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
         "backbone":                 "node_modules/backbone/backbone",
         "backbone.noconflict":      "src/backbone.noconflict",

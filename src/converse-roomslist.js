@@ -70,7 +70,7 @@
                     });
                     this.hide();
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-                        this.$('.open-rooms-list').hide();
+                        this.el.querySelector('.open-rooms-list').classList.add('hidden');
                     }
                     this.model.each(this.renderRoomsListElement.bind(this));
                     const controlboxview = _converse.chatboxviews.get('controlbox');
@@ -95,8 +95,8 @@
 
                 closeRoom (ev) {
                     ev.preventDefault();
-                    const name = $(ev.target).data('roomName');
-                    const jid = $(ev.target).data('roomJid');
+                    const name = ev.target.getAttribute('data-room-name');
+                    const jid = ev.target.getAttribute('data-room-jid');
                     if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }

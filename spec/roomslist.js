@@ -75,7 +75,7 @@
             var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
             close_el.click();
             expect(window.confirm).toHaveBeenCalledWith(
-                'Are you sure you want to leave the room ""?');
+                'Are you sure you want to leave the room "lounge"?');
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);

@@ -7,10 +7,10 @@
 /*global define */
 
 (function (root, factory) {
-    define(["jquery.noconflict", "converse-core", "strophe.vcard"], factory);
-}(this, function ($, converse) {
+    define(["converse-core", "strophe.vcard"], factory);
+}(this, function (converse) {
     "use strict";
-    const { Strophe, _, moment } = converse.env;
+    const { Strophe, _, moment, sizzle } = converse.env;
 
     converse.plugins.add('converse-vcard', {
 
@@ -62,13 +62,16 @@
 
             _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
                 const bare_jid = Strophe.getBareJidFromJid(jid);
-                const nick = $(presence).children(`nick[xmlns="${Strophe.NS.NICK}"]`).text();
+                if (!fullname) {
+                    const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence);
+                    fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
+                }
                 const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: fullname || nick || bare_jid,
+                    fullname: fullname,
                     image: img,
                     image_type: img_type,
                     url,
@@ -87,16 +90,16 @@
             };
 
             _converse.onVCardData = function (jid, iq, callback) {
-                const $vcard = $(iq).find('vCard'),
-                    img_type = $vcard.find('TYPE').text(),
-                    img = $vcard.find('BINVAL').text(),
-                    url = $vcard.find('URL').text();
+                const vcard = iq.querySelector('vCard'),
+                    img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
+                    img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
+                    url = _.get(vcard.querySelector('URL'), 'textContent');
 
-                let fullname = $vcard.find('FN').text();
+                let fullname = vcard.querySelector('FN').textContent;
                 if (jid) {
                     const contact = _converse.roster.get(jid);
                     if (contact) {
-                        fullname = _.isEmpty(fullname)? contact.get('fullname') || jid: fullname;
+                        fullname = _.isEmpty(fullname) ? _.get(contact, 'fullname', jid) : fullname;
                         contact.save({
                             'fullname': fullname,
                             'image_type': img_type,

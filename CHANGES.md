@@ -2,6 +2,7 @@
 
 ## 3.2.0 (Unreleased)
 
+- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
 - All promises are now native (or polyfilled) ES2015 Promises
   instead of jQuery's Deferred. [jcbrand]
 - #866 Add babel in order to support ES2015 syntax [jcbrand]

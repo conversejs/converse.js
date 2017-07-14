@@ -10,14 +10,13 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define(["jquery.noconflict",
-            "utils",
+    define(["utils",
             "converse-core",
             "converse-muc",
             "tpl!rooms_list",
             "tpl!rooms_list_item"
         ], factory);
-}(this, function ($, utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
     const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-roomslist', {
@@ -26,13 +25,12 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __,
-                ___ } = _converse;
+                  { __, ___ } = _converse;
 
             _converse.RoomsList = Backbone.Model.extend({
                 defaults: {
                     "toggle-state":  _converse.OPENED
-                },
+                }
             });
 
             _converse.RoomsListView = Backbone.View.extend({
@@ -44,6 +42,8 @@
                 },
 
                 initialize () {
+                    this.toggleRoomsList = _.debounce(this.toggleRoomsList, 600, {'leading': true});
+
                     this.model.on('add', this.renderRoomsListElement, this);
                     this.model.on('change:bookmarked', this.renderRoomsListElement, this);
                     this.model.on('change:name', this.renderRoomsListElement, this);
@@ -142,15 +142,17 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const el = ev.target;
                     if (el.classList.contains("icon-opened")) {
-                        this.$('.open-rooms-list').slideUp('fast');
-                        this.list_model.save({'toggle-state': _converse.CLOSED});
-                        el.classList.remove("icon-opened");
-                        el.classList.add("icon-closed");
+                        utils.slideUp(this.el.querySelector('.open-rooms-list')).then(() => {
+                            this.list_model.save({'toggle-state': _converse.CLOSED});
+                            el.classList.remove("icon-opened");
+                            el.classList.add("icon-closed");
+                        });
                     } else {
-                        el.classList.remove("icon-closed");
-                        el.classList.add("icon-opened");
-                        this.$('.open-rooms-list').slideDown('fast');
-                        this.list_model.save({'toggle-state': _converse.OPENED});
+                        utils.slideDown(this.el.querySelector('.open-rooms-list')).then(() => {
+                            this.list_model.save({'toggle-state': _converse.OPENED});
+                            el.classList.remove("icon-closed");
+                            el.classList.add("icon-opened");
+                        });
                     }
                 }
             });

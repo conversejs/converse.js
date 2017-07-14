@@ -206,7 +206,66 @@
             }
         },
 
+        slideDown: function (el, interval=0.6) {
+            return new Promise((resolve, reject) => {
+                if (_.isNil(el)) {
+                    const err = "Undefined or null element passed into slideDown"
+                    console.warn(err);
+                    reject(new Error(err));
+                }
+                let intval = el.getAttribute('data-slider-intval');
+                if (intval) {
+                    window.clearInterval(intval);
+                }
+                let h = 0;
+                const end_height = el.getAttribute('data-slider-height');
+                intval = window.setInterval(function () {
+                    h++;
+                    el.style.height = h + 'px';
+                    if (h >= end_height) {
+                        window.clearInterval(intval);
+                        el.style.height = '';
+                        el.style.overflow = '';
+                        el.removeAttribute('data-slider-intval');
+                        el.removeAttribute('data-slider-height');
+                        resolve();
+                    }
+                }, interval);
+                el.setAttribute('data-slider-intval', intval);
+            });
+        },
+
+        slideUp: function (el, interval=0.6) {
+            return new Promise((resolve, reject) => {
+                if (_.isNil(el)) {
+                    const err = "Undefined or null element passed into slideUp";
+                    console.warn(err);
+                    reject(new Error(err));
+                }
+                let intval = el.getAttribute('data-slider-intval');
+                if (intval) {
+                    window.clearInterval(intval);
+                }
+                let h = el.offsetHeight;
+                el.setAttribute('data-slider-height', h);
+                el.style.overflow = 'hidden';
+                intval = window.setInterval(function () {
+                    el.style.height = h + 'px';
+                    h--;
+                    if (h < 0) {
+                        window.clearInterval(intval);
+                        el.removeAttribute('data-slider-intval');
+                        resolve();
+                    }
+                }, interval);
+                el.setAttribute('data-slider-intval', intval);
+            });
+        },
+
         fadeIn: function (el, callback) {
+            if (_.isNil(el)) {
+                console.warn("Undefined or null element passed into fadeIn");
+            }
             if ($.fx.off) {
                 el.classList.remove('hidden');
                 if (_.isFunction(callback)) {

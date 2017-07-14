@@ -3,6 +3,8 @@
 ## 3.2.0 (Unreleased)
 
 - Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
+- Remove `jquery.easing` from the full build. Was only being used by the
+  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]
 - All promises are now native (or polyfilled) ES2015 Promises
   instead of jQuery's Deferred. [jcbrand]
 - #866 Add babel in order to support ES2015 syntax [jcbrand]

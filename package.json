@@ -55,7 +55,7 @@
     "install": "^0.8.5",
     "jasmine-core": "2.6.4",
     "jed": "0.5.4",
-    "jquery": "2.2.3",
+    "jquery": "3.2.1",
     "jquery-easing": "0.0.1",
     "jquery.browser": ">=0.1.0",
     "jshint": "^2.9.4",

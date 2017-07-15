@@ -110,7 +110,7 @@ stamp-bundler: Gemfile
 
 .PHONY: clean
 clean:
-	-rm -f stamp-npm stamp-bundler
+	-rm -f stamp-npm stamp-bundler package-lock.json
 	-rm -rf node_modules .bundle
 
 .PHONY: dev

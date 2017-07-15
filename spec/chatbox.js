@@ -1238,39 +1238,6 @@
                     done();
                 }));
 
-                it("should display emoticons correctly", 
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
-
-                    test_utils.createContacts(_converse, 'current');
-                    test_utils.openControlBox();
-                    test_utils.openContactsPanel(_converse);
-
-                    var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(_converse, contact_jid);
-                    var view = _converse.chatboxviews.get(contact_jid);
-                    var messages = [':)', ';)', ':D', ':P', '8)', '>:)', ':S', ':\\', '>:(', ':(', ':O', '(^.^)b', '<3'];
-                    var emoticons = [
-                        '<span class="emoticon icon-smiley"></span>', '<span class="emoticon icon-wink"></span>',
-                        '<span class="emoticon icon-grin"></span>', '<span class="emoticon icon-tongue"></span>',
-                        '<span class="emoticon icon-cool"></span>', '<span class="emoticon icon-evil"></span>',
-                        '<span class="emoticon icon-confused"></span>', '<span class="emoticon icon-wondering"></span>',
-                        '<span class="emoticon icon-angry"></span>', '<span class="emoticon icon-sad"></span>',
-                        '<span class="emoticon icon-shocked"></span>', '<span class="emoticon icon-thumbs-up"></span>',
-                        '<span class="emoticon icon-heart"></span>'
-                        ];
-                    spyOn(view, 'sendMessage').and.callThrough();
-                    for (var i = 0; i < messages.length; i++) {
-                        var message = messages[i];
-                        test_utils.sendMessage(view, message);
-                        expect(view.sendMessage).toHaveBeenCalled();
-                        var msg = view.$el.find('.chat-content').find('.chat-message').last().find('.chat-msg-content');
-                        expect(msg.html()).toEqual(emoticons[i]);
-                    }
-                    done();
-                }));
-
                 it("can contain hyperlinks, which will be clickable", 
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched'], {},

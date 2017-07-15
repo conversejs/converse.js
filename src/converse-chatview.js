@@ -54,14 +54,13 @@
             //
             registerGlobalEventHandlers: function () {
                 this.__super__.registerGlobalEventHandlers();
-                document.addEventListener('click', function () {
-                    if ($('.toggle-smiley ul').is(':visible')) {
-                        _.each(
-                            document.querySelectorAll('.toggle-smiley .emoji-picker-container'),
-                            utils.hideElement
-                        );
+                document.addEventListener(
+                    'click', function () {
+                        utils.slideInAllElements(
+                            document.querySelectorAll('.toolbar-menu')
+                        )
                     }
-                });
+                );
             },
 
             ChatBoxViews: {
@@ -114,7 +113,7 @@
             });
 
             _converse.EmojiPickerView = Backbone.View.extend({
-                className: 'emoji-picker-container hidden',
+                className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
                     'click .emoji-category-picker li a': 'chooseCategory',
                 },
@@ -710,7 +709,16 @@
                             return;
                         }
                     }
-                    utils.toggleElement(this.emoji_picker_view.el);
+                    const elements = _.difference(
+                        document.querySelectorAll('.toolbar-menu'),
+                        [this.emoji_picker_view.el]
+                    );
+                    utils.slideInAllElements(elements).then(
+                        _.partial(
+                            utils.slideToggleElement,
+                            this.emoji_picker_view.el
+                        )
+                    );
                 },
 
                 toggleCall (ev) {

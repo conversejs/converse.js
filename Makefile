@@ -148,7 +148,7 @@ css/mobile.min.css:: stamp-npm sass/*
 
 .PHONY: watch
 watch: stamp-bundler
-	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css
+	$(SASS) --watch -I ./node_modules/bourbon/app/assets/stylesheets/ sass/converse/converse.scss:css/converse.css sass/_muc_embedded.scss:css/converse-muc-embedded.css sass/inverse/inverse.scss:css/inverse.css
 
 .PHONY: watchjs
 watchjs: stamp-npm

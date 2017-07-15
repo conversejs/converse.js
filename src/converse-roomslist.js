@@ -70,7 +70,7 @@
                     });
                     this.hide();
                     if (this.list_model.get('toggle-state') !== _converse.OPENED) {
-                        this.el.querySelector('.open-rooms-list').classList.add('hidden');
+                        this.el.querySelector('.open-rooms-list').classList.add('collapsed');
                     }
                     this.model.each(this.renderRoomsListElement.bind(this));
                     const controlboxview = _converse.chatboxviews.get('controlbox');
@@ -142,13 +142,13 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const el = ev.target;
                     if (el.classList.contains("icon-opened")) {
-                        utils.slideUp(this.el.querySelector('.open-rooms-list')).then(() => {
+                        utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.CLOSED});
                             el.classList.remove("icon-opened");
                             el.classList.add("icon-closed");
                         });
                     } else {
-                        utils.slideDown(this.el.querySelector('.open-rooms-list')).then(() => {
+                        utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
                             this.list_model.save({'toggle-state': _converse.OPENED});
                             el.classList.remove("icon-closed");
                             el.classList.add("icon-opened");

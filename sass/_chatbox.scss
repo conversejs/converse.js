@@ -272,14 +272,6 @@
                     text-decoration: none;
                     text-shadow: none;
                 }
-                .emoji-picker {
-                    margin-bottom: $toolbar-height + 5px;
-                }
-                .toolbar-picker-panel {
-                    a {
-                        color: $link-color;
-                    }
-                }
                 .chat-toolbar-text {
                     font-size: 12px;
                     padding-right: 3px;
@@ -287,7 +279,7 @@
                 .unencrypted a,
                 .unencrypted {
                     color: $text-color;
-                    .toolbar-picker-panel {
+                    .toolbar-menu {
                         a {
                             color: $link-color;
                         }
@@ -307,83 +299,83 @@
                     float: right;
                 }
                 li {
+                    cursor: pointer;
                     display: inline-block;
                     list-style: none;
-                    padding: 0 3px 0 3px;
-                    cursor: pointer;
                     margin-top: 1px;
-                }
-                li:hover {
-                    cursor: pointer;
-                }
-                ul {
-                    background: #fff;
-                    bottom: 100%;
-                    box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                    font-size: 12px;
-                    margin: 0;
-                    position: absolute;
-                    right: 0;
-                    li {
+                    padding: 0 3px 0 3px;
+                    &:hover {
                         cursor: pointer;
-                        list-style: none;
-                        position: relative;
-                        a:hover {
-                            color: #8f2831;
-                        }
                     }
-                }
-                li {
-                    margin-left: 0;
-                }
-                .toggle-smiley {
-                    color: $text-color;
-                    padding-left: 5px;
-                    ul {
-                        &.emoji-category-picker {
-                            z-index: 100;
-                            .picked {
-                                background-color: $highlight-color;
+                    .toolbar-menu {
+                        background-color: #fff;
+                        bottom: 100%;
+                        box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+                        font-size: 12px;
+                        margin: 0;
+                        position: absolute;
+                        right: 0;
+                        a {
+                            color: $link-color;
+                        }
+                        ul {
+                            &.emoji-category-picker {
+                                box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+                                z-index: 100;
+                                .picked {
+                                    background-color: $highlight-color;
+                                }
                             }
-                        }
-                        &.emoji-picker {
-                            height: 250px;
-                            overflow: scroll;
-                        }
-                        left: 0;
-                        li {
-                            font-size: $font-size;
-                            padding: 5px;
-                            z-index: 98;
-                            &.emoji {
-                                a {
-                                    font-size: $font-size-huge;
+                            &.emoji-picker {
+                                height: 250px;
+                                overflow: scroll;
+                            }
+                            li {
+                                margin-left: 0;
+                                cursor: pointer;
+                                list-style: none;
+                                position: relative;
+                                a:hover {
+                                    color: #8f2831;
                                 }
                             }
                         }
-                        li:hover {
-                            background-color: $highlight-color;
-                        }
                     }
-                }
-                .toggle-otr {
-                    ul {
-                        li {
-                            padding: 7px;
-                            background-color: white;
-                            display: block;
-                            z-index: 99;
-                            a {
-                                -moz-transition: background-color 0.2s ease-in-out;
-                                -webkit-transition: background-color 0.2s ease-in-out;
-                                transition: background-color 0.2s ease-in-out;
-                                display: block;
-                                padding: 1px;
-                                text-decoration: none;
+                    &.toggle-toolbar-menu {
+                        color: $text-color;
+                        ul {
+                            li {
+                                &:hover {
+                                    background-color: $highlight-color;
+                                }
                             }
                         }
-                        li:hover {
-                            background-color: $highlight-color;
+                    }
+                    &.toggle-smiley {
+                        padding-left: 5px;
+                        ul {
+                            left: 0;
+                            li {
+                                padding: 5px;
+                                z-index: 98;
+                                &.emoji {
+                                    a {
+                                        font-size: $font-size-huge;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    &.toggle-otr {
+                        ul {
+                            z-index: 99;
+                            li {
+                                display: block;
+                                padding: 7px;
+                                a {
+                                    display: block;
+                                }
+                            }
                         }
                     }
                 }

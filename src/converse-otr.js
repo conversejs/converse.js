@@ -42,6 +42,7 @@
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
 
+
     converse.plugins.add('converse-otr', {
 
         overrides: {
@@ -51,15 +52,6 @@
             //
             // New functions which don't exist yet can also be added.
  
-            registerGlobalEventHandlers () {
-                this.__super__.registerGlobalEventHandlers();
-                document.addEventListener('click', function () {
-                    if ($('.toggle-otr ul').is(':visible')) {
-                        _.each($('.toggle-otr ul', this), utils.hideElement);
-                    }
-                });
-            },
-
             ChatBox: {
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
@@ -347,7 +339,6 @@
                 },
 
                 startOTRFromToolbar (ev) {
-                    $(ev.target).parent().parent().slideUp();
                     ev.stopPropagation();
                     this.model.initiateOTR();
                 },
@@ -392,7 +383,17 @@
 
                 toggleOTRMenu (ev) {
                     ev.stopPropagation();
-                    utils.toggleElement(this.el.querySelector('.toggle-otr ul'));
+                    const menu = this.el.querySelector('.toggle-otr ul');
+                    const elements = _.difference(
+                        document.querySelectorAll('.toolbar-menu'),
+                        [menu]
+                    );
+                    utils.slideInAllElements(elements).then(
+                        _.partial(
+                            utils.slideToggleElement,
+                            menu
+                        )
+                    );
                 },
                 
                 getOTRTooltip () {

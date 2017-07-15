@@ -74,6 +74,10 @@
         opacity: 0;
         display: none;
     }
+    .collapsed {
+        height: 0;
+        overflow: hidden;
+    }
 
     .locked {
         padding-right: 22px;

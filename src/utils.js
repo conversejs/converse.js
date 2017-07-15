@@ -129,355 +129,384 @@
         return this;
     };
 
-    var utils = {
-        // Translation machinery
-        // ---------------------
-        __: function (str) {
-            if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
-                return Jed.sprintf.apply(Jed, arguments);
-            }
-            if (typeof this.jed === "undefined") {
-                this.jed = new Jed(window.JSON.parse(locales[this.locale]));
-            }
-            var t = this.jed.translate(str);
-            if (arguments.length>1) {
-                return t.fetch.apply(t, [].slice.call(arguments,1));
-            } else {
-                return t.fetch();
-            }
-        },
+    function calculateSlideStep (height) {
+        if (height > 100) {
+            return 10;
+        } else if (height > 50) {
+            return 5;
+        } else {
+            return 1;
+        }
+    }
 
-        ___: function (str) {
-            /* XXX: This is part of a hack to get gettext to scan strings to be
-             * translated. Strings we cannot send to the function above because
-             * they require variable interpolation and we don't yet have the
-             * variables at scan time.
-             *
-             * See actionInfoMessages in src/converse-muc.js
-             */
-            return str;
-        },
+    var utils = {};
 
-        isLocaleAvailable: function (locale, available) {
-            /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-             *
-             * Parameters:
-             *      (Function) available - returns a boolean indicating whether the locale is supported
-             */
-            if (available(locale)) {
-                return locale;
-            } else {
-                var sublocale = locale.split("-")[0];
-                if (sublocale !== locale && available(sublocale)) {
-                    return sublocale;
-                }
-            }
-        },
+    // Translation machinery
+    // ---------------------
+    utils.__ = function (str) {
+        if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
+            return Jed.sprintf.apply(Jed, arguments);
+        }
+        if (typeof this.jed === "undefined") {
+            this.jed = new Jed(window.JSON.parse(locales[this.locale]));
+        }
+        var t = this.jed.translate(str);
+        if (arguments.length>1) {
+            return t.fetch.apply(t, [].slice.call(arguments,1));
+        } else {
+            return t.fetch();
+        }
+    };
 
-        hideElement: function (el) {
-            el.classList.add('hidden');
-        },
+    utils.___ = function (str) {
+        /* XXX: This is part of a hack to get gettext to scan strings to be
+         * translated. Strings we cannot send to the function above because
+         * they require variable interpolation and we don't yet have the
+         * variables at scan time.
+         *
+         * See actionInfoMessages in src/converse-muc.js
+         */
+        return str;
+    };
 
-        toggleElement: function (el) {
-            if (_.includes(el.classList, 'hidden')) {
-                // XXX: use fadeIn?
-                el.classList.remove('hidden');
-            } else {
-                this.hideElement (el);
-            }
-        },
-
-        slideDown: function (el, interval=0.6) {
-            return new Promise((resolve, reject) => {
-                if (_.isNil(el)) {
-                    const err = "Undefined or null element passed into slideDown"
-                    console.warn(err);
-                    reject(new Error(err));
-                }
-                let intval = el.getAttribute('data-slider-intval');
-                if (intval) {
-                    window.clearInterval(intval);
-                }
-                let h = 0;
-                const end_height = el.getAttribute('data-slider-height');
-                intval = window.setInterval(function () {
-                    h++;
-                    el.style.height = h + 'px';
-                    if (h >= end_height) {
-                        window.clearInterval(intval);
-                        el.style.height = '';
-                        el.style.overflow = '';
-                        el.removeAttribute('data-slider-intval');
-                        el.removeAttribute('data-slider-height');
-                        resolve();
-                    }
-                }, interval);
-                el.setAttribute('data-slider-intval', intval);
-            });
-        },
-
-        slideUp: function (el, interval=0.6) {
-            return new Promise((resolve, reject) => {
-                if (_.isNil(el)) {
-                    const err = "Undefined or null element passed into slideUp";
-                    console.warn(err);
-                    reject(new Error(err));
-                }
-                let intval = el.getAttribute('data-slider-intval');
-                if (intval) {
-                    window.clearInterval(intval);
-                }
-                let h = el.offsetHeight;
-                el.setAttribute('data-slider-height', h);
-                el.style.overflow = 'hidden';
-                intval = window.setInterval(function () {
-                    el.style.height = h + 'px';
-                    h--;
-                    if (h < 0) {
-                        window.clearInterval(intval);
-                        el.removeAttribute('data-slider-intval');
-                        resolve();
-                    }
-                }, interval);
-                el.setAttribute('data-slider-intval', intval);
-            });
-        },
-
-        fadeIn: function (el, callback) {
-            if (_.isNil(el)) {
-                console.warn("Undefined or null element passed into fadeIn");
-            }
-            if ($.fx.off) {
-                el.classList.remove('hidden');
-                if (_.isFunction(callback)) {
-                    callback();
-                }
-                return;
-            }
-            if (_.includes(el.classList, 'hidden')) {
-                /* XXX: This doesn't appear to be working...
-                    el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
-                    el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
-                */
-                setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
-                el.classList.add('visible');
-                el.classList.remove('hidden');
-            } else {
-                afterAnimationEnd(el, callback);
-            }
-        },
-
-        isSameBareJID: function (jid1, jid2) {
-            return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
-                   Strophe.getBareJidFromJid(jid2).toLowerCase();
-        },
-
-        isNewMessage: function (message) {
-            /* Given a stanza, determine whether it's a new
-             * message, i.e. not a MAM archived one.
-             */
-            if (message instanceof Element) {
-                return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
-            } else {
-                return !message.get('archive_id');
-            }
-        },
-
-        isOTRMessage: function (message) {
-            var body = message.querySelector('body'),
-                text = (!_.isNull(body) ? body.textContent: undefined);
-            return text && !!text.match(/^\?OTR/);
-        },
-
-        isHeadlineMessage: function (message) {
-            var from_jid = message.getAttribute('from');
-            if (message.getAttribute('type') === 'headline') {
-                return true;
-            }
-            if (message.getAttribute('type') !== 'error' &&
-                    !_.isNil(from_jid) &&
-                    !_.includes(from_jid, '@')) {
-                // Some servers (I'm looking at you Prosody) don't set the message
-                // type to "headline" when sending server messages. For now we
-                // check if an @ signal is included, and if not, we assume it's
-                // a headline message.
-                return true;
-            }
-            return false;
-        },
-
-        merge: function merge (first, second) {
-            /* Merge the second object into the first one.
-             */
-            for (var k in second) {
-                if (_.isObject(first[k])) {
-                    merge(first[k], second[k]);
-                } else {
-                    first[k] = second[k];
-                }
-            }
-        },
-
-        applyUserSettings: function applyUserSettings (context, settings, user_settings) {
-            /* Configuration settings might be nested objects. We only want to
-             * add settings which are whitelisted.
-             */
-            for (var k in settings) {
-                if (_.isUndefined(user_settings[k])) {
-                    continue;
-                }
-                if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
-                    applyUserSettings(context[k], settings[k], user_settings[k]);
-                } else {
-                    context[k] = user_settings[k];
-                }
-            }
-        },
-
-        refreshWebkit: function () {
-            /* This works around a webkit bug. Refreshes the browser's viewport,
-             * otherwise chatboxes are not moved along when one is closed.
-             */
-            if ($.browser.webkit && window.requestAnimationFrame) {
-                window.requestAnimationFrame(function () {
-                    var conversejs = document.getElementById('conversejs');
-                    conversejs.style.display = 'none';
-                    var tmp = conversejs.offsetHeight; // jshint ignore:line
-                    conversejs.style.display = 'block';
-                });
-            }
-        },
-
-        webForm2xForm: function (field) {
-            /* Takes an HTML DOM and turns it into an XForm field.
-            *
-            * Parameters:
-            *      (DOMElement) field - the field to convert
-            */
-            var $input = $(field), value;
-            if ($input.is('[type=checkbox]')) {
-                value = $input.is(':checked') && 1 || 0;
-            } else if ($input.is('textarea')) {
-                value = [];
-                var lines = $input.val().split('\n');
-                for( var vk=0; vk<lines.length; vk++) {
-                    var val = $.trim(lines[vk]);
-                    if (val === '')
-                        continue;
-                    value.push(val);
-                }
-            } else {
-                value = $input.val();
-            }
-            return $(tpl_field({
-                name: $input.attr('name'),
-                value: value
-            }))[0];
-        },
-
-        contains: function (attr, query) {
-            return function (item) {
-                if (typeof attr === 'object') {
-                    var value = false;
-                    _.forEach(attr, function (a) {
-                        value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
-                    });
-                    return value;
-                } else if (typeof attr === 'string') {
-                    return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
-                } else {
-                    throw new TypeError('contains: wrong attribute type. Must be string or array.');
-                }
-            };
-        },
-
-        xForm2webForm: function ($field, $stanza) {
-            /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-            * and turns it into a HTML DOM field.
-            *
-            *  Parameters:
-            *      (XMLElement) field - the field to convert
-            */
-
-            // FIXME: take <required> into consideration
-            var options = [], j, $options, $values, value, values;
-
-            if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
-                values = [];
-                $values = $field.children('value');
-                for (j=0; j<$values.length; j++) {
-                    values.push($($values[j]).text());
-                }
-                $options = $field.children('option');
-                for (j=0; j<$options.length; j++) {
-                    value = $($options[j]).find('value').text();
-                    options.push(tpl_select_option({
-                        value: value,
-                        label: $($options[j]).attr('label'),
-                        selected: _.startsWith(values, value),
-                        required: $field.find('required').length
-                    }));
-                }
-                return tpl_form_select({
-                    name: $field.attr('var'),
-                    label: $field.attr('label'),
-                    options: options.join(''),
-                    multiple: ($field.attr('type') === 'list-multi'),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') === 'fixed') {
-                return $('<p class="form-help">').text($field.find('value').text());
-            } else if ($field.attr('type') === 'jid-multi') {
-                return tpl_form_textarea({
-                    name: $field.attr('var'),
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') === 'boolean') {
-                return tpl_form_checkbox({
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    checked: $field.find('value').text() === "1" && 'checked="1"' || '',
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type') && $field.attr('var') === 'username') {
-                return tpl_form_username({
-                    domain: ' @'+this.domain,
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else if ($field.attr('type')) {
-                return tpl_form_input({
-                    name: $field.attr('var'),
-                    type: XFORM_TYPE_MAP[$field.attr('type')],
-                    label: $field.attr('label') || '',
-                    value: $field.find('value').text(),
-                    required: $field.find('required').length
-                });
-            } else {
-                if ($field.attr('var') === 'ocr') { // Captcha
-                    return _.reduce(_.map($field.find('uri'),
-                            $.proxy(function (uri) {
-                                return tpl_form_captcha({
-                                    label: this.$field.attr('label'),
-                                    name: this.$field.attr('var'),
-                                    data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
-                                    type: uri.getAttribute('type'),
-                                    required: this.$field.find('required').length
-                                });
-                            }, {'$stanza': $stanza, '$field': $field})
-                        ),
-                        function (memo, num) { return memo + num; }, ''
-                    );
-                }
+    utils.isLocaleAvailable = function (locale, available) {
+        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+         *
+         * Parameters:
+         *      (Function) available - returns a boolean indicating whether the locale is supported
+         */
+        if (available(locale)) {
+            return locale;
+        } else {
+            var sublocale = locale.split("-")[0];
+            if (sublocale !== locale && available(sublocale)) {
+                return sublocale;
             }
         }
     };
+
+    utils.slideInAllElements = function (elements) {
+        return Promise.all(
+            _.map(
+                elements,
+                _.partial(utils.slideIn, _, 600)
+            ));
+    };
+
+    utils.slideToggleElement = function (el) {
+        if (!el.offsetHeight) {
+            return utils.slideOut(el);
+        } else {
+            return utils.slideIn(el);
+        }
+    };
+
+    utils.slideOut = function (el, duration=600) {
+        /* Shows/expands an element by sliding it out of itself. */
+        return new Promise((resolve, reject) => {
+            if (_.isNil(el)) {
+                const err = "Undefined or null element passed into slideOut"
+                console.warn(err);
+                reject(new Error(err));
+            }
+            let interval_marker = el.getAttribute('data-slider-marker');
+            if (interval_marker) {
+                window.clearInterval(interval_marker);
+            }
+            const end_height = _.reduce(el.children, function (result, child) {
+                return result + child.offsetHeight;
+            }, 0);
+            const step = calculateSlideStep(end_height),
+                  interval = end_height/duration*step;
+
+            let h = 0;
+            interval_marker = window.setInterval(function () {
+                h += step;
+                if (h < end_height) {
+                    el.style.height = h + 'px';
+                } else {
+                    el.style.height = end_height + 'px';
+                    window.clearInterval(interval_marker);
+                    el.style.overflow = '';
+                    el.removeAttribute('data-slider-marker');
+                    resolve();
+                }
+            }, interval);
+            el.setAttribute('data-slider-marker', interval_marker);
+        });
+    };
+
+    utils.slideIn = function (el, duration=600) {
+        /* Hides/collapses an element by sliding it into itself. */
+        return new Promise((resolve, reject) => {
+            if (_.isNil(el)) {
+                const err = "Undefined or null element passed into slideIn";
+                console.warn(err);
+                reject(new Error(err));
+            }
+            if (!el.offsetHeight) {
+                resolve();
+                return;
+            }
+            let interval_marker = el.getAttribute('data-slider-marker');
+            if (interval_marker) {
+                window.clearInterval(interval_marker);
+            }
+            let h = el.offsetHeight;
+            const step = calculateSlideStep(h),
+                  interval = h/duration*step;
+
+            el.style.overflow = 'hidden';
+
+            interval_marker = window.setInterval(function () {
+                h -= step;
+                if (h > 0) {
+                    el.style.height = h + 'px';
+                } else {
+                    el.style.height = 0 + 'px';
+                    window.clearInterval(interval_marker);
+                    el.removeAttribute('data-slider-marker');
+                    resolve();
+                }
+            }, interval);
+            el.setAttribute('data-slider-marker', interval_marker);
+        });
+    };
+
+    utils.fadeIn = function (el, callback) {
+        if (_.isNil(el)) {
+            console.warn("Undefined or null element passed into fadeIn");
+        }
+        if ($.fx.off) {
+            el.classList.remove('hidden');
+            if (_.isFunction(callback)) {
+                callback();
+            }
+            return;
+        }
+        if (_.includes(el.classList, 'hidden')) {
+            /* XXX: This doesn't appear to be working...
+                el.addEventListener("webkitAnimationEnd", _.partial(afterAnimationEnd, el, callback), false);
+                el.addEventListener("animationend", _.partial(afterAnimationEnd, el, callback), false);
+            */
+            setTimeout(_.partial(afterAnimationEnd, el, callback), 351);
+            el.classList.add('visible');
+            el.classList.remove('hidden');
+        } else {
+            afterAnimationEnd(el, callback);
+        }
+    };
+
+    utils.isSameBareJID = function (jid1, jid2) {
+        return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
+                Strophe.getBareJidFromJid(jid2).toLowerCase();
+    };
+
+    utils.isNewMessage = function (message) {
+        /* Given a stanza, determine whether it's a new
+         * message, i.e. not a MAM archived one.
+         */
+        if (message instanceof Element) {
+            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
+        } else {
+            return !message.get('archive_id');
+        }
+    };
+
+    utils.isOTRMessage = function (message) {
+        var body = message.querySelector('body'),
+            text = (!_.isNull(body) ? body.textContent: undefined);
+        return text && !!text.match(/^\?OTR/);
+    };
+
+    utils.isHeadlineMessage = function (message) {
+        var from_jid = message.getAttribute('from');
+        if (message.getAttribute('type') === 'headline') {
+            return true;
+        }
+        if (message.getAttribute('type') !== 'error' &&
+                !_.isNil(from_jid) &&
+                !_.includes(from_jid, '@')) {
+            // Some servers (I'm looking at you Prosody) don't set the message
+            // type to "headline" when sending server messages. For now we
+            // check if an @ signal is included, and if not, we assume it's
+            // a headline message.
+            return true;
+        }
+        return false;
+    };
+
+    utils.merge = function merge (first, second) {
+        /* Merge the second object into the first one.
+         */
+        for (var k in second) {
+            if (_.isObject(first[k])) {
+                merge(first[k], second[k]);
+            } else {
+                first[k] = second[k];
+            }
+        }
+    };
+
+    utils.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
+        /* Configuration settings might be nested objects. We only want to
+         * add settings which are whitelisted.
+         */
+        for (var k in settings) {
+            if (_.isUndefined(user_settings[k])) {
+                continue;
+            }
+            if (_.isObject(settings[k]) && !_.isArray(settings[k])) {
+                applyUserSettings(context[k], settings[k], user_settings[k]);
+            } else {
+                context[k] = user_settings[k];
+            }
+        }
+    };
+
+    utils.refreshWebkit = function () {
+        /* This works around a webkit bug. Refreshes the browser's viewport,
+         * otherwise chatboxes are not moved along when one is closed.
+         */
+        if ($.browser.webkit && window.requestAnimationFrame) {
+            window.requestAnimationFrame(function () {
+                var conversejs = document.getElementById('conversejs');
+                conversejs.style.display = 'none';
+                var tmp = conversejs.offsetHeight; // jshint ignore:line
+                conversejs.style.display = 'block';
+            });
+        }
+    };
+
+    utils.webForm2xForm = function (field) {
+        /* Takes an HTML DOM and turns it into an XForm field.
+        *
+        * Parameters:
+        *      (DOMElement) field - the field to convert
+        */
+        var $input = $(field), value;
+        if ($input.is('[type=checkbox]')) {
+            value = $input.is(':checked') && 1 || 0;
+        } else if ($input.is('textarea')) {
+            value = [];
+            var lines = $input.val().split('\n');
+            for( var vk=0; vk<lines.length; vk++) {
+                var val = $.trim(lines[vk]);
+                if (val === '')
+                    continue;
+                value.push(val);
+            }
+        } else {
+            value = $input.val();
+        }
+        return $(tpl_field({
+            name: $input.attr('name'),
+            value: value
+        }))[0];
+    };
+
+    utils.contains = function (attr, query) {
+        return function (item) {
+            if (typeof attr === 'object') {
+                var value = false;
+                _.forEach(attr, function (a) {
+                    value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
+                });
+                return value;
+            } else if (typeof attr === 'string') {
+                return _.includes(item.get(attr).toLowerCase(), query.toLowerCase());
+            } else {
+                throw new TypeError('contains: wrong attribute type. Must be string or array.');
+            }
+        };
+    };
+
+    utils.xForm2webForm = function ($field, $stanza) {
+        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+        * and turns it into a HTML DOM field.
+        *
+        *  Parameters:
+        *      (XMLElement) field - the field to convert
+        */
+
+        // FIXME: take <required> into consideration
+        var options = [], j, $options, $values, value, values;
+
+        if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
+            values = [];
+            $values = $field.children('value');
+            for (j=0; j<$values.length; j++) {
+                values.push($($values[j]).text());
+            }
+            $options = $field.children('option');
+            for (j=0; j<$options.length; j++) {
+                value = $($options[j]).find('value').text();
+                options.push(tpl_select_option({
+                    value: value,
+                    label: $($options[j]).attr('label'),
+                    selected: _.startsWith(values, value),
+                    required: $field.find('required').length
+                }));
+            }
+            return tpl_form_select({
+                name: $field.attr('var'),
+                label: $field.attr('label'),
+                options: options.join(''),
+                multiple: ($field.attr('type') === 'list-multi'),
+                required: $field.find('required').length
+            });
+        } else if ($field.attr('type') === 'fixed') {
+            return $('<p class="form-help">').text($field.find('value').text());
+        } else if ($field.attr('type') === 'jid-multi') {
+            return tpl_form_textarea({
+                name: $field.attr('var'),
+                label: $field.attr('label') || '',
+                value: $field.find('value').text(),
+                required: $field.find('required').length
+            });
+        } else if ($field.attr('type') === 'boolean') {
+            return tpl_form_checkbox({
+                name: $field.attr('var'),
+                type: XFORM_TYPE_MAP[$field.attr('type')],
+                label: $field.attr('label') || '',
+                checked: $field.find('value').text() === "1" && 'checked="1"' || '',
+                required: $field.find('required').length
+            });
+        } else if ($field.attr('type') && $field.attr('var') === 'username') {
+            return tpl_form_username({
+                domain: ' @'+this.domain,
+                name: $field.attr('var'),
+                type: XFORM_TYPE_MAP[$field.attr('type')],
+                label: $field.attr('label') || '',
+                value: $field.find('value').text(),
+                required: $field.find('required').length
+            });
+        } else if ($field.attr('type')) {
+            return tpl_form_input({
+                name: $field.attr('var'),
+                type: XFORM_TYPE_MAP[$field.attr('type')],
+                label: $field.attr('label') || '',
+                value: $field.find('value').text(),
+                required: $field.find('required').length
+            });
+        } else {
+            if ($field.attr('var') === 'ocr') { // Captcha
+                return _.reduce(_.map($field.find('uri'),
+                        $.proxy(function (uri) {
+                            return tpl_form_captcha({
+                                label: this.$field.attr('label'),
+                                name: this.$field.attr('var'),
+                                data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
+                                type: uri.getAttribute('type'),
+                                required: this.$field.find('required').length
+                            });
+                        }, {'$stanza': $stanza, '$field': $field})
+                    ),
+                    function (memo, num) { return memo + num; }, ''
+                );
+            }
+        }
+    }
 
     utils.detectLocale = function (library_check) {
         /* Determine which locale is supported by the user's system as well

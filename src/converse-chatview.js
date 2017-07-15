@@ -427,10 +427,11 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    text = utils.addEmoji(_converse, emojione, text);
                     const msg_content = $msg[0].querySelector('.chat-msg-content');
-                    msg_content.innerHTML = xss.filterXSS(text, {'whiteList': {}});
-                    utils.addHyperlinks(msg_content);
+                    msg_content.innerHTML = utils.addEmoji(
+                        _converse, emojione, utils.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
+                    );
+                    utils.renderImageURLs(msg_content);
                     return $msg;
                 },
 

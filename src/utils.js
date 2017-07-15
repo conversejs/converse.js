@@ -97,10 +97,6 @@
         return false;
     };
 
-    var throttledHTML = _.throttle(function (el, html) {
-        el.innerHTML = html;
-    }, 500);
-
     function calculateSlideStep (height) {
         if (height > 100) {
             return 10;
@@ -157,21 +153,24 @@
         }
     };
 
-    utils.addHyperlinks = function (obj) {
-        var x = obj.innerHTML;
-        var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g ) || [];
+    utils.addHyperlinks = function (text) {
+        var list = text.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g ) || [];
         _.each(list, (match) => {
             const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
             const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            x = x.replace(match, '<a target="_blank" rel="noopener" href="' + url + '">'+ match + '</a>' );
+            text = text.replace(match, '<a target="_blank" rel="noopener" href="' + url + '">'+ match + '</a>' );
         });
-        obj.innerHTML = x;
+        return text;
+    };
+
+    utils.renderImageURLs = function (obj) {
+        var list = obj.textContent.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g ) || [];
         _.forEach(list, function (url) {
             isImage(unescapeHTML(url)).then(function (img) {
                 img.className = 'chat-image';
                 var a = obj.querySelector('a');
                 if (!_.isNull(a)) {
-                    throttledHTML(a, img.outerHTML);
+                    a.innerHTML = img.outerHTML;
                 }
             });
         });

@@ -269,13 +269,11 @@
 
                 renderRegistrationRequest (cancel_label) {
                     const form = this.el.querySelector('#converse-register');
-                    utils.createElementsFromString(
-                        form,
-                        tpl_registration_request({
-                            cancel: cancel_label,
-                            info_message: _converse.__('Requesting a registration form from the XMPP server')
-                        })
-                    );
+                    const markup = tpl_registration_request({
+                        'cancel': cancel_label,
+                        'info_message': _converse.__('Requesting a registration form from the XMPP server')
+                    });
+                    form.appendChild(utils.createFragmentFromText(markup));
                     if (!_converse.registration_domain) {
                         const cancel_button = document.querySelector('button.button-cancel');
                         cancel_button.addEventListener('click', this.cancelRegistration.bind(this));

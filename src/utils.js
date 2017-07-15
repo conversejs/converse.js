@@ -589,18 +589,20 @@
         };
     };
 
-    utils.createElementsFromString = function (element, html) {
+    utils.createFragmentFromText = function (markup) {
+        /* Returns a DocumentFragment containing DOM nodes based on the
+         * passed-in markup text.
+         */
         // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
         var frag = document.createDocumentFragment(),
             tmp = document.createElement('body'), child;
-        tmp.innerHTML = html;
-        // Append elements in a loop to a DocumentFragment, so that the browser does
-        // not re-render the document for each node
+        tmp.innerHTML = markup;
+        // Append elements in a loop to a DocumentFragment, so that the
+        // browser does not re-render the document for each node.
         while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
             frag.appendChild(child);
         }
-        element.appendChild(frag); // Now, append all elements at once
-        frag = tmp = null;
+        return frag
     };
 
     utils.addEmoji = function (_converse, emojione, text) {

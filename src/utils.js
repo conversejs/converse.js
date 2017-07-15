@@ -36,7 +36,10 @@
     ) {
     "use strict";
     locales = locales || {};
+    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
+
+    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
     var XFORM_TYPE_MAP = {
         'text-private': 'password',
@@ -154,24 +157,32 @@
     };
 
     utils.addHyperlinks = function (text) {
-        var list = text.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g ) || [];
+        const list = text.match(URL_REGEX) || [];
+        var links = [];
         _.each(list, (match) => {
             const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
             const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            text = text.replace(match, '<a target="_blank" rel="noopener" href="' + url + '">'+ match + '</a>' );
+            const  a = '<a target="_blank" rel="noopener" href="' + url + '">'+ _.escape(match) + '</a>';
+            // We first insert a hash of the code that will be inserted, and
+            // then later replace that with the code itself. That way we avoid
+            // issues when some matches are substrings of others.
+            links.push(a);
+            text = text.replace(match, b64_sha1(a));
         });
+        while (links.length) {
+            const a = links.pop();
+            text = text.replace(b64_sha1(a), a);
+        }
         return text;
     };
 
     utils.renderImageURLs = function (obj) {
-        var list = obj.textContent.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g ) || [];
+        const list = obj.textContent.match(URL_REGEX) || [];
         _.forEach(list, function (url) {
-            isImage(unescapeHTML(url)).then(function (img) {
+            isImage(url).then(function (img) {
                 img.className = 'chat-image';
-                var a = obj.querySelector('a');
-                if (!_.isNull(a)) {
-                    a.innerHTML = img.outerHTML;
-                }
+                var anchors = sizzle(`a[href="${url}"]`, obj);
+                _.each(anchors, (a) => { a.innerHTML = img.outerHTML; });
             });
         });
         return obj;

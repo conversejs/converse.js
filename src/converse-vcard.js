@@ -95,11 +95,11 @@
                     img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
                     url = _.get(vcard.querySelector('URL'), 'textContent');
 
-                let fullname = vcard.querySelector('FN').textContent;
+                let fullname = _.get(vcard.querySelector('FN'), 'textContent');
                 if (jid) {
                     const contact = _converse.roster.get(jid);
                     if (contact) {
-                        fullname = _.isEmpty(fullname) ? _.get(contact, 'fullname', jid) : fullname;
+                        fullname = _.isUndefined(fullname) ? _.get(contact, 'fullname', jid) : fullname;
                         contact.save({
                             'fullname': fullname,
                             'image_type': img_type,

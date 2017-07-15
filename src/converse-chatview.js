@@ -156,7 +156,7 @@
                 events: {
                     'click .close-chatbox-button': 'close',
                     'keypress .chat-textarea': 'keyPressed',
-                    'click .send-button': 'onSendButtonClicked',
+                    'click .send-button': 'onFormSubmitted',
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-clear': 'clearMessages',
@@ -636,34 +636,10 @@
                     return this;
                 },
 
-                keyPressed (ev) {
-                    /* Event handler for when a key is pressed in a chat box textarea.
-                     */
-                    if (ev.keyCode === KEY.ENTER) {
-                        ev.preventDefault();
-                        const  textarea = ev.target;
-                        const message = textarea.value;
-                        textarea.value = '';
-                        textarea.focus();
-                        if (message !== '') {
-                            this.onMessageSubmitted(message);
-                            _converse.emit('messageSend', message);
-                        }
-                        this.setChatState(_converse.ACTIVE);
-                    } else {
-                        // Set chat state to composing if keyCode is not a forward-slash
-                        // (which would imply an internal command and not a message).
-                        this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
-                    }
-                },
-
-                onSendButtonClicked(ev) {
-                    /* Event handler for when a send button is clicked in a chat box textarea.
-                     */
+                onFormSubmitted (ev) {
                     ev.preventDefault();
                     const textarea = this.el.querySelector('.chat-textarea'),
-                        message = textarea.value;
-
+                          message = textarea.value;
                     textarea.value = '';
                     textarea.focus();
                     if (message !== '') {
@@ -671,6 +647,18 @@
                         _converse.emit('messageSend', message);
                     }
                     this.setChatState(_converse.ACTIVE);
+                },
+
+                keyPressed (ev) {
+                    /* Event handler for when a key is pressed in a chat box textarea.
+                     */
+                    if (ev.keyCode === KEY.ENTER) {
+                        this.onFormSubmitted(ev);
+                    } else {
+                        // Set chat state to composing if keyCode is not a forward-slash
+                        // (which would imply an internal command and not a message).
+                        this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
+                    }
                 },
 
                 clearMessages (ev) {

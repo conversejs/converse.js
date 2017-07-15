@@ -153,8 +153,8 @@
                     'click .close-chatbox-button': 'close',
                     'keypress .chat-textarea': 'keyPressed',
                     'click .send-button': 'onSendButtonClicked',
-                    'click .toggle-smiley': 'toggleEmoticonMenu',
-                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoticon',
+                    'click .toggle-smiley': 'toggleEmojiMenu',
+                    'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                     'click .toggle-clear': 'clearMessages',
                     'click .toggle-call': 'toggleCall',
                     'click .new-msgs-indicator': 'viewUnreadMessages'
@@ -689,19 +689,19 @@
                     $textbox.focus().val(existing+value+' ');
                 },
 
-                insertEmoticon (ev) {
+                insertEmoji (ev) {
                     ev.stopPropagation();
-                    this.toggleEmoticonMenu();
+                    this.toggleEmojiMenu();
                     const target = ev.target.nodeName === 'IMG' ?
                         ev.target.parentElement : ev.target;
 
-                    var shortname = target.getAttribute('data-emoticon');
+                    var shortname = target.getAttribute('data-emoji');
                     this.insertIntoTextArea(
                         emojione.shortnameToUnicode(shortname)
                     );
                 },
 
-                toggleEmoticonMenu (ev) {
+                toggleEmojiMenu (ev) {
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
                         if (ev.target.classList.contains('emoji-category-picker') ||

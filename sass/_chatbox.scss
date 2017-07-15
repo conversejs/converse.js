@@ -156,6 +156,7 @@
                 font-style: italic;
             }
             .chat-message {
+                overflow: auto; // Ensures that content stays inside
                 margin: 0.3em;
                 span {
                     &.chat-msg-author {

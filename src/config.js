@@ -19,15 +19,18 @@ require.config({
         "awesomplete":              "node_modules/awesomplete-avoid-xss/awesomplete",
         "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
         "backbone":                 "node_modules/backbone/backbone",
-        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
+        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
         "emojione":                 "node_modules/emojione/lib/js/emojione",
-        "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
+        "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery.noconflict":        "src/jquery.noconflict",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
+        "jquery.noconflict":        "src/jquery.noconflict",
+        "lodash":                   "node_modules/lodash/lodash",
+        "lodash.converter":         "3rdparty/lodash.fp",
+        "lodash.noconflict":        "src/lodash.noconflict",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
@@ -39,11 +42,10 @@ require.config({
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
-        "lodash":                   "node_modules/lodash/lodash",
-        "lodash.converter":         "3rdparty/lodash.fp",
-        "lodash.noconflict":        "src/lodash.noconflict",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
+        "xss.noconflict":               "src/xss.noconflict",
+        "xss":                      "node_modules/xss/dist/xss",
 
         // Converse
         "converse":                 "src/converse",
@@ -139,5 +141,13 @@ require.config({
     shim: {
         'awesomplete':          { exports: 'Awesomplete'},
         'emojione':             { exports: 'emojione'},
+        'xss':                  {
+            init: function (xss_noconflict) {
+                return {
+                    filterXSS: window.filterXSS,
+                    filterCSS: window.filterCSS
+                }
+            }
+        }
     }
 });

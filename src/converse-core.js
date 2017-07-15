@@ -136,7 +136,7 @@
             logger.warn(`WARNING: ${txt}`);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace(`FATAL: ${txt}`);
+                logger.error(`FATAL: ${txt}`);
             } else {
                 logger.error(`FATAL: ${txt}`);
             }

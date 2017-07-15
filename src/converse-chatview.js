@@ -11,6 +11,7 @@
             "jquery.noconflict",
             "converse-core",
             "emojione",
+            "xss",
             "tpl!chatbox",
             "tpl!new_day",
             "tpl!action",
@@ -25,6 +26,7 @@
             $,
             converse,
             emojione,
+            xss,
             tpl_chatbox,
             tpl_new_day,
             tpl_action,
@@ -427,7 +429,9 @@
                     if (_converse.visible_toolbar_buttons.emoji) {
                         text = utils.addEmoji(_converse, emojione, text);
                     }
-                    $msg.find('.chat-msg-content').first().text(text).addHyperlinks();
+                    const msg_content = $msg[0].querySelector('.chat-msg-content');
+                    msg_content.innerHTML = xss.filterXSS(text, {'whiteList': {}});
+                    utils.addHyperlinks(msg_content);
                     return $msg;
                 },
 

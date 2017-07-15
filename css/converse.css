@@ -1582,6 +1582,7 @@
       font-style: italic; }
     #converse-embedded-chat .chatbox .chat-body .chat-message,
     #conversejs .chatbox .chat-body .chat-message {
+      overflow: auto;
       margin: 0.3em; }
       #converse-embedded-chat .chatbox .chat-body .chat-message span.chat-msg-author,
       #conversejs .chatbox .chat-body .chat-message span.chat-msg-author {

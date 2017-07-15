@@ -101,34 +101,6 @@
         el.innerHTML = html;
     }, 500);
 
-    $.fn.addHyperlinks = function () {
-        if (this.length > 0) {
-            this.each(function (i, obj) {
-                var prot, escaped_url;
-                var x = obj.innerHTML;
-                var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g );
-                if (list) {
-                    for (i=0; i<list.length; i++) {
-                        prot = list[i].indexOf('http://') === 0 || list[i].indexOf('https://') === 0 ? '' : 'http://';
-                        escaped_url = encodeURI(decodeURI(list[i])).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                        x = x.replace(list[i], '<a target="_blank" rel="noopener" href="' + prot + escaped_url + '">'+ list[i] + '</a>' );
-                    }
-                }
-                obj.innerHTML = x;
-                _.forEach(list, function (url) {
-                    isImage(unescapeHTML(url)).then(function (img) {
-                        img.className = 'chat-image';
-                        var a = obj.querySelector('a');
-                        if (!_.isNull(a)) {
-                            throttledHTML(a, img.outerHTML);
-                        }
-                    });
-                });
-            });
-        }
-        return this;
-    };
-
     function calculateSlideStep (height) {
         if (height > 100) {
             return 10;
@@ -183,6 +155,27 @@
                 return sublocale;
             }
         }
+    };
+
+    utils.addHyperlinks = function (obj) {
+        var x = obj.innerHTML;
+        var list = x.match(/\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<]{2,200}\b/g ) || [];
+        _.each(list, (match) => {
+            const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
+            const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+            x = x.replace(match, '<a target="_blank" rel="noopener" href="' + url + '">'+ match + '</a>' );
+        });
+        obj.innerHTML = x;
+        _.forEach(list, function (url) {
+            isImage(unescapeHTML(url)).then(function (img) {
+                img.className = 'chat-image';
+                var a = obj.querySelector('a');
+                if (!_.isNull(a)) {
+                    throttledHTML(a, img.outerHTML);
+                }
+            });
+        });
+        return obj;
     };
 
     utils.slideInAllElements = function (elements) {

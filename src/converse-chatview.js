@@ -93,7 +93,6 @@
                 time_format: 'HH:mm',
                 visible_toolbar_buttons: {
                     'emoji': true,
-                    'emoticons': true,
                     'call': false,
                     'clear': true
                 },
@@ -422,8 +421,8 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    if (_converse.visible_toolbar_buttons.emoticons) {
-                        text = utils.addEmoticons(_converse, emojione, text);
+                    if (_converse.visible_toolbar_buttons.emoji) {
+                        text = utils.addEmoji(_converse, emojione, text);
                     }
                     $msg.find('.chat-msg-content').first().text(text).addHyperlinks();
                     return $msg;
@@ -780,7 +779,6 @@
                         'label_start_call': __('Start a call'),
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_clear_button': _converse.visible_toolbar_buttons.clear,
-                        'show_emoticons': _converse.visible_toolbar_buttons.emoticons,
                         'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },

@@ -565,7 +565,7 @@
         frag = tmp = null;
     };
 
-    utils.addEmoticons = function (_converse, emojione, text) {
+    utils.addEmoji = function (_converse, emojione, text) {
         return emojione.shortnameToUnicode(text);
     }
 

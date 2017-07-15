@@ -1162,7 +1162,7 @@ visible_toolbar_buttons
     {
         call: false,
         clear: true,
-        emoticons: true,
+        emoji: true,
         toggle_occupants: true
     }
 
@@ -1181,9 +1181,9 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
         });
 * *clear*:
     Provides a button for clearing messages from a chat box.
-* *emoticons*:
-    Enables rendering of emoticons and provides a toolbar button for choosing them.
-* toggle_occupants:
+* *emoji*:
+    Enables rendering of emoji and provides a toolbar button for choosing them.
+* *toggle_occupants*:
     Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chat room.
 
 .. _`websocket-url`:

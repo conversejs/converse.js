@@ -2,7 +2,12 @@
 
 ## 3.2.0 (Unreleased)
 
+### New features
 - Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>).
+  Therefore the `visible_toolbar_buttons.emoticons` configuration option is now changed
+  to `visible_toolbar_buttons.emoji`. [jcbrand]
+
+### Code changes
 - Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
 - Remove `jquery.easing` from the full build. Was only being used by the
   [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]

@@ -92,6 +92,7 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
+                use_emojione: true,
                 chatview_avatar_height: 32,
                 chatview_avatar_width: 32,
                 show_toolbar: true,
@@ -426,9 +427,7 @@
                             'extra_classes': this.getExtraMessageClasses(attrs)
                         })
                     ));
-                    if (_converse.visible_toolbar_buttons.emoji) {
-                        text = utils.addEmoji(_converse, emojione, text);
-                    }
+                    text = utils.addEmoji(_converse, emojione, text);
                     const msg_content = $msg[0].querySelector('.chat-msg-content');
                     msg_content.innerHTML = xss.filterXSS(text, {'whiteList': {}});
                     utils.addHyperlinks(msg_content);

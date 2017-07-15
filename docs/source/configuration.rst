@@ -993,13 +993,13 @@ Notification will be shown in the following cases:
 
 Requires the `src/converse-notification.js` plugin.
 
-show_emojione
--------------
-* Default: ``false``
+use_emojione
+------------
+* Default: ``true``
 
 Determines whether `Emojione <https://www.emojione.com/>`_ should be used to
-render emojis. The default is not to do this, but to simply let the operating
-system or browser render emoji (if it has support for them).
+render emojis. If set to ``false``, then rendering support will fall back to
+the operating system or browser (which might not support emoji).
 
 show_only_online_users
 ----------------------

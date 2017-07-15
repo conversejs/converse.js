@@ -412,6 +412,8 @@
                         }, 300).then(function () {
                             $toolbar.children('li.toggle-smiley').click();
                             expect(view.toggleEmojiMenu).toHaveBeenCalled();
+                            view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+
                             test_utils.waitUntil(function () {
                                 var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
                                 return $picker.is(':visible');

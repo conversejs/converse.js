@@ -599,7 +599,11 @@
     };
 
     utils.addEmoji = function (_converse, emojione, text) {
-        return emojione.shortnameToUnicode(text);
+        if (_converse.use_emojione) {
+            return emojione.toImage(text);
+        } else {
+            return emojione.shortnameToUnicode(text);
+        }
     }
 
     utils.marshallEmojis = function (emojione) {

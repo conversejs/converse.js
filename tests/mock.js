@@ -1,7 +1,8 @@
 (function (root, factory) {
-    define("mock", ['converse'], factory);
-}(this, function (converse_api) {
+    define("mock", ['jquery.noconflict', 'converse'], factory);
+}(this, function ($, converse_api) {
     var _ = converse_api.env._;
+    var Promise = converse_api.env.Promise;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var mock = {};
@@ -76,7 +77,7 @@
         };
     }();
 
-    function initConverse (settings, spies) {
+    function initConverse (settings, spies, promises) {
         window.localStorage.clear();
         window.sessionStorage.clear();
 
@@ -101,8 +102,17 @@
             'debug': false
         }, settings || {}));
         converse.ChatBoxViews.prototype.trimChat = function () {};
+        $.fx.off = true;
         return converse;
     }
+
+    mock.initConverseWithPromises = function (spies, promise_names, settings, func) {
+        return function (done) {
+            var _converse = initConverse(settings, spies);
+            var promises = _.map(promise_names, _converse.api.waitUntil);
+            Promise.all(promises).then(_.partial(func, done, _converse));
+        }
+    };
 
     mock.initConverseWithConnectionSpies = function (spies, settings, func) {
         if (_.isFunction(settings)) {

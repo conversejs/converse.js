@@ -1353,7 +1353,7 @@
   #converse-embedded-chat form.pure-form.converse-form,
   #conversejs form.pure-form.converse-form {
     background: white;
-    padding: 0 1em; }
+    padding: 1em; }
     #converse-embedded-chat form.pure-form.converse-form legend,
     #conversejs form.pure-form.converse-form legend {
       color: #818479; }
@@ -1938,6 +1938,8 @@ body {
 
 #conversejs #controlbox {
   margin-right: 1em; }
+  #conversejs #controlbox .pure-form.converse-form {
+    padding: 0; }
   @media screen and (max-width: 480px) {
     #conversejs #controlbox {
       margin: 0; } }
@@ -2676,7 +2678,8 @@ body {
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container,
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;
-        border-radius: 7px;
+        border-bottom-left-radius: 7px;
+        border-bottom-right-radius: 7px;
         border: 0;
         color: #818479;
         font-size: 16px;
@@ -2738,6 +2741,8 @@ body {
     #conversejs .chatroom .box-flyout .chatroom-body {
       border-top-left-radius: 7px;
       border-top-right-radius: 7px; }
+      #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+        border-radius: 7px; }
       #conversejs .chatroom .box-flyout .chatroom-body .chat-area {
         border-top-left-radius: 7px;
         min-width: auto; }

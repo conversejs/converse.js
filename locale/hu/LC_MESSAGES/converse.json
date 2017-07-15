@@ -30,21 +30,21 @@
             null,
             "Mégsem"
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Belépés a csevegőszobába"
+            ""
          ],
          "Show more information on this room": [
             null,
             "További információk a csevegőszobáról"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Belépés a csevegőszobába"
          ],
          "Close this chat box": [
             null,
@@ -210,6 +210,14 @@
             null,
             "Kilépés"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Új csevegőpartner hozzáadása"
+         ],
+         "Add a contact": [
+            null,
+            "Új partner felvétele"
+         ],
          "Contact name": [
             null,
             "Partner neve"
@@ -221,14 +229,6 @@
          "Add": [
             null,
             "Hozzáad"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Új csevegőpartner hozzáadása"
-         ],
-         "Add a contact": [
-            null,
-            "Új partner felvétele"
          ],
          "No users found": [
             null,
@@ -846,6 +846,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -853,18 +857,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Partner törlése"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Partner felvételének elfogadása"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Partner felvételének megtagadása"
          ],
          "Click to chat with this contact": [
             null,

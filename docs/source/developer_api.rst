@@ -55,6 +55,8 @@ can call them. Public methods therefore don't expose any sensitive or closured
 data. To do that, you'll need to create a plugin, which has access to the
 private API method.
 
+.. _`initialize`:
+
 initialize
 ----------
 
@@ -63,7 +65,7 @@ initialize
 Publich API method which initializes converse.js.
 This method must always be called when using converse.js.
 
-The `initialize` method takes a map of :ref:`configuration-variables`.
+The `initialize` method takes a map of :ref:`configuration-settings`.
 
 Example:
 
@@ -133,6 +135,22 @@ that might be running in the page.
     time-constriaints these limitations are ignored in the examples below. For
     a fuller picture, refer to the section :ref:`events-API` as well.
 
+emit
+----
+
+This method allows you to emit events, which can be listened to via
+``_converse.api.listen.on`` or ``_converse.api.listen.once``.
+
+For example:
+
+.. code-block:: javascript
+
+    _converse.emit('foo-completed');
+
+Additionally, if a promise has been registered under the same name
+(via ``_converse.api.promises.add``), then that promise will also be resolved
+when calling ``emit``.
+
 send
 ----
 
@@ -154,7 +172,6 @@ For example, to send a message stanza:
 
         }
     });
-
 
 .. _`waituntil-grouping`:
 
@@ -202,7 +219,7 @@ Converse.js supports the *Message Archive Management*
 (`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
 through which it is able to query an XMPP server for archived messages.
 
-See also the **message_archiving** option in the :ref:`configuration-variables` section, which you'll usually
+See also the **message_archiving** option in the :ref:`configuration-settings` section, which you'll usually
 want to  in conjunction with this API.
 
 query
@@ -880,10 +897,101 @@ Lets you close open chat rooms. You can call this method without any arguments
 to close all open chat rooms, or you can specify a single JID or an array of
 JIDs.
 
+.. _`promises-grouping`:
+
+The **promises** grouping
+-------------------------
+
+Converse.js and its plugins emit various events which you can listen to via the 
+:refs:`listen-grouping`.
+
+These events can also be turned into promises, and by default some already
+are.
+
+The core events, which are also promises are:
+
+* cachedRoster
+* chatBoxesFetched
+* connected
+* pluginsInitialized
+* roster
+* rosterContactsFetched
+* rosterGroupsFetched
+* rosterInitialized
+* statusInitialized
+
+The various plugins might also provide promises, and they do this by using the
+``promises.add`` api method.
+
+add(promises)
+~~~~~~~~~~~~~
+
+By calling ``promises.add``, a new promise is made available for other code or
+plugins to depend on via the ``_converse.api.waitUntil`` method.
+
+This method accepts either a string or list of strings which specify the
+promise(s) to be added.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+            this._converse.api.promises.add('foo-completed');
+        }
+    });
+
+Generally, it's the responsibility of the plugin which adds the promise to
+also resolve it.
+
+This is done by calling ``_converse.api.emit``, which not only resolve the
+promise, but also emit an event with the same name (which can be listened to
+via ``_converse.api.listen``).
+
+For example:
+
+.. code-block:: javascript
+
+    _converse.api.emit('foo-completed');
+
+
 The **settings** grouping
 -------------------------
 
-This grouping allows you to get or set the configuration settings of converse.js.
+This grouping allows access to the configuration settings of converse.js.
+
+.. _`settings-update`:
+
+update(settings)
+~~~~~~~~~~~~~~~~
+
+Allows new configuration settings to be specified, or new default values for
+existing configuration settings to be specified.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+            this._converse.api.settings.update({
+                'enable_foo': true
+            });
+        }
+    });
+
+The user can then override the default value of the configuration setting when
+calling `converse.initialize`.
+
+For example:
+
+.. code-block:: javascript
+
+    converse.initialize({
+        'enable_foo': false
+    });
+
 
 get(key)
 ~~~~~~~~

@@ -1353,7 +1353,7 @@
   #converse-embedded-chat form.pure-form.converse-form,
   #conversejs form.pure-form.converse-form {
     background: white;
-    padding: 0 1em; }
+    padding: 1em; }
     #converse-embedded-chat form.pure-form.converse-form legend,
     #conversejs form.pure-form.converse-form legend {
       color: #818479; }
@@ -1853,6 +1853,8 @@
 
 #conversejs #controlbox {
   margin-right: 1em; }
+  #conversejs #controlbox .pure-form.converse-form {
+    padding: 0; }
   @media screen and (max-width: 480px) {
     #conversejs #controlbox {
       margin: 0; } }
@@ -2550,7 +2552,8 @@
       #converse-embedded-chat .chatroom .box-flyout .chatroom-body .chatroom-form-container,
       #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container {
         background-color: white;
-        border-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
         border: 0;
         color: #818479;
         font-size: 14px;

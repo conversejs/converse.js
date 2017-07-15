@@ -20,6 +20,9 @@
             @include calc(width, '100% - #{$controlbox-width}');
             .chatroom-body {
                 @include border-top-radius($chatbox-border-radius);
+                .chatroom-form-container {
+                    border-radius: $chatbox-border-radius;
+                }
                 .chat-area {
                     border-top-left-radius: $chatbox-border-radius;
                     min-width: auto;

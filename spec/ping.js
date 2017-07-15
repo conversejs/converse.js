@@ -6,20 +6,30 @@
     describe("XMPP Ping", function () {
         describe("Ping and pong handlers", function () {
 
-            it("are registered when _converse.js is connected", mock.initConverse(function (_converse) {
+            it("are registered when _converse.js is connected",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse, 'registerPingHandler').and.callThrough();
                 spyOn(_converse, 'registerPongHandler').and.callThrough();
                 _converse.emit('connected');
                 expect(_converse.registerPingHandler).toHaveBeenCalled();
                 expect(_converse.registerPongHandler).toHaveBeenCalled();
+                done();
             }));
 
-            it("are registered when _converse.js reconnected", mock.initConverse(function (_converse) {
+            it("are registered when _converse.js reconnected",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse, 'registerPingHandler').and.callThrough();
                 spyOn(_converse, 'registerPongHandler').and.callThrough();
                 _converse.emit('reconnected');
                 expect(_converse.registerPingHandler).toHaveBeenCalled();
                 expect(_converse.registerPongHandler).toHaveBeenCalled();
+                done();
             }));
         });
 

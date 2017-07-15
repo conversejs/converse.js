@@ -212,7 +212,7 @@ your authentication backend, since you could then configure your XMPP server to
 use that as well.
 
 To prebind you will require a BOSH-enabled XMPP server for converse.js to connect to
-(see the :ref:`bosh-service-url` under :ref:`configuration-variables`)
+(see the :ref:`bosh-service-url` under :ref:`configuration-settings`)
 as well as a BOSH client in your web application (written for example in
 Python, Ruby or PHP) that will set up an authenticated BOSH session, which
 converse.js can then attach to.

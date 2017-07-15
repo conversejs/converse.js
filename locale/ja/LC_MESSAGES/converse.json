@@ -35,21 +35,21 @@
             null,
             ""
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "クリックしてこの談話室を開く"
+            ""
          ],
          "Show more information on this room": [
             null,
             "この談話室についての詳細を見る"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "クリックしてこの談話室を開く"
          ],
          "Personal message": [
             null,
@@ -175,6 +175,14 @@
             null,
             "オフライン"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "クリックして新しいチャットの相手先を追加"
+         ],
+         "Add a contact": [
+            null,
+            "相手先を追加"
+         ],
          "Contact name": [
             null,
             "名前"
@@ -190,14 +198,6 @@
          "Add": [
             null,
             "追加"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "クリックして新しいチャットの相手先を追加"
-         ],
-         "Add a contact": [
-            null,
-            "相手先を追加"
          ],
          "No users found": [
             null,
@@ -751,6 +751,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -758,10 +762,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "クリックしてこの相手先を削除"
          ],
          "Click to chat with this contact": [
             null,

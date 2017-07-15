@@ -10,6 +10,7 @@
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var $pres = converse.env.$pres;
+    var _ = converse.env._;
     // See:
     // https://xmpp.org/rfcs/rfc3921.html
 
@@ -47,11 +48,15 @@
              * that session. A client MUST acknowledge each roster push with an IQ
              * stanza of type "result".
              */
-            it("Subscribe to contact, contact accepts and subscribes back", mock.initConverseWithAsync(function (done, _converse) {
+            it("Subscribe to contact, contact accepts and subscribes back",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'],
+                    { roster_groups: false },
+                    function (done, _converse) {
+
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
-                _converse.roster_groups = false;
                 var contact, stanza, sent_stanza, IQ_id;
                 test_utils.openControlBox(_converse);
                 var panel = _converse.chatboxviews.get('controlbox').contactspanel;
@@ -134,8 +139,10 @@
                 * </iq>
                 */
                 var create = _converse.roster.create;
+                var sent_stanzas = [];
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                     sent_stanza = stanza;
+                    sent_stanzas.push(stanza.toLocaleString());
                 });
                 spyOn(_converse.roster, 'create').and.callFake(function () {
                     contact = create.apply(_converse.roster, arguments);
@@ -165,6 +172,11 @@
                 *
                 *  <presence to='contact@example.org' type='subscribe'/>
                 */
+
+                test_utils.waitUntil(function () {
+                    return sent_stanzas.length == 1;
+                }).then(function () {
+
                 expect(contact.subscribe).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                     "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'>"+
@@ -347,9 +359,14 @@
                     expect($contacts.hasClass('both')).toBeTruthy();
                     done();
                 });
+                });
             }));
 
-            it("Alternate Flow: Contact Declines Subscription Request", mock.initConverse(function (_converse) {
+            it("Alternate Flow: Contact Declines Subscription Request",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 /* The process by which a user subscribes to a contact, including
                 * the interaction between roster items and subscription states.
                 */
@@ -429,11 +446,16 @@
                         "</query>"+
                     "</iq>"
                 );
+                done();
             }));
 
-            it("Unsubscribe to a contact when subscription is mutual", mock.initConverseWithAsync(function (done, _converse) {
+            it("Unsubscribe to a contact when subscription is mutual",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'],
+                    { roster_groups: false },
+                    function (done, _converse) {
+
                 var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
-                _converse.roster_groups = false;
                 test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current');
                 spyOn(window, 'confirm').and.returnValue(true);
@@ -490,7 +512,10 @@
                 });
             }));
 
-            it("Receiving a subscription request", mock.initConverse(function (_converse) {
+            it("Receiving a subscription request", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
                 test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
                 spyOn(_converse, "emit");
@@ -516,6 +541,7 @@
                     expect($header.is(":visible")).toBeTruthy();
                     var $contacts = $header.parent().nextUntil('dt', 'dd');
                     expect($contacts.length).toBe(1);
+                    done();
                 });
             }));
         });

@@ -39,25 +39,21 @@
             null,
             "Clicca per aprire/chiudere la lista bookmarks"
          ],
-         "Bookmarked Rooms": [
-            null,
-            "Stanza Salvate"
-         ],
          "Are you sure you want to remove the bookmark \"%1$s\"?": [
             null,
             "Sei sicuro di voler rimuovere il segnalibro \"%1$s\"?"
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Clicca per aprire questa stanza"
+            "Rimuovi questo bookmark"
          ],
          "Show more information on this room": [
             null,
             "Mostra più informazioni su questa stanza"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            "Rimuovi questo bookmark"
+            "Clicca per aprire questa stanza"
          ],
          "You have unread messages": [
             null,
@@ -231,6 +227,14 @@
             null,
             "Logo out"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Clicca per aggiungere nuovi contatti alla chat"
+         ],
+         "Add a contact": [
+            null,
+            "Aggiungi contatti"
+         ],
          "Contact name": [
             null,
             "Nome del contatto"
@@ -246,14 +250,6 @@
          "Add": [
             null,
             "Aggiungi"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Clicca per aggiungere nuovi contatti alla chat"
-         ],
-         "Add a contact": [
-            null,
-            "Aggiungi contatti"
          ],
          "No users found": [
             null,
@@ -1011,6 +1007,10 @@
             null,
             "Ogni"
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             "Chatty"
@@ -1018,18 +1018,6 @@
          "Extended Away": [
             null,
             "Away estesa"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Clicca per rimuovere questo contatto"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Clicca per accettare questa richiesta di contatto"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Clicca per rifiutare questa richiesta di contatto"
          ],
          "Click to chat with this contact": [
             null,

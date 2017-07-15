@@ -3,6 +3,7 @@
     define([
         "jquery.noconflict",
         "sizzle",
+        "es6-promise",
         "jquery.browser",
         "lodash.noconflict",
         "locales",
@@ -18,7 +19,9 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, sizzle, dummy, _,
+        $, sizzle,
+        Promise,
+        dummy, _,
         locales,
         moment,
         Strophe,
@@ -63,25 +66,25 @@
         var div = document.createElement('div');
         div.innerHTML = htmlEscapedText;
         return div.innerText;
-    }
+    };
 
     var isImage = function (url) {
-        var deferred = new $.Deferred();
-        var img = new Image();
-        var timer = window.setTimeout(function () {
-            deferred.reject();
-            img = null;
-        }, 3000);
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            deferred.reject();
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            deferred.resolve(img);
-        };
-        img.src = url;
-        return deferred.promise();
+        return new Promise((resolve, reject) => {
+            var img = new Image();
+            var timer = window.setTimeout(function () {
+                reject(new Error("Could not determine whether it's an image"));
+                img = null;
+            }, 3000);
+            img.onerror = img.onabort = function () {
+                clearTimeout(timer);
+                reject(new Error("Could not determine whether it's an image"));
+            };
+            img.onload = function () {
+                clearTimeout(timer);
+                resolve(img);
+            };
+            img.src = url;
+        });
     };
 
     $.fn.hasScrollBar = function() {
@@ -184,7 +187,66 @@
             }
         },
 
+        slideDown: function (el, interval=0.6) {
+            return new Promise((resolve, reject) => {
+                if (_.isNil(el)) {
+                    const err = "Undefined or null element passed into slideDown"
+                    console.warn(err);
+                    reject(new Error(err));
+                }
+                let intval = el.getAttribute('data-slider-intval');
+                if (intval) {
+                    window.clearInterval(intval);
+                }
+                let h = 0;
+                const end_height = el.getAttribute('data-slider-height');
+                intval = window.setInterval(function () {
+                    h++;
+                    el.style.height = h + 'px';
+                    if (h >= end_height) {
+                        window.clearInterval(intval);
+                        el.style.height = '';
+                        el.style.overflow = '';
+                        el.removeAttribute('data-slider-intval');
+                        el.removeAttribute('data-slider-height');
+                        resolve();
+                    }
+                }, interval);
+                el.setAttribute('data-slider-intval', intval);
+            });
+        },
+
+        slideUp: function (el, interval=0.6) {
+            return new Promise((resolve, reject) => {
+                if (_.isNil(el)) {
+                    const err = "Undefined or null element passed into slideUp";
+                    console.warn(err);
+                    reject(new Error(err));
+                }
+                let intval = el.getAttribute('data-slider-intval');
+                if (intval) {
+                    window.clearInterval(intval);
+                }
+                let h = el.offsetHeight;
+                el.setAttribute('data-slider-height', h);
+                el.style.overflow = 'hidden';
+                intval = window.setInterval(function () {
+                    el.style.height = h + 'px';
+                    h--;
+                    if (h < 0) {
+                        window.clearInterval(intval);
+                        el.removeAttribute('data-slider-intval');
+                        resolve();
+                    }
+                }, interval);
+                el.setAttribute('data-slider-intval', intval);
+            });
+        },
+
         fadeIn: function (el, callback) {
+            if (_.isNil(el)) {
+                console.warn("Undefined or null element passed into fadeIn");
+            }
             if ($.fx.off) {
                 el.classList.remove('hidden');
                 if (_.isFunction(callback)) {
@@ -448,13 +510,13 @@
 
     utils.isConverseLocale = function (locale) {
         if (!_.isString(locale)) { return false; }
-        return _.includes(_.keys(locales || {}), locale)
+        return _.includes(_.keys(locales || {}), locale);
     };
 
     utils.isMomentLocale  = function (locale) {
         if (!_.isString(locale)) { return false; }
         return moment.locale() !== moment.locale(locale);
-    }
+    };
 
     utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
@@ -473,7 +535,7 @@
 
     utils.isOfType = function (type, item) {
         return item.get('type') == type;
-    }
+    };
 
     utils.isInstance = function (type, item) {
         return item instanceof type;
@@ -501,7 +563,7 @@
         }
         element.appendChild(frag); // Now, append all elements at once
         frag = tmp = null;
-    }
+    };
 
     utils.addEmoticons = function (_converse, emojione, text) {
         return emojione.shortnameToUnicode(text);
@@ -546,7 +608,16 @@
 
     utils.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
-    }
+    };
+
+    utils.getWrappedPromise = function () {
+        const wrapper = {};
+        wrapper.promise = new Promise((resolve, reject) => {
+            wrapper.resolve = resolve;
+            wrapper.reject = reject;
+        })
+        return wrapper;
+    };
 
     utils.safeSave = function (model, attributes) {
         if (utils.isPersistableModel(model)) {

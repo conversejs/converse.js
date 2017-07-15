@@ -31,21 +31,21 @@
             null,
             "Cancel·la"
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Feu clic per obrir aquesta sala"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Mostra més informació d'aquesta sala"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Feu clic per obrir aquesta sala"
          ],
          "Close this chat box": [
             null,
@@ -211,6 +211,14 @@
             null,
             "Tanca la sessió"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Feu clic per afegir contactes nous al xat"
+         ],
+         "Add a contact": [
+            null,
+            "Afegeix un contacte"
+         ],
          "Contact name": [
             null,
             "Nom del contacte"
@@ -222,14 +230,6 @@
          "Add": [
             null,
             "Afegeix"
-         ],
-         "Click to add new chat contacts": [
-            null,
-            "Feu clic per afegir contactes nous al xat"
-         ],
-         "Add a contact": [
-            null,
-            "Afegeix un contacte"
          ],
          "No users found": [
             null,
@@ -839,6 +839,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -846,18 +850,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Feu clic per eliminar aquest contacte"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Feu clic per acceptar aquesta sol·licitud de contacte"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Feu clic per rebutjar aquesta sol·licitud de contacte"
          ],
          "Click to chat with this contact": [
             null,

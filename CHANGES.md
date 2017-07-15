@@ -1,25 +1,48 @@
 # Changelog
 
-## 3.1.0 (Unreleased)
+## 3.2.0 (Unreleased)
 
-- Add support for Emojis (uses <a href="https://www.emojione.com/">Emojione</a>).
-- Support for [XMPP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html)
-  has been upgraded to version 2. [jcbrand]
+- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>).
+- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
+- Remove `jquery.easing` from the full build. Was only being used by the
+  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]
+- All promises are now native (or polyfilled) ES2015 Promises
+  instead of jQuery's Deferred. [jcbrand]
+- #866 Add babel in order to support ES2015 syntax [jcbrand]
+
+## 3.1.1 (2017-07-12)
+
+- Use a patched version of [awesomplete](https://github.com/LeaVerou/awesomplete)
+  which doesn't render suggestions as HTML (possible XSS attack vector). [jcbrand]
+
+More info here: https://github.com/LeaVerou/awesomplete/pull/17082
+
+## 3.1.0 (2017-07-05)
+
+### API changes
+- Deprecate the `updateSettings` method in favour of
+  `_converse.settings.update`. [jcbrand]
+- Add a new API method `_converse.promises.add` for exposing promises to be
+  used with `_converse.waitUntil`. [jcbrand]
+- The `message` event now returns a data object with `stanza` and
+  `chatbox` attributes, instead of just the stanza. [jcbrand]
+
+### New Plugins
 - New non-core plugin `converse-singleton` which ensures that no more than
   one chat is visible at any given time. Used in the mobile build:
   `converse-mobile.js` and makes the unread messages counter possible there.
   [jcbrand]
 - New non-core plugin `converse-roomslist`, which shows a list of open rooms
   in the `Rooms` tab of the control box. [jcbrand]
-- Show unread messages for minimized chats. [jcbrand]
-- New configuration setting for `converse-bookmarks`:
+
+### New configuration settings
+- New setting for `converse-bookmarks`:
   [hide_open_bookmarks](https://conversejs.org/docs/html/configurations.html#hide-open-bookmarks)
   It is meant to be set to `true` when using `converse-roomslist` so that open
   rooms aren't listed twice (in the rooms list and the bookmarks list).
   [jcbrand]
-- API change: the `message` event now returns a data object with `stanza` and
-  `chatbox` attributes, instead of just the stanza. [jcbrand]
-- Render nickname form when entering a room via invitation. [jcbrand]
+
+### Github tickets resolved
 - #567 Unreaded message count reset on page load [novokrest]
 - #575 Logging out from converse.js doesn't clear the connection status from the
   sessionStorage [jcbrand]
@@ -30,6 +53,13 @@
 - #887 Make embedded images clickabe [jcbrand]
 - #890 Message carbons not sent out after reconnection [jcbrand]
 - #894 Room affiliation lost when connection jid and room presence jid are of different case [Rayzen]
+
+### Miscellaneous
+
+- Support for [XMPP-0313 Message Archive Management](https://xmpp.org/extensions/xep-0313.html)
+  has been upgraded to version 2. [jcbrand]
+- Show unread messages for minimized chats. [jcbrand]
+- Render nickname form when entering a room via invitation. [jcbrand]
 
 ## 3.0.2 (2017-04-23)
 

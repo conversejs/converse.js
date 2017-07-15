@@ -1800,7 +1800,7 @@ body {
           #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker,
           #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker {
             box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-            z-index: 100; }
+            overflow-x: scroll; }
             #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .picked,
             #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .picked {
               background-color: #DCF9F6; }

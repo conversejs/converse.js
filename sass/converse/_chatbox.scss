@@ -12,4 +12,25 @@
             border-top-right-radius: 0;
         }
     }
+    .chatbox {
+        form.sendXMPPMessage {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        ul {
+                            &.emoji-category-picker {
+                                display: table;
+                                table-layout: fixed;
+                                width: 100%;
+                                .emoji-category {
+                                    display: table-cell;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 }

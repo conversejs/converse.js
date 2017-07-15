@@ -296,6 +296,7 @@
                 .toggle-occupants,
                 .toggle-clear,
                 .toggle-otr {
+
                     float: right;
                 }
                 li {
@@ -321,13 +322,13 @@
                         ul {
                             &.emoji-category-picker {
                                 box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                                z-index: 100;
+                                overflow-x: scroll;
                                 .picked {
                                     background-color: $highlight-color;
                                 }
                             }
                             &.emoji-picker {
-                                height: 250px;
+                                height: $emoji-picker-height;
                                 overflow: scroll;
                             }
                             li {

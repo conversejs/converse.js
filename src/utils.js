@@ -612,7 +612,7 @@
             const excluded_substrings = [
                 ':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'
             ];
-            const excluded_categories = ['modifier'];
+            const excluded_categories = ['modifier', 'regional'];
             const categories = _.difference(
                 _.uniq(_.map(emojis, _.partial(_.get, _, 'category'))),
                 excluded_categories
@@ -634,6 +634,8 @@
                     list = _.union(_.slice(list, 24-1), _.slice(list, 0, 24));
                 } else if (cat === 'travel') {
                     list = _.union(_.slice(list, 17-1), _.slice(list, 0, 17));
+                } else if (cat === 'symbols') {
+                    list = _.union(_.slice(list, 60-1), _.slice(list, 0, 60));
                 }
                 emojis_by_category[cat] = list;
             });

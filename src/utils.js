@@ -208,17 +208,25 @@
                 const err = "Undefined or null element passed into slideOut"
                 console.warn(err);
                 reject(new Error(err));
+                return;
             }
             let interval_marker = el.getAttribute('data-slider-marker');
             if (interval_marker) {
+                el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            const end_height = _.reduce(el.children, function (result, child) {
-                return result + child.offsetHeight;
-            }, 0);
+            const end_height = _.reduce(
+                    el.children,
+                    (result, child) => result + child.offsetHeight, 0
+                );
+            if ($.fx.off) { // Effects are disabled (for tests)
+                el.style.height = end_height + 'px';
+                resolve();
+                return;
+            }
+
             const step = calculateSlideStep(end_height),
                   interval = end_height/duration*step;
-
             let h = 0;
             interval_marker = window.setInterval(function () {
                 h += step;
@@ -227,7 +235,6 @@
                 } else {
                     el.style.height = end_height + 'px';
                     window.clearInterval(interval_marker);
-                    el.style.overflow = '';
                     el.removeAttribute('data-slider-marker');
                     resolve();
                 }
@@ -242,14 +249,16 @@
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideIn";
                 console.warn(err);
-                reject(new Error(err));
-            }
-            if (!el.offsetHeight) {
-                resolve();
-                return;
+                return reject(new Error(err));
+            } else if (!el.offsetHeight) {
+                return resolve();
+            } else if ($.fx.off) { // Effects are disabled (for tests)
+                el.style.height = 0 + 'px';
+                return resolve();
             }
             let interval_marker = el.getAttribute('data-slider-marker');
             if (interval_marker) {
+                el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
             let h = el.offsetHeight;

@@ -55,7 +55,11 @@
             registerGlobalEventHandlers: function () {
                 this.__super__.registerGlobalEventHandlers();
                 document.addEventListener(
-                    'click', function () {
+                    'click', function (ev) {
+                        if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
+                            _.includes(ev.target.classList, 'insert-emoji')) {
+                            return;
+                        }
                         utils.slideInAllElements(
                             document.querySelectorAll('.toolbar-menu')
                         )

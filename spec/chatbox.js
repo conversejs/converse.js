@@ -385,36 +385,42 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
 
-                    test_utils.waitUntil(function () {
-                            return _converse.rosterview.$el.find('dt').length;
-                        }, 300)
-                    .then(function () {
-                        var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
-                            view, $toolbar, $textarea;
-                        test_utils.openChatBoxFor(_converse, contact_jid);
-                        view = _converse.chatboxviews.get(contact_jid);
-                        $toolbar = view.$el.find('ul.chat-toolbar');
-                        $textarea = view.$el.find('textarea.chat-textarea');
-                        expect($toolbar.children('li.toggle-smiley').length).toBe(1);
-                        // Register spies
-                        spyOn(view, 'toggleEmojiMenu').and.callThrough();
-                        spyOn(view, 'insertEmoji');
-                        view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                        $toolbar.children('li.toggle-smiley').click();
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        view, $toolbar, $textarea;
+                    test_utils.openChatBoxFor(_converse, contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
+                    $toolbar = view.$el.find('ul.chat-toolbar');
+                    $textarea = view.$el.find('textarea.chat-textarea');
+                    expect($toolbar.children('li.toggle-smiley').length).toBe(1);
+                    // Register spies
+                    spyOn(view, 'toggleEmojiMenu').and.callThrough();
+                    spyOn(view, 'insertEmoji').and.callThrough();
 
+                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                    $toolbar.children('li.toggle-smiley').click();
+
+                    test_utils.waitUntil(function () {
                         var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                        // expect($picker.is(':visible')).toBeTruthy();
-                        // expect(view.toggleEmojiMenu).toHaveBeenCalled();
+                        return $picker.is(':visible');
+                    }, 300).then(function () {
+                        var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
                         var $items = $picker.find('.emoji-picker li');
                         $items.first().click();
                         expect(view.insertEmoji).toHaveBeenCalled();
-                        expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeFalsy();
-                        $toolbar.children('li.toggle-smiley').click();
-                        expect(view.toggleEmojiMenu).toHaveBeenCalled();
-                        view.$el.find('.toggle-smiley ul').children('li').last().click();
-                        expect(view.insertEmoji).toHaveBeenCalled();
-                        expect(view.$el.find('.toggle-smiley ul').is(':visible')).toBeFalsy();
-                        done();
+                        test_utils.waitUntil(function () {
+                            return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
+                        }, 300).then(function () {
+                            $toolbar.children('li.toggle-smiley').click();
+                            expect(view.toggleEmojiMenu).toHaveBeenCalled();
+                            test_utils.waitUntil(function () {
+                                var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
+                                return $picker.is(':visible');
+                            }, 300).then(function () {
+                                view.$el.find('.toggle-smiley ul').children('li').last().click();
+                                expect(view.insertEmoji).toHaveBeenCalled();
+                                done();
+                            });
+                        });
                     });
                 }));
 

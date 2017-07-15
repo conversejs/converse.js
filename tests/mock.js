@@ -88,7 +88,7 @@
             });
         }
 
-        var converse = converse_api.initialize(_.extend({
+        var _converse = converse_api.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -101,9 +101,10 @@
             'password': 'secret',
             'debug': false
         }, settings || {}));
-        converse.ChatBoxViews.prototype.trimChat = function () {};
+        _converse.ChatBoxViews.prototype.trimChat = function () {};
+        _converse.disable_effects = true;
         $.fx.off = true;
-        return converse;
+        return _converse;
     }
 
     mock.initConverseWithPromises = function (spies, promise_names, settings, func) {

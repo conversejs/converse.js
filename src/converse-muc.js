@@ -1161,7 +1161,7 @@
                     );
                     this.message_handler = _converse.connection.addHandler(
                         this.handleMUCMessage.bind(this),
-                        null, 'message', null, null, room_jid,
+                        null, 'message', 'groupchat', null, room_jid,
                         {'matchBareFromJid': true}
                     );
                 },

@@ -125,8 +125,8 @@
             _converse.EmojiPickerView = Backbone.View.extend({
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
-                    'click .emoji-category-picker li a.pick-category': 'chooseCategory',
-                    'click .emoji-category-picker li a.pick-skintone': 'chooseSkinTone'
+                    'click .emoji-category-picker li.emoji-category': 'chooseCategory',
+                    'click .emoji-category-picker li.emoji-skintone': 'chooseSkinTone'
                 },
 
                 initialize () {
@@ -191,7 +191,9 @@
                 chooseSkinTone (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    const skintone = ev.target.parentElement.getAttribute("data-skintone").trim();
+                    const target = ev.target.nodeName === 'IMG' ?
+                        ev.target.parentElement : ev.target;
+                    const skintone = target.getAttribute("data-skintone").trim();
                     if (this.model.get('current_skintone') === skintone) {
                         this.model.set({'current_skintone': ''});
                     } else {
@@ -202,7 +204,9 @@
                 chooseCategory (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    const category = ev.target.parentElement.getAttribute("data-category").trim();
+                    const target = ev.target.nodeName === 'IMG' ?
+                        ev.target.parentElement : ev.target;
+                    const category = target.getAttribute("data-category").trim();
                     this.model.set({
                         'current_category': category,
                         'scroll_position': 0

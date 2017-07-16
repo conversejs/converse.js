@@ -16,7 +16,7 @@
     {[ }); ]}
 
     {[ _.forEach(skintones, function (skintone) { ]}
-        <li data-category="{{{skintone}}}" class="emoji-skintone {[ if (current_skintone === skintone) { ]} picked {[ } ]}">
+        <li data-skintone="{{{skintone}}}" class="emoji-skintone {[ if (current_skintone === skintone) { ]} picked {[ } ]}">
             <a class="pick-skintone" href="#" data-skintone="{{{skintone}}}"> {{ transform(':'+skintone+':') }} </a>
         </li>
     {[ }); ]}

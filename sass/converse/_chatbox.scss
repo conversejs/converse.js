@@ -19,16 +19,20 @@
                     .toolbar-menu {
                         ul {
                             &.emoji-category-picker {
-                                display: table;
-                                table-layout: fixed;
                                 width: 100%;
                                 .emoji-category {
-                                    display: table-cell;
+                                    float: left;
                                 }
                             }
                         }
                     }
-
+                    &.toggle-smiley {
+                        ul {
+                            li {
+                                padding: 2px;
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -115,14 +115,16 @@
 
             _converse.EmojiPicker = Backbone.Model.extend({ 
                 defaults: {
-                    'current_category': 'people'
+                    'current_category': 'people',
+                    'current_skintone': ''
                 }
             });
 
             _converse.EmojiPickerView = Backbone.View.extend({
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
-                    'click .emoji-category-picker li a': 'chooseCategory',
+                    'click .emoji-category-picker li a.pick-category': 'chooseCategory',
+                    'click .emoji-category-picker li a.pick-skintone': 'chooseSkinTone',
                 },
 
                 initialize: function () {
@@ -134,18 +136,26 @@
                     var emojis_html = tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
+                                'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
                                 'emojis_by_category': emojis_by_category,
-                                'emojione': emojione
+                                'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                             }
                         ));
                     this.el.innerHTML = emojis_html;
                     return this;
                 },
 
+                chooseSkinTone: function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    const skintone = ev.target.parentElement.getAttribute("data-skintone").trim();
+                    this.model.set({'current_skintone': skintone});
+                },
+
                 chooseCategory: function (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    var category = ev.target.parentElement.getAttribute("data-category").trim();
+                    const category = ev.target.parentElement.getAttribute("data-category").trim();
                     this.model.set({'current_category': category});
                 }
             });

@@ -1798,6 +1798,10 @@ body {
           #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu a,
           #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu a {
             color: #578EA9; }
+          #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-picker,
+          #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-picker {
+            height: 250px;
+            overflow: scroll; }
           #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker,
           #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker {
             box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
@@ -1805,10 +1809,9 @@ body {
             #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .picked,
             #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .picked {
               background-color: #DCF9F6; }
-          #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-picker,
-          #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-picker {
-            height: 250px;
-            overflow: scroll; }
+            #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .emoji-skintone,
+            #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-category-picker .emoji-skintone {
+              float: right; }
           #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul li,
           #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul li {
             margin-left: 0;

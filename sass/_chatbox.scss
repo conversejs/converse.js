@@ -321,16 +321,19 @@
                             color: $link-color;
                         }
                         ul {
+                            &.emoji-picker {
+                                height: $emoji-picker-height;
+                                overflow: scroll;
+                            }
                             &.emoji-category-picker {
                                 box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
                                 overflow-x: scroll;
                                 .picked {
                                     background-color: $highlight-color;
                                 }
-                            }
-                            &.emoji-picker {
-                                height: $emoji-picker-height;
-                                overflow: scroll;
+                                .emoji-skintone {
+                                    float: right;
+                                }
                             }
                             li {
                                 margin-left: 0;

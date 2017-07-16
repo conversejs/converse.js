@@ -38,7 +38,7 @@
             tpl_spinner
     ) {
     "use strict";
-    const { $msg, Backbone, Strophe, _, moment, utils } = converse.env;
+    const { $msg, Backbone, Strophe, _, b64_sha1, moment, utils } = converse.env;
 
     const KEY = {
         ENTER: 13,
@@ -119,6 +119,11 @@
                     'current_category': 'people',
                     'current_skintone': '',
                     'scroll_position': 0
+                },
+                initialize () {
+                    const id = `converse.emoji-${_converse.bare_jid}`;
+                    this.id = id;
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 }
             });
 
@@ -185,7 +190,7 @@
                 },
 
                 setScrollPosition (ev, position) {
-                    this.model.set('scroll_position', ev.target.scrollTop);
+                    this.model.save('scroll_position', ev.target.scrollTop);
                 },
 
                 chooseSkinTone (ev) {
@@ -195,9 +200,9 @@
                         ev.target.parentElement : ev.target;
                     const skintone = target.getAttribute("data-skintone").trim();
                     if (this.model.get('current_skintone') === skintone) {
-                        this.model.set({'current_skintone': ''});
+                        this.model.save({'current_skintone': ''});
                     } else {
-                        this.model.set({'current_skintone': skintone});
+                        this.model.save({'current_skintone': skintone});
                     }
                 },
 
@@ -207,7 +212,7 @@
                     const target = ev.target.nodeName === 'IMG' ?
                         ev.target.parentElement : ev.target;
                     const category = target.getAttribute("data-category").trim();
-                    this.model.set({
+                    this.model.save({
                         'current_category': category,
                         'scroll_position': 0
                     });
@@ -232,9 +237,7 @@
                 },
 
                 initialize () {
-                    this.emoji_picker_view = new _converse.EmojiPickerView({
-                        'model': new _converse.EmojiPicker()
-                    });
+                    this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -270,6 +273,16 @@
                     _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this.showStatusMessage();
+                },
+
+                createEmojiPicker () {
+                    if (_.isUndefined(_converse.emojipicker)) {
+                        _converse.emojipicker = new _converse.EmojiPicker();
+                        _converse.emojipicker.fetch();
+                    }
+                    this.emoji_picker_view = new _converse.EmojiPickerView({
+                        'model': _converse.emojipicker
+                    });
                 },
 
                 afterMessagesFetched () {

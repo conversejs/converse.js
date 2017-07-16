@@ -443,8 +443,7 @@
                     this.model.on('change:description', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
 
-                    this.emoji_picker_view = new _converse.EmojiPickerView({model: new _converse.EmojiPicker() });
-
+                    this.createEmojiPicker();
                     this.createOccupantsView();
                     this.render().insertIntoDOM();
                     this.registerHandlers();

@@ -116,7 +116,8 @@
             _converse.EmojiPicker = Backbone.Model.extend({ 
                 defaults: {
                     'current_category': 'people',
-                    'current_skintone': ''
+                    'current_skintone': '',
+                    'scroll_position': 0
                 }
             });
 
@@ -124,11 +125,13 @@
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
                     'click .emoji-category-picker li a.pick-category': 'chooseCategory',
-                    'click .emoji-category-picker li a.pick-skintone': 'chooseSkinTone',
+                    'click .emoji-category-picker li a.pick-skintone': 'chooseSkinTone'
                 },
 
-                initialize: function () {
-                    this.model.on('change', this.render, this);
+                initialize () {
+                    this.model.on('change:current_skintone', this.render, this);
+                    this.model.on('change:current_category', this.render, this);
+                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
 
                 render: function () {
@@ -142,21 +145,45 @@
                             }
                         ));
                     this.el.innerHTML = emojis_html;
+
+                    this.el.querySelectorAll('.emoji-picker').forEach((el) => {
+                        el.addEventListener(
+                            'scroll', this.setScrollPosition.bind(this)
+                        );
+                    });
+                    this.restoreScrollPosition();
                     return this;
                 },
 
-                chooseSkinTone: function (ev) {
+                restoreScrollPosition () {
+                    const current_picker = _.difference(
+                        this.el.querySelectorAll('.emoji-picker'),
+                        this.el.querySelectorAll('.emoji-picker.hidden')
+                    );
+                    if (current_picker.length === 1 && this.model.get('scroll_position')) {
+                        current_picker[0].scrollTop = this.model.get('scroll_position');
+                    }
+                },
+
+                setScrollPosition (ev, position) {
+                    this.model.set('scroll_position', ev.target.scrollTop);
+                },
+
+                chooseSkinTone (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
                     const skintone = ev.target.parentElement.getAttribute("data-skintone").trim();
                     this.model.set({'current_skintone': skintone});
                 },
 
-                chooseCategory: function (ev) {
+                chooseCategory (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
                     const category = ev.target.parentElement.getAttribute("data-category").trim();
-                    this.model.set({'current_category': category});
+                    this.model.set({
+                        'current_category': category,
+                        'scroll_position': 0
+                    });
                 }
             });
 

@@ -92,26 +92,26 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                use_emojione: true,
-                chatview_avatar_height: 32,
-                chatview_avatar_width: 32,
-                show_toolbar: true,
-                time_format: 'HH:mm',
-                visible_toolbar_buttons: {
+                'use_emojione': true,
+                'emojione_image_path': emojione.imagePathPNG,
+                'chatview_avatar_height': 32,
+                'chatview_avatar_width': 32,
+                'show_toolbar': true,
+                'time_format': 'HH:mm',
+                'visible_toolbar_buttons': {
                     'emoji': true,
                     'call': false,
                     'clear': true
                 },
             });
+            emojione.imagePathPNG = _converse.emojione_image_path;
 
             function onWindowStateChanged (data) {
                 _converse.chatboxviews.each(function (chatboxview) {
                     chatboxview.onWindowStateChanged(data.state);
                 });
             }
-
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
-
 
             _converse.EmojiPicker = Backbone.Model.extend({ 
                 defaults: {

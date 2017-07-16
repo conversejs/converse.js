@@ -3,9 +3,15 @@
 ## 3.2.0 (Unreleased)
 
 ### New features
-- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>).
-  Therefore the `visible_toolbar_buttons.emoticons` configuration option is now changed
-  to `visible_toolbar_buttons.emoji`. [jcbrand]
+- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
+
+### New configuration settings
+* The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.
+* [use_emojione](https://conversejs.org/docs/html/configurations.html#use-emojione)
+  is used to determine whether Emojione should be used to render emojis,
+  otherwise rendering falls back to native browser or OS support.
+* [emojione_image_path](https://conversejs.org/docs/html/configurations.html#emojione-image-path)
+  is used to specify from where Emojione will load images for rendering emojis.
 
 ### Code changes
 - Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]

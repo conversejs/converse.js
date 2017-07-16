@@ -324,18 +324,34 @@
                             &.emoji-picker {
                                 height: $emoji-picker-height;
                                 overflow: scroll;
+                                padding: 0.5em;
                             }
                             &.emoji-category-picker {
-                                box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                                overflow-x: scroll;
+                                /* offset-x | offset-y | blur-radius | spread-radius | color */
+                                box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+                            }
+                            &.emoji-category-picker,
+                            &.emoji-skintone-picker {
+                                overflow: hidden;
+                                left: 0;
                                 .picked {
                                     background-color: $highlight-color;
                                 }
-                                .emoji-skintone {
-                                    float: right;
+                                li {
+                                    height: $emoji_height + 2*5px;
+                                    padding: 5px;
+                                    z-index: 98;
+                                    &.emoji {
+                                        a {
+                                            font-size: $font-size-huge;
+                                        }
+                                    }
                                 }
                             }
                             li {
+                                &.insert-emoji {
+                                    padding: 0.3em;
+                                }
                                 margin-left: 0;
                                 cursor: pointer;
                                 list-style: none;
@@ -358,18 +374,6 @@
                     }
                     &.toggle-smiley {
                         padding-left: 5px;
-                        ul {
-                            left: 0;
-                            li {
-                                padding: 5px;
-                                z-index: 98;
-                                &.emoji {
-                                    a {
-                                        font-size: $font-size-huge;
-                                    }
-                                }
-                            }
-                        }
                     }
                     &.toggle-otr {
                         ul {

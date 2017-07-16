@@ -18,10 +18,14 @@
                 li {
                     .toolbar-menu {
                         ul {
-                            &.emoji-category-picker {
+                            &.emoji-category-picker,
+                            &.emoji-skintone-picker {
                                 width: 100%;
                                 .emoji-category {
                                     float: left;
+                                }
+                                li {
+                                    padding: 2px;
                                 }
                             }
                         }

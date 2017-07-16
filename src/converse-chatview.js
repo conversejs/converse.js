@@ -131,7 +131,7 @@
                 className: 'emoji-picker-container toolbar-menu collapsed',
                 events: {
                     'click .emoji-category-picker li.emoji-category': 'chooseCategory',
-                    'click .emoji-category-picker li.emoji-skintone': 'chooseSkinTone'
+                    'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
                 },
 
                 initialize () {
@@ -140,7 +140,7 @@
                     this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
 
-                render  () {
+                render () {
                     var emojis_html = tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
@@ -152,7 +152,6 @@
                             }
                         ));
                     this.el.innerHTML = emojis_html;
-
                     this.el.querySelectorAll('.emoji-picker').forEach((el) => {
                         el.addEventListener(
                             'scroll', this.setScrollPosition.bind(this)
@@ -778,6 +777,7 @@
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
                         if (ev.target.classList.contains('emoji-category-picker') ||
+                            ev.target.classList.contains('emoji-skintone-picker') ||
                                 ev.target.classList.contains('emoji-category')) {
                             return;
                         }

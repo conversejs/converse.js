@@ -14,7 +14,9 @@
             <a class="pick-category" href="#" data-category="{{{category}}}"> {{ transform(emojis_by_category[category][0]._shortname) }} </a>
         </li>
     {[ }); ]}
+</ul>
 
+<ul class="emoji-skintone-picker">
     {[ _.forEach(skintones, function (skintone) { ]}
         <li data-skintone="{{{skintone}}}" class="emoji-skintone {[ if (current_skintone === skintone) { ]} picked {[ } ]}">
             <a class="pick-skintone" href="#" data-skintone="{{{skintone}}}"> {{ transform(':'+skintone+':') }} </a>

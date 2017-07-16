@@ -1535,8 +1535,12 @@
             },
 
             registerMessageHandler () {
-                _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+                _converse.connection.addHandler(
+                    this.onMessage.bind(this), null, 'message', 'chat'
+                );
+                _converse.connection.addHandler(
+                    this.onErrorMessage.bind(this), null, 'message', 'error'
+                );
             },
 
             chatBoxMayBeShown (chatbox) {
@@ -1588,7 +1592,6 @@
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  */
-
                 let contact_jid, delay, resource,
                     from_jid = message.getAttribute('from'),
                     to_jid = message.getAttribute('to');

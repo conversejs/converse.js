@@ -105,6 +105,7 @@
                 },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
+            emojione.ascii = true;
 
             function onWindowStateChanged (data) {
                 _converse.chatboxviews.each(function (chatboxview) {

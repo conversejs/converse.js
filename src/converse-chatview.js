@@ -134,14 +134,15 @@
                     this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
 
-                render: function () {
-                    var emojis_by_category = utils.marshallEmojis(emojione);
+                render  () {
                     var emojis_html = tpl_emojis(
                         _.extend(
                             this.model.toJSON(), {
                                 'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                                'emojis_by_category': emojis_by_category,
+                                'emojis_by_category': utils.getEmojisByCategory(_converse, emojione),
+                                'toned_emojis': utils.getTonedEmojis(_converse),
                                 'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
+                                'shouldBeHidden': this.shouldBeHidden
                             }
                         ));
                     this.el.innerHTML = emojis_html;
@@ -153,6 +154,23 @@
                     });
                     this.restoreScrollPosition();
                     return this;
+                },
+
+                shouldBeHidden (shortname, current_skintone, toned_emojis) {
+                    /* Helper method for the template which decides whether an
+                     * emoji should be hidden, based on which skin tone is
+                     * currently being applied.
+                     */
+                    if (_.includes(shortname, '_tone')) {
+                        if (!current_skintone || !_.includes(shortname, current_skintone)) {
+                            return true;
+                        }
+                    } else {
+                        if (current_skintone && _.includes(toned_emojis, shortname)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 },
 
                 restoreScrollPosition () {
@@ -173,7 +191,11 @@
                     ev.preventDefault();
                     ev.stopPropagation();
                     const skintone = ev.target.parentElement.getAttribute("data-skintone").trim();
-                    this.model.set({'current_skintone': skintone});
+                    if (this.model.get('current_skintone') === skintone) {
+                        this.model.set({'current_skintone': ''});
+                    } else {
+                        this.model.set({'current_skintone': skintone});
+                    }
                 },
 
                 chooseCategory (ev) {

@@ -1,8 +1,7 @@
 {[ _.forEach(emojis_by_category, function (obj, category) { ]}
     <ul class="emoji-picker emoji-picker-{{{category}}} {[ if (current_category !== category) { ]} hidden {[ } ]}">
         {[ _.forEach(emojis_by_category[category], function (emoji) { ]}
-        <li class="emoji insert-emoji 
-                {[ if (emoji._shortname.indexOf('_tone') !== -1 && (!current_skintone || emoji._shortname.indexOf(current_skintone) === -1)) { ]} hidden {[ }; ]}"
+        <li class="emoji insert-emoji {[ if (shouldBeHidden(emoji._shortname, current_skintone, toned_emojis)) { ]} hidden {[ }; ]}"
             data-emoji="{{{emoji._shortname}}}">
                 <a href="#" data-emoji="{{{emoji._shortname}}}"> {{ transform(emoji._shortname) }}  </a>
         </li>

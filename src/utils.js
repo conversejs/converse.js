@@ -616,11 +616,11 @@
         }
     }
 
-    utils.marshallEmojis = function (emojione) {
+    utils.getEmojisByCategory = function (_converse, emojione) {
         /* Return a dict of emojis with the categories as keys and
          * lists of emojis in that category as values.
          */
-        if (_.isUndefined(this.emojis_by_category)) {
+        if (_.isUndefined(_converse.emojis_by_category)) {
             const emojis = _.values(_.mapValues(emojione.emojioneList, function (value, key, o) {
                 value._shortname = key;
                 return value
@@ -657,10 +657,22 @@
                 }
                 emojis_by_category[cat] = list;
             });
-            this.emojis_by_category = emojis_by_category;
+            _converse.emojis_by_category = emojis_by_category;
         }
-        return this.emojis_by_category;
-    }
+        return _converse.emojis_by_category;
+    };
+
+    utils.getTonedEmojis = function (_converse) {
+        _converse.toned_emojis = _.uniq(
+            _.map(
+                _.filter(
+                    utils.getEmojisByCategory(_converse).people,
+                    (person) => _.includes(person._shortname, '_tone')
+                ),
+                (person) => person._shortname.replace(/_tone[1-5]/, '')
+            ));
+        return _converse.toned_emojis;
+    };
 
     utils.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;

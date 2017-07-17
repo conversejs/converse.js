@@ -327,20 +327,22 @@
                                 overflow: scroll;
                                 padding: 0.5em;
                             }
-                            &.emoji-category-picker {
+                            &.emoji-toolbar {
                                 /* offset-x | offset-y | blur-radius | spread-radius | color */
                                 box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
                             }
-                            &.emoji-category-picker,
-                            &.emoji-skintone-picker {
+                            &.emoji-toolbar {
                                 overflow: hidden;
                                 left: 0;
                                 .picked {
                                     background-color: $highlight-color;
                                 }
+                                .emoji-category-picker {
+                                    margin-right: 5em;
+                                }
                                 li {
                                     height: $emoji_height + 2*5px;
-                                    padding: 5px;
+                                    padding: 4px;
                                     z-index: 98;
                                     &.emoji {
                                         a {

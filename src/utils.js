@@ -206,6 +206,14 @@
 
     utils.slideOut = function (el, duration=600) {
         /* Shows/expands an element by sliding it out of itself. */
+
+        function calculateEndHeight (el) {
+            return _.reduce(
+                el.children,
+                (result, child) => result + child.offsetHeight, 0
+            );
+        }
+
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideOut"
@@ -218,10 +226,7 @@
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            const end_height = _.reduce(
-                    el.children,
-                    (result, child) => result + child.offsetHeight, 0
-                );
+            const end_height = calculateEndHeight(el);
             if ($.fx.off) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
                 resolve();
@@ -236,7 +241,10 @@
                 if (h < end_height) {
                     el.style.height = h + 'px';
                 } else {
-                    el.style.height = end_height + 'px';
+                    // We recalculate the height to work around an apparent
+                    // browser bug where browsers don't know the correct
+                    // offsetHeight beforehand.
+                    el.style.height = calculateEndHeight(el) + 'px';
                     window.clearInterval(interval_marker);
                     el.removeAttribute('data-slider-marker');
                     resolve();

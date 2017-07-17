@@ -52,7 +52,8 @@ $send-button-margin: 3px !default;
 
 $message-them-color: $red !default;
 
-$emoji_height : 24px !default;
+$emoji_height: 22px !default;
+$emoji-picker-height: 150px !default;
 
 $roster-height: 194px !default;
 $roster-item-height: 30px !default;
@@ -102,8 +103,6 @@ $legend-font-size: 18px !default;
 
 $toolbar-height: 29px !default;
 $toolbar-color: $greenish-white !default;
-
-$emoji-picker-height: 150px !default;
 
 $line-height-small:  20px !default;
 $line-height:  22px !default;

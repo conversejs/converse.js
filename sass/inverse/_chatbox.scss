@@ -44,8 +44,16 @@
 
             .chat-message {
                 font-size: $font-size-small;
-                line-height: $line-height-small;
                 margin: 0.5em 0;
+                .chat-msg-author {
+                    line-height: $line-height;
+                }
+                .chat-msg-content {
+                    line-height: $line-height;
+                    .emojione {
+                        margin-bottom: -6px;
+                    }
+                }
             }
         }
         .chat-content {

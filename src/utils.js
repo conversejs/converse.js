@@ -197,14 +197,14 @@
     };
 
     utils.slideToggleElement = function (el) {
-        if (!el.offsetHeight) {
+        if (_.includes(el.classList, 'collapsed')) {
             return utils.slideOut(el);
         } else {
             return utils.slideIn(el);
         }
     };
 
-    utils.slideOut = function (el, duration=600) {
+    utils.slideOut = function (el, duration=900) {
         /* Shows/expands an element by sliding it out of itself. */
 
         function calculateEndHeight (el) {
@@ -236,6 +236,7 @@
             const step = calculateSlideStep(end_height),
                   interval = end_height/duration*step;
             let h = 0;
+
             interval_marker = window.setInterval(function () {
                 h += step;
                 if (h < end_height) {
@@ -247,6 +248,9 @@
                     el.style.height = calculateEndHeight(el) + 'px';
                     window.clearInterval(interval_marker);
                     el.removeAttribute('data-slider-marker');
+                    el.classList.remove('collapsed');
+                    el.style.overflow = "";
+                    el.style.height = "";
                     resolve();
                 }
             }, interval);
@@ -261,7 +265,7 @@
                 const err = "Undefined or null element passed into slideIn";
                 console.warn(err);
                 return reject(new Error(err));
-            } else if (!el.offsetHeight) {
+            } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
             } else if ($.fx.off) { // Effects are disabled (for tests)
                 el.style.height = 0 + 'px';
@@ -283,7 +287,8 @@
                 if (h > 0) {
                     el.style.height = h + 'px';
                 } else {
-                    el.style.height = 0 + 'px';
+                    el.classList.add('collapsed');
+                    el.style.height = "";
                     window.clearInterval(interval_marker);
                     el.removeAttribute('data-slider-marker');
                     resolve();

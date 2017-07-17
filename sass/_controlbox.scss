@@ -236,7 +236,6 @@
                     position: absolute;
                     left: 0;
                     top: 0;
-                    border: 1px solid $light-background-border-color;
                     width: 100%;
                     z-index: 21;
                     background-color: $light-background-color;
@@ -246,14 +245,16 @@
                 }
             }
 
-            /* Custom addition for CSP */
             dd.search-xmpp {
-                display: none;
-                width: 100%;
-            }
-
-            dd.search-xmpp ul {
-                box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+                height: 0;
+                .contact-form-container {
+                    position: absolute;
+                    z-index: 22;
+                    form {
+                        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+                        background-color: white;
+                    }
+                }
                 li:hover {
                     background-color: $light-background-color;
                 }
@@ -420,7 +421,6 @@
         }
 
         .add-xmpp-contact {
-            background: none;
             padding: 1em 0.5em;
             input {
                 margin: 0 0 1rem;

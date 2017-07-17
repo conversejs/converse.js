@@ -214,6 +214,13 @@
             );
         }
 
+        function wrapup (el) {
+            el.removeAttribute('data-slider-marker');
+            el.classList.remove('collapsed');
+            el.style.overflow = "";
+            el.style.height = "";
+        }
+
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideOut"
@@ -229,6 +236,7 @@
             const end_height = calculateEndHeight(el);
             if ($.fx.off) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
+                wrapup(el);
                 resolve();
                 return;
             }
@@ -247,10 +255,7 @@
                     // offsetHeight beforehand.
                     el.style.height = calculateEndHeight(el) + 'px';
                     window.clearInterval(interval_marker);
-                    el.removeAttribute('data-slider-marker');
-                    el.classList.remove('collapsed');
-                    el.style.overflow = "";
-                    el.style.height = "";
+                    wrapup(el);
                     resolve();
                 }
             }, interval);

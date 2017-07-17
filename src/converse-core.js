@@ -1417,15 +1417,12 @@
             }
         });
 
-
         this.Messages = Backbone.Collection.extend({
             model: _converse.Message,
             comparator: 'time'
         });
 
-
         this.ChatBox = Backbone.Model.extend({
-
             defaults: {
                 'type': 'chatbox',
                 'bookmarked': false,

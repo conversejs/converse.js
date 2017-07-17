@@ -1815,9 +1815,6 @@ body {
             #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .picked,
             #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .picked {
               background-color: #DCF9F6; }
-            #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category-picker,
-            #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category-picker {
-              margin-right: 5em; }
             #converse-embedded-chat .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li,
             #conversejs .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar li {
               height: 32px;
@@ -1939,6 +1936,8 @@ body {
     width: 100%; }
   #conversejs .chatbox form.sendXMPPMessage .toggle-smiley {
     padding-left: 0.5em; }
+    #conversejs .chatbox form.sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
+      margin-right: 5em; }
     #conversejs .chatbox form.sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
       padding-left: 10px;
       padding-right: 10px; }
@@ -2106,37 +2105,37 @@ body {
           padding: 0.3em 0;
           clear: left;
           width: 100%; }
-  #conversejs #controlbox .dropdown {
-    /* Custom addition for CSP */ }
-    #conversejs #controlbox .dropdown a {
-      width: 143px;
-      display: inline-block; }
-    #conversejs #controlbox .dropdown li {
-      list-style: none;
-      padding-left: 0; }
-    #conversejs #controlbox .dropdown dd ul {
-      padding: 0;
-      list-style: none;
+  #conversejs #controlbox .dropdown a {
+    width: 143px;
+    display: inline-block; }
+  #conversejs #controlbox .dropdown li {
+    list-style: none;
+    padding-left: 0; }
+  #conversejs #controlbox .dropdown dd ul {
+    padding: 0;
+    list-style: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 21;
+    background-color: #FCFDFD; }
+    #conversejs #controlbox .dropdown dd ul li:hover {
+      background-color: #DCF9F6; }
+  #conversejs #controlbox .dropdown dd.search-xmpp {
+    height: 0; }
+    #conversejs #controlbox .dropdown dd.search-xmpp .contact-form-container {
       position: absolute;
-      left: 0;
-      top: 0;
-      border: 1px solid #B1BFC4;
-      width: 100%;
-      z-index: 21;
+      z-index: 22; }
+      #conversejs #controlbox .dropdown dd.search-xmpp .contact-form-container form {
+        box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4);
+        background-color: white; }
+    #conversejs #controlbox .dropdown dd.search-xmpp li:hover {
       background-color: #FCFDFD; }
-      #conversejs #controlbox .dropdown dd ul li:hover {
-        background-color: #DCF9F6; }
-    #conversejs #controlbox .dropdown dd.search-xmpp {
-      display: none;
-      width: 100%; }
-    #conversejs #controlbox .dropdown dd.search-xmpp ul {
-      box-shadow: 1px 4px 10px 1px rgba(0, 0, 0, 0.4); }
-      #conversejs #controlbox .dropdown dd.search-xmpp ul li:hover {
-        background-color: #FCFDFD; }
-    #conversejs #controlbox .dropdown dt a span {
-      cursor: pointer;
-      display: block;
-      padding: 4px 7px 0 5px; }
+  #conversejs #controlbox .dropdown dt a span {
+    cursor: pointer;
+    display: block;
+    padding: 4px 7px 0 5px; }
   #conversejs #controlbox #select-xmpp-status {
     display: none;
     float: right;
@@ -2253,7 +2252,6 @@ body {
   #conversejs #controlbox #users {
     overflow-y: hidden; }
   #conversejs #controlbox .add-xmpp-contact {
-    background: none;
     padding: 1em 0.5em; }
     #conversejs #controlbox .add-xmpp-contact input {
       margin: 0 0 1rem;

@@ -635,31 +635,32 @@
                     this.parent_el.appendChild(this.render().el);
                     this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
                     this.tabs.appendChild(this.tab_el);
-                    this.$('.search-xmpp ul').append(
-                        this.generateAddContactHTML()
-                    );
                     return this;
                 },
 
-                generateAddContactHTML () {
+                generateAddContactHTML (settings={}) {
                     if (_converse.xhr_user_search) {
                         return tpl_search_contact({
                             label_contact_name: __('Contact name'),
                             label_search: __('Search')
                         });
                     } else {
-                        return tpl_add_contact_form({
+                        return tpl_add_contact_form(_.assign({
+                            error_message: null,
                             label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add')
-                        });
+                            label_add: __('Add'),
+                            value: ''
+                        }, settings));
                     }
                 },
 
                 toggleContactForm (ev) {
                     ev.preventDefault();
-                    this.$el.find('.search-xmpp').toggle('fast', function () {
-                        if ($(this).is(':visible')) {
-                            $(this).find('input.username').focus();
+                    this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
+                    var dropdown = this.el.querySelector('.contact-form-container');
+                    utils.slideToggleElement(dropdown).then(() => {
+                        if ($(dropdown).is(':visible')) {
+                            $(dropdown).find('input.username').focus();
                         }
                     });
                 },
@@ -690,13 +691,18 @@
                     ev.preventDefault();
                     const $input = $(ev.target).find('input');
                     const jid = $input.val();
-                    if (! jid) {
-                        // this is not a valid JID
-                        $input.addClass('error');
+                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                        this.el.querySelector('.search-xmpp div').innerHTML =
+                            this.generateAddContactHTML({
+                                error_message: __('Please enter a valid XMPP username'),
+                                label_contact_username: __('e.g. user@example.org'),
+                                label_add: __('Add'),
+                                value: jid
+                            });
                         return;
                     }
                     _converse.roster.addAndSubscribe(jid);
-                    $('.search-xmpp').hide();
+                    utils.slideIn(this.el.querySelector('.contact-form-container'));
                 },
 
                 addContactFromList (ev) {
@@ -706,7 +712,7 @@
                         name = $target.text();
                     _converse.roster.addAndSubscribe(jid, name);
                     $target.parent().remove();
-                    $('.search-xmpp').hide();
+                    utils.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
 

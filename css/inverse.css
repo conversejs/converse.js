@@ -1568,10 +1568,11 @@ body {
   #converse-embedded-chat .chatbox .chat-title,
   #conversejs .chatbox .chat-title {
     color: white;
-    line-height: 15px;
     display: block;
+    line-height: 15px;
+    overflow: hidden;
     text-overflow: ellipsis;
-    overflow: hidden; }
+    white-space: nowrap; }
     #converse-embedded-chat .chatbox .chat-title a,
     #conversejs .chatbox .chat-title a {
       color: white;
@@ -2518,17 +2519,23 @@ body {
   #conversejs .chat-head-chatroom .chatbox-btn.button-on {
     background-color: white;
     color: #E77051; }
-  #converse-embedded-chat .chat-head-chatroom .chatroom-description,
-  #conversejs .chat-head-chatroom .chatroom-description {
-    color: white;
-    font-size: 80%;
-    font-style: italic;
-    height: 1.3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin: 0;
-    margin-top: 0.3em; }
+  #converse-embedded-chat .chat-head-chatroom .chat-title,
+  #conversejs .chat-head-chatroom .chat-title {
+    color: #FF977C; }
+    #converse-embedded-chat .chat-head-chatroom .chat-title .chatroom-name,
+    #conversejs .chat-head-chatroom .chat-title .chatroom-name {
+      color: white; }
+    #converse-embedded-chat .chat-head-chatroom .chat-title .chatroom-description,
+    #conversejs .chat-head-chatroom .chat-title .chatroom-description {
+      color: white;
+      font-size: 80%;
+      font-style: italic;
+      height: 1.3em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0;
+      margin-top: 0.3em; }
 #converse-embedded-chat .chatroom,
 #conversejs .chatroom {
   width: 300px; }

@@ -342,7 +342,15 @@
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings = _.assign({'type': CHATROOMS_TYPE}, settings);
+                settings = _.assign({
+                    'name': Strophe.unescapeNode(
+                        Strophe.getNodeFromJid(settings.jid)
+                    ),
+                    'domain': Strophe.getDomainFromJid(settings.jid),
+                    'type': CHATROOMS_TYPE,
+                }, settings);
+
+
                 return _converse.chatboxviews.showChat(settings);
             };
 
@@ -1284,7 +1292,9 @@
                     });
                     $form.on('submit', (ev) => {
                         ev.preventDefault();
-                        this.saveConfiguration(ev.target);
+                        this.saveConfiguration(ev.target).then(
+                            this.getRoomFeatures.bind(this)
+                        );
                     });
                 },
 
@@ -1434,8 +1444,9 @@
                      *  <feature var='urn:xmpp:mam:0'/>
                      */
                     const features = {
-                        'features_fetched': true
-                    };
+                        'features_fetched': true,
+                        'name': iq.querySelector('identity').getAttribute('name')
+                    }
                     _.each(iq.querySelectorAll('feature'), function (field) {
                         const fieldname = field.getAttribute('var');
                         if (!fieldname.startsWith('muc_')) {
@@ -2623,8 +2634,6 @@
                     const chatroom = _converse.openChatRoom({
                         'id': room_jid,
                         'jid': room_jid,
-                        'name': Strophe.unescapeNode(Strophe.getNodeFromJid(room_jid)),
-                        'type': CHATROOMS_TYPE,
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });

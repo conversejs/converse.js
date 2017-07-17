@@ -100,10 +100,11 @@
         }
         .chat-title {
             color: $chat-head-text-color;
-            line-height: 15px;
             display: block;
-            text-overflow: ellipsis;
+            line-height: 15px;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             a {
                 color: $chat-head-text-color;
                 width: 100%;

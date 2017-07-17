@@ -21,6 +21,10 @@
   instead of jQuery's Deferred. [jcbrand]
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
+#### Bugfixes:
+
+- Room name wasn't being updated after changing it in the configuration form. [jcbrand]
+
 ## 3.1.1 (2017-07-12)
 
 - Use a patched version of [awesomplete](https://github.com/LeaVerou/awesomplete)

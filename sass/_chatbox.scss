@@ -351,6 +351,9 @@
                             li {
                                 &.insert-emoji {
                                     padding: 0.3em;
+                                    &:hover {
+                                        background-color: $highlight-color;
+                                    }
                                 }
                                 margin-left: 0;
                                 cursor: pointer;
@@ -364,21 +367,25 @@
                     }
                     &.toggle-toolbar-menu {
                         color: $text-color;
-                        ul {
-                            li {
-                                &:hover {
+                    }
+                    &.toggle-smiley {
+                        padding-left: 5px;
+                        .emoji-toolbar {
+                            .emoji-category-picker,
+                            .emoji-skintone-picker {
+                                li:hover {
                                     background-color: $highlight-color;
                                 }
                             }
                         }
                     }
-                    &.toggle-smiley {
-                        padding-left: 5px;
-                    }
                     &.toggle-otr {
                         ul {
                             z-index: 99;
                             li {
+                                &:hover {
+                                    background-color: $highlight-color;
+                                }
                                 display: block;
                                 padding: 7px;
                                 a {

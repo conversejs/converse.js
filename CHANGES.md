@@ -2,8 +2,9 @@
 
 ## 3.2.0 (Unreleased)
 
-### New features
+### New features and improvements
 - Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
+- Add JID validation in the contact add form. [jcbrand]
 
 ### New configuration settings
 * The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.
@@ -22,8 +23,8 @@
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
 #### Bugfixes:
-
 - Room name wasn't being updated after changing it in the configuration form. [jcbrand]
+- Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
 
 ## 3.1.1 (2017-07-12)
 

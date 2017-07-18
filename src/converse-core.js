@@ -583,7 +583,7 @@
             });
 
         this.initSession = function () {
-            this.session = new this.Session();
+            this.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
             this.session.id = id; // Appears to be necessary for backbone.browserStorage
             this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
@@ -1859,8 +1859,6 @@
             }
         });
 
-        this.Session = Backbone.Model; // General session settings to be saved to sessionStorage.
-        this.Feature = Backbone.Model;
         this.Features = Backbone.Collection.extend({
             /* Service Discovery
              * -----------------
@@ -1869,13 +1867,17 @@
              * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
              * All features are shown here: http://xmpp.org/registrar/disco-features.html
              */
-            model: _converse.Feature,
+            model: Backbone.Model,
             initialize () {
                 this.addClientIdentities().addClientFeatures();
                 this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                     b64_sha1(`converse.features${_converse.bare_jid}`)
                 );
                 this.on('add', this.onFeatureAdded, this);
+                this.fetchFeatures();
+            },
+
+            fetchFeatures () {
                 if (this.browserStorage.records.length === 0) {
                     // browserStorage is empty, so we've likely never queried this
                     // domain for features yet
@@ -2164,6 +2166,7 @@
             delete this.chatboxes.browserStorage;
             if (this.features) {
                 this.features.reset();
+                this.features.browserStorage._clear();
             }
             this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);

@@ -158,24 +158,24 @@
             }
             .chat-message {
                 overflow: auto; // Ensures that content stays inside
-                margin: 0.3em;
-                span {
-                    &.chat-msg-author {
-                        font-weight: bold;
-                        white-space: nowrap;
-                        float: left;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                    }
-                    &.chat-msg-them {
-                        color: $message-them-color;
-                    }
-                    &.chat-msg-me {
-                        color: $link-color;
-                    }
-                    &.chat-msg-content {
-                        max-width: 100%;
-                        word-wrap: break-word;
+                .chat-msg-author {
+                    font-weight: bold;
+                    white-space: nowrap;
+                    float: left;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                .chat-msg-them {
+                    color: $message-them-color;
+                }
+                .chat-msg-me {
+                    color: $link-color;
+                }
+                .chat-msg-content {
+                    max-width: 100%;
+                    word-wrap: break-word;
+                    .emojione {
+                        margin-bottom: -6px;
                     }
                 }
             }

@@ -43,6 +43,7 @@
             border-top-right-radius: $chatbox-border-radius;
 
             .chat-message {
+                line-height: $line-height;
                 font-size: $font-size-small;
                 margin: 0.5em 0;
                 .chat-msg-author {
@@ -50,9 +51,6 @@
                 }
                 .chat-msg-content {
                     line-height: $line-height;
-                    .emojione {
-                        margin-bottom: -6px;
-                    }
                 }
             }
         }

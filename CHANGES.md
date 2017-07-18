@@ -18,13 +18,13 @@
 - Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
 - Remove `jquery.easing` from the full build. Was only being used by the
   [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]
-- All promises are now native (or polyfilled) ES2015 Promises
-  instead of jQuery's Deferred. [jcbrand]
+- All promises are now native (or polyfilled) ES2015 Promises instead of jQuery's Deferred. [jcbrand]
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
 #### Bugfixes:
 - Room name wasn't being updated after changing it in the configuration form. [jcbrand]
 - Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
+- Don't show duplicate sent groupchat messages in Slack chat rooms. [jcbrand]
 
 ## 3.1.1 (2017-07-12)
 

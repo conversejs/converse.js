@@ -1444,13 +1444,17 @@
                 });
             },
 
-            getMessageAttributes (message, delay, original_stanza) {
-                delay = delay || message.querySelector('delay');
+            getMessageBody (message) {
                 const type = message.getAttribute('type');
-
-                const body = (type === 'error') ?
+                return (type === 'error') ?
                     _.propertyOf(message.querySelector('error text'))('textContent') :
                         _.propertyOf(message.querySelector('body'))('textContent');
+            },
+
+            getMessageAttributes (message, delay, original_stanza) {
+                delay = delay || message.querySelector('delay');
+                const type = message.getAttribute('type'),
+                      body = this.getMessageBody(message);
 
                 const delayed = !_.isNull(delay),
                     is_groupchat = type === 'groupchat',
@@ -1466,7 +1470,6 @@
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-
                 const time = delayed ? delay.getAttribute('stamp') : moment().format();
                 let sender, fullname;
                 if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {

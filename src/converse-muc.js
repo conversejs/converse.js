@@ -1966,6 +1966,44 @@
                     this.scrollDown();
                 },
 
+                isDuplicateBasedOnTime (message) {
+                    /* Checks whether a received messages is actually a
+                     * duplicate based on whether it has a "ts" attribute
+                     * with a unix timestamp.
+                     *
+                     * This is used for better integration with Slack's XMPP
+                     * gateway, which doesn't use message IDs but instead the
+                     * aforementioned "ts" attributes.
+                     */
+                    const ts = message.getAttribute('ts');
+                    if (_.isNull(ts)) {
+                        return false;
+                    } else {
+                        return this.model.messages.where({
+                            'sender': this.model.get('nick'),
+                            'message': this.model.getMessageBody(message)
+                        }).filter(
+                            (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 2000
+                        ).length > 0;
+                    }
+                },
+
+                isDuplicate (message) {
+                    const msgid = message.getAttribute('id'),
+                          jid = message.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          sender = resource && Strophe.unescapeNode(resource) || '';
+                    if (msgid) {
+                        return this.model.messages.filter(
+                            // Some bots (like HAL in the prosody chatroom)
+                            // respond to commands with the same ID as the
+                            // original message. So we also check the sender.
+                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
+                        ).length > 0;
+                    }
+                    return this.isDuplicateBasedOnTime(message);
+                },
+
                 onChatRoomMessage (message) {
                     /* Given a <message> stanza, create a message
                      * Backbone.Model if appropriate.
@@ -1981,18 +2019,11 @@
                         delay = forwarded.querySelector('delay');
                     }
                     const jid = message.getAttribute('from'),
-                        msgid = message.getAttribute('id'),
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
-                        subject = _.propertyOf(message.querySelector('subject'))('textContent'),
-                        dupes = msgid && this.model.messages.filter(
-                            // Find duplicates.
-                            // Some bots (like HAL in the prosody chatroom)
-                            // respond to commands with the same ID as the
-                            // original message. So we also check the sender.
-                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
-                        );
-                    if (dupes && dupes.length) {
+                        subject = _.propertyOf(message.querySelector('subject'))('textContent');
+
+                    if (this.isDuplicate(message)) {
                         return true;
                     }
                     if (subject) {

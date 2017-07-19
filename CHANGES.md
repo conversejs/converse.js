@@ -5,6 +5,7 @@
 ### New features and improvements
 - Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
 - Add JID validation in the contact add form. [jcbrand]
+- #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.). [jcbrand]
 
 ### New configuration settings
 * The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.

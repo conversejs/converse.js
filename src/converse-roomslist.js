@@ -117,6 +117,7 @@
                     }
                     const div = document.createElement('div');
                     div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
+                        'allow_bookmarks': _converse.allow_bookmarks,
                         'info_leave_room': __('Leave this room'),
                         'info_remove_bookmark': __('Unbookmark this room'),
                         'info_title': __('Show more information on this room'),

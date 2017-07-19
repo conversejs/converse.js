@@ -26,6 +26,8 @@
 - Room name wasn't being updated after changing it in the configuration form. [jcbrand]
 - Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
 - Don't show duplicate sent groupchat messages in Slack chat rooms. [jcbrand]
+- Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`. [jcbrand]
+- #879 Text in links are converted to smileys leading to non-clickable links.
 
 ## 3.1.1 (2017-07-12)
 

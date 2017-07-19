@@ -273,7 +273,8 @@
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
             } else if ($.fx.off) { // Effects are disabled (for tests)
-                el.style.height = 0 + 'px';
+                el.classList.add('collapsed');
+                el.style.height = "";
                 return resolve();
             }
             let interval_marker = el.getAttribute('data-slider-marker');
@@ -292,10 +293,10 @@
                 if (h > 0) {
                     el.style.height = h + 'px';
                 } else {
+                    el.removeAttribute('data-slider-marker');
+                    window.clearInterval(interval_marker);
                     el.classList.add('collapsed');
                     el.style.height = "";
-                    window.clearInterval(interval_marker);
-                    el.removeAttribute('data-slider-marker');
                     resolve();
                 }
             }, interval);

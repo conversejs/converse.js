@@ -73,15 +73,20 @@
                 panel.delegateEvents(); // Rebind all events so that our spy gets called
 
                 /* Add a new contact through the UI */
-                var $form = panel.$('form.add-xmpp-contact');
-                expect($form.is(":visible")).toBeFalsy();
+                var form = panel.el.querySelector('form.add-xmpp-contact');
+                expect(_.isNull(form)).toBeTruthy();
+
                 // Click the "Add a contact" link.
                 panel.$('.toggle-xmpp-contact-form').click();
-                // Check that the $form appears
-                expect($form.is(":visible")).toBeTruthy();
+
+                // Check that the form appears
+                form = panel.el.querySelector('form.add-xmpp-contact');
+                expect(form.parentElement.offsetHeight).not.toBe(0);
+                expect(_.includes(form.parentElement.classList, 'collapsed')).toBeFalsy();
+
                 // Fill in the form and submit
-                $form.find('input').val('contact@example.org');
-                $form.submit();
+                $(form).find('input').val('contact@example.org');
+                $(form).submit();
 
                 /* In preparation for being able to render the contact in the
                 * user's client interface and for the server to keep track of the
@@ -91,8 +96,11 @@
                 expect(panel.addContactFromForm).toHaveBeenCalled();
                 expect(_converse.roster.addAndSubscribe).toHaveBeenCalled();
                 expect(_converse.roster.addContact).toHaveBeenCalled();
-                // The form should not be visible anymore.
-                expect($form.is(":visible")).toBeFalsy();
+
+                // The form should not be visible anymore (by virtue of its
+                // parent being collapsed)
+                expect(form.parentElement.offsetHeight).toBe(0);
+                expect(_.includes(form.parentElement.classList, 'collapsed')).toBeTrue;
 
                 /* _converse request consists of sending an IQ
                 * stanza of type='set' containing a <query/> element qualified by
@@ -175,7 +183,7 @@
 
                 test_utils.waitUntil(function () {
                     return sent_stanzas.length == 1;
-                }).then(function () {
+                }, 300).then(function () {
 
                 expect(contact.subscribe).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
@@ -216,7 +224,8 @@
                 // contact in the roster.
                 test_utils.waitUntil(function () {
                     return $('a:contains("Pending contacts")').length;
-                }).then(function () {
+                }, 300).then(function () {
+
                     var $header = $('a:contains("Pending contacts")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();

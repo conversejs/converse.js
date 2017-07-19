@@ -3,6 +3,7 @@
 } (this, function ($, jasmine, mock, converse, test_utils) {
     "use strict";
     var _ = converse.env._;
+    var Backbone = converse.env.Backbone;
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var $msg = converse.env.$msg;
@@ -371,7 +372,7 @@
                 spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
-                var feature = new _converse.Feature({
+                var feature = new Backbone.Model({
                     'var': Strophe.NS.MAM
                 });
                 spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set

@@ -2531,17 +2531,18 @@ body {
     #converse-embedded-chat .chat-head-chatroom .chat-title .chatroom-name,
     #conversejs .chat-head-chatroom .chat-title .chatroom-name {
       color: white; }
+    #converse-embedded-chat .chat-head-chatroom .chat-title .chatroom-jid,
+    #conversejs .chat-head-chatroom .chat-title .chatroom-jid {
+      font-size: 14px; }
     #converse-embedded-chat .chat-head-chatroom .chat-title .chatroom-description,
     #conversejs .chat-head-chatroom .chat-title .chatroom-description {
       color: white;
       font-size: 80%;
       font-style: italic;
-      height: 1.3em;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      margin: 0;
-      margin-top: 0.3em; }
+      margin: 0.3em 0; }
 #converse-embedded-chat .chatroom,
 #conversejs .chatroom {
   width: 300px; }
@@ -2746,9 +2747,8 @@ body {
   font-size: 20px; }
   #conversejs .chat-head-chatroom .close-chatbox-button:before {
     content: "\e601"; }
-  #conversejs .chat-head-chatroom .chatroom-description {
-    font-size: 66%;
-    margin-top: 3px; }
+  #conversejs .chat-head-chatroom .chat-title .chatroom-description {
+    font-size: 65%; }
 #conversejs .chatroom {
   width: -webkit-calc(100% - 250px);
   width: calc(100% - 250px); }

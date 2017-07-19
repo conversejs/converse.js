@@ -342,15 +342,7 @@
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings = _.assign({
-                    'name': Strophe.unescapeNode(
-                        Strophe.getNodeFromJid(settings.jid)
-                    ),
-                    'domain': Strophe.getDomainFromJid(settings.jid),
-                    'type': CHATROOMS_TYPE,
-                }, settings);
-
-
+                settings.type = CHATROOMS_TYPE
                 return _converse.chatboxviews.showChat(settings);
             };
 
@@ -373,6 +365,7 @@
 
                           'affiliation': null,
                           'connection_status': ROOMSTATUS.DISCONNECTED,
+                          'name': '',
                           'description': '',
                           'features_fetched': false,
                           'roomconfig': {},
@@ -538,6 +531,7 @@
                      */
                     return tpl_chatroom_head(
                         _.extend(this.model.toJSON(), {
+                            Strophe: Strophe,
                             info_close: __('Close and leave this room'),
                             info_configure: __('Configure this room'),
                             description: this.model.get('description') || ''
@@ -2529,9 +2523,9 @@
                      */
                     const $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    $(el).find('span.spinner').replaceWith(
+                    el.querySelector('span.spinner').outerHTML =
                         tpl_room_description({
-                            'server': Strophe.getDomainFromJid(stanza.getAttribute('from')),
+                            'jid': stanza.getAttribute('from'),
                             'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
                             'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
                             'hidden': $stanza.find('feature[var="muc_hidden"]').length,
@@ -2546,7 +2540,7 @@
                             'temporary': $stanza.find('feature[var="muc_temporary"]').length,
                             'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
                             'label_desc': __('Description:'),
-                            'label_server': __('Server:'),
+                            'label_jid': __('Room Address (JID):'),
                             'label_occ': __('Occupants:'),
                             'label_features': __('Features:'),
                             'label_requires_auth': __('Requires authentication'),
@@ -2561,7 +2555,6 @@
                             'label_temp_room':  __('Temporary room'),
                             'label_unmoderated': __('Unmoderated')
                         })
-                    );
                 },
 
                 toggleRoomInfo (ev) {

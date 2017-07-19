@@ -5,9 +5,10 @@
         .close-chatbox-button:before {
             content: "\e601"; // Leave icon
         }
-        .chatroom-description {
-            font-size: 66%;
-            margin-top: 3px;
+        .chat-title {
+            .chatroom-description {
+                font-size: 65%;
+            }
         }
     }
 

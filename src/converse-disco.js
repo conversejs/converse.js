@@ -80,7 +80,6 @@
                 },
 
                 queryForItems () {
-
                     if (_.isEmpty(this.identities.where({'category': 'server'}))) {
                         // Don't fetch features and items if this is not a
                         // server or a conference component.

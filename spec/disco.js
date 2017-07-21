@@ -28,6 +28,9 @@
                      *      id='info1'>
                      *  <query xmlns='http://jabber.org/protocol/disco#info'>
                      *      <identity
+                     *          category='server'
+                     *          type='im'/>
+                     *      <identity
                      *          category='conference'
                      *          type='text'
                      *          name='Play-Specific Chatrooms'/>
@@ -53,6 +56,9 @@
                         'id': info_IQ_id
                     }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {
+                            'category': 'server',
+                            'type': 'im'}).up()
+                        .c('identity', {
                             'category': 'conference',
                             'type': 'text',
                             'name': 'Play-Specific Chatrooms'}).up()
@@ -74,7 +80,8 @@
 
                     var entities = _converse.disco_entities;
                     expect(entities.length).toBe(1);
-                    expect(entities.get('localhost').features.length).toBe(5);
+                    expect(entities.get(_converse.domain).features.length).toBe(5);
+                    expect(entities.get(_converse.domain).identities.length).toBe(3);
                     expect(entities.get('localhost').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
                     expect(entities.get('localhost').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
                     expect(entities.get('localhost').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
@@ -153,8 +160,6 @@
 
                     entities = _converse.disco_entities;
                     expect(entities.length).toBe(4);
-                    expect(entities.get(_converse.domain).features.length).toBe(5);
-                    expect(entities.get(_converse.domain).identities.length).toBe(2);
                     expect(entities.get(_converse.domain).identities.where({'category': 'conference'}).length).toBe(1);
                     expect(entities.get(_converse.domain).identities.where({'category': 'directory'}).length).toBe(1);
                     done();

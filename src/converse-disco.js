@@ -84,7 +84,12 @@
                 * All features are shown here: http://xmpp.org/registrar/disco-features.html
                 */
                 model: Backbone.Model,
-                initialize (jid) {
+
+                initialize (settings) {
+                    const jid = settings.jid;
+                    if (_.isNil(jid)) {
+                        throw new Error('DiscoEntity must be instantiated with a JID');
+                    }
                     this.addClientIdentities().addClientFeatures();
                     this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.features-${jid}`)
@@ -158,9 +163,11 @@
                 }
             });
 
-            _converse.api.waitUntil('connected').then(() => {
+            function initializeDisco () {
                 _converse.disco_entities = new _converse.DiscoEntities();
-            });
+            }
+            _converse.api.listen.on('reconnected', initializeDisco);
+            _converse.api.listen.on('connected', initializeDisco);
 
             _converse.api.listen.on('beforeTearDown', () => {
                 if (_converse.disco_entities) {

@@ -21,16 +21,6 @@
             //
             // New functions which don't exist yet can also be added.
 
-            Features: {
-                addClientFeatures () {
-                    const { _converse } = this.__super__;
-                    this.__super__.addClientFeatures.apply(this, arguments);
-                    if (_converse.use_vcards) {
-                        _converse.connection.disco.addFeature(Strophe.NS.VCARD);
-                    }
-                }
-            },
-
             RosterContacts: {
                 createRequestingContact (presence) {
                     const { _converse } = this.__super__;
@@ -49,7 +39,6 @@
                 }
             }
         },
-
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -135,6 +124,13 @@
                 }
             };
 
+            /* Event handlers */
+            _converse.on('addClientFeatures', () => {
+                if (_converse.use_vcards) {
+                    _converse.connection.disco.addFeature(Strophe.NS.VCARD);
+                }
+            });
+
             const updateVCardForChatBox = function (chatbox) {
                 if (!_converse.use_vcards) { return; }
                 const jid = chatbox.model.get('jid'),
@@ -161,7 +157,6 @@
             };
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
-
             const onContactAdd = function (contact) {
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
@@ -173,7 +168,7 @@
                 _converse.roster.on("add", onContactAdd);
             });
 
-            const fetchOwnVCard = function () {
+            _converse.on('statusInitialized', function fetchOwnVCard () {
                 if (_converse.xmppstatus.get('fullname') === undefined) {
                     _converse.getVCard(
                         null, // No 'to' attr when getting one's own vCard
@@ -182,8 +177,7 @@
                         }
                     );
                 }
-            };
-            _converse.on('statusInitialized', fetchOwnVCard);
+            });
         }
     });
 }));

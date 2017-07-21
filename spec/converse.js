@@ -53,7 +53,11 @@
 
         describe("A chat state indication", function () {
 
-            it("are sent out when the client becomes or stops being idle", mock.initConverse(function (_converse) {
+            it("are sent out when the client becomes or stops being idle",
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse, 'sendCSI').and.callThrough();
                 var sent_stanza;
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -61,7 +65,7 @@
                 });
                 var i = 0;
                 _converse.idle_seconds = 0; // Usually initialized by registerIntervalHandler
-                _converse.features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
+                _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = true; // Mock that the server supports CSI
 
                 _converse.csi_waiting_time = 3; // The relevant config option
                 while (i <= _converse.csi_waiting_time) {
@@ -78,10 +82,10 @@
                 expect(sent_stanza.toLocaleString()).toBe(
                     "<active xmlns='urn:xmpp:csi:0'/>"
                 );
-
                 // Reset values
                 _converse.csi_waiting_time = 0;
-                _converse.features['urn:xmpp:csi:0'] = false;
+                _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = false;
+                done();
             }));
         });
 

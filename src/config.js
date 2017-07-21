@@ -55,6 +55,7 @@ require.config({
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
+        "converse-disco":           "src/converse-disco",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-inverse":         "src/converse-inverse",

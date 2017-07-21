@@ -11,11 +11,16 @@
 
     describe("Service Discovery", function () {
         describe("Whenever converse.js discovers a new server feature", function () {
-           it("emits the serviceDiscovered event", mock.initConverse(function (_converse) {
+           it("emits the serviceDiscovered event",
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
                 sinon.spy(_converse, 'emit');
-                _converse.features.create({'var': Strophe.NS.MAM});
+                _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 expect(_converse.emit.called).toBe(true);
                 expect(_converse.emit.args[0][1].get('var')).toBe(Strophe.NS.MAM);
+                done();
             }));
         });
     });

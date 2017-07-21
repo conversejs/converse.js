@@ -16,7 +16,6 @@
             "strophe",
             "pluggable",
             "backbone.noconflict",
-            "strophe.disco",
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
@@ -59,6 +58,7 @@
         'converse-chatview',
         'converse-controlbox',
         'converse-core',
+        'converse-disco',
         'converse-dragresize',
         'converse-headline',
         'converse-mam',
@@ -794,16 +794,11 @@
             // If there's no xmppstatus obj, then we were never connected to
             // begin with, so we set reconnecting to false.
             reconnecting = _.isUndefined(_converse.xmppstatus) ? false : reconnecting;
-
             if (reconnecting) {
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                // There might be some open chat boxes. We don't
-                // know whether these boxes are of the same account or not, so we
-                // close them now.
                 _converse.chatboxviews.closeAllChatBoxes();
-                _converse.features = new _converse.Features();
                 _converse.initStatus()
                     .then(
                         _.partial(_converse.onStatusInitialized, false),
@@ -1866,88 +1861,6 @@
             }
         });
 
-        this.Features = Backbone.Collection.extend({
-            /* Service Discovery
-             * -----------------
-             * This collection stores Feature Models, representing features
-             * provided by available XMPP entities (e.g. servers)
-             * See XEP-0030 for more details: http://xmpp.org/extensions/xep-0030.html
-             * All features are shown here: http://xmpp.org/registrar/disco-features.html
-             */
-            model: Backbone.Model,
-            initialize () {
-                this.addClientIdentities().addClientFeatures();
-                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1(`converse.features${_converse.bare_jid}`)
-                );
-                this.on('add', this.onFeatureAdded, this);
-                this.fetchFeatures();
-            },
-
-            fetchFeatures () {
-                if (this.browserStorage.records.length === 0) {
-                    // browserStorage is empty, so we've likely never queried this
-                    // domain for features yet
-                    _converse.connection.disco.info(_converse.domain, null, this.onInfo.bind(this));
-                    _converse.connection.disco.items(_converse.domain, null, this.onItems.bind(this));
-                } else {
-                    this.fetch({add:true});
-                }
-            },
-
-            onFeatureAdded (feature) {
-                _converse.emit('serviceDiscovered', feature);
-            },
-
-            addClientIdentities () {
-                /* See http://xmpp.org/registrar/disco-categories.html
-                 */
-                 _converse.connection.disco.addIdentity('client', 'web', 'Converse.js');
-                 return this;
-            },
-
-            addClientFeatures () {
-                /* The strophe.disco.js plugin keeps a list of features which
-                 * it will advertise to any #info queries made to it.
-                 *
-                 * See: http://xmpp.org/extensions/xep-0030.html#info
-                 */
-                _converse.connection.disco.addFeature(Strophe.NS.BOSH);
-                _converse.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-                _converse.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-                _converse.connection.disco.addFeature(Strophe.NS.ROSTERX); // Limited support
-                if (_converse.message_carbons) {
-                    _converse.connection.disco.addFeature(Strophe.NS.CARBONS);
-                }
-                return this;
-            },
-
-            onItems (stanza) {
-                _.each(stanza.querySelectorAll('query item'), (item) => {
-                    _converse.connection.disco.info(
-                        item.getAttribute('jid'),
-                        null,
-                        this.onInfo.bind(this));
-                });
-            },
-
-            onInfo (stanza) {
-                if ((sizzle('identity[category=server][type=im]', stanza).length === 0) &&
-                    (sizzle('identity[category=conference][type=text]', stanza).length === 0)) {
-                    // This isn't an IM server component
-                    return;
-                }
-                _.forEach(stanza.querySelectorAll('feature'), (feature) => {
-                    const namespace = feature.getAttribute('var');
-                    this[namespace] = true;
-                    this.create({
-                        'var': namespace,
-                        'from': stanza.getAttribute('from')
-                    });
-                });
-            }
-        });
-
         this.setUpXMLLogging = function () {
             Strophe.log = function (level, msg) {
                 _converse.log(msg, level);
@@ -2165,16 +2078,13 @@
             /* Remove those views which are only allowed with a valid
              * connection.
              */
+            _converse.emit('beforeTearDown');
             this.unregisterPresenceHandler();
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }
             this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
             delete this.chatboxes.browserStorage;
-            if (this.features) {
-                this.features.reset();
-                this.features.browserStorage._clear();
-            }
             this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
@@ -2182,6 +2092,7 @@
             window.removeEventListener('mousemove', _converse.onUserActivity);
             window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
+            _converse.emit('afterTearDown');
             return this;
         };
 

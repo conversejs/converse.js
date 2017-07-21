@@ -15,20 +15,25 @@
 
         describe("The archive.query API", function () {
 
-           it("can be used to query for all archived messages", mock.initConverse(function (_converse) {
+           it("can be used to query for all archived messages",
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    function (done, _converse) {
+
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query();
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
                 expect(sent_stanza.toString()).toBe(
                     "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'><query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'/></iq>");
+                done();
             }));
 
            it("can be used to query for all messages to/from a particular JID", mock.initConverse(function (_converse) {
@@ -38,8 +43,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query({'with':'juliet@capulet.lit'});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
@@ -66,8 +71,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
                 var end = '2010-07-07T13:23:54Z';
@@ -97,8 +102,8 @@
            }));
 
            it("throws a TypeError if an invalid date is provided", mock.initConverse(function (_converse) {
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 expect(_.partial(_converse.api.archive.query, {'start': 'not a real date'})).toThrow(
                     new TypeError('archive.query: invalid date provided for: start')
@@ -112,8 +117,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start});
@@ -141,8 +146,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({'start': start, 'max':10});
@@ -173,8 +178,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query({
@@ -210,8 +215,8 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query({'before': '', 'max':10});
                 var queryid = $(sent_stanza.toString()).find('query').attr('queryid');
@@ -237,8 +242,8 @@
                 // and pass it in. However, in the callback method an RSM object is
                 // returned which can be reused for easy paging. This test is
                 // more for that usecase.
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
@@ -247,7 +252,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var rsm =  new Strophe.RSM({'max': '10'});
-                rsm['with'] = 'romeo@montague.lit';
+                rsm['with'] = 'romeo@montague.lit'; // eslint-disable-line dot-notation
                 rsm.start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query(rsm);
 
@@ -275,8 +280,8 @@
            }));
 
            it("accepts a callback function, which it passes the messages and a Strophe.RSM object", mock.initConverse(function (_converse) {
-                if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
-                    _converse.features.create({'var': Strophe.NS.MAM});
+                if (!_converse.disco_entities.get(_converse.domain).features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
@@ -351,7 +356,7 @@
                 expect(args[0].length).toBe(2);
                 expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
                 expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
-                expect(args[1]['with']).toBe('romeo@capulet.lit');
+                expect(args[1]['with']).toBe('romeo@capulet.lit'); // eslint-disable-line dot-notation
                 expect(args[1].max).toBe('10');
                 expect(args[1].count).toBe('16');
                 expect(args[1].first).toBe('23452-4534-1');
@@ -376,7 +381,7 @@
                     'var': Strophe.NS.MAM
                 });
                 spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set
-                _converse.features.onFeatureAdded(feature);
+                _converse.disco_entities.get(_converse.domain).features.onFeatureAdded(feature);
 
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe(
@@ -430,7 +435,7 @@
                     .c('never').up();
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(feature.save).toHaveBeenCalled();
-                expect(feature.get('preferences')['default']).toBe('never');
+                expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
 
                 // Restore
                 _converse.message_archiving = 'never';

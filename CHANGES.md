@@ -2,6 +2,11 @@
 
 ## 3.2.0 (Unreleased)
 
+### New Plugins
+- New plugin `converse-disco` which replaces the original support for
+  [XEP-0030](https://xmpp.org/extensions/xep-0030.html) and which has been
+  refactored to allow features for multiple entities to be stored. [jcbrand]
+
 ### New features and improvements
 - Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
 - Add JID validation in the contact add form. [jcbrand]

@@ -11,6 +11,7 @@
 (function (root, factory) {
     define(["jquery.noconflict",
             "converse-core",
+            "converse-disco",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
@@ -31,15 +32,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            Features: {
-                addClientFeatures () {
-                    const { _converse } = this.__super__;
-                    _converse.connection.disco.addFeature(Strophe.NS.MAM);
-                    return this.__super__.addClientFeatures.apply(this, arguments);
-                }
-            },
-
             ChatBox: {
                 getMessageAttributes ($message, $delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
@@ -60,7 +52,8 @@
                 afterMessagesFetched () {
                     const { _converse } = this.__super__;
                     if (this.disable_mam ||
-                            !_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                            !_converse.disco_entities.get(_converse.domain)
+                                .features.findWhere({'var': Strophe.NS.MAM})) {
                         return this.__super__.afterMessagesFetched.apply(this, arguments);
                     }
                     if (!this.model.get('mam_initialized') &&
@@ -83,7 +76,9 @@
                      * box, so that they are displayed inside it.
                      */
                     const { _converse } = this.__super__;
-                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    if (!_converse.disco_entities.get(_converse.domain)
+                            .features.findWhere({'var': Strophe.NS.MAM})) {
+
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
                             "user's server doesn't support XEP-0313",
@@ -167,7 +162,9 @@
                      * so that they are displayed inside it.
                      */
                     const { _converse } = this.__super__;
-                    if (!_converse.features.findWhere({'var': Strophe.NS.MAM})) {
+                    if (!_converse.disco_entities.get(_converse.domain)
+                            .features.findWhere({'var': Strophe.NS.MAM})) {
+
                         _converse.log(
                             "Attempted to fetch archived messages but this "+
                             "user's server doesn't support XEP-0313",
@@ -237,12 +234,12 @@
                 const queryid = _converse.connection.getUniqueId();
                 const attrs = {'type':'set'};
                 if (!_.isUndefined(options) && options.groupchat) {
-                    if (!options['with']) {
+                    if (!options['with']) { // eslint-disable-line dot-notation
                         throw new Error(
                             'You need to specify a "with" value containing '+
                             'the chat room JID, when querying groupchat messages.');
                     }
-                    attrs.to = options['with'];
+                    attrs.to = options['with']; // eslint-disable-line dot-notation
                 }
                 const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (!_.isUndefined(options)) {
@@ -250,8 +247,9 @@
                             .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                             .c('value').t(Strophe.NS.MAM).up().up();
 
-                    if (options['with'] && !options.groupchat) {
-                        stanza.c('field', {'var':'with'}).c('value').t(options['with']).up().up();
+                    if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
+                        stanza.c('field', {'var':'with'}).c('value')
+                            .t(options['with']).up().up(); // eslint-disable-line dot-notation
                     }
                     _.each(['start', 'end'], function (t) {
                         if (options[t]) {
@@ -352,11 +350,11 @@
                 }
             };
 
-
-            const onFeatureAdded = function (feature) {
+            /* Event handlers */
+            _converse.on('serviceDiscovered', (feature) => {
                 const prefs = feature.get('preferences') || {};
                 if (feature.get('var') === Strophe.NS.MAM &&
-                        prefs['default'] !== _converse.message_archiving &&
+                        prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
                         !_.isUndefined(_converse.message_archiving) ) {
                     // Ask the server for archiving preferences
                     _converse.connection.sendIQ(
@@ -365,8 +363,11 @@
                         _.partial(_converse.onMAMError, feature)
                     );
                 }
-            };
-            _converse.on('serviceDiscovered', onFeatureAdded.bind(_converse.features));
+            });
+
+            _converse.on('addClientFeatures', () => {
+                _converse.connection.disco.addFeature(Strophe.NS.MAM);
+            });
         }
     });
 }));

@@ -59,7 +59,7 @@
         "dot-notation": [
             "error",
             {
-                "allowKeywords": false
+                "allowKeywords": true
             }
         ],
         "eol-last": "error",

@@ -34,7 +34,7 @@
                 // However, some servers don't advertise while still keeping the
                 // connection option due to pings.
                 //
-                // var feature = _converse.features.findWhere({'var': Strophe.NS.PING});
+                // var feature = _converse.disco_entities[_converse.domain].features.findWhere({'var': Strophe.NS.PING});
                 _converse.lastStanzaDate = new Date();
                 if (_.isNil(jid)) {
                     jid = Strophe.getDomainFromJid(_converse.bare_jid);

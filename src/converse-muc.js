@@ -32,7 +32,8 @@
             "tpl!room_panel",
             "tpl!spinner",
             "awesomplete",
-            "converse-chatview"
+            "converse-chatview",
+            "converse-disco"
     ], factory);
 }(this, function (
             $,
@@ -130,19 +131,6 @@
                 this.__super__._tearDown.call(this, arguments);
             },
 
-            Features: {
-                addClientFeatures () {
-                    const { _converse } = this.__super__;
-                    this.__super__.addClientFeatures.apply(this, arguments);
-                    if (_converse.allow_muc_invitations) {
-                        _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
-                    }
-                    if (_converse.allow_muc) {
-                        _converse.connection.disco.addFeature(Strophe.NS.MUC);
-                    }
-                }
-            },
-
             ChatBoxes: {
                 model (attrs, options) {
                     const { _converse } = this.__super__;
@@ -182,6 +170,33 @@
                     }
                 },
 
+                featureAdded (feature) {
+                    const { _converse } = this.__super__;
+                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
+                        this.setMUCDomain(feature.get('from'));
+                    }
+                },
+
+                getMUCDomainFromDisco () {
+                    /* Check whether service discovery for the user's domain
+                     * returned MUC information and use that to automatically
+                     * set the MUC domain for the "Rooms" panel of the
+                     * controlbox.
+                     */
+                    const { _converse } = this.__super__;
+                    _converse.api.waitUntil('discoInitialized').then(() => {
+                        _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
+                        // Features could have been added before the controlbox was
+                        // initialized. We're only interested in MUC
+                        const feature = _converse.disco_entities[_converse.domain].features.findWhere({
+                            'var': Strophe.NS.MUC
+                        });
+                        if (feature) {
+                            this.featureAdded(feature);
+                        }
+                    });
+                },
+
                 onConnected () {
                     const { _converse } = this.__super__;
                     this.__super__.onConnected.apply(this, arguments);
@@ -189,33 +204,19 @@
                         return;
                     }
                     if (_.isUndefined(_converse.muc_domain)) {
-                        _converse.features.off('add', this.featureAdded, this);
-                        _converse.features.on('add', this.featureAdded, this);
-                        // Features could have been added before the controlbox was
-                        // initialized. We're only interested in MUC
-                        const feature = _converse.features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            this.featureAdded(feature);
-                        }
+                        this.getMUCDomainFromDisco();
                     } else {
                         this.setMUCDomain(_converse.muc_domain);
                     }
                 },
 
                 setMUCDomain (domain) {
+                    const { _converse } = this.__super__;
+                    _converse.muc_domain = domain;
                     this.roomspanel.model.save({'muc_domain': domain});
                     const $server= this.$el.find('input.new-chatroom-server');
                     if (!$server.is(':focus')) {
                         $server.val(this.roomspanel.model.get('muc_domain'));
-                    }
-                },
-
-                featureAdded (feature) {
-                    const { _converse } = this.__super__;
-                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
-                        this.setMUCDomain(feature.get('from'));
                     }
                 }
             },
@@ -1974,7 +1975,7 @@
                         return false;
                     } else {
                         return this.model.messages.where({
-                            'sender': this.model.get('nick'),
+                            'sender': 'me',
                             'message': this.model.getMessageBody(message)
                         }).filter(
                             (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 2000
@@ -2778,7 +2779,17 @@
                 }
             });
 
-            function reconnectToChatRooms () {
+            /* Event handlers */
+            _converse.on('addClientFeatures', () => {
+                if (_converse.allow_muc) {
+                    _converse.connection.disco.addFeature(Strophe.NS.MUC);
+                }
+                if (_converse.allow_muc_invitations) {
+                    _converse.connection.disco.addFeature('jabber:x:conference'); // Invites
+                }
+            });
+
+            _converse.on('reconnected', function reconnectToChatRooms () {
                 /* Upon a reconnection event from converse, join again
                  * all the open chat rooms.
                  */
@@ -2790,8 +2801,7 @@
                         view.fetchMessages();
                     }
                 });
-            }
-            _converse.on('reconnected', reconnectToChatRooms);
+            });
 
             function disconnectChatRooms () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as

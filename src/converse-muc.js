@@ -1971,17 +1971,21 @@
                      * gateway, which doesn't use message IDs but instead the
                      * aforementioned "ts" attributes.
                      */
-                    const ts = message.getAttribute('ts');
-                    if (_.isNull(ts)) {
-                        return false;
-                    } else {
-                        return this.model.messages.where({
-                            'sender': 'me',
-                            'message': this.model.getMessageBody(message)
-                        }).filter(
-                            (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 2000
-                        ).length > 0;
+                    const entity = _converse.disco_entities.get(_converse.domain);
+                    if (entity.identities.where({'name': "Slack-XMPP"})) {
+                        const ts = message.getAttribute('ts');
+                        if (_.isNull(ts)) {
+                            return false;
+                        } else {
+                            return this.model.messages.where({
+                                'sender': 'me',
+                                'message': this.model.getMessageBody(message)
+                            }).filter(
+                                (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000
+                            ).length > 0;
+                        }
                     }
+                    return false;
                 },
 
                 isDuplicate (message) {

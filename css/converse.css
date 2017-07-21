@@ -1336,6 +1336,9 @@
   #converse-embedded-chat .activated,
   #conversejs .activated {
     display: block !important; }
+  #converse-embedded-chat .pure-form-message,
+  #conversejs .pure-form-message {
+    padding: 0.5em 0; }
   #converse-embedded-chat .pure-button,
   #conversejs .pure-button {
     border-radius: 4px; }

@@ -169,6 +169,9 @@
     .activated {
         display: block !important;
     }
+    .pure-form-message {
+        padding: 0.5em 0;
+    }
     .pure-button {
         border-radius: $chatbox-border-radius;
     }

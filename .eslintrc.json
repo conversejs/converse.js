@@ -18,7 +18,7 @@
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
                 "find", "endsWith", "startsWith", "filter", "reduce",
-                "map", "replace", "toLower", "split", "trim", "forEach"
+                "map", "replace", "toLower", "split", "trim", "forEach", "toUpperCase"
             ]
         }],
         "lodash/prefer-startswith": "off",

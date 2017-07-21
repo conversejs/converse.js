@@ -381,7 +381,7 @@
                     'var': Strophe.NS.MAM
                 });
                 spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set
-                _converse.disco_entities.get(_converse.domain).features.onFeatureAdded(feature);
+                _converse.disco_entities.get(_converse.domain).onFeatureAdded(feature);
 
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe(

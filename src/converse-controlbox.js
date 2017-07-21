@@ -423,7 +423,7 @@
                     let jid = $jid_input.val(),
                         errors = false;
 
-                    if (!jid) {
+                    if (!jid || _.filter(jid.split('@')).length < 2) {
                         errors = true;
                         $jid_input.addClass('error');
                     }

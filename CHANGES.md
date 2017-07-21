@@ -9,7 +9,7 @@
 
 ### New features and improvements
 - Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
-- Add JID validation to the contact add form and the occupant invite form. [jcbrand]
+- Add JID validation to the contact add form, the occupant invite form and the login form. [jcbrand]
 - #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.). [jcbrand]
 
 ### New configuration settings

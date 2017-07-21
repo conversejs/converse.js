@@ -92,7 +92,8 @@
         'moderated': 'unmoderated',
         'unmoderated': 'moderated'
     };
-    const ROOMSTATUS = {
+
+    converse.ROOMSTATUS = {
         CONNECTED: 0,
         CONNECTING: 1,
         NICKNAME_REQUIRED: 2,
@@ -126,7 +127,7 @@
             _tearDown () {
                 const rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
-                    utils.safeSave(room, {'connection_status': ROOMSTATUS.DISCONNECTED});
+                    utils.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
                 this.__super__._tearDown.call(this, arguments);
             },
@@ -365,7 +366,7 @@
                           'num_unread_general': 0,
 
                           'affiliation': null,
-                          'connection_status': ROOMSTATUS.DISCONNECTED,
+                          'connection_status': converse.ROOMSTATUS.DISCONNECTED,
                           'name': '',
                           'description': '',
                           'features_fetched': false,
@@ -450,7 +451,7 @@
                     this.render().insertIntoDOM();
                     this.registerHandlers();
 
-                    if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         const handler = () => {
                             this.join();
                             this.fetchMessages();
@@ -468,7 +469,7 @@
                     this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
                     this.renderChatArea();
-                    if (this.model.get('connection_status') !== ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
                     utils.refreshWebkit();
@@ -554,7 +555,7 @@
                 },
 
                 afterConnected () {
-                    if (this.model.get('connection_status') === ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
                         this.scrollDown();
                         this.focus();
@@ -907,7 +908,7 @@
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    if (this.model.get('connection_status') !==  ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
                     const chat_state = this.model.get('chat_state');
@@ -1195,7 +1196,7 @@
                     if (!nick) {
                         return this.checkForReservedNick();
                     }
-                    if (this.model.get('connection_status') === ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         // We have restored a chat room from session storage,
                         // so we don't send out a presence stanza again.
                         return this;
@@ -1208,7 +1209,7 @@
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
-                    this.model.save('connection_status', ROOMSTATUS.CONNECTING);
+                    this.model.save('connection_status', converse.ROOMSTATUS.CONNECTING);
                     _converse.connection.send(stanza);
                     return this;
                 },
@@ -1240,7 +1241,7 @@
                     }
                     utils.safeSave(
                         this.model,
-                        {'connection_status': ROOMSTATUS.DISCONNECTED}
+                        {'connection_status': converse.ROOMSTATUS.DISCONNECTED}
                     );
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
@@ -1616,7 +1617,7 @@
                             label_join: __('Enter room'),
                             validation_message: message
                         }));
-                    this.model.save('connection_status', ROOMSTATUS.NICKNAME_REQUIRED);
+                    this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
                 },
 
@@ -1636,7 +1637,7 @@
                             label_password: __('Password: '),
                             label_submit: __('Submit')
                         }));
-                    this.model.save('connection_status', ROOMSTATUS.PASSWORD_REQUIRED);
+                    this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
                 },
 
@@ -1752,7 +1753,7 @@
                         if (notification.reason) {
                             this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
                         }
-                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
                     }
                     _.each(notification.messages, (message) => {
@@ -1809,7 +1810,7 @@
                     if (_.isEmpty(notifications) &&
                             _converse.muc_show_join_leave &&
                             stanza.nodeName === 'presence' &&
-                            this.model.get('connection_status') === ROOMSTATUS.ENTERED
+                            this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED
                         ) {
                         notifications = this.getJoinLeaveMessages(stanza);
                     }
@@ -1852,9 +1853,9 @@
                      * example after the spinner has been removed or after a
                      * form has been submitted and removed.
                      */
-                    if (this.model.get('connection_status') == ROOMSTATUS.NICKNAME_REQUIRED) {
+                    if (this.model.get('connection_status') == converse.ROOMSTATUS.NICKNAME_REQUIRED) {
                         this.renderNicknameForm();
-                    } else if (this.model.get('connection_status') == ROOMSTATUS.PASSWORD_REQUIRED) {
+                    } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                         this.renderPasswordForm();
                     } else {
                         this.$el.find('.chat-area').removeClass('hidden');
@@ -1923,7 +1924,7 @@
                             this.getRoomFeatures();
                         }
                     }
-                    this.model.save('connection_status', ROOMSTATUS.ENTERED);
+                    this.model.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 },
 
                 onChatRoomPresence (pres) {
@@ -1933,7 +1934,7 @@
                      *  (XMLElement) pres: The stanza
                      */
                     if (pres.getAttribute('type') === 'error') {
-                        this.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         this.showErrorMessage(pres);
                         return true;
                     }
@@ -1946,8 +1947,8 @@
                     // "join" messages are correctly shown.
                     this.occupantsview.updateOccupantsOnPresence(pres);
                     if (this.model.get('role') !== 'none' &&
-                            this.model.get('connection_status') === ROOMSTATUS.CONNECTING) {
-                        this.model.save('connection_status', ROOMSTATUS.CONNECTED);
+                            this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                        this.model.save('connection_status', converse.ROOMSTATUS.CONNECTED);
                     }
                     return true;
                 },
@@ -2662,7 +2663,7 @@
                         'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
-                    if (chatroom.get('connection_status') === ROOMSTATUS.DISCONNECTED) {
+                    if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                         _converse.chatboxviews.get(room_jid).join();
                     }
                 }
@@ -2795,7 +2796,7 @@
                  */
                 _converse.chatboxviews.each(function (view) {
                     if (view.model.get('type') === CHATROOMS_TYPE) {
-                        view.model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         view.registerHandlers();
                         view.join();
                         view.fetchMessages();
@@ -2810,7 +2811,7 @@
                  */
                 _converse.chatboxes.each(function (model) {
                     if (model.get('type') === CHATROOMS_TYPE) {
-                        model.save('connection_status', ROOMSTATUS.DISCONNECTED);
+                        model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     }
                 });
             }

@@ -49,24 +49,19 @@
                     return result;
                 },
 
-                afterMessagesFetched () {
-                    const { _converse } = this.__super__;
-                    if (this.disable_mam ||
-                            !_converse.disco_entities.get(_converse.domain)
-                                .features.findWhere({'var': Strophe.NS.MAM})) {
-                        return this.__super__.afterMessagesFetched.apply(this, arguments);
-                    }
-                    if (!this.model.get('mam_initialized') &&
-                            this.model.messages.length < _converse.archived_messages_page_size) {
+                fetchArchivedMessagesIfNecessary () {
+                    /* Check if archived messages should be fetched, and if so, do so. */
+                    const { _converse } = this.__super__,
+                          entity = _converse.disco_entities.get(_converse.domain),
+                          server_supports_mam = entity.features.findWhere({'var': Strophe.NS.MAM});
 
-                        this.fetchArchivedMessages({
-                            'before': '', // Page backwards from the most recent message
-                            'with': this.model.get('jid'),
-                            'max': _converse.archived_messages_page_size
-                        });
-                        this.model.save({'mam_initialized': true});
+                    if (this.disable_mam ||
+                            !server_supports_mam ||
+                            this.model.get('mam_initialized')) {
+                        return;
                     }
-                    return this.__super__.afterMessagesFetched.apply(this, arguments);
+                    this.fetchArchivedMessages();
+                    this.model.save({'mam_initialized': true});
                 },
 
                 fetchArchivedMessages (options) {
@@ -90,7 +85,11 @@
                     }
                     this.addSpinner();
                     _converse.queryForArchivedMessages(
-                        options,
+                        _.extend({
+                            'before': '', // Page backwards from the most recent message
+                            'max': _converse.archived_messages_page_size,
+                            'with': this.model.get('jid'),
+                        }, options),
                         (messages) => { // Success
                             this.clearSpinner();
                             if (messages.length) {
@@ -110,9 +109,7 @@
                     const { _converse } = this.__super__;
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
-                            'before': this.model.messages.at(0).get('archive_id'),
-                            'with': this.model.get('jid'),
-                            'max': _converse.archived_messages_page_size
+                            'before': this.model.messages.at(0).get('archive_id')
                         });
                     }
                 },
@@ -123,17 +120,8 @@
                 initialize () {
                     const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
-                    this.model.on('change:mam_enabled', function () {
-                        // Fetch messages again if we find out that mam has
-                        // been enabled (because the first attempt would then
-                        // have failed.
-                        this.fetchArchivedMessages({
-                            'before': '', // Page backwards from the most recent message
-                            'with': this.model.get('jid'),
-                            'max': _converse.archived_messages_page_size
-                        });
-                        this.model.save({'mam_initialized': true});
-                    }, this);
+                    this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
+                    this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
 
                 render () {
@@ -155,29 +143,33 @@
                     return this.__super__.handleMUCMessage.apply(this, arguments);
                 },
 
+                fetchArchivedMessagesIfNecessary () {
+                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                        !this.model.get('mam_enabled') ||
+                        this.model.get('mam_initialized')) {
+
+                        return;
+                    }
+                    this.fetchArchivedMessages();
+                    this.model.save({'mam_initialized': true});
+                },
+
                 fetchArchivedMessages (options) {
-                    /* Fetch archived chat messages from the XMPP server.
+                    /* Fetch archived chat messages for this Chat Room
                      *
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
-                    const { _converse } = this.__super__;
-                    if (!_converse.disco_entities.get(_converse.domain)
-                            .features.findWhere({'var': Strophe.NS.MAM})) {
-
-                        _converse.log(
-                            "Attempted to fetch archived messages but this "+
-                            "user's server doesn't support XEP-0313",
-                            Strophe.LogLevel.WARN);
-                        return;
-                    }
-                    if (!this.model.get('mam_enabled')) {
-                        return;
-                    }
                     this.addSpinner();
-
                     const that = this;
-                    _converse.api.archive.query(_.extend(options, {'groupchat': true}),
+                    const { _converse } = this.__super__;
+                    _converse.api.archive.query(
+                        _.extend({
+                            'groupchat': true,
+                            'before': '', // Page backwards from the most recent message
+                            'with': this.model.get('jid'),
+                            'max': _converse.archived_messages_page_size
+                        }, options),
                         function (messages) {
                             that.clearSpinner();
                             if (messages.length) {
@@ -194,7 +186,6 @@
                 }
             }
         },
-
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -367,6 +358,12 @@
 
             _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.MAM);
+            });
+
+            _converse.on('afterMessagesFetched', (chatboxview) => {
+                _converse.api.waitUntil('discoInitialized')
+                    .then(chatboxview.fetchArchivedMessagesIfNecessary.bind(chatboxview))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
         }
     });

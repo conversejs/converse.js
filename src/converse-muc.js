@@ -2140,6 +2140,7 @@
                         if (_.isNull(form)) {
                             const heading = this.el.querySelector('.occupants-heading');
                             form = tpl_chatroom_invite({
+                                'error_message': null,
                                 'label_invitation': __('Invite'),
                             });
                             heading.insertAdjacentHTML('afterend', form);
@@ -2329,17 +2330,31 @@
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);
                     }
+                    const form = suggestion.target.form,
+                          error = form.querySelector('.pure-form-message.error');
+                    if (!_.isNull(error)) {
+                        error.parentNode.removeChild(error);
+                    }
                     suggestion.target.value = '';
                 },
 
                 inviteFormSubmitted (evt) {
                     evt.preventDefault();
-                    const el = evt.target.querySelector('input.invited-contact');
+                    const el = evt.target.querySelector('input.invited-contact'),
+                          jid = el.value;
+                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                        evt.target.outerHTML = tpl_chatroom_invite({
+                            'error_message': __('Please enter a valid XMPP username'),
+                            'label_invitation': __('Invite'),
+                        });
+                        this.initInviteWidget();
+                        return;
+                    }
                     this.promptForInvite({
                         'target': el,
                         'text': {
-                            'label': el.value,
-                            'value': el.value
+                            'label': jid,
+                            'value': jid
                         }});
                 },
 
@@ -2365,7 +2380,8 @@
                         'minChars': 1,
                         'list': list
                     });
-                    el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
+                    el.addEventListener('awesomplete-selectcomplete',
+                        this.promptForInvite.bind(this));
                 }
             });
 

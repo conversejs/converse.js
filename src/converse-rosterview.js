@@ -819,9 +819,13 @@
                             _.each(matches, (item) => {
                                 this.get(item.get('id')).$el.hide();
                             });
-                            _.each(this.model.contacts.reject(
-                                utils.contains.not('fullname', q)),
-                                (item) => { this.get(item.get('id')).$el.show(); });
+                            if (this.model.get('state') === _converse.OPENED) {
+                                _.each(this.model.contacts.reject(
+                                    utils.contains.not('fullname', q)),
+                                    (item) => {
+                                        this.get(item.get('id')).$el.show();
+                                    });
+                            }
                             this.showIfNecessary();
                         }
                     }

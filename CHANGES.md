@@ -32,6 +32,8 @@
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
 #### Bugfixes:
+- Roster filter is not shown when all groups are collapsed. [jcbrand]
+- When filtering, contacts in closed groups appear. [jcbrand]
 - Room name wasn't being updated after changing it in the configuration form. [jcbrand]
 - Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
 - Don't show duplicate sent groupchat messages in Slack chat rooms. [jcbrand]

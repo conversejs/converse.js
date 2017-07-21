@@ -329,7 +329,7 @@
                     if (!this.$el.is(':visible')) {
                         return;
                     }
-                    if (this.$roster.hasScrollBar()) {
+                    if (_converse.roster.length >= 10) {
                         this.filter_view.show();
                     } else if (!this.filter_view.isActive()) {
                         this.filter_view.hide();

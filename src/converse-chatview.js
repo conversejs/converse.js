@@ -290,6 +290,7 @@
                     // We only start listening for the scroll event after
                     // cached messages have been fetched
                     this.$content.on('scroll', this.markScrolled.bind(this));
+                    _converse.emit('afterMessagesFetched', this);
                 },
 
                 fetchMessages () {

@@ -27,6 +27,20 @@ Refer to the :ref:`whitelisted_plugins` setting.
 
 Here follows the different events that are emitted:
 
+afterMessagesFetched
+~~~~~~~~~~~~~~~~~~~~
+
+Emitted whenever a chat box has fetched its messages from ``sessionStorage`` and
+**NOT** from the server.
+
+This event is listened to by the ``converse-mam`` plugin to know when it can
+fetch archived messages from the server.
+
+The event handler is passed the ``Backbone.View`` instance of the relevant chat
+box.
+
+``_converse.on('afterMessagesFetched', function (chatboxview) { ... });``
+
 cachedRoster
 ~~~~~~~~~~~~
 
@@ -120,6 +134,15 @@ contactStatusMessageChanged
 When a chat buddy's custom status message has changed.
 
 ``_converse.on('contactStatusMessageChanged', function (data) { ... });``
+
+discoInitialized
+~~~~~~~~~~~~~~~~
+
+Emitted once the ``converse-disco`` plugin has been initialized and the
+``_converse.disco_entities`` collection will be available and populated with at
+least the service discovery features of the user's own server.
+
+``_converse.on('discoInitialized', function () { ... });``
 
 disconnected
 ~~~~~~~~~~~~

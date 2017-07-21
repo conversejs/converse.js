@@ -20,6 +20,10 @@
 * [emojione_image_path](https://conversejs.org/docs/html/configurations.html#emojione-image-path)
   is used to specify from where Emojione will load images for rendering emojis.
 
+### New events
+* ['discoInitialized'](https://conversejs.org/docs/html/development.html#discoInitialized)
+* ['afterMessagesFetched'](https://conversejs.org/docs/html/development.html#afterMessagesFetched)
+
 ### Code changes
 - Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
 - Remove `jquery.easing` from the full build. Was only being used by the

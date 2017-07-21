@@ -509,6 +509,9 @@
 
                 toggleOptions (ev) {
                     ev.preventDefault();
+                    utils.slideInAllElements(
+                        document.querySelectorAll('#conversejs .contact-form-container')
+                    );
                     $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
                 },
 

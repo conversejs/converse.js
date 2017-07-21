@@ -152,7 +152,8 @@
                         padding-bottom: 0.5em;
                         text-shadow: 0 1px 0 $text-shadow-color;
                     }
-                    dd.available-chatroom {
+                    .available-chatroom,
+                    .open-chatroom {
                         border: none;
                         clear: both;
                         color: $text-color;
@@ -165,6 +166,7 @@
                             color: $dark-link-color;
                         }
                         &.unread-msgs {
+                            .available-room,
                             .open-room {
                                 max-width: 55%;
                                 width: auto;
@@ -178,12 +180,15 @@
                                 }
                             }
                             &.open-room {
-                                float: left;
                                 width: 68%;
+                                float: left;
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                                 white-space: nowrap;
                                 padding-right: 0.5em;
+                            }
+                            &.available-room {
+                                width: 85%;
                             }
                         }
                         .remove-bookmark {

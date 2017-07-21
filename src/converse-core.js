@@ -155,7 +155,6 @@
     const PROMISES = [
         'cachedRoster',
         'chatBoxesFetched',
-        'connected',
         'pluginsInitialized',
         'roster',
         'rosterContactsFetched',

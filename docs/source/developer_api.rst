@@ -912,7 +912,6 @@ The core events, which are also promises are:
 
 * cachedRoster
 * chatBoxesFetched
-* connected
 * pluginsInitialized
 * roster
 * rosterContactsFetched

@@ -22,7 +22,9 @@ avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/
 
 ![Screenshot of Converse.js](https://opkode.com/img/converse-screenshot.png)
 
-### inVerse: a full-screen version of converse.js
+### inVerse: a fullscreen version of converse.js
+
+Converse.js is also available in a fullscreen version, called [inVerse](https://inverse.chat)
 
 ![Screenshot of inVerse](https://opkode.com/img/inverse-screenshot.png)
 

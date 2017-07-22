@@ -35,21 +35,21 @@
             null,
             ""
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Klikk for å åpne dette rommet"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Vis mer informasjon om dette rommet"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "Klikk for å åpne dette rommet"
          ],
          "Personal message": [
             null,
@@ -187,6 +187,14 @@
             null,
             "Logg Av"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Klikk for å legge til nye meldingskontakter"
+         ],
+         "Add a contact": [
+            null,
+            "Legg til en Kontakt"
+         ],
          "Contact name": [
             null,
             "Kontaktnavn"
@@ -203,49 +211,9 @@
             null,
             "Legg Til"
          ],
-         "Click to add new chat contacts": [
-            null,
-            "Klikk for å legge til nye meldingskontakter"
-         ],
-         "Add a contact": [
-            null,
-            "Legg til en Kontakt"
-         ],
          "No users found": [
             null,
             "Ingen brukere funnet"
-         ],
-         "Click to add as a chat contact": [
-            null,
-            "Klikk for å legge til som meldingskontakt"
-         ],
-         "Toggle chat": [
-            null,
-            "Endre chatten"
-         ],
-         "Reconnecting": [
-            null,
-            "Kobler til igjen"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Kobler til"
-         ],
-         "Authenticating": [
-            null,
-            "Godkjenner"
-         ],
-         "Authentication Failed": [
-            null,
-            "Godkjenning mislyktes"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
          ],
          "This client does not allow presence subscriptions": [
             null,
@@ -323,7 +291,7 @@
             null,
             "Melding"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -399,9 +367,9 @@
             null,
             "Send"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "Årsaken som er oppgitt er: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -471,7 +439,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -479,7 +447,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -494,6 +462,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Du kan eventuelt inkludere en melding og forklare årsaken til invitasjonen."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -515,13 +487,13 @@
             null,
             "Ingen rom på %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Rom på %1$s"
-         ],
          "Description:": [
             null,
             "Beskrivelse:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -743,10 +715,6 @@
             null,
             "Registrering var vellykket"
          ],
-         "Return": [
-            null,
-            "Tilbake"
-         ],
          "Retry": [
             null,
             ""
@@ -807,6 +775,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -814,18 +786,6 @@
          "Extended Away": [
             null,
             ""
-         ],
-         "Click to remove this contact": [
-            null,
-            "Klikk for å fjerne denne kontakten"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Klikk for å Godta denne kontaktforespørselen"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Klikk for å avslå denne kontaktforespørselen"
          ],
          "Click to chat with this contact": [
             null,
@@ -838,10 +798,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Er du sikker på at du vil fjerne denne kontakten?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            ""
          ],
          "Are you sure you want to decline this contact request?": [
             null,

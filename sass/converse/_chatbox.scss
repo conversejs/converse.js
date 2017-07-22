@@ -12,4 +12,49 @@
             border-top-right-radius: 0;
         }
     }
+    .chatbox {
+        .chat-body {
+            .chat-message {
+                margin: 0.3em;
+                line-height: $line-height-large;
+                .chat-msg-author {
+                    line-height: $line-height-large;
+                }
+                .chat-msg-content {
+                    line-height: $line-height-large;
+                    .emojione {
+                        margin-bottom: -5px;
+                    }
+                }
+            }
+        }
+    }
+    .chatbox {
+        form.sendXMPPMessage {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        ul {
+                            &.emoji-toolbar {
+                                width: 100%;
+                                .emoji-category {
+                                    float: left;
+                                }
+                                li {
+                                    padding: 2px;
+                                }
+                            }
+                        }
+                    }
+                    &.toggle-smiley {
+                        ul {
+                            li {
+                                padding: 2px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

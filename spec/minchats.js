@@ -6,7 +6,11 @@
 
     describe("The Minimized Chats Widget", function () {
 
-        it("shows chats that have been minimized",  mock.initConverse(function (_converse) {
+        it("shows chats that have been minimized",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
             test_utils.openContactsPanel(_converse);
@@ -34,9 +38,14 @@
             expect(_converse.minimized_chats.$el.is(':visible')).toBeTruthy();
             expect(_converse.minimized_chats.keys().length).toBe(2);
             expect(_.includes(_converse.minimized_chats.keys(), contact_jid)).toBeTruthy();
+            done();
         }));
 
-        it("can be toggled to hide or show minimized chats", mock.initConverse(function (_converse) {
+        it("can be toggled to hide or show minimized chats",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
             test_utils.openContactsPanel(_converse);
@@ -56,9 +65,14 @@
             _converse.minimized_chats.$('#toggle-minimized-chats').click();
             expect(_converse.minimized_chats.$('.minimized-chats-flyout').is(':visible')).toBeFalsy();
             expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
+            done();
         }));
 
-        it("shows the number messages received to minimized chats", mock.initConverse(function (_converse) {
+        it("shows the number messages received to minimized chats",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
             test_utils.openContactsPanel(_converse);
@@ -120,28 +134,35 @@
                 id: (new Date()).getTime()
             }).c('inactive', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe((i).toString());
+            done();
         }));
 
-        it("shows the number messages received to minimized groupchats", mock.initConverse(function (_converse) {
+        it("shows the number messages received to minimized groupchats",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             var room_jid = 'kitchen@conference.shakespeare.lit';
             test_utils.openAndEnterChatRoom(
-                _converse, 'kitchen', 'conference.shakespeare.lit', 'fires');
-            var view = _converse.chatboxviews.get(room_jid);
-            view.model.set({'minimized': true});
+                _converse, 'kitchen', 'conference.shakespeare.lit', 'fires').then(function () {
+                var view = _converse.chatboxviews.get(room_jid);
+                view.model.set({'minimized': true});
 
-            var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var message = 'fires: Your attention is required';
-            var nick = mock.chatroom_names[0],
-                msg = $msg({
-                    from: room_jid+'/'+nick,
-                    id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
-                    type: 'groupchat'
-                }).c('body').t(message).tree();
-            view.handleMUCMessage(msg);
+                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var message = 'fires: Your attention is required';
+                var nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: room_jid+'/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                view.handleMUCMessage(msg);
 
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
+                expect(_converse.minimized_chats.toggleview.$('.unread-message-count').is(':visible')).toBeTruthy();
+                expect(_converse.minimized_chats.toggleview.$('.unread-message-count').text()).toBe('1');
+                done();
+            });
         }));
     });
 }));

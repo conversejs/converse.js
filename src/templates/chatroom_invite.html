@@ -1,3 +1,6 @@
 <form class="pure-form room-invite">
+    {[ if (error_message) { ]}
+        <span class="pure-form-message error">{{{error_message}}}</span>
+    {[ } ]}
     <input class="invited-contact" placeholder="{{{label_invitation}}}" type="text"/>
 </form>

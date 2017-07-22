@@ -3,6 +3,10 @@
     <a class="chatbox-btn configure-chatroom-button icon-wrench" title="{{{info_configure}}} "></a>
 {[ } ]}
 <div class="chat-title" title="{{{jid}}}">
-    {{{ name }}}
+    {[ if (name && name !== Strophe.getNodeFromJid(jid)) { ]}
+        <span class="chatroom-name">{{{ name }}}</span>
+    {[ } else { ]}
+        <span class="chatroom-name">{{{ Strophe.getNodeFromJid(jid) }}}</span>@{{{ Strophe.getDomainFromJid(jid) }}}
+    {[ } ]}
     <p class="chatroom-description">{{{ description }}}<p/>
 </div>

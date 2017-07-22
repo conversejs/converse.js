@@ -1,8 +1,7 @@
 (function (root, factory) {
-    define(['converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
-}(this, function (converse_api, Promise, mock, waitUntilPromise) {
+    define(['jquery.noconflict', 'converse', 'es6-promise',  'mock', 'wait-until-promise'], factory);
+}(this, function ($, converse_api, Promise, mock, waitUntilPromise) {
     var _ = converse_api.env._;
-    var $ = converse_api.env.jQuery;
     var $msg = converse_api.env.$msg;
     var $pres = converse_api.env.$pres;
     var $iq = converse_api.env.$iq;
@@ -87,54 +86,60 @@
         this.openRoomsPanel(_converse);
         var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
         roomspanel.$el.find('input.new-chatroom-name').val(room);
-        roomspanel.$el.find('input.new-chatroom-nick').val(nick);
         roomspanel.$el.find('input.new-chatroom-server').val(server);
         roomspanel.$el.find('form').submit();
         this.closeControlBox(_converse);
     };
 
     utils.openAndEnterChatRoom = function (converse, room, server, nick) {
-        sinon.spy(converse.connection, 'sendIQ');
-        utils.openChatRoom(converse, room, server);
-        var view = converse.chatboxviews.get((room+'@'+server).toLowerCase());
+        return new Promise(function (resolve, reject) {
+            sinon.spy(converse.connection, 'sendIQ');
+            utils.openChatRoom(converse, room, server);
+            var view = converse.chatboxviews.get((room+'@'+server).toLowerCase());
 
-        // We pretend this is a new room, so no disco info is returned.
-        var IQ_id = converse.connection.sendIQ.firstCall.returnValue;
-        var features_stanza = $iq({
-                from: 'lounge@localhost',
-                'id': IQ_id,
-                'to': 'dummy@localhost/desktop',
-                'type': 'error'
-            }).c('error', {'type': 'cancel'})
-                .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-        converse.connection._dataRecv(utils.createRequest(features_stanza));
+            // We pretend this is a new room, so no disco info is returned.
+            var IQ_id = converse.connection.sendIQ.firstCall.returnValue;
+            var features_stanza = $iq({
+                    'from': 'lounge@localhost',
+                    'id': IQ_id,
+                    'to': 'dummy@localhost/desktop',
+                    'type': 'error'
+                }).c('error', {'type': 'cancel'})
+                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            converse.connection._dataRecv(utils.createRequest(features_stanza));
 
-        // The XMPP server returns the reserved nick for this user.
-        IQ_id = converse.connection.sendIQ.secondCall.returnValue;
-        var stanza = $iq({
-            'type': 'result',
-            'id': IQ_id,
-            'from': view.model.get('jid'),
-            'to': converse.connection.jid 
-        }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
-            .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
-        converse.connection._dataRecv(utils.createRequest(stanza));
-        // The user has just entered the room (because join was called)
-        // and receives their own presence from the server.
-        // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
-        var presence = $pres({
-                to: converse.connection.jid,
-                from: room+'@'+server+'/'+nick,
-                id: 'DC352437-C019-40EC-B590-AF29E879AF97'
-        }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-            .c('item').attrs({
-                affiliation: 'member',
-                jid: converse.bare_jid,
-                role: 'occupant'
-            }).up()
-            .c('status').attrs({code:'110'});
-        converse.connection._dataRecv(utils.createRequest(presence));
-        converse.connection.sendIQ.restore();
+            utils.waitUntil(function () {
+                return converse.connection.sendIQ.secondCall;
+            }).then(function () {
+                // The XMPP server returns the reserved nick for this user.
+                IQ_id = converse.connection.sendIQ.secondCall.returnValue;
+                var stanza = $iq({
+                    'type': 'result',
+                    'id': IQ_id,
+                    'from': view.model.get('jid'),
+                    'to': converse.connection.jid 
+                }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
+                    .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
+                converse.connection._dataRecv(utils.createRequest(stanza));
+                // The user has just entered the room (because join was called)
+                // and receives their own presence from the server.
+                // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
+                var presence = $pres({
+                        to: converse.connection.jid,
+                        from: room+'@'+server+'/'+nick,
+                        id: 'DC352437-C019-40EC-B590-AF29E879AF97'
+                }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                    .c('item').attrs({
+                        affiliation: 'member',
+                        jid: converse.bare_jid,
+                        role: 'occupant'
+                    }).up()
+                    .c('status').attrs({code:'110'});
+                converse.connection._dataRecv(utils.createRequest(presence));
+                converse.connection.sendIQ.restore();
+                resolve();
+            });
+        });
     };
 
     utils.clearBrowserStorage = function () {

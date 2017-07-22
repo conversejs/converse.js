@@ -35,21 +35,21 @@
             null,
             ""
          ],
-         "Bookmarked Rooms": [
+         "Bookmarks": [
             null,
             ""
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "CLique para abrir a sala"
+            ""
          ],
          "Show more information on this room": [
             null,
             "Mostrar mais informações nessa sala"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            ""
+            "CLique para abrir a sala"
          ],
          "Personal message": [
             null,
@@ -167,6 +167,14 @@
             null,
             "Offline"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Clique para adicionar novos contatos ao chat"
+         ],
+         "Add a contact": [
+            null,
+            "Adicionar contato"
+         ],
          "Contact name": [
             null,
             "Nome do contato"
@@ -183,45 +191,9 @@
             null,
             "Adicionar"
          ],
-         "Click to add new chat contacts": [
-            null,
-            "Clique para adicionar novos contatos ao chat"
-         ],
-         "Add a contact": [
-            null,
-            "Adicionar contato"
-         ],
          "No users found": [
             null,
             "Não foram encontrados usuários"
-         ],
-         "Click to add as a chat contact": [
-            null,
-            "Clique para adicionar como um contato do chat"
-         ],
-         "Toggle chat": [
-            null,
-            "Alternar bate-papo"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Conectando"
-         ],
-         "Authenticating": [
-            null,
-            "Autenticando"
-         ],
-         "Authentication Failed": [
-            null,
-            "Falha de autenticação"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
          ],
          "This client does not allow presence subscriptions": [
             null,
@@ -295,7 +267,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -367,7 +339,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -435,7 +407,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -443,7 +415,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -456,6 +428,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -479,13 +455,13 @@
             null,
             "Sem salas em %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Salas em %1$s"
-         ],
          "Description:": [
             null,
             "Descrição:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -671,10 +647,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -739,6 +711,10 @@
             null,
             ""
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             ""
@@ -747,19 +723,11 @@
             null,
             ""
          ],
-         "Click to remove this contact": [
-            null,
-            "Clique para remover o contato"
-         ],
          "Click to chat with this contact": [
             null,
             "Clique para conversar com o contato"
          ],
          "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

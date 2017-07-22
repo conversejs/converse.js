@@ -10,7 +10,8 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["converse-core",
+    define(["jquery.noconflict",
+            "converse-core",
             "tpl!form_username",
             "tpl!register_panel",
             "tpl!register_tab",
@@ -20,6 +21,7 @@
             "converse-controlbox"
     ], factory);
 }(this, function (
+            $,
             converse,
             tpl_form_username,
             tpl_register_panel,
@@ -32,19 +34,13 @@
     "use strict";
 
     // Strophe methods for building stanzas
-    var Strophe = converse.env.Strophe,
-        Backbone = converse.env.Backbone,
-        utils = converse.env.utils,
-        $iq = converse.env.$iq;
-    // Other necessary globals
-    var $ = converse.env.jQuery,
-        _ = converse.env._;
+    const { Strophe, Backbone, utils, $iq, _ } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
     // Add Strophe Statuses
-    var i = 0;
+    let i = 0;
     _.each(_.keys(Strophe.Status), function (key) {
         i = Math.max(i, Strophe.Status[key]);
     });
@@ -64,9 +60,9 @@
 
             ControlBoxView: {
 
-                switchTab: function (ev) {
-                    var _converse = this.__super__._converse;
-                    var result = this.__super__.switchTab.apply(this, arguments);
+                switchTab (ev) {
+                    const { _converse } = this.__super__;
+                    const result = this.__super__.switchTab.apply(this, arguments);
                     if (_converse.registration_domain &&
                             ev.target.getAttribute('data-id') === "register" &&
                             !this.model.get('registration_form_rendered')) {
@@ -75,8 +71,8 @@
                     return result;
                 },
 
-                renderRegistrationPanel: function () {
-                    var _converse = this.__super__._converse;
+                renderRegistrationPanel () {
+                    const { _converse } = this.__super__;
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
@@ -87,7 +83,7 @@
                     return this;
                 },
 
-                renderLoginPanel: function () {
+                renderLoginPanel () {
                     /* Also render a registration panel, when rendering the
                      * login panel.
                      */
@@ -98,12 +94,12 @@
             }
         },
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
+            const { _converse } = this,
+                { __ } = _converse;
 
             // Add new templates
             _converse.templates.form_username = tpl_form_username;
@@ -112,7 +108,7 @@
             _converse.templates.registration_form = tpl_registration_form;
             _converse.templates.registration_request = tpl_registration_request;
 
-            this.updateSettings({
+            _converse.api.settings.update({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
@@ -126,14 +122,14 @@
                     'submit form#converse-register': 'onProviderChosen'
                 },
 
-                initialize: function (cfg) {
+                initialize (cfg) {
                     this.reset();
                     this.$parent = cfg.$parent;
                     this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     this.registerHooks();
                 },
 
-                render: function () {
+                render () {
                     this.model.set('registration_form_rendered', false);
                     this.$parent.append(this.$el.html(
                         tpl_register_panel({
@@ -150,13 +146,13 @@
                     return this;
                 },
 
-                registerHooks: function () {
+                registerHooks () {
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
                      * requesting the registration fields.
                      */
-                    var conn = _converse.connection;
-                    var connect_cb = conn._connect_cb.bind(conn);
-                    conn._connect_cb = function (req, callback, raw) {
+                    const conn = _converse.connection;
+                    const connect_cb = conn._connect_cb.bind(conn);
+                    conn._connect_cb = (req, callback, raw) => {
                         if (!this._registering) {
                             connect_cb(req, callback, raw);
                         } else {
@@ -164,26 +160,26 @@
                                 this._registering = false;
                             }
                         }
-                    }.bind(this);
+                    };
                 },
 
-                getRegistrationFields: function (req, _callback, raw) {
+                getRegistrationFields (req, _callback, raw) {
                     /*  Send an IQ stanza to the XMPP server asking for the
                      *  registration fields.
                      *  Parameters:
                      *    (Strophe.Request) req - The current request
                      *    (Function) callback
                      */
-                    var conn = _converse.connection;
+                    const conn = _converse.connection;
                     conn.connected = true;
 
-                    var body = conn._proto._reqToData(req);
+                    const body = conn._proto._reqToData(req);
                     if (!body) { return; }
                     if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
                         return false;
                     }
-                    var register = body.getElementsByTagName("register");
-                    var mechanisms = body.getElementsByTagName("mechanism");
+                    const register = body.getElementsByTagName("register");
+                    const mechanisms = body.getElementsByTagName("mechanism");
                     if (register.length === 0 && mechanisms.length === 0) {
                         conn._proto._no_auth_received(_callback);
                         return false;
@@ -204,7 +200,7 @@
                     return true;
                 },
 
-                onRegistrationFields: function (stanza) {
+                onRegistrationFields (stanza) {
                     /*  Handler for Registration Fields Request.
                      *
                      *  Parameters:
@@ -219,8 +215,8 @@
                     return false;
                 },
 
-                reset: function (settings) {
-                    var defaults = {
+                reset (settings) {
+                    const defaults = {
                         fields: {},
                         urls: [],
                         title: "",
@@ -236,7 +232,7 @@
                     }
                 },
 
-                onProviderChosen: function (ev) {
+                onProviderChosen (ev) {
                     /* Callback method that gets called when the user has chosen an
                      * XMPP provider.
                      *
@@ -244,7 +240,7 @@
                      *      (Submit Event) ev - Form submission event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var $form = $(ev.target),
+                    const $form = $(ev.target),
                         $domain_input = $form.find('input[name=domain]'),
                         domain = $domain_input.val();
                     if (!domain) {
@@ -255,7 +251,7 @@
                     this.fetchRegistrationForm(domain, __('Cancel'));
                 },
 
-                fetchRegistrationForm: function (domain_name, cancel_label) {
+                fetchRegistrationForm (domain_name, cancel_label) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
@@ -271,30 +267,28 @@
                     return false;
                 },
 
-                renderRegistrationRequest: function (cancel_label) {
-                    var form = this.el.querySelector('#converse-register');
-                    utils.createElementsFromString(
-                        form,
-                        tpl_registration_request({
-                            cancel: cancel_label,
-                            info_message: _converse.__('Requesting a registration form from the XMPP server')
-                        })
-                    );
+                renderRegistrationRequest (cancel_label) {
+                    const form = this.el.querySelector('#converse-register');
+                    const markup = tpl_registration_request({
+                        'cancel': cancel_label,
+                        'info_message': _converse.__('Requesting a registration form from the XMPP server')
+                    });
+                    form.appendChild(utils.createFragmentFromText(markup));
                     if (!_converse.registration_domain) {
-                        var cancel_button = document.querySelector('button.button-cancel');
+                        const cancel_button = document.querySelector('button.button-cancel');
                         cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
                     }
                 },
 
-                giveFeedback: function (message, klass) {
+                giveFeedback (message, klass) {
                     this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
                     if (klass) {
                         $('.reg-feedback').addClass(klass);
                     }
                 },
 
-                onRegistering: function (status, error) {
-                    var that;
+                onRegistering (status, error) {
+                    let that;
                     _converse.log('onRegistering');
                     if (_.includes([
                                 Strophe.Status.DISCONNECTED,
@@ -304,7 +298,10 @@
                                 Strophe.Status.CONFLICT
                             ], status)) {
 
-                        _converse.log('Problem during registration: Strophe.Status is: '+status);
+                        _converse.log(
+                            `Problem during registration: Strophe.Status is: ${status}`,
+                            Strophe.LogLevel.ERROR
+                        );
                         this.cancelRegistration();
                         if (error) {
                             this.giveFeedback(error, 'error');
@@ -339,7 +336,7 @@
                     }
                 },
 
-                renderRegistrationForm: function (stanza) {
+                renderRegistrationForm (stanza) {
                     /* Renders the registration form based on the XForm fields
                      * received from the XMPP server.
                      *
@@ -348,9 +345,9 @@
                      */
                     this.model.set('registration_form_rendered', true);
 
-                    var $form = this.$('form'),
-                        $stanza = $(stanza),
-                        $fields, $input;
+                    const $form = this.$('form'),
+                        $stanza = $(stanza);
+                    let $fields, $input;
                     $form.empty().append(tpl_registration_form({
                         'domain': this.domain,
                         'title': this.title,
@@ -358,15 +355,15 @@
                     }));
                     if (this.form_type === 'xform') {
                         $fields = $stanza.find('field');
-                        _.each($fields, function (field) {
+                        _.each($fields, (field) => {
                             $form.append(utils.xForm2webForm.bind(this, $(field), $stanza));
-                        }.bind(this));
+                        });
                     } else {
                         // Show fields
-                        _.each(_.keys(this.fields), function (key) {
+                        _.each(_.keys(this.fields), (key) => {
                             if (key === "username") {
                                 $input = tpl_form_username({
-                                    domain: ' @'+this.domain,
+                                    domain: ` @${this.domain}`,
                                     name: key,
                                     type: "text",
                                     label: key,
@@ -374,26 +371,26 @@
                                     required: 1
                                 });
                             } else {
-                                $form.append('<label>'+key+'</label>');
-                                $input = $('<input placeholder="'+key+'" name="'+key+'"></input>');
+                                $form.append(`<label>${key}</label>`);
+                                $input = $(`<input placeholder="${key}" name="${key}"></input>`);
                                 if (key === 'password' || key === 'email') {
                                     $input.attr('type', key);
                                 }
                             }
                             $form.append($input);
-                        }.bind(this));
+                        });
                         // Show urls
-                        _.each(this.urls, function (url) {
+                        _.each(this.urls, (url) => {
                             $form.append($('<a target="blank"></a>').attr('href', url).text(url));
-                        }.bind(this));
+                        });
                     }
                     if (this.fields) {
-                        $form.append('<input type="submit" class="pure-button button-primary" value="'+__('Register')+'"/>');
+                        $form.append(`<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`);
                         $form.on('submit', this.submitRegistrationForm.bind(this));
-                        $form.append('<input type="button" class="pure-button button-cancel" value="'+__('Cancel')+'"/>');
+                        $form.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
                         $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                     } else {
-                        $form.append('<input type="button" class="submit" value="'+__('Return')+'"/>');
+                        $form.append(`<input type="button" class="submit" value="${__('Return')}"/>`);
                         $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                     }
                     if (_converse.registration_domain) {
@@ -401,7 +398,7 @@
                     }
                 },
 
-                reportErrors: function (stanza) {
+                reportErrors (stanza) {
                     /* Report back to the user any error messages received from the
                      * XMPP server after attempted registration.
                      *
@@ -409,11 +406,12 @@
                      *      (XMLElement) stanza - The IQ stanza received from the
                      *      XMPP server.
                      */
-                    var $form= this.$('form'), flash;
-                    var $errmsgs = $(stanza).find('error text');
-                    var $flash = $form.find('.form-errors');
+                    const $form= this.$('form'),
+                          $errmsgs = $(stanza).find('error text');
+
+                    let $flash = $form.find('.form-errors');
                     if (!$flash.length) {
-                    flash = '<legend class="form-errors"></legend>';
+                    const flash = '<legend class="form-errors"></legend>';
                         if ($form.find('p.instructions').length) {
                             $form.find('p.instructions').append(flash);
                         } else {
@@ -434,7 +432,7 @@
                     $flash.show();
                 },
 
-                cancelRegistration: function (ev) {
+                cancelRegistration (ev) {
                     /* Handler, when the user cancels the registration form.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
@@ -450,7 +448,7 @@
                     }
                 },
 
-                submitRegistrationForm: function (ev) {
+                submitRegistrationForm (ev) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
@@ -459,7 +457,7 @@
                      *      (Event) ev - the submit event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    var has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'),
+                    const has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'),
                         function (result, input) {
                             if (input.value === '') {
                                 input.classList.add('error');
@@ -468,7 +466,7 @@
                             return result;
                         }, 0);
                     if (has_empty_inputs) { return; }
-                    var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+                    const $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
                         iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 
                     if (this.form_type === 'xform') {
@@ -478,7 +476,7 @@
                         });
                     } else {
                         $inputs.each(function () {
-                            var $input = $(this);
+                            const $input = $(this);
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
@@ -488,16 +486,16 @@
                     this.setFields(iq.tree());
                 },
 
-                setFields: function (stanza) {
+                setFields (stanza) {
                     /* Stores the values that will be sent to the XMPP server
                      * during attempted registration.
                      *
                      * Parameters:
                      *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                      */
-                    var $query = $(stanza).find('query'), $xform;
+                    const $query = $(stanza).find('query');
                     if ($query.length > 0) {
-                        $xform = $query.find('x[xmlns="'+Strophe.NS.XFORM+'"]');
+                        const $xform = $query.find(`x[xmlns="${Strophe.NS.XFORM}"]`);
                         if ($xform.length > 0) {
                             this._setFieldsFromXForm($xform);
                         } else {
@@ -506,41 +504,41 @@
                     }
                 },
 
-                _setFieldsFromLegacy: function ($query) {
-                    $query.children().each(function (idx, field) {
-                        var $field = $(field);
+                _setFieldsFromLegacy ($query) {
+                    $query.children().each((idx, field) => {
+                        const $field = $(field);
                         if (field.tagName.toLowerCase() === 'instructions') {
                             this.instructions = Strophe.getText(field);
                             return;
                         } else if (field.tagName.toLowerCase() === 'x') {
                             if ($field.attr('xmlns') === 'jabber:x:oob') {
-                                $field.find('url').each(function (idx, url) {
+                                $field.find('url').each((idx, url) => {
                                     this.urls.push($(url).text());
-                                }.bind(this));
+                                });
                             }
                             return;
                         }
                         this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
-                    }.bind(this));
+                    });
                     this.form_type = 'legacy';
                 },
 
-                _setFieldsFromXForm: function ($xform) {
+                _setFieldsFromXForm ($xform) {
                     this.title = $xform.find('title').text();
                     this.instructions = $xform.find('instructions').text();
-                    $xform.find('field').each(function (idx, field) {
-                        var _var = field.getAttribute('var');
+                    $xform.find('field').each((idx, field) => {
+                        const _var = field.getAttribute('var');
                         if (_var) {
                             this.fields[_var.toLowerCase()] = $(field).children('value').text();
                         } else {
                             // TODO: other option seems to be type="fixed"
-                            _converse.log("WARNING: Found field we couldn't parse");
+                            _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
                         }
-                    }.bind(this));
+                    });
                     this.form_type = 'xform';
                 },
 
-                _onRegisterIQ: function (stanza) {
+                _onRegisterIQ (stanza) {
                     /* Callback method that gets called when a return IQ stanza
                      * is received from the XMPP server, after attempting to
                      * register a new user.
@@ -548,13 +546,13 @@
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza.
                      */
-                    var error = null,
+                    let error = null,
                         query = stanza.getElementsByTagName("query");
                     if (query.length > 0) {
                         query = query[0];
                     }
                     if (stanza.getAttribute("type") === "error") {
-                        _converse.log("Registration failed.");
+                        _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
                         error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
@@ -575,7 +573,7 @@
                     return false;
                 },
 
-                remove: function () {
+                remove () {
                     this.$tabs.empty();
                     this.$el.parent().empty();
                 }

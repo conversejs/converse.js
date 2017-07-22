@@ -42,7 +42,7 @@ Initializing Converse.js
 ------------------------
 
 You'll then need to initialize Converse.js with configuration settings relevant to your requirements.
-Refer to the :ref:`configuration-variables` section for info on all the available configuration settings.
+Refer to the :ref:`configuration-settings` section for info on all the available configuration settings.
 
 To quickly get started, you can put the following Javascript code at the
 bottom of your page (after the closing *</body>* element)::

@@ -21,8 +21,7 @@
         factory);
 }(this, function (converse) {
     "use strict";
-    var _ = converse.env._,
-        Strophe = converse.env.Strophe;
+    const { _, Strophe } = converse.env;
 
     function hideChat (view) {
         if (view.model.get('id') === 'controlbox') { return; }
@@ -46,7 +45,7 @@
             // new functions which don't exist yet can also be added.
 
             ChatBoxes: {
-                createChatBox: function (jid, attrs) {
+                createChatBox (jid, attrs) {
                     /* Make sure new chat boxes are hidden by default.
                      */
                     attrs = attrs || {};
@@ -56,25 +55,25 @@
             },
 
             RoomsPanel: {
-                parseRoomDataFromEvent: function (ev) {
+                parseRoomDataFromEvent (ev) {
                     /* We set hidden to false for rooms opened manually by the
                      * user. They should always be shown.
                      */
-                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    const result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
                     result.hidden = false;
                     return result;
                 }
             },
  
             ChatBoxViews: {
-                showChat: function (attrs, force) {
+                showChat (attrs, force) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    var _converse = this.__super__._converse;
-                    var chatbox = this.getChatBox(attrs, true);
-                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    const { _converse } = this.__super__;
+                    const chatbox = this.getChatBox(attrs, true);
+                    const hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
                     if ((force || !hidden) && _converse.connection.authenticated) {
                         _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
                         chatbox.save({'hidden': false});
@@ -84,7 +83,7 @@
             },
 
             ChatBoxView: {
-                _show: function (focus) {
+                _show (focus) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
@@ -97,7 +96,7 @@
             },
 
             RosterContactView: {
-                openChat: function (ev) {
+                openChat (ev) {
                     /* We only have one chat visible at any one
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.

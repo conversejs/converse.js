@@ -5,9 +5,10 @@
         .close-chatbox-button:before {
             content: "\e601"; // Leave icon
         }
-        .chatroom-description {
-            font-size: 66%;
-            margin-top: 3px;
+        .chat-title {
+            .chatroom-description {
+                font-size: 65%;
+            }
         }
     }
 
@@ -20,6 +21,9 @@
             @include calc(width, '100% - #{$controlbox-width}');
             .chatroom-body {
                 @include border-top-radius($chatbox-border-radius);
+                .chatroom-form-container {
+                    border-radius: $chatbox-border-radius;
+                }
                 .chat-area {
                     border-top-left-radius: $chatbox-border-radius;
                     min-width: auto;

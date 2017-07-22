@@ -43,9 +43,15 @@
             border-top-right-radius: $chatbox-border-radius;
 
             .chat-message {
+                line-height: $line-height;
                 font-size: $font-size-small;
-                line-height: $line-height-small;
                 margin: 0.5em 0;
+                .chat-msg-author {
+                    line-height: $line-height;
+                }
+                .chat-msg-content {
+                    line-height: $line-height;
+                }
             }
         }
         .chat-content {
@@ -65,8 +71,14 @@
             .toggle-smiley {
                 padding-left: 0.5em;
                 ul {
-                    li {
-                        padding: 0.5em;
+                    &.emoji-toolbar {
+                        .emoji-category-picker {
+                            margin-right: 5em;
+                        }
+                        .emoji-category {
+                            padding-left: 10px;
+                            padding-right: 10px;
+                        }
                     }
                 }
             }

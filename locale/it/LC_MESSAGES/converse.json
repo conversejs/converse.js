@@ -39,25 +39,21 @@
             null,
             "Clicca per aprire/chiudere la lista bookmarks"
          ],
-         "Bookmarked Rooms": [
-            null,
-            "Stanza Salvate"
-         ],
          "Are you sure you want to remove the bookmark \"%1$s\"?": [
             null,
             "Sei sicuro di voler rimuovere il segnalibro \"%1$s\"?"
          ],
-         "Click to open this room": [
+         "Remove this bookmark": [
             null,
-            "Clicca per aprire questa stanza"
+            "Rimuovi questo bookmark"
          ],
          "Show more information on this room": [
             null,
             "Mostra più informazioni su questa stanza"
          ],
-         "Remove this bookmark": [
+         "Click to open this room": [
             null,
-            "Rimuovi questo bookmark"
+            "Clicca per aprire questa stanza"
          ],
          "You have unread messages": [
             null,
@@ -231,6 +227,14 @@
             null,
             "Logo out"
          ],
+         "Click to add new chat contacts": [
+            null,
+            "Clicca per aggiungere nuovi contatti alla chat"
+         ],
+         "Add a contact": [
+            null,
+            "Aggiungi contatti"
+         ],
          "Contact name": [
             null,
             "Nome del contatto"
@@ -247,65 +251,9 @@
             null,
             "Aggiungi"
          ],
-         "Click to add new chat contacts": [
-            null,
-            "Clicca per aggiungere nuovi contatti alla chat"
-         ],
-         "Add a contact": [
-            null,
-            "Aggiungi contatti"
-         ],
          "No users found": [
             null,
             "Nessun utente trovato"
-         ],
-         "Click to add as a chat contact": [
-            null,
-            "Clicca per aggiungere il contatto alla chat"
-         ],
-         "Toggle chat": [
-            null,
-            "Attiva/disattiva chat"
-         ],
-         "Reconnecting": [
-            null,
-            "Riconnessione"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            "La connessione è caduta, attendi la riconnessione."
-         ],
-         "Connection error": [
-            null,
-            "Errore di connessione"
-         ],
-         "An error occurred while connecting to the chat server.": [
-            null,
-            "Si è verificato un errore durante la connessione al server."
-         ],
-         "Connecting": [
-            null,
-            "Connessione in corso"
-         ],
-         "Authenticating": [
-            null,
-            "Autenticazione in corso"
-         ],
-         "Authentication Failed": [
-            null,
-            "Autenticazione fallita"
-         ],
-         "Connection failed": [
-            null,
-            "Errore di connessione"
-         ],
-         "An error occurred while connecting to the chat server: ": [
-            null,
-            "Si è verificato un errore durante la connessione al server. "
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "Si è verificato un errore durante il tentativo di aggiunta "
          ],
          "This client does not allow presence subscriptions": [
             null,
@@ -435,9 +383,9 @@
             null,
             "Nascondi la lista degli occupanti"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Errore: il \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -531,9 +479,9 @@
             null,
             "Invia"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "La ragione data è: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -554,10 +502,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Topic impostato da %1$s a: %2$s"
-         ],
-         "Click to mention ": [
-            null,
-            "Clicca per citare "
          ],
          "This user is a moderator.": [
             null,
@@ -647,10 +591,6 @@
             null,
             "Questa stanza è moderata"
          ],
-         "All other room occupants can see your Jabber ID": [
-            null,
-            "Tutti gli occupanti della stanza possono vedere il tuo Jabber ID"
-         ],
          "Anyone can join this room": [
             null,
             "Chiunque può collegarsi a questa stanza"
@@ -662,10 +602,6 @@
          "This room persists even if it's unoccupied": [
             null,
             ""
-         ],
-         "Only moderators can see your Jabber ID": [
-            null,
-            "Solo il moderatore può vedere il tuo Jabber ID"
          ],
          "This room will disappear once the last person leaves": [
             null,
@@ -686,6 +622,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Puoi includere un messaggio per spiegare le ragioni dell'invito."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -711,13 +651,13 @@
             null,
             "Nessuna stanza su %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Stanze su %1$s"
-         ],
          "Description:": [
             null,
             "Descrizione:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -943,10 +883,6 @@
             null,
             "Registrazione riuscita"
          ],
-         "Return": [
-            null,
-            "Ritorna"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "Il provider ha respinto il tentativo di registrazione. Controlla i dati inseriti."
@@ -1011,6 +947,10 @@
             null,
             "Ogni"
          ],
+         "Unread": [
+            null,
+            ""
+         ],
          "Chatty": [
             null,
             "Chatty"
@@ -1018,18 +958,6 @@
          "Extended Away": [
             null,
             "Away estesa"
-         ],
-         "Click to remove this contact": [
-            null,
-            "Clicca per rimuovere questo contatto"
-         ],
-         "Click to accept this contact request": [
-            null,
-            "Clicca per accettare questa richiesta di contatto"
-         ],
-         "Click to decline this contact request": [
-            null,
-            "Clicca per rifiutare questa richiesta di contatto"
          ],
          "Click to chat with this contact": [
             null,
@@ -1042,10 +970,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Sei sicuro di voler rimuovere questo contatto?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "Si è verificato un errore durante il tentativo di rimozione "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

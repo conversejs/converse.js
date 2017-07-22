@@ -42,14 +42,18 @@ $global-background-color: $light-blue !default;
 $inverse-link-color: white !default;
 $link-shadow-color: #FAFAFA !default;
 $text-shadow-color: #FAFAFA !default;
-$text-color: #818479 !default;
+$text-color: #777 !default;
 $light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
 $icon-color: $blue !default;
 $save-button-color: $green !default;
 $send-button-height: 27px !default;
 $send-button-margin: 3px !default;
+
 $message-them-color: $red !default;
+
+$emoji_height: 22px !default;
+$emoji-picker-height: 150px !default;
 
 $roster-height: 194px !default;
 $roster-item-height: 30px !default;
@@ -121,6 +125,7 @@ $chatroom-head-height: 62px !default;
 $chatroom-width: 300px !default;
 $chatroom-head-color: $red !default;
 $chatroom-color-light: $light-red !default;
+$chatroom-color-lightest: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
 $chatroom-message-them-color: $green !default;
 $chatroom-toolbar-color: $reddish-white !default;

@@ -251,54 +251,6 @@
             null,
             "Aucun utilisateur trouvé"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Cliquer pour ajouter aux contacts"
-         ],
-         "Toggle chat": [
-            null,
-            "Ouvrir IM"
-         ],
-         "Reconnecting": [
-            null,
-            "Reconnexion"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            "La connexion a été perdue, tentative de reconnexion en cours."
-         ],
-         "Connection error": [
-            null,
-            "Erreur de connexion"
-         ],
-         "An error occurred while connecting to the chat server.": [
-            null,
-            "Une erreur est survenue lors de la connexion au serveur de discussion."
-         ],
-         "Connecting": [
-            null,
-            "Connexion"
-         ],
-         "Authenticating": [
-            null,
-            "Authentification"
-         ],
-         "Authentication Failed": [
-            null,
-            "L’authentification a échoué"
-         ],
-         "Connection failed": [
-            null,
-            "La connexion a échoué"
-         ],
-         "An error occurred while connecting to the chat server: ": [
-            null,
-            "Une erreur est survenue lors de la connexion au serveur de discussion : "
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "Désolé, il y a eu une erreur lors de la tentative d’ajout "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "Ce client ne permet pas les mises à jour de disponibilité"
@@ -427,9 +379,9 @@
             null,
             "Cacher la liste des participants"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Erreur : \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -531,9 +483,9 @@
             null,
             "La raison indiquée est : « %1$s »."
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "La raison indiquée est : \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -554,10 +506,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Le sujet « %2$s » a été défini par %1$s"
-         ],
-         "Click to mention ": [
-            null,
-            "Cliquer pour citer "
          ],
          "This user is a moderator.": [
             null,
@@ -647,10 +595,6 @@
             null,
             "Ce salon est modéré"
          ],
-         "All other room occupants can see your Jabber ID": [
-            null,
-            "Tous les autres occupants de ce salon peuvent voir votre ID Jabber"
-         ],
          "Anyone can join this room": [
             null,
             "N’importe qui peut rejoindre ce salon"
@@ -658,10 +602,6 @@
          "This room requires a password before entry": [
             null,
             "Ce salon nécessite un mot de passe pour y accéder"
-         ],
-         "Only moderators can see your Jabber ID": [
-            null,
-            "Seuls les modérateurs peuvent voir votre identifiant Jabber"
          ],
          "This room will disappear once the last person leaves": [
             null,
@@ -682,6 +622,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -707,13 +651,13 @@
             null,
             "Aucun salon dans %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Salons dans %1$s"
-         ],
          "Description:": [
             null,
             "Description :"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -939,10 +883,6 @@
             null,
             "Enregistré avec succès"
          ],
-         "Return": [
-            null,
-            "Retourner"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "Le fournisseur a rejeté votre demande d’enregistrement."
@@ -1030,10 +970,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Voulez-vous vraiment supprimer ce contact ?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "Désolé, il y a eu une erreur lors de la tentative de retrait "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

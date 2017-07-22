@@ -227,38 +227,6 @@
             null,
             "Жодного користувача не знайдено"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Клацніть, щоб додати як чат-контакт"
-         ],
-         "Toggle chat": [
-            null,
-            "Включити чат"
-         ],
-         "Reconnecting": [
-            null,
-            "Перепід'єднуюсь"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Під'єднуюсь"
-         ],
-         "Authenticating": [
-            null,
-            "Автентикуюсь"
-         ],
-         "Authentication Failed": [
-            null,
-            "Автентикація невдала"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -335,7 +303,7 @@
             null,
             "Повідомлення"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -415,9 +383,9 @@
             null,
             "Надіслати"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "Причиною вказано: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -487,7 +455,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -495,7 +463,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -510,6 +478,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -535,13 +507,13 @@
             null,
             "Жодної кімнати на %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Кімнати на %1$s"
-         ],
          "Description:": [
             null,
             "Опис:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -763,10 +735,6 @@
             null,
             "Успішно зареєстровано"
          ],
-         "Return": [
-            null,
-            "Вернутися"
-         ],
          "Retry": [
             null,
             ""
@@ -850,10 +818,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Ви впевнені, що хочете видалити цей контакт?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            ""
          ],
          "Are you sure you want to decline this contact request?": [
             null,

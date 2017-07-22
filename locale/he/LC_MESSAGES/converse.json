@@ -231,38 +231,6 @@
             null,
             "לא נמצאו משתמשים"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "לחץ כדי להוסיף בתור איש קשר שיחה"
-         ],
-         "Toggle chat": [
-            null,
-            "הפעל שיח"
-         ],
-         "Reconnecting": [
-            null,
-            "כעת מתחבר"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "כעת מתחבר"
-         ],
-         "Authenticating": [
-            null,
-            "כעת מאמת"
-         ],
-         "Authentication Failed": [
-            null,
-            "אימות נכשל"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "מצטערים, היתה שגיאה במהלך ניסיון הוספת "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "לקוח זה לא מתיר הרשמות נוכחות"
@@ -339,7 +307,7 @@
             null,
             "הודעה"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -419,9 +387,9 @@
             null,
             "שלח"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "הסיבה שניתנה היא: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -491,7 +459,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -499,7 +467,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -514,6 +482,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -539,13 +511,13 @@
             null,
             "אין חדרים על %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "חדרים על %1$s"
-         ],
          "Description:": [
             null,
             "תיאור:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -767,10 +739,6 @@
             null,
             "נרשם בהצלחה"
          ],
-         "Return": [
-            null,
-            "חזור"
-         ],
          "Retry": [
             null,
             ""
@@ -854,10 +822,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "מצטערים, היתה שגיאה במהלך ניסיון להסיר את "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

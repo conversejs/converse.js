@@ -247,38 +247,6 @@
             null,
             "Nie znaleziono użytkowników"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Kliknij aby dodać jako kontakt"
-         ],
-         "Toggle chat": [
-            null,
-            "Przełącz rozmowę"
-         ],
-         "Reconnecting": [
-            null,
-            "Przywracam połączenie"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Łączę się"
-         ],
-         "Authenticating": [
-            null,
-            "Autoryzuję"
-         ],
-         "Authentication Failed": [
-            null,
-            "Autoryzacja nie powiodła się"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "Wystąpił błąd w czasie próby dodania "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "Klient nie umożliwia subskrybcji obecności"
@@ -363,9 +331,9 @@
             null,
             "Ukryj listę rozmówców"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Błąd: \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -455,9 +423,9 @@
             null,
             "Wyślij"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "Podana przyczyna to: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -539,7 +507,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -547,7 +515,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -562,6 +530,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Masz opcjonalną możliwość dołączenia wiadomości, która wyjaśni przyczynę zaproszenia."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -587,13 +559,13 @@
             null,
             "Brak jest pokojów na %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Pokoje na %1$s"
-         ],
          "Description:": [
             null,
             "Opis:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -819,10 +791,6 @@
             null,
             "Szczęśliwie zarejestrowany"
          ],
-         "Return": [
-            null,
-            "Powrót"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "Dostawca odrzucił twoją próbę rejestracji. Sprawdź proszę poprawność danych które zostały wprowadzone."
@@ -910,10 +878,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Czy potwierdzasz zamiar usnunięcia tego kontaktu?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "Wystąpił błąd w trakcie próby usunięcia "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

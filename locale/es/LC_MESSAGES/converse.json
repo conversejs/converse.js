@@ -203,38 +203,6 @@
             null,
             "Sin usuarios encontrados"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Haga click para agregar como contacto de chat"
-         ],
-         "Toggle chat": [
-            null,
-            "Chat"
-         ],
-         "Reconnecting": [
-            null,
-            "Reconectando"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Conectando"
-         ],
-         "Authenticating": [
-            null,
-            "Autenticando"
-         ],
-         "Authentication Failed": [
-            null,
-            "La autenticación falló"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -311,7 +279,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -387,7 +355,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -459,7 +427,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -467,7 +435,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -480,6 +448,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -503,13 +475,13 @@
             null,
             "Sin salas en %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Salas en %1$s"
-         ],
          "Description:": [
             null,
             "Descripción"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -695,10 +667,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -786,10 +754,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "¿Esta seguro de querer eliminar este contacto?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            ""
          ]
       }
    }

@@ -203,34 +203,6 @@
             null,
             "ユーザーが見つかりません"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "クリックしてチャットの相手先として追加"
-         ],
-         "Toggle chat": [
-            null,
-            ""
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "接続中です"
-         ],
-         "Authenticating": [
-            null,
-            "認証中"
-         ],
-         "Authentication Failed": [
-            null,
-            "認証に失敗"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -303,7 +275,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -375,7 +347,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -443,7 +415,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -451,7 +423,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -464,6 +436,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -487,13 +463,13 @@
             null,
             "%1$s に談話室はありません"
          ],
-         "Rooms on %1$s": [
-            null,
-            "%1$s の談話室一覧"
-         ],
          "Description:": [
             null,
             "説明: "
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -683,10 +659,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -768,10 +740,6 @@
             "クリックしてこの相手先とチャット"
          ],
          "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

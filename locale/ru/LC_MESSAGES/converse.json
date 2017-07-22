@@ -230,34 +230,6 @@
             null,
             "Пользователи не найдены"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Кликните, чтобы добавить контакт"
-         ],
-         "Toggle chat": [
-            null,
-            "Включить чат"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Соединение"
-         ],
-         "Authenticating": [
-            null,
-            "Авторизация"
-         ],
-         "Authentication Failed": [
-            null,
-            "Не удалось авторизоваться"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "Возникла ошибка при добавлении "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "Программа не поддерживает уведомления о статусе"
@@ -338,9 +310,9 @@
             null,
             "Спрятать список участников"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Ошибка:  \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -418,6 +390,10 @@
             null,
             "Отправить"
          ],
+         "${notification.reason}": [
+            null,
+            ""
+         ],
          " has left the room. \"": [
             null,
             ""
@@ -486,7 +462,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -494,7 +470,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -509,6 +485,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Вы можете дополнительно вставить сообщение, объясняющее причину приглашения."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -534,13 +514,13 @@
             null,
             "Нет чатов %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Чаты %1$s:"
-         ],
          "Description:": [
             null,
             "Описание:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -746,10 +726,6 @@
             null,
             "Зарегистрирован успешно"
          ],
-         "Return": [
-            null,
-            "Назад"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "Провайдер отклонил вашу попытку зарегистрироваться. Пожалуйста, проверьте, правильно ли введены значения."
@@ -837,10 +813,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Вы уверены, что хотите удалить этот контакт?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "Возникла ошибка при удалении "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

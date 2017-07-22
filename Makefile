@@ -61,7 +61,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.1.0 -c
+GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.0-rc -c
 
 .PHONY: pot
 pot:

@@ -49781,8 +49781,7 @@ return Backbone.BrowserStorage;
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            var els = document.querySelectorAll('.conn-feedback');
-            _.forEach(els, function (el) {
+            _.forEach(document.querySelectorAll('.conn-feedback'), function (el) {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {
@@ -55186,7 +55185,7 @@ return __p
                 initialize: function initialize() {
                     this.model.on('change:current_skintone', this.render, this);
                     this.model.on('change:current_category', this.render, this);
-                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
+                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50).bind(this);
                 },
                 render: function render() {
                     var _this = this;
@@ -55199,8 +55198,8 @@ return __p
                         'shouldBeHidden': this.shouldBeHidden
                     }));
                     this.el.innerHTML = emojis_html;
-                    this.el.querySelectorAll('.emoji-picker').forEach(function (el) {
-                        el.addEventListener('scroll', _this.setScrollPosition.bind(_this));
+                    _.forEach(this.el.querySelectorAll('.emoji-picker'), function (el) {
+                        el.addEventListener('scroll', _this.setScrollPosition);
                     });
                     this.restoreScrollPosition();
                     return this;
@@ -55227,7 +55226,7 @@ return __p
                         current_picker[0].scrollTop = this.model.get('scroll_position');
                     }
                 },
-                setScrollPosition: function setScrollPosition(ev, position) {
+                setScrollPosition: function setScrollPosition(ev) {
                     this.model.save('scroll_position', ev.target.scrollTop);
                 },
                 chooseSkinTone: function chooseSkinTone(ev) {
@@ -58827,7 +58826,10 @@ Strophe.addConnectionPlugin('disco',
                 },
                 openChatRoom: function openChatRoom(ev) {
                     ev.preventDefault();
-                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
+                    var data = this.parseRoomDataFromEvent(ev);
+                    if (!_.isUndefined(data)) {
+                        _converse.openChatRoom(data);
+                    }
                 },
                 setDomain: function setDomain(ev) {
                     this.model.save({ muc_domain: ev.target.value });
@@ -71177,6 +71179,9 @@ return __p
                      * user. They should always be shown.
                      */
                     var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    if (_.isUndefined(result)) {
+                        return;
+                    }
                     result.hidden = false;
                     return result;
                 }

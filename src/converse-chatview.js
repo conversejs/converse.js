@@ -137,7 +137,7 @@
                 initialize () {
                     this.model.on('change:current_skintone', this.render, this);
                     this.model.on('change:current_category', this.render, this);
-                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
+                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50).bind(this);
                 },
 
                 render () {
@@ -152,10 +152,8 @@
                             }
                         ));
                     this.el.innerHTML = emojis_html;
-                    this.el.querySelectorAll('.emoji-picker').forEach((el) => {
-                        el.addEventListener(
-                            'scroll', this.setScrollPosition.bind(this)
-                        );
+                    _.forEach(this.el.querySelectorAll('.emoji-picker'), (el) => {
+                        el.addEventListener('scroll', this.setScrollPosition);
                     });
                     this.restoreScrollPosition();
                     return this;
@@ -188,7 +186,7 @@
                     }
                 },
 
-                setScrollPosition (ev, position) {
+                setScrollPosition (ev) {
                     this.model.save('scroll_position', ev.target.scrollTop);
                 },
 

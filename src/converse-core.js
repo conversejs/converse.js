@@ -413,8 +413,7 @@
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            const els = document.querySelectorAll('.conn-feedback');
-            _.forEach(els, function (el) {
+            _.forEach(document.querySelectorAll('.conn-feedback'), (el) => {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {

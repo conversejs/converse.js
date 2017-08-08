@@ -26,7 +26,7 @@
             }
         });
 
-        document.querySelectorAll('.page-scroll a').forEach(function (el) {
+        Array.prototype.forEach.call(document.querySelectorAll('.page-scroll a'), function (el) {
             el.addEventListener('click', function (ev) {
                 ev.preventDefault();
                 var hash = this.getAttribute("href")

@@ -105,6 +105,7 @@
                             'from': stanza.getAttribute('from')
                         });
                     });
+                    this.trigger('featuresDiscovered');
                 }
             });
 
@@ -118,7 +119,7 @@
                     this.fetchEntities().then(
                         _.partial(_converse.emit, 'discoInitialized'),
                         _.partial(_converse.emit, 'discoInitialized')
-                    );
+                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 fetchEntities () {

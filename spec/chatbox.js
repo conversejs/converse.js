@@ -1450,10 +1450,9 @@
                         });
                     }));
 
-                    it("is sent when the user maximizes a minimized a chat box",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    it("is sent when the user maximizes a minimized a chat box", mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1474,7 +1473,11 @@
                             }, 300);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(1);
+                            var $stanza = $(calls[0].args[0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('active');
@@ -1637,7 +1640,12 @@
                             }, 500);
                     }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.argsFor(1)[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(2);
+                            var $stanza = $(calls[1].args[0].tree());
+
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('paused');
@@ -1776,7 +1784,11 @@
                             }, 250);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.first().args[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(2);
+                            var $stanza = $(calls[0].args[0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('paused');

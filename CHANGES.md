@@ -32,6 +32,7 @@
 - #866 Add babel in order to support ES2015 syntax [jcbrand]
 
 #### Bugfixes:
+- The domain was queried for MAM:2 support, instead of the JID. [jcbrand]
 - Roster filter is not shown when all groups are collapsed. [jcbrand]
 - When filtering, contacts in closed groups appear. [jcbrand]
 - Room name wasn't being updated after changing it in the configuration form. [jcbrand]

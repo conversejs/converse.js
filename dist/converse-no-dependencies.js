@@ -16110,6 +16110,7 @@ return __p
                             'from': stanza.getAttribute('from')
                         });
                     });
+                    this.trigger('featuresDiscovered');
                 }
             });
 
@@ -16123,7 +16124,7 @@ return __p
                     this.fetchEntities().then(
                         _.partial(_converse.emit, 'discoInitialized'),
                         _.partial(_converse.emit, 'discoInitialized')
-                    );
+                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 fetchEntities () {
@@ -19618,6 +19619,7 @@ return __p
     "use strict";
 
     var _converse$env = converse.env,
+        Promise = _converse$env.Promise,
         Strophe = _converse$env.Strophe,
         $iq = _converse$env.$iq,
         _ = _converse$env._,
@@ -19627,6 +19629,31 @@ return __p
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+    function checkMAMSupport(_converse) {
+        /* Returns a promise which resolves when MAM is supported
+         * for this user, or which rejects if not.
+         */
+        return _converse.api.waitUntil('discoInitialized').then(function () {
+            return new Promise(function (resolve, reject) {
+
+                function fulfillPromise(entity) {
+                    if (entity.features.findWhere({ 'var': Strophe.NS.MAM })) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+                var entity = _converse.disco_entities.get(_converse.bare_jid);
+                if (_.isUndefined(entity)) {
+                    entity = _converse.disco_entities.create({ 'jid': _converse.bare_jid });
+                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                } else {
+                    fulfillPromise(entity);
+                }
+            });
+        });
+    }
 
     converse.plugins.add('converse-mam', {
 
@@ -19653,20 +19680,35 @@ return __p
                     return result;
                 },
                 fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
+                    var _this = this;
+
                     /* Check if archived messages should be fetched, and if so, do so. */
-                    var _converse = this.__super__._converse,
-                        entity = _converse.disco_entities.get(_converse.domain),
-                        server_supports_mam = entity.features.findWhere({ 'var': Strophe.NS.MAM });
-
-
-                    if (this.disable_mam || !server_supports_mam || this.model.get('mam_initialized')) {
+                    if (this.disable_mam || this.model.get('mam_initialized')) {
                         return;
                     }
-                    this.fetchArchivedMessages();
-                    this.model.save({ 'mam_initialized': true });
+                    var _converse = this.__super__._converse;
+
+                    this.addSpinner();
+
+                    checkMAMSupport(_converse).then(function (supported) {
+                        // Success
+                        if (supported) {
+                            _this.fetchArchivedMessages();
+                        } else {
+                            _this.clearSpinner();
+                        }
+                        _this.model.save({ 'mam_initialized': true });
+                    }, function () {
+                        // Error
+                        _this.clearSpinner();
+                        _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
+                    }).catch(function (msg) {
+                        _this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
                 },
                 fetchArchivedMessages: function fetchArchivedMessages(options) {
-                    var _this = this;
+                    var _this2 = this;
 
                     /* Fetch archived chat messages from the XMPP server.
                      *
@@ -19675,7 +19717,7 @@ return __p
                      */
                     var _converse = this.__super__._converse;
 
-                    if (!_converse.disco_entities.get(_converse.domain).features.findWhere({ 'var': Strophe.NS.MAM })) {
+                    if (!_converse.disco_entities.get(_converse.bare_jid).features.findWhere({ 'var': Strophe.NS.MAM })) {
 
                         _converse.log("Attempted to fetch archived messages but this " + "user's server doesn't support XEP-0313", Strophe.LogLevel.WARN);
                         return;
@@ -19690,13 +19732,13 @@ return __p
                         'with': this.model.get('jid')
                     }, options), function (messages) {
                         // Success
-                        _this.clearSpinner();
+                        _this2.clearSpinner();
                         if (messages.length) {
                             _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
                         }
                     }, function () {
                         // Error
-                        _this.clearSpinner();
+                        _this2.clearSpinner();
                         _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
                     });
                 },
@@ -19930,7 +19972,7 @@ return __p
             });
 
             _converse.on('afterMessagesFetched', function (chatboxview) {
-                _converse.api.waitUntil('discoInitialized').then(chatboxview.fetchArchivedMessagesIfNecessary.bind(chatboxview)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                chatboxview.fetchArchivedMessagesIfNecessary();
             });
         }
     });

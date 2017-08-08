@@ -2629,7 +2629,10 @@
 
                 openChatRoom (ev) {
                     ev.preventDefault();
-                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
+                    const data = this.parseRoomDataFromEvent(ev);
+                    if (!_.isUndefined(data)) {
+                        _converse.openChatRoom(data);
+                    }
                 },
 
                 setDomain (ev) {

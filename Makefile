@@ -176,38 +176,31 @@ BUILDS = dist/converse.js \
 dist/converse.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
 dist/converse.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse.js -o dist/converse.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse.min.js >> tmpfile && mv tmpfile dist/converse.min.js
+	$(RJS) -o src/build.js include=converse out=dist/converse.js
 dist/converse-esnext.js: src locale node_modules *.js transpile
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
 dist/converse-esnext.min.js: src locale node_modules *.js transpile
-	$(UGLIFYJS) --verbose dist/converse-esnext.js -o dist/converse-esnext.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-esnext.min.js >> tmpfile && mv tmpfile dist/converse-esnext.min.js
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js
 dist/inverse.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
 dist/inverse.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/inverse.js -o dist/inverse.min.js
-	cat COPYRIGHT > tmpfile && cat dist/inverse.min.js >> tmpfile && mv tmpfile dist/inverse.min.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js
 dist/converse-no-jquery.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
 dist/converse-no-jquery.min.js: src locale node_modules *.js transpile
-	$(UGLIFYJS) --verbose dist/converse-no-jquery.js -o dist/converse-no-jquery.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-no-jquery.min.js >> tmpfile && mv tmpfile dist/converse-no-jquery.min.js
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js
 dist/converse-no-dependencies.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-no-dependencies.js -o dist/converse-no-dependencies.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-no-dependencies.min.js >> tmpfile && mv tmpfile dist/converse-no-dependencies.min.js
+	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.js
 dist/converse-mobile.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
 dist/converse-mobile.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-mobile.js -o dist/converse-mobile.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-mobile.min.js >> tmpfile && mv tmpfile dist/converse-mobile.min.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js
 dist/converse-muc-embedded.js: transpile src locale node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
 dist/converse-muc-embedded.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-muc-embedded.js -o dist/converse-muc-embedded.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-muc-embedded.min.js >> tmpfile && mv tmpfile dist/converse-muc-embedded.min.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js
 
 .PHONY: jsmin
 jsmin: $(BUILDS)

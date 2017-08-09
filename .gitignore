@@ -11,6 +11,7 @@
 .pydevproject
 .idea
 .su?
+builds/*
 
 analytics.js
 inverse-analytics.js

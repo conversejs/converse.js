@@ -217,7 +217,7 @@ jsmin: $(BUILDS)
 dist:: build
 
 .PHONY: build
-build:: dev css
+build:: dev css transpile
 	$(GRUNT) json
 	make jsmin
 

@@ -409,21 +409,21 @@
                         expect(view.insertEmoji).toHaveBeenCalled();
                         test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300).then(function () {
-                            $toolbar.children('li.toggle-smiley').click();
-                            expect(view.toggleEmojiMenu).toHaveBeenCalled();
-                            view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                        }, 300)
+                    .then(function () {
+                        $toolbar.children('li.toggle-smiley').click();
+                        expect(view.toggleEmojiMenu).toHaveBeenCalled();
 
-                            test_utils.waitUntil(function () {
-                                var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                                return $picker.is(':visible');
-                            }, 300).then(function () {
-                                view.$el.find('.toggle-smiley ul').children('li').last().click();
-                                expect(view.insertEmoji).toHaveBeenCalled();
-                                done();
-                            });
-                        });
-                    });
+                        test_utils.waitUntil(function () {
+                            var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
+                            return $picker.is(':visible');
+                        }, 300)
+                    .then(function () {
+                        view.$el.find('.toggle-smiley ul').children('li').last().click();
+                        expect(view.$el.find('textarea.chat-textarea').val()).toBe(':grinning: ');
+                        expect(view.insertEmoji).toHaveBeenCalled();
+                        done();
+                    }); }); });
                 }));
 
                 it("contains a button for starting an encrypted chat session",
@@ -744,23 +744,22 @@
                     });
 
                     it("will cause the chat area to be scrolled down only if it was at the bottom already",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
 
-                        var message = 'This message is received while the chat area is scrolled up';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
+
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         spyOn(chatboxview, 'scrollDown').and.callThrough();
-                        var $chat_content = chatboxview.$el.find('.chat-content');
-                        /* Create enough messages so that there's a
-                         * scrollbar.
-                         */
+
+                        // Create enough messages so that there's a scrollbar.
+                        var message = 'This message is received while the chat area is scrolled up';
                         for (var i=0; i<20; i++) {
                             _converse.chatboxes.onMessage($msg({
                                     from: sender_jid,
@@ -773,11 +772,11 @@
 
                         test_utils.waitUntil(function () {
                                 return chatboxview.$content.scrollTop();
-                            }, 300)
+                            }, 500)
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             chatboxview.$content.scrollTop(0);
                             return test_utils.waitUntil(function () {
@@ -798,7 +797,7 @@
                             expect(msg_txt).toEqual(message);
                             return test_utils.waitUntil(function () {
                                 return chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             expect(chatboxview.model.get('scrolled')).toBe(true);
                             expect(chatboxview.$content.scrollTop()).toBe(0);
@@ -807,15 +806,14 @@
                             chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300);
+                            }, 500);
                         }).then(done);
                     }));
 
                     it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
-
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1461,7 +1459,7 @@
 
                         test_utils.waitUntil(function () {
                             return _converse.rosterview.$el.find('dt').length;
-                        }, 300).then(function () {
+                        }, 500).then(function () {
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);
                             view.model.minimize();
@@ -1470,7 +1468,7 @@
                             view.model.maximize();
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'active';
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -1491,9 +1489,9 @@
                 describe("A composing notification", function () {
 
                     it("is sent as soon as the user starts typing a message which is not a command",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1748,9 +1746,9 @@
                 describe("An inactive notifciation", function () {
 
                     it("is sent if the user has stopped typing since 2 minutes",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         var view, contact_jid;
                         test_utils.createContacts(_converse, 'current');
@@ -1777,11 +1775,11 @@
                                     return true;
                                 }
                                 return false;
-                            }, 250);
+                            }, 300);
                         }).then(function () {
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'inactive';
-                            }, 250);
+                            }, 300);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {

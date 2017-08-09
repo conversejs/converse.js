@@ -137,7 +137,7 @@
                 initialize () {
                     this.model.on('change:current_skintone', this.render, this);
                     this.model.on('change:current_category', this.render, this);
-                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50).bind(this);
+                    this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
 
                 render () {
@@ -153,7 +153,7 @@
                         ));
                     this.el.innerHTML = emojis_html;
                     _.forEach(this.el.querySelectorAll('.emoji-picker'), (el) => {
-                        el.addEventListener('scroll', this.setScrollPosition);
+                        el.addEventListener('scroll', this.setScrollPosition.bind(this));
                     });
                     this.restoreScrollPosition();
                     return this;
@@ -234,6 +234,8 @@
                 },
 
                 initialize () {
+                    this.markScrolled = _.debounce(this.markScrolled, 100);
+
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -955,7 +957,7 @@
                     }
                 },
 
-                markScrolled: _.debounce(function (ev) {
+                markScrolled: function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
@@ -974,12 +976,13 @@
                     const is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
+
                     if (is_at_bottom) {
                         scrolled = false;
                         this.onScrolledDown();
                     }
                     utils.safeSave(this.model, {'scrolled': scrolled});
-                }, 150),
+                },
 
                 viewUnreadMessages () {
                     this.model.save('scrolled', false);

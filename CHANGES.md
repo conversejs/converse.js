@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2.0 (Unreleased)
+## 3.2.0 (2017-08-09)
 
 ### New Plugins
 - New plugin `converse-disco` which replaces the original support for

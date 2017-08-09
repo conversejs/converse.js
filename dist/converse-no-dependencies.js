@@ -6792,7 +6792,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         'promises': {}
     };
 
-    debugger;
     _.extend(_converse, Backbone.Events);
 
     _converse.core_plugins = ['converse-bookmarks', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];

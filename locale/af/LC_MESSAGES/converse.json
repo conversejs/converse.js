@@ -31,6 +31,10 @@
             null,
             "Kanseleer"
          ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
+         ],
          "Sorry, something went wrong while trying to save your bookmark.": [
             null,
             "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
@@ -38,10 +42,6 @@
          "Click to toggle the bookmarks list": [
             null,
             "Klik om die boekmerklys te skakel"
-         ],
-         "Are you sure you want to remove the bookmark \"%1$s\"?": [
-            null,
-            "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
          ],
          "Remove this bookmark": [
             null,

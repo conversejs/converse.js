@@ -5,12 +5,12 @@
 ### New Plugins
 - New plugin `converse-disco` which replaces the original support for
   [XEP-0030](https://xmpp.org/extensions/xep-0030.html) and which has been
-  refactored to allow features for multiple entities to be stored. [jcbrand]
+  refactored to allow features for multiple entities to be stored.
 
 ### New features and improvements
-- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
-- Add JID validation to the contact add form, the occupant invite form and the login form. [jcbrand]
-- #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.). [jcbrand]
+- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>).
+- Add JID validation to the contact add form, the occupant invite form and the login form.
+- #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.).
 
 ### New configuration settings
 * The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.
@@ -25,20 +25,21 @@
 * ['afterMessagesFetched'](https://conversejs.org/docs/html/development.html#afterMessagesFetched)
 
 ### Code changes
-- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
+- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`.
 - Remove `jquery.easing` from the full build. Was only being used by the
-  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]
-- All promises are now native (or polyfilled) ES2015 Promises instead of jQuery's Deferred. [jcbrand]
-- #866 Add babel in order to support ES2015 syntax [jcbrand]
+  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it.
+- All promises are now native (or polyfilled) ES2015 Promises instead of jQuery's Deferred.
+- #866 Add babel in order to support ES2015 syntax
 
 #### Bugfixes:
-- The domain was queried for MAM:2 support, instead of the JID. [jcbrand]
-- Roster filter is not shown when all groups are collapsed. [jcbrand]
-- When filtering, contacts in closed groups appear. [jcbrand]
-- Room name wasn't being updated after changing it in the configuration form. [jcbrand]
-- Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
-- Don't show duplicate sent groupchat messages in Slack chat rooms. [jcbrand]
-- Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`. [jcbrand]
+- The domain was queried for MAM:2 support, instead of the JID.
+- Roster filter is not shown when all groups are collapsed.
+- When filtering, contacts in closed groups appear.
+- Room name wasn't being updated after changing it in the configuration form.
+- Server disco features were "forgotten" after logging out and then logging in again.
+- Don't show duplicate sent groupchat messages in Slack chat rooms.
+- Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`.
+- It wasn't possible to add or remove bookmarks via the "Open Rooms" list.
 - #879 Text in links are converted to smileys leading to non-clickable links.
 
 ## 3.1.1 (2017-07-12)

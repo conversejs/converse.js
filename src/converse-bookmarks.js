@@ -198,6 +198,31 @@
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
 
+            // Pure functions on the _converse object
+            _.extend(_converse, {
+                removeBookmarkViaEvent (ev) {
+                    /* Remove a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    const name = ev.target.getAttribute('data-bookmark-name');
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
+                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
+                    }
+                },
+
+                addBookmarkViaEvent (ev) {
+                    /* Add a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const chatroom = _converse.openChatRoom({'jid': jid}, true);
+                    _converse.chatboxviews.get(jid).renderBookmarkForm();
+                },
+            });
+
             _converse.Bookmark = Backbone.Model;
 
             _converse.BookmarksList = Backbone.Model.extend({
@@ -353,8 +378,9 @@
                 tagName: 'div',
                 className: 'bookmarks-list, rooms-list-container',
                 events: {
-                    'click .remove-bookmark': 'removeBookmark',
-                    'click .bookmarks-toggle': 'toggleBookmarksList'
+                    'click .add-bookmark': 'addBookmark',
+                    'click .bookmarks-toggle': 'toggleBookmarksList',
+                    'click .remove-bookmark': 'removeBookmark'
                 },
 
                 initialize () {
@@ -390,14 +416,8 @@
                     return this.$el;
                 },
 
-                removeBookmark (ev) {
-                    ev.preventDefault();
-                    const name = $(ev.target).data('bookmarkName');
-                    const jid = $(ev.target).data('roomJid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
-                    }
-                },
+                removeBookmark: _converse.removeBookmarkViaEvent,
+                addBookmark: _converse.addBookmarkViaEvent,
 
                 renderBookmarkListElement (item) {
                     if (item instanceof _converse.ChatBox) {

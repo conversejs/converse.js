@@ -339,13 +339,18 @@
             });
             _converse.api.promises.add('roomsPanelRendered');
 
-            _converse.openChatRoom = function (settings) {
+            _converse.openChatRoom = function (settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings.type = CHATROOMS_TYPE
-                return _converse.chatboxviews.showChat(settings);
+                if (_.isUndefined(settings.jid)) {
+                    throw new Error("openChatRoom needs to be called with a JID");
+                }
+                settings.type = CHATROOMS_TYPE;
+                settings.id = settings.jid;
+                settings.box_id = b64_sha1(settings.jid)
+                return _converse.chatboxviews.showChat(settings, bring_to_foreground);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
@@ -2619,11 +2624,8 @@
                         }
                     }
                     return {
-                        'id': jid,
                         'jid': jid,
                         'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                        'type': CHATROOMS_TYPE,
-                        'box_id': b64_sha1(jid)
                     }
                 },
 
@@ -2681,9 +2683,7 @@
                 }
                 if (result === true) {
                     const chatroom = _converse.openChatRoom({
-                        'id': room_jid,
                         'jid': room_jid,
-                        'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
                     if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {

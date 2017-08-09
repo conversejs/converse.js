@@ -2039,13 +2039,19 @@
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom a.available-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom a.available-room {
           width: 85%; }
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark,
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark {
           color: #A8ABA1; }
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark.button-on,
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark.button-on,
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark.button-on,
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on {
             color: #578EA9; }
+            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark.button-on:hover,
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark.button-on:hover,
+            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark.button-on:hover,
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on:hover {
               color: #206485; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .room-info,

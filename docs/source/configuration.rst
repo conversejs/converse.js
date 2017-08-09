@@ -19,7 +19,7 @@ on your website.
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
 
-Please refer to the `Configuration variables`_ section below for info on
+Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
 After you have configured *Converse.js*, you'll have to regenerate the minified
@@ -1109,7 +1109,7 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-The Converse.js plugins architecture can have an ``optional_dependencies``
+The Converse.js plugins architecture can have an :ref:`optional_dependencies`
 plugin attribute. This enables you to specify an array of optional, or
 "soft", dependencies. Converse.js (more specifically,
 `pluggable.js <https://jcbrand.github.io/pluggable.js/>`_) will try to first

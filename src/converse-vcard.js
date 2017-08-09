@@ -82,15 +82,14 @@
                 const vcard = iq.querySelector('vCard'),
                     img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
                     img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
-                    url = _.get(vcard.querySelector('URL'), 'textContent');
+                    url = _.get(vcard.querySelector('URL'), 'textContent'),
+                    fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
-                let fullname = _.get(vcard.querySelector('FN'), 'textContent');
                 if (jid) {
                     const contact = _converse.roster.get(jid);
                     if (contact) {
-                        fullname = _.isUndefined(fullname) ? _.get(contact, 'fullname', jid) : fullname;
                         contact.save({
-                            'fullname': fullname,
+                            'fullname': fullname || _.get(contact, 'fullname', jid),
                             'image_type': img_type,
                             'image': img,
                             'url': url,

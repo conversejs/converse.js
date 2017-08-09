@@ -763,13 +763,8 @@
                 insertEmoji (ev) {
                     ev.stopPropagation();
                     this.toggleEmojiMenu();
-                    const target = ev.target.nodeName === 'IMG' ?
-                        ev.target.parentElement : ev.target;
-
-                    var shortname = target.getAttribute('data-emoji');
-                    this.insertIntoTextArea(
-                        emojione.shortnameToUnicode(shortname)
-                    );
+                    const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+                    this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
 
                 toggleEmojiMenu (ev) {

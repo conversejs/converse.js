@@ -41,6 +41,7 @@
 - Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`.
 - It wasn't possible to add or remove bookmarks via the "Open Rooms" list.
 - #879 Text in links are converted to smileys leading to non-clickable links.
+- #899: Only touch `stamp-npm` if `npm install` was successful
 - #902 `make build` dependends on non-existing files
 
 ## 3.1.1 (2017-07-12)

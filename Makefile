@@ -100,8 +100,7 @@ release:
 ## Install dependencies
 
 stamp-npm: package.json
-	npm install
-	touch stamp-npm
+	npm install && touch stamp-npm
 
 stamp-bundler: Gemfile
 	mkdir -p .bundle

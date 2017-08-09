@@ -1,7 +1,8 @@
 (function (root, factory) {
-    define("mock", ['converse'], factory);
-}(this, function (converse_api) {
+    define("mock", ['jquery.noconflict', 'converse'], factory);
+}(this, function ($, converse_api) {
     var _ = converse_api.env._;
+    var Promise = converse_api.env.Promise;
     var Strophe = converse_api.env.Strophe;
     var $iq = converse_api.env.$iq;
     var mock = {};
@@ -48,6 +49,17 @@
         return function () {
             Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
             var c = new Strophe.Connection('jasmine tests');
+            var sendIQ = c.sendIQ;
+
+            c.IQ_stanzas = [];
+            c.IQ_ids = [];
+            c.sendIQ = function (iq, callback, errback) {
+                this.IQ_stanzas.push(iq);
+                var id = sendIQ.bind(this)(iq, callback, errback);
+                this.IQ_ids.push(id);
+                return id;
+            }
+
             c.vcard = {
                 'get': function (callback, jid) {
                     var fullname;
@@ -76,7 +88,7 @@
         };
     }();
 
-    function initConverse (settings, spies) {
+    function initConverse (settings, spies, promises) {
         window.localStorage.clear();
         window.sessionStorage.clear();
 
@@ -87,7 +99,7 @@
             });
         }
 
-        var converse = converse_api.initialize(_.extend({
+        var _converse = converse_api.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -100,18 +112,25 @@
             'password': 'secret',
             'debug': false
         }, settings || {}));
-        converse.ChatBoxViews.prototype.trimChat = function () {};
-        return converse;
+        _converse.ChatBoxViews.prototype.trimChat = function () {};
+        _converse.disable_effects = true;
+        $.fx.off = true;
+        return _converse;
     }
 
-    mock.initConverseWithConnectionSpies = function (spies, settings, func) {
-        if (_.isFunction(settings)) {
-            var _func = settings;
-            settings = func;
-            func = _func;
+    mock.initConverseWithPromises = function (spies, promise_names, settings, func) {
+        return function (done) {
+            var _converse = initConverse(settings, spies);
+            var promises = _.map(promise_names, _converse.api.waitUntil);
+            Promise.all(promises)
+                .then(_.partial(func, done, _converse))
+                .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
-        return function () {
-            return func(initConverse(settings, spies));
+    };
+
+    mock.initConverseWithConnectionSpies = function (spies, settings, func) {
+        return function (done) {
+            return func(done, initConverse(settings, spies));
         };
     };
 

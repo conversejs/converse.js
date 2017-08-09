@@ -202,34 +202,6 @@
             null,
             "未找到用户"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "点击添加为好友"
-         ],
-         "Toggle chat": [
-            null,
-            "折叠聊天窗口"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "连接中"
-         ],
-         "Authenticating": [
-            null,
-            "验证中"
-         ],
-         "Authentication Failed": [
-            null,
-            "验证失败"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -302,7 +274,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -374,7 +346,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -442,7 +414,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -450,7 +422,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -463,6 +435,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -486,13 +462,13 @@
             null,
             "%1$s 上没有聊天室"
          ],
-         "Rooms on %1$s": [
-            null,
-            "%1$s 上的聊天室"
-         ],
          "Description:": [
             null,
             "描述: "
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -678,10 +654,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -763,10 +735,6 @@
             "点击与对方交谈"
          ],
          "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

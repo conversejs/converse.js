@@ -9,16 +9,24 @@
 .svn/
 .project
 .pydevproject
+.idea
+.su?
+builds/*
+
 analytics.js
 inverse-analytics.js
-.idea
+
+# python/buildout
 eggs
 .Python
+build
+parts
+*.pyc
+*.egg-info
 
 dev-jc.html
 inverse-dev.html
 inverse-dev-jc.html
-
 converse-logs/*.html
 
 # Ruby/Sass/Bundler
@@ -30,7 +38,6 @@ bourbon
 Backbone.Overview
 tags
 stamp-npm
-stamp-bower
 stamp-bundler
 
 # Sphinx
@@ -50,8 +57,5 @@ develop-eggs
 .DS_Store
 
 # Builds
-dist/*
-css/*.map
-css/*.min.css
 .sv?
 /vendor/

@@ -235,34 +235,6 @@
             null,
             "No s'ha trobat cap usuari"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Feu clic per afegir com a contacte del xat"
-         ],
-         "Toggle chat": [
-            null,
-            "Canvia de xat"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "S'està establint la connexió"
-         ],
-         "Authenticating": [
-            null,
-            "S'està efectuant l'autenticació"
-         ],
-         "Authentication Failed": [
-            null,
-            "Error d'autenticació"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "S'ha produït un error en intentar afegir "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "Aquest client no admet les subscripcions de presència"
@@ -343,9 +315,9 @@
             null,
             "Amaga la llista d'ocupants"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Error: el \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -427,9 +399,9 @@
             null,
             "Envia"
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "El motiu indicat és: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -495,7 +467,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -503,7 +475,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -518,6 +490,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Teniu l'opció d'incloure un missatge per explicar el motiu de la invitació."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -543,13 +519,13 @@
             null,
             "No hi ha cap sala a %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Sales a %1$s"
-         ],
          "Description:": [
             null,
             "Descripció:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -771,10 +747,6 @@
             null,
             "Registre correcte"
          ],
-         "Return": [
-            null,
-            "Torna"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             "El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que heu introduït siguin correctes."
@@ -862,10 +834,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Segur que voleu eliminar aquest contacte?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            "S'ha produït un error en intentar eliminar "
          ],
          "Are you sure you want to decline this contact request?": [
             null,

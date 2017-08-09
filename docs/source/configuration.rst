@@ -19,7 +19,7 @@ on your website.
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
 
-Please refer to the `Configuration variables`_ section below for info on
+Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
 After you have configured *Converse.js*, you'll have to regenerate the minified
@@ -516,6 +516,16 @@ domain_placeholder
 
 The placeholder text shown in the domain input on the registration form.
 
+
+emojione_image_path
+-------------------
+
+* Default: ``'https://cdn.jsdelivr.net/emojione/assets/' + emojioneVersion + '/png/'``
+
+When `use_emojione`_ is set to ``true``, then this is the URL from where PNG image files for
+displaying emojis will be fetched.
+
+
 expose_rid_and_sid
 ------------------
 
@@ -993,6 +1003,17 @@ Notification will be shown in the following cases:
 
 Requires the `src/converse-notification.js` plugin.
 
+use_emojione
+------------
+* Default: ``true``
+
+Determines whether `Emojione <https://www.emojione.com/>`_ should be used to
+render emojis. If set to ``false``, then rendering support will fall back to
+the operating system or browser (which might not support emoji).
+
+See also `emojione_image_path`_.
+
+
 show_only_online_users
 ----------------------
 
@@ -1088,7 +1109,7 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-The Converse.js plugins architecture can have an ``optional_dependencies``
+The Converse.js plugins architecture can have an :ref:`optional_dependencies`
 plugin attribute. This enables you to specify an array of optional, or
 "soft", dependencies. Converse.js (more specifically,
 `pluggable.js <https://jcbrand.github.io/pluggable.js/>`_) will try to first
@@ -1154,7 +1175,7 @@ visible_toolbar_buttons
     {
         call: false,
         clear: true,
-        emoticons: true,
+        emoji: true,
         toggle_occupants: true
     }
 
@@ -1173,9 +1194,9 @@ Allows you to show or hide buttons on the chat boxes' toolbars.
         });
 * *clear*:
     Provides a button for clearing messages from a chat box.
-* *emoticons*:
-    Enables rendering of emoticons and provides a toolbar button for choosing them.
-* toggle_occupants:
+* *emoji*:
+    Enables rendering of emoji and provides a toolbar button for choosing them.
+* *toggle_occupants*:
     Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chat room.
 
 .. _`websocket-url`:

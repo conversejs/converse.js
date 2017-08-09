@@ -195,34 +195,6 @@
             null,
             "Não foram encontrados usuários"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Clique para adicionar como um contato do chat"
-         ],
-         "Toggle chat": [
-            null,
-            "Alternar bate-papo"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Conectando"
-         ],
-         "Authenticating": [
-            null,
-            "Autenticando"
-         ],
-         "Authentication Failed": [
-            null,
-            "Falha de autenticação"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -295,7 +267,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -367,7 +339,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -435,7 +407,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -443,7 +415,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -456,6 +428,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -479,13 +455,13 @@
             null,
             "Sem salas em %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Salas em %1$s"
-         ],
          "Description:": [
             null,
             "Descrição:"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -671,10 +647,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -756,10 +728,6 @@
             "Clique para conversar com o contato"
          ],
          "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

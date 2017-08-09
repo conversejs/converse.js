@@ -10,21 +10,19 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    var utils = converse.env.utils,
-        Strophe = converse.env.Strophe,
-        _ = converse.env._;
+    const { utils, Strophe, _ } = converse.env;
 
     converse.plugins.add('converse-notification', {
 
-        initialize: function () {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
             // For translations
-            var __ = _converse.__;
-            var ___ = _converse.___;
+            const { __ } = _converse;
+            const { ___ } = _converse;
 
             _converse.supports_html5_notification = "Notification" in window;
 
@@ -39,36 +37,34 @@
                 notification_icon: '/logo/conversejs128.png'
             });
 
-            _converse.isOnlyChatStateNotification = function (msg) {
+            _converse.isOnlyChatStateNotification = (msg) =>
                 // See XEP-0085 Chat State Notification
-                return (
-                    _.isNull(msg.querySelector('body')) && (
+                _.isNull(msg.querySelector('body')) && (
                         _.isNull(msg.querySelector(_converse.ACTIVE)) ||
                         _.isNull(msg.querySelector(_converse.COMPOSING)) ||
                         _.isNull(msg.querySelector(_converse.INACTIVE)) ||
                         _.isNull(msg.querySelector(_converse.PAUSED)) ||
                         _.isNull(msg.querySelector(_converse.GONE))
                     )
-                );
-            };
+            ;
 
             _converse.shouldNotifyOfGroupMessage = function (message) {
                 /* Is this a group message worthy of notification?
                  */
-                var notify_all = _converse.notify_all_room_messages,
-                    jid = message.getAttribute('from'),
+                let notify_all = _converse.notify_all_room_messages;
+                const jid = message.getAttribute('from'),
                     resource = Strophe.getResourceFromJid(jid),
                     room_jid = Strophe.getBareJidFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '';
                 if (sender === '' || message.querySelectorAll('delay').length > 0) {
                     return false;
                 }
-                var room = _converse.chatboxes.get(room_jid);
-                var body = message.querySelector('body');
+                const room = _converse.chatboxes.get(room_jid);
+                const body = message.querySelector('body');
                 if (_.isNull(body)) {
                     return false;
                 }
-                var mentioned = (new RegExp("\\b"+room.get('nick')+"\\b")).test(body.textContent);
+                const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
                 notify_all = notify_all === true ||
                     (_.isArray(notify_all) && _.includes(notify_all, room_jid));
                 if (sender === room.get('nick') || (!notify_all && !mentioned)) {
@@ -83,7 +79,7 @@
                 if (utils.isOTRMessage(message)) {
                     return false;
                 }
-                var forwarded = message.querySelector('forwarded');
+                const forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
                     return false;
                 } else if (message.getAttribute('type') === 'groupchat') {
@@ -92,7 +88,7 @@
                     // We want to show notifications for headline messages.
                     return true;
                 }
-                var is_me = Strophe.getBareJidFromJid(
+                const is_me = Strophe.getBareJidFromJid(
                         message.getAttribute('from')) === _converse.bare_jid;
                 return !_converse.isOnlyChatStateNotification(message) && !is_me;
             };
@@ -103,7 +99,7 @@
                 // XXX Eventually this can be refactored to use Notification's sound
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
-                var audio;
+                let audio;
                 if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
                     audio = new Audio(_converse.sounds_path+"msg_received.ogg");
                     if (audio.canPlayType('/audio/ogg')) {
@@ -116,7 +112,7 @@
             };
 
             _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                var enabled = _converse.supports_html5_notification &&
+                const enabled = _converse.supports_html5_notification &&
                     _converse.show_desktop_notifications &&
                     Notification.permission === "granted";
                 if (ignore_hidden) {
@@ -130,9 +126,9 @@
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                var title, roster_item,
-                    full_from_jid = message.getAttribute('from'),
-                    from_jid = Strophe.getBareJidFromJid(full_from_jid);
+                let title, roster_item;
+                const full_from_jid = message.getAttribute('from'),
+                      from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
                         title = __(___("Notification from %1$s"), from_jid);
@@ -162,7 +158,7 @@
                         }
                     }
                 }
-                var n = new Notification(title, {
+                const n = new Notification(title, {
                         body: message.querySelector('body').textContent,
                         lang: _converse.locale,
                         icon: _converse.notification_icon
@@ -178,8 +174,8 @@
                     // Don't notify if the user is being ignored.
                     return;
                 }
-                var chat_state = contact.chat_status,
-                    message = null;
+                const chat_state = contact.chat_status;
+                let message = null;
                 if (chat_state === 'offline') {
                     message = __('has gone offline');
                 } else if (chat_state === 'away') {
@@ -192,7 +188,7 @@
                 if (message === null) {
                     return;
                 }
-                var n = new Notification(contact.fullname, {
+                const n = new Notification(contact.fullname, {
                         body: message,
                         lang: _converse.locale,
                         icon: _converse.notification_icon
@@ -201,7 +197,7 @@
             };
 
             _converse.showContactRequestNotification = function (contact) {
-                var n = new Notification(contact.fullname, {
+                const n = new Notification(contact.fullname, {
                         body: __('wants to be your contact'),
                         lang: _converse.locale,
                         icon: _converse.notification_icon
@@ -211,7 +207,7 @@
 
             _converse.showFeedbackNotification = function (data) {
                 if (data.klass === 'error' || data.klass === 'warn') {
-                    var n = new Notification(data.subject, {
+                    const n = new Notification(data.subject, {
                             body: data.message,
                             lang: _converse.locale,
                             icon: _converse.notification_icon
@@ -235,7 +231,7 @@
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
-                var message = data.stanza;
+                const message = data.stanza;
                 if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }

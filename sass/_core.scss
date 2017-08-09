@@ -52,9 +52,6 @@
         -webkit-touch-callout: none;
         @include user-select(none);
     }
-    .emoticon {
-        font-size: $font-size;
-    }
 
     @keyframes fadein {
         0% { opacity: 0 }
@@ -77,6 +74,10 @@
         opacity: 0;
         display: none;
     }
+    .collapsed {
+        height: 0;
+        overflow: hidden;
+    }
 
     .locked {
         padding-right: 22px;
@@ -89,6 +90,10 @@
         to {
             @include transform(rotate(359deg));
         }
+    }
+
+    .emojione {
+        height: $emoji_height;
     }
 
     .spinner {
@@ -163,6 +168,9 @@
 
     .activated {
         display: block !important;
+    }
+    .pure-form-message {
+        padding: 0.5em 0;
     }
     .pure-button {
         border-radius: $chatbox-border-radius;

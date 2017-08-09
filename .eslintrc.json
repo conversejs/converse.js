@@ -1,4 +1,7 @@
 {
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
     "env": {
         "browser": true,
         "jasmine": true
@@ -15,7 +18,7 @@
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
                 "find", "endsWith", "startsWith", "filter", "reduce",
-                "map", "replace", "toLower", "split", "trim"
+                "map", "replace", "toLower", "split", "trim", "forEach", "toUpperCase"
             ]
         }],
         "lodash/prefer-startswith": "off",
@@ -56,7 +59,7 @@
         "dot-notation": [
             "error",
             {
-                "allowKeywords": false
+                "allowKeywords": true
             }
         ],
         "eol-last": "error",

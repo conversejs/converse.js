@@ -167,6 +167,8 @@ A better approach is to listen to the events emitted by Converse.js, and to add
 your code in event handlers. This is however not always possible, in which case
 the overrides are a powerful tool.
 
+.. _`optional_dependencies`:
+
 Optional plugin dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -189,7 +191,7 @@ In this case, you can't specify the plugin as a dependency in the ``define``
 statement at the top of the plugin, since it might not always be available,
 which would cause ``require.js`` to throw an error.
 
-To resolve this problem we thave the ``optional_dependencies`` Array attribute.
+To resolve this problem we have the ``optional_dependencies`` Array attribute.
 With this you can specify those dependencies which need to be loaded before
 your plugin, if they exist. If they don't exist, they won't be ignored.
 

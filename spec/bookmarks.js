@@ -17,7 +17,9 @@
 
     describe("A chat room", function () {
 
-        it("can be bookmarked", mock.initConverse(function (_converse) {
+        it("can be bookmarked", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
             var sent_stanza, IQ_id;
             var sendIQ = _converse.connection.sendIQ;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -124,9 +126,12 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             // We ignore this IQ stanza... (unless it's an error stanza), so
             // nothing to test for here.
+            done();
         }));
 
-        it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverse(function (_converse) {
+        it("will be automatically opened if 'autojoin' is set on the bookmark", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
             var jid = 'lounge@localhost';
             _converse.bookmarks.create({
                 'jid': jid,
@@ -144,11 +149,14 @@
                 'nick': ' Othello'
             });
             expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
+            done();
         }));
 
         describe("when bookmarked", function () {
 
-            it("displays that it's bookmarked through its bookmark icon", mock.initConverse(function (_converse) {
+            it("displays that it's bookmarked through its bookmark icon", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost');
                 var $bookmark_icon = view.$('.icon-pushpin');
@@ -157,9 +165,12 @@
                 expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
                 view.model.set('bookmarked', false);
                 expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
+                done();
             }));
 
-            it("can be unbookmarked", mock.initConverse(function (_converse) {
+            it("can be unbookmarked", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
                 var sent_stanza, IQ_id;
                 var sendIQ = _converse.connection.sendIQ;
                 test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
@@ -216,6 +227,7 @@
                         "</pubsub>"+
                     "</iq>"
                 );
+                done();
             }));
         });
 
@@ -293,8 +305,9 @@
              */
         }));
 
-        it("can be retrieved from the XMPP server",
-                mock.initConverseWithConnectionSpies(['send'], function (_converse) {
+        it("can be retrieved from the XMPP server", mock.initConverseWithPromises(
+            ['send'], ['rosterGroupsFetched'], {}, function (done, _converse) {
+
             /* Client requests all items
              * -------------------------
              *
@@ -306,7 +319,7 @@
              */
             var IQ_id;
             expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                var stanza = call.args[0]
+                var stanza = call.args[0];
                 if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                     return;
                 }
@@ -366,14 +379,17 @@
             expect(_converse.bookmarks.models.length).toBe(2);
             expect(_converse.bookmarks.findWhere({'jid': 'theplay@conference.shakespeare.lit'}).get('autojoin')).toBe(true);
             expect(_converse.bookmarks.findWhere({'jid': 'another@conference.shakespeare.lit'}).get('autojoin')).toBe(false);
+            done();
         }));
 
         describe("The rooms panel", function () {
 
-            it("shows a list of bookmarks", mock.initConverseWithConnectionSpies(['send'], function (_converse) {
+            it("shows a list of bookmarks", mock.initConverseWithPromises(
+                ['send'], ['rosterGroupsFetched'], {}, function (done, _converse) {
+
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                    var stanza = call.args[0]
+                    var stanza = call.args[0];
                     if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                         return;
                     }
@@ -414,14 +430,21 @@
                                         'jid': 'another@conference.shakespeare.lit'
                                     }).c('nick').t('JC').up().up();
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
+
+                test_utils.waitUntil(function () {
+                    return $('#chatrooms dl.bookmarks dd').length;
+                }, 300).then(function () {
+                    expect($('#chatrooms dl.bookmarks dd').length).toBe(3);
+                    done();
+                });
             }));
 
-            it("remembers the toggle state of the bookmarks list",
-                    mock.initConverseWithConnectionSpies(['send'], function (_converse) {
+            it("remembers the toggle state of the bookmarks list", mock.initConverseWithPromises(
+                ['send'], ['rosterGroupsFetched'], {}, function (done, _converse) {
+
                 var IQ_id;
                 expect(_.filter(_converse.connection.send.calls.all(), function (call) {
-                    var stanza = call.args[0]
+                    var stanza = call.args[0];
                     if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
                         return;
                     }
@@ -454,23 +477,32 @@
                     'nick': ''
                 });
                 test_utils.openControlBox().openRoomsPanel(_converse);
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-                $('#chatrooms .bookmarks-toggle').click();
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
-                $('#chatrooms .bookmarks-toggle').click();
-                expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
-                expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+
+                test_utils.waitUntil(function () {
+                    return $('#chatrooms dl.bookmarks dd:visible').length;
+                }, 300).then(function () {
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(0);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
+                    $('#chatrooms .bookmarks-toggle').click();
+                    expect($('#chatrooms dl.bookmarks dd:visible').length).toBe(1);
+                    expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
+                    done();
+                });
             }));
         });
     });
 
     describe("When hide_open_bookmarks is true and a bookmarked room is opened", function () {
 
-        it("can be closed", mock.initConverse({ hide_open_bookmarks: true }, function (_converse) {
-            test_utils.openControlBox().openRoomsPanel(_converse);
+        it("can be closed", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'],
+            { hide_open_bookmarks: true },
+            function (done, _converse) {
 
+            test_utils.openControlBox().openRoomsPanel(_converse);
             // XXX Create bookmarks view here, otherwise we need to mock stanza
             // traffic for it to get created.
             _converse.bookmarksview = new _converse.BookmarksView(
@@ -502,6 +534,7 @@
             view.close();
             room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
+            done();
         }));
     });
 }));

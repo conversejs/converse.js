@@ -1,5 +1,6 @@
 (function (root, factory) {
     define([
+        "jquery.noconflict",
         "converse-core",
         "mock",
         "test_utils",
@@ -7,10 +8,9 @@
         "transcripts"
         ], factory
     );
-} (this, function (converse, mock, test_utils, utils, transcripts) {
+} (this, function ($, converse, mock, test_utils, utils, transcripts) {
     var Strophe = converse.env.Strophe;
     var _ = converse.env._;
-    var $ = converse.env.jQuery;
     var IGNORED_TAGS = [
         'stream:features',
         'auth',

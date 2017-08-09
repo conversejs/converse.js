@@ -1,8 +1,7 @@
 (function (root, factory) {
-    define(["jasmine", "mock", "converse-core", "test-utils"], factory);
-} (this, function (jasmine, mock, converse, test_utils) {
+    define(["jquery.noconflict", "jasmine", "mock", "converse-core", "test-utils"], factory);
+} (this, function ($, jasmine, mock, converse, test_utils) {
     var _ = converse.env._;
-    var $ = converse.env.jQuery;
     var $pres = converse.env.$pres;
     var $msg = converse.env.$msg;
     var $iq = converse.env.$iq;
@@ -25,7 +24,11 @@
 
     describe("The Control Box", function () {
 
-        it("can be opened by clicking a DOM element with class 'toggle-controlbox'", mock.initConverse(function (_converse) {
+        it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             // This spec will only pass if the controlbox is not currently
             // open yet.
             expect($("div#controlbox").is(':visible')).toBe(false);
@@ -39,18 +42,28 @@
             expect(_converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
             expect(_converse.emit).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
             expect($("div#controlbox").is(':visible')).toBe(true);
+            done();
         }));
 
         describe("The Status Widget", function () {
 
-            it("shows the user's chat status, which is online by default", mock.initConverse(function (_converse) {
+            it("shows the user's chat status, which is online by default",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
                 expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am online');
+                done();
             }));
 
-            it("can be used to set the current user's chat status", mock.initConverse(function (_converse) {
+            it("can be used to set the current user's chat status",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
                 spyOn(view, 'toggleOptions').and.callThrough();
@@ -68,9 +81,14 @@
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(false);
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('dnd')).toBe(true);
                 expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe('I am busy');
+                done();
             }));
 
-            it("can be used to set a custom status message", mock.initConverse(function (_converse) {
+            it("can be used to set a custom status message",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
                 _converse.xmppstatus.save({'status': 'online'});
@@ -87,6 +105,7 @@
                 expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
                 expect(view.$el.find('a.choose-xmpp-status').hasClass('online')).toBe(true);
                 expect(view.$el.find('a.choose-xmpp-status').attr('data-value')).toBe(msg);
+                done();
             }));
         });
     });
@@ -95,7 +114,11 @@
 
         describe("The live filter", function () {
 
-            it("will only appear when roster contacts flow over the visible area", mock.initConverseWithAsync(function (done, _converse) {
+            it("will only appear when roster contacts flow over the visible area",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var $filter = _converse.rosterview.$('.roster-filter');
                 var names = mock.cur_names;
                 test_utils.openControlBox();
@@ -120,13 +143,17 @@
                         } else {
                             return !$filter.is(':visible');
                         }
-                }).then(function () {
-                    done();
-                });
+                    }).then(function () {
+                        done();
+                    });
                 });
             }));
 
-            it("can be used to filter the contacts shown", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be used to filter the contacts shown",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var $filter;
                 var $roster;
                 _converse.roster_groups = true;
@@ -180,7 +207,11 @@
                 });
             }));
 
-            it("can be used to filter the groups shown", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be used to filter the groups shown",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var $filter;
                 var $roster;
                 var $type;
@@ -226,7 +257,11 @@
                 });
             }));
 
-            it("has a button with which its contents can be cleared", mock.initConverseWithAsync(function (done, _converse) {
+            it("has a button with which its contents can be cleared",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
@@ -250,7 +285,11 @@
                 });
             }));
 
-            it("can be used to filter contacts by their chat state", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be used to filter contacts by their chat state",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var $filter;
                 var $roster;
                 _converse.roster_groups = true;
@@ -287,7 +326,11 @@
 
         describe("A Roster Group", function () {
 
-            it("can be used to organize existing contacts", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be used to organize existing contacts",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.roster_groups = true;
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -321,7 +364,11 @@
                 });
             }));
 
-            it("can share contacts with other roster groups", mock.initConverseWithAsync(function (done, _converse) {
+            it("can share contacts with other roster groups", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.roster_groups = true;
                 var groups = ['colleagues', 'friends'];
                 spyOn(_converse, 'emit');
@@ -351,7 +398,11 @@
                 });
             }));
 
-            it("remembers whether it is closed or opened", mock.initConverse(function (_converse) {
+            it("remembers whether it is closed or opened",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.roster_groups = true;
                 var i=0, j=0;
                 var groups = {
@@ -378,6 +429,7 @@
                 expect(view.model.get('state')).toBe('closed');
                 $toggle.click();
                 expect(view.model.get('state')).toBe('opened');
+                done();
             }));
         });
 
@@ -388,7 +440,11 @@
                 test_utils.createContacts(_converse, 'pending').openControlBox().openContactsPanel(_converse);
             }
 
-            it("can be collapsed under their own header", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be collapsed under their own header", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dd').length;
@@ -399,7 +455,11 @@
                 });
             }));
 
-            it("can be added to the roster", mock.initConverse(function (_converse) {
+            it("can be added to the roster",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
@@ -410,9 +470,14 @@
                     fullname: mock.pend_names[0]
                 });
                 expect(_converse.rosterview.update).toHaveBeenCalled();
+                done();
             }));
 
-            it("are shown in the roster when show_only_online_users", mock.initConverseWithAsync(function (done, _converse) {
+            it("are shown in the roster when show_only_online_users", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.show_only_online_users = true;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
@@ -428,7 +493,11 @@
                 });
             }));
 
-            it("are shown in the roster when hide_offline_users", mock.initConverseWithAsync(function (done, _converse) {
+            it("are shown in the roster when hide_offline_users", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.hide_offline_users = true;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
@@ -444,7 +513,11 @@
                 });
             }));
 
-            it("can be removed by the user", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be removed by the user", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 var name = mock.pend_names[0];
                 var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -474,7 +547,11 @@
                 });
             }));
 
-            it("do not have a header if there aren't any", mock.initConverseWithAsync(function (done, _converse) {
+            it("do not have a header if there aren't any", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openControlBox();
                 var name = mock.pend_names[0];
                 _converse.roster.create({
@@ -500,7 +577,11 @@
                 });
             }));
 
-            it("will lose their own header once the last one has been removed", mock.initConverse(function (_converse) {
+            it("is shown when a new private message is received",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 var name;
                 spyOn(window, 'confirm').and.returnValue(true);
@@ -510,9 +591,14 @@
                         .parent().siblings('.remove-xmpp-contact').click();
                 }
                 expect(_converse.rosterview.$el.find('dt#pending-xmpp-contacts').is(':visible')).toBeFalsy();
+                done();
             }));
 
-            it("can be added to the roster and they will be sorted alphabetically", mock.initConverse(function (_converse) {
+            it("can be added to the roster and they will be sorted alphabetically",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var i, t;
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -530,6 +616,7 @@
                     return result + _.trim(value.textContent);
                 }, '');
                 expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
+                done();
             }));
         });
 
@@ -538,7 +625,11 @@
                 test_utils.createContacts(_converse, 'current').openControlBox().openContactsPanel(_converse);
             };
 
-            it("can be collapsed under their own header", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be collapsed under their own header", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dd:visible').length;
@@ -549,7 +640,11 @@
                 });
             }));
 
-            it("will be hidden when appearing under a collapsed group", mock.initConverseWithAsync(function (done, _converse) {
+            it("will be hidden when appearing under a collapsed group", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _converse.roster_groups = false;
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
@@ -572,7 +667,11 @@
                 });
             }));
 
-            it("can be added to the roster and they will be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be added to the roster and they will be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (var i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
@@ -595,7 +694,11 @@
                 });
             }));
 
-            it("can be removed by the user", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be removed by the user", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dd').length;
@@ -620,7 +723,11 @@
                 });
             }));
 
-            it("do not have a header if there aren't any", mock.initConverseWithAsync(function (done, _converse) {
+            it("do not have a header if there aren't any", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var name = mock.cur_names[0];
                 var contact;
                 contact = _converse.roster.create({
@@ -650,7 +757,11 @@
                 });
             }));
 
-            it("can change their status to online and be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can change their status to online and be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -674,7 +785,11 @@
                 });
             }));
 
-            it("can change their status to busy and be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can change their status to busy and be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -698,7 +813,11 @@
                 });
             }));
 
-            it("can change their status to away and be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can change their status to away and be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -722,7 +841,11 @@
                 });
             }));
 
-            it("can change their status to xa and be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can change their status to xa and be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -746,7 +869,11 @@
                 });
             }));
 
-            it("can change their status to unavailable and be sorted alphabetically", mock.initConverseWithAsync(function (done, _converse) {
+            it("can change their status to unavailable and be sorted alphabetically", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -770,7 +897,11 @@
                 });
             }));
 
-            it("are ordered according to status: online, busy, away, xa, unavailable, offline", mock.initConverseWithAsync(function (done, _converse) {
+            it("are ordered according to status: online, busy, away, xa, unavailable, offline", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -860,7 +991,11 @@
 
         describe("Requesting Contacts", function () {
 
-            it("can be added to the roster and they will be sorted alphabetically", mock.initConverse(function (_converse) {
+            it("can be added to the roster and they will be sorted alphabetically",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 var i, children;
                 var names = [];
                 var addName = function (idx, item) {
@@ -887,9 +1022,14 @@
                 names = [];
                 children.each(addName);
                 expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
+                done();
             }));
 
-            it("do not have a header if there aren't any", mock.initConverseWithAsync(function (done, _converse) {
+            it("do not have a header if there aren't any", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.openContactsPanel(_converse);
                 var name = mock.req_names[0];
                 spyOn(window, 'confirm').and.returnValue(true);
@@ -914,7 +1054,11 @@
                 });
             }));
 
-            it("can be collapsed under their own header", mock.initConverseWithAsync(function (done, _converse) {
+            it("can be collapsed under their own header", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -925,7 +1069,11 @@
                 });
             }));
 
-            it("can have their requests accepted by the user", mock.initConverseWithAsync(function (done, _converse) {
+            it("can have their requests accepted by the user", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -950,7 +1098,11 @@
                 });
             }));
 
-            it("can have their requests denied by the user", mock.initConverseWithAsync(function (done, _converse) {
+            it("can have their requests denied by the user", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 test_utils.waitUntil(function () {
                         return _converse.rosterview.$el.find('dt').length;
@@ -973,7 +1125,9 @@
                 });
             }));
 
-            it("are persisted even if other contacts' change their presence ", mock.initConverse(function (_converse) {
+            it("are persisted even if other contacts' change their presence ", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
                 /* This is a regression test.
                  * https://github.com/jcbrand/_converse.js/issues/262
                  */
@@ -1009,12 +1163,17 @@
                 }).c('group').t('Friends');
                 _converse.roster.onReceivedFromServer(stanza.tree());
                 expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                done();
             }));
         });
 
         describe("All Contacts", function () {
 
-            it("are saved to, and can be retrieved from browserStorage", mock.initConverse(function (_converse) {
+            it("are saved to, and can be retrieved from browserStorage",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
                 var new_attrs, old_attrs, attrs;
@@ -1036,9 +1195,14 @@
                     // comparison
                     expect(_.isEqual(new_attrs.sort(), old_attrs.sort())).toEqual(true);
                 }
+                done();
             }));
 
-            it("will show fullname and jid properties on tooltip", mock.initConverseWithAsync(function (done, _converse) {
+            it("will show fullname and jid properties on tooltip", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
                 test_utils.waitUntil(function () {
@@ -1064,7 +1228,11 @@
 
     describe("The 'Add Contact' widget", function () {
 
-        it("opens up an add form when you click on it", mock.initConverse(function (_converse) {
+        it("opens up an add form when you click on it",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             var panel = _converse.chatboxviews.get('controlbox').contactspanel;
             spyOn(panel, 'toggleContactForm').and.callThrough();
             panel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -1072,9 +1240,14 @@
             expect(panel.toggleContactForm).toHaveBeenCalled();
             // XXX: Awaiting more tests, close it again for now...
             panel.$el.find('a.toggle-xmpp-contact-form').click();
+            done();
         }));
 
-        it("can be used to add contact and it checks for case-sensivity", mock.initConverseWithAsync(function (done, _converse) {
+        it("can be used to add contact and it checks for case-sensivity", 
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             spyOn(_converse, 'emit');
             spyOn(_converse.rosterview, 'update').and.callThrough();
             test_utils.openControlBox();
@@ -1101,12 +1274,15 @@
                 done();
             });
         }));
-
     });
 
     describe("The Controlbox Tabs", function () {
 
-        it("contains two tabs, 'Contacts' and 'ChatRooms'", mock.initConverse(function (_converse) {
+        it("contains two tabs, 'Contacts' and 'ChatRooms'",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
             var $panels = cbview.$el.find('.controlbox-panes');
@@ -1115,9 +1291,14 @@
             expect($panels.children().first().is(':visible')).toBe(true);
             expect($panels.children().last().attr('id')).toBe('chatrooms');
             expect($panels.children().last().is(':visible')).toBe(false);
+            done();
         }));
 
-        it("remembers which tab was open last", mock.initConverse(function (_converse) {
+        it("remembers which tab was open last",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
             var $tabs = cbview.$el.find('#controlbox-tabs');
@@ -1126,11 +1307,16 @@
             expect(cbview.model.get('active-panel')).toBe('chatrooms');
             $tabs.find('li').first().find('a').click();
             expect(cbview.model.get('active-panel')).toBe('users');
+            done();
         }));
 
         describe("The \"Contacts\" Panel", function () {
 
-            it("shows the number of unread mentions received", mock.initConverse(function (_converse) {
+            it("shows the number of unread mentions received",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 test_utils.openContactsPanel(_converse);
 
@@ -1168,8 +1354,8 @@
                 chatview.model.set({'minimized': false});
                 expect(_.includes(contacts_panel.tab_el.firstChild.classList, 'unread-msgs')).toBeFalsy();
                 expect(_.isNull(contacts_panel.tab_el.querySelector('.msgs-indicator'))).toBeTruthy();
+                done();
             }));
-
         });
     });
 }));

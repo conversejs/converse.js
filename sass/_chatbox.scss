@@ -100,10 +100,11 @@
         }
         .chat-title {
             color: $chat-head-text-color;
-            line-height: 15px;
             display: block;
-            text-overflow: ellipsis;
+            line-height: 15px;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             a {
                 color: $chat-head-text-color;
                 width: 100%;
@@ -156,24 +157,25 @@
                 font-style: italic;
             }
             .chat-message {
-                margin: 0.3em;
-                span {
-                    &.chat-msg-author {
-                        font-weight: bold;
-                        white-space: nowrap;
-                        float: left;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                    }
-                    &.chat-msg-them {
-                        color: $message-them-color;
-                    }
-                    &.chat-msg-me {
-                        color: $link-color;
-                    }
-                    &.chat-msg-content {
-                        max-width: 100%;
-                        word-wrap: break-word;
+                overflow: auto; // Ensures that content stays inside
+                .chat-msg-author {
+                    font-weight: bold;
+                    white-space: nowrap;
+                    float: left;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                .chat-msg-them {
+                    color: $message-them-color;
+                }
+                .chat-msg-me {
+                    color: $link-color;
+                }
+                .chat-msg-content {
+                    max-width: 100%;
+                    word-wrap: break-word;
+                    .emojione {
+                        margin-bottom: -6px;
                     }
                 }
             }
@@ -272,11 +274,6 @@
                     text-decoration: none;
                     text-shadow: none;
                 }
-                .toolbar-picker-panel {
-                    a {
-                        color: $link-color;
-                    }
-                }
                 .chat-toolbar-text {
                     font-size: 12px;
                     padding-right: 3px;
@@ -284,7 +281,7 @@
                 .unencrypted a,
                 .unencrypted {
                     color: $text-color;
-                    .toolbar-picker-panel {
+                    .toolbar-menu {
                         a {
                             color: $link-color;
                         }
@@ -301,72 +298,100 @@
                 .toggle-occupants,
                 .toggle-clear,
                 .toggle-otr {
+
                     float: right;
                 }
                 li {
+                    cursor: pointer;
                     display: inline-block;
                     list-style: none;
-                    padding: 0 3px 0 3px;
-                    cursor: pointer;
                     margin-top: 1px;
-                }
-                li:hover {
-                    cursor: pointer;
-                }
-                ul {
-                    background: #fff;
-                    bottom: 100%;
-                    box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
-                    display: none;
-                    font-size: 12px;
-                    margin: 0;
-                    position: absolute;
-                    right: 0;
-                    li {
+                    padding: 0 3px 0 3px;
+                    &:hover {
                         cursor: pointer;
-                        list-style: none;
-                        position: relative;
-                        a:hover {
-                            color: #8f2831;
-                        }
                     }
-                }
-                li {
-                    margin-left: 0;
-                }
-                .toggle-smiley {
-                    color: $text-color;
-                    padding-left: 5px;
-                    ul {
-                        left: 0;
-                        li {
-                            font-size: $font-size;
-                            padding: 5px;
-                            z-index: 98;
+                    .toolbar-menu {
+                        background-color: #fff;
+                        bottom: 100%;
+                        box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+                        font-size: 12px;
+                        margin: 0;
+                        position: absolute;
+                        right: 0;
+                        a {
+                            color: $link-color;
                         }
-                        li:hover {
-                            background-color: $highlight-color;
-                        }
-                    }
-                }
-                .toggle-otr {
-                    ul {
-                        li {
-                            padding: 7px;
-                            background-color: white;
-                            display: block;
-                            z-index: 99;
-                            a {
-                                -moz-transition: background-color 0.2s ease-in-out;
-                                -webkit-transition: background-color 0.2s ease-in-out;
-                                transition: background-color 0.2s ease-in-out;
-                                display: block;
-                                padding: 1px;
-                                text-decoration: none;
+                        ul {
+                            &.emoji-picker {
+                                height: $emoji-picker-height;
+                                overflow: scroll;
+                                padding: 0.5em;
+                            }
+                            &.emoji-toolbar {
+                                /* offset-x | offset-y | blur-radius | spread-radius | color */
+                                box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+                            }
+                            &.emoji-toolbar {
+                                overflow: hidden;
+                                left: 0;
+                                .picked {
+                                    background-color: $highlight-color;
+                                }
+                                li {
+                                    height: $emoji_height + 2*5px;
+                                    padding: 4px;
+                                    z-index: 98;
+                                    &.emoji {
+                                        a {
+                                            font-size: $font-size-huge;
+                                        }
+                                    }
+                                }
+                            }
+                            li {
+                                &.insert-emoji {
+                                    padding: 0.3em;
+                                    &:hover {
+                                        background-color: $highlight-color;
+                                    }
+                                }
+                                margin-left: 0;
+                                cursor: pointer;
+                                list-style: none;
+                                position: relative;
+                                a:hover {
+                                    color: #8f2831;
+                                }
                             }
                         }
-                        li:hover {
-                            background-color: $highlight-color;
+                    }
+                    &.toggle-toolbar-menu {
+                        color: $text-color;
+                    }
+                    &.toggle-smiley {
+                        padding-left: 5px;
+                        .emoji-toolbar {
+                            .emoji-category-picker,
+                            .emoji-skintone-picker {
+                                li:hover {
+                                    background-color: $highlight-color;
+                                }
+                            }
+                        }
+                    }
+                    &.toggle-otr {
+                        ul {
+                            z-index: 99;
+                            li {
+                                &:hover {
+                                    background-color: $highlight-color;
+                                }
+                                display: block;
+                                padding: 7px;
+                                a {
+                                    display: block;
+                                }
+                            }
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 {[ if (allow_otr)  { ]}
-    <li class="toggle-otr {{{otr_status_class}}}" title="{{{otr_tooltip}}}">
+    <li class="toggle-toolbar-menu toggle-otr {{{otr_status_class}}}" title="{{{otr_tooltip}}}">
         <span class="chat-toolbar-text">{{{otr_translated_status}}}</span>
         {[ if (otr_status == UNENCRYPTED) { ]}
             <span class="icon-unlocked"></span>
@@ -13,7 +13,7 @@
         {[ if (otr_status == FINISHED) { ]}
             <span class="icon-unlocked"></span>
         {[ } ]}
-        <ul class="toolbar-picker-panel">
+        <ul class="toolbar-menu collapsed">
             {[ if (otr_status == UNENCRYPTED) { ]}
                <li><a class="start-otr" href="#">{{{label_start_encrypted_conversation}}}</a></li>
             {[ } ]}

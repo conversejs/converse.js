@@ -195,34 +195,6 @@
             null,
             "Geen gebruikers gevonden"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Klik om contact toe te voegen"
-         ],
-         "Toggle chat": [
-            null,
-            ""
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            ""
-         ],
-         "Connecting": [
-            null,
-            "Verbinden"
-         ],
-         "Authenticating": [
-            null,
-            "Authenticeren"
-         ],
-         "Authentication Failed": [
-            null,
-            "Authenticeren mislukt"
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            ""
-         ],
          "This client does not allow presence subscriptions": [
             null,
             ""
@@ -307,7 +279,7 @@
             null,
             ""
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
             ""
          ],
@@ -379,7 +351,7 @@
             null,
             ""
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
             ""
          ],
@@ -447,7 +419,7 @@
             null,
             ""
          ],
-         "All other room occupants can see your Jabber ID": [
+         "All other room occupants can see your XMPP username": [
             null,
             ""
          ],
@@ -455,7 +427,7 @@
             null,
             ""
          ],
-         "Only moderators can see your Jabber ID": [
+         "Only moderators can see your XMPP username": [
             null,
             ""
          ],
@@ -468,6 +440,10 @@
             ""
          ],
          "You may optionally include a message, explaining the reason for the invitation.": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP username": [
             null,
             ""
          ],
@@ -491,13 +467,13 @@
             null,
             "Geen room op %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Room op %1$s"
-         ],
          "Description:": [
             null,
             "Beschrijving"
+         ],
+         "Room Address (JID):": [
+            null,
+            ""
          ],
          "Occupants:": [
             null,
@@ -695,10 +671,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            ""
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -780,10 +752,6 @@
             "Klik om te chatten met contact"
          ],
          "Name": [
-            null,
-            ""
-         ],
-         "Sorry, there was an error while trying to remove ": [
             null,
             ""
          ]

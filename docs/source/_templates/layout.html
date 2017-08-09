@@ -2,7 +2,7 @@
 {% extends "!layout.html" %}
 
 {# Custom CSS overrides #}
-{% set bootswatch_css_custom = ['_static/style.css', "../../css/converse.min.css"] %}
+{% set css_files = css_files + ['_static/style.css', "../../css/converse.min.css"] %}
 {% set script_files = script_files + ["../../dist/converse.min.js", "../../analytics.js"] %}
 
 {# Add some extra stuff before and use existing with 'super()' call. #}

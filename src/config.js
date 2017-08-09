@@ -17,16 +17,20 @@ require.config({
     paths: {
         "almond":                   "node_modules/almond/almond",
         "awesomplete":              "node_modules/awesomplete-avoid-xss/awesomplete",
+        "babel":                    "node_modules/requirejs-babel/babel-5.8.34.min",
         "backbone":                 "node_modules/backbone/backbone",
-        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
+        "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "emojione":                 "node_modules/emojione/lib/js/emojione",
+        "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
-        "es6-promise":              "node_modules/es6-promise/dist/es6-promise",
         "jquery":                   "node_modules/jquery/dist/jquery",
-        "jquery.noconflict":        "src/jquery.noconflict",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",
-        "jquery.easing":            "node_modules/jquery-easing/jquery.easing.1.3.umd", // XXX: Only required for https://conversejs.org website
+        "jquery.noconflict":        "src/jquery.noconflict",
+        "lodash":                   "node_modules/lodash/lodash",
+        "lodash.converter":         "3rdparty/lodash.fp",
+        "lodash.noconflict":        "src/lodash.noconflict",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",
@@ -38,11 +42,10 @@ require.config({
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/lodash-template-loader/loader",
         "typeahead":                "components/typeahead.js/index",
-        "lodash":                   "node_modules/lodash/lodash",
-        "lodash.converter":         "3rdparty/lodash.fp",
-        "lodash.noconflict":        "src/lodash.noconflict",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
+        "xss.noconflict":           "src/xss.noconflict",
+        "xss":                      "node_modules/xss/dist/xss",
 
         // Converse
         "converse":                 "src/converse",
@@ -52,6 +55,7 @@ require.config({
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",
+        "converse-disco":           "src/converse-disco",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
         "converse-inverse":         "src/converse-inverse",
@@ -136,6 +140,15 @@ require.config({
 
     // define module dependencies for modules not using define
     shim: {
-        'awesomplete':          { exports: 'Awesomplete' }
+        'awesomplete':          { exports: 'Awesomplete'},
+        'emojione':             { exports: 'emojione'},
+        'xss':                  {
+            init: function (xss_noconflict) {
+                return {
+                    filterXSS: window.filterXSS,
+                    filterCSS: window.filterCSS
+                }
+            }
+        }
     }
 });

@@ -40,7 +40,9 @@
             utils.isHeadlineMessage.restore();
         }));
 
-        it("will open and display headline messages", mock.initConverse(function (_converse) {
+        it("will open and display headline messages", mock.initConverseWithPromises(
+            null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+
             /* <message from='notify.example.com'
              *          to='romeo@im.example.com'
              *          type='headline'
@@ -74,9 +76,12 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
+            done();
         }));
 
-        it("will not show a headline messages from a full JID if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
+        it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
+            mock.initConverse(function (_converse) {
+
             _converse.allow_non_roster_messaging = false;
             sinon.spy(utils, 'isHeadlineMessage');
             var stanza = $msg({

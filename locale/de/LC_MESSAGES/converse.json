@@ -31,6 +31,10 @@
             null,
             "Abbrechen"
          ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Wollen Sie dieses Lesezeichen wirklich entfernen \"%1$s\"?"
+         ],
          "Sorry, something went wrong while trying to save your bookmark.": [
             null,
             "Etwas ging beim Versuch des Abspeicherns des Lesezeichens schief."
@@ -38,10 +42,6 @@
          "Click to toggle the bookmarks list": [
             null,
             "Zum Aus-/Einklappen klicken"
-         ],
-         "Are you sure you want to remove the bookmark \"%1$s\"?": [
-            null,
-            "Wollen Sie dieses Lesezeichen wirklich entfernen \"%1$s\"?"
          ],
          "Remove this bookmark": [
             null,
@@ -255,54 +255,6 @@
             null,
             "Keine Benutzer gefunden"
          ],
-         "Click to add as a chat contact": [
-            null,
-            "Hier klicken um als Kontakt hinzuzufügen"
-         ],
-         "Toggle chat": [
-            null,
-            "Chat ein-/ausblenden"
-         ],
-         "Reconnecting": [
-            null,
-            "Verbindung wiederherstellen"
-         ],
-         "The connection has dropped, attempting to reconnect.": [
-            null,
-            "Die Verbindung wurde unterbrochen. Versuche neu zu verbinden."
-         ],
-         "Connection error": [
-            null,
-            "Verbindungsfehler"
-         ],
-         "An error occurred while connecting to the chat server.": [
-            null,
-            "Beim Speichern des Formulars ist ein Fehler aufgetreten."
-         ],
-         "Connecting": [
-            null,
-            "Verbindungsaufbau"
-         ],
-         "Authenticating": [
-            null,
-            "Authentifizierung"
-         ],
-         "Authentication Failed": [
-            null,
-            "Authentifizierung gescheitert"
-         ],
-         "Connection failed": [
-            null,
-            "Verbindung fehlgeschlagen"
-         ],
-         "An error occurred while connecting to the chat server: ": [
-            null,
-            "Es trat ein Fehler während des Verbindungsvorgangs mit dem Chat-Server auf: "
-         ],
-         "Sorry, there was an error while trying to add ": [
-            null,
-            "Entschuldige, es kam zu einem Fehler bei der Hinzufügung von "
-         ],
          "This client does not allow presence subscriptions": [
             null,
             "Dieser Kontakt erlaubt die Abonnieren des Status nicht"
@@ -431,9 +383,9 @@
             null,
             "Teilnehmerliste ausblenden"
          ],
-         "Error: the \"": [
+         "${command}": [
             null,
-            "Fehler: Das \""
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -535,9 +487,9 @@
             null,
             "Die angegebene Begründung lautet: \"%1$s\"."
          ],
-         "The reason given is: \"": [
+         "${notification.reason}": [
             null,
-            "Die angegebene Begründung lautet: \""
+            ""
          ],
          " has left the room. \"": [
             null,
@@ -586,10 +538,6 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "%1$s hat das Thema zu \"%2$s\" geändert"
-         ],
-         "Click to mention ": [
-            null,
-            "Drücke um zu erwähnen "
          ],
          "This user is a moderator.": [
             null,
@@ -683,10 +631,6 @@
             null,
             "Dieser Raum ist moderiert"
          ],
-         "All other room occupants can see your Jabber ID": [
-            null,
-            "Jeder in dem Raum kann deine Jabber ID sehen"
-         ],
          "Anyone can join this room": [
             null,
             "Jeder kann diesen Raum betreten"
@@ -702,10 +646,6 @@
          "This room is publicly searchable": [
             null,
             "Dieser Raum ist per Suche auffindbar"
-         ],
-         "Only moderators can see your Jabber ID": [
-            null,
-            "Nur Moderatoren können deine Jabber ID sehen"
          ],
          "This room will disappear once the last person leaves": [
             null,
@@ -726,6 +666,10 @@
          "You may optionally include a message, explaining the reason for the invitation.": [
             null,
             "Du kannst optional eine Nachricht mit den Gründen der Einladung mitsenden."
+         ],
+         "Please enter a valid XMPP username": [
+            null,
+            ""
          ],
          "Room name": [
             null,
@@ -751,17 +695,13 @@
             null,
             "Keine Räume auf %1$s"
          ],
-         "Rooms on %1$s": [
-            null,
-            "Räume auf %1$s"
-         ],
          "Description:": [
             null,
             "Beschreibung:"
          ],
-         "Server:": [
+         "Room Address (JID):": [
             null,
-            "Server:"
+            ""
          ],
          "Occupants:": [
             null,
@@ -987,10 +927,6 @@
             null,
             ""
          ],
-         "Return": [
-            null,
-            "Zurück"
-         ],
          "The provider rejected your registration attempt. Please check the values you entered for correctness.": [
             null,
             ""
@@ -1078,10 +1014,6 @@
          "Are you sure you want to remove this contact?": [
             null,
             "Wollen Sie diesen Kontakt wirklich entfernen?"
-         ],
-         "Sorry, there was an error while trying to remove ": [
-            null,
-            ""
          ],
          "Are you sure you want to decline this contact request?": [
             null,

@@ -44,7 +44,7 @@ require.config({
         "typeahead":                "components/typeahead.js/index",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
-        "xss.noconflict":               "src/xss.noconflict",
+        "xss.noconflict":           "src/xss.noconflict",
         "xss":                      "node_modules/xss/dist/xss",
 
         // Converse

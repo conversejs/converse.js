@@ -52,9 +52,10 @@
     <script type="text/javascript" src="../dist/locales.js"></script>
     <!-- END I18N -->
 
-    <script type="text/javascript" src="../node_modules/awesomplete/awesomplete.js"></script>
+    <script type="text/javascript" src="../node_modules/awesomplete-avoid-xss/awesomplete.js"></script>
     <script type="text/javascript" src="../node_modules/moment/min/moment-with-locales.js"></script>
 
+    <script type="text/javascript" src="../3rdparty/lodash.fp.js"></script>
 	<script src="../dist/converse-no-dependencies.js"></script>
 </head>
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -80,16 +81,14 @@
 </body>
 
 <script>
-    require(['converse'], function (converse) {
-        converse.initialize({
-            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-            i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
-            prebind: false,
-            show_controlbox_by_default: true,
-            debug: true,
-            roster_groups: true,
-            keepalive: true
-        });
+    converse.initialize({
+        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
+        i18n: locales.en, // Refer to ./locale/locales.js to see which locales are supported
+        prebind: false,
+        show_controlbox_by_default: true,
+        debug: true,
+        roster_groups: true,
+        keepalive: true
     });
 </script>
 </html>

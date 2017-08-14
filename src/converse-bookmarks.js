@@ -101,10 +101,11 @@
                 },
 
                 onBookmarked () {
+                    const icon = this.el.querySelector('.icon-pushpin');
                     if (this.model.get('bookmarked')) {
-                        this.$('.icon-pushpin').addClass('button-on');
+                        icon.classList.add('button-on');
                     } else {
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        icon.classList.remove('button-on');
                     }
                 },
 
@@ -125,11 +126,18 @@
                 renderBookmarkForm () {
                     const { _converse } = this.__super__,
                         { __ } = _converse,
-                        $body = this.$('.chatroom-body');
-                    $body.children().addClass('hidden');
+                        body = this.el.querySelector('.chatroom-body');
+
+                    _.each(body.children, function (child) {
+                        child.classList.add('hidden');
+                    });
                     // Remove any existing forms
-                    $body.find('form.chatroom-form').remove();
-                    $body.append(
+                    let form = body.querySelector('form.chatroom-form');
+                    if (!_.isNull(form)) {
+                        form.parentNode.removeChild(form);
+                    }
+                    body.insertAdjacentHTML(
+                        'beforeend', 
                         tpl_chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
@@ -138,9 +146,17 @@
                             default_nick: this.model.get('nick'),
                             label_submit: __('Save'),
                             label_cancel: __('Cancel')
-                        }));
-                    this.$('.chatroom-form').submit(this.onBookmarkFormSubmitted.bind(this));
-                    this.$('.chatroom-form .button-cancel').on('click', this.cancelConfiguration.bind(this));
+                        })
+                    );
+                    form = body.querySelector('form.chatroom-form');
+                    form.addEventListener(
+                        'submit',
+                        this.onBookmarkFormSubmitted.bind(this)
+                    );
+                    form.querySelector('.button-cancel').addEventListener(
+                        'click',
+                        this.cancelConfiguration.bind(this)
+                    );
                 },
 
                 onBookmarkFormSubmitted (ev) {
@@ -173,7 +189,7 @@
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
                     }
                 }
             }

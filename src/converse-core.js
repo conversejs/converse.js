@@ -276,7 +276,6 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locked_domain: undefined,
             message_carbons: true,
             message_storage: 'session',
             password: undefined,

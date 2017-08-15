@@ -9,7 +9,7 @@
 (function (root, factory) {
     define(["jquery.noconflict",
             "converse-core",
-            "lodash.converter",
+            "lodash.fp",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!change_status_message",
@@ -29,7 +29,7 @@
 }(this, function (
             $,
             converse,
-            lodashConverter,
+            fp,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_change_status_message,
@@ -49,7 +49,6 @@
     const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
     const { Strophe, Backbone, utils, _, moment } = converse.env;
-    const fp = lodashConverter(_.runInContext());
 
 
     converse.plugins.add('converse-controlbox', {

@@ -31,6 +31,7 @@ require.config({
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.noconflict":        "src/lodash.noconflict",
+        "lodash.fp":                "src/lodash.fp",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",
         "polyfill":                 "src/polyfill",
         "sizzle":                   "node_modules/jquery/sizzle/dist/sizzle",

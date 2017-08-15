@@ -19,9 +19,11 @@
         "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, sizzle,
+        $,
+        sizzle,
         Promise,
-        dummy, _,
+        jQBrowser,
+        _,
         locales,
         moment,
         Strophe,
@@ -34,6 +36,7 @@
         tpl_form_input,
         tpl_form_captcha
     ) {
+
     "use strict";
     locales = locales || {};
     const b64_sha1 = Strophe.SHA1.b64_sha1;
@@ -399,7 +402,7 @@
         /* This works around a webkit bug. Refreshes the browser's viewport,
          * otherwise chatboxes are not moved along when one is closed.
          */
-        if ($.browser.webkit && window.requestAnimationFrame) {
+        if (jQBrowser.webkit && window.requestAnimationFrame) {
             window.requestAnimationFrame(function () {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';

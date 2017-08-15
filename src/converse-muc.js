@@ -13,7 +13,7 @@
     define([
             "jquery.noconflict",
             "converse-core",
-            "lodash.converter",
+            "lodash.fp",
             "tpl!chatarea",
             "tpl!chatroom",
             "tpl!chatroom_disconnect",
@@ -39,7 +39,7 @@
 }(this, function (
             $,
             converse,
-            lodashConverter,
+            fp,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_disconnect,
@@ -66,7 +66,6 @@
     const CHATROOMS_TYPE = 'chatroom';
 
     const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, moment } = converse.env;
-    const fp = lodashConverter(_.runInContext());
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");

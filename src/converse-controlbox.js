@@ -188,6 +188,7 @@
             _converse.api.settings.update({
                 allow_logout: true,
                 default_domain: undefined,
+                locked_domain: undefined,
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,

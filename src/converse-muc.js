@@ -191,11 +191,12 @@
                         _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        const feature = _converse.disco_entities[_converse.domain].features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            this.featureAdded(feature);
+                        const entity = _converse.disco_entities[_converse.domain];
+                        if (!_.isUndefined(entity)) {
+                            const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
+                            if (feature) {
+                                this.featureAdded(feature);
+                            }
                         }
                     });
                 },
@@ -1283,7 +1284,7 @@
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm($(field), $stanza));
+                        $fieldset.append(utils.xForm2webForm(field, stanza));
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');

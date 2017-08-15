@@ -1,10 +1,10 @@
 (function (root, factory) {
     define("mock", ['jquery.noconflict', 'converse'], factory);
-}(this, function ($, converse_api) {
-    var _ = converse_api.env._;
-    var Promise = converse_api.env.Promise;
-    var Strophe = converse_api.env.Strophe;
-    var $iq = converse_api.env.$iq;
+}(this, function ($, converse) {
+    var _ = converse.env._;
+    var Promise = converse.env.Promise;
+    var Strophe = converse.env.Strophe;
+    var $iq = converse.env.$iq;
     var mock = {};
     // Names from http://www.fakenamegenerator.com/
     mock.req_names = [
@@ -99,7 +99,7 @@
             });
         }
 
-        var _converse = converse_api.initialize(_.extend({
+        var _converse = converse.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -113,7 +113,7 @@
             'debug': false
         }, settings || {}));
         _converse.ChatBoxViews.prototype.trimChat = function () {};
-        _converse.disable_effects = true;
+        window.converse_disable_effects = true;
         $.fx.off = true;
         return _converse;
     }

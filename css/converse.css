@@ -1944,10 +1944,13 @@
       color: red;
       display: none; }
     #conversejs #controlbox #converse-register .provider-title {
-      font-size: 22px; }
+      font-size: 20px;
+      margin: 0; }
     #conversejs #controlbox #converse-register .provider-score {
       width: 178px;
       margin-bottom: 8px; }
+    #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label {
+      margin: 0.5em 0 0 0; }
     #conversejs #controlbox #converse-register .form-help .url {
       font-weight: bold;
       color: #578EA9; }

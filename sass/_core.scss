@@ -194,9 +194,19 @@
             padding: 1em;
             legend {
                 color: $text-color;
+                font-size: 125%;
+            }
+            input[type=checkbox] {
+                display: block;
+            }
+            select,
+            input[type=password],
+            input[type=number],
+            input[type=text] {
+                min-width: 50%;
             }
             label {
-                margin-top: 1em;
+                margin: 1em 0;
                 font-size: $font-size-large;
             }
             input[type=text],

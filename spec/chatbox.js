@@ -743,7 +743,7 @@
                         }));
                     });
 
-                    it("will cause the chat area to be scrolled down only if it was at the bottom already",
+                    it("will cause the chat area to be scrolled down only if it was at the bottom originally",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
@@ -769,10 +769,9 @@
                                 }).c('body').t('Message: '+i).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
-
                         test_utils.waitUntil(function () {
                                 return chatboxview.$content.scrollTop();
-                            }, 500)
+                            }, 1000)
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');

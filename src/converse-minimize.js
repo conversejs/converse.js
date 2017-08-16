@@ -13,8 +13,8 @@
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
             "tpl!chats_panel",
-            "converse-controlbox",
             "converse-chatview",
+            "converse-controlbox",
             "converse-muc"
     ], factory);
 }(this, function (
@@ -27,7 +27,7 @@
     ) {
     "use strict";
 
-    const { _ , utils, Backbone, b64_sha1, moment } = converse.env;
+    const { _ , utils, Backbone, Promise, Strophe, b64_sha1, moment } = converse.env;
 
     converse.plugins.add('converse-minimize', {
         overrides: {
@@ -36,15 +36,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            initChatBoxes () {
-                const { _converse } = this.__super__;
-                const result = this.__super__.initChatBoxes.apply(this, arguments);
-                _converse.minimized_chats = new _converse.MinimizedChats({
-                    model: _converse.chatboxes
-                });
-                return result;
-            },
 
             registerGlobalEventHandlers () {
                 const { _converse } = this.__super__;
@@ -251,29 +242,31 @@
                         // fullscreen. In this case we don't trim.
                         return;
                     }
-                    const $minimized = _converse.minimized_chats.$el,
-                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
-                        new_id = newchat ? newchat.model.get('id') : null;
+                    _converse.api.waitUntil('chatBoxesInitialized').then(() => {
+                        const $minimized = _.get(_converse.minimized_chats, '$el'),
+                            minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                            new_id = newchat ? newchat.model.get('id') : null;
 
-                    const boxes_width = _.reduce(
-                        this.xget(new_id),
-                        (memo, view) => memo + this.getChatBoxWidth(view),
-                        newchat ? newchat.$el.outerWidth(true) : 0);
+                        const boxes_width = _.reduce(
+                            this.xget(new_id),
+                            (memo, view) => memo + this.getChatBoxWidth(view),
+                            newchat ? newchat.$el.outerWidth(true) : 0);
 
-                    if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
-                        const oldest_chat = this.getOldestMaximizedChat([new_id]);
-                        if (oldest_chat) {
-                            // We hide the chat immediately, because waiting
-                            // for the event to fire (and letting the
-                            // ChatBoxView hide it then) causes race
-                            // conditions.
-                            const view = this.get(oldest_chat.get('id'));
-                            if (view) {
-                                view.hide();
+                        if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
+                            const oldest_chat = this.getOldestMaximizedChat([new_id]);
+                            if (oldest_chat) {
+                                // We hide the chat immediately, because waiting
+                                // for the event to fire (and letting the
+                                // ChatBoxView hide it then) causes race
+                                // conditions.
+                                const view = this.get(oldest_chat.get('id'));
+                                if (view) {
+                                    view.hide();
+                                }
+                                oldest_chat.minimize();
                             }
-                            oldest_chat.minimize();
                         }
-                    }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 getOldestMaximizedChat (exclude_ids) {
@@ -311,6 +304,8 @@
             _converse.api.settings.update({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });
+
+            _converse.api.promises.add('minimizedChatsInitialized');
 
             _converse.MinimizedChatBoxView = Backbone.View.extend({
                 tagName: 'div',
@@ -492,7 +487,17 @@
                 }
             });
 
-            const renderMinimizeButton = function (view) {
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(() => {
+                _converse.minimized_chats = new _converse.MinimizedChats({
+                    model: _converse.chatboxes
+                });
+                _converse.emit('minimizedChatsInitialized');
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxOpened', function renderMinimizeButton (view) {
                 // Inserts a "minimize" button in the chatview's header
                 const $el = view.$el.find('.toggle-chatbox-button');
                 const $new_el = tpl_chatbox_minimize(
@@ -503,8 +508,7 @@
                 } else {
                     view.$el.find('.close-chatbox-button').after($new_el);
                 }
-            };
-            _converse.on('chatBoxOpened', renderMinimizeButton);
+            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

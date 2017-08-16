@@ -48,7 +48,7 @@
 
     const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
-    const { Strophe, Backbone, utils, _, moment } = converse.env;
+    const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
 
 
     converse.plugins.add('converse-controlbox', {
@@ -59,18 +59,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            initChatBoxes () {
-                this.__super__.initChatBoxes.apply(this, arguments);
-                this.controlboxtoggle = new this.ControlBoxToggle();
-            },
-
-            initConnection () {
-                this.__super__.initConnection.apply(this, arguments);
-                if (this.connection) {
-                    this.addControlBox();
-                }
-            },
 
             _tearDown () {
                 this.__super__._tearDown.apply(this, arguments);
@@ -102,8 +90,8 @@
                 },
 
                 onChatBoxesFetched (collection, resp) {
-                    const { _converse } = this.__super__;
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
+                    const { _converse } = this.__super__;
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
                         _converse.addControlBox();
                     }
@@ -159,7 +147,6 @@
                 }
             },
 
-
             ChatBox: {
                 initialize () {
                     if (this.get('id') === 'controlbox') {
@@ -169,7 +156,6 @@
                     }
                 },
             },
-
 
             ChatBoxView: {
                 insertIntoDOM () {
@@ -199,14 +185,14 @@
 
             const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = () =>
+            _converse.addControlBox = () => {
                 _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 })
-            ;
+            };
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
@@ -218,6 +204,7 @@
                 },
 
                 initialize () {
+                    _converse.controlboxtoggle = new _converse.ControlBoxToggle();
                     this.$el.insertAfter(_converse.controlboxtoggle.$el);
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
@@ -226,7 +213,9 @@
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.insertRoster();
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 },
 
@@ -259,7 +248,10 @@
 
                 onConnected () {
                     if (this.model.get('connected')) {
-                        this.render().insertRoster();
+                        this.render();
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         this.model.save();
                     }
                 },
@@ -735,15 +727,15 @@
                 },
 
                 initialize () {
-                    _converse.chatboxviews.$el.prepend(this.render());
+                    _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
                     const that = this;
-                    _converse.on('initialized', function () {
+                    _converse.api.waitUntil('initialized').then(() => {
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 render () {
@@ -751,11 +743,10 @@
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    return this.$el.html(
-                        tpl_controlbox_toggle({
-                            'label_toggle': __('Toggle chat')
-                        })
-                    );
+                    this.el.innerHTML = tpl_controlbox_toggle({
+                        'label_toggle': __('Toggle chat')
+                    })
+                    return this;
                 },
 
                 updateOnlineCount: _.debounce(function () {
@@ -804,6 +795,12 @@
                     }
                 }
             });
+
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(_converse.addControlBox)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if

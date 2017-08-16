@@ -10,6 +10,7 @@
     define([
             "jquery.noconflict",
             "converse-core",
+            "converse-chatboxes",
             "emojione",
             "xss",
             "tpl!chatbox",
@@ -25,6 +26,7 @@
 }(this, function (
             $,
             converse,
+            dummy,
             emojione,
             xss,
             tpl_chatbox,
@@ -706,10 +708,10 @@
                     }
                     if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
                     } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);

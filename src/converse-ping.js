@@ -56,7 +56,9 @@
             };
 
             _converse.registerPongHandler = function () {
-                _converse.connection.disco.addFeature(Strophe.NS.PING);
+                if (!_.isUndefined(_converse.connection.disco)) {
+                    _converse.connection.disco.addFeature(Strophe.NS.PING);
+                }
                 _converse.connection.ping.addPingHandler(_converse.pong);
             };
 

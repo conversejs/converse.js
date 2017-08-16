@@ -325,8 +325,8 @@
             });
 
             _converse.api.listen.on('beforeTearDown', () => {
-                this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-                delete this.chatboxes.browserStorage;
+                _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+                delete _converse.chatboxes.browserStorage;
             });
             // END: Event handlers
 

@@ -242,29 +242,31 @@
                         // fullscreen. In this case we don't trim.
                         return;
                     }
-                    const $minimized = _converse.minimized_chats.$el,
-                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
-                        new_id = newchat ? newchat.model.get('id') : null;
+                    _converse.api.waitUntil('chatBoxesInitialized').then(() => {
+                        const $minimized = _.get(_converse.minimized_chats, '$el'),
+                            minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                            new_id = newchat ? newchat.model.get('id') : null;
 
-                    const boxes_width = _.reduce(
-                        this.xget(new_id),
-                        (memo, view) => memo + this.getChatBoxWidth(view),
-                        newchat ? newchat.$el.outerWidth(true) : 0);
+                        const boxes_width = _.reduce(
+                            this.xget(new_id),
+                            (memo, view) => memo + this.getChatBoxWidth(view),
+                            newchat ? newchat.$el.outerWidth(true) : 0);
 
-                    if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
-                        const oldest_chat = this.getOldestMaximizedChat([new_id]);
-                        if (oldest_chat) {
-                            // We hide the chat immediately, because waiting
-                            // for the event to fire (and letting the
-                            // ChatBoxView hide it then) causes race
-                            // conditions.
-                            const view = this.get(oldest_chat.get('id'));
-                            if (view) {
-                                view.hide();
+                        if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
+                            const oldest_chat = this.getOldestMaximizedChat([new_id]);
+                            if (oldest_chat) {
+                                // We hide the chat immediately, because waiting
+                                // for the event to fire (and letting the
+                                // ChatBoxView hide it then) causes race
+                                // conditions.
+                                const view = this.get(oldest_chat.get('id'));
+                                if (view) {
+                                    view.hide();
+                                }
+                                oldest_chat.minimize();
                             }
-                            oldest_chat.minimize();
                         }
-                    }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 getOldestMaximizedChat (exclude_ids) {
@@ -302,6 +304,8 @@
             _converse.api.settings.update({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
             });
+
+            _converse.api.promises.add('minimizedChatsInitialized');
 
             _converse.MinimizedChatBoxView = Backbone.View.extend({
                 tagName: 'div',
@@ -490,6 +494,7 @@
                 _converse.minimized_chats = new _converse.MinimizedChats({
                     model: _converse.chatboxes
                 });
+                _converse.emit('minimizedChatsInitialized');
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             _converse.on('chatBoxOpened', function renderMinimizeButton (view) {

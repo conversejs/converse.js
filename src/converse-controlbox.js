@@ -93,8 +93,9 @@
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
                     const { _converse } = this.__super__;
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
-                        _converse.addControlBox({'connected': true});
+                        _converse.addControlBox();
                     }
+                    this.get('controlbox').save({connected:true});
                 },
             },
 
@@ -184,13 +185,13 @@
 
             const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = (settings) => {
-                _converse.chatboxes.add(_.assign({
+            _converse.addControlBox = () => {
+                _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
-                }, settings))
+                })
             };
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
@@ -211,9 +212,11 @@
                     this.model.on('show', this.show, this);
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
-                    _converse.api.waitUntil('rosterViewInitialized')
-                        .then(this.insertRoster.bind(this))
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    if (this.model.get('connected')) {
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    }
                 },
 
                 render () {

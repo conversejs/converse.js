@@ -10,6 +10,7 @@
     define([
             "jquery.noconflict",
             "converse-core",
+            "converse-chatboxes",
             "emojione",
             "xss",
             "tpl!chatbox",
@@ -25,6 +26,7 @@
 }(this, function (
             $,
             converse,
+            dummy,
             emojione,
             xss,
             tpl_chatbox,

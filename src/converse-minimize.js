@@ -13,8 +13,8 @@
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
             "tpl!chats_panel",
-            "converse-controlbox",
             "converse-chatview",
+            "converse-controlbox",
             "converse-muc"
     ], factory);
 }(this, function (

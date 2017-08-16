@@ -53,6 +53,7 @@ require.config({
         "inverse":                  "src/inverse",
 
         "converse-bookmarks":       "src/converse-bookmarks",
+        "converse-chatboxes":       "src/converse-chatboxes",
         "converse-chatview":        "src/converse-chatview",
         "converse-controlbox":      "src/converse-controlbox",
         "converse-core":            "src/converse-core",

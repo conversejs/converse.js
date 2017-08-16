@@ -14,7 +14,8 @@
             "tpl!requesting_contact",
             "tpl!roster",
             "tpl!roster_filter",
-            "tpl!roster_item"
+            "tpl!roster_item",
+            "converse-chatboxes"
     ], factory);
 }(this, function (
             $,

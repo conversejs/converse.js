@@ -51,6 +51,7 @@
 
     _converse.core_plugins = [
         'converse-bookmarks',
+        'converse-chatboxes',
         'converse-chatview',
         'converse-controlbox',
         'converse-core',
@@ -112,8 +113,8 @@
         9: 'REDIRECT'
     };
 
-    const DEFAULT_IMAGE_TYPE = 'image/png';
-    const DEFAULT_IMAGE = "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";
+    _converse.DEFAULT_IMAGE_TYPE = 'image/png';
+    _converse.DEFAULT_IMAGE = "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";
 
     _converse.log = function (message, level) {
         if (message instanceof Error) {
@@ -150,7 +151,6 @@
 
     const PROMISES = [
         'cachedRoster',
-        'chatBoxesFetched',
         'pluginsInitialized',
         'roster',
         'rosterContactsFetched',
@@ -182,7 +182,7 @@
 
         _.each(PROMISES, addPromise);
 
-        if (!_.isUndefined(_converse.chatboxes)) {
+        if (!_.isUndefined(_converse.connection)) {
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
@@ -320,10 +320,6 @@
 
         // Module-level functions
         // ----------------------
-        this.getViewForChatBox = function (chatbox) {
-            if (!chatbox) { return; }
-            return _converse.chatboxviews.get(chatbox.get('id'));
-        };
 
         this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
 
@@ -455,7 +451,6 @@
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
             _converse._tearDown();
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
         };
 
@@ -596,9 +591,7 @@
         };
 
         this.logOut = function () {
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.clearSession();
-
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
@@ -750,10 +743,7 @@
                 _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
-            // First set up chat boxes, before populating the roster, so that
-            // the controlbox is properly set up and ready for the rosterview.
             _converse.roster.onConnected();
-            _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
             _converse.giveFeedback(__('Contacts'));
@@ -791,7 +781,6 @@
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                _converse.chatboxviews.closeAllChatBoxes();
                 _converse.initStatus()
                     .then(
                         _.partial(_converse.onStatusInitialized, false),
@@ -808,8 +797,8 @@
                 'chat_state': undefined,
                 'chat_status': 'offline',
                 'groups': [],
-                'image': DEFAULT_IMAGE,
-                'image_type': DEFAULT_IMAGE_TYPE,
+                'image': _converse.DEFAULT_IMAGE,
+                'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
                 'status': '',
             },
@@ -1519,267 +1508,6 @@
             }
         });
 
-        this.ChatBoxes = Backbone.Collection.extend({
-            comparator: 'time_opened',
-
-            model (attrs, options) {
-                return new _converse.ChatBox(attrs, options);
-            },
-
-            registerMessageHandler () {
-                _converse.connection.addHandler(
-                    this.onMessage.bind(this), null, 'message', 'chat'
-                );
-                _converse.connection.addHandler(
-                    this.onErrorMessage.bind(this), null, 'message', 'error'
-                );
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return true;
-            },
-
-            onChatBoxesFetched (collection) {
-                /* Show chat boxes upon receiving them from sessionStorage
-                 *
-                 * This method gets overridden entirely in src/converse-controlbox.js
-                 * if the controlbox plugin is active.
-                 */
-                collection.each((chatbox) => {
-                    if (this.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show');
-                    }
-                });
-                _converse.emit('chatBoxesFetched');
-            },
-
-            onConnected () {
-                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
-                this.registerMessageHandler();
-                this.fetch({
-                    add: true,
-                    success: this.onChatBoxesFetched.bind(this)
-                });
-            },
-
-            onErrorMessage (message) {
-                /* Handler method for all incoming error message stanzas
-                 */
-                // TODO: we can likely just reuse "onMessage" below
-                const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-                    return true;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                const chatbox = this.getChatBox(from_jid);
-                if (!chatbox) {
-                    return true;
-                }
-                chatbox.createMessage(message, null, message);
-                return true;
-            },
-
-            onMessage (message) {
-                /* Handler method for all incoming single-user chat "message"
-                 * stanzas.
-                 */
-                let contact_jid, delay, resource,
-                    from_jid = message.getAttribute('from'),
-                    to_jid = message.getAttribute('to');
-
-                const original_stanza = message,
-                      to_resource = Strophe.getResourceFromJid(to_jid),
-                      is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
-
-                if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                    _converse.log(
-                        `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
-                        Strophe.LogLevel.INFO
-                    );
-                    return true;
-                } else if (utils.isHeadlineMessage(message)) {
-                    // XXX: Ideally we wouldn't have to check for headline
-                    // messages, but Prosody sends headline messages with the
-                    // wrong type ('chat'), so we need to filter them out here.
-                    _converse.log(
-                        `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
-                        Strophe.LogLevel.INFO
-                    );
-                    return true;
-                }
-                const forwarded = message.querySelector('forwarded');
-                if (!_.isNull(forwarded)) {
-                    const forwarded_message = forwarded.querySelector('message');
-                    const forwarded_from = forwarded_message.getAttribute('from');
-                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-                        // Prevent message forging via carbons
-                        //
-                        // https://xmpp.org/extensions/xep-0280.html#security
-                        return true;
-                    }
-                    message = forwarded_message;
-                    delay = forwarded.querySelector('delay');
-                    from_jid = message.getAttribute('from');
-                    to_jid = message.getAttribute('to');
-                }
-
-                const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                      from_resource = Strophe.getResourceFromJid(from_jid),
-                      is_me = from_bare_jid === _converse.bare_jid;
-
-                if (is_me) {
-                    // I am the sender, so this must be a forwarded message...
-                    contact_jid = Strophe.getBareJidFromJid(to_jid);
-                    resource = Strophe.getResourceFromJid(to_jid);
-                } else {
-                    contact_jid = from_bare_jid;
-                    resource = from_resource;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                      msgid = message.getAttribute('id');
-
-                if (chatbox) {
-                    const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
-                    if (_.isEmpty(messages)) {
-                        // Only create the message when we're sure it's not a
-                        // duplicate
-                        chatbox.incrementUnreadMsgCounter(original_stanza);
-                        chatbox.createMessage(message, delay, original_stanza);
-                    }
-                }
-                _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
-                return true;
-            },
-
-            createChatBox (jid, attrs) {
-                /* Creates a chat box
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user for whom a chat box
-                 *      gets created.
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                const bare_jid = Strophe.getBareJidFromJid(jid),
-                      roster_item = _converse.roster.get(bare_jid);
-                let roster_info = {};
-
-                if (! _.isUndefined(roster_item)) {
-                    roster_info = {
-                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url'),
-                    };
-                } else if (!_converse.allow_non_roster_messaging) {
-                    _converse.log(`Could not get roster item for JID ${bare_jid}`+
-                        ' and allow_non_roster_messaging is set to false',
-                        Strophe.LogLevel.ERROR);
-                    return;
-                }
-                return this.create(_.assignIn({
-                        'id': bare_jid,
-                        'jid': bare_jid,
-                        'fullname': jid,
-                        'image_type': DEFAULT_IMAGE_TYPE,
-                        'image': DEFAULT_IMAGE,
-                        'url': '',
-                    }, roster_info, attrs || {}));
-            },
-
-            getChatBox (jid, create, attrs) {
-                /* Returns a chat box or optionally return a newly
-                 * created one if one doesn't exist.
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user whose chat box we want
-                 *    (Boolean) create - Should a new chat box be created if none exists?
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                jid = jid.toLowerCase();
-                let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
-                if (!chatbox && create) {
-                    chatbox = this.createChatBox(jid, attrs);
-                }
-                return chatbox;
-            }
-        });
-
-        this.ChatBoxViews = Backbone.Overview.extend({
-
-            initialize () {
-                this.model.on("add", this.onChatBoxAdded, this);
-                this.model.on("destroy", this.removeChat, this);
-            },
-
-            _ensureElement () {
-                /* Override method from backbone.js
-                 * If the #conversejs element doesn't exist, create it.
-                 */
-                if (!this.el) {
-                    let el = document.querySelector('#conversejs');
-                    if (_.isNull(el)) {
-                        el = document.createElement('div');
-                        el.setAttribute('id', 'conversejs');
-                        // Converse.js expects a <body> tag to be present.
-                        document.querySelector('body').appendChild(el);
-                    }
-                    el.innerHTML = '';
-                    this.setElement(el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
-            },
-
-            onChatBoxAdded (item) {
-                // Views aren't created here, since the core code doesn't
-                // contain any views. Instead, they're created in overrides in
-                // plugins, such as in converse-chatview.js and converse-muc.js
-                return this.get(item.get('id'));
-            },
-
-            removeChat (item) {
-                this.remove(item.get('id'));
-            },
-
-            closeAllChatBoxes () {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
-                this.each(function (view) { view.close(); });
-                return this;
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
-            },
-
-            getChatBox (attrs, create) {
-                let chatbox  = this.model.get(attrs.jid);
-                if (!chatbox && create) {
-                    chatbox = this.model.create(attrs, {
-                        'error' (model, response) {
-                            _converse.log(response.responseText);
-                        }
-                    });
-                }
-                return chatbox;
-            },
-
-            showChat (attrs) {
-                /* Find the chat box and show it (if it may be shown).
-                 * If it doesn't exist, create it.
-                 */
-                const chatbox = this.getChatBox(attrs, true);
-                if (this.chatBoxMayBeShown(chatbox)) {
-                    chatbox.trigger('show', true);
-                }
-                return chatbox;
-            }
-        });
-
-
         this.XMPPStatus = Backbone.Model.extend({
             initialize () {
                 this.set({
@@ -1886,7 +1614,7 @@
                 };
                 xhr.onerror = function () {
                     delete _converse.connection;
-                    _converse.emit('noResumeableSession');
+                    _converse.emit('noResumeableSession', this);
                     reject(xhr.responseText);
                 };
                 xhr.send();
@@ -1908,7 +1636,7 @@
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.emit('noResumeableSession');
+                _converse.emit('noResumeableSession', this);
             };
             xhr.send();
         };
@@ -2076,8 +1804,6 @@
             if (this.roster) {
                 this.roster.off().reset(); // Removes roster contacts
             }
-            this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-            delete this.chatboxes.browserStorage;
             this.session.destroy();
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
@@ -2087,11 +1813,6 @@
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
             return this;
-        };
-
-        this.initChatBoxes = function () {
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
         };
 
         this.initPlugins = function () {
@@ -2127,7 +1848,6 @@
             this.connection = settings.connection;
         }
         _converse.initPlugins();
-        _converse.initChatBoxes();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();
@@ -2238,46 +1958,6 @@
                     throw new TypeError('contacts.add: invalid jid');
                 }
                 _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
-            }
-        },
-        'chats': {
-            'open' (jids, attrs) {
-                if (_.isUndefined(jids)) {
-                    _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                    return null;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(
-                        _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
-                    );
-                }
-                return _.map(jids, (jid) =>
-                    _converse.getViewForChatBox(
-                        _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
-                    )
-                );
-            },
-            'get' (jids) {
-                if (_.isUndefined(jids)) {
-                    const result = [];
-                    _converse.chatboxes.each(function (chatbox) {
-                        // FIXME: Leaky abstraction from MUC. We need to add a
-                        // base type for chat boxes, and check for that.
-                        if (chatbox.get('type') !== 'chatroom') {
-                            result.push(_converse.getViewForChatBox(chatbox));
-                        }
-                    });
-                    return result;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-                }
-                return _.map(jids,
-                    _.partial(
-                        _.flow(
-                            _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
-                            _converse.getViewForChatBox.bind(_converse)
-                        ), _, true
-                    )
-                );
             }
         },
         'tokens': {

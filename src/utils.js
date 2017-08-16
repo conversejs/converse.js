@@ -6,7 +6,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, Jed */
+/*global define, escape, locales, window */
 (function (root, factory) {
     define([
         "sizzle",
@@ -86,8 +86,11 @@
     // Translation machinery
     // ---------------------
     u.__ = function (str) {
+        if (_.isUndefined(window.Jed)) {
+            return str;
+        }
         if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(Jed, arguments);
+            return Jed.sprintf.apply(window.Jed, arguments);
         }
         if (typeof this.jed === "undefined") {
             this.jed = new Jed(window.JSON.parse(locales[this.locale]));

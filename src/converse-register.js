@@ -11,6 +11,7 @@
  */
 (function (root, factory) {
     define(["jquery.noconflict",
+            "form-utils",
             "converse-core",
             "tpl!form_username",
             "tpl!register_panel",
@@ -22,6 +23,7 @@
     ], factory);
 }(this, function (
             $,
+            utils,
             converse,
             tpl_form_username,
             tpl_register_panel,
@@ -34,7 +36,7 @@
     "use strict";
 
     // Strophe methods for building stanzas
-    const { Strophe, Backbone, utils, $iq, _ } = converse.env;
+    const { Strophe, Backbone, $iq, _ } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');

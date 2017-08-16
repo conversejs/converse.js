@@ -12,6 +12,7 @@
 (function (root, factory) {
     define([
             "jquery.noconflict",
+            "form-utils",
             "converse-core",
             "lodash.fp",
             "tpl!chatarea",
@@ -38,6 +39,7 @@
     ], factory);
 }(this, function (
             $,
+            utils,
             converse,
             fp,
             tpl_chatarea,
@@ -65,7 +67,7 @@
     const ROOMS_PANEL_ID = 'chatrooms';
     const CHATROOMS_TYPE = 'chatroom';
 
-    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, moment } = converse.env;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");

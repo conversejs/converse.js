@@ -735,12 +735,12 @@
                     _converse.chatboxviews.$el.prepend(this.render());
                     this.updateOnlineCount();
                     const that = this;
-                    _converse.on('initialized', function () {
+                    _converse.api.waitUntil('initialized').then(() => {
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 render () {

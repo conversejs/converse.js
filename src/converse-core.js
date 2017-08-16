@@ -150,6 +150,7 @@
     };
 
     const PROMISES = [
+        'initialized',
         'cachedRoster',
         'pluginsInitialized',
         'roster',

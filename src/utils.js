@@ -6,7 +6,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, window */
+/*global define, escape, locales, window, Jed */
 (function (root, factory) {
     define([
         "sizzle",

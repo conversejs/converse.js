@@ -27,7 +27,7 @@
     ) {
     "use strict";
 
-    const { _ , utils, Backbone, b64_sha1, moment } = converse.env;
+    const { _ , utils, Backbone, Promise, Strophe, b64_sha1, moment } = converse.env;
 
     converse.plugins.add('converse-minimize', {
         overrides: {
@@ -36,15 +36,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            initChatBoxes () {
-                const { _converse } = this.__super__;
-                const result = this.__super__.initChatBoxes.apply(this, arguments);
-                _converse.minimized_chats = new _converse.MinimizedChats({
-                    model: _converse.chatboxes
-                });
-                return result;
-            },
 
             registerGlobalEventHandlers () {
                 const { _converse } = this.__super__;
@@ -492,7 +483,16 @@
                 }
             });
 
-            const renderMinimizeButton = function (view) {
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(() => {
+                _converse.minimized_chats = new _converse.MinimizedChats({
+                    model: _converse.chatboxes
+                });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxOpened', function renderMinimizeButton (view) {
                 // Inserts a "minimize" button in the chatview's header
                 const $el = view.$el.find('.toggle-chatbox-button');
                 const $new_el = tpl_chatbox_minimize(
@@ -503,8 +503,7 @@
                 } else {
                     view.$el.find('.close-chatbox-button').after($new_el);
                 }
-            };
-            _converse.on('chatBoxOpened', renderMinimizeButton);
+            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews

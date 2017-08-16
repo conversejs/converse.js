@@ -50,7 +50,10 @@
              */
             const { _converse } = this;
 
-            _converse.api.promises.add('chatBoxesFetched');
+            _converse.api.promises.add([
+                'chatBoxesFetched',
+                'chatBoxesInitialized'
+            ]);
 
             _converse.ChatBoxes = Backbone.Collection.extend({
                 comparator: 'time_opened',
@@ -312,15 +315,20 @@
                 }
             });
 
-            _converse.chatboxes = new _converse.ChatBoxes();
-            _converse.chatboxviews = new _converse.ChatBoxViews({
-                'model': this.chatboxes
+            // BEGIN: Event handlers
+            _converse.api.listen.on('pluginsInitialized', () => {
+                _converse.chatboxes = new _converse.ChatBoxes();
+                _converse.chatboxviews = new _converse.ChatBoxViews({
+                    'model': _converse.chatboxes
+                });
+                _converse.emit('chatBoxesInitialized');
             });
 
             _converse.api.listen.on('beforeTearDown', () => {
                 this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete this.chatboxes.browserStorage;
             });
+            // END: Event handlers
 
             _converse.getViewForChatBox = function (chatbox) {
                 if (!chatbox) { return; }
@@ -331,7 +339,6 @@
             _.extend(_converse.api, {
                 'chats': {
                     'open' (jids, attrs) {
-                        debugger;
                         if (_.isUndefined(jids)) {
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;

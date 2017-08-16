@@ -152,6 +152,7 @@
     const PROMISES = [
         'initialized',
         'cachedRoster',
+        'connectionInitialized',
         'pluginsInitialized',
         'roster',
         'rosterContactsFetched',
@@ -575,11 +576,11 @@
             });
 
         this.initSession = function () {
-            this.session = new Backbone.Model();
+            _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
-            this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-            this.session.fetch();
+            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.fetch();
         };
 
         this.clearSession = function () {
@@ -1778,22 +1779,22 @@
         };
 
         this.initConnection = function () {
-            if (this.connection) {
-                return;
+            if (!this.connection) {
+                if (!this.bosh_service_url && ! this.websocket_url) {
+                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                }
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                    this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+                } else if (this.bosh_service_url) {
+                    this.connection = new Strophe.Connection(
+                        this.bosh_service_url,
+                        _.assignIn(this.connection_options, {'keepalive': this.keepalive})
+                    );
+                } else {
+                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                }
             }
-            if (!this.bosh_service_url && ! this.websocket_url) {
-                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-            }
-            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-            } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(
-                    this.bosh_service_url,
-                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
-                );
-            } else {
-                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-            }
+            _converse.emit('connectionInitialized');
         };
 
         this._tearDown = function () {
@@ -1801,11 +1802,13 @@
              * connection.
              */
             _converse.emit('beforeTearDown');
-            this.unregisterPresenceHandler();
-            if (this.roster) {
-                this.roster.off().reset(); // Removes roster contacts
+            _converse.unregisterPresenceHandler();
+            if (_converse.roster) {
+                _converse.roster.off().reset(); // Removes roster contacts
             }
-            this.session.destroy();
+            if (!_.isUndefined(_converse.session)) {
+                _converse.session.destroy();
+            }
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -1813,7 +1816,7 @@
             window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
-            return this;
+            return _converse;
         };
 
         this.initPlugins = function () {

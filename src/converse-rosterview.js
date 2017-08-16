@@ -76,6 +76,7 @@
                 allow_contact_removal: true,
                 show_toolbar: true,
             });
+            _converse.api.promises.add('rosterViewInitialized');
 
             const STATUSES = {
                 'dnd': __('This contact is busy'),
@@ -950,6 +951,7 @@
                     'model': _converse.rostergroups
                 });
                 _converse.rosterview.render();
+                _converse.emit('rosterViewInitialized');
             };
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);

@@ -356,7 +356,7 @@
                     if (this.form_type === 'xform') {
                         $fields = $stanza.find('field');
                         _.each($fields, (field) => {
-                            $form.append(utils.xForm2webForm.bind(this, $(field), $stanza));
+                            $form.append(utils.xForm2webForm.bind(this, field, stanza));
                         });
                     } else {
                         // Show fields

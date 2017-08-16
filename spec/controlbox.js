@@ -137,6 +137,17 @@
                         });
                         _converse.rosterview.update(); // XXX: Will normally called as event handler
                     }
+
+                    $.fn.hasScrollBar = function() {
+                        if (!$.contains(document, this.get(0))) {
+                            return false;
+                        }
+                        if(this.parent().height() < this.get(0).scrollHeight) {
+                            return true;
+                        }
+                        return false;
+                    };
+
                     return test_utils.waitUntil(function () {
                         if (_converse.rosterview.$roster.hasScrollBar()) {
                             return $filter.is(':visible');

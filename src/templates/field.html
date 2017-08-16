@@ -1,4 +1,5 @@
-<field var="{{{name}}}">{[ if (_.isArray(value)) { ]}
+<field var="{{{name}}}">
+{[ if (_.isArray(value)) { ]}
     {[ _.each(value,function(arrayValue) { ]}<value>{{{arrayValue}}}</value>{[ }); ]}
 {[ } else { ]}
     <value>{{{value}}}</value>

@@ -4,9 +4,11 @@
     mainConfigFile: 'config.js',
     paths: {
         "converse-bookmarks":       "builds/converse-bookmarks",
+        "converse-chatboxes":       "builds/converse-chatboxes",
         "converse-chatview":        "builds/converse-chatview",
         "converse-controlbox":      "builds/converse-controlbox",
         "converse-core":            "builds/converse-core",
+        "converse-disco":           "builds/converse-disco",
         "converse-dragresize":      "builds/converse-dragresize",
         "converse-headline":        "builds/converse-headline",
         "converse-inverse":         "builds/converse-inverse",

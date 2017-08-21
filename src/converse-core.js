@@ -121,10 +121,10 @@
             message = message.stack;
         }
         const logger = _.assignIn({
-                'debug': _.noop,
-                'error': _.noop,
-                'info': _.noop,
-                'warn': _.noop,
+                'debug': console.log || _.noop,
+                'error': console.log || _.noop,
+                'info': console.log || _.noop,
+                'warn': console.log || _.noop,
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
@@ -136,7 +136,7 @@
             logger.warn(`WARNING: ${message}`);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.error(`FATAL: ${message}`);
+                logger.trace(`FATAL: ${message}`);
             } else {
                 logger.error(`FATAL: ${message}`);
             }

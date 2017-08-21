@@ -33,6 +33,13 @@
 
     const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
+    const logger = _.assignIn({
+        'debug': console.log || _.noop,
+        'error': console.log || _.noop,
+        'info': console.log || _.noop,
+        'warn': console.log || _.noop,
+    }, console);
+
     var afterAnimationEnd = function (el, callback) {
         el.classList.remove('visible');
         if (_.isFunction(callback)) {
@@ -198,7 +205,7 @@
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideOut"
-                console.warn(err);
+                logger.warn(err);
                 reject(new Error(err));
                 return;
             }
@@ -242,7 +249,7 @@
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideIn";
-                console.warn(err);
+                logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
@@ -280,7 +287,7 @@
 
     u.fadeIn = function (el, callback) {
         if (_.isNil(el)) {
-            console.warn("Undefined or null element passed into fadeIn");
+            logger.warn("Undefined or null element passed into fadeIn");
         }
         if (window.converse_disable_effects) { // Effects are disabled (for tests)
             el.classList.remove('hidden');
@@ -488,7 +495,7 @@
                 var obj = window.JSON.parse(preferred_locale);
                 return obj.locale_data.converse[""].lang;
             } catch (e) {
-                console.log(e);
+                logger.error(e);
             }
         }
         return u.detectLocale(isSupportedByLibrary) || 'en';

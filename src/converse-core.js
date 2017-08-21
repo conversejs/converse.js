@@ -120,11 +120,11 @@
         if (message instanceof Error) {
             message = message.stack;
         }
-        const logger = _.assignIn({
-                'debug': console.log || _.noop,
-                'error': console.log || _.noop,
-                'info': console.log || _.noop,
-                'warn': console.log || _.noop,
+        const logger = _.assign({
+                'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
@@ -1658,7 +1658,7 @@
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
                 return true;
             } catch (e) {
-                this.log(
+                _converse.log(
                     "Could not restore session for jid: "+
                     this.jid+" Error message: "+e.message);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)

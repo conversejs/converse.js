@@ -33,11 +33,11 @@
 
     const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
-    const logger = _.assignIn({
-        'debug': console.log || _.noop,
-        'error': console.log || _.noop,
-        'info': console.log || _.noop,
-        'warn': console.log || _.noop,
+    const logger = _.assign({
+        'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
     var afterAnimationEnd = function (el, callback) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.1 (Unreleased)
+
+### Bugfixes
+- Various IE11 fixes.
+- Translations written as template literals [aren't parsed properly by xgettext](https://savannah.gnu.org/bugs/?50920).
+
 ## 3.2.0 (2017-08-09)
 
 ### New Plugins

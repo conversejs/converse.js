@@ -973,7 +973,8 @@
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showStatusNotification(
-                            __(`Error: the "${command}" command takes two arguments, the user's nickname and optionally a reason.`),
+                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                                command),
                             true
                         );
                         return false;
@@ -1758,10 +1759,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
+                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
+                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
                         }
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
@@ -1770,7 +1771,7 @@
                         this.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__(`The reason given is: "${notification.reason}"`), true);
+                        this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
                     }
                     if (notification.messages.length) {
                         this.scrollDown();
@@ -2077,7 +2078,7 @@
                             { 'jid': '',
                               'show': show,
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                              'hint_occupant': __(`Click to mention ${this.model.get('nick')} in your message.`),
+                              'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                               'desc_moderator': __('This user is a moderator.'),
                               'desc_occupant': __('This user can send messages in this room.'),
                               'desc_visitor': __('This user can NOT send messages in this room.')
@@ -2334,7 +2335,7 @@
 
                 promptForInvite (suggestion) {
                     const reason = prompt(
-                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
+                        __('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) +
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
                     if (reason !== null) {
@@ -2477,7 +2478,7 @@
                 informNoRoomsFound () {
                     const $available_chatrooms = this.$el.find('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s',this.model.get('muc_domain'))}</dt>`);
+                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`);
                     $('input#show-rooms').show().siblings('span.spinner').remove();
                 },
 
@@ -2676,12 +2677,11 @@
                     contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
                     if (!reason) {
                         result = confirm(
-                            __(___("%1$s has invited you to join a chat room: %2$s"),
-                                contact, room_jid)
+                            __("%1$s has invited you to join a chat room: %2$s", contact, room_jid)
                         );
                     } else {
                         result = confirm(
-                            __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
+                            __('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"',
                                 contact, room_jid, reason)
                         );
                     }

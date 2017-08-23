@@ -88,6 +88,25 @@
         }
     }
 
+    function calculateElementHeight (el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(
+            el.children,
+            (result, child) => result + child.offsetHeight, 0
+        );
+    }
+
+    function slideOutWrapup (el) {
+        /* Wrapup function for slideOut. */
+        el.removeAttribute('data-slider-marker');
+        el.classList.remove('collapsed');
+        el.style.overflow = "";
+        el.style.height = "";
+    }
+
+
     var u = {};
 
     // Translation machinery
@@ -186,22 +205,12 @@
     };
 
     u.slideOut = function (el, duration=900) {
-        /* Shows/expands an element by sliding it out of itself. */
-
-        function calculateEndHeight (el) {
-            return _.reduce(
-                el.children,
-                (result, child) => result + child.offsetHeight, 0
-            );
-        }
-
-        function wrapup (el) {
-            el.removeAttribute('data-slider-marker');
-            el.classList.remove('collapsed');
-            el.style.overflow = "";
-            el.style.height = "";
-        }
-
+        /* Shows/expands an element by sliding it out of itself
+         *
+         * Parameters:
+         *      (HTMLElement) el - The HTML string
+         *      (Number) duration - The duration amount in milliseconds
+         */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideOut"
@@ -214,10 +223,10 @@
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            const end_height = calculateEndHeight(el);
+            const end_height = calculateElementHeight(el);
             if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
-                wrapup(el);
+                slideOutWrapup(el);
                 resolve();
                 return;
             }
@@ -234,9 +243,9 @@
                     // We recalculate the height to work around an apparent
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
-                    el.style.height = calculateEndHeight(el) + 'px';
+                    el.style.height = calculateElementHeight(el) + 'px';
                     window.clearInterval(interval_marker);
-                    wrapup(el);
+                    slideOutWrapup(el);
                     resolve();
                 }
             }, interval);

@@ -534,7 +534,7 @@
             } else if (status === Strophe.Status.CONNFAIL) {
                 _converse.giveFeedback(
                     __('Connection failed'), 'error',
-                    __(`An error occurred while connecting to the chat server: ${condition}`)
+                    __('An error occurred while connecting to the chat server: '+condition)
                 );
                 _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
@@ -1144,7 +1144,7 @@
                             resolve(contact);
                         },
                         function (err) {
-                            alert(__(`Sorry, there was an error while trying to add ${name} as a contact.`));
+                            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
                             _converse.log(err, Strophe.LogLevel.ERROR);
                             resolve(err);
                         }

@@ -667,7 +667,7 @@
                                 this.remove();
                             },
                             function (err) {
-                                alert(__(`Sorry, there was an error while trying to remove ${name} as a contact.`));
+                                alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
                                 _converse.log(err, Strophe.LogLevel.ERROR);
                             }
                         );

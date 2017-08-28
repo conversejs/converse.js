@@ -5,6 +5,7 @@
 ### Bugfixes
 - Various IE11 fixes.
 - Translations written as template literals [aren't parsed properly by xgettext](https://savannah.gnu.org/bugs/?50920).
+- Fix regarding ChatRoomView.getDefaultNickName() and muc_nickname_from_jid
 
 ## 3.2.0 (2017-08-09)
 

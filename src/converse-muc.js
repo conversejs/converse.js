@@ -1571,7 +1571,7 @@
                     if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
-                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid)));
+                        this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
                     }

@@ -71,7 +71,7 @@
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                const contact = _converse.roster.get(jid);
+                const contact = _.get(_converse.roster, jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }

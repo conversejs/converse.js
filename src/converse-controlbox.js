@@ -159,8 +159,12 @@
 
             ChatBoxView: {
                 insertIntoDOM () {
-                    const { _converse } = this.__super__;
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    const view = this.__super__._converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        view.el.insertAdjacentElement('afterend', this.el)
+                    } else {
+                        this.__super__.insertIntoDOM.apply(this, arguments);
+                    }
                     return this;
                 }
             }
@@ -204,8 +208,10 @@
                 },
 
                 initialize () {
-                    _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    if (_.isUndefined(_converse.controlboxtoggle)) {
+                        _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -405,6 +411,8 @@
                 },
 
                 authenticate (ev) {
+                    /* Authenticate the user based on a form submission event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
@@ -418,10 +426,14 @@
                     let jid = $jid_input.val(),
                         errors = false;
 
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || (
+                            !_converse.locked_domain &&
+                            !_converse.default_domain &&
+                            _.filter(jid.split('@')).length < 2)) {
                         errors = true;
                         $jid_input.addClass('error');
                     }
+
                     if (!password && _converse.authentication !== _converse.EXTERNAL)  {
                         errors = true;
                         $pw_input.addClass('error');

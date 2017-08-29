@@ -4,8 +4,9 @@
 
 ### Bugfixes
 - Various IE11 fixes.
-- Translations written as template literals [aren't parsed properly by xgettext](https://savannah.gnu.org/bugs/?50920).
-- Fix regarding ChatRoomView.getDefaultNickName() and muc_nickname_from_jid
+- #908 Login form for inVerse is only 200px when `allow_registration` is set to `false`.
+- #909 Translations written as template literals [aren't parsed properly by xgettext](https://savannah.gnu.org/bugs/?50920).
+- #911 Use `getDefaultNickName` consistently to allow better overrides via plugins.
 
 ## 3.2.0 (2017-08-09)
 

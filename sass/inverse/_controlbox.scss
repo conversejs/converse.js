@@ -40,9 +40,13 @@
             #available-chatrooms {
                 padding: 0 1em 2em 1em;
             }
-            input[type=submit] {
+            .title, .instructions, label {
+                margin: 1em 0;
+            }
+            input[type=submit],
+            input[type=button] {
                 width: auto;
-                margin-top: 1.5em;
+                margin: 1.5em 1em 0 0;
             }
         }
         #controlbox-tabs {

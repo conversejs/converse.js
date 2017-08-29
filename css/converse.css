@@ -1360,10 +1360,23 @@
     padding: 1em; }
     #converse-embedded-chat form.pure-form.converse-form legend,
     #conversejs form.pure-form.converse-form legend {
-      color: #777; }
+      color: #777;
+      font-size: 125%; }
+    #converse-embedded-chat form.pure-form.converse-form input[type=checkbox],
+    #conversejs form.pure-form.converse-form input[type=checkbox] {
+      display: block; }
+    #converse-embedded-chat form.pure-form.converse-form select,
+    #converse-embedded-chat form.pure-form.converse-form input[type=password],
+    #converse-embedded-chat form.pure-form.converse-form input[type=number],
+    #converse-embedded-chat form.pure-form.converse-form input[type=text],
+    #conversejs form.pure-form.converse-form select,
+    #conversejs form.pure-form.converse-form input[type=password],
+    #conversejs form.pure-form.converse-form input[type=number],
+    #conversejs form.pure-form.converse-form input[type=text] {
+      min-width: 50%; }
     #converse-embedded-chat form.pure-form.converse-form label,
     #conversejs form.pure-form.converse-form label {
-      margin-top: 1em;
+      margin: 1em 0;
       font-size: 16px; }
     #converse-embedded-chat form.pure-form.converse-form input[type=text],
     #converse-embedded-chat form.pure-form.converse-form input[type=password],
@@ -1944,10 +1957,13 @@
       color: red;
       display: none; }
     #conversejs #controlbox #converse-register .provider-title {
-      font-size: 22px; }
+      font-size: 20px;
+      margin: 0; }
     #conversejs #controlbox #converse-register .provider-score {
       width: 178px;
       margin-bottom: 8px; }
+    #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label {
+      margin: 0.5em 0 0 0; }
     #conversejs #controlbox #converse-register .form-help .url {
       font-weight: bold;
       color: #578EA9; }

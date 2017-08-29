@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -65,16 +65,16 @@
 
                 renderRegistrationPanel () {
                     this.__super__.renderRegistrationPanel.apply(this, arguments);
-
-                    const el = document.getElementById('converse-register');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    if (this.__super__._converse.allow_registration) {
+                        const el = document.getElementById('converse-register');
+                        el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    }
                     return this;
                 },
 
                 renderLoginPanel () {
                     this.__super__.renderLoginPanel.apply(this, arguments);
                     this.el.classList.add("fullscreen");
-
                     const el = document.getElementById('converse-login');
                     el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;

@@ -1643,9 +1643,11 @@
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
+
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost'),
                     trimmed_chatboxes = _converse.minimized_chats;
+
                 spyOn(view, 'minimize').and.callThrough();
                 spyOn(view, 'maximize').and.callThrough();
                 spyOn(_converse, 'emit');
@@ -1659,18 +1661,11 @@
                 expect(view.minimize).toHaveBeenCalled();
                 var trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                 trimmedview.$("a.restore-chat").click();
-
-                test_utils.waitUntil(function () {
-                        return view.$el.is(':visible');
-                    }, 300)
-                .then(function () {
-                    expect(view.maximize).toHaveBeenCalled();
-                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-                    expect(view.$el.is(':visible')).toBeTruthy();
-                    expect(view.model.get('minimized')).toBeFalsy();
-                    expect(_converse.emit.calls.count(), 3);
-                    done();
-                });
+                expect(view.maximize).toHaveBeenCalled();
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(view.model.get('minimized')).toBeFalsy();
+                expect(_converse.emit.calls.count(), 3);
+                done();
             }));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",

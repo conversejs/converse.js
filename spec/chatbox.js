@@ -743,7 +743,7 @@
                         }));
                     });
 
-                    it("will cause the chat area to be scrolled down only if it was at the bottom already",
+                    it("will cause the chat area to be scrolled down only if it was at the bottom originally",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
@@ -769,10 +769,9 @@
                                 }).c('body').t('Message: '+i).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
-
                         test_utils.waitUntil(function () {
                                 return chatboxview.$content.scrollTop();
-                            }, 500)
+                            }, 1000)
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
@@ -1756,31 +1755,42 @@
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return _converse.rosterview.$el.find('dt').length;
-                        }, 300).then(function () {
+                        }, 500).then(function () {
                             // Make the timeouts shorter so that we can test
                             _converse.TIMEOUTS.PAUSED = 200;
                             _converse.TIMEOUTS.INACTIVE = 200;
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             view = _converse.chatboxviews.get(contact_jid);
+                            return test_utils.waitUntil(function () {
+                                return view.model.get('chat_state') === 'active';
+                            }, 500);
+                        }).then(function () {
+                            console.log('chat_state set to active');
+                            view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
                                 target: view.$el.find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
+                            return test_utils.waitUntil(function () {
+                                return view.model.get('chat_state') === 'composing';
+                            }, 500);
+                        }).then(function () {
+                            console.log('chat_state set to composing');
+                            view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
                             return test_utils.waitUntil(function () {
-                                if (view.model.get('chat_state') === 'paused') {
-                                    return true;
-                                }
-                                return false;
-                            }, 300);
+                                return view.model.get('chat_state') === 'paused';
+                            }, 500);
                         }).then(function () {
+                            console.log('chat_state set to paused');
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'inactive';
-                            }, 300);
+                            }, 500);
                         }).then(function () {
+                            console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;
@@ -1800,7 +1810,7 @@
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }));
 
                     it("is sent when the user a minimizes a chat box",

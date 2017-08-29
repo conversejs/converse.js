@@ -67,11 +67,15 @@
                 display: none;
             }
             .provider-title {
-                font-size: 22px;
+                font-size: $font-size-huge;
+                margin: 0;
             }
             .provider-score {
                 width: 178px;
                 margin-bottom: 8px;
+            }
+            .title, .instructions, label {
+                margin: 0.5em 0 0 0;
             }
             .form-help .url {
                 font-weight: bold;

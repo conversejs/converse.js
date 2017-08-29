@@ -12,7 +12,9 @@
 (function (root, factory) {
     define([
             "jquery.noconflict",
+            "form-utils",
             "converse-core",
+            "lodash.fp",
             "tpl!chatarea",
             "tpl!chatroom",
             "tpl!chatroom_disconnect",
@@ -37,7 +39,9 @@
     ], factory);
 }(this, function (
             $,
+            utils,
             converse,
+            fp,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_disconnect,
@@ -63,7 +67,7 @@
     const ROOMS_PANEL_ID = 'chatrooms';
     const CHATROOMS_TYPE = 'chatroom';
 
-    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, utils, _, fp, moment } = converse.env;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -189,11 +193,12 @@
                         _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        const feature = _converse.disco_entities[_converse.domain].features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            this.featureAdded(feature);
+                        const entity = _converse.disco_entities[_converse.domain];
+                        if (!_.isUndefined(entity)) {
+                            const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
+                            if (feature) {
+                                this.featureAdded(feature);
+                            }
                         }
                     });
                 },
@@ -517,19 +522,6 @@
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({add:true});
-                    return this;
-                },
-
-                insertIntoDOM () {
-                    if (document.querySelector('body').contains(this.el)) {
-                        return;
-                    }
-                    const view = _converse.chatboxviews.get("controlbox");
-                    if (view) {
-                        this.$el.insertAfter(view.$el);
-                    } else {
-                        $('#conversejs').prepend(this.$el);
-                    }
                     return this;
                 },
 
@@ -968,7 +960,8 @@
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showStatusNotification(
-                            __(`Error: the "${command}" command takes two arguments, the user's nickname and optionally a reason.`),
+                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                                command),
                             true
                         );
                         return false;
@@ -1281,7 +1274,7 @@
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm($(field), $stanza));
+                        $fieldset.append(utils.xForm2webForm(field, stanza));
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
@@ -1565,7 +1558,7 @@
                     if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
-                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid)));
+                        this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -1753,10 +1746,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
+                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
+                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
                         }
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
@@ -1765,7 +1758,7 @@
                         this.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__(`The reason given is: "${notification.reason}"`), true);
+                        this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
                     }
                     if (notification.messages.length) {
                         this.scrollDown();
@@ -2072,7 +2065,7 @@
                             { 'jid': '',
                               'show': show,
                               'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                              'hint_occupant': __(`Click to mention ${this.model.get('nick')} in your message.`),
+                              'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                               'desc_moderator': __('This user is a moderator.'),
                               'desc_occupant': __('This user can send messages in this room.'),
                               'desc_visitor': __('This user can NOT send messages in this room.')
@@ -2329,7 +2322,7 @@
 
                 promptForInvite (suggestion) {
                     const reason = prompt(
-                        __(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) +
+                        __('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) +
                         __("You may optionally include a message, explaining the reason for the invitation.")
                     );
                     if (reason !== null) {
@@ -2472,7 +2465,7 @@
                 informNoRoomsFound () {
                     const $available_chatrooms = this.$el.find('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s',this.model.get('muc_domain'))}</dt>`);
+                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`);
                     $('input#show-rooms').show().siblings('span.spinner').remove();
                 },
 
@@ -2671,12 +2664,11 @@
                     contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
                     if (!reason) {
                         result = confirm(
-                            __(___("%1$s has invited you to join a chat room: %2$s"),
-                                contact, room_jid)
+                            __("%1$s has invited you to join a chat room: %2$s", contact, room_jid)
                         );
                     } else {
                         result = confirm(
-                            __(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'),
+                            __('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"',
                                 contact, room_jid, reason)
                         );
                     }

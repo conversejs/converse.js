@@ -1,7 +1,14 @@
-/*global define, escape, locales, Jed */
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, escape, locales, window, Jed */
 (function (root, factory) {
     define([
-        "jquery.noconflict",
         "sizzle",
         "es6-promise",
         "jquery.browser",
@@ -9,30 +16,15 @@
         "locales",
         "moment_with_locales",
         "strophe",
-        "tpl!field",
-        "tpl!select_option",
-        "tpl!form_select",
-        "tpl!form_textarea",
-        "tpl!form_checkbox",
-        "tpl!form_username",
-        "tpl!form_input",
-        "tpl!form_captcha"
     ], factory);
 }(this, function (
-        $, sizzle,
+        sizzle,
         Promise,
-        dummy, _,
+        jQBrowser,
+        _,
         locales,
         moment,
-        Strophe,
-        tpl_field,
-        tpl_select_option,
-        tpl_form_select,
-        tpl_form_textarea,
-        tpl_form_checkbox,
-        tpl_form_username,
-        tpl_form_input,
-        tpl_form_captcha
+        Strophe
     ) {
     "use strict";
     locales = locales || {};
@@ -41,16 +33,12 @@
 
     const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
-    var XFORM_TYPE_MAP = {
-        'text-private': 'password',
-        'text-single': 'text',
-        'fixed': 'label',
-        'boolean': 'checkbox',
-        'hidden': 'hidden',
-        'jid-multi': 'textarea',
-        'list-single': 'dropdown',
-        'list-multi': 'dropdown'
-    };
+    const logger = _.assign({
+        'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+    }, console);
 
     var afterAnimationEnd = function (el, callback) {
         el.classList.remove('visible');
@@ -90,16 +78,6 @@
         });
     };
 
-    $.fn.hasScrollBar = function() {
-        if (!$.contains(document, this.get(0))) {
-            return false;
-        }
-        if(this.parent().height() < this.get(0).scrollHeight) {
-            return true;
-        }
-        return false;
-    };
-
     function calculateSlideStep (height) {
         if (height > 100) {
             return 10;
@@ -110,13 +88,35 @@
         }
     }
 
-    var utils = {};
+    function calculateElementHeight (el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(
+            el.children,
+            (result, child) => result + child.offsetHeight, 0
+        );
+    }
+
+    function slideOutWrapup (el) {
+        /* Wrapup function for slideOut. */
+        el.removeAttribute('data-slider-marker');
+        el.classList.remove('collapsed');
+        el.style.overflow = "";
+        el.style.height = "";
+    }
+
+
+    var u = {};
 
     // Translation machinery
     // ---------------------
-    utils.__ = function (str) {
-        if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(Jed, arguments);
+    u.__ = function (str) {
+        if (_.isUndefined(window.Jed)) {
+            return str;
+        }
+        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
+            return Jed.sprintf.apply(window.Jed, arguments);
         }
         if (typeof this.jed === "undefined") {
             this.jed = new Jed(window.JSON.parse(locales[this.locale]));
@@ -129,7 +129,7 @@
         }
     };
 
-    utils.___ = function (str) {
+    u.___ = function (str) {
         /* XXX: This is part of a hack to get gettext to scan strings to be
          * translated. Strings we cannot send to the function above because
          * they require variable interpolation and we don't yet have the
@@ -140,7 +140,7 @@
         return str;
     };
 
-    utils.isLocaleAvailable = function (locale, available) {
+    u.isLocaleAvailable = function (locale, available) {
         /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
          *
          * Parameters:
@@ -156,7 +156,7 @@
         }
     };
 
-    utils.addHyperlinks = function (text) {
+    u.addHyperlinks = function (text) {
         const list = text.match(URL_REGEX) || [];
         var links = [];
         _.each(list, (match) => {
@@ -176,7 +176,7 @@
         return text;
     };
 
-    utils.renderImageURLs = function (obj) {
+    u.renderImageURLs = function (obj) {
         const list = obj.textContent.match(URL_REGEX) || [];
         _.forEach(list, function (url) {
             isImage(url).then(function (img) {
@@ -188,43 +188,33 @@
         return obj;
     };
 
-    utils.slideInAllElements = function (elements) {
+    u.slideInAllElements = function (elements) {
         return Promise.all(
             _.map(
                 elements,
-                _.partial(utils.slideIn, _, 600)
+                _.partial(u.slideIn, _, 600)
             ));
     };
 
-    utils.slideToggleElement = function (el) {
+    u.slideToggleElement = function (el) {
         if (_.includes(el.classList, 'collapsed')) {
-            return utils.slideOut(el);
+            return u.slideOut(el);
         } else {
-            return utils.slideIn(el);
+            return u.slideIn(el);
         }
     };
 
-    utils.slideOut = function (el, duration=900) {
-        /* Shows/expands an element by sliding it out of itself. */
-
-        function calculateEndHeight (el) {
-            return _.reduce(
-                el.children,
-                (result, child) => result + child.offsetHeight, 0
-            );
-        }
-
-        function wrapup (el) {
-            el.removeAttribute('data-slider-marker');
-            el.classList.remove('collapsed');
-            el.style.overflow = "";
-            el.style.height = "";
-        }
-
+    u.slideOut = function (el, duration=900) {
+        /* Shows/expands an element by sliding it out of itself
+         *
+         * Parameters:
+         *      (HTMLElement) el - The HTML string
+         *      (Number) duration - The duration amount in milliseconds
+         */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideOut"
-                console.warn(err);
+                logger.warn(err);
                 reject(new Error(err));
                 return;
             }
@@ -233,10 +223,10 @@
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            const end_height = calculateEndHeight(el);
-            if ($.fx.off) { // Effects are disabled (for tests)
+            const end_height = calculateElementHeight(el);
+            if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
-                wrapup(el);
+                slideOutWrapup(el);
                 resolve();
                 return;
             }
@@ -253,9 +243,9 @@
                     // We recalculate the height to work around an apparent
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
-                    el.style.height = calculateEndHeight(el) + 'px';
+                    el.style.height = calculateElementHeight(el) + 'px';
                     window.clearInterval(interval_marker);
-                    wrapup(el);
+                    slideOutWrapup(el);
                     resolve();
                 }
             }, interval);
@@ -263,16 +253,16 @@
         });
     };
 
-    utils.slideIn = function (el, duration=600) {
+    u.slideIn = function (el, duration=600) {
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
                 const err = "Undefined or null element passed into slideIn";
-                console.warn(err);
+                logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
-            } else if ($.fx.off) { // Effects are disabled (for tests)
+            } else if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.classList.add('collapsed');
                 el.style.height = "";
                 return resolve();
@@ -304,11 +294,11 @@
         });
     };
 
-    utils.fadeIn = function (el, callback) {
+    u.fadeIn = function (el, callback) {
         if (_.isNil(el)) {
-            console.warn("Undefined or null element passed into fadeIn");
+            logger.warn("Undefined or null element passed into fadeIn");
         }
-        if ($.fx.off) {
+        if (window.converse_disable_effects) { // Effects are disabled (for tests)
             el.classList.remove('hidden');
             if (_.isFunction(callback)) {
                 callback();
@@ -328,12 +318,12 @@
         }
     };
 
-    utils.isSameBareJID = function (jid1, jid2) {
+    u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
                 Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
 
-    utils.isNewMessage = function (message) {
+    u.isNewMessage = function (message) {
         /* Given a stanza, determine whether it's a new
          * message, i.e. not a MAM archived one.
          */
@@ -344,13 +334,13 @@
         }
     };
 
-    utils.isOTRMessage = function (message) {
+    u.isOTRMessage = function (message) {
         var body = message.querySelector('body'),
             text = (!_.isNull(body) ? body.textContent: undefined);
         return text && !!text.match(/^\?OTR/);
     };
 
-    utils.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
@@ -367,7 +357,7 @@
         return false;
     };
 
-    utils.merge = function merge (first, second) {
+    u.merge = function merge (first, second) {
         /* Merge the second object into the first one.
          */
         for (var k in second) {
@@ -379,7 +369,7 @@
         }
     };
 
-    utils.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
+    u.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
         /* Configuration settings might be nested objects. We only want to
          * add settings which are whitelisted.
          */
@@ -395,11 +385,11 @@
         }
     };
 
-    utils.refreshWebkit = function () {
+    u.refreshWebkit = function () {
         /* This works around a webkit bug. Refreshes the browser's viewport,
          * otherwise chatboxes are not moved along when one is closed.
          */
-        if ($.browser.webkit && window.requestAnimationFrame) {
+        if (jQBrowser.webkit && window.requestAnimationFrame) {
             window.requestAnimationFrame(function () {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';
@@ -409,34 +399,47 @@
         }
     };
 
-    utils.webForm2xForm = function (field) {
-        /* Takes an HTML DOM and turns it into an XForm field.
-        *
-        * Parameters:
-        *      (DOMElement) field - the field to convert
-        */
-        var $input = $(field), value;
-        if ($input.is('[type=checkbox]')) {
-            value = $input.is(':checked') && 1 || 0;
-        } else if ($input.is('textarea')) {
-            value = [];
-            var lines = $input.val().split('\n');
-            for( var vk=0; vk<lines.length; vk++) {
-                var val = $.trim(lines[vk]);
-                if (val === '')
-                    continue;
-                value.push(val);
-            }
-        } else {
-            value = $input.val();
-        }
-        return $(tpl_field({
-            name: $input.attr('name'),
-            value: value
-        }))[0];
+    u.stringToDOM = function (s) {
+        /* Converts an HTML string into a DOM element.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.childNodes;
     };
 
-    utils.contains = function (attr, query) {
+    u.matchesSelector = function (el, selector) {
+        /* Checks whether the DOM element matches the given selector.
+         *
+         * Parameters:
+         *      (DOMElement) el - The DOM element
+         *      (String) selector - The selector
+         */
+        return (
+            el.matches ||
+            el.matchesSelector ||
+            el.msMatchesSelector ||
+            el.mozMatchesSelector ||
+            el.webkitMatchesSelector ||
+            el.oMatchesSelector
+        ).call(el, selector);
+    };
+
+    u.queryChildren = function (el, selector) {
+        /* Returns a list of children of the DOM element that match the
+         * selector.
+         *
+         *  Parameters:
+         *      (DOMElement) el - the DOM element
+         *      (String) selector - the selector they should be matched
+         *          against.
+         */
+        return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    };
+
+    u.contains = function (attr, query) {
         return function (item) {
             if (typeof attr === 'object') {
                 var value = false;
@@ -452,94 +455,8 @@
         };
     };
 
-    utils.xForm2webForm = function ($field, $stanza) {
-        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-        * and turns it into a HTML DOM field.
-        *
-        *  Parameters:
-        *      (XMLElement) field - the field to convert
-        */
 
-        // FIXME: take <required> into consideration
-        var options = [], j, $options, $values, value, values;
-
-        if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
-            values = [];
-            $values = $field.children('value');
-            for (j=0; j<$values.length; j++) {
-                values.push($($values[j]).text());
-            }
-            $options = $field.children('option');
-            for (j=0; j<$options.length; j++) {
-                value = $($options[j]).find('value').text();
-                options.push(tpl_select_option({
-                    value: value,
-                    label: $($options[j]).attr('label'),
-                    selected: _.startsWith(values, value),
-                    required: $field.find('required').length
-                }));
-            }
-            return tpl_form_select({
-                name: $field.attr('var'),
-                label: $field.attr('label'),
-                options: options.join(''),
-                multiple: ($field.attr('type') === 'list-multi'),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'fixed') {
-            return $('<p class="form-help">').text($field.find('value').text());
-        } else if ($field.attr('type') === 'jid-multi') {
-            return tpl_form_textarea({
-                name: $field.attr('var'),
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'boolean') {
-            return tpl_form_checkbox({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                checked: $field.find('value').text() === "1" && 'checked="1"' || '',
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') && $field.attr('var') === 'username') {
-            return tpl_form_username({
-                domain: ' @'+this.domain,
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type')) {
-            return tpl_form_input({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else {
-            if ($field.attr('var') === 'ocr') { // Captcha
-                return _.reduce(_.map($field.find('uri'),
-                        $.proxy(function (uri) {
-                            return tpl_form_captcha({
-                                label: this.$field.attr('label'),
-                                name: this.$field.attr('var'),
-                                data: this.$stanza.find('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]').text(),
-                                type: uri.getAttribute('type'),
-                                required: this.$field.find('required').length
-                            });
-                        }, {'$stanza': $stanza, '$field': $field})
-                    ),
-                    function (memo, num) { return memo + num; }, ''
-                );
-            }
-        }
-    }
-
-    utils.detectLocale = function (library_check) {
+    u.detectLocale = function (library_check) {
         /* Determine which locale is supported by the user's system as well
          * as by the relevant library (e.g. converse.js or moment.js).
          *
@@ -549,36 +466,36 @@
          */
         var locale, i;
         if (window.navigator.userLanguage) {
-            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
         }
         if (window.navigator.languages && !locale) {
             for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
             }
         }
         if (window.navigator.browserLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
         }
         if (window.navigator.language && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+            locale = u.isLocaleAvailable(window.navigator.language, library_check);
         }
         if (window.navigator.systemLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
         }
         return locale || 'en';
     };
 
-    utils.isConverseLocale = function (locale) {
+    u.isConverseLocale = function (locale) {
         if (!_.isString(locale)) { return false; }
         return _.includes(_.keys(locales || {}), locale);
     };
 
-    utils.isMomentLocale  = function (locale) {
+    u.isMomentLocale  = function (locale) {
         if (!_.isString(locale)) { return false; }
         return moment.locale() !== moment.locale(locale);
     };
 
-    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
@@ -587,31 +504,31 @@
                 var obj = window.JSON.parse(preferred_locale);
                 return obj.locale_data.converse[""].lang;
             } catch (e) {
-                console.log(e);
+                logger.error(e);
             }
         }
-        return utils.detectLocale(isSupportedByLibrary) || 'en';
+        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
-    utils.isOfType = function (type, item) {
+    u.isOfType = function (type, item) {
         return item.get('type') == type;
     };
 
-    utils.isInstance = function (type, item) {
+    u.isInstance = function (type, item) {
         return item instanceof type;
     };
 
-    utils.getAttribute = function (key, item) {
+    u.getAttribute = function (key, item) {
         return item.get(key);
     };
 
-    utils.contains.not = function (attr, query) {
+    u.contains.not = function (attr, query) {
         return function (item) {
-            return !(utils.contains(attr, query)(item));
+            return !(u.contains(attr, query)(item));
         };
     };
 
-    utils.createFragmentFromText = function (markup) {
+    u.createFragmentFromText = function (markup) {
         /* Returns a DocumentFragment containing DOM nodes based on the
          * passed-in markup text.
          */
@@ -627,7 +544,7 @@
         return frag
     };
 
-    utils.addEmoji = function (_converse, emojione, text) {
+    u.addEmoji = function (_converse, emojione, text) {
         if (_converse.use_emojione) {
             return emojione.toImage(text);
         } else {
@@ -635,7 +552,7 @@
         }
     }
 
-    utils.getEmojisByCategory = function (_converse, emojione) {
+    u.getEmojisByCategory = function (_converse, emojione) {
         /* Return a dict of emojis with the categories as keys and
          * lists of emojis in that category as values.
          */
@@ -681,11 +598,11 @@
         return _converse.emojis_by_category;
     };
 
-    utils.getTonedEmojis = function (_converse) {
+    u.getTonedEmojis = function (_converse) {
         _converse.toned_emojis = _.uniq(
             _.map(
                 _.filter(
-                    utils.getEmojisByCategory(_converse).people,
+                    u.getEmojisByCategory(_converse).people,
                     (person) => _.includes(person._shortname, '_tone')
                 ),
                 (person) => person._shortname.replace(/_tone[1-5]/, '')
@@ -693,11 +610,11 @@
         return _converse.toned_emojis;
     };
 
-    utils.isPersistableModel = function (model) {
+    u.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
     };
 
-    utils.getWrappedPromise = function () {
+    u.getWrappedPromise = function () {
         const wrapper = {};
         wrapper.promise = new Promise((resolve, reject) => {
             wrapper.resolve = resolve;
@@ -706,12 +623,12 @@
         return wrapper;
     };
 
-    utils.safeSave = function (model, attributes) {
-        if (utils.isPersistableModel(model)) {
+    u.safeSave = function (model, attributes) {
+        if (u.isPersistableModel(model)) {
             model.save(attributes);
         } else {
             model.set(attributes);
         }
     }
-    return utils;
+    return u;
 }));

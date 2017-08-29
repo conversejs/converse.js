@@ -485,7 +485,7 @@ default_domain
 Specify a domain to act as the default for user JIDs. This allows users to log
 in with only the username part of their JID, instead of the full JID.
 
-For example, if ``default_domain`` is ``example.org``, then the user:
+For example, if ``default_domain`` is ``example.org``, then the user
 ``johnny@example.org`` can log in with only ``johnny``.
 
 JIDs with other domains are still allowed but need to be provided in full.
@@ -700,6 +700,12 @@ locked_domain
 * Default:  ``undefined``
 
 Similar to `default_domain`_ but no other domains are allowed.
+
+For example, if ``locked_domain`` is set to ``example.org``, then the user
+``johnny@example.org`` can log in with only ``johnny``.
+
+Additionally, only users registered on the ``example.org`` host can log in, no
+other users are allowed to log in.
 
 message_archiving
 -----------------

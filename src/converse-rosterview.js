@@ -14,7 +14,8 @@
             "tpl!requesting_contact",
             "tpl!roster",
             "tpl!roster_filter",
-            "tpl!roster_item"
+            "tpl!roster_item",
+            "converse-chatboxes"
     ], factory);
 }(this, function (
             $,
@@ -75,6 +76,7 @@
                 allow_contact_removal: true,
                 show_toolbar: true,
             });
+            _converse.api.promises.add('rosterViewInitialized');
 
             const STATUSES = {
                 'dnd': __('This contact is busy'),
@@ -665,7 +667,7 @@
                                 this.remove();
                             },
                             function (err) {
-                                alert(__(`Sorry, there was an error while trying to remove ${name} as a contact.`));
+                                alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
                                 _converse.log(err, Strophe.LogLevel.ERROR);
                             }
                         );
@@ -949,6 +951,7 @@
                     'model': _converse.rostergroups
                 });
                 _converse.rosterview.render();
+                _converse.emit('rosterViewInitialized');
             };
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);

@@ -405,6 +405,8 @@
                 },
 
                 authenticate (ev) {
+                    /* Authenticate the user based on a form submission event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
@@ -418,10 +420,14 @@
                     let jid = $jid_input.val(),
                         errors = false;
 
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || (
+                            !_converse.locked_domain &&
+                            !_converse.default_domain &&
+                            _.filter(jid.split('@')).length < 2)) {
                         errors = true;
                         $jid_input.addClass('error');
                     }
+
                     if (!password && _converse.authentication !== _converse.EXTERNAL)  {
                         errors = true;
                         $pw_input.addClass('error');

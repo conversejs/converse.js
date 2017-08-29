@@ -305,8 +305,9 @@
                 },
 
                 insertIntoDOM () {
-                    /* This method gets overridden in src/converse-controlbox.js if
-                     * the controlbox plugin is active.
+                    /* This method gets overridden in src/converse-controlbox.js
+                     * as well as src/converse-muc.js (if those plugins are
+                     * enabled).
                      */
                     const container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {

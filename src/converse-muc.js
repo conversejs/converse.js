@@ -525,19 +525,6 @@
                     return this;
                 },
 
-                insertIntoDOM () {
-                    if (document.querySelector('body').contains(this.el)) {
-                        return;
-                    }
-                    const view = _converse.chatboxviews.get("controlbox");
-                    if (view) {
-                        this.$el.insertAfter(view.$el);
-                    } else {
-                        $('#conversejs').prepend(this.$el);
-                    }
-                    return this;
-                },
-
                 generateHeadingHTML () {
                     /* Returns the heading HTML to be rendered.
                      */

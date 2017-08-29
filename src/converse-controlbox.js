@@ -159,8 +159,12 @@
 
             ChatBoxView: {
                 insertIntoDOM () {
-                    const { _converse } = this.__super__;
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    const view = this.__super__._converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        view.el.insertAdjacentElement('afterend', this.el)
+                    } else {
+                        this.__super__.insertIntoDOM.apply(this, arguments);
+                    }
                     return this;
                 }
             }
@@ -204,8 +208,10 @@
                 },
 
                 initialize () {
-                    _converse.controlboxtoggle = new _converse.ControlBoxToggle();
-                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    if (_.isUndefined(_converse.controlboxtoggle)) {
+                        _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);

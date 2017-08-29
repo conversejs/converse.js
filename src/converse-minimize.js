@@ -13,9 +13,7 @@
             "tpl!toggle_chats",
             "tpl!trimmed_chat",
             "tpl!chats_panel",
-            "converse-chatview",
-            "converse-controlbox",
-            "converse-muc"
+            "converse-chatview"
     ], factory);
 }(this, function (
         $,
@@ -30,6 +28,20 @@
     const { _ , utils, Backbone, Promise, Strophe, b64_sha1, moment } = converse.env;
 
     converse.plugins.add('converse-minimize', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-controlbox", "converse-muc"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -127,12 +139,13 @@
                 maximize () {
                     // Restores a minimized chat box
                     const { _converse } = this.__super__;
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    this.insertIntoDOM();
+
                     if (!this.model.isScrolledUp()) {
                         this.model.clearUnreadMsgCounter();
                     }
                     this.show();
-                    _converse.emit('chatBoxMaximized', this);
+                    this.__super__._converse.emit('chatBoxMaximized', this);
                     return this;
                 },
 
@@ -177,11 +190,12 @@
                     const html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     const div = document.createElement('div');
                     div.innerHTML = html;
-                    const el = tpl_chatbox_minimize(
-                        {info_minimize: __('Minimize this chat box')}
-                    );
                     const button = div.querySelector('.close-chatbox-button');
-                    button.insertAdjacentHTML('afterend', el);
+                    button.insertAdjacentHTML('afterend',
+                        tpl_chatbox_minimize({
+                            'info_minimize': __('Minimize this chat box')
+                        })
+                    );
                     return div.innerHTML;
                 }
             },

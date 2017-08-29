@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2.1 (Unreleased)
+## 3.2.1 (2017-08-29)
 
 ### Bugfixes
 - Various IE11 fixes.

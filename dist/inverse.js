@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.2.0-rc
+ *  Version: 3.2.1
  */
 
 /* jshint ignore:start */
@@ -20864,1048 +20864,19 @@ define('lodash.noconflict',['lodash'], function (_) {
     return _.noConflict();
 });
 
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define('lodash.converter',[], factory);
-	else if(typeof exports === 'object')
-		exports["fp"] = factory();
-	else
-		root["fp"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
-/******/ 			return installedModules[moduleId].exports;
-
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
-/******/ 		};
-
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-
-
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseConvert = __webpack_require__(1);
-
-	/**
-	 * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	 * version with conversion `options` applied.
-	 *
-	 * @param {Function} lodash The lodash function to convert.
-	 * @param {Object} [options] The options object. See `baseConvert` for more details.
-	 * @returns {Function} Returns the converted `lodash`.
-	 */
-	function browserConvert(lodash, options) {
-	  return baseConvert(lodash, lodash, options);
-	}
-
-	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
-      // XXX: Customization in order to be able to run both _ and fp in the
-      // non-AMD usecase.
-	  fp = browserConvert(_.runInContext());
-	}
-	module.exports = browserConvert;
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var mapping = __webpack_require__(2),
-	    fallbackHolder = __webpack_require__(3);
-
-	/** Built-in value reference. */
-	var push = Array.prototype.push;
-
-	/**
-	 * Creates a function, with an arity of `n`, that invokes `func` with the
-	 * arguments it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {number} n The arity of the new function.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseArity(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func.apply(undefined, arguments); }
-	    : function(a) { return func.apply(undefined, arguments); };
-	}
-
-	/**
-	 * Creates a function that invokes `func`, with up to `n` arguments, ignoring
-	 * any additional arguments.
-	 *
-	 * @private
-	 * @param {Function} func The function to cap arguments for.
-	 * @param {number} n The arity cap.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseAry(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func(a, b); }
-	    : function(a) { return func(a); };
-	}
-
-	/**
-	 * Creates a clone of `array`.
-	 *
-	 * @private
-	 * @param {Array} array The array to clone.
-	 * @returns {Array} Returns the cloned array.
-	 */
-	function cloneArray(array) {
-	  var length = array ? array.length : 0,
-	      result = Array(length);
-
-	  while (length--) {
-	    result[length] = array[length];
-	  }
-	  return result;
-	}
-
-	/**
-	 * Creates a function that clones a given object using the assignment `func`.
-	 *
-	 * @private
-	 * @param {Function} func The assignment function.
-	 * @returns {Function} Returns the new cloner function.
-	 */
-	function createCloner(func) {
-	  return function(object) {
-	    return func({}, object);
-	  };
-	}
-
-	/**
-	 * A specialized version of `_.spread` which flattens the spread array into
-	 * the arguments of the invoked `func`.
-	 *
-	 * @private
-	 * @param {Function} func The function to spread arguments over.
-	 * @param {number} start The start position of the spread.
-	 * @returns {Function} Returns the new function.
-	 */
-	function flatSpread(func, start) {
-	  return function() {
-	    var length = arguments.length,
-	        lastIndex = length - 1,
-	        args = Array(length);
-
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var array = args[start],
-	        otherArgs = args.slice(0, start);
-
-	    if (array) {
-	      push.apply(otherArgs, array);
-	    }
-	    if (start != lastIndex) {
-	      push.apply(otherArgs, args.slice(start + 1));
-	    }
-	    return func.apply(this, otherArgs);
-	  };
-	}
-
-	/**
-	 * Creates a function that wraps `func` and uses `cloner` to clone the first
-	 * argument it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {Function} cloner The function to clone arguments.
-	 * @returns {Function} Returns the new immutable function.
-	 */
-	function wrapImmutable(func, cloner) {
-	  return function() {
-	    var length = arguments.length;
-	    if (!length) {
-	      return;
-	    }
-	    var args = Array(length);
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var result = args[0] = cloner.apply(undefined, args);
-	    func.apply(undefined, args);
-	    return result;
-	  };
-	}
-
-	/**
-	 * The base implementation of `convert` which accepts a `util` object of methods
-	 * required to perform conversions.
-	 *
-	 * @param {Object} util The util object.
-	 * @param {string} name The name of the function to convert.
-	 * @param {Function} func The function to convert.
-	 * @param {Object} [options] The options object.
-	 * @param {boolean} [options.cap=true] Specify capping iteratee arguments.
-	 * @param {boolean} [options.curry=true] Specify currying.
-	 * @param {boolean} [options.fixed=true] Specify fixed arity.
-	 * @param {boolean} [options.immutable=true] Specify immutable operations.
-	 * @param {boolean} [options.rearg=true] Specify rearranging arguments.
-	 * @returns {Function|Object} Returns the converted function or object.
-	 */
-	function baseConvert(util, name, func, options) {
-	  var setPlaceholder,
-	      isLib = typeof name == 'function',
-	      isObj = name === Object(name);
-
-	  if (isObj) {
-	    options = func;
-	    func = name;
-	    name = undefined;
-	  }
-	  if (func == null) {
-	    throw new TypeError;
-	  }
-	  options || (options = {});
-
-	  var config = {
-	    'cap': 'cap' in options ? options.cap : true,
-	    'curry': 'curry' in options ? options.curry : true,
-	    'fixed': 'fixed' in options ? options.fixed : true,
-	    'immutable': 'immutable' in options ? options.immutable : true,
-	    'rearg': 'rearg' in options ? options.rearg : true
-	  };
-
-	  var forceCurry = ('curry' in options) && options.curry,
-	      forceFixed = ('fixed' in options) && options.fixed,
-	      forceRearg = ('rearg' in options) && options.rearg,
-	      placeholder = isLib ? func : fallbackHolder,
-	      pristine = isLib ? func.runInContext() : undefined;
-
-	  var helpers = isLib ? func : {
-	    'ary': util.ary,
-	    'assign': util.assign,
-	    'clone': util.clone,
-	    'curry': util.curry,
-	    'forEach': util.forEach,
-	    'isArray': util.isArray,
-	    'isFunction': util.isFunction,
-	    'iteratee': util.iteratee,
-	    'keys': util.keys,
-	    'rearg': util.rearg,
-	    'toInteger': util.toInteger,
-	    'toPath': util.toPath
-	  };
-
-	  var ary = helpers.ary,
-	      assign = helpers.assign,
-	      clone = helpers.clone,
-	      curry = helpers.curry,
-	      each = helpers.forEach,
-	      isArray = helpers.isArray,
-	      isFunction = helpers.isFunction,
-	      keys = helpers.keys,
-	      rearg = helpers.rearg,
-	      toInteger = helpers.toInteger,
-	      toPath = helpers.toPath;
-
-	  var aryMethodKeys = keys(mapping.aryMethod);
-
-	  var wrappers = {
-	    'castArray': function(castArray) {
-	      return function() {
-	        var value = arguments[0];
-	        return isArray(value)
-	          ? castArray(cloneArray(value))
-	          : castArray.apply(undefined, arguments);
-	      };
-	    },
-	    'iteratee': function(iteratee) {
-	      return function() {
-	        var func = arguments[0],
-	            arity = arguments[1],
-	            result = iteratee(func, arity),
-	            length = result.length;
-
-	        if (config.cap && typeof arity == 'number') {
-	          arity = arity > 2 ? (arity - 2) : 1;
-	          return (length && length <= arity) ? result : baseAry(result, arity);
-	        }
-	        return result;
-	      };
-	    },
-	    'mixin': function(mixin) {
-	      return function(source) {
-	        var func = this;
-	        if (!isFunction(func)) {
-	          return mixin(func, Object(source));
-	        }
-	        var pairs = [];
-	        each(keys(source), function(key) {
-	          if (isFunction(source[key])) {
-	            pairs.push([key, func.prototype[key]]);
-	          }
-	        });
-
-	        mixin(func, Object(source));
-
-	        each(pairs, function(pair) {
-	          var value = pair[1];
-	          if (isFunction(value)) {
-	            func.prototype[pair[0]] = value;
-	          } else {
-	            delete func.prototype[pair[0]];
-	          }
-	        });
-	        return func;
-	      };
-	    },
-	    'nthArg': function(nthArg) {
-	      return function(n) {
-	        var arity = n < 0 ? 1 : (toInteger(n) + 1);
-	        return curry(nthArg(n), arity);
-	      };
-	    },
-	    'rearg': function(rearg) {
-	      return function(func, indexes) {
-	        var arity = indexes ? indexes.length : 0;
-	        return curry(rearg(func, indexes), arity);
-	      };
-	    },
-	    'runInContext': function(runInContext) {
-	      return function(context) {
-	        return baseConvert(util, runInContext(context), options);
-	      };
-	    }
-	  };
-
-	  /*--------------------------------------------------------------------------*/
-
-	  /**
-	   * Casts `func` to a function with an arity capped iteratee if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCap(name, func) {
-	    if (config.cap) {
-	      var indexes = mapping.iterateeRearg[name];
-	      if (indexes) {
-	        return iterateeRearg(func, indexes);
-	      }
-	      var n = !isLib && mapping.iterateeAry[name];
-	      if (n) {
-	        return iterateeAry(func, n);
-	      }
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to a curried function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCurry(name, func, n) {
-	    return (forceCurry || (config.curry && n > 1))
-	      ? curry(func, n)
-	      : func;
-	  }
-
-	  /**
-	   * Casts `func` to a fixed arity function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castFixed(name, func, n) {
-	    if (config.fixed && (forceFixed || !mapping.skipFixed[name])) {
-	      var data = mapping.methodSpread[name],
-	          start = data && data.start;
-
-	      return start  === undefined ? ary(func, n) : flatSpread(func, start);
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to an rearged function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castRearg(name, func, n) {
-	    return (config.rearg && n > 1 && (forceRearg || !mapping.skipRearg[name]))
-	      ? rearg(func, mapping.methodRearg[name] || mapping.aryRearg[n])
-	      : func;
-	  }
-
-	  /**
-	   * Creates a clone of `object` by `path`.
-	   *
-	   * @private
-	   * @param {Object} object The object to clone.
-	   * @param {Array|string} path The path to clone by.
-	   * @returns {Object} Returns the cloned object.
-	   */
-	  function cloneByPath(object, path) {
-	    path = toPath(path);
-
-	    var index = -1,
-	        length = path.length,
-	        lastIndex = length - 1,
-	        result = clone(Object(object)),
-	        nested = result;
-
-	    while (nested != null && ++index < length) {
-	      var key = path[index],
-	          value = nested[key];
-
-	      if (value != null) {
-	        nested[path[index]] = clone(index == lastIndex ? value : Object(value));
-	      }
-	      nested = nested[key];
-	    }
-	    return result;
-	  }
-
-	  /**
-	   * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	   * version with conversion `options` applied.
-	   *
-	   * @param {Object} [options] The options object. See `baseConvert` for more details.
-	   * @returns {Function} Returns the converted `lodash`.
-	   */
-	  function convertLib(options) {
-	    return _.runInContext.convert(options)(undefined);
-	  }
-
-	  /**
-	   * Create a converter function for `func` of `name`.
-	   *
-	   * @param {string} name The name of the function to convert.
-	   * @param {Function} func The function to convert.
-	   * @returns {Function} Returns the new converter function.
-	   */
-	  function createConverter(name, func) {
-	    var realName = mapping.aliasToReal[name] || name,
-	        methodName = mapping.remap[realName] || realName,
-	        oldOptions = options;
-
-	    return function(options) {
-	      var newUtil = isLib ? pristine : helpers,
-	          newFunc = isLib ? pristine[methodName] : func,
-	          newOptions = assign(assign({}, oldOptions), options);
-
-	      return baseConvert(newUtil, realName, newFunc, newOptions);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
-	   * arguments, ignoring any additional arguments.
-	   *
-	   * @private
-	   * @param {Function} func The function to cap iteratee arguments for.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeAry(func, n) {
-	    return overArg(func, function(func) {
-	      return typeof func == 'function' ? baseAry(func, n) : func;
-	    });
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee with arguments
-	   * arranged according to the specified `indexes` where the argument value at
-	   * the first index is provided as the first argument, the argument value at
-	   * the second index is provided as the second argument, and so on.
-	   *
-	   * @private
-	   * @param {Function} func The function to rearrange iteratee arguments for.
-	   * @param {number[]} indexes The arranged argument indexes.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeRearg(func, indexes) {
-	    return overArg(func, function(func) {
-	      var n = indexes.length;
-	      return baseArity(rearg(baseAry(func, n), indexes), n);
-	    });
-	  }
-
-	  /**
-	   * Creates a function that invokes `func` with its first argument transformed.
-	   *
-	   * @private
-	   * @param {Function} func The function to wrap.
-	   * @param {Function} transform The argument transform.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function overArg(func, transform) {
-	    return function() {
-	      var length = arguments.length;
-	      if (!length) {
-	        return func();
-	      }
-	      var args = Array(length);
-	      while (length--) {
-	        args[length] = arguments[length];
-	      }
-	      var index = config.rearg ? 0 : (length - 1);
-	      args[index] = transform(args[index]);
-	      return func.apply(undefined, args);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` and applys the conversions
-	   * rules by `name`.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to wrap.
-	   * @param {Function} func The function to wrap.
-	   * @returns {Function} Returns the converted function.
-	   */
-	  function wrap(name, func) {
-	    var result,
-	        realName = mapping.aliasToReal[name] || name,
-	        wrapped = func,
-	        wrapper = wrappers[realName];
-
-	    if (wrapper) {
-	      wrapped = wrapper(func);
-	    }
-	    else if (config.immutable) {
-	      if (mapping.mutate.array[realName]) {
-	        wrapped = wrapImmutable(func, cloneArray);
-	      }
-	      else if (mapping.mutate.object[realName]) {
-	        wrapped = wrapImmutable(func, createCloner(func));
-	      }
-	      else if (mapping.mutate.set[realName]) {
-	        wrapped = wrapImmutable(func, cloneByPath);
-	      }
-	    }
-	    each(aryMethodKeys, function(aryKey) {
-	      each(mapping.aryMethod[aryKey], function(otherName) {
-	        if (realName == otherName) {
-	          var data = mapping.methodSpread[realName],
-	              afterRearg = data && data.afterRearg;
-
-	          result = afterRearg
-	            ? castFixed(realName, castRearg(realName, wrapped, aryKey), aryKey)
-	            : castRearg(realName, castFixed(realName, wrapped, aryKey), aryKey);
-
-	          result = castCap(realName, result);
-	          result = castCurry(realName, result, aryKey);
-	          return false;
-	        }
-	      });
-	      return !result;
-	    });
-
-	    result || (result = wrapped);
-	    if (result == func) {
-	      result = forceCurry ? curry(result, 1) : function() {
-	        return func.apply(this, arguments);
-	      };
-	    }
-	    result.convert = createConverter(realName, func);
-	    if (mapping.placeholder[realName]) {
-	      setPlaceholder = true;
-	      result.placeholder = func.placeholder = placeholder;
-	    }
-	    return result;
-	  }
-
-	  /*--------------------------------------------------------------------------*/
-
-	  if (!isObj) {
-	    return wrap(name, func);
-	  }
-	  var _ = func;
-
-	  // Convert methods by ary cap.
-	  var pairs = [];
-	  each(aryMethodKeys, function(aryKey) {
-	    each(mapping.aryMethod[aryKey], function(key) {
-	      var func = _[mapping.remap[key] || key];
-	      if (func) {
-	        pairs.push([key, wrap(key, func)]);
-	      }
-	    });
-	  });
-
-	  // Convert remaining methods.
-	  each(keys(_), function(key) {
-	    var func = _[key];
-	    if (typeof func == 'function') {
-	      var length = pairs.length;
-	      while (length--) {
-	        if (pairs[length][0] == key) {
-	          return;
-	        }
-	      }
-	      func.convert = createConverter(key, func);
-	      pairs.push([key, func]);
-	    }
-	  });
-
-	  // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
-	  each(pairs, function(pair) {
-	    _[pair[0]] = pair[1];
-	  });
-
-	  _.convert = convertLib;
-	  if (setPlaceholder) {
-	    _.placeholder = placeholder;
-	  }
-	  // Assign aliases.
-	  each(keys(_), function(key) {
-	    each(mapping.realToAlias[key] || [], function(alias) {
-	      _[alias] = _[key];
-	    });
-	  });
-
-	  return _;
-	}
-
-	module.exports = baseConvert;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	/** Used to map aliases to their real names. */
-	exports.aliasToReal = {
-
-	  // Lodash aliases.
-	  'each': 'forEach',
-	  'eachRight': 'forEachRight',
-	  'entries': 'toPairs',
-	  'entriesIn': 'toPairsIn',
-	  'extend': 'assignIn',
-	  'extendAll': 'assignInAll',
-	  'extendAllWith': 'assignInAllWith',
-	  'extendWith': 'assignInWith',
-	  'first': 'head',
-
-	  // Methods that are curried variants of others.
-	  'conforms': 'conformsTo',
-	  'matches': 'isMatch',
-	  'property': 'get',
-
-	  // Ramda aliases.
-	  '__': 'placeholder',
-	  'F': 'stubFalse',
-	  'T': 'stubTrue',
-	  'all': 'every',
-	  'allPass': 'overEvery',
-	  'always': 'constant',
-	  'any': 'some',
-	  'anyPass': 'overSome',
-	  'apply': 'spread',
-	  'assoc': 'set',
-	  'assocPath': 'set',
-	  'complement': 'negate',
-	  'compose': 'flowRight',
-	  'contains': 'includes',
-	  'dissoc': 'unset',
-	  'dissocPath': 'unset',
-	  'dropLast': 'dropRight',
-	  'dropLastWhile': 'dropRightWhile',
-	  'equals': 'isEqual',
-	  'identical': 'eq',
-	  'indexBy': 'keyBy',
-	  'init': 'initial',
-	  'invertObj': 'invert',
-	  'juxt': 'over',
-	  'omitAll': 'omit',
-	  'nAry': 'ary',
-	  'path': 'get',
-	  'pathEq': 'matchesProperty',
-	  'pathOr': 'getOr',
-	  'paths': 'at',
-	  'pickAll': 'pick',
-	  'pipe': 'flow',
-	  'pluck': 'map',
-	  'prop': 'get',
-	  'propEq': 'matchesProperty',
-	  'propOr': 'getOr',
-	  'props': 'at',
-	  'symmetricDifference': 'xor',
-	  'symmetricDifferenceBy': 'xorBy',
-	  'symmetricDifferenceWith': 'xorWith',
-	  'takeLast': 'takeRight',
-	  'takeLastWhile': 'takeRightWhile',
-	  'unapply': 'rest',
-	  'unnest': 'flatten',
-	  'useWith': 'overArgs',
-	  'where': 'conformsTo',
-	  'whereEq': 'isMatch',
-	  'zipObj': 'zipObject'
-	};
-
-	/** Used to map ary to method names. */
-	exports.aryMethod = {
-	  '1': [
-	    'assignAll', 'assignInAll', 'attempt', 'castArray', 'ceil', 'create',
-	    'curry', 'curryRight', 'defaultsAll', 'defaultsDeepAll', 'floor', 'flow',
-	    'flowRight', 'fromPairs', 'invert', 'iteratee', 'memoize', 'method', 'mergeAll',
-	    'methodOf', 'mixin', 'nthArg', 'over', 'overEvery', 'overSome','rest', 'reverse',
-	    'round', 'runInContext', 'spread', 'template', 'trim', 'trimEnd', 'trimStart',
-	    'uniqueId', 'words', 'zipAll'
-	  ],
-	  '2': [
-	    'add', 'after', 'ary', 'assign', 'assignAllWith', 'assignIn', 'assignInAllWith',
-	    'at', 'before', 'bind', 'bindAll', 'bindKey', 'chunk', 'cloneDeepWith',
-	    'cloneWith', 'concat', 'conformsTo', 'countBy', 'curryN', 'curryRightN',
-	    'debounce', 'defaults', 'defaultsDeep', 'defaultTo', 'delay', 'difference',
-	    'divide', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'endsWith', 'eq',
-	    'every', 'filter', 'find', 'findIndex', 'findKey', 'findLast', 'findLastIndex',
-	    'findLastKey', 'flatMap', 'flatMapDeep', 'flattenDepth', 'forEach',
-	    'forEachRight', 'forIn', 'forInRight', 'forOwn', 'forOwnRight', 'get',
-	    'groupBy', 'gt', 'gte', 'has', 'hasIn', 'includes', 'indexOf', 'intersection',
-	    'invertBy', 'invoke', 'invokeMap', 'isEqual', 'isMatch', 'join', 'keyBy',
-	    'lastIndexOf', 'lt', 'lte', 'map', 'mapKeys', 'mapValues', 'matchesProperty',
-	    'maxBy', 'meanBy', 'merge', 'mergeAllWith', 'minBy', 'multiply', 'nth', 'omit',
-	    'omitBy', 'overArgs', 'pad', 'padEnd', 'padStart', 'parseInt', 'partial',
-	    'partialRight', 'partition', 'pick', 'pickBy', 'propertyOf', 'pull', 'pullAll',
-	    'pullAt', 'random', 'range', 'rangeRight', 'rearg', 'reject', 'remove',
-	    'repeat', 'restFrom', 'result', 'sampleSize', 'some', 'sortBy', 'sortedIndex',
-	    'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexOf', 'sortedUniqBy',
-	    'split', 'spreadFrom', 'startsWith', 'subtract', 'sumBy', 'take', 'takeRight',
-	    'takeRightWhile', 'takeWhile', 'tap', 'throttle', 'thru', 'times', 'trimChars',
-	    'trimCharsEnd', 'trimCharsStart', 'truncate', 'union', 'uniqBy', 'uniqWith',
-	    'unset', 'unzipWith', 'without', 'wrap', 'xor', 'zip', 'zipObject',
-	    'zipObjectDeep'
-	  ],
-	  '3': [
-	    'assignInWith', 'assignWith', 'clamp', 'differenceBy', 'differenceWith',
-	    'findFrom', 'findIndexFrom', 'findLastFrom', 'findLastIndexFrom', 'getOr',
-	    'includesFrom', 'indexOfFrom', 'inRange', 'intersectionBy', 'intersectionWith',
-	    'invokeArgs', 'invokeArgsMap', 'isEqualWith', 'isMatchWith', 'flatMapDepth',
-	    'lastIndexOfFrom', 'mergeWith', 'orderBy', 'padChars', 'padCharsEnd',
-	    'padCharsStart', 'pullAllBy', 'pullAllWith', 'rangeStep', 'rangeStepRight',
-	    'reduce', 'reduceRight', 'replace', 'set', 'slice', 'sortedIndexBy',
-	    'sortedLastIndexBy', 'transform', 'unionBy', 'unionWith', 'update', 'xorBy',
-	    'xorWith', 'zipWith'
-	  ],
-	  '4': [
-	    'fill', 'setWith', 'updateWith'
-	  ]
-	};
-
-	/** Used to map ary to rearg configs. */
-	exports.aryRearg = {
-	  '2': [1, 0],
-	  '3': [2, 0, 1],
-	  '4': [3, 2, 0, 1]
-	};
-
-	/** Used to map method names to their iteratee ary. */
-	exports.iterateeAry = {
-	  'dropRightWhile': 1,
-	  'dropWhile': 1,
-	  'every': 1,
-	  'filter': 1,
-	  'find': 1,
-	  'findFrom': 1,
-	  'findIndex': 1,
-	  'findIndexFrom': 1,
-	  'findKey': 1,
-	  'findLast': 1,
-	  'findLastFrom': 1,
-	  'findLastIndex': 1,
-	  'findLastIndexFrom': 1,
-	  'findLastKey': 1,
-	  'flatMap': 1,
-	  'flatMapDeep': 1,
-	  'flatMapDepth': 1,
-	  'forEach': 1,
-	  'forEachRight': 1,
-	  'forIn': 1,
-	  'forInRight': 1,
-	  'forOwn': 1,
-	  'forOwnRight': 1,
-	  'map': 1,
-	  'mapKeys': 1,
-	  'mapValues': 1,
-	  'partition': 1,
-	  'reduce': 2,
-	  'reduceRight': 2,
-	  'reject': 1,
-	  'remove': 1,
-	  'some': 1,
-	  'takeRightWhile': 1,
-	  'takeWhile': 1,
-	  'times': 1,
-	  'transform': 2
-	};
-
-	/** Used to map method names to iteratee rearg configs. */
-	exports.iterateeRearg = {
-	  'mapKeys': [1],
-	  'reduceRight': [1, 0]
-	};
-
-	/** Used to map method names to rearg configs. */
-	exports.methodRearg = {
-	  'assignInAllWith': [1, 0],
-	  'assignInWith': [1, 2, 0],
-	  'assignAllWith': [1, 0],
-	  'assignWith': [1, 2, 0],
-	  'differenceBy': [1, 2, 0],
-	  'differenceWith': [1, 2, 0],
-	  'getOr': [2, 1, 0],
-	  'intersectionBy': [1, 2, 0],
-	  'intersectionWith': [1, 2, 0],
-	  'isEqualWith': [1, 2, 0],
-	  'isMatchWith': [2, 1, 0],
-	  'mergeAllWith': [1, 0],
-	  'mergeWith': [1, 2, 0],
-	  'padChars': [2, 1, 0],
-	  'padCharsEnd': [2, 1, 0],
-	  'padCharsStart': [2, 1, 0],
-	  'pullAllBy': [2, 1, 0],
-	  'pullAllWith': [2, 1, 0],
-	  'rangeStep': [1, 2, 0],
-	  'rangeStepRight': [1, 2, 0],
-	  'setWith': [3, 1, 2, 0],
-	  'sortedIndexBy': [2, 1, 0],
-	  'sortedLastIndexBy': [2, 1, 0],
-	  'unionBy': [1, 2, 0],
-	  'unionWith': [1, 2, 0],
-	  'updateWith': [3, 1, 2, 0],
-	  'xorBy': [1, 2, 0],
-	  'xorWith': [1, 2, 0],
-	  'zipWith': [1, 2, 0]
-	};
-
-	/** Used to map method names to spread configs. */
-	exports.methodSpread = {
-	  'assignAll': { 'start': 0 },
-	  'assignAllWith': { 'start': 0 },
-	  'assignInAll': { 'start': 0 },
-	  'assignInAllWith': { 'start': 0 },
-	  'defaultsAll': { 'start': 0 },
-	  'defaultsDeepAll': { 'start': 0 },
-	  'invokeArgs': { 'start': 2 },
-	  'invokeArgsMap': { 'start': 2 },
-	  'mergeAll': { 'start': 0 },
-	  'mergeAllWith': { 'start': 0 },
-	  'partial': { 'start': 1 },
-	  'partialRight': { 'start': 1 },
-	  'without': { 'start': 1 },
-	  'zipAll': { 'start': 0 }
-	};
-
-	/** Used to identify methods which mutate arrays or objects. */
-	exports.mutate = {
-	  'array': {
-	    'fill': true,
-	    'pull': true,
-	    'pullAll': true,
-	    'pullAllBy': true,
-	    'pullAllWith': true,
-	    'pullAt': true,
-	    'remove': true,
-	    'reverse': true
-	  },
-	  'object': {
-	    'assign': true,
-	    'assignAll': true,
-	    'assignAllWith': true,
-	    'assignIn': true,
-	    'assignInAll': true,
-	    'assignInAllWith': true,
-	    'assignInWith': true,
-	    'assignWith': true,
-	    'defaults': true,
-	    'defaultsAll': true,
-	    'defaultsDeep': true,
-	    'defaultsDeepAll': true,
-	    'merge': true,
-	    'mergeAll': true,
-	    'mergeAllWith': true,
-	    'mergeWith': true,
-	  },
-	  'set': {
-	    'set': true,
-	    'setWith': true,
-	    'unset': true,
-	    'update': true,
-	    'updateWith': true
-	  }
-	};
-
-	/** Used to track methods with placeholder support */
-	exports.placeholder = {
-	  'bind': true,
-	  'bindKey': true,
-	  'curry': true,
-	  'curryRight': true,
-	  'partial': true,
-	  'partialRight': true
-	};
-
-	/** Used to map real names to their aliases. */
-	exports.realToAlias = (function() {
-	  var hasOwnProperty = Object.prototype.hasOwnProperty,
-	      object = exports.aliasToReal,
-	      result = {};
-
-	  for (var key in object) {
-	    var value = object[key];
-	    if (hasOwnProperty.call(result, value)) {
-	      result[value].push(key);
-	    } else {
-	      result[value] = [key];
-	    }
-	  }
-	  return result;
-	}());
-
-	/** Used to map method names to other names. */
-	exports.remap = {
-	  'assignAll': 'assign',
-	  'assignAllWith': 'assignWith',
-	  'assignInAll': 'assignIn',
-	  'assignInAllWith': 'assignInWith',
-	  'curryN': 'curry',
-	  'curryRightN': 'curryRight',
-	  'defaultsAll': 'defaults',
-	  'defaultsDeepAll': 'defaultsDeep',
-	  'findFrom': 'find',
-	  'findIndexFrom': 'findIndex',
-	  'findLastFrom': 'findLast',
-	  'findLastIndexFrom': 'findLastIndex',
-	  'getOr': 'get',
-	  'includesFrom': 'includes',
-	  'indexOfFrom': 'indexOf',
-	  'invokeArgs': 'invoke',
-	  'invokeArgsMap': 'invokeMap',
-	  'lastIndexOfFrom': 'lastIndexOf',
-	  'mergeAll': 'merge',
-	  'mergeAllWith': 'mergeWith',
-	  'padChars': 'pad',
-	  'padCharsEnd': 'padEnd',
-	  'padCharsStart': 'padStart',
-	  'propertyOf': 'get',
-	  'rangeStep': 'range',
-	  'rangeStepRight': 'rangeRight',
-	  'restFrom': 'rest',
-	  'spreadFrom': 'spread',
-	  'trimChars': 'trim',
-	  'trimCharsEnd': 'trimEnd',
-	  'trimCharsStart': 'trimStart',
-	  'zipAll': 'zip'
-	};
-
-	/** Used to track methods that skip fixing their arity. */
-	exports.skipFixed = {
-	  'castArray': true,
-	  'flow': true,
-	  'flowRight': true,
-	  'iteratee': true,
-	  'mixin': true,
-	  'rearg': true,
-	  'runInContext': true
-	};
-
-	/** Used to track methods that skip rearranging arguments. */
-	exports.skipRearg = {
-	  'add': true,
-	  'assign': true,
-	  'assignIn': true,
-	  'bind': true,
-	  'bindKey': true,
-	  'concat': true,
-	  'difference': true,
-	  'divide': true,
-	  'eq': true,
-	  'gt': true,
-	  'gte': true,
-	  'isEqual': true,
-	  'lt': true,
-	  'lte': true,
-	  'matchesProperty': true,
-	  'merge': true,
-	  'multiply': true,
-	  'overArgs': true,
-	  'partial': true,
-	  'partialRight': true,
-	  'propertyOf': true,
-	  'random': true,
-	  'range': true,
-	  'rangeRight': true,
-	  'subtract': true,
-	  'zip': true,
-	  'zipObject': true,
-	  'zipObjectDeep': true
-	};
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	/**
-	 * The default argument placeholder value for methods.
-	 *
-	 * @type {Object}
-	 */
-	module.exports = {};
-
-
-/***/ }
-/******/ ])
-});
-;
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;  // eslint-disable-line lodash/prefer-includes
+        }
+  };
+}
 
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function (searchString, position) {
@@ -33408,13 +32379,13 @@ define('text!af',[],function () { return '{\n   "domain": "converse",\n   "local
 define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
 
 
-define('text!de',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "de"\n         },\n         "Bookmark this room": [\n            null,\n            "Lesezeichen setzen"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Der Name für das Lesezeichen:"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Diesem Raum automatisch betreten?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Wie soll dein Nickname in diesem Raum sein?"\n         ],\n         "Save": [\n            null,\n            "Speichern"\n         ],\n         "Cancel": [\n            null,\n            "Abbrechen"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Wollen Sie dieses Lesezeichen wirklich entfernen \\"%1$s\\"?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Etwas ging beim Versuch des Abspeicherns des Lesezeichens schief."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Zum Aus-/Einklappen klicken"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Dieses Lesezeichen entfernen"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mehr Information über diesen Raum zeigen"\n         ],\n         "Click to open this room": [\n            null,\n            "Hier klicken um diesen Raum zu öffnen"\n         ],\n         "You have unread messages": [\n            null,\n            "Sie haben ungelesene Nachrichten"\n         ],\n         "Close this chat box": [\n            null,\n            "Das Chat-Fenster schließen"\n         ],\n         "Personal message": [\n            null,\n            "Persönliche Nachricht"\n         ],\n         "Send": [\n            null,\n            "Senden"\n         ],\n         "me": [\n            null,\n            "Ich"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Eine sehr lange Nachricht wurde empfangen. Dies könnte ein Angriff mit dem Ziel sein die Chat-Performanz zu reduzieren. Die Ausgabe wurde gekürzt."\n         ],\n         "Typing from another device": [\n            null,\n            "Schreibt von einem anderen Gerät"\n         ],\n         "is typing": [\n            null,\n            "tippt"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Schreibt nicht mehr auf dem anderen Gerät"\n         ],\n         "has stopped typing": [\n            null,\n            "tippt nicht mehr"\n         ],\n         "has gone away": [\n            null,\n            "ist jetzt abwesend"\n         ],\n         "Show this menu": [\n            null,\n            "Dieses Menü anzeigen"\n         ],\n         "Write in the third person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Remove messages": [\n            null,\n            "Nachrichten entfernen"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten dieses Chats löschen möchten?"\n         ],\n         "has gone offline": [\n            null,\n            "ist offline gegangen"\n         ],\n         "is busy": [\n            null,\n            "ist beschäftigt"\n         ],\n         "Clear all messages": [\n            null,\n            "Alle Nachrichten löschen"\n         ],\n         "Insert a smiley": [\n            null,\n            "Smiley einfügen"\n         ],\n         "Start a call": [\n            null,\n            "Beginne ein Gespräch"\n         ],\n         "Contacts": [\n            null,\n            "Kontakte"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Benutzername:"\n         ],\n         "Password:": [\n            null,\n            "Passwort:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Hier klicken um anonym anzumelden"\n         ],\n         "Log In": [\n            null,\n            "Anmelden"\n         ],\n         "Username": [\n            null,\n            "Benutzername"\n         ],\n         "user@server": [\n            null,\n            "Benutzer@Server"\n         ],\n         "password": [\n            null,\n            "passwort"\n         ],\n         "Sign in": [\n            null,\n            "Anmelden"\n         ],\n         "I am %1$s": [\n            null,\n            "Ich bin %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Hier klicken um Statusnachricht zu ändern"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Hier klicken um Status zu ändern"\n         ],\n         "Custom status": [\n            null,\n            "Statusnachricht"\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "beschäftigt"\n         ],\n         "away for long": [\n            null,\n            "länger abwesend"\n         ],\n         "away": [\n            null,\n            "abwesend"\n         ],\n         "offline": [\n            null,\n            "abgemeldet"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Beschäftigt"\n         ],\n         "Away": [\n            null,\n            "Abwesend"\n         ],\n         "Offline": [\n            null,\n            "Abgemeldet"\n         ],\n         "Log out": [\n            null,\n            "Abmelden"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Hier klicken um neuen Kontakt hinzuzufügen"\n         ],\n         "Add a contact": [\n            null,\n            "Kontakt hinzufügen"\n         ],\n         "Contact name": [\n            null,\n            "Name des Kontakts"\n         ],\n         "Search": [\n            null,\n            "Suche"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "z.B. benutzer@example.org"\n         ],\n         "Add": [\n            null,\n            "Hinzufügen"\n         ],\n         "No users found": [\n            null,\n            "Keine Benutzer gefunden"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Dieser Kontakt erlaubt die Abonnieren des Status nicht"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Hier klicken um diese Kontakte zu verstecken"\n         ],\n         "Close this box": [\n            null,\n            "Schließen"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimiere dieses Gesprächsfenster"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Hier klicken um diesen Chat wiederherzustellen"\n         ],\n         "Minimized": [\n            null,\n            "Minimiert"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Dieser Raum ist nicht anonym"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder an"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Die Raumkonfiguration hat sich geändert"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Nachrichten in diesem Raum werden ab jetzt protokolliert"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Nachrichten in diesem Raum werden nicht mehr protokolliert"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Dieses Zimmer ist jetzt nicht anonym"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Dieser Raum ist jetzt teils anonym"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Dieser Raum ist jetzt anonym"\n         ],\n         "A new room has been created": [\n            null,\n            "Ein neuer Raum wurde erstellt"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Sie wurden aus diesem Raum hinausgeworfen"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Sie wurden wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Du wurdest aus dem Raum entfernt, da der Raum jetzt nur noch Mitglieder erlaubt und du kein Mitglied bist"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst gerade heruntergefahren wird."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s ist verbannt worden"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "%1$s\'s Spitzname hat sich geändert"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s wurde hinausgeworfen"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s wurde wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s ist kein Mitglied und wurde daher entfernt"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Ihr Spitzname wurde automatisiert geändert zu: %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Ihr Spitzname wurde geändert zu: %1$s"\n         ],\n         "Message": [\n            null,\n            "Nachricht"\n         ],\n         "Close and leave this room": [\n            null,\n            "Schließe und verlasse diesen Raum"\n         ],\n         "Configure this room": [\n            null,\n            "Einstellungsänderungen an diesem Raum vornehmen"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Teilnehmerliste ausblenden"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Fehler: Konnte den Befehl nicht ausführen"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Ändere die Zugehörigkeit des Benutzers zu Administrator"\n         ],\n         "Ban user from room": [\n            null,\n            "Verbanne einen Benutzer aus dem Raum"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Benutzerrolle zu Teilnehmer ändern"\n         ],\n         "Kick user from room": [\n            null,\n            "Werfe Benutzer aus dem Raum"\n         ],\n         "Write in 3rd person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Gewähre einem Benutzer Mitgliedschaft"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Entferne die Möglichkeit des Benutzers Nachrichten zu senden"\n         ],\n         "Change your nickname": [\n            null,\n            "Spitznamen ändern"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Gebe Benutzer Moderatorrechte"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Besitzrechte an diesem Raum vergeben"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Widerrufe die Mitgliedschaft des Benutzers"\n         ],\n         "Set room subject": [\n            null,\n            "Chatraum Thema festlegen"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Setze Raumthema (alias für /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Erlaube stummgeschaltetem Benutzer Nachrichten zu senden"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wähle einen Anderen."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Wähle deinen Spitznamen"\n         ],\n         "Nickname": [\n            null,\n            "Spitzname"\n         ],\n         "Enter room": [\n            null,\n            "Betrete Raum"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "Password: ": [\n            null,\n            "Passwort: "\n         ],\n         "Submit": [\n            null,\n            "Abschicken"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "Diese Aktion wurde ausgeführt durch %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "Die angegebene Begründung lautet: \\"%1$s\\"."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " hat den Raum verlassen. \\""\n         ],\n         " has left the room": [\n            null,\n            " hat den Raum verlassen"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " hat den Raum betreten. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " ist dem Raum beigetreten."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Sie sind nicht auf der Mitgliederliste dieses Raums."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Kein Spitzname festgelegt."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Es ist Ihnen nicht erlaubt neue Räume anzulegen."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Ungültiger Spitzname."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Dieser Raum existiert (noch) nicht."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Dieser Raum hat die maximale Mitgliederanzahl erreicht"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "%1$s hat das Thema zu \\"%2$s\\" geändert"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Dieser Benutzer ist ein Moderator."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Dieser Benutzer kann Nachrichten in diesem Raum verschicken."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken."\n         ],\n         "Occupants": [\n            null,\n            "Teilnehmer"\n         ],\n         "Invite": [\n            null,\n            "Einladen"\n         ],\n         "Features": [\n            null,\n            "Funktionen"\n         ],\n         "Hidden": [\n            null,\n            "Versteckt"\n         ],\n         "Message archiving": [\n            null,\n            "Nachrichten Archivierung"\n         ],\n         "Members only": [\n            null,\n            "Nur Mitglieder"\n         ],\n         "Moderated": [\n            null,\n            "Moderiert"\n         ],\n         "Non-anonymous": [\n            null,\n            "Nicht anonym"\n         ],\n         "Open": [\n            null,\n            "Offen"\n         ],\n         "Password protected": [\n            null,\n            "Passwort geschützt"\n         ],\n         "Persistent": [\n            null,\n            "Dauerhaft"\n         ],\n         "Public": [\n            null,\n            "Öffentlich"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Teils anonym"\n         ],\n         "Temporary": [\n            null,\n            "Vorübergehend"\n         ],\n         "Unmoderated": [\n            null,\n            "Unmoderiert"\n         ],\n         "Unsecured": [\n            null,\n            "Ungeschützt"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Dieser Raum ist nicht suchbar"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Nachrichten werden auf dem Server archiviert"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Dieser Raum ist nur für Mitglieder zugänglich"\n         ],\n         "This room is being moderated": [\n            null,\n            "Dieser Raum ist moderiert"\n         ],\n         "Anyone can join this room": [\n            null,\n            "Jeder kann diesen Raum betreten"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Dieser Raum bleibt auch wenn Niemand in ihm ist bestehen"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Dieser Raum ist per Suche auffindbar"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Dieser Raum verschwindet sobald diesen die letzte Person verlassen hat"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Dieser Raum ist unmoderiert"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Dieser Raum erfordert kein Passwort"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Du bist gerade dabei %1$s in den Raum \\"%2$s\\" einzuladen. "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Du kannst optional eine Nachricht mit den Gründen der Einladung mitsenden."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Raumname"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Join Room": [\n            null,\n            "Raum betreten"\n         ],\n         "Show rooms": [\n            null,\n            "Räume anzeigen"\n         ],\n         "Rooms": [\n            null,\n            "Räume"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Keine Räume auf %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beschreibung:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Teilnehmer:"\n         ],\n         "Features:": [\n            null,\n            "Funktionen:"\n         ],\n         "Requires authentication": [\n            null,\n            "Authentifizierung erforderlich"\n         ],\n         "Requires an invitation": [\n            null,\n            "Einladung erforderlich"\n         ],\n         "Open room": [\n            null,\n            "Offener Raum"\n         ],\n         "Permanent room": [\n            null,\n            "Dauerhafter Raum"\n         ],\n         "Temporary room": [\n            null,\n            "Vorübergehender Raum"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen. Begründung: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Benachrichtigung von %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s sagt"\n         ],\n         "has come online": [\n            null,\n            "kam online"\n         ],\n         "wants to be your contact": [\n            null,\n            "will dein Kontakt sein"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Verschlüsselte Sitzung wiederherstellen"\n         ],\n         "Generating private key.": [\n            null,\n            "Generiere privaten Schlüssel."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ihr Browser könnte langsam reagieren."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Authentifizierungsanfrage von %1$s\\n\\nIhr Kontakt möchte durch die folgende Frage Ihre Identität verifizieren:\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Die Identität des Benutzers konnte nicht verifiziert werden."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Tausche private Schlüssel mit Kontakt aus."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Deine Nachrichten sind nicht mehr verschlüsselt"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Deine Nachrichten sind ab jetzt verschlüsselt, aber die Identität des Kontaktes wurde noch nicht bestätigt."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Die Identität des Kontakts wurde bestätigt."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Dein Kontakt hat die Verschlüsselung deaktiviert, du solltest das gleiche tun."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ihre Nachricht konnte nicht gesendet werden"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Wir haben eine unverschlüsselte Nachricht empfangen"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Wir haben eine unlesbare Nachricht empfangen"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Hier sind die Fingerabdrücke, bitte bestätige diese mit %1$s, außerhalb von diesem Chat\\n\\nFingerabdruck für dich, %2$s: %3$s\\n\\nFingerabdruck für %1$s: %4$s\\n\\nWenn du überprüft hast, dass die Fingerabdrücke zusammenpassen, drücke OK, andernfalls Abbrechen."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            ""\n         ],\n         "What is your security question?": [\n            null,\n            ""\n         ],\n         "What is the answer to the security question?": [\n            null,\n            ""\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            ""\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            ""\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            ""\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            ""\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            ""\n         ],\n         "End encrypted conversation": [\n            null,\n            ""\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            ""\n         ],\n         "Start encrypted conversation": [\n            null,\n            ""\n         ],\n         "Verify with fingerprints": [\n            null,\n            ""\n         ],\n         "Verify with SMP": [\n            null,\n            ""\n         ],\n         "What\'s this?": [\n            null,\n            "Was ist das?"\n         ],\n         "unencrypted": [\n            null,\n            "unverschlüsselt"\n         ],\n         "unverified": [\n            null,\n            "nicht verifiziert"\n         ],\n         "verified": [\n            null,\n            "verifiziert"\n         ],\n         "finished": [\n            null,\n            "erledigt"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " z. B. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Dieser Kontakt ist beschäftigt"\n         ],\n         "This contact is online": [\n            null,\n            "Dieser Kontakt ist online"\n         ],\n         "This contact is offline": [\n            null,\n            "Dieser Kontakt ist offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Dieser Kontakt ist nicht verfügbar"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Dieser Kontakt ist für längere Zeit abwesend"\n         ],\n         "This contact is away": [\n            null,\n            "Dieser Kontakt ist abwesend"\n         ],\n         "Groups": [\n            null,\n            "Gruppen"\n         ],\n         "My contacts": [\n            null,\n            "Meine Kontakte"\n         ],\n         "Pending contacts": [\n            null,\n            "Unbestätigte Kontakte"\n         ],\n         "Contact requests": [\n            null,\n            "Kontaktanfragen"\n         ],\n         "Ungrouped": [\n            null,\n            "Ungruppiert"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Hier klicken um mit diesem Kontakt zu chatten"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Wollen Sie diesen Kontakt wirklich entfernen?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Wollen Sie diese Kontaktanfrage wirklich ablehnen?"\n         ]\n      }\n   }\n}';});
+define('text!de',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n != 1;",\n            "lang": "de"\n         },\n         "Bookmark this room": [\n            null,\n            "Raum als Lesezeichen setzen"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Der Name für das Lesezeichen:"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Beim Anmelden diesem Raum automatisch betreten?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Wie soll dein Nickname in diesem Raum sein?"\n         ],\n         "Save": [\n            null,\n            "Speichern"\n         ],\n         "Cancel": [\n            null,\n            "Abbrechen"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Wollen Sie dieses Lesezeichen \\"%1$s\\" wirklich entfernen?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Entschuldigung! Beim Versuch das Lesezeichens zu speichern schlug etwas fehl."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Liste der Lesezeichen umschalten"\n         ],\n         "Bookmarks": [\n            null,\n            "Lesezeichen"\n         ],\n         "Leave this room": [\n            null,\n            "Diesen Raum verlassen"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Dieses Lesezeichen entfernen"\n         ],\n         "Unbookmark this room": [\n            null,\n            "Lesezeichen dieses Raums entfernen"\n         ],\n         "Show more information on this room": [\n            null,\n            "Mehr Information über diesen Raum zeigen"\n         ],\n         "Click to open this room": [\n            null,\n            "Hier klicken um diesen Raum zu öffnen"\n         ],\n         "You have unread messages": [\n            null,\n            "Sie haben ungelesene Nachrichten"\n         ],\n         "Close this chat box": [\n            null,\n            "Das Chat-Fenster schließen"\n         ],\n         "Personal message": [\n            null,\n            "Persönliche Nachricht"\n         ],\n         "Send": [\n            null,\n            "Senden"\n         ],\n         "me": [\n            null,\n            "Ich"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Eine sehr lange Nachricht wurde empfangen. Dies könnte ein Angriff mit dem Ziel sein die Chat-Performanz zu reduzieren. Die Ausgabe wurde gekürzt."\n         ],\n         "Typing from another device": [\n            null,\n            "Schreibt von einem anderen Gerät"\n         ],\n         "is typing": [\n            null,\n            "tippt"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Schreibt nicht mehr auf dem anderen Gerät"\n         ],\n         "has stopped typing": [\n            null,\n            "tippt nicht mehr"\n         ],\n         "has gone away": [\n            null,\n            "ist jetzt abwesend"\n         ],\n         "Show this menu": [\n            null,\n            "Dieses Menü anzeigen"\n         ],\n         "Write in the third person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Remove messages": [\n            null,\n            "Nachrichten entfernen"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten dieses Chats löschen möchten?"\n         ],\n         "has gone offline": [\n            null,\n            "ist offline gegangen"\n         ],\n         "is busy": [\n            null,\n            "ist beschäftigt"\n         ],\n         "Clear all messages": [\n            null,\n            "Alle Nachrichten löschen"\n         ],\n         "Insert a smiley": [\n            null,\n            "Smiley einfügen"\n         ],\n         "Start a call": [\n            null,\n            "Beginne ein Gespräch"\n         ],\n         "Contacts": [\n            null,\n            "Kontakte"\n         ],\n         "XMPP Username:": [\n            null,\n            "XMPP Benutzername:"\n         ],\n         "Password:": [\n            null,\n            "Passwort:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Hier klicken um anonym anzumelden"\n         ],\n         "Log In": [\n            null,\n            "Anmelden"\n         ],\n         "Username": [\n            null,\n            "Benutzername"\n         ],\n         "user@server": [\n            null,\n            "Benutzer@Server"\n         ],\n         "password": [\n            null,\n            "passwort"\n         ],\n         "Sign in": [\n            null,\n            "Anmelden"\n         ],\n         "I am %1$s": [\n            null,\n            "Ich bin %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Hier klicken um Statusnachricht zu ändern"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Hier klicken um Status zu ändern"\n         ],\n         "Custom status": [\n            null,\n            "Statusnachricht"\n         ],\n         "online": [\n            null,\n            "online"\n         ],\n         "busy": [\n            null,\n            "beschäftigt"\n         ],\n         "away for long": [\n            null,\n            "länger abwesend"\n         ],\n         "away": [\n            null,\n            "abwesend"\n         ],\n         "offline": [\n            null,\n            "abgemeldet"\n         ],\n         "Online": [\n            null,\n            "Online"\n         ],\n         "Busy": [\n            null,\n            "Beschäftigt"\n         ],\n         "Away": [\n            null,\n            "Abwesend"\n         ],\n         "Offline": [\n            null,\n            "Abgemeldet"\n         ],\n         "Log out": [\n            null,\n            "Abmelden"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Hier klicken um neuen Kontakt hinzuzufügen"\n         ],\n         "Add a contact": [\n            null,\n            "Kontakt hinzufügen"\n         ],\n         "Contact name": [\n            null,\n            "Name des Kontakts"\n         ],\n         "Search": [\n            null,\n            "Suche"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "z.B. benutzer@example.org"\n         ],\n         "Add": [\n            null,\n            "Hinzufügen"\n         ],\n         "No users found": [\n            null,\n            "Keine Benutzer gefunden"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Dieser Kontakt erlaubt die Abonnieren des Status nicht"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Hier klicken um diese Kontakte zu verstecken"\n         ],\n         "Close this box": [\n            null,\n            "Schließen"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimiere dieses Gesprächsfenster"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Hier klicken um diesen Chat wiederherzustellen"\n         ],\n         "Minimized": [\n            null,\n            "Minimiert"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Dieser Raum ist nicht anonym"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder an"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Dieser Raum zeigt jetzt nicht verfügbare Mitglieder nicht an"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Die Raumkonfiguration hat sich geändert"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Nachrichten in diesem Raum werden ab jetzt protokolliert"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Nachrichten in diesem Raum werden nicht mehr protokolliert"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Dieses Zimmer ist jetzt nicht anonym"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Dieser Raum ist jetzt teils anonym"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Dieser Raum ist jetzt anonym"\n         ],\n         "A new room has been created": [\n            null,\n            "Ein neuer Raum wurde erstellt"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Sie wurden aus diesem Raum hinausgeworfen"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Sie wurden wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Du wurdest aus dem Raum entfernt, da der Raum jetzt nur noch Mitglieder erlaubt und du kein Mitglied bist"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst gerade heruntergefahren wird."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s ist verbannt worden"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "%1$s\'s Spitzname hat sich geändert"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s wurde hinausgeworfen"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s wurde wegen einer Zugehörigkeitsänderung entfernt"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s ist kein Mitglied und wurde daher entfernt"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Ihr Spitzname wurde automatisiert geändert zu: %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Ihr Spitzname wurde geändert zu: %1$s"\n         ],\n         "Message": [\n            null,\n            "Nachricht"\n         ],\n         "Close and leave this room": [\n            null,\n            "Schließe und verlasse diesen Raum"\n         ],\n         "Configure this room": [\n            null,\n            "Einstellungsänderungen an diesem Raum vornehmen"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Teilnehmerliste ausblenden"\n         ],\n         "${command}": [\n            null,\n            "${command}"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Sind Sie sicher, dass Sie alle Nachrichten in diesem Raum löschen möchten?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Fehler: Konnte den Befehl nicht ausführen"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Ändere die Zugehörigkeit des Benutzers zu Administrator"\n         ],\n         "Ban user from room": [\n            null,\n            "Verbanne einen Benutzer aus dem Raum"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Benutzerrolle zu Teilnehmer ändern"\n         ],\n         "Kick user from room": [\n            null,\n            "Werfe Benutzer aus dem Raum"\n         ],\n         "Write in 3rd person": [\n            null,\n            "In der dritten Person schreiben"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Gewähre einem Benutzer Mitgliedschaft"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Entferne die Möglichkeit des Benutzers Nachrichten zu senden"\n         ],\n         "Change your nickname": [\n            null,\n            "Spitznamen ändern"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Gebe Benutzer Moderatorrechte"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Besitzrechte an diesem Raum vergeben"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Widerrufe die Mitgliedschaft des Benutzers"\n         ],\n         "Set room subject": [\n            null,\n            "Chatraum Thema festlegen"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Setze Raumthema (alias für /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Erlaube stummgeschaltetem Benutzer Nachrichten zu senden"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "Der gewählte Spitzname ist reserviert oder derzeit in Gebrauch. Bitte wähle einen Anderen."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Wähle deinen Spitznamen"\n         ],\n         "Nickname": [\n            null,\n            "Spitzname"\n         ],\n         "Enter room": [\n            null,\n            "Betrete Raum"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "Password: ": [\n            null,\n            "Passwort: "\n         ],\n         "Submit": [\n            null,\n            "Abschicken"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "Diese Aktion wurde ausgeführt durch %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "Die angegebene Begründung lautet: \\"%1$s\\"."\n         ],\n         "${notification.reason}": [\n            null,\n            "${notification.reason}"\n         ],\n         " has left the room. \\"": [\n            null,\n            " hat den Raum verlassen. \\""\n         ],\n         " has left the room": [\n            null,\n            " hat den Raum verlassen"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " hat den Raum betreten. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " ist dem Raum beigetreten."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Sie sind nicht auf der Mitgliederliste dieses Raums."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Sie sind aus diesem Raum verbannt worden."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Kein Spitzname festgelegt."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Es ist Ihnen nicht erlaubt neue Räume anzulegen."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Ungültiger Spitzname."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Dieser Raum existiert (noch) nicht."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Maximale Anzahl an Mitgliedern für diesen Raum erreicht"\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "%1$s hat das Thema zu \\"%2$s\\" geändert"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Dieser Benutzer ist ein Moderator."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Dieser Benutzer kann Nachrichten in diesem Raum verschicken."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Dieser Benutzer kann keine Nachrichten in diesem Raum verschicken."\n         ],\n         "Occupants": [\n            null,\n            "Teilnehmer/Innen"\n         ],\n         "Invite": [\n            null,\n            "Einladen"\n         ],\n         "Features": [\n            null,\n            "Funktionen"\n         ],\n         "Hidden": [\n            null,\n            "Versteckt"\n         ],\n         "Message archiving": [\n            null,\n            "Nachrichten Archivierung"\n         ],\n         "Members only": [\n            null,\n            "Nur Mitglieder"\n         ],\n         "Moderated": [\n            null,\n            "Moderiert"\n         ],\n         "Non-anonymous": [\n            null,\n            "Nicht anonym"\n         ],\n         "Open": [\n            null,\n            "Offen"\n         ],\n         "Password protected": [\n            null,\n            "Passwort geschützt"\n         ],\n         "Persistent": [\n            null,\n            "Dauerhaft"\n         ],\n         "Public": [\n            null,\n            "Öffentlich"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Teils anonym"\n         ],\n         "Temporary": [\n            null,\n            "Vorübergehend"\n         ],\n         "Unmoderated": [\n            null,\n            "Unmoderiert"\n         ],\n         "Unsecured": [\n            null,\n            "Ungeschützt"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Dieser Raum ist nicht suchbar"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Nachrichten werden auf dem Server archiviert"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Dieser Raum ist nur für Mitglieder zugänglich"\n         ],\n         "This room is being moderated": [\n            null,\n            "Dieser Raum ist moderiert"\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            "Jeder in dem Raum kann deine XMPP/ Jabber ID sehen"\n         ],\n         "Anyone can join this room": [\n            null,\n            "Jeder kann diesen Raum betreten"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Dieser Raum erfordert ein Passwort"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Dieser Raum bleibt auch wenn Niemand in ihm ist bestehen"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Dieser Raum ist per Suche auffindbar"\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            "Nur Moderatoren können deine XMPP/ Jabber ID sehen"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Dieser Raum verschwindet sobald diesen die letzte Person verlassen hat"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Dieser Raum ist unmoderiert"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Dieser Raum erfordert kein Passwort"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Du bist gerade dabei %1$s in den Raum \\"%2$s\\" einzuladen. "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Du kannst optional eine Nachricht mit den Gründen der Einladung mitsenden."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            "Bitte geben Sie eine gültige XMPP/ Jabber ID an"\n         ],\n         "Room name": [\n            null,\n            "Raumname"\n         ],\n         "Server": [\n            null,\n            "Server"\n         ],\n         "Join Room": [\n            null,\n            "Raum betreten"\n         ],\n         "Show rooms": [\n            null,\n            "Räume anzeigen"\n         ],\n         "Rooms": [\n            null,\n            "Räume"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Keine Räume auf %1$s"\n         ],\n         "Description:": [\n            null,\n            "Beschreibung:"\n         ],\n         "Room Address (JID):": [\n            null,\n            "XMPP/ Jabber ID (JID) dieses Raumes:"\n         ],\n         "Occupants:": [\n            null,\n            "Teilnehmer:"\n         ],\n         "Features:": [\n            null,\n            "Funktionen:"\n         ],\n         "Requires authentication": [\n            null,\n            "Authentifizierung erforderlich"\n         ],\n         "Requires an invitation": [\n            null,\n            "Einladung erforderlich"\n         ],\n         "Open room": [\n            null,\n            "Offener Raum"\n         ],\n         "Permanent room": [\n            null,\n            "Dauerhafter Raum"\n         ],\n         "Temporary room": [\n            null,\n            "Vorübergehender Raum"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s hat Sie in den Raum \\"%2$s\\" eingeladen. Begründung: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Benachrichtigung von %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s sagt"\n         ],\n         "has come online": [\n            null,\n            "kam online"\n         ],\n         "wants to be your contact": [\n            null,\n            "will dein Kontakt sein"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Verschlüsselte Sitzung wiederherstellen"\n         ],\n         "Generating private key.": [\n            null,\n            "Generiere privaten Schlüssel."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Ihr Browser könnte langsam reagieren."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Authentifizierungsanfrage von %1$s\\n\\nIhr Kontakt möchte durch die folgende Frage Ihre Identität verifizieren:\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "Die Identität des Benutzers konnte nicht verifiziert werden."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Tausche private Schlüssel mit Kontakt aus."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Deine Nachrichten sind nicht mehr verschlüsselt"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Deine Nachrichten sind ab jetzt verschlüsselt, aber die Identität des Kontaktes wurde noch nicht bestätigt."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "Die Identität des Kontakts wurde bestätigt."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Dein Kontakt hat die Verschlüsselung deaktiviert, du solltest das gleiche tun."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Ihre Nachricht konnte nicht gesendet werden"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Wir haben eine unverschlüsselte Nachricht empfangen"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Wir haben eine unlesbare Nachricht empfangen"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Hier sind die Fingerabdrücke, bitte bestätige diese mit %1$s, außerhalb von diesem Chat\\n\\nFingerabdruck für dich, %2$s: %3$s\\n\\nFingerabdruck für %1$s: %4$s\\n\\nWenn du überprüft hast, dass die Fingerabdrücke zusammenpassen, drücke OK, andernfalls Abbrechen."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Sie werden im folgenden nach einer Sicherheitsfrage und dann nach dessen Antwort gefragt.\\n\\nIhr Kontakt wird dann die Sicherheitsfrage lesen und die Antwort korrekt beantworten müssen (Groß- und Kleinschreibung beachten!) um die Identitäten zu überprüfen."\n         ],\n         "What is your security question?": [\n            null,\n            "Wie lautet Ihre Sicherheitsfrage?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Wie lautet die Antwort Ihrer Sicherheitsfrage?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Ungültiges Authentifizierungsmuster wurde zur Verfügung gestellt"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Ihre Nachricht ist unverschlüsselt. Klicken Sie hier um OTR Verschlüsselung zu aktivieren."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Ihre Nachrichten werden verschlüsselt aber Ihr Kontakt wurde noch nicht verifiziert/ bestätigt."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Ihre Nachrichten werden verschlüsselt und Ihr Kontakt wurde bestätigt."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Ihr Kontakt hat die private Sitzung geschlossen. Sie sollten das gleiche tun."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Beende die verschlüsselte Unterhaltung"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Verschlüsselte Unterhaltung aktualisieren"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Beginn einer verschlüsselten Unterhaltung"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Überprüfung mit Fingerabdruck"\n         ],\n         "Verify with SMP": [\n            null,\n            "Überprüfung mit SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Was ist das?"\n         ],\n         "unencrypted": [\n            null,\n            "unverschlüsselt"\n         ],\n         "unverified": [\n            null,\n            "nicht verifiziert"\n         ],\n         "verified": [\n            null,\n            "verifiziert"\n         ],\n         "finished": [\n            null,\n            "erledigt"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " z. B. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Ihr XMPP/ Jabber Provider Domain Name:"\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Tipp: Eine Liste öffentlicher Provider ist verfügbar"\n         ],\n         "here": [\n            null,\n            "hier"\n         ],\n         "Register": [\n            null,\n            "Registrierung"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Entschuldigung: Dieser Provider erlaubt keine direkte Benutzer- Registrierung. Versuchen Sie einen anderen Provider oder erstellen Sie einen Zugang beim Provider direkt."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Etwas schlägt fehl beim Versuch eine Verbindung mit \\"%1$s\\" her zu stellen. Sicher das \\"%1$s\\" existiert?"\n         ],\n         "Now logging you in": [\n            null,\n            "Sie werden angemeldet"\n         ],\n         "Registered successfully": [\n            null,\n            "Registrierung erfolgreich"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Der Provider hat die Registrierung abgelehnt. Bitte überprüfen Sie Ihre Angaben auf Richtigkeit."\n         ],\n         "Retry": [\n            null,\n            "Wiederholen"\n         ],\n         "Click to toggle the rooms list": [\n            null,\n            "Umschalten der Raum listen"\n         ],\n         "Open Rooms": [\n            null,\n            "Offene Räume"\n         ],\n         "Are you sure you want to leave the room \\"%1$s\\"?": [\n            null,\n            "Wollen Sie diesen Raum \\"%1$s\\" wirklich verlassen?"\n         ],\n         "This contact is busy": [\n            null,\n            "Dieser Kontakt ist beschäftigt"\n         ],\n         "This contact is online": [\n            null,\n            "Dieser Kontakt ist online"\n         ],\n         "This contact is offline": [\n            null,\n            "Dieser Kontakt ist offline"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Dieser Kontakt ist nicht verfügbar"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Dieser Kontakt ist für längere Zeit abwesend"\n         ],\n         "This contact is away": [\n            null,\n            "Dieser Kontakt ist abwesend"\n         ],\n         "Groups": [\n            null,\n            "Gruppen"\n         ],\n         "My contacts": [\n            null,\n            "Meine Kontakte"\n         ],\n         "Pending contacts": [\n            null,\n            "Unbestätigte Kontakte"\n         ],\n         "Contact requests": [\n            null,\n            "Kontaktanfragen"\n         ],\n         "Ungrouped": [\n            null,\n            "Ungruppiert"\n         ],\n         "Filter": [\n            null,\n            "Filter"\n         ],\n         "State": [\n            null,\n            "Staat"\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            "Ungelesen"\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            "Länger nicht anwesend"\n         ],\n         "Click to remove %1$s as a contact": [\n            null,\n            "Hier klicken um %1$s zu entfernen"\n         ],\n         "Click to accept the contact request from %1$s": [\n            null,\n            "Hier klicken um die Kontaktanfrage von %1$s zu akzeptieren"\n         ],\n         "Click to decline the contact request from %1$s": [\n            null,\n            "Hier klicken um die Kontaktanfrage von %1$s abzulehnen"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Hier klicken um mit diesem Kontakt zu chatten"\n         ],\n         "Name": [\n            null,\n            "Name"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Wollen Sie diesen Kontakt wirklich entfernen?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Wollen Sie diese Kontaktanfrage wirklich ablehnen?"\n         ]\n      }\n   }\n}';});
 
 
 define('text!es',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "es"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Guardar"\n         ],\n         "Cancel": [\n            null,\n            "Cancelar"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            ""\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostrar más información en esta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Haga click para abrir esta sala"\n         ],\n         "Personal message": [\n            null,\n            "Mensaje personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "yo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            ""\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            ""\n         ],\n         "Show this menu": [\n            null,\n            "Mostrar este menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escribir en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Eliminar mensajes"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta conversación?"\n         ],\n         "Insert a smiley": [\n            null,\n            ""\n         ],\n         "Start a call": [\n            null,\n            ""\n         ],\n         "Contacts": [\n            null,\n            "Contactos"\n         ],\n         "Password:": [\n            null,\n            "Contraseña:"\n         ],\n         "Log In": [\n            null,\n            "Iniciar sesión"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "Sign in": [\n            null,\n            "Registrar"\n         ],\n         "I am %1$s": [\n            null,\n            "Estoy %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Haga click para escribir un mensaje de estatus personalizado"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Haga click para cambiar su estatus de chat"\n         ],\n         "Custom status": [\n            null,\n            "Personalizar estatus"\n         ],\n         "online": [\n            null,\n            "en línea"\n         ],\n         "busy": [\n            null,\n            "ocupado"\n         ],\n         "away for long": [\n            null,\n            "ausente por mucho tiempo"\n         ],\n         "away": [\n            null,\n            "ausente"\n         ],\n         "Online": [\n            null,\n            "En línea"\n         ],\n         "Busy": [\n            null,\n            "Ocupado"\n         ],\n         "Away": [\n            null,\n            "Ausente"\n         ],\n         "Offline": [\n            null,\n            "Desconectado"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Haga click para agregar nuevos contactos al chat"\n         ],\n         "Add a contact": [\n            null,\n            "Agregar un contacto"\n         ],\n         "Contact name": [\n            null,\n            "Nombre de contacto"\n         ],\n         "Search": [\n            null,\n            "Búsqueda"\n         ],\n         "e.g. user@example.org": [\n            null,\n            ""\n         ],\n         "Add": [\n            null,\n            "Agregar"\n         ],\n         "No users found": [\n            null,\n            "Sin usuarios encontrados"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            ""\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "Haga click para eliminar este contacto"\n         ],\n         "Minimized": [\n            null,\n            "Minimizado"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Esta sala no es para usuarios anónimos"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Esta sala ahora muestra los miembros no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Esta sala no muestra los miembros no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registro de la sala ahora está habilitado"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registro de la sala ahora está deshabilitado"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Esta sala ahora es semi-anónima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Esta sala ahora es completamente anónima"\n         ],\n         "A new room has been created": [\n            null,\n            "Una nueva sala ha sido creada"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Usted ha sido bloqueado de esta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Usted ha sido expulsado de esta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a un cambio de afiliación"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que la sala cambio su configuración a solo-miembros y usted no es un miembro"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Usted ha sido eliminado de esta sala debido a que el servicio MUC (Multi-user chat) está deshabilitado."\n         ],\n         "Message": [\n            null,\n            "Mensaje"\n         ],\n         "Hide the list of occupants": [\n            null,\n            ""\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "¿Está seguro de querer limpiar los mensajes de esta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            ""\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            ""\n         ],\n         "Change user role to occupant": [\n            null,\n            ""\n         ],\n         "Grant membership to a user": [\n            null,\n            ""\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            ""\n         ],\n         "Change your nickname": [\n            null,\n            ""\n         ],\n         "Grant moderator role to user": [\n            null,\n            ""\n         ],\n         "Revoke user\'s membership": [\n            null,\n            ""\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            ""\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Please choose your nickname": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Apodo"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Esta sala de chat requiere una contraseña."\n         ],\n         "Password: ": [\n            null,\n            "Contraseña: "\n         ],\n         "Submit": [\n            null,\n            "Enviar"\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            ""\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema fijado por %1$s a: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupantes"\n         ],\n         "Invite": [\n            null,\n            ""\n         ],\n         "Hidden": [\n            null,\n            "Oculto"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderado"\n         ],\n         "Non-anonymous": [\n            null,\n            "No anónimo"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi anónimo"\n         ],\n         "Unmoderated": [\n            null,\n            "Sin moderar"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            ""\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            ""\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nombre de sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Show rooms": [\n            null,\n            "Mostrar salas"\n         ],\n         "Rooms": [\n            null,\n            "Salas"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Sin salas en %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripción"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupantes:"\n         ],\n         "Features:": [\n            null,\n            "Características:"\n         ],\n         "Requires authentication": [\n            null,\n            "Autenticación requerida"\n         ],\n         "Requires an invitation": [\n            null,\n            "Requiere una invitación"\n         ],\n         "Open room": [\n            null,\n            "Abrir sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanente"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            ""\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            ""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Re-estableciendo sesión cifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "Generando llave privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Su navegador podría dejar de responder por un momento"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No se pudo verificar la identidad de este usuario"\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Sus mensajes han dejado de cifrarse"\n         ],\n         "Your message could not be sent": [\n            null,\n            "Su mensaje no se pudo enviar"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Se recibío un mensaje sin cifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Se recibío un mensaje cifrado corrupto"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Por favor confirme los identificadores de %1$s fuera de este chat.\\n\\nSu identificador es, %2$s: %3$s\\n\\nEl identificador de %1$s es: %4$s\\n\\nDespués de confirmar los identificadores haga click en OK, cancele si no concuerdan."\n         ],\n         "What is your security question?": [\n            null,\n            "Introduzca su pregunta de seguridad"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Introduzca la respuesta a su pregunta de seguridad"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Esquema de autenticación inválido"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Sus mensajes no están cifrados. Haga click aquí para habilitar el cifrado OTR"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalizar sesión cifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualizar sesión cifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Iniciar sesión cifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verificar con identificadores"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verificar con SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "¿Qué es esto?"\n         ],\n         "unencrypted": [\n            null,\n            "texto plano"\n         ],\n         "unverified": [\n            null,\n            "sin verificar"\n         ],\n         "verified": [\n            null,\n            "verificado"\n         ],\n         "finished": [\n            null,\n            "finalizado"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            ""\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            ""\n         ],\n         "Fetch registration form": [\n            null,\n            ""\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            ""\n         ],\n         "here": [\n            null,\n            ""\n         ],\n         "Register": [\n            null,\n            ""\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            ""\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            ""\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            ""\n         ],\n         "Now logging you in": [\n            null,\n            ""\n         ],\n         "Registered successfully": [\n            null,\n            ""\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            ""\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Este contacto está ocupado"\n         ],\n         "This contact is online": [\n            null,\n            "Este contacto está en línea"\n         ],\n         "This contact is offline": [\n            null,\n            "Este contacto está desconectado"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Este contacto no está disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Este contacto está ausente por un largo periodo de tiempo"\n         ],\n         "This contact is away": [\n            null,\n            "Este contacto está ausente"\n         ],\n         "Groups": [\n            null,\n            ""\n         ],\n         "My contacts": [\n            null,\n            "Mis contactos"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactos pendientes"\n         ],\n         "Contact requests": [\n            null,\n            "Solicitudes de contacto"\n         ],\n         "Ungrouped": [\n            null,\n            ""\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Haga click para conversar con este contacto"\n         ],\n         "Name": [\n            null,\n            ""\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "¿Esta seguro de querer eliminar este contacto?"\n         ]\n      }\n   }\n}';});
 
 
-define('text!fr',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n > 1;",\n            "lang": "fr"\n         },\n         "Bookmark this room": [\n            null,\n            "Marquer ce salon"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Nom de ce marque-page :"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Quel alias devrait être utilisé pour ce salon ?"\n         ],\n         "Save": [\n            null,\n            "Enregistrer"\n         ],\n         "Cancel": [\n            null,\n            "Annuler"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Supprimer ce marque-page"\n         ],\n         "Show more information on this room": [\n            null,\n            "Afficher davantage d’informations sur ce salon"\n         ],\n         "Click to open this room": [\n            null,\n            "Cliquer pour ouvrir ce salon"\n         ],\n         "You have unread messages": [\n            null,\n            "Vous avez de nouveaux messages"\n         ],\n         "Close this chat box": [\n            null,\n            "Fermer cette fenêtre de discussion"\n         ],\n         "Personal message": [\n            null,\n            "Message personnel"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "moi"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader la performance de la conversation. La sortie a été tronquée."\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "écrit"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "a arrêté d’écrire"\n         ],\n         "has gone away": [\n            null,\n            "est parti"\n         ],\n         "Show this menu": [\n            null,\n            "Afficher ce menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Remove messages": [\n            null,\n            "Effacer les messages"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de cette conversation ?"\n         ],\n         "has gone offline": [\n            null,\n            "s’est déconnecté"\n         ],\n         "is busy": [\n            null,\n            "est occupé"\n         ],\n         "Clear all messages": [\n            null,\n            "Supprimer tous les messages"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insérer une émoticône"\n         ],\n         "Start a call": [\n            null,\n            "Démarrer un appel"\n         ],\n         "Contacts": [\n            null,\n            "Contacts"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d’utilisateur XMPP :"\n         ],\n         "Password:": [\n            null,\n            "Mot de passe :"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Cliquez ici pour se connecter anonymement"\n         ],\n         "Log In": [\n            null,\n            "Se connecter"\n         ],\n         "Username": [\n            null,\n            "Nom"\n         ],\n         "user@server": [\n            null,\n            "utilisateur@serveur"\n         ],\n         "password": [\n            null,\n            "Mot de passe"\n         ],\n         "Sign in": [\n            null,\n            "S’inscrire"\n         ],\n         "I am %1$s": [\n            null,\n            "Je suis %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Cliquez ici pour indiquer votre statut personnel"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Cliquez pour changer votre statut"\n         ],\n         "Custom status": [\n            null,\n            "Statut personnel"\n         ],\n         "online": [\n            null,\n            "en ligne"\n         ],\n         "busy": [\n            null,\n            "occupé"\n         ],\n         "away for long": [\n            null,\n            "absent pour une longue durée"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Online": [\n            null,\n            "En ligne"\n         ],\n         "Busy": [\n            null,\n            "Occupé"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Log out": [\n            null,\n            "Se déconnecter"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Cliquez pour ajouter de nouveaux contacts"\n         ],\n         "Add a contact": [\n            null,\n            "Ajouter un contact"\n         ],\n         "Contact name": [\n            null,\n            "Nom du contact"\n         ],\n         "Search": [\n            null,\n            "Rechercher"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "e.g. utilisateur@exemple.org"\n         ],\n         "Add": [\n            null,\n            "Ajouter"\n         ],\n         "No users found": [\n            null,\n            "Aucun utilisateur trouvé"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Ce client ne permet pas les mises à jour de disponibilité"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Cliquez pour cacher ces contacts"\n         ],\n         "Close this box": [\n            null,\n            "Fermer cette fenêtre"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Réduire cette fenêtre de discussion"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Cliquez pour afficher cette discussion"\n         ],\n         "Minimized": [\n            null,\n            "Réduit(s)"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ce salon n’est pas anonyme"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ce salon affiche maintenant les membres indisponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ce salon n’affiche pas les membres indisponibles"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Les paramètres de ce salon ont été modifiés"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Le logging du salon est activé"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Le logging du salon est désactivé"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Ce salon n’est plus anonyme"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ce salon est maintenant semi-anonyme"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ce salon est maintenant entièrement anonyme"\n         ],\n         "A new room has been created": [\n            null,\n            "Un nouveau salon a été créé"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Vous avez été banni de ce salon"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Vous avez été expulsé de ce salon"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s a été banni"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "L’alias de %1$s a changé"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s a été expulsé"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s a été supprimé à cause d’un changement d’affiliation"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s a été supprimé car il n’est pas membre"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Votre alias a été automatiquement déterminé en : %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Votre alias a été modifié en : %1$s"\n         ],\n         "Message": [\n            null,\n            "Message"\n         ],\n         "Close and leave this room": [\n            null,\n            "Fermer et quitter ce salon"\n         ],\n         "Configure this room": [\n            null,\n            "Configurer ce salon"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Cacher la liste des participants"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de ce salon ?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Erreur : la commande ne peut pas être exécutée"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Changer le rôle  de l’utilisateur en administrateur"\n         ],\n         "Ban user from room": [\n            null,\n            "Bannir l’utilisateur du salon"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Changer le rôle de l’utilisateur en participant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulser l’utilisateur du salon"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Autoriser l’utilisateur à être membre"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Retirer le droit d’envoyer des messages"\n         ],\n         "Change your nickname": [\n            null,\n            "Changer votre alias"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Changer le rôle de l’utilisateur en modérateur"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Accorder la propriété à ce salon"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Révoquer l’utilisateur des membres"\n         ],\n         "Set room subject": [\n            null,\n            "Indiquer le sujet du salon"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Définir le sujet de la salle (alias pour /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Autoriser les utilisateurs muets à poster des messages"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir un différent."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Veuillez choisir votre alias"\n         ],\n         "Nickname": [\n            null,\n            "Alias"\n         ],\n         "Enter room": [\n            null,\n            "Entrer dans le salon"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ce salon nécessite un mot de passe"\n         ],\n         "Password: ": [\n            null,\n            "Mot de passe : "\n         ],\n         "Submit": [\n            null,\n            "Soumettre"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "L’action a été réalisée par %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "La raison indiquée est : « %1$s »."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " a quitté le salon. \\""\n         ],\n         " has left the room": [\n            null,\n            " a quitté le salon"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " a rejoint le salon. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " a rejoint le salon."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Le sujet « %2$s » a été défini par %1$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Cet utilisateur est un modérateur."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Cet utilisateur peut envoyer des messages dans ce salon."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."\n         ],\n         "Occupants": [\n            null,\n            "Participants :"\n         ],\n         "Invite": [\n            null,\n            "Inviter"\n         ],\n         "Features": [\n            null,\n            "Caractéristiques"\n         ],\n         "Hidden": [\n            null,\n            "Masqué"\n         ],\n         "Message archiving": [\n            null,\n            "Archivage du message"\n         ],\n         "Members only": [\n            null,\n            "Membres uniquement"\n         ],\n         "Moderated": [\n            null,\n            "Modéré"\n         ],\n         "Non-anonymous": [\n            null,\n            "Non-anonyme"\n         ],\n         "Open": [\n            null,\n            "Ouvrir"\n         ],\n         "Password protected": [\n            null,\n            "Protégé par mot de passe"\n         ],\n         "Persistent": [\n            null,\n            "Persistant"\n         ],\n         "Public": [\n            null,\n            "Public"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonyme"\n         ],\n         "Temporary": [\n            null,\n            "Temporaire"\n         ],\n         "Unmoderated": [\n            null,\n            "Non modéré"\n         ],\n         "Unsecured": [\n            null,\n            "Non sécurisé"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Les messages sont archivés sur le serveur"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Ce salon est restreint aux membres uniquement"\n         ],\n         "This room is being moderated": [\n            null,\n            "Ce salon est modéré"\n         ],\n         "Anyone can join this room": [\n            null,\n            "N’importe qui peut rejoindre ce salon"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Ce salon disparaîtra au départ de la dernière personne"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Ce salon n’est pas modéré"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Vous vous apprêtez à inviter %1$s dans le salon \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nom du salon"\n         ],\n         "Server": [\n            null,\n            "Serveur"\n         ],\n         "Join Room": [\n            null,\n            "Rejoindre"\n         ],\n         "Show rooms": [\n            null,\n            "Afficher les salons"\n         ],\n         "Rooms": [\n            null,\n            "Salons"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Aucun salon dans %1$s"\n         ],\n         "Description:": [\n            null,\n            "Description :"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Participants :"\n         ],\n         "Features:": [\n            null,\n            "Caractéristiques :"\n         ],\n         "Requires authentication": [\n            null,\n            "Nécessite une authentification"\n         ],\n         "Requires an invitation": [\n            null,\n            "Nécessite une invitation"\n         ],\n         "Open room": [\n            null,\n            "Ouvrir un salon"\n         ],\n         "Permanent room": [\n            null,\n            "Salon permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Salon temporaire"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Notification depuis %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s dit"\n         ],\n         "has come online": [\n            null,\n            "s’est déconnecté"\n         ],\n         "wants to be your contact": [\n            null,\n            "veut être votre contact"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Rétablissement d’une session chiffrée"\n         ],\n         "Generating private key.": [\n            null,\n            "Génération de la clé privée."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Votre navigateur pourrait ne plus répondre."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Demande d’authentification de %1$s\\n\\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "L’identité de cet utilisateur ne peut pas être vérifiée."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Échange de la clef privée avec le contact."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Vos messages ne sont plus chiffrés"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Vos messages sont maintenant chiffrés mais l’identité de votre contact n’a pas encore été vérifiée."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "L’identité de votre contact a été vérifiée."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Votre contact a arrêté le chiffrement de son côté, vous devriez le faire aussi."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Votre message ne peut pas être envoyé"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Un message non chiffré a été reçu"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Un message chiffré illisible a été reçu"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\\n\\nEmpreinte pour vous, %2$s : %3$s\\n\\nEmpreinte pour %1$s : %4$s\\n\\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\\n\\nVotre contact devra répondre à la même question et s’il fournit la même réponse (sensible à la casse), son identité sera vérifiée."\n         ],\n         "What is your security question?": [\n            null,\n            "Quelle est votre question de sécurité ?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quelle est la réponse à la question de sécurité ?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schéma d’authentification fourni non valide"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Vos messages ne sont pas chiffrés. Cliquez ici pour activer le chiffrement OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Vos messages sont chiffrés, mais votre contact n’a pas été vérifié."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Vos messages sont chiffrés et votre contact est vérifié."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Terminer la conversation chiffrée"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualiser la conversation chiffrée"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Démarrer une conversation chiffrée"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Vérifier par empreintes de sécurité"\n         ],\n         "Verify with SMP": [\n            null,\n            "Vérifier par Question/Réponse"\n         ],\n         "What\'s this?": [\n            null,\n            "Qu’est-ce que c’est ?"\n         ],\n         "unencrypted": [\n            null,\n            "chiffré"\n         ],\n         "unverified": [\n            null,\n            "non vérifié"\n         ],\n         "verified": [\n            null,\n            "vérifié"\n         ],\n         "finished": [\n            null,\n            "terminé"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " e.g. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Votre domaine XMPP :"\n         ],\n         "Fetch registration form": [\n            null,\n            "Récupération du formulaire d’enregistrement"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Astuce : une liste publique de fournisseurs XMPP est disponible"\n         ],\n         "here": [\n            null,\n            "ici"\n         ],\n         "Register": [\n            null,\n            "S’enregistrer"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Demande du formulaire enregistrement au serveur XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Quelque chose a échoué lors de l’établissement de la connexion avec \\"%1$s\\". Existe-t-il vraiment ?"\n         ],\n         "Now logging you in": [\n            null,\n            "En cours de connexion"\n         ],\n         "Registered successfully": [\n            null,\n            "Enregistré avec succès"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Le fournisseur a rejeté votre demande d’enregistrement."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Ce contact est occupé"\n         ],\n         "This contact is online": [\n            null,\n            "Ce contact est connecté"\n         ],\n         "This contact is offline": [\n            null,\n            "Ce contact est déconnecté"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Ce contact est indisponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Ce contact est absent"\n         ],\n         "This contact is away": [\n            null,\n            "Ce contact est absent"\n         ],\n         "Groups": [\n            null,\n            "Groupes"\n         ],\n         "My contacts": [\n            null,\n            "Mes contacts"\n         ],\n         "Pending contacts": [\n            null,\n            "Contacts en attente"\n         ],\n         "Contact requests": [\n            null,\n            "Demandes de contacts"\n         ],\n         "Ungrouped": [\n            null,\n            "Sans groupe"\n         ],\n         "Filter": [\n            null,\n            "Filtrer"\n         ],\n         "State": [\n            null,\n            "Status"\n         ],\n         "Any": [\n            null,\n            "Aucun"\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Cliquez pour discuter avec ce contact"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Voulez-vous vraiment supprimer ce contact ?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Voulez-vous vraiment refuser cette demande de contact ?"\n         ]\n      }\n   }\n}';});
+define('text!fr',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=n > 1;",\n            "lang": "fr"\n         },\n         "Bookmark this room": [\n            null,\n            "Marquer ce salon"\n         ],\n         "The name for this bookmark:": [\n            null,\n            "Nom de ce marque-page :"\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            "Quel alias devrait être utilisé pour ce salon ?"\n         ],\n         "Save": [\n            null,\n            "Enregistrer"\n         ],\n         "Cancel": [\n            null,\n            "Annuler"\n         ],\n         "Are you sure you want to remove the bookmark \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"\n         ],\n         "Sorry, something went wrong while trying to save your bookmark.": [\n            null,\n            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."\n         ],\n         "Click to toggle the bookmarks list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Bookmarks": [\n            null,\n            "Marques-page"\n         ],\n         "Leave this room": [\n            null,\n            "Quitter ce salon"\n         ],\n         "Remove this bookmark": [\n            null,\n            "Retirer ce marque-page"\n         ],\n         "Unbookmark this room": [\n            null,\n            "Retirer ce salon"\n         ],\n         "Show more information on this room": [\n            null,\n            "Afficher davantage d’informations sur ce salon"\n         ],\n         "Click to open this room": [\n            null,\n            "Cliquer pour ouvrir ce salon"\n         ],\n         "You have unread messages": [\n            null,\n            "Vous avez de nouveaux messages"\n         ],\n         "Close this chat box": [\n            null,\n            "Fermer cette fenêtre de discussion"\n         ],\n         "Personal message": [\n            null,\n            "Message personnel"\n         ],\n         "Send": [\n            null,\n            "Envoyer"\n         ],\n         "me": [\n            null,\n            "moi"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            "Un message très long a été reçu. Cela pourrait être lié à une attaque visant à dégrader la performance de la conversation. La sortie a été tronquée."\n         ],\n         "Typing from another device": [\n            null,\n            "Saisie depuis un autre appareil"\n         ],\n         "is typing": [\n            null,\n            "écrit"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            "Fin de saisie depuis l’autre appareil"\n         ],\n         "has stopped typing": [\n            null,\n            "a arrêté d’écrire"\n         ],\n         "has gone away": [\n            null,\n            "est parti"\n         ],\n         "Show this menu": [\n            null,\n            "Afficher ce menu"\n         ],\n         "Write in the third person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Remove messages": [\n            null,\n            "Effacer les messages"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de cette conversation ?"\n         ],\n         "has gone offline": [\n            null,\n            "s’est déconnecté"\n         ],\n         "is busy": [\n            null,\n            "est occupé"\n         ],\n         "Clear all messages": [\n            null,\n            "Supprimer tous les messages"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insérer une émoticône"\n         ],\n         "Start a call": [\n            null,\n            "Démarrer un appel"\n         ],\n         "Contacts": [\n            null,\n            "Contacts"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d’utilisateur XMPP :"\n         ],\n         "Password:": [\n            null,\n            "Mot de passe :"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Cliquez ici pour se connecter anonymement"\n         ],\n         "Log In": [\n            null,\n            "Se connecter"\n         ],\n         "Username": [\n            null,\n            "Nom"\n         ],\n         "user@server": [\n            null,\n            "utilisateur@serveur"\n         ],\n         "password": [\n            null,\n            "Mot de passe"\n         ],\n         "Sign in": [\n            null,\n            "S’inscrire"\n         ],\n         "I am %1$s": [\n            null,\n            "Je suis %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Cliquez ici pour indiquer votre statut personnel"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Cliquez pour changer votre statut"\n         ],\n         "Custom status": [\n            null,\n            "Statut personnel"\n         ],\n         "online": [\n            null,\n            "en ligne"\n         ],\n         "busy": [\n            null,\n            "occupé"\n         ],\n         "away for long": [\n            null,\n            "absent pour une longue durée"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Online": [\n            null,\n            "En ligne"\n         ],\n         "Busy": [\n            null,\n            "Occupé"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Déconnecté"\n         ],\n         "Log out": [\n            null,\n            "Se déconnecter"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Cliquez pour ajouter de nouveaux contacts"\n         ],\n         "Add a contact": [\n            null,\n            "Ajouter un contact"\n         ],\n         "Contact name": [\n            null,\n            "Nom du contact"\n         ],\n         "Search": [\n            null,\n            "Rechercher"\n         ],\n         "e.g. user@example.org": [\n            null,\n            "e.g. utilisateur@exemple.org"\n         ],\n         "Add": [\n            null,\n            "Ajouter"\n         ],\n         "No users found": [\n            null,\n            "Aucun utilisateur trouvé"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Ce client ne permet pas les mises à jour de disponibilité"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Cliquez pour cacher ces contacts"\n         ],\n         "Close this box": [\n            null,\n            "Fermer cette fenêtre"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Réduire cette fenêtre de discussion"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Cliquez pour afficher cette discussion"\n         ],\n         "Minimized": [\n            null,\n            "Réduit(s)"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Ce salon n’est pas anonyme"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Ce salon affiche maintenant les membres indisponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Ce salon n’affiche pas les membres indisponibles"\n         ],\n         "The room configuration has changed": [\n            null,\n            "Les paramètres de ce salon ont été modifiés"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "Le logging du salon est activé"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "Le logging du salon est désactivé"\n         ],\n         "This room is now no longer anonymous": [\n            null,\n            "Ce salon n’est plus anonyme"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Ce salon est maintenant semi-anonyme"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Ce salon est maintenant entièrement anonyme"\n         ],\n         "A new room has been created": [\n            null,\n            "Un nouveau salon a été créé"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Vous avez été banni de ce salon"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Vous avez été expulsé de ce salon"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Vous avez été retiré de ce salon du fait d’un changement d’affiliation"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."\n         ],\n         "%1$s has been banned": [\n            null,\n            "%1$s a été banni"\n         ],\n         "%1$s\'s nickname has changed": [\n            null,\n            "L’alias de %1$s a changé"\n         ],\n         "%1$s has been kicked out": [\n            null,\n            "%1$s a été expulsé"\n         ],\n         "%1$s has been removed because of an affiliation change": [\n            null,\n            "%1$s a été supprimé à cause d’un changement d’affiliation"\n         ],\n         "%1$s has been removed for not being a member": [\n            null,\n            "%1$s a été supprimé car il n’est pas membre"\n         ],\n         "Your nickname has been automatically set to: %1$s": [\n            null,\n            "Votre alias a été automatiquement déterminé en : %1$s"\n         ],\n         "Your nickname has been changed to: %1$s": [\n            null,\n            "Votre alias a été modifié en : %1$s"\n         ],\n         "Message": [\n            null,\n            "Message"\n         ],\n         "Close and leave this room": [\n            null,\n            "Fermer et quitter ce salon"\n         ],\n         "Configure this room": [\n            null,\n            "Configurer ce salon"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Cacher la liste des participants"\n         ],\n         "${command}": [\n            null,\n            "${command}"\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Voulez-vous vraiment supprimer les messages de ce salon ?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Erreur : la commande ne peut pas être exécutée"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Changer le rôle  de l’utilisateur en administrateur"\n         ],\n         "Ban user from room": [\n            null,\n            "Bannir l’utilisateur du salon"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Changer le rôle de l’utilisateur en participant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulser l’utilisateur du salon"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Écrire à la troisième personne"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Autoriser l’utilisateur à être membre"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Retirer le droit d’envoyer des messages"\n         ],\n         "Change your nickname": [\n            null,\n            "Changer votre alias"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Changer le rôle de l’utilisateur en modérateur"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Accorder la propriété à ce salon"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Révoquer l’utilisateur des membres"\n         ],\n         "Set room subject": [\n            null,\n            "Indiquer le sujet du salon"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            "Définir le sujet de la salle (alias pour /subject)"\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Autoriser les utilisateurs muets à poster des messages"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            "L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir un différent."\n         ],\n         "Please choose your nickname": [\n            null,\n            "Veuillez choisir votre alias"\n         ],\n         "Nickname": [\n            null,\n            "Alias"\n         ],\n         "Enter room": [\n            null,\n            "Entrer dans le salon"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Ce salon nécessite un mot de passe"\n         ],\n         "Password: ": [\n            null,\n            "Mot de passe : "\n         ],\n         "Submit": [\n            null,\n            "Soumettre"\n         ],\n         "This action was done by %1$s.": [\n            null,\n            "L’action a été réalisée par %1$s."\n         ],\n         "The reason given is: \\"%1$s\\".": [\n            null,\n            "La raison indiquée est : « %1$s »."\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            " a quitté le salon. \\""\n         ],\n         " has left the room": [\n            null,\n            " a quitté le salon"\n         ],\n         " has joined the room. \\"": [\n            null,\n            " a rejoint le salon. \\""\n         ],\n         " has joined the room.": [\n            null,\n            " a rejoint le salon."\n         ],\n         "You are not on the member list of this room.": [\n            null,\n            "Vous n’êtes pas dans la liste des membres de ce salon."\n         ],\n         "You have been banned from this room.": [\n            null,\n            "Vous avez été banni de ce salon."\n         ],\n         "No nickname was specified.": [\n            null,\n            "Aucun alias n’a été indiqué."\n         ],\n         "You are not allowed to create new rooms.": [\n            null,\n            "Vous n’êtes pas autorisé à créer des salons."\n         ],\n         "Your nickname doesn\'t conform to this room\'s policies.": [\n            null,\n            "Votre alias n’est pas conforme à la politique de ce salon."\n         ],\n         "This room does not (yet) exist.": [\n            null,\n            "Ce salon n’existe pas (pour l’instant)."\n         ],\n         "This room has reached its maximum number of occupants.": [\n            null,\n            "Ce salon a atteint sa limite maximale d’occupants."\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Le sujet « %2$s » a été défini par %1$s"\n         ],\n         "This user is a moderator.": [\n            null,\n            "Cet utilisateur est un modérateur."\n         ],\n         "This user can send messages in this room.": [\n            null,\n            "Cet utilisateur peut envoyer des messages dans ce salon."\n         ],\n         "This user can NOT send messages in this room.": [\n            null,\n            "Cet utilisateur ne peut PAS envoyer de messages dans ce salon."\n         ],\n         "Occupants": [\n            null,\n            "Participants :"\n         ],\n         "Invite": [\n            null,\n            "Inviter"\n         ],\n         "Features": [\n            null,\n            "Caractéristiques"\n         ],\n         "Hidden": [\n            null,\n            "Masqué"\n         ],\n         "Message archiving": [\n            null,\n            "Archivage du message"\n         ],\n         "Members only": [\n            null,\n            "Membres uniquement"\n         ],\n         "Moderated": [\n            null,\n            "Modéré"\n         ],\n         "Non-anonymous": [\n            null,\n            "Non-anonyme"\n         ],\n         "Open": [\n            null,\n            "Ouvrir"\n         ],\n         "Password protected": [\n            null,\n            "Protégé par mot de passe"\n         ],\n         "Persistent": [\n            null,\n            "Persistant"\n         ],\n         "Public": [\n            null,\n            "Public"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semi-anonyme"\n         ],\n         "Temporary": [\n            null,\n            "Temporaire"\n         ],\n         "Unmoderated": [\n            null,\n            "Non modéré"\n         ],\n         "Unsecured": [\n            null,\n            "Non sécurisé"\n         ],\n         "This room is not publicly searchable": [\n            null,\n            "Ce salon ne peut pas être recherché publiquement"\n         ],\n         "Messages are archived on the server": [\n            null,\n            "Les messages sont archivés sur le serveur"\n         ],\n         "This room is restricted to members only": [\n            null,\n            "Ce salon est restreint aux membres uniquement"\n         ],\n         "This room is being moderated": [\n            null,\n            "Ce salon est modéré"\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            "Tous les autres occupants de ce salon peuvent voir votre nom d’utilisateur XMPP"\n         ],\n         "Anyone can join this room": [\n            null,\n            "N’importe qui peut rejoindre ce salon"\n         ],\n         "This room requires a password before entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            "Ce salon persiste même s\'il est inoccupé"\n         ],\n         "This room is publicly searchable": [\n            null,\n            "Ce salon peut être recherché publiquement"\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            "Seuls les modérateurs peuvent voir votre identifiant XMPP"\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            "Ce salon disparaîtra au départ de la dernière personne"\n         ],\n         "This room is not being moderated": [\n            null,\n            "Ce salon n’est pas modéré"\n         ],\n         "This room does not require a password upon entry": [\n            null,\n            "Ce salon nécessite un mot de passe pour y accéder"\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Vous vous apprêtez à inviter %1$s dans le salon \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Vous pouvez facultativement ajouter un message, expliquant la raison de cette invitation."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            "Veuillez saisir un identifiant utilisateur XMPP valide"\n         ],\n         "Room name": [\n            null,\n            "Nom du salon"\n         ],\n         "Server": [\n            null,\n            "Serveur"\n         ],\n         "Join Room": [\n            null,\n            "Rejoindre"\n         ],\n         "Show rooms": [\n            null,\n            "Afficher les salons"\n         ],\n         "Rooms": [\n            null,\n            "Salons"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "Aucun salon dans %1$s"\n         ],\n         "Description:": [\n            null,\n            "Description :"\n         ],\n         "Room Address (JID):": [\n            null,\n            "Adresse du salon (JID) :"\n         ],\n         "Occupants:": [\n            null,\n            "Participants :"\n         ],\n         "Features:": [\n            null,\n            "Caractéristiques :"\n         ],\n         "Requires authentication": [\n            null,\n            "Nécessite une authentification"\n         ],\n         "Requires an invitation": [\n            null,\n            "Nécessite une invitation"\n         ],\n         "Open room": [\n            null,\n            "Ouvrir un salon"\n         ],\n         "Permanent room": [\n            null,\n            "Salon permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Salon temporaire"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            "Notification depuis %1$s"\n         ],\n         "%1$s says": [\n            null,\n            "%1$s dit"\n         ],\n         "has come online": [\n            null,\n            "s’est déconnecté"\n         ],\n         "wants to be your contact": [\n            null,\n            "veut être votre contact"\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "Rétablissement d’une session chiffrée"\n         ],\n         "Generating private key.": [\n            null,\n            "Génération de la clé privée."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "Votre navigateur pourrait ne plus répondre."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Demande d’authentification de %1$s\\n\\nVotre contact tente de vérifier votre identité, en vous posant la question ci-dessous.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "L’identité de cet utilisateur ne peut pas être vérifiée."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "Échange de la clef privée avec le contact."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Vos messages ne sont plus chiffrés"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Vos messages sont maintenant chiffrés mais l’identité de votre contact n’a pas encore été vérifiée."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "L’identité de votre contact a été vérifiée."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "Votre contact a arrêté le chiffrement de son côté, vous devriez le faire aussi."\n         ],\n         "Your message could not be sent": [\n            null,\n            "Votre message ne peut pas être envoyé"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Un message non chiffré a été reçu"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Un message chiffré illisible a été reçu"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Voici les empreintes de sécurité, veuillez les confirmer avec %1$s, en dehors de ce chat.\\n\\nEmpreinte pour vous, %2$s : %3$s\\n\\nEmpreinte pour %1$s : %4$s\\n\\nSi vous avez confirmé que les empreintes correspondent, cliquez OK, sinon cliquez Annuler."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Vous allez être invité à fournir une question de sécurité et une réponse à cette question.\\n\\nVotre contact devra répondre à la même question et s’il fournit la même réponse (sensible à la casse), son identité sera vérifiée."\n         ],\n         "What is your security question?": [\n            null,\n            "Quelle est votre question de sécurité ?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quelle est la réponse à la question de sécurité ?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "Schéma d’authentification fourni non valide"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Vos messages ne sont pas chiffrés. Cliquez ici pour activer le chiffrement OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Vos messages sont chiffrés, mais votre contact n’a pas été vérifié."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Vos messages sont chiffrés et votre contact est vérifié."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "Votre contact a fermé la session privée de son côté, vous devriez le faire aussi"\n         ],\n         "End encrypted conversation": [\n            null,\n            "Terminer la conversation chiffrée"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualiser la conversation chiffrée"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Démarrer une conversation chiffrée"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Vérifier par empreintes de sécurité"\n         ],\n         "Verify with SMP": [\n            null,\n            "Vérifier par Question/Réponse"\n         ],\n         "What\'s this?": [\n            null,\n            "Qu’est-ce que c’est ?"\n         ],\n         "unencrypted": [\n            null,\n            "chiffré"\n         ],\n         "unverified": [\n            null,\n            "non vérifié"\n         ],\n         "verified": [\n            null,\n            "vérifié"\n         ],\n         "finished": [\n            null,\n            "terminé"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " e.g. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Votre domaine XMPP :"\n         ],\n         "Fetch registration form": [\n            null,\n            "Récupération du formulaire d’enregistrement"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Astuce : une liste publique de fournisseurs XMPP est disponible"\n         ],\n         "here": [\n            null,\n            "ici"\n         ],\n         "Register": [\n            null,\n            "S’enregistrer"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "Demande du formulaire enregistrement au serveur XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Quelque chose a échoué lors de l’établissement de la connexion avec \\"%1$s\\". Existe-t-il vraiment ?"\n         ],\n         "Now logging you in": [\n            null,\n            "En cours de connexion"\n         ],\n         "Registered successfully": [\n            null,\n            "Enregistré avec succès"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "Le fournisseur a rejeté votre demande d’enregistrement."\n         ],\n         "Retry": [\n            null,\n            "Réessayer"\n         ],\n         "Click to toggle the rooms list": [\n            null,\n            "Cliquer pour ouvrir la liste des salons"\n         ],\n         "Open Rooms": [\n            null,\n            "Ouvrir les salons"\n         ],\n         "Are you sure you want to leave the room \\"%1$s\\"?": [\n            null,\n            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"\n         ],\n         "This contact is busy": [\n            null,\n            "Ce contact est occupé"\n         ],\n         "This contact is online": [\n            null,\n            "Ce contact est connecté"\n         ],\n         "This contact is offline": [\n            null,\n            "Ce contact est déconnecté"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Ce contact est indisponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Ce contact est absent"\n         ],\n         "This contact is away": [\n            null,\n            "Ce contact est absent"\n         ],\n         "Groups": [\n            null,\n            "Groupes"\n         ],\n         "My contacts": [\n            null,\n            "Mes contacts"\n         ],\n         "Pending contacts": [\n            null,\n            "Contacts en attente"\n         ],\n         "Contact requests": [\n            null,\n            "Demandes de contacts"\n         ],\n         "Ungrouped": [\n            null,\n            "Sans groupe"\n         ],\n         "Filter": [\n            null,\n            "Filtrer"\n         ],\n         "State": [\n            null,\n            "Status"\n         ],\n         "Any": [\n            null,\n            "Aucun"\n         ],\n         "Unread": [\n            null,\n            "Non lu"\n         ],\n         "Chatty": [\n            null,\n            "Bavard"\n         ],\n         "Extended Away": [\n            null,\n            "Absence longue durée"\n         ],\n         "Click to remove %1$s as a contact": [\n            null,\n            "Cliquez pour retirer le contact « %1$s »"\n         ],\n         "Click to accept the contact request from %1$s": [\n            null,\n            "Cliquez pour accepter la demande de « %1$s »"\n         ],\n         "Click to decline the contact request from %1$s": [\n            null,\n            "Cliquez pour décliner la demande de contact de « %1$s »"\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Cliquez pour discuter avec ce contact"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Voulez-vous vraiment retirer ce contact ?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Voulez-vous vraiment décliner cette demande de contact ?"\n         ]\n      }\n   }\n}';});
 
 
 define('text!he',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "he"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "שמור"\n         ],\n         "Cancel": [\n            null,\n            "ביטול"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "הצג עוד מידע אודות חדר זה"\n         ],\n         "Click to open this room": [\n            null,\n            "לחץ כדי לפתוח את חדר זה"\n         ],\n         "Personal message": [\n            null,\n            "הודעה אישית"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "אני"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "מקליד(ה) כעת"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "חדל(ה) להקליד"\n         ],\n         "has gone away": [\n            null,\n            "נעדר(ת)"\n         ],\n         "Show this menu": [\n            null,\n            "הצג את תפריט זה"\n         ],\n         "Write in the third person": [\n            null,\n            "כתוב בגוף השלישי"\n         ],\n         "Remove messages": [\n            null,\n            "הסר הודעות"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך תיבת שיחה זה?"\n         ],\n         "has gone offline": [\n            null,\n            "כבר לא מקוון"\n         ],\n         "is busy": [\n            null,\n            "עסוק(ה) כעת"\n         ],\n         "Clear all messages": [\n            null,\n            "טהר את כל ההודעות"\n         ],\n         "Insert a smiley": [\n            null,\n            "הכנס סמיילי"\n         ],\n         "Start a call": [\n            null,\n            "התחל שיחה"\n         ],\n         "Contacts": [\n            null,\n            "אנשי קשר"\n         ],\n         "XMPP Username:": [\n            null,\n            "שם משתמש XMPP:"\n         ],\n         "Password:": [\n            null,\n            "סיסמה:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "לחץ כאן כדי להתחבר באופן אנונימי"\n         ],\n         "Log In": [\n            null,\n            "כניסה"\n         ],\n         "user@server": [\n            null,\n            ""\n         ],\n         "password": [\n            null,\n            "סיסמה"\n         ],\n         "Sign in": [\n            null,\n            "התחברות"\n         ],\n         "I am %1$s": [\n            null,\n            "מצבי כעת הינו %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "לחץ כאן כדי לכתוב הודעת מצב מותאמת"\n         ],\n         "Click to change your chat status": [\n            null,\n            "לחץ כדי לשנות את הודעת השיחה שלך"\n         ],\n         "Custom status": [\n            null,\n            "מצב מותאם"\n         ],\n         "online": [\n            null,\n            "מקוון"\n         ],\n         "busy": [\n            null,\n            "עסוק"\n         ],\n         "away for long": [\n            null,\n            "נעדר לזמן מה"\n         ],\n         "away": [\n            null,\n            "נעדר"\n         ],\n         "offline": [\n            null,\n            "לא מקוון"\n         ],\n         "Online": [\n            null,\n            "מקוון"\n         ],\n         "Busy": [\n            null,\n            "עסוק"\n         ],\n         "Away": [\n            null,\n            "נעדר"\n         ],\n         "Offline": [\n            null,\n            "לא מקוון"\n         ],\n         "Log out": [\n            null,\n            "התנתקות"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "לחץ כדי להוסיף אנשי קשר שיחה חדשים"\n         ],\n         "Add a contact": [\n            null,\n            "הוסף איש קשר"\n         ],\n         "Contact name": [\n            null,\n            "שם איש קשר"\n         ],\n         "Search": [\n            null,\n            "חיפוש"\n         ],\n         "Add": [\n            null,\n            "הוסף"\n         ],\n         "No users found": [\n            null,\n            "לא נמצאו משתמשים"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "לקוח זה לא מתיר הרשמות נוכחות"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "לחץ כדי להסתיר את אנשי קשר אלה"\n         ],\n         "Minimize this chat box": [\n            null,\n            ""\n         ],\n         "Click to restore this chat": [\n            null,\n            "לחץ כדי לשחזר את שיחה זו"\n         ],\n         "Minimized": [\n            null,\n            "ממוזער"\n         ],\n         "This room is not anonymous": [\n            null,\n            "חדר זה אינו אנונימי"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "חדר זה כעת מציג חברים לא זמינים"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "חדר זה לא מציג חברים לא זמינים"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "יומן חדר הינו מופעל כעת"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "יומן חדר הינו מנוטרל כעת"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "חדר זה הינו אנונימי-למחצה כעת"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "חדר זה הינו אנונימי-לחלוטין כעת"\n         ],\n         "A new room has been created": [\n            null,\n            "חדר חדש נוצר"\n         ],\n         "You have been banned from this room": [\n            null,\n            "נאסרת מתוך חדר זה"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "נבעטת מתוך חדר זה"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "הוסרת מתוך חדר זה משום שינוי שיוך"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."\n         ],\n         "Message": [\n            null,\n            "הודעה"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "האם אתה בטוח כי ברצונך לטהר את ההודעות מתוך חדר זה?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "שגיאה: לא היתה אפשרות לבצע פקודה"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "שנה סינוף משתמש למנהל"\n         ],\n         "Ban user from room": [\n            null,\n            "אסור משתמש מתוך חדר"\n         ],\n         "Kick user from room": [\n            null,\n            "בעט משתמש מתוך חדר"\n         ],\n         "Write in 3rd person": [\n            null,\n            "כתוב בגוף שלישי"\n         ],\n         "Grant membership to a user": [\n            null,\n            "הענק חברות למשתמש"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "הסר יכולת משתמש לפרסם הודעות"\n         ],\n         "Change your nickname": [\n            null,\n            "שנה את השם כינוי שלך"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "הענק תפקיד אחראי למשתמש"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "הענק בעלות על חדר זה"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "שלול חברות משתמש"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "התר למשתמש מושתק לפרסם הודעות"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "שם כינוי"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "חדר שיחה זה מצריך סיסמה"\n         ],\n         "Password: ": [\n            null,\n            "סיסמה: "\n         ],\n         "Submit": [\n            null,\n            "שלח"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "נושא חדר זה נקבע על ידי %1$s אל: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "נוכחים"\n         ],\n         "Invite": [\n            null,\n            "הזמנה"\n         ],\n         "Hidden": [\n            null,\n            "נסתר"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "מבוקר"\n         ],\n         "Non-anonymous": [\n            null,\n            "לא-אנונימי"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "פומבי"\n         ],\n         "Semi-anonymous": [\n            null,\n            "אנונימי-למחצה"\n         ],\n         "Unmoderated": [\n            null,\n            "לא מבוקר"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "אתה עומד להזמין את %1$s לחדר שיחה \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "שם חדר"\n         ],\n         "Server": [\n            null,\n            "שרת"\n         ],\n         "Join Room": [\n            null,\n            "הצטרף לחדר"\n         ],\n         "Show rooms": [\n            null,\n            "הצג חדרים"\n         ],\n         "Rooms": [\n            null,\n            "חדרים"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "אין חדרים על %1$s"\n         ],\n         "Description:": [\n            null,\n            "תיאור:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "נוכחים:"\n         ],\n         "Features:": [\n            null,\n            "תכונות:"\n         ],\n         "Requires authentication": [\n            null,\n            "מצריך אישור"\n         ],\n         "Requires an invitation": [\n            null,\n            "מצריך הזמנה"\n         ],\n         "Open room": [\n            null,\n            "חדר פתוח"\n         ],\n         "Permanent room": [\n            null,\n            "חדר צמיתה"\n         ],\n         "Temporary room": [\n            null,\n            "חדר זמני"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s הזמינך להצטרף לחדר שיחה: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s הזמינך להצטרף לחדר שיחה: %2$s, והשאיר את הסיבה הבאה: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "בסס מחדש ישיבה מוצפנת"\n         ],\n         "Generating private key.": [\n            null,\n            "כעת מפיק מפתח פרטי."\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "הדפדפן שלך עשוי שלא להגיב."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "בקשת אימות מאת %1$s\\n\\nהאיש קשר שלך מנסה לאמת את הזהות שלך, בעזרת שאילת השאלה שלהלן.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "לא היתה אפשרות לאמת את זהות משתמש זה."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "מחליף מפתח פרטי עם איש קשר."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "ההודעות שלך אינן מוצפנות עוד"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת אך זהות האיש קשר שלך טרם אומתה."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "זהות האיש קשר שלך אומתה."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "האיש קשר סיים הצפנה בקצה שלהם, עליך לעשות זאת גם כן."\n         ],\n         "Your message could not be sent": [\n            null,\n            "ההודעה שלך לא היתה יכולה להישלח"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "אנחנו קיבלנו הודעה לא מוצפנת"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "אנחנו קיבלנו הודעה מוצפנת לא קריאה"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "הרי טביעות האצבע, אנא אמת אותן עם %1$s, מחוץ לשיחה זו.\\n\\nטביעת אצבע עבורך, %2$s: %3$s\\n\\nטביעת אצבע עבור %1$s: %4$s\\n\\nהיה ואימתת כי טביעות האצבע תואמות, לחץ אישור (OK), אחרת לחץ ביטול (Cancel)."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "אתה תתבקש לספק שאלת אבטחה ולאחריה תשובה לשאלה הזו.\\n\\nהאיש קשר יתבקש עובר זאת לאותה שאלת אבטחה ואם אלו יקלידו את אותה התשובה במדויק (case sensitive), זהותם תאומת."\n         ],\n         "What is your security question?": [\n            null,\n            "מהי שאלת האבטחה שלך?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "מהי התשובה לשאלת האבטחה?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "סופקה סכימת אימות שגויה"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "ההודעות שלך אינן מוצפנות. לחץ כאן כדי לאפשר OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת, אך האיש קשר שלך טרם אומת."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "ההודעות שלך מוצפנות כעת והאיש קשר שלך אומת."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "האיש קשר סגר את קצה ישיבה פרטית שלהם, עליך לעשות זאת גם כן"\n         ],\n         "End encrypted conversation": [\n            null,\n            "סיים ישיבה מוצפנת"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "רענן ישיבה מוצפנת"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "התחל ישיבה מוצפנת"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "אמת בעזרת טביעות אצבע"\n         ],\n         "Verify with SMP": [\n            null,\n            "אמת בעזרת SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "מה זה?"\n         ],\n         "unencrypted": [\n            null,\n            "לא מוצפנת"\n         ],\n         "unverified": [\n            null,\n            "לא מאומתת"\n         ],\n         "verified": [\n            null,\n            "מאומתת"\n         ],\n         "finished": [\n            null,\n            "מוגמרת"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            " למשל conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "שם מתחם של ספק XMPP שלך:"\n         ],\n         "Fetch registration form": [\n            null,\n            "משוך טופס הרשמה"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "טיפ: רשימה פומבית של ספקי XMPP הינה זמינה"\n         ],\n         "here": [\n            null,\n            "כאן"\n         ],\n         "Register": [\n            null,\n            "הירשם"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה עם ספק אחר."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "כעת מבקש טופס הרשמה מתוך שרת XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "משהו השתבש במהלך ביסוס חיבור עם \\"%1$s\\". האם אתה בטוח כי זה קיים?"\n         ],\n         "Now logging you in": [\n            null,\n            "כעת מחבר אותך פנימה"\n         ],\n         "Registered successfully": [\n            null,\n            "נרשם בהצלחה"\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "איש קשר זה עסוק"\n         ],\n         "This contact is online": [\n            null,\n            "איש קשר זה מקוון"\n         ],\n         "This contact is offline": [\n            null,\n            "איש קשר זה אינו מקוון"\n         ],\n         "This contact is unavailable": [\n            null,\n            "איש קשר זה לא זמין"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "איש קשר זה נעדר למשך זמן ממושך"\n         ],\n         "This contact is away": [\n            null,\n            "איש קשר זה הינו נעדר"\n         ],\n         "Groups": [\n            null,\n            "קבוצות"\n         ],\n         "My contacts": [\n            null,\n            "האנשי קשר שלי"\n         ],\n         "Pending contacts": [\n            null,\n            "אנשי קשר ממתינים"\n         ],\n         "Contact requests": [\n            null,\n            "בקשות איש קשר"\n         ],\n         "Ungrouped": [\n            null,\n            "ללא קבוצה"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "לחץ כדי לשוחח עם איש קשר זה"\n         ],\n         "Name": [\n            null,\n            "שם"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"\n         ]\n      }\n   }\n}';});
@@ -45774,375 +44745,22 @@ require(["strophe-polyfill"]);
 }));
 /* jshint ignore:end */
 ;
-/* Lo-Dash Template Loader v1.0.1
- * Copyright 2015, Tim Branyen (@tbranyen).
- * loader.js may be freely distributed under the MIT license.
- */
-(function(global) {
-"use strict";
-
-// Cache used to map configuration options between load and write.
-var buildMap = {};
-
-// Alias the correct `nodeRequire` method.
-var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
-
-// Strips trailing `/` from url fragments.
-var stripTrailing = function(prop) {
-  return prop.replace(/(\/$)/, '');
-};
-
-// Define the plugin using the CommonJS syntax.
-define('tpl',['require','exports','module','lodash'],function(require, exports) {
-  var _ = require("lodash");
-
-  exports.version = "1.0.1";
-
-  // Invoked by the AMD builder, passed the path to resolve, the require
-  // function, done callback, and the configuration options.
-  exports.load = function(name, req, load, config) {
-    var isDojo;
-
-    // Dojo provides access to the config object through the req function.
-    if (!config) {
-      config = require.rawConfig;
-      isDojo = true;
-    }
-
-    var contents = "";
-    var settings = configure(config);
-
-    // If the baseUrl and root are the same, just null out the root.
-    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
-      settings.root = '';
-    }
-
-    var url = require.toUrl(settings.root + name + settings.ext);
-
-    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
-      url = stripTrailing(config.baseUrl) + url;
-    }
-
-    // Builds with r.js require Node.js to be installed.
-    if (config.isBuild) {
-      // If in Node, get access to the filesystem.
-      var fs = nodeRequire("fs");
-
-      try {
-        // First try reading the filepath as-is.
-        contents = String(fs.readFileSync(url));
-      } catch(ex) {
-        // If it failed, it's most likely because of a leading `/` and not an
-        // absolute path.  Remove the leading slash and try again.
-        if (url.slice(0, 1) === "/") {
-          url = url.slice(1);
-        }
-
-        // Try reading again with the leading `/`.
-        contents = String(fs.readFileSync(url));
-      }
-
-      // Read in the file synchronously, as RequireJS expects, and return the
-      // contents.  Process as a Lo-Dash template.
-      buildMap[name] = _.template(contents);
-
-      return load();
-    }
-
-    // Create a basic XHR.
-    var xhr = new XMLHttpRequest();
-
-    // Wait for it to load.
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        var templateSettings = _.clone(settings.templateSettings);
-
-        // Attach the sourceURL.
-        templateSettings.sourceURL = url;
-
-        // Process as a Lo-Dash template and cache.
-        buildMap[name] = _.template(xhr.responseText, templateSettings);
-
-        // Return the compiled template.
-        load(buildMap[name]);
-      }
-    };
-
-    // Initiate the fetch.
-    xhr.open("GET", url, true);
-    xhr.send(null);
-  };
-
-  // Also invoked by the AMD builder, this writes out a compatible define
-  // call that will work with loaders such as almond.js that cannot read
-  // the configuration data.
-  exports.write = function(pluginName, moduleName, write) {
-    var template = buildMap[moduleName].source;
-
-    // Write out the actual definition
-    write(strDefine(pluginName, moduleName, template));
-  };
-
-  // This is for curl.js/cram.js build-time support.
-  exports.compile = function(pluginName, moduleName, req, io, config) {
-    configure(config);
-
-    // Ask cram to fetch the template file (resId) and pass it to `write`.
-    io.read(moduleName, write, io.error);
-
-    function write(template) {
-      // Write-out define(id,function(){return{/* template */}});
-      io.write(strDefine(pluginName, moduleName, template));
-    }
-  };
-
-  // Crafts the written definition form of the module during a build.
-  function strDefine(pluginName, moduleName, template) {
-    return [
-      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
-        [
-          "function(_) {",
-            "return ", template, ";",
-          "}"
-        ].join(""),
-      ");\n"
-    ].join("");
-  }
-
-  function configure(config) {
-    // Default settings point to the project root and using html files.
-    var settings = _.extend({
-      ext: ".html",
-      root: config.baseUrl,
-      templateSettings: {}
-    }, config.lodashLoader);
-
-    // Ensure the root has been properly configured with a trailing slash,
-    // unless it's an empty string or undefined, in which case work off the
-    // baseUrl.
-    if (settings.root && settings.root.slice(-1) !== "/") {
-      settings.root += "/";
-    }
-
-    // Set the custom passed in template settings.
-    _.extend(_.templateSettings, settings.templateSettings);
-
-    return settings;
-  }
-});
-
-})(typeof global === "object" ? global : this);
-
-
-define('tpl!field', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<field var="' +
-__e(name) +
-'">';
- if (_.isArray(value)) { ;
-__p += '\n    ';
- _.each(value,function(arrayValue) { ;
-__p += '<value>' +
-__e(arrayValue) +
-'</value>';
- }); ;
-__p += '\n';
- } else { ;
-__p += '\n    <value>' +
-__e(value) +
-'</value>\n';
- } ;
-__p += '</field>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<option value="' +
-__e(value) +
-'" ';
- if (selected) { ;
-__p += ' selected="selected" ';
- } ;
-__p += ' >' +
-__e(label) +
-'</option>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<select name="' +
-__e(name) +
-'"  ';
- if (multiple) { ;
-__p += ' multiple="multiple" ';
- } ;
-__p += '>' +
-((__t = (options)) == null ? '' : __t) +
-'</select>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label class="label-ta">' +
-__e(label) +
-'</label>\n<textarea name="' +
-__e(name) +
-'">' +
-__e(value) +
-'</textarea>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" ' +
-__e(checked) +
-'>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<div class="input-group">\n    <input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'"\n        ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n        ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' />\n    <span title="' +
-__e(domain) +
-'">' +
-__e(domain) +
-'</span>\n</div>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" \n    ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n    ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<img src="data:' +
-__e(type) +
-';base64,' +
-__e(data) +
-'">\n<input name="' +
-__e(name) +
-'" type="text" ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n\n\n';
-
-}
-return __p
-};});
-
 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/*global define, escape, locales, Jed */
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, escape, locales, window, Jed */
 (function (root, factory) {
-    define('utils',["jquery.noconflict", "sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha"], factory);
-})(undefined, function ($, sizzle, Promise, dummy, _, locales, moment, Strophe, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha) {
+    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe"], factory);
+})(undefined, function (sizzle, Promise, jQBrowser, _, locales, moment, Strophe) {
     "use strict";
 
     locales = locales || {};
@@ -46151,16 +44769,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
-    var XFORM_TYPE_MAP = {
-        'text-private': 'password',
-        'text-single': 'text',
-        'fixed': 'label',
-        'boolean': 'checkbox',
-        'hidden': 'hidden',
-        'jid-multi': 'textarea',
-        'list-single': 'dropdown',
-        'list-multi': 'dropdown'
-    };
+    var logger = _.assign({
+        'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+    }, console);
 
     var afterAnimationEnd = function afterAnimationEnd(el, callback) {
         el.classList.remove('visible');
@@ -46200,16 +44814,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    $.fn.hasScrollBar = function () {
-        if (!$.contains(document, this.get(0))) {
-            return false;
-        }
-        if (this.parent().height() < this.get(0).scrollHeight) {
-            return true;
-        }
-        return false;
-    };
-
     function calculateSlideStep(height) {
         if (height > 100) {
             return 10;
@@ -46220,13 +44824,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     }
 
-    var utils = {};
+    function calculateElementHeight(el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(el.children, function (result, child) {
+            return result + child.offsetHeight;
+        }, 0);
+    }
+
+    function slideOutWrapup(el) {
+        /* Wrapup function for slideOut. */
+        el.removeAttribute('data-slider-marker');
+        el.classList.remove('collapsed');
+        el.style.overflow = "";
+        el.style.height = "";
+    }
+
+    var u = {};
 
     // Translation machinery
     // ---------------------
-    utils.__ = function (str) {
-        if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(Jed, arguments);
+    u.__ = function (str) {
+        if (_.isUndefined(window.Jed)) {
+            return str;
+        }
+        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
+            return Jed.sprintf.apply(window.Jed, arguments);
         }
         if (typeof this.jed === "undefined") {
             this.jed = new Jed(window.JSON.parse(locales[this.locale]));
@@ -46239,7 +44863,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.___ = function (str) {
+    u.___ = function (str) {
         /* XXX: This is part of a hack to get gettext to scan strings to be
          * translated. Strings we cannot send to the function above because
          * they require variable interpolation and we don't yet have the
@@ -46250,7 +44874,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return str;
     };
 
-    utils.isLocaleAvailable = function (locale, available) {
+    u.isLocaleAvailable = function (locale, available) {
         /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
          *
          * Parameters:
@@ -46266,7 +44890,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.addHyperlinks = function (text) {
+    u.addHyperlinks = function (text) {
         var list = text.match(URL_REGEX) || [];
         var links = [];
         _.each(list, function (match) {
@@ -46286,7 +44910,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return text;
     };
 
-    utils.renderImageURLs = function (obj) {
+    u.renderImageURLs = function (obj) {
         var list = obj.textContent.match(URL_REGEX) || [];
         _.forEach(list, function (url) {
             isImage(url).then(function (img) {
@@ -46300,40 +44924,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return obj;
     };
 
-    utils.slideInAllElements = function (elements) {
-        return Promise.all(_.map(elements, _.partial(utils.slideIn, _, 600)));
+    u.slideInAllElements = function (elements) {
+        return Promise.all(_.map(elements, _.partial(u.slideIn, _, 600)));
     };
 
-    utils.slideToggleElement = function (el) {
+    u.slideToggleElement = function (el) {
         if (_.includes(el.classList, 'collapsed')) {
-            return utils.slideOut(el);
+            return u.slideOut(el);
         } else {
-            return utils.slideIn(el);
+            return u.slideIn(el);
         }
     };
 
-    utils.slideOut = function (el) {
+    u.slideOut = function (el) {
         var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 900;
 
-        /* Shows/expands an element by sliding it out of itself. */
-
-        function calculateEndHeight(el) {
-            return _.reduce(el.children, function (result, child) {
-                return result + child.offsetHeight;
-            }, 0);
-        }
-
-        function wrapup(el) {
-            el.removeAttribute('data-slider-marker');
-            el.classList.remove('collapsed');
-            el.style.overflow = "";
-            el.style.height = "";
-        }
-
+        /* Shows/expands an element by sliding it out of itself
+         *
+         * Parameters:
+         *      (HTMLElement) el - The HTML string
+         *      (Number) duration - The duration amount in milliseconds
+         */
         return new Promise(function (resolve, reject) {
             if (_.isNil(el)) {
                 var err = "Undefined or null element passed into slideOut";
-                console.warn(err);
+                logger.warn(err);
                 reject(new Error(err));
                 return;
             }
@@ -46342,11 +44957,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            var end_height = calculateEndHeight(el);
-            if ($.fx.off) {
+            var end_height = calculateElementHeight(el);
+            if (window.converse_disable_effects) {
                 // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
-                wrapup(el);
+                slideOutWrapup(el);
                 resolve();
                 return;
             }
@@ -46363,9 +44978,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // We recalculate the height to work around an apparent
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
-                    el.style.height = calculateEndHeight(el) + 'px';
+                    el.style.height = calculateElementHeight(el) + 'px';
                     window.clearInterval(interval_marker);
-                    wrapup(el);
+                    slideOutWrapup(el);
                     resolve();
                 }
             }, interval);
@@ -46373,18 +44988,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    utils.slideIn = function (el) {
+    u.slideIn = function (el) {
         var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
 
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise(function (resolve, reject) {
             if (_.isNil(el)) {
                 var err = "Undefined or null element passed into slideIn";
-                console.warn(err);
+                logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
-            } else if ($.fx.off) {
+            } else if (window.converse_disable_effects) {
                 // Effects are disabled (for tests)
                 el.classList.add('collapsed');
                 el.style.height = "";
@@ -46417,11 +45032,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    utils.fadeIn = function (el, callback) {
+    u.fadeIn = function (el, callback) {
         if (_.isNil(el)) {
-            console.warn("Undefined or null element passed into fadeIn");
+            logger.warn("Undefined or null element passed into fadeIn");
         }
-        if ($.fx.off) {
+        if (window.converse_disable_effects) {
+            // Effects are disabled (for tests)
             el.classList.remove('hidden');
             if (_.isFunction(callback)) {
                 callback();
@@ -46441,11 +45057,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.isSameBareJID = function (jid1, jid2) {
+    u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
 
-    utils.isNewMessage = function (message) {
+    u.isNewMessage = function (message) {
         /* Given a stanza, determine whether it's a new
          * message, i.e. not a MAM archived one.
          */
@@ -46456,13 +45072,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.isOTRMessage = function (message) {
+    u.isOTRMessage = function (message) {
         var body = message.querySelector('body'),
             text = !_.isNull(body) ? body.textContent : undefined;
         return text && !!text.match(/^\?OTR/);
     };
 
-    utils.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
@@ -46477,7 +45093,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return false;
     };
 
-    utils.merge = function merge(first, second) {
+    u.merge = function merge(first, second) {
         /* Merge the second object into the first one.
          */
         for (var k in second) {
@@ -46489,7 +45105,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.applyUserSettings = function applyUserSettings(context, settings, user_settings) {
+    u.applyUserSettings = function applyUserSettings(context, settings, user_settings) {
         /* Configuration settings might be nested objects. We only want to
          * add settings which are whitelisted.
          */
@@ -46505,11 +45121,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.refreshWebkit = function () {
+    u.refreshWebkit = function () {
         /* This works around a webkit bug. Refreshes the browser's viewport,
          * otherwise chatboxes are not moved along when one is closed.
          */
-        if ($.browser.webkit && window.requestAnimationFrame) {
+        if (jQBrowser.webkit && window.requestAnimationFrame) {
             window.requestAnimationFrame(function () {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';
@@ -46519,34 +45135,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.webForm2xForm = function (field) {
-        /* Takes an HTML DOM and turns it into an XForm field.
-        *
-        * Parameters:
-        *      (DOMElement) field - the field to convert
-        */
-        var $input = $(field),
-            value;
-        if ($input.is('[type=checkbox]')) {
-            value = $input.is(':checked') && 1 || 0;
-        } else if ($input.is('textarea')) {
-            value = [];
-            var lines = $input.val().split('\n');
-            for (var vk = 0; vk < lines.length; vk++) {
-                var val = $.trim(lines[vk]);
-                if (val === '') continue;
-                value.push(val);
-            }
-        } else {
-            value = $input.val();
-        }
-        return $(tpl_field({
-            name: $input.attr('name'),
-            value: value
-        }))[0];
+    u.stringToDOM = function (s) {
+        /* Converts an HTML string into a DOM element.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.childNodes;
     };
 
-    utils.contains = function (attr, query) {
+    u.matchesSelector = function (el, selector) {
+        /* Checks whether the DOM element matches the given selector.
+         *
+         * Parameters:
+         *      (DOMElement) el - The DOM element
+         *      (String) selector - The selector
+         */
+        return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+    };
+
+    u.queryChildren = function (el, selector) {
+        /* Returns a list of children of the DOM element that match the
+         * selector.
+         *
+         *  Parameters:
+         *      (DOMElement) el - the DOM element
+         *      (String) selector - the selector they should be matched
+         *          against.
+         */
+        return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    };
+
+    u.contains = function (attr, query) {
         return function (item) {
             if ((typeof attr === "undefined" ? "undefined" : _typeof(attr)) === 'object') {
                 var value = false;
@@ -46562,98 +45184,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
     };
 
-    utils.xForm2webForm = function ($field, $stanza) {
-        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-        * and turns it into a HTML DOM field.
-        *
-        *  Parameters:
-        *      (XMLElement) field - the field to convert
-        */
-
-        // FIXME: take <required> into consideration
-        var options = [],
-            j,
-            $options,
-            $values,
-            value,
-            values;
-
-        if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
-            values = [];
-            $values = $field.children('value');
-            for (j = 0; j < $values.length; j++) {
-                values.push($($values[j]).text());
-            }
-            $options = $field.children('option');
-            for (j = 0; j < $options.length; j++) {
-                value = $($options[j]).find('value').text();
-                options.push(tpl_select_option({
-                    value: value,
-                    label: $($options[j]).attr('label'),
-                    selected: _.startsWith(values, value),
-                    required: $field.find('required').length
-                }));
-            }
-            return tpl_form_select({
-                name: $field.attr('var'),
-                label: $field.attr('label'),
-                options: options.join(''),
-                multiple: $field.attr('type') === 'list-multi',
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'fixed') {
-            return $('<p class="form-help">').text($field.find('value').text());
-        } else if ($field.attr('type') === 'jid-multi') {
-            return tpl_form_textarea({
-                name: $field.attr('var'),
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'boolean') {
-            return tpl_form_checkbox({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                checked: $field.find('value').text() === "1" && 'checked="1"' || '',
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') && $field.attr('var') === 'username') {
-            return tpl_form_username({
-                domain: ' @' + this.domain,
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type')) {
-            return tpl_form_input({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else {
-            if ($field.attr('var') === 'ocr') {
-                // Captcha
-                return _.reduce(_.map($field.find('uri'), $.proxy(function (uri) {
-                    return tpl_form_captcha({
-                        label: this.$field.attr('label'),
-                        name: this.$field.attr('var'),
-                        data: this.$stanza.find('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]').text(),
-                        type: uri.getAttribute('type'),
-                        required: this.$field.find('required').length
-                    });
-                }, { '$stanza': $stanza, '$field': $field })), function (memo, num) {
-                    return memo + num;
-                }, '');
-            }
-        }
-    };
-
-    utils.detectLocale = function (library_check) {
+    u.detectLocale = function (library_check) {
         /* Determine which locale is supported by the user's system as well
          * as by the relevant library (e.g. converse.js or moment.js).
          *
@@ -46663,40 +45194,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var locale, i;
         if (window.navigator.userLanguage) {
-            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
         }
         if (window.navigator.languages && !locale) {
             for (i = 0; i < window.navigator.languages.length && !locale; i++) {
-                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
             }
         }
         if (window.navigator.browserLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
         }
         if (window.navigator.language && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+            locale = u.isLocaleAvailable(window.navigator.language, library_check);
         }
         if (window.navigator.systemLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
         }
         return locale || 'en';
     };
 
-    utils.isConverseLocale = function (locale) {
+    u.isConverseLocale = function (locale) {
         if (!_.isString(locale)) {
             return false;
         }
         return _.includes(_.keys(locales || {}), locale);
     };
 
-    utils.isMomentLocale = function (locale) {
+    u.isMomentLocale = function (locale) {
         if (!_.isString(locale)) {
             return false;
         }
         return moment.locale() !== moment.locale(locale);
     };
 
-    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
@@ -46705,31 +45236,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var obj = window.JSON.parse(preferred_locale);
                 return obj.locale_data.converse[""].lang;
             } catch (e) {
-                console.log(e);
+                logger.error(e);
             }
         }
-        return utils.detectLocale(isSupportedByLibrary) || 'en';
+        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
-    utils.isOfType = function (type, item) {
+    u.isOfType = function (type, item) {
         return item.get('type') == type;
     };
 
-    utils.isInstance = function (type, item) {
+    u.isInstance = function (type, item) {
         return item instanceof type;
     };
 
-    utils.getAttribute = function (key, item) {
+    u.getAttribute = function (key, item) {
         return item.get(key);
     };
 
-    utils.contains.not = function (attr, query) {
+    u.contains.not = function (attr, query) {
         return function (item) {
-            return !utils.contains(attr, query)(item);
+            return !u.contains(attr, query)(item);
         };
     };
 
-    utils.createFragmentFromText = function (markup) {
+    u.createFragmentFromText = function (markup) {
         /* Returns a DocumentFragment containing DOM nodes based on the
          * passed-in markup text.
          */
@@ -46747,7 +45278,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return frag;
     };
 
-    utils.addEmoji = function (_converse, emojione, text) {
+    u.addEmoji = function (_converse, emojione, text) {
         if (_converse.use_emojione) {
             return emojione.toImage(text);
         } else {
@@ -46755,7 +45286,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.getEmojisByCategory = function (_converse, emojione) {
+    u.getEmojisByCategory = function (_converse, emojione) {
         /* Return a dict of emojis with the categories as keys and
          * lists of emojis in that category as values.
          */
@@ -46794,8 +45325,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return _converse.emojis_by_category;
     };
 
-    utils.getTonedEmojis = function (_converse) {
-        _converse.toned_emojis = _.uniq(_.map(_.filter(utils.getEmojisByCategory(_converse).people, function (person) {
+    u.getTonedEmojis = function (_converse) {
+        _converse.toned_emojis = _.uniq(_.map(_.filter(u.getEmojisByCategory(_converse).people, function (person) {
             return _.includes(person._shortname, '_tone');
         }), function (person) {
             return person._shortname.replace(/_tone[1-5]/, '');
@@ -46803,11 +45334,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return _converse.toned_emojis;
     };
 
-    utils.isPersistableModel = function (model) {
+    u.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
     };
 
-    utils.getWrappedPromise = function () {
+    u.getWrappedPromise = function () {
         var wrapper = {};
         wrapper.promise = new Promise(function (resolve, reject) {
             wrapper.resolve = resolve;
@@ -46816,14 +45347,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return wrapper;
     };
 
-    utils.safeSave = function (model, attributes) {
-        if (utils.isPersistableModel(model)) {
+    u.safeSave = function (model, attributes) {
+        if (u.isPersistableModel(model)) {
             model.save(attributes);
         } else {
             model.set(attributes);
         }
     };
-    return utils;
+    return u;
 });
 //# sourceMappingURL=utils.js.map;
 (function (global, factory) {
@@ -47108,8 +45639,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 });
 
-//# sourceMappingURL=pluggable.js.map
-;
+//# sourceMappingURL=pluggable.js.map;
 /*global define */
 define('underscore',['lodash'], function (_) {
     return _.noConflict();
@@ -49411,16 +47941,13 @@ return Backbone.BrowserStorage;
 //
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.converter", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
-})(undefined, function (sizzle, Promise, _, lodashConverter, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
+})(undefined, function (sizzle, Promise, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
-
-    // Create the FP (functional programming) version of lodash
-    var fp = lodashConverter(_.runInContext());
 
     // Strophe globals
     var _Strophe = Strophe,
@@ -49449,7 +47976,7 @@ return Backbone.BrowserStorage;
 
     _.extend(_converse, Backbone.Events);
 
-    _converse.core_plugins = ['converse-bookmarks', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
+    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
@@ -49494,18 +48021,18 @@ return Backbone.BrowserStorage;
         9: 'REDIRECT'
     };
 
-    var DEFAULT_IMAGE_TYPE = 'image/png';
-    var DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
+    _converse.DEFAULT_IMAGE_TYPE = 'image/png';
+    _converse.DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
 
     _converse.log = function (message, level) {
         if (message instanceof Error) {
             message = message.stack;
         }
-        var logger = _.assignIn({
-            'debug': _.noop,
-            'error': _.noop,
-            'info': _.noop,
-            'warn': _.noop
+        var logger = _.assign({
+            'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
         }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
@@ -49517,7 +48044,7 @@ return Backbone.BrowserStorage;
             logger.warn("WARNING: " + message);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.error("FATAL: " + message);
+                logger.trace("FATAL: " + message);
             } else {
                 logger.error("FATAL: " + message);
             }
@@ -49530,7 +48057,7 @@ return Backbone.BrowserStorage;
         }
     };
 
-    var PROMISES = ['cachedRoster', 'chatBoxesFetched', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
+    var PROMISES = ['initialized', 'cachedRoster', 'connectionInitialized', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
 
     function addPromise(promise) {
         /* Private function, used to add a new promise to the ones already
@@ -49558,10 +48085,11 @@ return Backbone.BrowserStorage;
 
         _.each(PROMISES, addPromise);
 
-        if (!_.isUndefined(_converse.chatboxes)) {
+        if (!_.isUndefined(_converse.connection)) {
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
@@ -49652,7 +48180,6 @@ return Backbone.BrowserStorage;
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locked_domain: undefined,
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -49699,12 +48226,6 @@ return Backbone.BrowserStorage;
 
         // Module-level functions
         // ----------------------
-        this.getViewForChatBox = function (chatbox) {
-            if (!chatbox) {
-                return;
-            }
-            return _converse.chatboxviews.get(chatbox.get('id'));
-        };
 
         this.generateResource = function () {
             return "/converse.js-" + Math.floor(Math.random() * 139749825).toString();
@@ -49830,7 +48351,6 @@ return Backbone.BrowserStorage;
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
             _converse._tearDown();
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
         };
 
@@ -49905,7 +48425,7 @@ return Backbone.BrowserStorage;
                 _converse.setDisconnectionCause(status, condition, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
-                _converse.giveFeedback(__('Connection failed'), 'error', __("An error occurred while connecting to the chat server: " + condition));
+                _converse.giveFeedback(__('Connection failed'), 'error', __('An error occurred while connecting to the chat server: ' + condition));
                 _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 _converse.setDisconnectionCause(status, condition);
@@ -49945,11 +48465,11 @@ return Backbone.BrowserStorage;
         };
 
         this.initSession = function () {
-            this.session = new Backbone.Model();
+            _converse.session = new Backbone.Model();
             var id = b64_sha1('converse.bosh-session');
-            this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-            this.session.fetch();
+            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.fetch();
         };
 
         this.clearSession = function () {
@@ -49962,9 +48482,7 @@ return Backbone.BrowserStorage;
         };
 
         this.logOut = function () {
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.clearSession();
-
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
@@ -50111,10 +48629,7 @@ return Backbone.BrowserStorage;
                 _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
-            // First set up chat boxes, before populating the roster, so that
-            // the controlbox is properly set up and ready for the rosterview.
             _converse.roster.onConnected();
-            _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
             _converse.giveFeedback(__('Contacts'));
@@ -50152,7 +48667,6 @@ return Backbone.BrowserStorage;
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                _converse.chatboxviews.closeAllChatBoxes();
                 _converse.initStatus().then(_.partial(_converse.onStatusInitialized, false), _.partial(_converse.onStatusInitialized, false)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 _converse.emit('connected');
             }
@@ -50165,8 +48679,8 @@ return Backbone.BrowserStorage;
                 'chat_state': undefined,
                 'chat_status': 'offline',
                 'groups': [],
-                'image': DEFAULT_IMAGE,
-                'image_type': DEFAULT_IMAGE_TYPE,
+                'image': _converse.DEFAULT_IMAGE,
+                'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
                 'status': ''
             },
@@ -50478,7 +48992,7 @@ return Backbone.BrowserStorage;
                         }, attributes), { sort: false });
                         resolve(contact);
                     }, function (err) {
-                        alert(__("Sorry, there was an error while trying to add " + name + " as a contact."));
+                        alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
                         _converse.log(err, Strophe.LogLevel.ERROR);
                         resolve(err);
                     });
@@ -50815,256 +49329,19 @@ return Backbone.BrowserStorage;
             }
         });
 
-        this.ChatBoxes = Backbone.Collection.extend({
-            comparator: 'time_opened',
-
-            model: function model(attrs, options) {
-                return new _converse.ChatBox(attrs, options);
-            },
-            registerMessageHandler: function registerMessageHandler() {
-                _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
-            },
-            chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-                return true;
-            },
-            onChatBoxesFetched: function onChatBoxesFetched(collection) {
-                var _this8 = this;
-
-                /* Show chat boxes upon receiving them from sessionStorage
-                 *
-                 * This method gets overridden entirely in src/converse-controlbox.js
-                 * if the controlbox plugin is active.
-                 */
-                collection.each(function (chatbox) {
-                    if (_this8.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show');
-                    }
-                });
-                _converse.emit('chatBoxesFetched');
-            },
-            onConnected: function onConnected() {
-                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-" + _converse.bare_jid));
-                this.registerMessageHandler();
-                this.fetch({
-                    add: true,
-                    success: this.onChatBoxesFetched.bind(this)
-                });
-            },
-            onErrorMessage: function onErrorMessage(message) {
-                /* Handler method for all incoming error message stanzas
-                 */
-                // TODO: we can likely just reuse "onMessage" below
-                var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-                    return true;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                var chatbox = this.getChatBox(from_jid);
-                if (!chatbox) {
-                    return true;
-                }
-                chatbox.createMessage(message, null, message);
-                return true;
-            },
-            onMessage: function onMessage(message) {
-                /* Handler method for all incoming single-user chat "message"
-                 * stanzas.
-                 */
-                var contact_jid = void 0,
-                    delay = void 0,
-                    resource = void 0,
-                    from_jid = message.getAttribute('from'),
-                    to_jid = message.getAttribute('to');
-
-                var original_stanza = message,
-                    to_resource = Strophe.getResourceFromJid(to_jid),
-                    is_carbon = !_.isNull(message.querySelector("received[xmlns=\"" + Strophe.NS.CARBONS + "\"]"));
-
-                if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
-                    _converse.log("onMessage: Ignoring incoming message intended for a different resource: " + to_jid, Strophe.LogLevel.INFO);
-                    return true;
-                } else if (utils.isHeadlineMessage(message)) {
-                    // XXX: Ideally we wouldn't have to check for headline
-                    // messages, but Prosody sends headline messages with the
-                    // wrong type ('chat'), so we need to filter them out here.
-                    _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: " + from_jid, Strophe.LogLevel.INFO);
-                    return true;
-                }
-                var forwarded = message.querySelector('forwarded');
-                if (!_.isNull(forwarded)) {
-                    var forwarded_message = forwarded.querySelector('message');
-                    var forwarded_from = forwarded_message.getAttribute('from');
-                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-                        // Prevent message forging via carbons
-                        //
-                        // https://xmpp.org/extensions/xep-0280.html#security
-                        return true;
-                    }
-                    message = forwarded_message;
-                    delay = forwarded.querySelector('delay');
-                    from_jid = message.getAttribute('from');
-                    to_jid = message.getAttribute('to');
-                }
-
-                var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                    from_resource = Strophe.getResourceFromJid(from_jid),
-                    is_me = from_bare_jid === _converse.bare_jid;
-
-                if (is_me) {
-                    // I am the sender, so this must be a forwarded message...
-                    contact_jid = Strophe.getBareJidFromJid(to_jid);
-                    resource = Strophe.getResourceFromJid(to_jid);
-                } else {
-                    contact_jid = from_bare_jid;
-                    resource = from_resource;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                    msgid = message.getAttribute('id');
-
-                if (chatbox) {
-                    var messages = msgid && chatbox.messages.findWhere({ msgid: msgid }) || [];
-                    if (_.isEmpty(messages)) {
-                        // Only create the message when we're sure it's not a
-                        // duplicate
-                        chatbox.incrementUnreadMsgCounter(original_stanza);
-                        chatbox.createMessage(message, delay, original_stanza);
-                    }
-                }
-                _converse.emit('message', { 'stanza': original_stanza, 'chatbox': chatbox });
-                return true;
-            },
-            createChatBox: function createChatBox(jid, attrs) {
-                /* Creates a chat box
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user for whom a chat box
-                 *      gets created.
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                var bare_jid = Strophe.getBareJidFromJid(jid),
-                    roster_item = _converse.roster.get(bare_jid);
-                var roster_info = {};
-
-                if (!_.isUndefined(roster_item)) {
-                    roster_info = {
-                        'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url')
-                    };
-                } else if (!_converse.allow_non_roster_messaging) {
-                    _converse.log("Could not get roster item for JID " + bare_jid + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
-                    return;
-                }
-                return this.create(_.assignIn({
-                    'id': bare_jid,
-                    'jid': bare_jid,
-                    'fullname': jid,
-                    'image_type': DEFAULT_IMAGE_TYPE,
-                    'image': DEFAULT_IMAGE,
-                    'url': ''
-                }, roster_info, attrs || {}));
-            },
-            getChatBox: function getChatBox(jid, create, attrs) {
-                /* Returns a chat box or optionally return a newly
-                 * created one if one doesn't exist.
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user whose chat box we want
-                 *    (Boolean) create - Should a new chat box be created if none exists?
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                jid = jid.toLowerCase();
-                var chatbox = this.get(Strophe.getBareJidFromJid(jid));
-                if (!chatbox && create) {
-                    chatbox = this.createChatBox(jid, attrs);
-                }
-                return chatbox;
-            }
-        });
-
-        this.ChatBoxViews = Backbone.Overview.extend({
-            initialize: function initialize() {
-                this.model.on("add", this.onChatBoxAdded, this);
-                this.model.on("destroy", this.removeChat, this);
-            },
-            _ensureElement: function _ensureElement() {
-                /* Override method from backbone.js
-                 * If the #conversejs element doesn't exist, create it.
-                 */
-                if (!this.el) {
-                    var el = document.querySelector('#conversejs');
-                    if (_.isNull(el)) {
-                        el = document.createElement('div');
-                        el.setAttribute('id', 'conversejs');
-                        // Converse.js expects a <body> tag to be present.
-                        document.querySelector('body').appendChild(el);
-                    }
-                    el.innerHTML = '';
-                    this.setElement(el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
-            },
-            onChatBoxAdded: function onChatBoxAdded(item) {
-                // Views aren't created here, since the core code doesn't
-                // contain any views. Instead, they're created in overrides in
-                // plugins, such as in converse-chatview.js and converse-muc.js
-                return this.get(item.get('id'));
-            },
-            removeChat: function removeChat(item) {
-                this.remove(item.get('id'));
-            },
-            closeAllChatBoxes: function closeAllChatBoxes() {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
-                this.each(function (view) {
-                    view.close();
-                });
-                return this;
-            },
-            chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
-            },
-            getChatBox: function getChatBox(attrs, create) {
-                var chatbox = this.model.get(attrs.jid);
-                if (!chatbox && create) {
-                    chatbox = this.model.create(attrs, {
-                        'error': function error(model, response) {
-                            _converse.log(response.responseText);
-                        }
-                    });
-                }
-                return chatbox;
-            },
-            showChat: function showChat(attrs) {
-                /* Find the chat box and show it (if it may be shown).
-                 * If it doesn't exist, create it.
-                 */
-                var chatbox = this.getChatBox(attrs, true);
-                if (this.chatBoxMayBeShown(chatbox)) {
-                    chatbox.trigger('show', true);
-                }
-                return chatbox;
-            }
-        });
-
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function initialize() {
-                var _this9 = this;
+                var _this8 = this;
 
                 this.set({
                     'status': this.getStatus()
                 });
                 this.on('change', function (item) {
                     if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', _this9.get('status'));
+                        _converse.emit('statusChanged', _this8.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', _this9.get('status_message'));
+                        _converse.emit('statusMessageChanged', _this8.get('status_message'));
                     }
                 });
             },
@@ -51147,7 +49424,7 @@ return Backbone.BrowserStorage;
                 };
                 xhr.onerror = function () {
                     delete _converse.connection;
-                    _converse.emit('noResumeableSession');
+                    _converse.emit('noResumeableSession', this);
                     reject(xhr.responseText);
                 };
                 xhr.send();
@@ -51168,7 +49445,7 @@ return Backbone.BrowserStorage;
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.emit('noResumeableSession');
+                _converse.emit('noResumeableSession', this);
             };
             xhr.send();
         };
@@ -51187,7 +49464,7 @@ return Backbone.BrowserStorage;
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
                 return true;
             } catch (e) {
-                this.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message);
+                _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 return false;
             }
@@ -51288,19 +49565,19 @@ return Backbone.BrowserStorage;
         };
 
         this.initConnection = function () {
-            if (this.connection) {
-                return;
+            if (!this.connection) {
+                if (!this.bosh_service_url && !this.websocket_url) {
+                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                }
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                    this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+                } else if (this.bosh_service_url) {
+                    this.connection = new Strophe.Connection(this.bosh_service_url, _.assignIn(this.connection_options, { 'keepalive': this.keepalive }));
+                } else {
+                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                }
             }
-            if (!this.bosh_service_url && !this.websocket_url) {
-                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-            }
-            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-            } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(this.bosh_service_url, _.assignIn(this.connection_options, { 'keepalive': this.keepalive }));
-            } else {
-                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-            }
+            _converse.emit('connectionInitialized');
         };
 
         this._tearDown = function () {
@@ -51308,13 +49585,13 @@ return Backbone.BrowserStorage;
              * connection.
              */
             _converse.emit('beforeTearDown');
-            this.unregisterPresenceHandler();
-            if (this.roster) {
-                this.roster.off().reset(); // Removes roster contacts
+            _converse.unregisterPresenceHandler();
+            if (_converse.roster) {
+                _converse.roster.off().reset(); // Removes roster contacts
             }
-            this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-            delete this.chatboxes.browserStorage;
-            this.session.destroy();
+            if (!_.isUndefined(_converse.session)) {
+                _converse.session.destroy();
+            }
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -51322,12 +49599,7 @@ return Backbone.BrowserStorage;
             window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
-            return this;
-        };
-
-        this.initChatBoxes = function () {
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxviews = new this.ChatBoxViews({ model: this.chatboxes });
+            return _converse;
         };
 
         this.initPlugins = function () {
@@ -51358,7 +49630,6 @@ return Backbone.BrowserStorage;
             this.connection = settings.connection;
         }
         _converse.initPlugins();
-        _converse.initChatBoxes();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();
@@ -51473,35 +49744,6 @@ return Backbone.BrowserStorage;
                 _converse.roster.addAndSubscribe(jid, _.isEmpty(name) ? jid : name);
             }
         },
-        'chats': {
-            'open': function open(jids, attrs) {
-                if (_.isUndefined(jids)) {
-                    _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                    return null;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids, true, attrs).trigger('show'));
-                }
-                return _.map(jids, function (jid) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
-                });
-            },
-            'get': function get(jids) {
-                if (_.isUndefined(jids)) {
-                    var result = [];
-                    _converse.chatboxes.each(function (chatbox) {
-                        // FIXME: Leaky abstraction from MUC. We need to add a
-                        // base type for chat boxes, and check for that.
-                        if (chatbox.get('type') !== 'chatroom') {
-                            result.push(_converse.getViewForChatBox(chatbox));
-                        }
-                    });
-                    return result;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-                }
-                return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
-            }
-        },
         'tokens': {
             'get': function get(id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
@@ -51566,7 +49808,6 @@ return Backbone.BrowserStorage;
             'Strophe': Strophe,
             '_': _,
             'b64_sha1': b64_sha1,
-            'fp': fp,
             'moment': moment,
             'sizzle': sizzle,
             'utils': utils
@@ -51574,6 +49815,370 @@ return Backbone.BrowserStorage;
     };
 });
 //# sourceMappingURL=converse-core.js.map;
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('converse-chatboxes',["converse-core"], factory);
+})(undefined, function (converse) {
+    "use strict";
+
+    var _converse$env = converse.env,
+        Backbone = _converse$env.Backbone,
+        Strophe = _converse$env.Strophe,
+        b64_sha1 = _converse$env.b64_sha1,
+        utils = _converse$env.utils,
+        _ = _converse$env._;
+
+
+    converse.plugins.add('converse-chatboxes', {
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+
+            disconnect: function disconnect() {
+                var _converse = this.__super__._converse;
+
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.disconnect.apply(this, arguments);
+            },
+
+            logOut: function logOut() {
+                var _converse = this.__super__._converse;
+
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.logOut.apply(this, arguments);
+            },
+
+            initStatus: function initStatus() {
+                var _converse = this.__super__._converse;
+
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.initStatus.apply(this, arguments);
+            },
+
+            onStatusInitialized: function onStatusInitialized() {
+                var _converse = this.__super__._converse;
+
+                _converse.chatboxes.onConnected();
+                return this.__super__.onStatusInitialized.apply(this, arguments);
+            }
+        },
+
+        initialize: function initialize() {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            var _converse = this._converse;
+
+
+            _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
+
+            _converse.ChatBoxes = Backbone.Collection.extend({
+                comparator: 'time_opened',
+
+                model: function model(attrs, options) {
+                    return new _converse.ChatBox(attrs, options);
+                },
+                registerMessageHandler: function registerMessageHandler() {
+                    _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
+                    _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+                },
+                chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+                    return true;
+                },
+                onChatBoxesFetched: function onChatBoxesFetched(collection) {
+                    var _this = this;
+
+                    /* Show chat boxes upon receiving them from sessionStorage
+                    *
+                    * This method gets overridden entirely in src/converse-controlbox.js
+                    * if the controlbox plugin is active.
+                    */
+                    collection.each(function (chatbox) {
+                        if (_this.chatBoxMayBeShown(chatbox)) {
+                            chatbox.trigger('show');
+                        }
+                    });
+                    _converse.emit('chatBoxesFetched');
+                },
+                onConnected: function onConnected() {
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-" + _converse.bare_jid));
+                    this.registerMessageHandler();
+                    this.fetch({
+                        add: true,
+                        success: this.onChatBoxesFetched.bind(this)
+                    });
+                },
+                onErrorMessage: function onErrorMessage(message) {
+                    /* Handler method for all incoming error message stanzas
+                    */
+                    // TODO: we can likely just reuse "onMessage" below
+                    var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
+                        return true;
+                    }
+                    // Get chat box, but only create a new one when the message has a body.
+                    var chatbox = this.getChatBox(from_jid);
+                    if (!chatbox) {
+                        return true;
+                    }
+                    chatbox.createMessage(message, null, message);
+                    return true;
+                },
+                onMessage: function onMessage(message) {
+                    /* Handler method for all incoming single-user chat "message"
+                    * stanzas.
+                    */
+                    var contact_jid = void 0,
+                        delay = void 0,
+                        resource = void 0,
+                        from_jid = message.getAttribute('from'),
+                        to_jid = message.getAttribute('to');
+
+                    var original_stanza = message,
+                        to_resource = Strophe.getResourceFromJid(to_jid),
+                        is_carbon = !_.isNull(message.querySelector("received[xmlns=\"" + Strophe.NS.CARBONS + "\"]"));
+
+                    if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
+                        _converse.log("onMessage: Ignoring incoming message intended for a different resource: " + to_jid, Strophe.LogLevel.INFO);
+                        return true;
+                    } else if (utils.isHeadlineMessage(message)) {
+                        // XXX: Ideally we wouldn't have to check for headline
+                        // messages, but Prosody sends headline messages with the
+                        // wrong type ('chat'), so we need to filter them out here.
+                        _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: " + from_jid, Strophe.LogLevel.INFO);
+                        return true;
+                    }
+                    var forwarded = message.querySelector('forwarded');
+                    if (!_.isNull(forwarded)) {
+                        var forwarded_message = forwarded.querySelector('message');
+                        var forwarded_from = forwarded_message.getAttribute('from');
+                        if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                            // Prevent message forging via carbons
+                            //
+                            // https://xmpp.org/extensions/xep-0280.html#security
+                            return true;
+                        }
+                        message = forwarded_message;
+                        delay = forwarded.querySelector('delay');
+                        from_jid = message.getAttribute('from');
+                        to_jid = message.getAttribute('to');
+                    }
+
+                    var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+                        from_resource = Strophe.getResourceFromJid(from_jid),
+                        is_me = from_bare_jid === _converse.bare_jid;
+
+                    if (is_me) {
+                        // I am the sender, so this must be a forwarded message...
+                        contact_jid = Strophe.getBareJidFromJid(to_jid);
+                        resource = Strophe.getResourceFromJid(to_jid);
+                    } else {
+                        contact_jid = from_bare_jid;
+                        resource = from_resource;
+                    }
+                    // Get chat box, but only create a new one when the message has a body.
+                    var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
+                        msgid = message.getAttribute('id');
+
+                    if (chatbox) {
+                        var messages = msgid && chatbox.messages.findWhere({ msgid: msgid }) || [];
+                        if (_.isEmpty(messages)) {
+                            // Only create the message when we're sure it's not a
+                            // duplicate
+                            chatbox.incrementUnreadMsgCounter(original_stanza);
+                            chatbox.createMessage(message, delay, original_stanza);
+                        }
+                    }
+                    _converse.emit('message', { 'stanza': original_stanza, 'chatbox': chatbox });
+                    return true;
+                },
+                createChatBox: function createChatBox(jid, attrs) {
+                    /* Creates a chat box
+                    *
+                    * Parameters:
+                    *    (String) jid - The JID of the user for whom a chat box
+                    *      gets created.
+                    *    (Object) attrs - Optional chat box atributes.
+                    */
+                    var bare_jid = Strophe.getBareJidFromJid(jid),
+                        roster_item = _converse.roster.get(bare_jid);
+                    var roster_info = {};
+
+                    if (!_.isUndefined(roster_item)) {
+                        roster_info = {
+                            'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url')
+                        };
+                    } else if (!_converse.allow_non_roster_messaging) {
+                        _converse.log("Could not get roster item for JID " + bare_jid + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
+                        return;
+                    }
+                    return this.create(_.assignIn({
+                        'id': bare_jid,
+                        'jid': bare_jid,
+                        'fullname': jid,
+                        'image_type': _converse.DEFAULT_IMAGE_TYPE,
+                        'image': _converse.DEFAULT_IMAGE,
+                        'url': ''
+                    }, roster_info, attrs || {}));
+                },
+                getChatBox: function getChatBox(jid, create, attrs) {
+                    /* Returns a chat box or optionally return a newly
+                    * created one if one doesn't exist.
+                    *
+                    * Parameters:
+                    *    (String) jid - The JID of the user whose chat box we want
+                    *    (Boolean) create - Should a new chat box be created if none exists?
+                    *    (Object) attrs - Optional chat box atributes.
+                    */
+                    jid = jid.toLowerCase();
+                    var chatbox = this.get(Strophe.getBareJidFromJid(jid));
+                    if (!chatbox && create) {
+                        chatbox = this.createChatBox(jid, attrs);
+                    }
+                    return chatbox;
+                }
+            });
+
+            _converse.ChatBoxViews = Backbone.Overview.extend({
+                initialize: function initialize() {
+                    this.model.on("add", this.onChatBoxAdded, this);
+                    this.model.on("destroy", this.removeChat, this);
+                },
+                _ensureElement: function _ensureElement() {
+                    /* Override method from backbone.js
+                    * If the #conversejs element doesn't exist, create it.
+                    */
+                    if (!this.el) {
+                        var el = document.querySelector('#conversejs');
+                        if (_.isNull(el)) {
+                            el = document.createElement('div');
+                            el.setAttribute('id', 'conversejs');
+                            // Converse.js expects a <body> tag to be present.
+                            document.querySelector('body').appendChild(el);
+                        }
+                        el.innerHTML = '';
+                        this.setElement(el, false);
+                    } else {
+                        this.setElement(_.result(this, 'el'), false);
+                    }
+                },
+                onChatBoxAdded: function onChatBoxAdded(item) {
+                    // Views aren't created here, since the core code doesn't
+                    // contain any views. Instead, they're created in overrides in
+                    // plugins, such as in converse-chatview.js and converse-muc.js
+                    return this.get(item.get('id'));
+                },
+                removeChat: function removeChat(item) {
+                    this.remove(item.get('id'));
+                },
+                closeAllChatBoxes: function closeAllChatBoxes() {
+                    /* This method gets overridden in src/converse-controlbox.js if
+                    * the controlbox plugin is active.
+                    */
+                    this.each(function (view) {
+                        view.close();
+                    });
+                    return this;
+                },
+                chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+                    return this.model.chatBoxMayBeShown(chatbox);
+                },
+                getChatBox: function getChatBox(attrs, create) {
+                    var chatbox = this.model.get(attrs.jid);
+                    if (!chatbox && create) {
+                        chatbox = this.model.create(attrs, {
+                            'error': function error(model, response) {
+                                _converse.log(response.responseText);
+                            }
+                        });
+                    }
+                    return chatbox;
+                },
+                showChat: function showChat(attrs) {
+                    /* Find the chat box and show it (if it may be shown).
+                    * If it doesn't exist, create it.
+                    */
+                    var chatbox = this.getChatBox(attrs, true);
+                    if (this.chatBoxMayBeShown(chatbox)) {
+                        chatbox.trigger('show', true);
+                    }
+                    return chatbox;
+                }
+            });
+
+            // BEGIN: Event handlers
+            _converse.api.listen.on('pluginsInitialized', function () {
+                _converse.chatboxes = new _converse.ChatBoxes();
+                _converse.chatboxviews = new _converse.ChatBoxViews({
+                    'model': _converse.chatboxes
+                });
+                _converse.emit('chatBoxesInitialized');
+            });
+
+            _converse.api.listen.on('beforeTearDown', function () {
+                _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+                delete _converse.chatboxes.browserStorage;
+            });
+            // END: Event handlers
+
+            _converse.getViewForChatBox = function (chatbox) {
+                if (!chatbox) {
+                    return;
+                }
+                return _converse.chatboxviews.get(chatbox.get('id'));
+            };
+
+            /* We extend the default converse.js API */
+            _.extend(_converse.api, {
+                'chats': {
+                    'open': function open(jids, attrs) {
+                        if (_.isUndefined(jids)) {
+                            _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+                            return null;
+                        } else if (_.isString(jids)) {
+                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids, true, attrs).trigger('show'));
+                        }
+                        return _.map(jids, function (jid) {
+                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
+                        });
+                    },
+                    'get': function get(jids) {
+                        if (_.isUndefined(jids)) {
+                            var result = [];
+                            _converse.chatboxes.each(function (chatbox) {
+                                // FIXME: Leaky abstraction from MUC. We need to add a
+                                // base type for chat boxes, and check for that.
+                                if (chatbox.get('type') !== 'chatroom') {
+                                    result.push(_converse.getViewForChatBox(chatbox));
+                                }
+                            });
+                            return result;
+                        } else if (_.isString(jids)) {
+                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
+                        }
+                        return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
+                    }
+                }
+            });
+        }
+    });
+    return converse;
+});
+//# sourceMappingURL=converse-chatboxes.js.map;
 /* jshint maxerr: 10000 */
 /* jslint unused: true */
 /* jshint shadow: true */
@@ -53730,6 +52335,165 @@ define("xss", (function (global) {
     };
 }(this)));
 
+/* Lo-Dash Template Loader v1.0.1
+ * Copyright 2015, Tim Branyen (@tbranyen).
+ * loader.js may be freely distributed under the MIT license.
+ */
+(function(global) {
+"use strict";
+
+// Cache used to map configuration options between load and write.
+var buildMap = {};
+
+// Alias the correct `nodeRequire` method.
+var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
+
+// Strips trailing `/` from url fragments.
+var stripTrailing = function(prop) {
+  return prop.replace(/(\/$)/, '');
+};
+
+// Define the plugin using the CommonJS syntax.
+define('tpl',['require','exports','module','lodash'],function(require, exports) {
+  var _ = require("lodash");
+
+  exports.version = "1.0.1";
+
+  // Invoked by the AMD builder, passed the path to resolve, the require
+  // function, done callback, and the configuration options.
+  exports.load = function(name, req, load, config) {
+    var isDojo;
+
+    // Dojo provides access to the config object through the req function.
+    if (!config) {
+      config = require.rawConfig;
+      isDojo = true;
+    }
+
+    var contents = "";
+    var settings = configure(config);
+
+    // If the baseUrl and root are the same, just null out the root.
+    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
+      settings.root = '';
+    }
+
+    var url = require.toUrl(settings.root + name + settings.ext);
+
+    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
+      url = stripTrailing(config.baseUrl) + url;
+    }
+
+    // Builds with r.js require Node.js to be installed.
+    if (config.isBuild) {
+      // If in Node, get access to the filesystem.
+      var fs = nodeRequire("fs");
+
+      try {
+        // First try reading the filepath as-is.
+        contents = String(fs.readFileSync(url));
+      } catch(ex) {
+        // If it failed, it's most likely because of a leading `/` and not an
+        // absolute path.  Remove the leading slash and try again.
+        if (url.slice(0, 1) === "/") {
+          url = url.slice(1);
+        }
+
+        // Try reading again with the leading `/`.
+        contents = String(fs.readFileSync(url));
+      }
+
+      // Read in the file synchronously, as RequireJS expects, and return the
+      // contents.  Process as a Lo-Dash template.
+      buildMap[name] = _.template(contents);
+
+      return load();
+    }
+
+    // Create a basic XHR.
+    var xhr = new XMLHttpRequest();
+
+    // Wait for it to load.
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var templateSettings = _.clone(settings.templateSettings);
+
+        // Attach the sourceURL.
+        templateSettings.sourceURL = url;
+
+        // Process as a Lo-Dash template and cache.
+        buildMap[name] = _.template(xhr.responseText, templateSettings);
+
+        // Return the compiled template.
+        load(buildMap[name]);
+      }
+    };
+
+    // Initiate the fetch.
+    xhr.open("GET", url, true);
+    xhr.send(null);
+  };
+
+  // Also invoked by the AMD builder, this writes out a compatible define
+  // call that will work with loaders such as almond.js that cannot read
+  // the configuration data.
+  exports.write = function(pluginName, moduleName, write) {
+    var template = buildMap[moduleName].source;
+
+    // Write out the actual definition
+    write(strDefine(pluginName, moduleName, template));
+  };
+
+  // This is for curl.js/cram.js build-time support.
+  exports.compile = function(pluginName, moduleName, req, io, config) {
+    configure(config);
+
+    // Ask cram to fetch the template file (resId) and pass it to `write`.
+    io.read(moduleName, write, io.error);
+
+    function write(template) {
+      // Write-out define(id,function(){return{/* template */}});
+      io.write(strDefine(pluginName, moduleName, template));
+    }
+  };
+
+  // Crafts the written definition form of the module during a build.
+  function strDefine(pluginName, moduleName, template) {
+    return [
+      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
+        [
+          "function(_) {",
+            "return ", template, ";",
+          "}"
+        ].join(""),
+      ");\n"
+    ].join("");
+  }
+
+  function configure(config) {
+    // Default settings point to the project root and using html files.
+    var settings = _.extend({
+      ext: ".html",
+      root: config.baseUrl,
+      templateSettings: {}
+    }, config.lodashLoader);
+
+    // Ensure the root has been properly configured with a trailing slash,
+    // unless it's an empty string or undefined, in which case work off the
+    // baseUrl.
+    if (settings.root && settings.root.slice(-1) !== "/") {
+      settings.root += "/";
+    }
+
+    // Set the custom passed in template settings.
+    _.extend(_.templateSettings, settings.templateSettings);
+
+    return settings;
+  }
+});
+
+})(typeof global === "object" ? global : this);
+
 
 define('tpl!chatbox', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -53987,8 +52751,8 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-chatview',["jquery.noconflict", "converse-core", "emojione", "xss", "tpl!chatbox", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!avatar", "tpl!spinner"], factory);
-})(undefined, function ($, converse, emojione, xss, tpl_chatbox, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_avatar, tpl_spinner) {
+    define('converse-chatview',["jquery.noconflict", "converse-core", "converse-chatboxes", "emojione", "xss", "tpl!chatbox", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!avatar", "tpl!spinner"], factory);
+})(undefined, function ($, converse, dummy, emojione, xss, tpl_chatbox, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_avatar, tpl_spinner) {
     "use strict";
 
     var _converse$env = converse.env,
@@ -54239,8 +53003,9 @@ return __p
                     return this;
                 },
                 insertIntoDOM: function insertIntoDOM() {
-                    /* This method gets overridden in src/converse-controlbox.js if
-                     * the controlbox plugin is active.
+                    /* This method gets overridden in src/converse-controlbox.js
+                     * as well as src/converse-muc.js (if those plugins are
+                     * enabled).
                      */
                     var container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
@@ -54884,6 +53649,1055 @@ return __p
     return converse;
 });
 //# sourceMappingURL=converse-chatview.js.map;
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define('lodash.converter',[], factory);
+	else if(typeof exports === 'object')
+		exports["fp"] = factory();
+	else
+		root["fp"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseConvert = __webpack_require__(1);
+
+	/**
+	 * Converts `lodash` to an immutable auto-curried iteratee-first data-last
+	 * version with conversion `options` applied.
+	 *
+	 * @param {Function} lodash The lodash function to convert.
+	 * @param {Object} [options] The options object. See `baseConvert` for more details.
+	 * @returns {Function} Returns the converted `lodash`.
+	 */
+	function browserConvert(lodash, options) {
+	  return baseConvert(lodash, lodash, options);
+	}
+
+	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
+      // XXX: Customization in order to be able to run both _ and fp in the
+      // non-AMD usecase.
+	  fp = browserConvert(_.runInContext());
+	}
+	module.exports = browserConvert;
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var mapping = __webpack_require__(2),
+	    fallbackHolder = __webpack_require__(3);
+
+	/** Built-in value reference. */
+	var push = Array.prototype.push;
+
+	/**
+	 * Creates a function, with an arity of `n`, that invokes `func` with the
+	 * arguments it receives.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {number} n The arity of the new function.
+	 * @returns {Function} Returns the new function.
+	 */
+	function baseArity(func, n) {
+	  return n == 2
+	    ? function(a, b) { return func.apply(undefined, arguments); }
+	    : function(a) { return func.apply(undefined, arguments); };
+	}
+
+	/**
+	 * Creates a function that invokes `func`, with up to `n` arguments, ignoring
+	 * any additional arguments.
+	 *
+	 * @private
+	 * @param {Function} func The function to cap arguments for.
+	 * @param {number} n The arity cap.
+	 * @returns {Function} Returns the new function.
+	 */
+	function baseAry(func, n) {
+	  return n == 2
+	    ? function(a, b) { return func(a, b); }
+	    : function(a) { return func(a); };
+	}
+
+	/**
+	 * Creates a clone of `array`.
+	 *
+	 * @private
+	 * @param {Array} array The array to clone.
+	 * @returns {Array} Returns the cloned array.
+	 */
+	function cloneArray(array) {
+	  var length = array ? array.length : 0,
+	      result = Array(length);
+
+	  while (length--) {
+	    result[length] = array[length];
+	  }
+	  return result;
+	}
+
+	/**
+	 * Creates a function that clones a given object using the assignment `func`.
+	 *
+	 * @private
+	 * @param {Function} func The assignment function.
+	 * @returns {Function} Returns the new cloner function.
+	 */
+	function createCloner(func) {
+	  return function(object) {
+	    return func({}, object);
+	  };
+	}
+
+	/**
+	 * A specialized version of `_.spread` which flattens the spread array into
+	 * the arguments of the invoked `func`.
+	 *
+	 * @private
+	 * @param {Function} func The function to spread arguments over.
+	 * @param {number} start The start position of the spread.
+	 * @returns {Function} Returns the new function.
+	 */
+	function flatSpread(func, start) {
+	  return function() {
+	    var length = arguments.length,
+	        lastIndex = length - 1,
+	        args = Array(length);
+
+	    while (length--) {
+	      args[length] = arguments[length];
+	    }
+	    var array = args[start],
+	        otherArgs = args.slice(0, start);
+
+	    if (array) {
+	      push.apply(otherArgs, array);
+	    }
+	    if (start != lastIndex) {
+	      push.apply(otherArgs, args.slice(start + 1));
+	    }
+	    return func.apply(this, otherArgs);
+	  };
+	}
+
+	/**
+	 * Creates a function that wraps `func` and uses `cloner` to clone the first
+	 * argument it receives.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {Function} cloner The function to clone arguments.
+	 * @returns {Function} Returns the new immutable function.
+	 */
+	function wrapImmutable(func, cloner) {
+	  return function() {
+	    var length = arguments.length;
+	    if (!length) {
+	      return;
+	    }
+	    var args = Array(length);
+	    while (length--) {
+	      args[length] = arguments[length];
+	    }
+	    var result = args[0] = cloner.apply(undefined, args);
+	    func.apply(undefined, args);
+	    return result;
+	  };
+	}
+
+	/**
+	 * The base implementation of `convert` which accepts a `util` object of methods
+	 * required to perform conversions.
+	 *
+	 * @param {Object} util The util object.
+	 * @param {string} name The name of the function to convert.
+	 * @param {Function} func The function to convert.
+	 * @param {Object} [options] The options object.
+	 * @param {boolean} [options.cap=true] Specify capping iteratee arguments.
+	 * @param {boolean} [options.curry=true] Specify currying.
+	 * @param {boolean} [options.fixed=true] Specify fixed arity.
+	 * @param {boolean} [options.immutable=true] Specify immutable operations.
+	 * @param {boolean} [options.rearg=true] Specify rearranging arguments.
+	 * @returns {Function|Object} Returns the converted function or object.
+	 */
+	function baseConvert(util, name, func, options) {
+	  var setPlaceholder,
+	      isLib = typeof name == 'function',
+	      isObj = name === Object(name);
+
+	  if (isObj) {
+	    options = func;
+	    func = name;
+	    name = undefined;
+	  }
+	  if (func == null) {
+	    throw new TypeError;
+	  }
+	  options || (options = {});
+
+	  var config = {
+	    'cap': 'cap' in options ? options.cap : true,
+	    'curry': 'curry' in options ? options.curry : true,
+	    'fixed': 'fixed' in options ? options.fixed : true,
+	    'immutable': 'immutable' in options ? options.immutable : true,
+	    'rearg': 'rearg' in options ? options.rearg : true
+	  };
+
+	  var forceCurry = ('curry' in options) && options.curry,
+	      forceFixed = ('fixed' in options) && options.fixed,
+	      forceRearg = ('rearg' in options) && options.rearg,
+	      placeholder = isLib ? func : fallbackHolder,
+	      pristine = isLib ? func.runInContext() : undefined;
+
+	  var helpers = isLib ? func : {
+	    'ary': util.ary,
+	    'assign': util.assign,
+	    'clone': util.clone,
+	    'curry': util.curry,
+	    'forEach': util.forEach,
+	    'isArray': util.isArray,
+	    'isFunction': util.isFunction,
+	    'iteratee': util.iteratee,
+	    'keys': util.keys,
+	    'rearg': util.rearg,
+	    'toInteger': util.toInteger,
+	    'toPath': util.toPath
+	  };
+
+	  var ary = helpers.ary,
+	      assign = helpers.assign,
+	      clone = helpers.clone,
+	      curry = helpers.curry,
+	      each = helpers.forEach,
+	      isArray = helpers.isArray,
+	      isFunction = helpers.isFunction,
+	      keys = helpers.keys,
+	      rearg = helpers.rearg,
+	      toInteger = helpers.toInteger,
+	      toPath = helpers.toPath;
+
+	  var aryMethodKeys = keys(mapping.aryMethod);
+
+	  var wrappers = {
+	    'castArray': function(castArray) {
+	      return function() {
+	        var value = arguments[0];
+	        return isArray(value)
+	          ? castArray(cloneArray(value))
+	          : castArray.apply(undefined, arguments);
+	      };
+	    },
+	    'iteratee': function(iteratee) {
+	      return function() {
+	        var func = arguments[0],
+	            arity = arguments[1],
+	            result = iteratee(func, arity),
+	            length = result.length;
+
+	        if (config.cap && typeof arity == 'number') {
+	          arity = arity > 2 ? (arity - 2) : 1;
+	          return (length && length <= arity) ? result : baseAry(result, arity);
+	        }
+	        return result;
+	      };
+	    },
+	    'mixin': function(mixin) {
+	      return function(source) {
+	        var func = this;
+	        if (!isFunction(func)) {
+	          return mixin(func, Object(source));
+	        }
+	        var pairs = [];
+	        each(keys(source), function(key) {
+	          if (isFunction(source[key])) {
+	            pairs.push([key, func.prototype[key]]);
+	          }
+	        });
+
+	        mixin(func, Object(source));
+
+	        each(pairs, function(pair) {
+	          var value = pair[1];
+	          if (isFunction(value)) {
+	            func.prototype[pair[0]] = value;
+	          } else {
+	            delete func.prototype[pair[0]];
+	          }
+	        });
+	        return func;
+	      };
+	    },
+	    'nthArg': function(nthArg) {
+	      return function(n) {
+	        var arity = n < 0 ? 1 : (toInteger(n) + 1);
+	        return curry(nthArg(n), arity);
+	      };
+	    },
+	    'rearg': function(rearg) {
+	      return function(func, indexes) {
+	        var arity = indexes ? indexes.length : 0;
+	        return curry(rearg(func, indexes), arity);
+	      };
+	    },
+	    'runInContext': function(runInContext) {
+	      return function(context) {
+	        return baseConvert(util, runInContext(context), options);
+	      };
+	    }
+	  };
+
+	  /*--------------------------------------------------------------------------*/
+
+	  /**
+	   * Casts `func` to a function with an arity capped iteratee if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castCap(name, func) {
+	    if (config.cap) {
+	      var indexes = mapping.iterateeRearg[name];
+	      if (indexes) {
+	        return iterateeRearg(func, indexes);
+	      }
+	      var n = !isLib && mapping.iterateeAry[name];
+	      if (n) {
+	        return iterateeAry(func, n);
+	      }
+	    }
+	    return func;
+	  }
+
+	  /**
+	   * Casts `func` to a curried function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity of `func`.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castCurry(name, func, n) {
+	    return (forceCurry || (config.curry && n > 1))
+	      ? curry(func, n)
+	      : func;
+	  }
+
+	  /**
+	   * Casts `func` to a fixed arity function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity cap.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castFixed(name, func, n) {
+	    if (config.fixed && (forceFixed || !mapping.skipFixed[name])) {
+	      var data = mapping.methodSpread[name],
+	          start = data && data.start;
+
+	      return start  === undefined ? ary(func, n) : flatSpread(func, start);
+	    }
+	    return func;
+	  }
+
+	  /**
+	   * Casts `func` to an rearged function if needed.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to inspect.
+	   * @param {Function} func The function to inspect.
+	   * @param {number} n The arity of `func`.
+	   * @returns {Function} Returns the cast function.
+	   */
+	  function castRearg(name, func, n) {
+	    return (config.rearg && n > 1 && (forceRearg || !mapping.skipRearg[name]))
+	      ? rearg(func, mapping.methodRearg[name] || mapping.aryRearg[n])
+	      : func;
+	  }
+
+	  /**
+	   * Creates a clone of `object` by `path`.
+	   *
+	   * @private
+	   * @param {Object} object The object to clone.
+	   * @param {Array|string} path The path to clone by.
+	   * @returns {Object} Returns the cloned object.
+	   */
+	  function cloneByPath(object, path) {
+	    path = toPath(path);
+
+	    var index = -1,
+	        length = path.length,
+	        lastIndex = length - 1,
+	        result = clone(Object(object)),
+	        nested = result;
+
+	    while (nested != null && ++index < length) {
+	      var key = path[index],
+	          value = nested[key];
+
+	      if (value != null) {
+	        nested[path[index]] = clone(index == lastIndex ? value : Object(value));
+	      }
+	      nested = nested[key];
+	    }
+	    return result;
+	  }
+
+	  /**
+	   * Converts `lodash` to an immutable auto-curried iteratee-first data-last
+	   * version with conversion `options` applied.
+	   *
+	   * @param {Object} [options] The options object. See `baseConvert` for more details.
+	   * @returns {Function} Returns the converted `lodash`.
+	   */
+	  function convertLib(options) {
+	    return _.runInContext.convert(options)(undefined);
+	  }
+
+	  /**
+	   * Create a converter function for `func` of `name`.
+	   *
+	   * @param {string} name The name of the function to convert.
+	   * @param {Function} func The function to convert.
+	   * @returns {Function} Returns the new converter function.
+	   */
+	  function createConverter(name, func) {
+	    var realName = mapping.aliasToReal[name] || name,
+	        methodName = mapping.remap[realName] || realName,
+	        oldOptions = options;
+
+	    return function(options) {
+	      var newUtil = isLib ? pristine : helpers,
+	          newFunc = isLib ? pristine[methodName] : func,
+	          newOptions = assign(assign({}, oldOptions), options);
+
+	      return baseConvert(newUtil, realName, newFunc, newOptions);
+	    };
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
+	   * arguments, ignoring any additional arguments.
+	   *
+	   * @private
+	   * @param {Function} func The function to cap iteratee arguments for.
+	   * @param {number} n The arity cap.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function iterateeAry(func, n) {
+	    return overArg(func, function(func) {
+	      return typeof func == 'function' ? baseAry(func, n) : func;
+	    });
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` to invoke its iteratee with arguments
+	   * arranged according to the specified `indexes` where the argument value at
+	   * the first index is provided as the first argument, the argument value at
+	   * the second index is provided as the second argument, and so on.
+	   *
+	   * @private
+	   * @param {Function} func The function to rearrange iteratee arguments for.
+	   * @param {number[]} indexes The arranged argument indexes.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function iterateeRearg(func, indexes) {
+	    return overArg(func, function(func) {
+	      var n = indexes.length;
+	      return baseArity(rearg(baseAry(func, n), indexes), n);
+	    });
+	  }
+
+	  /**
+	   * Creates a function that invokes `func` with its first argument transformed.
+	   *
+	   * @private
+	   * @param {Function} func The function to wrap.
+	   * @param {Function} transform The argument transform.
+	   * @returns {Function} Returns the new function.
+	   */
+	  function overArg(func, transform) {
+	    return function() {
+	      var length = arguments.length;
+	      if (!length) {
+	        return func();
+	      }
+	      var args = Array(length);
+	      while (length--) {
+	        args[length] = arguments[length];
+	      }
+	      var index = config.rearg ? 0 : (length - 1);
+	      args[index] = transform(args[index]);
+	      return func.apply(undefined, args);
+	    };
+	  }
+
+	  /**
+	   * Creates a function that wraps `func` and applys the conversions
+	   * rules by `name`.
+	   *
+	   * @private
+	   * @param {string} name The name of the function to wrap.
+	   * @param {Function} func The function to wrap.
+	   * @returns {Function} Returns the converted function.
+	   */
+	  function wrap(name, func) {
+	    var result,
+	        realName = mapping.aliasToReal[name] || name,
+	        wrapped = func,
+	        wrapper = wrappers[realName];
+
+	    if (wrapper) {
+	      wrapped = wrapper(func);
+	    }
+	    else if (config.immutable) {
+	      if (mapping.mutate.array[realName]) {
+	        wrapped = wrapImmutable(func, cloneArray);
+	      }
+	      else if (mapping.mutate.object[realName]) {
+	        wrapped = wrapImmutable(func, createCloner(func));
+	      }
+	      else if (mapping.mutate.set[realName]) {
+	        wrapped = wrapImmutable(func, cloneByPath);
+	      }
+	    }
+	    each(aryMethodKeys, function(aryKey) {
+	      each(mapping.aryMethod[aryKey], function(otherName) {
+	        if (realName == otherName) {
+	          var data = mapping.methodSpread[realName],
+	              afterRearg = data && data.afterRearg;
+
+	          result = afterRearg
+	            ? castFixed(realName, castRearg(realName, wrapped, aryKey), aryKey)
+	            : castRearg(realName, castFixed(realName, wrapped, aryKey), aryKey);
+
+	          result = castCap(realName, result);
+	          result = castCurry(realName, result, aryKey);
+	          return false;
+	        }
+	      });
+	      return !result;
+	    });
+
+	    result || (result = wrapped);
+	    if (result == func) {
+	      result = forceCurry ? curry(result, 1) : function() {
+	        return func.apply(this, arguments);
+	      };
+	    }
+	    result.convert = createConverter(realName, func);
+	    if (mapping.placeholder[realName]) {
+	      setPlaceholder = true;
+	      result.placeholder = func.placeholder = placeholder;
+	    }
+	    return result;
+	  }
+
+	  /*--------------------------------------------------------------------------*/
+
+	  if (!isObj) {
+	    return wrap(name, func);
+	  }
+	  var _ = func;
+
+	  // Convert methods by ary cap.
+	  var pairs = [];
+	  each(aryMethodKeys, function(aryKey) {
+	    each(mapping.aryMethod[aryKey], function(key) {
+	      var func = _[mapping.remap[key] || key];
+	      if (func) {
+	        pairs.push([key, wrap(key, func)]);
+	      }
+	    });
+	  });
+
+	  // Convert remaining methods.
+	  each(keys(_), function(key) {
+	    var func = _[key];
+	    if (typeof func == 'function') {
+	      var length = pairs.length;
+	      while (length--) {
+	        if (pairs[length][0] == key) {
+	          return;
+	        }
+	      }
+	      func.convert = createConverter(key, func);
+	      pairs.push([key, func]);
+	    }
+	  });
+
+	  // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
+	  each(pairs, function(pair) {
+	    _[pair[0]] = pair[1];
+	  });
+
+	  _.convert = convertLib;
+	  if (setPlaceholder) {
+	    _.placeholder = placeholder;
+	  }
+	  // Assign aliases.
+	  each(keys(_), function(key) {
+	    each(mapping.realToAlias[key] || [], function(alias) {
+	      _[alias] = _[key];
+	    });
+	  });
+
+	  return _;
+	}
+
+	module.exports = baseConvert;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	/** Used to map aliases to their real names. */
+	exports.aliasToReal = {
+
+	  // Lodash aliases.
+	  'each': 'forEach',
+	  'eachRight': 'forEachRight',
+	  'entries': 'toPairs',
+	  'entriesIn': 'toPairsIn',
+	  'extend': 'assignIn',
+	  'extendAll': 'assignInAll',
+	  'extendAllWith': 'assignInAllWith',
+	  'extendWith': 'assignInWith',
+	  'first': 'head',
+
+	  // Methods that are curried variants of others.
+	  'conforms': 'conformsTo',
+	  'matches': 'isMatch',
+	  'property': 'get',
+
+	  // Ramda aliases.
+	  '__': 'placeholder',
+	  'F': 'stubFalse',
+	  'T': 'stubTrue',
+	  'all': 'every',
+	  'allPass': 'overEvery',
+	  'always': 'constant',
+	  'any': 'some',
+	  'anyPass': 'overSome',
+	  'apply': 'spread',
+	  'assoc': 'set',
+	  'assocPath': 'set',
+	  'complement': 'negate',
+	  'compose': 'flowRight',
+	  'contains': 'includes',
+	  'dissoc': 'unset',
+	  'dissocPath': 'unset',
+	  'dropLast': 'dropRight',
+	  'dropLastWhile': 'dropRightWhile',
+	  'equals': 'isEqual',
+	  'identical': 'eq',
+	  'indexBy': 'keyBy',
+	  'init': 'initial',
+	  'invertObj': 'invert',
+	  'juxt': 'over',
+	  'omitAll': 'omit',
+	  'nAry': 'ary',
+	  'path': 'get',
+	  'pathEq': 'matchesProperty',
+	  'pathOr': 'getOr',
+	  'paths': 'at',
+	  'pickAll': 'pick',
+	  'pipe': 'flow',
+	  'pluck': 'map',
+	  'prop': 'get',
+	  'propEq': 'matchesProperty',
+	  'propOr': 'getOr',
+	  'props': 'at',
+	  'symmetricDifference': 'xor',
+	  'symmetricDifferenceBy': 'xorBy',
+	  'symmetricDifferenceWith': 'xorWith',
+	  'takeLast': 'takeRight',
+	  'takeLastWhile': 'takeRightWhile',
+	  'unapply': 'rest',
+	  'unnest': 'flatten',
+	  'useWith': 'overArgs',
+	  'where': 'conformsTo',
+	  'whereEq': 'isMatch',
+	  'zipObj': 'zipObject'
+	};
+
+	/** Used to map ary to method names. */
+	exports.aryMethod = {
+	  '1': [
+	    'assignAll', 'assignInAll', 'attempt', 'castArray', 'ceil', 'create',
+	    'curry', 'curryRight', 'defaultsAll', 'defaultsDeepAll', 'floor', 'flow',
+	    'flowRight', 'fromPairs', 'invert', 'iteratee', 'memoize', 'method', 'mergeAll',
+	    'methodOf', 'mixin', 'nthArg', 'over', 'overEvery', 'overSome','rest', 'reverse',
+	    'round', 'runInContext', 'spread', 'template', 'trim', 'trimEnd', 'trimStart',
+	    'uniqueId', 'words', 'zipAll'
+	  ],
+	  '2': [
+	    'add', 'after', 'ary', 'assign', 'assignAllWith', 'assignIn', 'assignInAllWith',
+	    'at', 'before', 'bind', 'bindAll', 'bindKey', 'chunk', 'cloneDeepWith',
+	    'cloneWith', 'concat', 'conformsTo', 'countBy', 'curryN', 'curryRightN',
+	    'debounce', 'defaults', 'defaultsDeep', 'defaultTo', 'delay', 'difference',
+	    'divide', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'endsWith', 'eq',
+	    'every', 'filter', 'find', 'findIndex', 'findKey', 'findLast', 'findLastIndex',
+	    'findLastKey', 'flatMap', 'flatMapDeep', 'flattenDepth', 'forEach',
+	    'forEachRight', 'forIn', 'forInRight', 'forOwn', 'forOwnRight', 'get',
+	    'groupBy', 'gt', 'gte', 'has', 'hasIn', 'includes', 'indexOf', 'intersection',
+	    'invertBy', 'invoke', 'invokeMap', 'isEqual', 'isMatch', 'join', 'keyBy',
+	    'lastIndexOf', 'lt', 'lte', 'map', 'mapKeys', 'mapValues', 'matchesProperty',
+	    'maxBy', 'meanBy', 'merge', 'mergeAllWith', 'minBy', 'multiply', 'nth', 'omit',
+	    'omitBy', 'overArgs', 'pad', 'padEnd', 'padStart', 'parseInt', 'partial',
+	    'partialRight', 'partition', 'pick', 'pickBy', 'propertyOf', 'pull', 'pullAll',
+	    'pullAt', 'random', 'range', 'rangeRight', 'rearg', 'reject', 'remove',
+	    'repeat', 'restFrom', 'result', 'sampleSize', 'some', 'sortBy', 'sortedIndex',
+	    'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexOf', 'sortedUniqBy',
+	    'split', 'spreadFrom', 'startsWith', 'subtract', 'sumBy', 'take', 'takeRight',
+	    'takeRightWhile', 'takeWhile', 'tap', 'throttle', 'thru', 'times', 'trimChars',
+	    'trimCharsEnd', 'trimCharsStart', 'truncate', 'union', 'uniqBy', 'uniqWith',
+	    'unset', 'unzipWith', 'without', 'wrap', 'xor', 'zip', 'zipObject',
+	    'zipObjectDeep'
+	  ],
+	  '3': [
+	    'assignInWith', 'assignWith', 'clamp', 'differenceBy', 'differenceWith',
+	    'findFrom', 'findIndexFrom', 'findLastFrom', 'findLastIndexFrom', 'getOr',
+	    'includesFrom', 'indexOfFrom', 'inRange', 'intersectionBy', 'intersectionWith',
+	    'invokeArgs', 'invokeArgsMap', 'isEqualWith', 'isMatchWith', 'flatMapDepth',
+	    'lastIndexOfFrom', 'mergeWith', 'orderBy', 'padChars', 'padCharsEnd',
+	    'padCharsStart', 'pullAllBy', 'pullAllWith', 'rangeStep', 'rangeStepRight',
+	    'reduce', 'reduceRight', 'replace', 'set', 'slice', 'sortedIndexBy',
+	    'sortedLastIndexBy', 'transform', 'unionBy', 'unionWith', 'update', 'xorBy',
+	    'xorWith', 'zipWith'
+	  ],
+	  '4': [
+	    'fill', 'setWith', 'updateWith'
+	  ]
+	};
+
+	/** Used to map ary to rearg configs. */
+	exports.aryRearg = {
+	  '2': [1, 0],
+	  '3': [2, 0, 1],
+	  '4': [3, 2, 0, 1]
+	};
+
+	/** Used to map method names to their iteratee ary. */
+	exports.iterateeAry = {
+	  'dropRightWhile': 1,
+	  'dropWhile': 1,
+	  'every': 1,
+	  'filter': 1,
+	  'find': 1,
+	  'findFrom': 1,
+	  'findIndex': 1,
+	  'findIndexFrom': 1,
+	  'findKey': 1,
+	  'findLast': 1,
+	  'findLastFrom': 1,
+	  'findLastIndex': 1,
+	  'findLastIndexFrom': 1,
+	  'findLastKey': 1,
+	  'flatMap': 1,
+	  'flatMapDeep': 1,
+	  'flatMapDepth': 1,
+	  'forEach': 1,
+	  'forEachRight': 1,
+	  'forIn': 1,
+	  'forInRight': 1,
+	  'forOwn': 1,
+	  'forOwnRight': 1,
+	  'map': 1,
+	  'mapKeys': 1,
+	  'mapValues': 1,
+	  'partition': 1,
+	  'reduce': 2,
+	  'reduceRight': 2,
+	  'reject': 1,
+	  'remove': 1,
+	  'some': 1,
+	  'takeRightWhile': 1,
+	  'takeWhile': 1,
+	  'times': 1,
+	  'transform': 2
+	};
+
+	/** Used to map method names to iteratee rearg configs. */
+	exports.iterateeRearg = {
+	  'mapKeys': [1],
+	  'reduceRight': [1, 0]
+	};
+
+	/** Used to map method names to rearg configs. */
+	exports.methodRearg = {
+	  'assignInAllWith': [1, 0],
+	  'assignInWith': [1, 2, 0],
+	  'assignAllWith': [1, 0],
+	  'assignWith': [1, 2, 0],
+	  'differenceBy': [1, 2, 0],
+	  'differenceWith': [1, 2, 0],
+	  'getOr': [2, 1, 0],
+	  'intersectionBy': [1, 2, 0],
+	  'intersectionWith': [1, 2, 0],
+	  'isEqualWith': [1, 2, 0],
+	  'isMatchWith': [2, 1, 0],
+	  'mergeAllWith': [1, 0],
+	  'mergeWith': [1, 2, 0],
+	  'padChars': [2, 1, 0],
+	  'padCharsEnd': [2, 1, 0],
+	  'padCharsStart': [2, 1, 0],
+	  'pullAllBy': [2, 1, 0],
+	  'pullAllWith': [2, 1, 0],
+	  'rangeStep': [1, 2, 0],
+	  'rangeStepRight': [1, 2, 0],
+	  'setWith': [3, 1, 2, 0],
+	  'sortedIndexBy': [2, 1, 0],
+	  'sortedLastIndexBy': [2, 1, 0],
+	  'unionBy': [1, 2, 0],
+	  'unionWith': [1, 2, 0],
+	  'updateWith': [3, 1, 2, 0],
+	  'xorBy': [1, 2, 0],
+	  'xorWith': [1, 2, 0],
+	  'zipWith': [1, 2, 0]
+	};
+
+	/** Used to map method names to spread configs. */
+	exports.methodSpread = {
+	  'assignAll': { 'start': 0 },
+	  'assignAllWith': { 'start': 0 },
+	  'assignInAll': { 'start': 0 },
+	  'assignInAllWith': { 'start': 0 },
+	  'defaultsAll': { 'start': 0 },
+	  'defaultsDeepAll': { 'start': 0 },
+	  'invokeArgs': { 'start': 2 },
+	  'invokeArgsMap': { 'start': 2 },
+	  'mergeAll': { 'start': 0 },
+	  'mergeAllWith': { 'start': 0 },
+	  'partial': { 'start': 1 },
+	  'partialRight': { 'start': 1 },
+	  'without': { 'start': 1 },
+	  'zipAll': { 'start': 0 }
+	};
+
+	/** Used to identify methods which mutate arrays or objects. */
+	exports.mutate = {
+	  'array': {
+	    'fill': true,
+	    'pull': true,
+	    'pullAll': true,
+	    'pullAllBy': true,
+	    'pullAllWith': true,
+	    'pullAt': true,
+	    'remove': true,
+	    'reverse': true
+	  },
+	  'object': {
+	    'assign': true,
+	    'assignAll': true,
+	    'assignAllWith': true,
+	    'assignIn': true,
+	    'assignInAll': true,
+	    'assignInAllWith': true,
+	    'assignInWith': true,
+	    'assignWith': true,
+	    'defaults': true,
+	    'defaultsAll': true,
+	    'defaultsDeep': true,
+	    'defaultsDeepAll': true,
+	    'merge': true,
+	    'mergeAll': true,
+	    'mergeAllWith': true,
+	    'mergeWith': true,
+	  },
+	  'set': {
+	    'set': true,
+	    'setWith': true,
+	    'unset': true,
+	    'update': true,
+	    'updateWith': true
+	  }
+	};
+
+	/** Used to track methods with placeholder support */
+	exports.placeholder = {
+	  'bind': true,
+	  'bindKey': true,
+	  'curry': true,
+	  'curryRight': true,
+	  'partial': true,
+	  'partialRight': true
+	};
+
+	/** Used to map real names to their aliases. */
+	exports.realToAlias = (function() {
+	  var hasOwnProperty = Object.prototype.hasOwnProperty,
+	      object = exports.aliasToReal,
+	      result = {};
+
+	  for (var key in object) {
+	    var value = object[key];
+	    if (hasOwnProperty.call(result, value)) {
+	      result[value].push(key);
+	    } else {
+	      result[value] = [key];
+	    }
+	  }
+	  return result;
+	}());
+
+	/** Used to map method names to other names. */
+	exports.remap = {
+	  'assignAll': 'assign',
+	  'assignAllWith': 'assignWith',
+	  'assignInAll': 'assignIn',
+	  'assignInAllWith': 'assignInWith',
+	  'curryN': 'curry',
+	  'curryRightN': 'curryRight',
+	  'defaultsAll': 'defaults',
+	  'defaultsDeepAll': 'defaultsDeep',
+	  'findFrom': 'find',
+	  'findIndexFrom': 'findIndex',
+	  'findLastFrom': 'findLast',
+	  'findLastIndexFrom': 'findLastIndex',
+	  'getOr': 'get',
+	  'includesFrom': 'includes',
+	  'indexOfFrom': 'indexOf',
+	  'invokeArgs': 'invoke',
+	  'invokeArgsMap': 'invokeMap',
+	  'lastIndexOfFrom': 'lastIndexOf',
+	  'mergeAll': 'merge',
+	  'mergeAllWith': 'mergeWith',
+	  'padChars': 'pad',
+	  'padCharsEnd': 'padEnd',
+	  'padCharsStart': 'padStart',
+	  'propertyOf': 'get',
+	  'rangeStep': 'range',
+	  'rangeStepRight': 'rangeRight',
+	  'restFrom': 'rest',
+	  'spreadFrom': 'spread',
+	  'trimChars': 'trim',
+	  'trimCharsEnd': 'trimEnd',
+	  'trimCharsStart': 'trimStart',
+	  'zipAll': 'zip'
+	};
+
+	/** Used to track methods that skip fixing their arity. */
+	exports.skipFixed = {
+	  'castArray': true,
+	  'flow': true,
+	  'flowRight': true,
+	  'iteratee': true,
+	  'mixin': true,
+	  'rearg': true,
+	  'runInContext': true
+	};
+
+	/** Used to track methods that skip rearranging arguments. */
+	exports.skipRearg = {
+	  'add': true,
+	  'assign': true,
+	  'assignIn': true,
+	  'bind': true,
+	  'bindKey': true,
+	  'concat': true,
+	  'difference': true,
+	  'divide': true,
+	  'eq': true,
+	  'gt': true,
+	  'gte': true,
+	  'isEqual': true,
+	  'lt': true,
+	  'lte': true,
+	  'matchesProperty': true,
+	  'merge': true,
+	  'multiply': true,
+	  'overArgs': true,
+	  'partial': true,
+	  'partialRight': true,
+	  'propertyOf': true,
+	  'random': true,
+	  'range': true,
+	  'rangeRight': true,
+	  'subtract': true,
+	  'zip': true,
+	  'zipObject': true,
+	  'zipObjectDeep': true
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/**
+	 * The default argument placeholder value for methods.
+	 *
+	 * @type {Object}
+	 */
+	module.exports = {};
+
+
+/***/ }
+/******/ ])
+});
+;
+
+define('lodash.fp',['lodash', 'lodash.converter', 'converse-core'], function (_, lodashConverter, converse) {
+    var fp = lodashConverter(_.runInContext());
+    converse.env.fp = fp;
+    return fp;
+});
+
 
 define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -55391,7 +55205,7 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-rosterview',["jquery.noconflict", "converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item"], factory);
+    define('converse-rosterview',["jquery.noconflict", "converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "converse-chatboxes"], factory);
 })(undefined, function ($, converse, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item) {
     "use strict";
 
@@ -55452,6 +55266,7 @@ return __p
                 allow_contact_removal: true,
                 show_toolbar: true
             });
+            _converse.api.promises.add('rosterViewInitialized');
 
             var STATUSES = {
                 'dnd': __('This contact is busy'),
@@ -56010,7 +55825,7 @@ return __p
                             _this.model.destroy();
                             _this.remove();
                         }, function (err) {
-                            alert(__("Sorry, there was an error while trying to remove " + name + " as a contact."));
+                            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
                             _converse.log(err, Strophe.LogLevel.ERROR);
                         });
                     }
@@ -56280,6 +56095,7 @@ return __p
                     'model': _converse.rostergroups
                 });
                 _converse.rosterview.render();
+                _converse.emit('rosterViewInitialized');
             };
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
@@ -56301,8 +56117,8 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-controlbox',["jquery.noconflict", "converse-core", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!login_tab", "tpl!search_contact", "tpl!status_option", "converse-chatview", "converse-rosterview"], factory);
-})(undefined, function ($, converse, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_login_tab, tpl_search_contact, tpl_status_option) {
+    define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!login_tab", "tpl!search_contact", "tpl!status_option", "converse-chatview", "converse-rosterview"], factory);
+})(undefined, function ($, converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_login_tab, tpl_search_contact, tpl_status_option) {
     "use strict";
 
     var USERS_PANEL_ID = 'users';
@@ -56310,9 +56126,9 @@ return __p
     var _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         Backbone = _converse$env.Backbone,
+        Promise = _converse$env.Promise,
         utils = _converse$env.utils,
         _ = _converse$env._,
-        fp = _converse$env.fp,
         moment = _converse$env.moment;
 
 
@@ -56325,16 +56141,6 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            initChatBoxes: function initChatBoxes() {
-                this.__super__.initChatBoxes.apply(this, arguments);
-                this.controlboxtoggle = new this.ControlBoxToggle();
-            },
-            initConnection: function initConnection() {
-                this.__super__.initConnection.apply(this, arguments);
-                if (this.connection) {
-                    this.addControlBox();
-                }
-            },
             _tearDown: function _tearDown() {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
@@ -56361,9 +56167,9 @@ return __p
                     return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
                 },
                 onChatBoxesFetched: function onChatBoxesFetched(collection, resp) {
+                    this.__super__.onChatBoxesFetched.apply(this, arguments);
                     var _converse = this.__super__._converse;
 
-                    this.__super__.onChatBoxesFetched.apply(this, arguments);
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
                         _converse.addControlBox();
                     }
@@ -56431,9 +56237,12 @@ return __p
 
             ChatBoxView: {
                 insertIntoDOM: function insertIntoDOM() {
-                    var _converse = this.__super__._converse;
-
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    var view = this.__super__._converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        view.el.insertAdjacentElement('afterend', this.el);
+                    } else {
+                        this.__super__.insertIntoDOM.apply(this, arguments);
+                    }
                     return this;
                 }
             }
@@ -56450,6 +56259,7 @@ return __p
             _converse.api.settings.update({
                 allow_logout: true,
                 default_domain: undefined,
+                locked_domain: undefined,
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,
@@ -56459,7 +56269,7 @@ return __p
             var LABEL_CONTACTS = __('Contacts');
 
             _converse.addControlBox = function () {
-                return _converse.chatboxes.add({
+                _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
@@ -56477,7 +56287,10 @@ return __p
                 },
 
                 initialize: function initialize() {
-                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    if (_.isUndefined(_converse.controlboxtoggle)) {
+                        _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -56485,7 +56298,7 @@ return __p
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.insertRoster();
+                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 },
                 render: function render() {
@@ -56512,7 +56325,8 @@ return __p
                 },
                 onConnected: function onConnected() {
                     if (this.model.get('connected')) {
-                        this.render().insertRoster();
+                        this.render();
+                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         this.model.save();
                     }
                 },
@@ -56653,6 +56467,8 @@ return __p
                     return this;
                 },
                 authenticate: function authenticate(ev) {
+                    /* Authenticate the user based on a form submission event.
+                     */
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
@@ -56668,10 +56484,11 @@ return __p
                     var jid = $jid_input.val(),
                         errors = false;
 
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
+                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
                         errors = true;
                         $jid_input.addClass('error');
                     }
+
                     if (!password && _converse.authentication !== _converse.EXTERNAL) {
                         errors = true;
                         $pw_input.addClass('error');
@@ -56949,24 +56766,25 @@ return __p
                 },
 
                 initialize: function initialize() {
-                    _converse.chatboxviews.$el.prepend(this.render());
+                    _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
                     var that = this;
-                    _converse.on('initialized', function () {
+                    _converse.api.waitUntil('initialized').then(function () {
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
                 render: function render() {
                     // We let the render method of ControlBoxView decide whether
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    return this.$el.html(tpl_controlbox_toggle({
+                    this.el.innerHTML = tpl_controlbox_toggle({
                         'label_toggle': __('Toggle chat')
-                    }));
+                    });
+                    return this;
                 },
 
 
@@ -57014,6 +56832,8 @@ return __p
                 }
             });
 
+            Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
             var disconnect = function disconnect() {
                 /* Upon disconnection, set connected to `false`, so that if
                  * we reconnect,
@@ -57042,6 +56862,367 @@ return __p
     });
 });
 //# sourceMappingURL=converse-controlbox.js.map;
+
+define('tpl!field', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<field var="' +
+__e(name) +
+'">\n';
+ if (_.isArray(value)) { ;
+__p += '\n    ';
+ _.each(value,function(arrayValue) { ;
+__p += '<value>' +
+__e(arrayValue) +
+'</value>';
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
+__e(value) +
+'</value>\n';
+ } ;
+__p += '</field>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<option value="' +
+__e(value) +
+'" ';
+ if (selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
+__e(label) +
+'</option>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <select name="' +
+__e(name) +
+'"  ';
+ if (multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
+((__t = (options)) == null ? '' : __t) +
+'</select>\n</label>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="label-ta">' +
+__e(label) +
+'</label>\n<textarea name="' +
+__e(name) +
+'">' +
+__e(value) +
+'</textarea>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="checkbox" for="' +
+__e(name) +
+'">' +
+__e(label) +
+'<input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" ' +
+__e(checked) +
+'></label>\n\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'"\n        ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span title="' +
+__e(domain) +
+'">' +
+__e(domain) +
+'</span>\n</div>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" \n        ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n</label>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<img src="data:' +
+__e(type) +
+';base64,' +
+__e(data) +
+'">\n<input name="' +
+__e(name) +
+'" type="text" ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
+
+}
+return __p
+};});
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, escape, locales, Jed */
+(function (root, factory) {
+    define('form-utils',[
+        "sizzle",
+        "lodash.noconflict",
+        "utils",
+        "tpl!field",
+        "tpl!select_option",
+        "tpl!form_select",
+        "tpl!form_textarea",
+        "tpl!form_checkbox",
+        "tpl!form_username",
+        "tpl!form_input",
+        "tpl!form_captcha"
+    ], factory);
+}(this, function (
+        sizzle,
+        _,
+        u,
+        tpl_field,
+        tpl_select_option,
+        tpl_form_select,
+        tpl_form_textarea,
+        tpl_form_checkbox,
+        tpl_form_username,
+        tpl_form_input,
+        tpl_form_captcha
+    ) {
+    "use strict";
+
+    var XFORM_TYPE_MAP = {
+        'text-private': 'password',
+        'text-single': 'text',
+        'fixed': 'label',
+        'boolean': 'checkbox',
+        'hidden': 'hidden',
+        'jid-multi': 'textarea',
+        'list-single': 'dropdown',
+        'list-multi': 'dropdown'
+    };
+
+    u.webForm2xForm = function (field) {
+        /* Takes an HTML DOM and turns it into an XForm field.
+         *
+         * Parameters:
+         *      (DOMElement) field - the field to convert
+         */
+        let value;
+        if (field.getAttribute('type') === 'checkbox') {
+            value = field.checked && 1 || 0;
+        } else if (field.tagName == "textarea") {
+            value = _.filter(field.value.split('\n'), _.trim);
+        } else {
+            value = field.value;
+        }
+        return u.stringToDOM(
+            tpl_field({
+                name: field.getAttribute('name'),
+                value: value
+            })
+        )[0];
+    };
+
+    u.xForm2webForm = function (field, stanza) {
+        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+         * and turns it into an HTML field.
+         *
+         * Returns either text or a DOM element (which is not ideal, but fine
+         * for now).
+         *
+         *  Parameters:
+         *      (XMLElement) field - the field to convert
+         */
+        if (field.getAttribute('type') === 'list-single' ||
+            field.getAttribute('type') === 'list-multi') {
+
+            const values = _.map(
+                u.queryChildren(field, 'value'),
+                _.partial(_.get, _, 'textContent')
+            );
+            const options = _.map(
+                u.queryChildren(field, 'option'),
+                function (option) {
+                    const value = _.get(option.querySelector('value'), 'textContent');
+                    return tpl_select_option({
+                        'value': value,
+                        'label': option.getAttribute('label'),
+                        'selected': _.startsWith(values, value),
+                        'required': _.isNil(field.querySelector('required'))
+                    })
+                }
+            );
+            return tpl_form_select({
+                'name': field.getAttribute('var'),
+                'label': field.getAttribute('label'),
+                'options': options.join(''),
+                'multiple': (field.getAttribute('type') === 'list-multi'),
+                'required': _.isNil(field.querySelector('required'))
+            })
+        } else if (field.getAttribute('type') === 'fixed') {
+            const text = _.get(field.querySelector('value'), 'textContent');
+            const el = u.stringToDOM('<p class="form-help">');
+            el.textContent = text;
+            return el;
+        } else if (field.getAttribute('type') === 'jid-multi') {
+            return tpl_form_textarea({
+                'name': field.getAttribute('var'),
+                'label': field.getAttribute('label') || '',
+                'value': _.get(field.querySelector('value'), 'textContent'),
+                'required': _.isNil(field.querySelector('required'))
+            })
+        } else if (field.getAttribute('type') === 'boolean') {
+            return tpl_form_checkbox({
+                'name': field.getAttribute('var'),
+                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                'label': field.getAttribute('label') || '',
+                'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+                'required': _.isNil(field.querySelector('required'))
+            })
+        } else if (field.getAttribute('type') && field.getAttribute('var') === 'username') {
+            return tpl_form_username({
+                'domain': ' @'+this.domain,
+                'name': field.getAttribute('var'),
+                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                'label': field.getAttribute('label') || '',
+                'value': _.get(field.querySelector('value'), 'textContent'),
+                'required': _.isNil(field.querySelector('required'))
+            })
+        } else if (field.getAttribute('type')) {
+            return tpl_form_input({
+                'name': field.getAttribute('var'),
+                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                'label': field.getAttribute('label') || '',
+                'value': _.get(field.querySelector('value'), 'textContent'),
+                'required': _.isNil(field.querySelector('required'))
+            })
+        } else {
+            if (field.getAttribute('var') === 'ocr') { // Captcha
+                const uri = field.querySelector('uri');
+                const el = sizzle('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]', stanza)[0];
+                return tpl_form_captcha({
+                    'label': field.getAttribute('label'),
+                    'name': field.getAttribute('var'),
+                    'data': _.get(el, 'textContent'),
+                    'type': uri.getAttribute('type'),
+                    'required': _.isNil(field.querySelector('required'))
+                })
+            }
+        }
+    }
+    return u;
+}));
+
 
 define('tpl!chatarea', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -58400,6 +58581,8 @@ Strophe.addConnectionPlugin('disco',
 });
 }));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -58412,29 +58595,34 @@ Strophe.addConnectionPlugin('disco',
 /*global Backbone, define, window, document */
 (function (root, factory) {
     define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
-}(this, function (converse, sizzle) {
+})(undefined, function (converse, sizzle) {
+    var _converse$env = converse.env,
+        Backbone = _converse$env.Backbone,
+        Promise = _converse$env.Promise,
+        Strophe = _converse$env.Strophe,
+        b64_sha1 = _converse$env.b64_sha1,
+        _ = _converse$env._;
 
-    const { Backbone, Promise, Strophe, b64_sha1, _ } = converse.env;
 
     converse.plugins.add('converse-disco', {
-
-        initialize () {
+        initialize: function initialize() {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            const { _converse } = this;
+            var _converse = this._converse;
 
-            function onDiscoItems (stanza) {
-                _.each(stanza.querySelectorAll('query item'), (item) => {
+
+            function onDiscoItems(stanza) {
+                _.each(stanza.querySelectorAll('query item'), function (item) {
                     if (item.getAttribute("node")) {
                         // XXX: ignore nodes for now.
                         // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
                         return;
                     }
-                    const jid = item.getAttribute('jid');
-                    const entities = _converse.disco_entities;
+                    var jid = item.getAttribute('jid');
+                    var entities = _converse.disco_entities;
                     if (_.isUndefined(entities.get(jid))) {
-                        entities.create({'jid': jid});
+                        entities.create({ 'jid': jid });
                     }
                 });
             }
@@ -58450,59 +58638,52 @@ Strophe.addConnectionPlugin('disco',
                 */
                 idAttribute: 'jid',
 
-                initialize () {
+                initialize: function initialize() {
                     this.features = new Backbone.Collection();
-                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.features-${this.get('jid')}`)
-                    );
+                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-" + this.get('jid')));
                     this.features.on('add', this.onFeatureAdded);
 
                     this.identities = new Backbone.Collection();
-                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.identities-${this.get('jid')}`)
-                    );
+                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-" + this.get('jid')));
                     this.fetchFeatures();
                 },
-
-                onFeatureAdded (feature) {
+                onFeatureAdded: function onFeatureAdded(feature) {
                     _converse.emit('serviceDiscovered', feature);
                 },
-
-                fetchFeatures () {
+                fetchFeatures: function fetchFeatures() {
                     if (this.features.browserStorage.records.length === 0) {
                         this.queryInfo();
                     } else {
-                        this.features.fetch({add: true});
-                        this.identities.fetch({add: true});
+                        this.features.fetch({ add: true });
+                        this.identities.fetch({ add: true });
                     }
                 },
-
-                queryInfo () {
+                queryInfo: function queryInfo() {
                     _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
                 },
-
-                queryForItems () {
-                    if (_.isEmpty(this.identities.where({'category': 'server'}))) {
+                queryForItems: function queryForItems() {
+                    if (_.isEmpty(this.identities.where({ 'category': 'server' }))) {
                         // Don't fetch features and items if this is not a
                         // server or a conference component.
                         return;
                     }
                     _converse.connection.disco.items(this.get('jid'), null, onDiscoItems);
                 },
+                onInfo: function onInfo(stanza) {
+                    var _this = this;
 
-                onInfo (stanza) {
-                    _.forEach(stanza.querySelectorAll('identity'), (identity) => {
-                        this.identities.create({
+                    _.forEach(stanza.querySelectorAll('identity'), function (identity) {
+                        _this.identities.create({
                             'category': identity.getAttribute('category'),
                             'type': stanza.getAttribute('type'),
                             'name': stanza.getAttribute('name')
                         });
                     });
-                    if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
+                    if (stanza.querySelector('feature[var="' + Strophe.NS.DISCO_ITEMS + '"]')) {
                         this.queryForItems();
                     }
-                    _.forEach(stanza.querySelectorAll('feature'), (feature) => {
-                        this.features.create({
+                    _.forEach(stanza.querySelectorAll('feature'), function (feature) {
+                        _this.features.create({
                             'var': feature.getAttribute('var'),
                             'from': stanza.getAttribute('from')
                         });
@@ -58514,35 +58695,31 @@ Strophe.addConnectionPlugin('disco',
             _converse.DiscoEntities = Backbone.Collection.extend({
                 model: _converse.DiscoEntity,
 
-                initialize () {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
-                    );
-                    this.fetchEntities().then(
-                        _.partial(_converse.emit, 'discoInitialized'),
-                        _.partial(_converse.emit, 'discoInitialized')
-                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                initialize: function initialize() {
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-" + _converse.bare_jid));
+                    this.fetchEntities().then(_.partial(_converse.emit, 'discoInitialized'), _.partial(_converse.emit, 'discoInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
+                fetchEntities: function fetchEntities() {
+                    var _this2 = this;
 
-                fetchEntities () {
-                    return new Promise((resolve, reject) => {
-                        this.fetch({
+                    return new Promise(function (resolve, reject) {
+                        _this2.fetch({
                             add: true,
                             success: function (collection) {
                                 if (collection.length === 0 || !collection.get(_converse.domain)) {
-                                    this.create({'jid': _converse.domain});
+                                    this.create({ 'jid': _converse.domain });
                                 }
                                 resolve();
-                            }.bind(this),
-                            error () {
-                                reject (new Error("Could not fetch disco entities"));
+                            }.bind(_this2),
+                            error: function error() {
+                                reject(new Error("Could not fetch disco entities"));
                             }
                         });
                     });
                 }
             });
 
-            function addClientFeatures () {
+            function addClientFeatures() {
                 /* The strophe.disco.js plugin keeps a list of features which
                  * it will advertise to any #info queries made to it.
                  *
@@ -58563,16 +58740,16 @@ Strophe.addConnectionPlugin('disco',
                 return this;
             }
 
-            function initializeDisco () {
+            function initializeDisco() {
                 addClientFeatures();
                 _converse.disco_entities = new _converse.DiscoEntities();
             }
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 
-            _converse.api.listen.on('beforeTearDown', () => {
+            _converse.api.listen.on('beforeTearDown', function () {
                 if (_converse.disco_entities) {
-                    _converse.disco_entities.each((entity) => {
+                    _converse.disco_entities.each(function (entity) {
                         entity.features.reset();
                         entity.features.browserStorage._clear();
                     });
@@ -58582,8 +58759,8 @@ Strophe.addConnectionPlugin('disco',
             });
         }
     });
-}));
-
+});
+//# sourceMappingURL=converse-disco.js.map;
 
 
 // Converse.js (A browser based XMPP chat client)
@@ -58598,8 +58775,8 @@ Strophe.addConnectionPlugin('disco',
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define('converse-muc',["jquery.noconflict", "converse-core", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco"], factory);
-})(undefined, function ($, converse, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
+    define('converse-muc',["jquery.noconflict", "form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco"], factory);
+})(undefined, function ($, utils, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
 
     "use strict";
 
@@ -58616,9 +58793,7 @@ Strophe.addConnectionPlugin('disco',
         $pres = _converse$env.$pres,
         b64_sha1 = _converse$env.b64_sha1,
         sizzle = _converse$env.sizzle,
-        utils = _converse$env.utils,
         _ = _converse$env._,
-        fp = _converse$env.fp,
         moment = _converse$env.moment;
 
     // Add Strophe Namespaces
@@ -58745,11 +58920,12 @@ Strophe.addConnectionPlugin('disco',
                         _converse.api.listen.on('serviceDiscovered', _this.featureAdded, _this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        var feature = _converse.disco_entities[_converse.domain].features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            _this.featureAdded(feature);
+                        var entity = _converse.disco_entities[_converse.domain];
+                        if (!_.isUndefined(entity)) {
+                            var feature = entity.features.findWhere({ 'var': Strophe.NS.MUC });
+                            if (feature) {
+                                _this.featureAdded(feature);
+                            }
                         }
                     });
                 },
@@ -59062,18 +59238,6 @@ Strophe.addConnectionPlugin('disco',
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({ add: true });
-                    return this;
-                },
-                insertIntoDOM: function insertIntoDOM() {
-                    if (document.querySelector('body').contains(this.el)) {
-                        return;
-                    }
-                    var view = _converse.chatboxviews.get("controlbox");
-                    if (view) {
-                        this.$el.insertAfter(view.$el);
-                    } else {
-                        $('#conversejs').prepend(this.$el);
-                    }
                     return this;
                 },
                 generateHeadingHTML: function generateHeadingHTML() {
@@ -59468,7 +59632,7 @@ Strophe.addConnectionPlugin('disco',
                      */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
-                        this.showStatusNotification(__("Error: the \"" + command + "\" command takes two arguments, the user's nickname and optionally a reason."), true);
+                        this.showStatusNotification(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
                         return false;
                     }
                     return true;
@@ -59745,7 +59909,7 @@ Strophe.addConnectionPlugin('disco',
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm($(field), $stanza));
+                        $fieldset.append(utils.xForm2webForm(field, stanza));
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
@@ -60009,7 +60173,7 @@ Strophe.addConnectionPlugin('disco',
                     if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
-                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid)));
+                        this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -60186,10 +60350,10 @@ Strophe.addConnectionPlugin('disco',
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
+                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
+                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
                         }
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
@@ -60198,7 +60362,7 @@ Strophe.addConnectionPlugin('disco',
                         _this11.$content.append(tpl_info({ 'message': message }));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__("The reason given is: \"" + notification.reason + "\""), true);
+                        this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
                     }
                     if (notification.messages.length) {
                         this.scrollDown();
@@ -60482,7 +60646,7 @@ Strophe.addConnectionPlugin('disco',
                     var new_el = tpl_occupant(_.extend({ 'jid': '',
                         'show': show,
                         'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                        'hint_occupant': __("Click to mention " + this.model.get('nick') + " in your message."),
+                        'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                         'desc_moderator': __('This user is a moderator.'),
                         'desc_occupant': __('This user can send messages in this room.'),
                         'desc_visitor': __('This user can NOT send messages in this room.')
@@ -60717,7 +60881,7 @@ Strophe.addConnectionPlugin('disco',
                     }
                 },
                 promptForInvite: function promptForInvite(suggestion) {
-                    var reason = prompt(__(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
+                    var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);
                     }
@@ -61028,9 +61192,9 @@ Strophe.addConnectionPlugin('disco',
                     // Invite request might come from someone not your roster list
                     contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
                     if (!reason) {
-                        result = confirm(__(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid));
+                        result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
                     } else {
-                        result = confirm(__(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason));
+                        result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
                     }
                 }
                 if (result === true) {
@@ -61381,10 +61545,11 @@ return __p
                     }
                 },
                 onBookmarked: function onBookmarked() {
+                    var icon = this.el.querySelector('.icon-pushpin');
                     if (this.model.get('bookmarked')) {
-                        this.$('.icon-pushpin').addClass('button-on');
+                        icon.classList.add('button-on');
                     } else {
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        icon.classList.remove('button-on');
                     }
                 },
                 setBookmarkState: function setBookmarkState() {
@@ -61404,12 +61569,18 @@ return __p
                 renderBookmarkForm: function renderBookmarkForm() {
                     var _converse = this.__super__._converse,
                         __ = _converse.__,
-                        $body = this.$('.chatroom-body');
+                        body = this.el.querySelector('.chatroom-body');
 
-                    $body.children().addClass('hidden');
+
+                    _.each(body.children, function (child) {
+                        child.classList.add('hidden');
+                    });
                     // Remove any existing forms
-                    $body.find('form.chatroom-form').remove();
-                    $body.append(tpl_chatroom_bookmark_form({
+                    var form = body.querySelector('form.chatroom-form');
+                    if (!_.isNull(form)) {
+                        form.parentNode.removeChild(form);
+                    }
+                    body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
                         heading: __('Bookmark this room'),
                         label_name: __('The name for this bookmark:'),
                         label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
@@ -61418,8 +61589,9 @@ return __p
                         label_submit: __('Save'),
                         label_cancel: __('Cancel')
                     }));
-                    this.$('.chatroom-form').submit(this.onBookmarkFormSubmitted.bind(this));
-                    this.$('.chatroom-form .button-cancel').on('click', this.cancelConfiguration.bind(this));
+                    form = body.querySelector('form.chatroom-form');
+                    form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
+                    form.querySelector('.button-cancel').addEventListener('click', this.cancelConfiguration.bind(this));
                 },
                 onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
                     ev.preventDefault();
@@ -61452,7 +61624,7 @@ return __p
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
                     }
                 }
             }
@@ -62658,7 +62830,7 @@ Strophe.RSM.prototype = {
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                var contact = _converse.roster.get(jid);
+                var contact = _.get(_converse.roster, jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
@@ -62719,23 +62891,25 @@ Strophe.RSM.prototype = {
             });
 
             var updateVCardForChatBox = function updateVCardForChatBox(chatbox) {
-                if (!_converse.use_vcards) {
+                if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
-                var jid = chatbox.model.get('jid'),
-                    contact = _converse.roster.get(jid);
-                if (contact && !contact.get('vcard_updated')) {
-                    _converse.getVCard(jid, function (iq, jid, fullname, image, image_type, url) {
-                        chatbox.model.save({
-                            'fullname': fullname || jid,
-                            'url': url,
-                            'image_type': image_type,
-                            'image': image
+                _converse.api.waitUntil('rosterInitialized').then(function () {
+                    var jid = chatbox.model.get('jid'),
+                        contact = _converse.roster.get(jid);
+                    if (contact && !contact.get('vcard_updated')) {
+                        _converse.getVCard(jid, function (iq, jid, fullname, image, image_type, url) {
+                            chatbox.model.save({
+                                'fullname': fullname || jid,
+                                'url': url,
+                                'image_type': image_type,
+                                'image': image
+                            });
+                        }, function () {
+                            _converse.log("updateVCardForChatBox: Error occured while fetching vcard", Strophe.LogLevel.ERROR);
                         });
-                    }, function () {
-                        _converse.log("updateVCardForChatBox: Error occured while fetching vcard", Strophe.LogLevel.ERROR);
-                    });
-                }
+                    }
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             };
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
@@ -70089,7 +70263,7 @@ CryptoJS.mode.CTR = (function () {
         _ = _converse$env._;
 
 
-    var HAS_CSPRNG = !_.isUndefined(crypto) && (_.isFunction(crypto.randomBytes) || _.isFunction(crypto.getRandomValues));
+    var HAS_CSPRNG = _.isUndefined(window.crypto) ? false : _.isFunction(window.crypto.randomBytes) || _.isFunction(window.crypto.getRandomValues);
 
     var HAS_CRYPTO = HAS_CSPRNG && !_.isUndefined(otr.OTR) && !_.isUndefined(otr.DSA);
 
@@ -70602,8 +70776,8 @@ return __p
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define('converse-register',["jquery.noconflict", "converse-core", "tpl!form_username", "tpl!register_panel", "tpl!register_tab", "tpl!registration_form", "tpl!registration_request", "tpl!spinner", "converse-controlbox"], factory);
-})(undefined, function ($, converse, tpl_form_username, tpl_register_panel, tpl_register_tab, tpl_registration_form, tpl_registration_request, tpl_spinner) {
+    define('converse-register',["jquery.noconflict", "form-utils", "converse-core", "tpl!form_username", "tpl!register_panel", "tpl!register_tab", "tpl!registration_form", "tpl!registration_request", "tpl!spinner", "converse-controlbox"], factory);
+})(undefined, function ($, utils, converse, tpl_form_username, tpl_register_panel, tpl_register_tab, tpl_registration_form, tpl_registration_request, tpl_spinner) {
 
     "use strict";
 
@@ -70612,7 +70786,6 @@ return __p
     var _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         Backbone = _converse$env.Backbone,
-        utils = _converse$env.utils,
         $iq = _converse$env.$iq,
         _ = _converse$env._;
 
@@ -70908,7 +71081,7 @@ return __p
                     if (this.form_type === 'xform') {
                         $fields = $stanza.find('field');
                         _.each($fields, function (field) {
-                            $form.append(utils.xForm2webForm.bind(_this2, $(field), $stanza));
+                            $form.append(utils.xForm2webForm.bind(_this2, field, stanza));
                         });
                     } else {
                         // Show fields
@@ -71291,7 +71464,9 @@ return __p
             };
 
             _converse.registerPongHandler = function () {
-                _converse.connection.disco.addFeature(Strophe.NS.PING);
+                if (!_.isUndefined(_converse.connection.disco)) {
+                    _converse.connection.disco.addFeature(Strophe.NS.PING);
+                }
                 _converse.connection.ping.addPingHandler(_converse.pong);
             };
 
@@ -71856,7 +72031,7 @@ return __p
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -71918,15 +72093,15 @@ return __p
                 },
                 renderRegistrationPanel: function renderRegistrationPanel() {
                     this.__super__.renderRegistrationPanel.apply(this, arguments);
-
-                    var el = document.getElementById('converse-register');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    if (this.__super__._converse.allow_registration) {
+                        var el = document.getElementById('converse-register');
+                        el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    }
                     return this;
                 },
                 renderLoginPanel: function renderLoginPanel() {
                     this.__super__.renderLoginPanel.apply(this, arguments);
                     this.el.classList.add("fullscreen");
-
                     var el = document.getElementById('converse-login');
                     el.parentNode.insertBefore(createBrandHeadingElement(), el);
                     return this;

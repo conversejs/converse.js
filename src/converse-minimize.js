@@ -256,7 +256,7 @@
                         // fullscreen. In this case we don't trim.
                         return;
                     }
-                    _converse.api.waitUntil('chatBoxesInitialized').then(() => {
+                    _converse.api.waitUntil('minimizedChatsInitialized').then(() => {
                         const $minimized = _.get(_converse.minimized_chats, '$el'),
                             minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
                             new_id = newchat ? newchat.model.get('id') : null;
@@ -383,10 +383,25 @@
                 initialize () {
                     this.render();
                     this.initToggle();
+                    this.addMultipleChats(this.model.where({'minimized': true}));
                     this.model.on("add", this.onChanged, this);
                     this.model.on("destroy", this.removeChat, this);
                     this.model.on("change:minimized", this.onChanged, this);
                     this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                },
+
+                render () {
+                    if (!this.el.parentElement) {
+                        this.el.innerHTML = tpl_chats_panel();
+                        _converse.chatboxviews.el.appendChild(this.el);
+                    }
+                    if (this.keys().length === 0) {
+                        this.el.classList.add('hidden');
+                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+                        this.el.classList.remove('hidden');
+                        _converse.chatboxviews.trimChats();
+                    }
+                    return this.$el;
                 },
 
                 tearDown () {
@@ -407,21 +422,6 @@
                     this.toggleview.model.fetch();
                 },
 
-                render () {
-                    if (!this.el.parentElement) {
-                        this.el.innerHTML = tpl_chats_panel();
-                        _converse.chatboxviews.el.appendChild(this.el);
-                    }
-                    if (this.keys().length === 0) {
-                        this.el.classList.add('hidden');
-                        _converse.chatboxviews.trimChats.bind(_converse.chatboxviews);
-                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
-                        this.el.classList.remove('hidden');
-                        _converse.chatboxviews.trimChats();
-                    }
-                    return this.$el;
-                },
-
                 toggle (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
@@ -438,6 +438,20 @@
                     } else if (this.get(item.get('id'))) {
                         this.removeChat(item);
                     }
+                },
+
+                addMultipleChats (items) {
+                    _.each(items, (item) => {
+                        const existing = this.get(item.get('id'));
+                        if (existing && existing.$el.parent().length !== 0) {
+                            return;
+                        }
+                        const view = new _converse.MinimizedChatBoxView({model: item});
+                        this.$('.minimized-chats-flyout').append(view.render());
+                        this.add(item.get('id'), view);
+                    });
+                    this.toggleview.model.set({'num_minimized': this.keys().length});
+                    this.render();
                 },
 
                 addChat (item) {

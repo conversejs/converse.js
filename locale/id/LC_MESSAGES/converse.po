@@ -9,30 +9,37 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-29 13:20+0200\n"
-"PO-Revision-Date: 2014-01-25 21:30+0700\n"
-"Last-Translator: Priyadi Iman Nurcahyo <priyadi@priyadi.net>\n"
-"Language-Team: Bahasa Indonesia\n"
+"PO-Revision-Date: 2017-09-02 07:46+0000\n"
+"Last-Translator: Imam Ilham Khawarizma <khrzm@tuta.io>\n"
+"Language-Team: Indonesian "
+"<https://hosted.weblate.org/projects/conversejs/translations/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.17-dev\n"
 
 #: src/converse-bookmarks.js:75 src/converse-bookmarks.js:142
 #: src/converse-roomslist.js:140
+#, fuzzy
 msgid "Bookmark this room"
-msgstr ""
+msgstr "Tandai ruang ini"
 
 #: src/converse-bookmarks.js:143
+#, fuzzy
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "Nama untuk bookmark ini:"
 
 #: src/converse-bookmarks.js:144
+#, fuzzy
 msgid "Would you like this room to be automatically joined upon startup?"
-msgstr ""
+msgstr "Apakah Anda ingin ruangan ini digabungkan secara otomatis saat startup?"
 
 #: src/converse-bookmarks.js:145
+#, fuzzy
 msgid "What should your nickname for this room be?"
-msgstr ""
+msgstr "Apa nama panggilanmu untuk ruangan ini?"
 
 #: src/converse-bookmarks.js:147 src/converse-controlbox.js:531
 msgid "Save"
@@ -45,34 +52,37 @@ msgstr "Batal"
 #: src/converse-bookmarks.js:226
 #, fuzzy, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Klik untuk menghapus teman ini"
+msgstr "Apakah anda yakin ingin menghapus bookmark \"% 1 $ s 1\"?"
 
 #: src/converse-bookmarks.js:335
+#, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
+msgstr "Maaf, ada yang tidak beres saat mencoba menyimpan bookmark Anda."
 
 #: src/converse-bookmarks.js:421
 #, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Klik untuk membuka ruangan ini"
+msgstr "Klik untuk membuka daftar bookmark"
 
 #: src/converse-bookmarks.js:422
+#, fuzzy
 msgid "Bookmarks"
-msgstr ""
+msgstr "Bookmark"
 
 #: src/converse-bookmarks.js:459 src/converse-roomslist.js:138
 #, fuzzy
 msgid "Leave this room"
-msgstr "Klik untuk membuka ruangan ini"
+msgstr "Meninggalkan ruangan ini"
 
 #: src/converse-bookmarks.js:460
+#, fuzzy
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "Menghapus bookmark ini"
 
 #: src/converse-bookmarks.js:461 src/converse-roomslist.js:139
 #, fuzzy
 msgid "Unbookmark this room"
-msgstr "Klik untuk membuka ruangan ini"
+msgstr "Melepas bookmark ruangan ini"
 
 #: src/converse-bookmarks.js:462 src/converse-muc.js:2493
 #: src/converse-roomslist.js:141
@@ -88,7 +98,7 @@ msgstr "Klik untuk membuka ruangan ini"
 #: src/converse-muc.js:505
 #, fuzzy
 msgid "You have unread messages"
-msgstr "Hapus pesan"
+msgstr "Anda mempunyai pesan yang belum dibaca"
 
 #: src/converse-chatview.js:265
 #, fuzzy
@@ -101,47 +111,52 @@ msgstr "Pesan pribadi"
 
 #: src/converse-chatview.js:267 src/converse-muc.js:502
 msgid "Send"
-msgstr ""
+msgstr "Kirim"
 
 #: src/converse-chatview.js:487
 msgid "me"
 msgstr "saya"
 
 #: src/converse-chatview.js:494
+#, fuzzy
 msgid ""
 "A very large message has been received.This might be due to an attack meant "
 "to degrade the chat performance.Output has been shortened."
 msgstr ""
+"Sebuah pesan yang sangat besar telah diterima. Ini mungkin karena serangan "
+"yang dimaksudkan untuk menurunkan kinerja obrolan. Output telah dipersingkat."
 
 #: src/converse-chatview.js:536
 msgid "Typing from another device"
-msgstr ""
+msgstr "Mengetik dari perangkat lain"
 
 #: src/converse-chatview.js:538
 msgid "is typing"
-msgstr ""
+msgstr "sedang menulis"
 
 #: src/converse-chatview.js:543
+#, fuzzy
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "Berhenti mengetik dari perangkat lain"
 
 #: src/converse-chatview.js:545
 msgid "has stopped typing"
-msgstr ""
+msgstr "telah berhenti menulis"
 
 #: src/converse-chatview.js:550 src/converse-chatview.js:812
 #: src/converse-notification.js:182
 #, fuzzy
 msgid "has gone away"
-msgstr "Teman ini tidak di tempat"
+msgstr "telah pergi"
 
 #: src/converse-chatview.js:661 src/converse-muc.js:1030
 msgid "Show this menu"
 msgstr "Tampilkan menu ini"
 
 #: src/converse-chatview.js:662
+#, fuzzy
 msgid "Write in the third person"
-msgstr "Tulis ini menggunakan bahasa pihak ketiga"
+msgstr "Tulis ini menggunakan pihak ketiga"
 
 #: src/converse-chatview.js:663 src/converse-muc.js:1028
 msgid "Remove messages"
@@ -149,40 +164,42 @@ msgstr "Hapus pesan"
 
 #: src/converse-chatview.js:750
 msgid "Are you sure you want to clear the messages from this chat box?"
-msgstr ""
+msgstr "Apakah anda yakin ingin menghapus pesan dari kotak obrolan ini?"
 
 #: src/converse-chatview.js:810 src/converse-notification.js:180
 #, fuzzy
 msgid "has gone offline"
-msgstr "Teman ini tidak terhubung"
+msgstr "telah offline"
 
 #: src/converse-chatview.js:814 src/converse-notification.js:184
 #, fuzzy
 msgid "is busy"
-msgstr "sibuk"
+msgstr "sedang sibuk"
 
 #: src/converse-chatview.js:857
-#, fuzzy
 msgid "Clear all messages"
-msgstr "Pesan pribadi"
+msgstr "Hapus semua pesan"
 
 #: src/converse-chatview.js:858
+#, fuzzy
 msgid "Insert a smiley"
-msgstr ""
+msgstr "Masukan wajah senyum"
 
 #: src/converse-chatview.js:859
+#, fuzzy
 msgid "Start a call"
-msgstr ""
+msgstr "Memulai panggilan"
 
 #: src/converse-controlbox.js:190 src/converse-core.js:752
 #: src/converse-rosterview.js:89
+#, fuzzy
 msgid "Contacts"
-msgstr "Teman"
+msgstr "Kontak"
 
 #: src/converse-controlbox.js:393
 #, fuzzy
 msgid "XMPP Username:"
-msgstr "Nama pengguna XMPP/Jabber:"
+msgstr "Username XMPP:"
 
 #: src/converse-controlbox.js:394
 msgid "Password:"
@@ -191,7 +208,7 @@ msgstr "Kata sandi:"
 #: src/converse-controlbox.js:395
 #, fuzzy
 msgid "Click here to log in anonymously"
-msgstr "Ruangan ini tidak anonim"
+msgstr "Klik disini untuk memasuki penyamaran"
 
 #: src/converse-controlbox.js:396
 msgid "Log In"
@@ -200,16 +217,15 @@ msgstr "Masuk"
 #: src/converse-controlbox.js:397
 #, fuzzy
 msgid "Username"
-msgstr "Nama pengguna XMPP/Jabber:"
+msgstr "Username"
 
 #: src/converse-controlbox.js:397
 msgid "user@server"
 msgstr ""
 
 #: src/converse-controlbox.js:398
-#, fuzzy
 msgid "password"
-msgstr "Kata sandi:"
+msgstr "kata sandi"
 
 #: src/converse-controlbox.js:405
 msgid "Sign in"
@@ -223,14 +239,16 @@ msgid "I am %1$s"
 msgstr "Saya %1$s"
 
 #: src/converse-controlbox.js:501 src/converse-controlbox.js:582
+#, fuzzy
 msgid "Click here to write a custom status message"
-msgstr "Klik untuk menulis status kustom"
+msgstr "Klik disini untuk menulis status pesan kustom"
 
 #: src/converse-controlbox.js:502 src/converse-controlbox.js:583
 msgid "Click to change your chat status"
-msgstr "Klik untuk mengganti status"
+msgstr "Klik untuk mengganti status obrolan"
 
 #: src/converse-controlbox.js:530
+#, fuzzy
 msgid "Custom status"
 msgstr "Status kustom"
 
@@ -243,17 +261,18 @@ msgid "busy"
 msgstr "sibuk"
 
 #: src/converse-controlbox.js:563
+#, fuzzy
 msgid "away for long"
 msgstr "lama tak di tempat"
 
 #: src/converse-controlbox.js:565
+#, fuzzy
 msgid "away"
-msgstr "tak di tempat"
+msgstr "pergi"
 
 #: src/converse-controlbox.js:567
-#, fuzzy
 msgid "offline"
-msgstr "Tak Terhubung"
+msgstr "tidak terhubung"
 
 #: src/converse-controlbox.js:611 src/converse-rosterview.js:158
 msgid "Online"
@@ -264,12 +283,13 @@ msgid "Busy"
 msgstr "Sibuk"
 
 #: src/converse-controlbox.js:613 src/converse-rosterview.js:161
+#, fuzzy
 msgid "Away"
 msgstr "Pergi"
 
 #: src/converse-controlbox.js:614 src/converse-rosterview.js:163
 msgid "Offline"
-msgstr "Tak Terhubung"
+msgstr "Tidak Terhubung"
 
 #: src/converse-controlbox.js:615
 #, fuzzy
@@ -277,55 +297,63 @@ msgid "Log out"
 msgstr "Masuk"
 
 #: src/converse-controlbox.js:621
+#, fuzzy
 msgid "Click to add new chat contacts"
-msgstr "Klik untuk menambahkan teman baru"
+msgstr "Klik untuk menambahkan obrolan baru"
 
 #: src/converse-controlbox.js:622
+#, fuzzy
 msgid "Add a contact"
-msgstr "Tambah teman"
+msgstr "Tambah kontak"
 
 #: src/converse-controlbox.js:654
+#, fuzzy
 msgid "Contact name"
-msgstr "Nama teman"
+msgstr "Nama kontak"
 
 #: src/converse-controlbox.js:655
 msgid "Search"
 msgstr "Cari"
 
 #: src/converse-controlbox.js:660
+#, fuzzy
 msgid "e.g. user@example.org"
-msgstr ""
+msgstr "contoh user@example.org"
 
 #: src/converse-controlbox.js:661
 msgid "Add"
 msgstr "Tambah"
 
 #: src/converse-controlbox.js:685
+#, fuzzy
 msgid "No users found"
 msgstr "Pengguna tak ditemukan"
 
 #: src/converse-core.js:1148
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr ""
+"Maaf, ada sesuatu kesalahan saat mencoba menambahkan %1$s1 sebagai kontak"
 
 #: src/converse-core.js:1292
+#, fuzzy
 msgid "This client does not allow presence subscriptions"
-msgstr ""
+msgstr "Klien ini tidak mengizinkan langganan kehadiran"
 
 #: src/converse-core.js:1366
 #, fuzzy
 msgid "Click to hide these contacts"
-msgstr "Klik untuk menghapus teman ini"
+msgstr "Klik untuk menyembunyikan kontak ini"
 
 #: src/converse-headline.js:78
 #, fuzzy
 msgid "Close this box"
-msgstr "Klik untuk menghapus teman ini"
+msgstr "Keluar dari kotak ini"
 
 #: src/converse-minimize.js:196 src/converse-minimize.js:532
+#, fuzzy
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "Meminimimalkan kotak chat ini"
 
 #: src/converse-minimize.js:339
 #, fuzzy
@@ -333,8 +361,9 @@ msgid "Click to restore this chat"
 msgstr "Klik untuk menghapus teman ini"
 
 #: src/converse-minimize.js:506
+#, fuzzy
 msgid "Minimized"
-msgstr ""
+msgstr "Diminimalkan"
 
 #: src/converse-muc.js:280
 msgid "This room is not anonymous"

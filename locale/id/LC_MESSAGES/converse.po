@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-29 13:20+0200\n"
-"PO-Revision-Date: 2017-09-02 07:46+0000\n"
+"PO-Revision-Date: 2017-09-03 20:13+0000\n"
 "Last-Translator: Imam Ilham Khawarizma <khrzm@tuta.io>\n"
 "Language-Team: Indonesian "
 "<https://hosted.weblate.org/projects/conversejs/translations/id/>\n"
@@ -29,7 +29,7 @@ msgstr "Tandai ruang ini"
 #: src/converse-bookmarks.js:143
 #, fuzzy
 msgid "The name for this bookmark:"
-msgstr "Nama untuk bookmark ini:"
+msgstr "Nama untuk penanda:"
 
 #: src/converse-bookmarks.js:144
 #, fuzzy
@@ -42,32 +42,34 @@ msgid "What should your nickname for this room be?"
 msgstr "Apa nama panggilanmu untuk ruangan ini?"
 
 #: src/converse-bookmarks.js:147 src/converse-controlbox.js:531
+#, fuzzy
 msgid "Save"
 msgstr "Simpan"
 
 #: src/converse-bookmarks.js:148 src/converse-register.js:253
+#, fuzzy
 msgid "Cancel"
 msgstr "Batal"
 
 #: src/converse-bookmarks.js:226
 #, fuzzy, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "Apakah anda yakin ingin menghapus bookmark \"% 1 $ s 1\"?"
+msgstr "Apakah anda yakin ingin menghapus penanda \"%1$s 1\"?"
 
 #: src/converse-bookmarks.js:335
 #, fuzzy
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr "Maaf, ada yang tidak beres saat mencoba menyimpan bookmark Anda."
+msgstr "Maaf, ada yang tidak beres saat mencoba menyimpan penanda Anda."
 
 #: src/converse-bookmarks.js:421
 #, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "Klik untuk membuka daftar bookmark"
+msgstr "Klik untuk membuka daftar penanda"
 
 #: src/converse-bookmarks.js:422
 #, fuzzy
 msgid "Bookmarks"
-msgstr "Bookmark"
+msgstr "Penanda"
 
 #: src/converse-bookmarks.js:459 src/converse-roomslist.js:138
 #, fuzzy
@@ -77,20 +79,22 @@ msgstr "Meninggalkan ruangan ini"
 #: src/converse-bookmarks.js:460
 #, fuzzy
 msgid "Remove this bookmark"
-msgstr "Menghapus bookmark ini"
+msgstr "Hapus penanda ini"
 
 #: src/converse-bookmarks.js:461 src/converse-roomslist.js:139
 #, fuzzy
 msgid "Unbookmark this room"
-msgstr "Melepas bookmark ruangan ini"
+msgstr "Melepas penanda ruangan ini"
 
 #: src/converse-bookmarks.js:462 src/converse-muc.js:2493
 #: src/converse-roomslist.js:141
+#, fuzzy
 msgid "Show more information on this room"
-msgstr "Tampilkan informasi ruangan ini"
+msgstr "Tampilkan lebih informasi ruangan ini"
 
 #: src/converse-bookmarks.js:465 src/converse-muc.js:2492
 #: src/converse-roomslist.js:143
+#, fuzzy
 msgid "Click to open this room"
 msgstr "Klik untuk membuka ruangan ini"
 
@@ -106,14 +110,17 @@ msgid "Close this chat box"
 msgstr "Klik untuk menghapus teman ini"
 
 #: src/converse-chatview.js:266
+#, fuzzy
 msgid "Personal message"
 msgstr "Pesan pribadi"
 
 #: src/converse-chatview.js:267 src/converse-muc.js:502
+#, fuzzy
 msgid "Send"
 msgstr "Kirim"
 
 #: src/converse-chatview.js:487
+#, fuzzy
 msgid "me"
 msgstr "saya"
 
@@ -199,7 +206,7 @@ msgstr "Kontak"
 #: src/converse-controlbox.js:393
 #, fuzzy
 msgid "XMPP Username:"
-msgstr "Username XMPP:"
+msgstr "Nama pengguna XMPP:"
 
 #: src/converse-controlbox.js:394
 msgid "Password:"
@@ -215,9 +222,8 @@ msgid "Log In"
 msgstr "Masuk"
 
 #: src/converse-controlbox.js:397
-#, fuzzy
 msgid "Username"
-msgstr "Username"
+msgstr "Nama pengguna"
 
 #: src/converse-controlbox.js:397
 msgid "user@server"
@@ -318,7 +324,7 @@ msgstr "Cari"
 #: src/converse-controlbox.js:660
 #, fuzzy
 msgid "e.g. user@example.org"
-msgstr "contoh user@example.org"
+msgstr "contoh pengguna@contoh.org"
 
 #: src/converse-controlbox.js:661
 msgid "Add"
@@ -487,16 +493,17 @@ msgstr "Pesan"
 #: src/converse-muc.js:534
 #, fuzzy
 msgid "Close and leave this room"
-msgstr "Klik untuk membuka ruangan ini"
+msgstr "Tutup dan tinggalkan ruang ini"
 
 #: src/converse-muc.js:535
 #, fuzzy
 msgid "Configure this room"
-msgstr "Klik untuk membuka ruangan ini"
+msgstr "Konfigurasi ruang ini"
 
 #: src/converse-muc.js:579
+#, fuzzy
 msgid "Hide the list of occupants"
-msgstr ""
+msgstr "Sembunyikan daftar penghuni"
 
 #: src/converse-muc.js:963
 #, javascript-format
@@ -508,15 +515,17 @@ msgstr ""
 #: src/converse-muc.js:976
 #, fuzzy
 msgid "Are you sure you want to clear the messages from this room?"
-msgstr "Anda bukan anggota dari ruangan ini"
+msgstr "Apakah anda yakin ingin menghapus pesan pada ruang ini?"
 
 #: src/converse-muc.js:984
+#, fuzzy
 msgid "Error: could not execute the command"
-msgstr ""
+msgstr "Kesalahan: tidak bisa menjalankan perintah"
 
 #: src/converse-muc.js:1026
+#, fuzzy
 msgid "Change user's affiliation to admin"
-msgstr ""
+msgstr "Ubah afiliasi pengguna ke admin"
 
 #: src/converse-muc.js:1027
 #, fuzzy
@@ -524,8 +533,9 @@ msgid "Ban user from room"
 msgstr "Larang pengguna dari ruangan"
 
 #: src/converse-muc.js:1029
+#, fuzzy
 msgid "Change user role to occupant"
-msgstr ""
+msgstr "Ubah peran pengguna menjadi penghuni"
 
 #: src/converse-muc.js:1031
 #, fuzzy

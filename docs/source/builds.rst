@@ -47,7 +47,7 @@ This command does the following:
 
 * Also, the CSS files in the ``./css`` directory will be minified.
 
-The Javascript build files are contained in the ``./dist`` directory:
+The JavaScript build files are contained in the ``./dist`` directory:
 
 .. code-block:: bash
 

@@ -59,7 +59,7 @@ translated into, do the following
 
 Please make sure to add the following attributes at the top of the file (under
 *Content-Transfer-Encoding*). They are required as configuration settings for Jed,
-the Javascript translations library that we're using.
+the JavaScript translations library that we're using.
 
 .. code-block:: po
 
@@ -90,7 +90,7 @@ The resulting `.po` file is then what gets translated.
 
 
 -----------------------------------------------------
-Generating a Javascript file from a translations file
+Generating a JavaScript file from a translations file
 -----------------------------------------------------
 
 Unfortunately `Jed <http://slexaxton.github.io/Jed>`_, which we use for

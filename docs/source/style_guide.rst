@@ -14,10 +14,10 @@ Software Style Guide
     rely on a transpiler and still support older browsers.
 
 Most of the style guide recommendations here come from Douglas Crockford's book
-`Javascript, the good parts <http://shop.oreilly.com/product/9780596517748.do>`_
+`JavaScript, the good parts <http://shop.oreilly.com/product/9780596517748.do>`_
 
 This style guide is fairly opinionated. Some of these opinions perhaps don't
-conform to your expectations on how Javascript code should look like.
+conform to your expectations on how JavaScript code should look like.
 I apologize for that. However, for the sake of sanity, consistency and having
 code that is pleasing to the eye, please stick to these guidelines.
 
@@ -103,7 +103,7 @@ and method invocations.
 Checking for equality
 ---------------------
 
-Javascript has a strict ``===`` and less strict ``==`` equality operator. The
+JavaScript has a strict ``===`` and less strict ``==`` equality operator. The
 stricter equality operator also does type checking. To avoid subtle bugs when
 doing comparisons, always use the strict equality check.
 

@@ -50,7 +50,7 @@ Public API methods
 ==================
 
 Publich API methods are those methods that are accessible on the global
-``window.converse`` object. They are public, because any Javascript in the page
+``window.converse`` object. They are public, because any JavaScript in the page
 can call them. Public methods therefore don't expose any sensitive or closured
 data. To do that, you'll need to create a plugin, which has access to the
 private API method.
@@ -325,7 +325,7 @@ room under the  ``with`` key.
 
 The ``start`` and ``end`` parameters are used to query for messages
 within a certain timeframe. The passed in date values may either be ISO8601
-formatted date strings, or Javascript Date objects.
+formatted date strings, or JavaScript Date objects.
 
 .. code-block:: javascript
 
@@ -1070,7 +1070,7 @@ Example:
 The **listen** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own Javascript.
+Converse.js emits events to which you can subscribe from your own JavaScript.
 
 Concerning events, the following methods are available under the "listen"
 grouping:

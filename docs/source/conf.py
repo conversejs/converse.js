@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Converse.js'
-copyright = u'2014, JC Brand'
+copyright = u'2017, JC Brand'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -177,7 +177,7 @@ html_favicon = "_static/favicon.ico"
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {'**': ['localtoc.html', 'sourcelink.html', 'searchbox.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

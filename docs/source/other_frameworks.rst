@@ -5,10 +5,6 @@
 Integrating converse.js into other frameworks
 =============================================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 Angular.js
 ----------
 

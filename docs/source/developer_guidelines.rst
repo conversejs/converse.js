@@ -5,10 +5,6 @@
 Developer guidelines
 ====================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 If you want to work with the non-minified JavaScript and CSS files you'll soon
 notice that there are references to a missing *node_modules* directory.
 Please follow the instructions below to create these directories and fetch Converse's

@@ -6,10 +6,6 @@
 The converse.js developer API
 =============================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. note:: The API documented here is available in Converse.js 0.8.4 and higher.
         Earlier versions of Converse.js might have different API methods or none at all.
 

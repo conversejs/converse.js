@@ -7,10 +7,6 @@
 Events and promises
 ===================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 Converse.js and its plugins emit various events which you can listen to via the
 :ref:`listen-grouping`.
 

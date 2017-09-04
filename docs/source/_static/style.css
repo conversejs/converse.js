@@ -28,6 +28,28 @@ h5 {
     margin-right: 0.5em;
 }
 
+.nav-header {
+    font-weight: bold;
+    font-size: 110%;
+}
+
+.sidebar-title {
+    padding-left: 15px;
+}
+
+#sidebar > .nav-list {
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+.bs-sidenav .nav .nav > li > a {
+    font-size: 100%;
+}
+.bs-sidenav .nav .nav .nav > li > a {
+    font-size: 90%;
+	color: gray;
+}
+
 /*
 Copyright (c) 2012 Terrence Ryan
 

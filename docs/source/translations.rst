@@ -6,10 +6,6 @@
 Translations
 ============
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. note::
    Translations take up a lot of space and will bloat your minified file.
    At the time of writing, all the translations add about 50KB of extra data to

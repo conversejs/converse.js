@@ -6,10 +6,6 @@
 Features
 ========
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 Off-the-record encryption
 =========================
 

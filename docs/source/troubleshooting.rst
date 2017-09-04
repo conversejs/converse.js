@@ -6,10 +6,6 @@
 Troubleshooting and debugging
 =============================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 General tips on debugging Converse.js
 =====================================
 

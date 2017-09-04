@@ -6,10 +6,6 @@
 Setup and integration
 =====================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. _what-you-will-need:
 
 ------------------

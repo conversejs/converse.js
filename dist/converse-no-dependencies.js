@@ -6744,8 +6744,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 });
 
-//# sourceMappingURL=pluggable.js.map
-;
+//# sourceMappingURL=pluggable.js.map;
 
 
 // Converse.js (A browser based XMPP chat client)

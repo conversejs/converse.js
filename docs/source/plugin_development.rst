@@ -30,8 +30,8 @@ To more deeply understand how this plugin architecture works, please read the
 and to understand its inner workins, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
-Playing with a Converse.js plugin in JSFiddle
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trying out a plugin in JSFiddle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Because Converse.js consists only of JavaScript, HTML and CSS (with no backend
 code required like PHP, Python or Ruby) it runs fine in JSFiddle.
@@ -41,10 +41,34 @@ initialized and also when a chat message gets rendered:
 
 https://jsfiddle.net/4drfaok0/15/
 
+Generating a plugin with Yeoman
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The rest of this document explains how to write a plugin for Converse.js, and
+ends with a documented example of a plugin.
+
+You can use a `Yeoman <http://yeoman.io/>`_ code generator, called
+`generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_ to
+generate plugin scaffolding code, which you can use as a starting point and
+basis for writing your plugin.
+
+Please refer to the `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_
+README for information on how to use it.
+
 Registering a plugin
 --------------------
 
-You register a converse.js plugin as follows:
+Plugins need to be registered (and whitelisted) before they can be loaded and
+initialized.
+
+You register a converse.js plugin by calling ``converse.plugins.add``.
+
+The plugin itself is a JavaScript object which usually has at least an
+``initialize`` method, which gets called at the end of the
+``converse.initialize`` method which is the top-level method that gets called
+by the website to configure and initialize Converse.js itself.
+
+Here's an example code snippet:
 
 .. code-block:: javascript
 
@@ -63,7 +87,6 @@ You register a converse.js plugin as follows:
 .. note:: It's important that `converse.plugins.add` is called **before**
     `converse.initialize` is called. Otherwise the plugin will never get
     registered and never get called.
-
 
 Whitelisting of plugins
 -----------------------

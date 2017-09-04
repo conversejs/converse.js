@@ -6,10 +6,6 @@
 Writing Documentation
 =====================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. note:: Contributions to the documentation are much appreciated.
 
 What is used to write the documentation?

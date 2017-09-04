@@ -6,10 +6,6 @@
 Configuration
 =============
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 The included minified JS and CSS files can be used for demoing or testing, but
 you'll want to configure *Converse.js* to suit your needs before you deploy it
 on your website.

@@ -8,10 +8,6 @@
 Theming
 =======
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 Setting up your environment
 ===========================
 

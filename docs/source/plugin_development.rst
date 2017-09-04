@@ -30,30 +30,27 @@ To more deeply understand how this plugin architecture works, please read the
 and to understand its inner workins, please refer to the `annotated source code
 <https://jcbrand.github.io/pluggable.js/docs/pluggable.html>`_.
 
-Trying out a plugin in JSFiddle
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note:: **Trying out a plugin in JSFiddle**
 
-Because Converse.js consists only of JavaScript, HTML and CSS (with no backend
-code required like PHP, Python or Ruby) it runs fine in JSFiddle.
+    Because Converse.js consists only of JavaScript, HTML and CSS (with no backend
+    code required like PHP, Python or Ruby) it runs fine in JSFiddle.
 
-Here's an Fiddle with a Converse.js plugin that calls `alert` once it gets
-initialized and also when a chat message gets rendered:
+    Here's a Fiddle with a Converse.js plugin that calls `alert` once it gets
+    initialized and also when a chat message gets rendered: https://jsfiddle.net/4drfaok0/15/
 
-https://jsfiddle.net/4drfaok0/15/
 
-Generating a plugin with Yeoman
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note:: **Generating a plugin with Yeoman**
 
-The rest of this document explains how to write a plugin for Converse.js, and
-ends with a documented example of a plugin.
+    The rest of this document explains how to write a plugin for Converse.js and
+    ends with a documented example of a plugin.
 
-You can use a `Yeoman <http://yeoman.io/>`_ code generator, called
-`generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_ to
-generate plugin scaffolding code, which you can use as a starting point and
-basis for writing your plugin.
+    There is a `Yeoman <http://yeoman.io/>`_ code generator, called
+    `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_, which
+    you can use to generate plugin scaffolding/boilerplate, which you can use as a
+    starting point and basis for writing your plugin.
 
-Please refer to the `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_
-README for information on how to use it.
+    Please refer to the `generator-conversejs <https://github.com/jcbrand/generator-conversejs>`_
+    README for information on how to use it.
 
 Registering a plugin
 --------------------

@@ -37,6 +37,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Features
 
+-   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://jcbrand.github.io/pluggable.js/)
 -   Single-user chat
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)

@@ -12,22 +12,37 @@ Setup and integration
 What you will need
 ------------------
 
-If you'd like to host your own version of converse.js or you would like to
-integrate it into your website, then you'll need to set up and configure some
-more server components.
+If you'd like to host your own version of Converse.js or you would like to
+integrate it into your website, then you'll need to do some further setup work.
 
-For example, if you want to allow chat accounts under your own domain (for
-example, the same domain as your website), then you will need to set up your
-own :ref:`XMPP server`.
+For example, if you want to allow chat accounts under your own domain (i.e.
+the same domain as your website), then you will need to set up your
+own :ref:`XMPP server` that hosts accounts under that domain.
 
-Besides an XMPP server, you also need a way for converse.js (which uses HTTP), to
-communicate with XMPP servers (which use XMPP).
+Besides an XMPP server, you'll also need a way for Converse.js (which uses HTTP
+or Websocket), to communicate with the XMPP server(s).
 
-For this, you'll need :ref:`BOSH Connection Manager`.
+Here you have two choices. You can either use a :ref:`BOSH Connection Manager`
+(standalone or integrated into the XMPP server) which allows you to use the
+XMPP protocol over HTTP, or you can use a websocket connection if your XMPP
+server supports it.
 
-Lastly, if you want to maintain a single chat session for your website's users,
-you'll need to set up a BOSH session on your server, which converse.js can then
-connect to once the page loads. Please see the section: :ref:`session-support`.
+Furthermore, it's possible to let users who are authenticated against your web
+application to also automatically be logged in to the XMPP server.
+
+There are various ways in which this can be achived. One way of doing this is
+to use a directory service such as LDAP or Active Directory and to share it
+between your backend web application and your XMPP server. The diagram below
+assumes such a setup.
+
+For other options, please read the section: :ref:`session-support`.
+
+.. figure:: images/diagram.png
+   :align: center
+   :alt: A diagram of a possible setup, consisting of Converse.js, a web server, a backend web application, an XMPP server, a user directory such as LDAP and an XMPP server.
+
+   This diagram shows a potential setup containing various services (image generated with `draw.io <https://draw.io>`_).
+
 
 .. _`XMPP server`:
 
@@ -36,14 +51,13 @@ An XMPP server
 
 *Converse.js* implements `XMPP <http://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
-server (Jabber is really just a synonym for XMPP).
+server (Jabber® is an older and more user-friendly synonym for XMPP).
 
 You can connect to public XMPP servers like ``jabber.org`` but if you want to
 have :ref:`session support <session-support>` you'll have to set up your own XMPP server.
 
-You can find a list of public XMPP servers/providers on `xmpp.net <http://xmpp.net>`_ and a list of
-servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
-
+You can find a list of public XMPP servers/providers on `xmpp.net <https://list.jabber.at>`_
+and a list of servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
 
 .. _`BOSH connection manager`:
 
@@ -51,10 +65,11 @@ A BOSH Connection Manager
 =========================
 
 Your website and *Converse.js* use `HTTP <https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol>`_
-as protocol to communicate with the webserver. HTTP connections are stateless and usually shortlived.
+as protocol to communicate with the webserver. HTTP connections are
+stateless and usually shortlived.
 
 XMPP on the other hand, is the protocol that enables instant messaging, and
-its connections are stateful and usually longer.
+its connections are stateful and usually last much longer.
 
 To enable a web application like *Converse.js* to communicate with an XMPP
 server, we need a proxy which acts as a bridge between these two protocols.

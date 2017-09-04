@@ -38,7 +38,7 @@ h5 {
 }
 
 #sidebar > .nav-list {
-    height: 100vh;
+    max-height: 70vh;
     overflow-y: scroll;
 }
 

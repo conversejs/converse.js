@@ -6,10 +6,6 @@
 Troubleshooting and debugging
 =============================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 General tips on debugging Converse.js
 =====================================
 
@@ -42,13 +38,13 @@ more likely on the XMPP server's end (perhaps a misconfiguration?). If they
 **are** logged, then there might be a bug or misconfiguration in Converse.js.
 
 
-Conflicts with other Javascript libraries
+Conflicts with other JavaScript libraries
 =========================================
 
 Problem: 
 ---------
 
-You are using other Javascript libraries (like JQuery plugins), and
+You are using other JavaScript libraries (like JQuery plugins), and
 get errors like these in your browser console::
 
     Uncaught TypeError: Object [object Object] has no method 'xxx' from example.js

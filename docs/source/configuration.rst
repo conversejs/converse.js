@@ -6,10 +6,6 @@
 Configuration
 =============
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 The included minified JS and CSS files can be used for demoing or testing, but
 you'll want to configure *Converse.js* to suit your needs before you deploy it
 on your website.
@@ -261,7 +257,7 @@ If ``authentication`` is set to ``anonymous``, then you will also need to provid
 server's domain via the `jid`_ setting.
 
 This is a useful setting if you'd like to create a custom login form in your
-website. You'll need to write some Javascript to accept that custom form's
+website. You'll need to write some JavaScript to accept that custom form's
 login credentials, then you can pass those credentials (``jid`` and
 ``password``) to ``converse.initialize`` to start converse.js and log the user
 into their XMPP account.
@@ -1341,7 +1337,7 @@ xhr_custom_status
 * Default:  ``false``
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 This option will let converse.js make an AJAX POST with your changed custom chat status to a
 remote server.
@@ -1350,7 +1346,7 @@ xhr_custom_status_url
 ---------------------
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 * Default:  Empty string
 
@@ -1367,7 +1363,7 @@ xhr_user_search
 * Default:  ``false``
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 There are two ways to add users.
 
@@ -1392,7 +1388,7 @@ xhr_user_search_url
 -------------------
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 * Default:  Empty string
 

@@ -51,6 +51,10 @@
                 }
                 .chat-msg-content {
                     line-height: $line-height;
+                    .emojione {
+                        height: $line-height;
+                        margin-bottom: -$line-height/4;
+                    }
                 }
             }
         }

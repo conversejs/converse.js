@@ -10,10 +10,6 @@ The Converse.js User Manual
 
    <br />
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. figure:: images/homepage.jpg
    :align: right
    :alt: The converse.js website

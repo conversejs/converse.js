@@ -1949,6 +1949,9 @@ body {
         line-height: 22px; }
       #conversejs .chatbox .chat-body .chat-message .chat-msg-content {
         line-height: 22px; }
+        #conversejs .chatbox .chat-body .chat-message .chat-msg-content .emojione {
+          height: 22px;
+          margin-bottom: -5.5px; }
   #conversejs .chatbox .chat-content {
     padding: 0 1em 1em 1em;
     border-top-left-radius: 7px;

@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-29 13:20+0200\n"
-"PO-Revision-Date: 2017-09-07 10:46+0000\n"
-"Last-Translator: Imam Ilham Khawarizma <khrzm@tuta.io>\n"
+"PO-Revision-Date: 2017-09-08 12:24+0000\n"
+"Last-Translator: Theodore Fabian Rudy <dorerudy@gmail.com>\n"
 "Language-Team: Indonesian "
 "<https://hosted.weblate.org/projects/conversejs/translations/id/>\n"
 "Language: id\n"
@@ -22,12 +22,10 @@ msgstr ""
 
 #: src/converse-bookmarks.js:75 src/converse-bookmarks.js:142
 #: src/converse-roomslist.js:140
-#, fuzzy
 msgid "Bookmark this room"
 msgstr "Tandai ruang ini"
 
 #: src/converse-bookmarks.js:143
-#, fuzzy
 msgid "The name for this bookmark:"
 msgstr "Nama untuk penanda ini:"
 

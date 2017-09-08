@@ -43,7 +43,6 @@ require.config({
         "strophe.vcard":            "node_modules/strophejs-plugin-vcard/strophe.vcard",
         "text":                     "node_modules/text/text",
         "tpl":                      "node_modules/lodash-template-loader/loader",
-        "typeahead":                "components/typeahead.js/index",
         "underscore":               "src/underscore-shim",
         "utils":                    "src/utils",
         "xss":                      "node_modules/xss/dist/xss",
@@ -108,8 +107,6 @@ require.config({
 
     packages: [{
         'name': 'moment',
-        // This location is relative to baseUrl. Choose bower_components
-        // or node_modules, depending on how moment was installed.
         'location': 'node_modules/moment',
         'main': 'moment'
     }],

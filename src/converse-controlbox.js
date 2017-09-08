@@ -269,6 +269,17 @@
                     return this;
                 },
 
+                showLoginPanel () {
+                    if (!_.isUndefined(this.loginpanel)) {
+                        this.renderLoginPanel();
+                    } else {
+                        this.loginpanel.$el.find('input#jid').focus();
+                        if (!this.loginpanel.$el.is(':visible')) {
+                            this.loginpanel.$el.show();
+                        }
+                    }
+                },
+
                 renderLoginPanel () {
                     this.loginpanel = new _converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
@@ -390,6 +401,9 @@
                             'PREBIND': _converse.PREBIND,
                             'auto_login': _converse.auto_login,
                             'authentication': _converse.authentication,
+                            'conn_feedback_class': _converse.connfeedback.get('klass'),
+                            'conn_feedback_subject': _converse.connfeedback.get('subject'),
+                            'conn_feedback_message': _converse.connfeedback.get('message'),
                             'label_username': __('XMPP Username:'),
                             'label_password': __('Password:'),
                             'label_anon_login': __('Click here to log in anonymously'),
@@ -399,6 +413,7 @@
                         })
                     ));
                     this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
+                    _converse.connfeedback.on('change', this.showConnectionFeedback, this);
                 },
 
                 render () {
@@ -408,6 +423,25 @@
                         this.$el.show();
                     }
                     return this;
+                },
+
+                showConnectionFeedback () {
+                    const klass = _converse.connfeedback.get('klass');
+                    function insert (text, el) {
+                        el.textContent = text;
+                        el.classList.remove('error');
+                        if (klass) {
+                            el.classList.add(klass);
+                        }
+                    }
+                    insert(
+                        _converse.connfeedback.get('subject'),
+                        this.el.querySelector('.conn-feedback .feedback-subject')
+                    )
+                    insert(
+                        _converse.connfeedback.get('message'),
+                        this.el.querySelector('.conn-feedback .feedback-message')
+                    )
                 },
 
                 authenticate (ev) {
@@ -743,6 +777,7 @@
                     this.updateOnlineCount();
                     const that = this;
                     _converse.api.waitUntil('initialized').then(() => {
+                        this.render();
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
@@ -756,7 +791,7 @@
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     this.el.innerHTML = tpl_controlbox_toggle({
-                        'label_toggle': __('Toggle chat')
+                        'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
                     })
                     return this;
                 },
@@ -823,7 +858,7 @@
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
                 view.$('#controlbox-tabs').empty();
-                view.renderLoginPanel();
+                view.showLoginPanel();
             };
             _converse.on('disconnected', disconnect);
 

@@ -496,6 +496,7 @@
              */
             _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                _converse.giveFeedback();
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();

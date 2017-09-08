@@ -1044,7 +1044,7 @@
     padding: 0.5em 1em;
     color: #444;
     /* rgba not supported (IE 8) */
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 0.6);
     /* rgba supported */
     border: 1px solid #999;
     /*IE 6/7/8*/
@@ -1983,6 +1983,15 @@
       font-size: 85%; }
       #conversejs #controlbox #converse-register .instructions:hover {
         color: #777; }
+  #conversejs #controlbox .conn-feedback {
+    padding-top: 2em; }
+    #conversejs #controlbox .conn-feedback p {
+      color: #578EA9;
+      padding-bottom: 0.5em; }
+      #conversejs #controlbox .conn-feedback p.feedback-subject.error {
+        font-weight: bold; }
+      #conversejs #controlbox .conn-feedback p.error {
+        color: #A53214; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin-top: 2em; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -1990,13 +1999,6 @@
       white-space: normal; }
     #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
       color: #3AA569; }
-    #conversejs #controlbox #converse-register .conn-feedback p, #conversejs #controlbox #converse-login .conn-feedback p {
-      color: #578EA9;
-      padding-bottom: 0.5em; }
-      #conversejs #controlbox #converse-register .conn-feedback p.feedback-subject.error, #conversejs #controlbox #converse-login .conn-feedback p.feedback-subject.error {
-        font-weight: bold; }
-      #conversejs #controlbox #converse-register .conn-feedback p.error, #conversejs #controlbox #converse-login .conn-feedback p.error {
-        color: #A53214; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
       margin: 0.5em 0; }

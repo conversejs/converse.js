@@ -1044,7 +1044,7 @@
     padding: 0.5em 1em;
     color: #444;
     /* rgba not supported (IE 8) */
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 0.6);
     /* rgba supported */
     border: 1px solid #999;
     /*IE 6/7/8*/
@@ -2051,6 +2051,15 @@ body {
       font-size: 85%; }
       #conversejs #controlbox #converse-register .instructions:hover {
         color: #777; }
+  #conversejs #controlbox .conn-feedback {
+    padding-top: 2em; }
+    #conversejs #controlbox .conn-feedback p {
+      color: #578EA9;
+      padding-bottom: 0.5em; }
+      #conversejs #controlbox .conn-feedback p.feedback-subject.error {
+        font-weight: bold; }
+      #conversejs #controlbox .conn-feedback p.error {
+        color: #A53214; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin-top: 2em; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -2058,13 +2067,6 @@ body {
       white-space: normal; }
     #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
       color: #3AA569; }
-    #conversejs #controlbox #converse-register .conn-feedback p, #conversejs #controlbox #converse-login .conn-feedback p {
-      color: #578EA9;
-      padding-bottom: 0.5em; }
-      #conversejs #controlbox #converse-register .conn-feedback p.feedback-subject.error, #conversejs #controlbox #converse-login .conn-feedback p.feedback-subject.error {
-        font-weight: bold; }
-      #conversejs #controlbox #converse-register .conn-feedback p.error, #conversejs #controlbox #converse-login .conn-feedback p.error {
-        color: #A53214; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
       margin: 0.5em 0; }
@@ -2351,16 +2353,21 @@ body {
   width: 200px;
   float: left;
   margin: 0; }
-  #conversejs #controlbox #login-dialog .brand-heading, #conversejs #controlbox #register .brand-heading {
+  #conversejs #controlbox #login-dialog .brand-heading {
     font-size: 600%;
-    margin: 10% 0 0 0;
+    margin: 0.5em 0 0 0;
+    opacity: 0.8;
     color: #387592; }
-  #conversejs #controlbox #login-dialog .converse-form, #conversejs #controlbox #register .converse-form {
-    margin: 4em 30% 0 30%; }
+  #conversejs #controlbox #login-dialog .brand-subtitle {
+    font-size: 90%; }
+  #conversejs #controlbox #login-dialog .register-account {
+    font-weight: bold; }
   #conversejs #controlbox.fullscreen {
     width: 100%; }
     #conversejs #controlbox.fullscreen .box-flyout {
       width: 100%; }
+      #conversejs #controlbox.fullscreen .box-flyout .controlbox-head {
+        background-color: white; }
   #conversejs #controlbox .box-flyout {
     border: 0;
     min-width: 250px;
@@ -2371,18 +2378,16 @@ body {
     height: 63px;
     padding: 6px 0 6px 0;
     margin-top: 0.5em; }
-  #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
-    margin: 30%;
-    margin-top: 15%; }
-    #conversejs #controlbox #converse-register #available-chatrooms, #conversejs #controlbox #converse-login #available-chatrooms {
-      padding: 0 1em 2em 1em; }
-    #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login .title, #conversejs #controlbox #converse-login .instructions, #conversejs #controlbox #converse-login label {
-      margin: 1em 0; }
-    #conversejs #controlbox #converse-register input[type=submit],
-    #conversejs #controlbox #converse-register input[type=button], #conversejs #controlbox #converse-login input[type=submit],
-    #conversejs #controlbox #converse-login input[type=button] {
-      width: auto;
-      margin: 1.5em 1em 0 0; }
+  #conversejs #controlbox #converse-register {
+    margin: 4em 30% 0 30%; }
+  #conversejs #controlbox #converse-login {
+    margin: 2em 30% 0 30%; }
+  #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login .title, #conversejs #controlbox #converse-login .instructions, #conversejs #controlbox #converse-login label {
+    margin: 1em 0; }
+  #conversejs #controlbox #converse-register input[type=submit],
+  #conversejs #controlbox #converse-register input[type=button], #conversejs #controlbox #converse-login input[type=submit],
+  #conversejs #controlbox #converse-login input[type=button] {
+    width: auto; }
   #conversejs #controlbox #controlbox-tabs {
     /* single tab */ }
     #conversejs #controlbox #controlbox-tabs li {

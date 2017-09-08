@@ -63,20 +63,11 @@
                     return this;
                 },
 
-                renderRegistrationPanel () {
-                    this.__super__.renderRegistrationPanel.apply(this, arguments);
-                    if (this.__super__._converse.allow_registration) {
-                        const el = document.getElementById('converse-register');
-                        el.parentNode.insertBefore(createBrandHeadingElement(), el);
-                    }
-                    return this;
-                },
-
                 renderLoginPanel () {
                     this.__super__.renderLoginPanel.apply(this, arguments);
                     this.el.classList.add("fullscreen");
                     const el = document.getElementById('converse-login');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
+                    el.parentNode.insertBefore(createBrandHeadingElement(), el.parentNode.firstChild);
                     return this;
                 }
             },

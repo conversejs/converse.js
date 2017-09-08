@@ -127,7 +127,6 @@
                 initialize (cfg) {
                     this.reset();
                     this.$parent = cfg.$parent;
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     this.registerHooks();
                 },
 
@@ -144,7 +143,6 @@
                             'domain_placeholder': _converse.domain_placeholder
                         })
                     ));
-                    this.$tabs.append(tpl_register_tab({label_register: __('Register')}));
                     return this;
                 },
 

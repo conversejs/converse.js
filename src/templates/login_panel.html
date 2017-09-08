@@ -1,11 +1,12 @@
+<div class="conn-feedback">
+    <p class="feedback-subject {{ conn_feedback_class }}">{{ conn_feedback_subject }}</p>
+    <p class="feedback-message {{ conn_feedback_class }}">{{ conn_feedback_message }} </p>
+</div>
+
 <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
     {[ if (auto_login) { ]}
         <span class="spinner login-submit"/>
     {[ } ]}
-    <div class="conn-feedback">
-        <p class="feedback-subject {{ conn_feedback_class }}">{{ conn_feedback_subject }}</p>
-        <p class="feedback-message {{ conn_feedback_class }}">{{ conn_feedback_message }} </p>
-    </div>
     {[ if (!auto_login) { ]}
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{label_username}}}</label>
@@ -23,4 +24,8 @@
             <p>Disconnected.</p>
         {[ } ]}
     {[ } ]}
+</form>
+
+<form class="pure-form pure-form-stacked converse-form" id="converse-register" method="post">
+    <p>Don't have a chat account? You can <a class="register-account">register an account</a></p>
 </form>

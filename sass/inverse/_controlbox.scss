@@ -5,14 +5,18 @@
         float: left;
         margin: 0;
 
-        #login-dialog, #register {
+        #login-dialog {
             .brand-heading {
                 font-size: 600%;
-                margin: 10% 0 0 0;
+                margin: 0.5em 0 0 0;
+                opacity: 0.8;
                 color: $blue;
             }
-            .converse-form {
-                margin: 4em 30% 0 30%;
+            .brand-subtitle {
+                font-size: 90%;
+            }
+            .register-account {
+                font-weight: bold;
             }
         }
 
@@ -20,6 +24,9 @@
             width: 100%;
             .box-flyout {
                 width: 100%;
+                .controlbox-head {
+                    background-color: white;
+                }
             }
         }
         .box-flyout {
@@ -34,19 +41,19 @@
             padding: 6px 0 6px 0;
             margin-top: 0.5em;
         }
+        #converse-register {
+            margin: 4em 30% 0 30%;
+        }
+        #converse-login {
+            margin: 2em 30% 0 30%;
+        }
         #converse-register, #converse-login {
-            margin: 30%;
-            margin-top: 15%;
-            #available-chatrooms {
-                padding: 0 1em 2em 1em;
-            }
             .title, .instructions, label {
                 margin: 1em 0;
             }
             input[type=submit],
             input[type=button] {
                 width: auto;
-                margin: 1.5em 1em 0 0;
             }
         }
         #controlbox-tabs {

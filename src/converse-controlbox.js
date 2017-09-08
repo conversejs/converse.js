@@ -20,7 +20,6 @@
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
-            "tpl!login_tab",
             "tpl!search_contact",
             "tpl!status_option",
             "converse-chatview",
@@ -40,7 +39,6 @@
             tpl_controlbox,
             tpl_controlbox_toggle,
             tpl_login_panel,
-            tpl_login_tab,
             tpl_search_contact,
             tpl_status_option
         ) {
@@ -269,17 +267,6 @@
                     return this;
                 },
 
-                showLoginPanel () {
-                    if (!_.isUndefined(this.loginpanel)) {
-                        this.renderLoginPanel();
-                    } else {
-                        this.loginpanel.$el.find('input#jid').focus();
-                        if (!this.loginpanel.$el.is(':visible')) {
-                            this.loginpanel.$el.show();
-                        }
-                    }
-                },
-
                 renderLoginPanel () {
                     this.loginpanel = new _converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
@@ -404,20 +391,18 @@
                             'conn_feedback_class': _converse.connfeedback.get('klass'),
                             'conn_feedback_subject': _converse.connfeedback.get('subject'),
                             'conn_feedback_message': _converse.connfeedback.get('message'),
-                            'label_username': __('XMPP Username:'),
+                            'label_username': __('Jabber ID:'),
                             'label_password': __('Password:'),
                             'label_anon_login': __('Click here to log in anonymously'),
                             'label_login': __('Log In'),
-                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
+                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
                             'placeholder_password': __('password')
                         })
                     ));
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     _converse.connfeedback.on('change', this.showConnectionFeedback, this);
                 },
 
                 render () {
-                    this.$tabs.append(tpl_login_tab({label_sign_in: __('Sign in')}));
                     this.$el.find('input#jid').focus();
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
@@ -738,7 +723,7 @@
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
-                                error_message: __('Please enter a valid XMPP username'),
+                                error_message: __('Please enter a valid XMPP address'),
                                 label_contact_username: __('e.g. user@example.org'),
                                 label_add: __('Add'),
                                 value: jid
@@ -858,7 +843,7 @@
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({connected:false});
                 view.$('#controlbox-tabs').empty();
-                view.showLoginPanel();
+                view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);
 

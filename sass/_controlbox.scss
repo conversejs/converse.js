@@ -104,6 +104,20 @@
             }
         }
 
+        .conn-feedback {
+            padding-top: 2em;
+            p {
+                color: $controlbox-head-color;
+                padding-bottom: 0.5em;
+                &.feedback-subject.error {
+                    font-weight: bold;
+                }
+                &.error {
+                    color: $error-color;
+                }
+            }
+        }
+
         #converse-register, #converse-login {
             margin-top: 2em;
             .login-anon {
@@ -112,18 +126,6 @@
             }
             .save-submit {
                 color: $save-button-color;
-            }
-            .conn-feedback {
-                p {
-                    color: $controlbox-head-color;
-                    padding-bottom: 0.5em;
-                    &.feedback-subject.error {
-                        font-weight: bold;
-                    }
-                    &.error {
-                        color: $error-color;
-                    }
-                }
             }
             input {
                 width: 100%;

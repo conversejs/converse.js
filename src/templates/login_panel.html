@@ -2,6 +2,10 @@
     {[ if (auto_login) { ]}
         <span class="spinner login-submit"/>
     {[ } ]}
+    <div class="conn-feedback">
+        <p class="feedback-subject {{ conn_feedback_class }}">{{ conn_feedback_subject }}</p>
+        <p class="feedback-message {{ conn_feedback_class }}">{{ conn_feedback_message }} </p>
+    </div>
     {[ if (!auto_login) { ]}
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{label_username}}}</label>
@@ -11,7 +15,6 @@
                 <input type="password" name="password" placeholder="{{{placeholder_password}}}">
             {[ } ]}
             <input class="pure-button button-primary" type="submit" value="{{{label_login}}}">
-            <span class="conn-feedback"></span>
         {[ } ]}
         {[ if (authentication == ANONYMOUS) { ]}
             <input class="pure-button button-primary login-anon" type="submit" value="{{{label_anon_login}}}"/>

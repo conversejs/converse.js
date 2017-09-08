@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2.2 (Unreleased)
+
+- Don't hang indefinitely and provide nicer error messages when a connection
+  can't be established.
+
 ## 3.2.1 (2017-08-29)
 
 ### Bugfixes

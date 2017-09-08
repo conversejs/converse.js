@@ -407,19 +407,10 @@
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            _.forEach(document.querySelectorAll('.conn-feedback'), (el) => {
-                el.classList.add('conn-feedback');
-                el.textContent = subject;
-                if (klass) {
-                    el.classList.add(klass);
-                } else {
-                    el.classList.remove('error');
-                }
-            });
-            _converse.emit('feedback', {
+            _converse.connfeedback.set({
+                'subject': subject,
                 'klass': klass,
-                'message': message,
-                'subject': subject
+                'message': message
             });
         };
 
@@ -462,6 +453,8 @@
              * Will either start a teardown process for converse.js or attempt
              * to reconnect.
              */
+            const reason = _converse.disconnection_reason;
+
             if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
                 if (_converse.credentials_url && _converse.auto_reconnect) {
                     /* In this case, we reconnect, because we might be receiving
@@ -473,7 +466,9 @@
                     return _converse.disconnect();
                 }
             } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                    _converse.disconnection_reason === "host-unknown" ||
+                    (!_.isUndefined(reason) && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                    reason === "host-unknown" ||
+                    reason === "remote-connection-failed" ||
                     !_converse.auto_reconnect) {
                 return _converse.disconnect();
             }
@@ -494,7 +489,7 @@
             }
         };
 
-        this.onConnectStatusChanged = function (status, condition) {
+        this.onConnectStatusChanged = function (status, message) {
             /* Callback method called by Strophe as the Strophe.Connection goes
              * through various states while establishing or tearing down a
              * connection.
@@ -517,29 +512,38 @@
                     _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
                 _converse.giveFeedback(
-                    __('Connection error'), 'error',
+                    __('Connection error'),
+                    'error',
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting'));
+                _converse.giveFeedback(__('Connecting…'));
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating'));
+                _converse.giveFeedback(__('Authenticating…'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication Failed'), 'error');
-                _converse.setDisconnectionCause(status, condition, true);
+                _converse.giveFeedback(__('Authentication failed: '+message), 'error');
+                _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
+                let feedback = message;
+                if (message === "host-unknown" || message == "remote-connection-failed") {
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") +
+                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`;
+                } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+                    feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                }
                 _converse.giveFeedback(
-                    __('Connection failed'), 'error',
-                    __('An error occurred while connecting to the chat server: '+condition)
+                    __('Connection failed'),
+                    'error',
+                    feedback
                 );
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
             }
         };
 
@@ -749,7 +753,6 @@
             _converse.roster.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
-            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
                 _converse.xmppstatus.sendPresence();
             } else {
@@ -1510,6 +1513,22 @@
                 return this.get('scrolled', true);
             }
         });
+
+        this.ConnectionFeedback = Backbone.Model.extend({
+
+            initialize () {
+                this.on('change', this.emitConnectionFeedbackChange);
+            },
+
+            emitConnectionFeedbackChange () {
+                _converse.emit('connfeedback', {
+                    'klass': _converse.connfeedback.get('klass'),
+                    'message': _converse.connfeedback.get('message'),
+                    'subject': _converse.connfeedback.get('subject')
+                });
+            }
+        });
+        this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
             initialize () {

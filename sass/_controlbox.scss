@@ -113,6 +113,18 @@
             .save-submit {
                 color: $save-button-color;
             }
+            .conn-feedback {
+                p {
+                    color: $controlbox-head-color;
+                    padding-bottom: 0.5em;
+                    &.feedback-subject.error {
+                        font-weight: bold;
+                    }
+                    &.error {
+                        color: $error-color;
+                    }
+                }
+            }
             input {
                 width: 100%;
                 margin: 0.5em 0;

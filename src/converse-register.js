@@ -15,7 +15,6 @@
             "converse-core",
             "tpl!form_username",
             "tpl!register_panel",
-            "tpl!register_tab",
             "tpl!registration_form",
             "tpl!registration_request",
             "tpl!spinner",
@@ -27,7 +26,6 @@
             converse,
             tpl_form_username,
             tpl_register_panel,
-            tpl_register_tab,
             tpl_registration_form,
             tpl_registration_request,
             tpl_spinner
@@ -106,7 +104,6 @@
             // Add new templates
             _converse.templates.form_username = tpl_form_username;
             _converse.templates.register_panel = tpl_register_panel;
-            _converse.templates.register_tab = tpl_register_tab;
             _converse.templates.registration_form = tpl_registration_form;
             _converse.templates.registration_request = tpl_registration_request;
 

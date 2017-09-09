@@ -382,6 +382,7 @@
                 initialize (cfg) {
                     cfg.$parent.html(this.$el.html(
                         tpl_login_panel({
+                            '__': __,
                             'ANONYMOUS': _converse.ANONYMOUS,
                             'EXTERNAL': _converse.EXTERNAL,
                             'LOGIN': _converse.LOGIN,

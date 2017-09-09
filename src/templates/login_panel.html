@@ -1,6 +1,6 @@
 <div class="conn-feedback">
-    <p class="feedback-subject {{ conn_feedback_class }}">{{ conn_feedback_subject }}</p>
-    <p class="feedback-message {{ conn_feedback_class }}">{{ conn_feedback_message }} </p>
+    <p class="feedback-subject {{{ conn_feedback_class }}}">{{{ conn_feedback_subject }}}</p>
+    <p class="feedback-message {{{ conn_feedback_class }}}">{{{ conn_feedback_message }}}</p>
 </div>
 
 <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
@@ -27,5 +27,5 @@
 </form>
 
 <form class="pure-form pure-form-stacked converse-form" id="converse-register" method="post">
-    <p>Don't have a chat account? You can <a class="register-account">register an account</a></p>
+    <p>{{{ __("Don't have a chat account?") }}} <a class="register-account" href="#register">{{{__("Register an account here")}}}</a></p>
 </form>

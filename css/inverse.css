@@ -17,6 +17,7 @@
   font-weight: normal;
   font-style: normal; }
 .icon-conversejs {
+  padding-right: 0.2em;
   font-family: 'Converse-js';
   speak: none;
   font-style: normal;
@@ -1995,6 +1996,10 @@ body {
       #conversejs #controlbox .controlbox-head {
         border-top-left-radius: 0;
         border-top-right-radius: 0; } }
+  #conversejs #controlbox.logged-out .controlbox-head {
+    background-color: white; }
+    #conversejs #controlbox.logged-out .controlbox-head .chatbox-btn {
+      color: #578EA9; }
   #conversejs #controlbox form.search-xmpp-contact {
     margin: 0;
     padding-left: 5px;
@@ -2051,15 +2056,19 @@ body {
       font-size: 85%; }
       #conversejs #controlbox #converse-register .instructions:hover {
         color: #777; }
-  #conversejs #controlbox .conn-feedback {
-    padding-top: 2em; }
-    #conversejs #controlbox .conn-feedback p {
-      color: #578EA9;
-      padding-bottom: 0.5em; }
-      #conversejs #controlbox .conn-feedback p.feedback-subject.error {
-        font-weight: bold; }
-      #conversejs #controlbox .conn-feedback p.error {
-        color: #A53214; }
+  #conversejs #controlbox .conn-feedback p {
+    color: #578EA9;
+    padding-bottom: 0.5em; }
+    #conversejs #controlbox .conn-feedback p.feedback-subject.error {
+      font-weight: bold; }
+    #conversejs #controlbox .conn-feedback p.error {
+      color: #A53214; }
+  #conversejs #controlbox #login-dialog .brand-heading {
+    font-size: 150%; }
+  #conversejs #controlbox #login-dialog .brand-name {
+    font-size: 120%; }
+  #conversejs #controlbox #login-dialog .register-account {
+    font-weight: bold; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin-top: 2em; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
@@ -2353,6 +2362,8 @@ body {
   width: 200px;
   float: left;
   margin: 0; }
+  #conversejs #controlbox .conn-feedback {
+    padding-top: 2em; }
   #conversejs #controlbox #login-dialog .brand-heading {
     font-size: 600%;
     margin: 0.5em 0 0 0;
@@ -2360,13 +2371,11 @@ body {
     color: #387592; }
   #conversejs #controlbox #login-dialog .brand-subtitle {
     font-size: 90%; }
-  #conversejs #controlbox #login-dialog .register-account {
-    font-weight: bold; }
-  #conversejs #controlbox.fullscreen {
+  #conversejs #controlbox.logged-out {
     width: 100%; }
-    #conversejs #controlbox.fullscreen .box-flyout {
+    #conversejs #controlbox.logged-out .box-flyout {
       width: 100%; }
-      #conversejs #controlbox.fullscreen .box-flyout .controlbox-head {
+      #conversejs #controlbox.logged-out .box-flyout .controlbox-head {
         background-color: white; }
   #conversejs #controlbox .box-flyout {
     border: 0;

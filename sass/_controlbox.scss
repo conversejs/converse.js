@@ -27,6 +27,16 @@
             margin: 0;
             padding: 6px 6px 6px 0;
         }
+
+        &.logged-out {
+            .controlbox-head {
+                background-color: white;
+                .chatbox-btn {
+                    color: $controlbox-head-color;
+                }
+            }
+        }
+
         form.search-xmpp-contact {
             margin: 0;
             padding-left: 5px;
@@ -105,7 +115,6 @@
         }
 
         .conn-feedback {
-            padding-top: 2em;
             p {
                 color: $controlbox-head-color;
                 padding-bottom: 0.5em;
@@ -115,6 +124,18 @@
                 &.error {
                     color: $error-color;
                 }
+            }
+        }
+
+        #login-dialog {
+            .brand-heading {
+                font-size: 150%;
+            }
+            .brand-name {
+                font-size: 120%;
+            }
+            .register-account {
+                font-weight: bold;
             }
         }
 

@@ -5,6 +5,10 @@
         float: left;
         margin: 0;
 
+        .conn-feedback {
+            padding-top: 2em;
+        }
+
         #login-dialog {
             .brand-heading {
                 font-size: 600%;
@@ -15,12 +19,9 @@
             .brand-subtitle {
                 font-size: 90%;
             }
-            .register-account {
-                font-weight: bold;
-            }
         }
 
-        &.fullscreen {
+        &.logged-out {
             width: 100%;
             .box-flyout {
                 width: 100%;

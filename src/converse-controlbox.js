@@ -12,6 +12,7 @@
             "lodash.fp",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
+            "tpl!converse_brand_heading",
             "tpl!change_status_message",
             "tpl!chat_status",
             "tpl!choose_status",
@@ -31,6 +32,7 @@
             fp,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
+            tpl_brand_heading,
             tpl_change_status_message,
             tpl_chat_status,
             tpl_choose_status,
@@ -267,12 +269,21 @@
                     return this;
                 },
 
+                 createBrandHeadingElement () {
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_brand_heading();
+                    return div.firstChild;
+                },
+
                 renderLoginPanel () {
                     this.loginpanel = new _converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
                     });
                     this.loginpanel.render();
+                    this.el.classList.add("logged-out");
+                    const el = document.getElementById('converse-login');
+                    el.parentNode.insertBefore(this.createBrandHeadingElement(), el.parentNode.firstChild);
                     return this;
                 },
 
@@ -289,6 +300,7 @@
                         'model': _converse.xmppstatus
                     });
                     _converse.xmppstatusview.render();
+                    this.el.classList.remove("logged-out");
                 },
 
                 close (ev) {
@@ -415,6 +427,11 @@
                     const klass = _converse.connfeedback.get('klass');
                     function insert (text, el) {
                         el.textContent = text;
+                        if (!text) {
+                            el.classList.add('hidden');
+                        } else {
+                            el.classList.remove('hidden');
+                        }
                         el.classList.remove('error');
                         if (klass) {
                             el.classList.add(klass);

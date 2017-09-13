@@ -306,8 +306,8 @@ If your web-application has access to the same credentials, it can send those
 credentials to Converse.js so that user's are automatically logged in when the
 page loads.
 
-This is can be done by setting `auto_login`_ to true and configuring the 
-the `credentials_url`_ setting.
+This is can be done by setting :ref:`auto_login` to true and configuring the 
+the :ref:`credentials_url` setting.
 
 Option 3). Temporary authentication tokens
 ------------------------------------------

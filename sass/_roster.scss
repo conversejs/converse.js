@@ -78,28 +78,37 @@
     }
 
     .roster-contacts {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: none;
+      
+      dt.roster-group {
+        border: none;
+        color: $text-color;
         display: none;
-        dt.roster-group {
-            border: none;
-            color: $text-color;
-            display: none;
-            font-weight: normal;
-            margin: 1em 0 0.5em 0;
-            text-shadow: 0 1px 0 $text-shadow-color;
-            .group-toggle {
-                &:hover {
-                    color: $dark-gray-color;
-                }
-                color: $text-color;
-                display: block;
-                width: 100%;
-            }
+        font-weight: normal;
+        margin: 1em 0 0.5em 0;
+        text-shadow: 0 1px 0 $text-shadow-color;
+        
+        .group-toggle {
+        
+          &::before {
+            padding: 0 0.4em 0 0;
+          }
+        
+          &:hover {
+            color: $dark-gray-color;
+          }
+          
+          color: $text-color;
+          display: block;
+          width: 100%;
         }
+      }
+        
         dd {
             border: none;
             clear: both;
@@ -177,7 +186,7 @@
             &.current-xmpp-contact span {
                 font-size: $font-size;
                 float: left;
-                margin-right: 0.5em;
+                margin-right: 0.4em;
             }
             &.odd {
                 background-color: #DCEAC5;
@@ -198,7 +207,7 @@
                     margin-left: 5px;
                 }
                 &.remove-xmpp-contact {
-                    font-size: $font-size-tiny;
+                    font-size: $font-size;
                     float: right;
                     margin: 0;
                     padding: 0;

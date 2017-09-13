@@ -1,259 +1,291 @@
 #converse-embedded-chat,
 #conversejs {
-    bottom: 0;
-    color: $text-color;
-    direction: ltr;
-    display: block;
-    font-family: "Helvetica", "Arial", sans-serif;
-    font-size: $font-size;
-    height: $bottom-gutter-height;
-    position: fixed;
-    right: 0;
-    width: auto;
-    z-index: 1031; // One more than bootstrap navbar
-    @media screen and (max-height: $mobile-landscape-height) {
-        width: 100%;
-        width: 100vw;
-    }
-    @media screen and (max-width: $mobile-portrait-length) {
-        width: 100%;
-        width: 100vw;
-    }
-
+  bottom: 0;
+  color: $text-color;
+  direction: ltr;
+  display: block;
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: $font-size;
+  height: $bottom-gutter-height;
+  position: fixed;  
+  right: 0;
+  width: auto;
+  z-index: 1031; // One more than bootstrap navbar
+  
+  @media screen and (max-height: $mobile-landscape-height) {
+    width: 100%;
+    width: 100vw;
+  }
+  
+  @media screen and (max-width: $mobile-portrait-length) {
+    width: 100%;
+    width: 100vw;
+  }
 
 	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: $subdued-color;
+   color: $subdued-color;
 	}
+	
 	::-moz-placeholder { /* Firefox 19+ */
-        color: $subdued-color;
+    color: $subdued-color;
 	}
+	
 	:-ms-input-placeholder { /* IE 10+ */
-        color: $subdued-color;
+    color: $subdued-color;
 	}
+	
 	:-moz-placeholder { /* Firefox 18- */
-        color: $subdued-color;
+    color: $subdued-color;
 	}
-    ::placeholder {
-        color: $subdued-color;
-    }
+	
+  ::placeholder {
+    color: $subdued-color;
+  }
 
-    .circle {
-        border-radius: 50%;
-    }
+  .circle {
+    border-radius: 50%;
+  }
 
-    ::selection {
-        background-color: $highlight-color;
-    }
-    ::-moz-selection {
-        background-color: $highlight-color;
-    }
+  ::selection {
+    background-color: $highlight-color;
+  }
+  ::-moz-selection {
+    background-color: $highlight-color;
+  }
 
-    .no-text-select {
-        -webkit-touch-callout: none;
-        @include user-select(none);
-    }
+  .no-text-select {
+    -webkit-touch-callout: none;
+    @include user-select(none);
+  }
 
-    @keyframes fadein {
-        0% { opacity: 0 }
-        100% { opacity: 1 }
-    }
-    @-webkit-keyframes fadein {
-        0% { opacity: 0 }
-        100% { opacity: 1 }
-    }
+  @keyframes fadein {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+  }
+  @-webkit-keyframes fadein {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+  }
 
-    .visible {
-        visibility: visible;
-        opacity: 1;
-        @include animation-name(fadein);
-        @include animation-fill-mode(forwards);
-        @include animation-duration(350ms);
-        @include animation-timing-function(ease);
-    }
-    .hidden {
-        opacity: 0;
-        display: none;
-    }
-    .collapsed {
-        height: 0;
-        overflow: hidden;
-    }
+  .visible {
+    visibility: visible;
+    opacity: 1;
+    @include animation-name(fadein);
+    @include animation-fill-mode(forwards);
+    @include animation-duration(350ms);
+    @include animation-timing-function(ease);
+  }
+  
+  .hidden {
+    opacity: 0;
+    display: none;
+  }
+  
+  .collapsed {
+    height: 0;
+    overflow: hidden;
+  }
 
-    .locked {
-        padding-right: 22px;
-    }
+  .locked {
+    padding-right: 22px;
+  }
 
-    @include keyframes(spin) {
-        from {
-            @include transform(rotate(0deg));
-        }
-        to {
-            @include transform(rotate(359deg));
-        }
+  @include keyframes(spin) {
+    from {
+      @include transform(rotate(0deg));
     }
-
-    .emojione {
-        height: $emoji_height;
+    to {
+      @include transform(rotate(359deg));
     }
+  }
 
-    .spinner {
-        @include animation(spin 2s infinite, linear);
+  .emojione {
+    height: $emoji_height;
+  }
+
+  .spinner {
+    @include animation(spin 2s infinite, linear);
+    display: block;
+    text-align: center;
+    margin: 1em;
+    
+    &:before {
+      font-size: 24px;
+      font-family: 'Converse-js' !important;
+      content: "\231b";
+    }
+  }
+  
+  .left {
+    float: left;
+  }
+  
+  .right {
+    float: right;
+  }
+  
+  .centered {
+    text-align: center;
+    display: block;
+    margin: 0;
+    padding: 10% 0;
+  }
+  
+  .hor_centered {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    clear: both;
+  }
+
+  .button-group,
+  .input-button-group {
+    display: table;
+  }
+  
+  .button-group {
+    width: 100%;
+  }
+
+  .input-button-group button,
+  .input-button-group input {
+    display: table-cell;
+  }
+
+  .error {
+    color: $error-color;
+  }
+  .reg-feedback {
+    font-size: 85%;
+  }
+
+  .reg-feedback,
+  #converse-login .conn-feedback {
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+
+  a.restore-chat {
+    padding: 2px 0 1px 5px;
+    color: $chat-head-text-color;
+    line-height: 14px;
+    font-size: $font-size;
+    font-weight: 400;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+ 
+  a.restore-chat:visited { 
+    color: $chat-head-text-color;
+  }
+
+  .activated {
+    display: block !important;
+  }
+  
+  .pure-form-message {
+    padding: 0.5em 0;
+  }
+  
+  .pure-button {
+    border-radius: $chatbox-border-radius;
+  }
+  
+  .button-primary {
+    color: white;
+    background-color: $primary-color;
+  }
+  
+  .button-secondary {
+    color: white;
+    background-color: $secondary-color;
+  }
+  
+  .button-cancel {
+    color: white;
+    background-color: $text-color;
+  }
+
+  form {
+  
+    &.pure-form.converse-form {
+      background: white;
+      padding: 1em;
+      
+      legend {
+        color: $text-color;
+        font-size: 125%;
+      }
+      
+      input[type=checkbox] {
         display: block;
-        text-align: center;
-        margin: 1em;
-        &:before {
-            font-size: 24px;
-            font-family: 'Converse-js' !important;
-            content: "\231b";
-        }
-    }
-    .left {
-        float: left;
-    }
-    .right {
-        float: right;
-    }
-    .centered {
-        text-align: center;
-        display: block;
-        margin: 0;
-        padding: 10% 0;
-    }
-    .hor_centered {
-        text-align: center;
-        display: block;
-        margin: 0 auto;
-        clear: both;
-    }
-
-    .button-group,
-    .input-button-group {
-        display: table;
-    }
-    .button-group {
-        width: 100%;
-    }
-    .input-button-group button,
-    .input-button-group input {
-        display: table-cell;
-    }
-
-    .error {
-        color: $error-color;
-    }
-    .reg-feedback {
+      }
+      
+      select,
+      input[type=password],
+      input[type=number],
+      input[type=text] {
+        min-width: 50%;
+      }
+      
+      label {
+        margin: 1em 0;
+        font-size: $font-size-large;
+      }
+      
+      input[type=text],
+      input[type=password],
+      input[type=number],
+      input[type=button],
+      input[type=submit] {
+        padding: 0.5em;
+      }
+      
+      input[type=button],
+      input[type=submit] {
+        padding-left: 1em;
+        padding-right: 1em;
+        margin: 0.5em 0;
+        border: none;
+      }
+      
+      input.error {
+        border: 1px solid $error-color;
+        color: $text-color;
+      }
+      
+      .form-help {
+        color: gray;
         font-size: 85%;
-    }
-
-    .reg-feedback,
-    #converse-login .conn-feedback {
-        display: block;
-        text-align: center;
-        width: 100%;
-    }
-
-    a.restore-chat {
-        padding: 1px 0 1px 5px;
-        color: $chat-head-text-color;
-        line-height: 15px;
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    a.restore-chat:visited {
-        color: $chat-head-text-color;
-    }
-
-    .activated {
-        display: block !important;
-    }
-    .pure-form-message {
-        padding: 0.5em 0;
-    }
-    .pure-button {
-        border-radius: $chatbox-border-radius;
-    }
-    .button-primary {
-        color: white;
-        background-color: $primary-color;
-    }
-    .button-secondary {
-        color: white;
-        background-color: $secondary-color;
-    }
-    .button-cancel {
-        color: white;
-        background-color: $text-color;
-    }
-
-    form {
-        &.pure-form.converse-form {
-            background: white;
-            padding: 1em;
-            legend {
-                color: $text-color;
-                font-size: 125%;
-            }
-            input[type=checkbox] {
-                display: block;
-            }
-            select,
-            input[type=password],
-            input[type=number],
-            input[type=text] {
-                min-width: 50%;
-            }
-            label {
-                margin: 1em 0;
-                font-size: $font-size-large;
-            }
-            input[type=text],
-            input[type=password],
-            input[type=number],
-            input[type=button],
-            input[type=submit] {
-                padding: 0.5em;
-            }
-            input[type=button],
-            input[type=submit] {
-                padding-left: 1em;
-                padding-right: 1em;
-                margin: 0.5em 0;
-                border: none;
-            }
-            input.error {
-                border: 1px solid $error-color;
-                color: $text-color;
-            }
-            .form-help {
-                color: gray;
-                font-size: 85%;
-                padding-top: 0.5em;
-                &:hover {
-                    color: $text-color;
-                }
-            }
+        padding-top: 0.5em;
+        
+        &:hover {
+          color: $text-color;
         }
-        &.pure-form.converse-centered-form {
-            text-align: center;
-            width: 100%;
-        }
+      }
     }
+    
+    &.pure-form.converse-centered-form {
+      text-align: center;
+      width: 100%;
+    }
+  }
 
-    .chat-textarea-chatbox-selected {
-        border: 1px solid #578308;
-        margin: 0;
-    }
-    .chat-textarea-chatroom-selected {
-        border: 2px solid $link-color;
-        margin: 0;
-    }
+  .chat-textarea-chatbox-selected {
+    border: 1px solid #578308;
+    margin: 0;
+  }
+  .chat-textarea-chatroom-selected {
+    border: 2px solid $link-color;
+    margin: 0;
+  }
 
-    .dropdown dt,
-    .dropdown ul {
-        margin: 0;
-        padding: 0;
-    }
+  .dropdown dt,
+  .dropdown ul {
+    margin: 0;
+    padding: 0;
+  }
 }

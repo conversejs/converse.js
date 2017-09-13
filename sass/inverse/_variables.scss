@@ -29,20 +29,22 @@ $darkest-orange: #A56214;
 $greenish-white: #E7FBF0;
 $reddish-white: #FFECE7;
 
-$lightest-green: #E7FBF0;
+$lightest-green: #BCEDD1;
 $light-green: #5CBC86;
 $green: #3AA569;
 $dark-green: #1E9652;
 $darkest-green: #0E763B;
 
-$link-color: $light-blue !default;
+// ////////
+
+$link-color: #009fe3 !default;
 $dark-link-color: $dark-blue !default;
 $global-background-color: $light-blue !default;
 
-$inverse-link-color: white !default;
+$inverse-link-color: #fff !default;
 $link-shadow-color: #FAFAFA !default;
 $text-shadow-color: #FAFAFA !default;
-$text-color: #777 !default;
+$text-color: #2c2c2c !default;
 $light-text-color: #A8ABA1 !default;
 $border-color: #CCC !default;
 $icon-color: $blue !default;
@@ -60,9 +62,9 @@ $roster-item-height: 30px !default;
 
 $flyout-padding: 1.2em;
 
-$chat-head-color: $green !default;
-$chat-head-text-color: white !default;
-$chat-head-inverse-text-color: white !default;
+$chat-head-color: #009fe3 !default;
+$chat-head-text-color: #fff !default;
+$chat-head-inverse-text-color: #fff !default;
 $chat-head-height: 62px !default;
 
 $chat-textarea-height: 70px !default;
@@ -70,8 +72,9 @@ $chat-textarea-height: 70px !default;
 $input-focus-color: #1A9707 !default;
 $highlight-color: #DCF9F6 !default;
 
+$controlbox-toggle-text-color: #fff !default;
 $controlbox-dropdown-height: 30px !default;
-$controlbox-head-color: $light-blue !default;
+$controlbox-head-color: #00afcd !default;
 $controlbox-head-height: 63px !default;
 $controlbox-pane-padding: $flyout-padding !default;
 
@@ -86,10 +89,10 @@ $moderator-color: $red !default;
 $online-color: $green !default;
 $error-color: $darkest-red !default;
 
-$button-border-radius: 5px !default;
-$chatbox-border-radius: 7px !default;
-$bottom-gutter-height: 35px !default;
-$chatbox-hover-height: 6px !default;
+$button-border-radius: 3px !default;
+$chatbox-border-radius: 2px !default;
+$bottom-gutter-height: 30px !default;
+$chatbox-hover-height: 0 !default;
 
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
@@ -102,7 +105,7 @@ $font-size-huge: 26px !default;
 $legend-font-size: 18px !default;
 
 $toolbar-height: 29px !default;
-$toolbar-color: $greenish-white !default;
+$toolbar-color: #cef0ff !default;
 
 $line-height-small:  20px !default;
 $line-height:  22px !default;
@@ -110,7 +113,7 @@ $line-height:  22px !default;
 $controlbox-width: 250px !default;
 $chat-width: 100% !default;
 $chat-height: 100%;
-$chat-gutter: 0.5em !default;
+$chat-gutter: 5px !default;
 $minimized-chats-width: 130px !default;
 
 $padding: 1em;
@@ -119,16 +122,18 @@ $mobile-chat-width: 100% !default;
 $mobile-chat-height: 400px !default;
 $small-mobile-chat-height: 300px !default;
 
-$font-path: "../fonticons/fonts/" !default;
+$font-path: "//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/" !default; 
 
 $chatroom-head-height: 62px !default;
 $chatroom-width: 300px !default;
-$chatroom-head-color: $red !default;
+$chatroom-head-color: #2fd4af !default;
+$chatroom-title-color: #fff !default;
+$chatroom-topic-color: #fff !default;
 $chatroom-color-light: $light-red !default;
 $chatroom-color-lightest: $light-red !default;
 $chatroom-color-dark: $darkest-red !default;
 $chatroom-message-them-color: $green !default;
-$chatroom-toolbar-color: $reddish-white !default;
+$chatroom-toolbar-color: #e7fbf0 !default;
 
 $headline-head-color: $orange !default;
 

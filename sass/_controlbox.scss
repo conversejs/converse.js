@@ -1,5 +1,5 @@
 #conversejs {
-    #controlbox {
+    #controlbox { 
         .pure-form.converse-form {
             padding: 0;
         }
@@ -7,7 +7,7 @@
         @media screen and (max-width: $mobile-portrait-length) {
             margin: 0;
         }
-        @media screen and (max-height: $mobile-landscape-height) {
+        @media screen and (max-height: $mobile-landscape-height) { 
             margin: 0;
         }
         .controlbox-head {
@@ -23,7 +23,7 @@
                 border-top-right-radius: 0;
             }
             color: $chat-head-inverse-text-color;
-            height: $chat-head-height;
+            height: 33px;
             margin: 0;
             padding: 6px 6px 6px 0;
         }
@@ -279,7 +279,7 @@
         #select-xmpp-status {
             display: none;
             float: right;
-            margin-right: 0.5em;
+            margin-right: 0.4em;
         }
 
         #controlbox-tabs {
@@ -362,7 +362,7 @@
                 }
             }
             .toggle-xmpp-contact-form {
-                padding: 0 0.5em;
+                padding: 0 0.4em;
                 width: 100%;
             }
             &.no-border {
@@ -372,7 +372,7 @@
         }
         #fancy-xmpp-status-select {
             .xmpp-status {
-                padding: 0 0.5em;
+                padding: 0 0.4em;
             }
             a.change-xmpp-status-message {
                 line-height: $controlbox-dropdown-height;
@@ -431,7 +431,7 @@
         }
 
         .add-xmpp-contact {
-            padding: 1em 0.5em;
+            padding: 1em 0.4em;
             input {
                 margin: 0 0 1rem;
                 width: 100%;
@@ -467,16 +467,27 @@
     }
 
     .toggle-controlbox {
-        background-color: $link-color;
-        border-top-left-radius: $button-border-radius;
-        border-top-right-radius: $button-border-radius;
-        color: #0a0a0a;
-        float: right;
-        height: 100%;
-        margin: 0 $chat-gutter;
-        padding: 10px 8px 0 8px;
+        background-color: $controlbox-head-color;
+        border-radius: 100%;
+        border: 2px solid #fff;
+        color: $controlbox-toggle-text-color;
+        height: 54px;
+        margin: 0;
+        padding: 11px 10px 7px 10px;
+        width: 54px;
+        text-align: center;
+        position: absolute;
+        right: 10px;
+        z-index: 99999;
+        bottom: 5px;
+        box-shadow: 0 -2px 9px rgba(0,0,0,.3);
+
         span {
-            color: $inverse-link-color;
+          color: $inverse-link-color; 
+          line-height: 27px;
+          transform: rotate(-15deg);
+          font-size: 27px;
+          display: block;
         }
     }
 }

@@ -4,7 +4,7 @@
             border-bottom-left-radius: $chatbox-border-radius;
             border-bottom-right-radius: $chatbox-border-radius;
             height: 289px;
-            @include calc(height, '100% - #{$controlbox-head-height}');
+            @include calc(height, '100% - #{$controlbox-head-height}');  
         }
     }
 }

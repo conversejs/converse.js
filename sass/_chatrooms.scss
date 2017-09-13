@@ -20,22 +20,34 @@
             }
         }
         .chat-title {
-            color: $chatroom-color-lightest;
+            color: $chatroom-title-color;
+            
             .chatroom-name {
                 color: white;
             }
+            
             .chatroom-jid {
                 font-size: $font-size-small;
             }
+            
             .chatroom-description {
                 color: white;
                 font-size: 80%;
                 font-style: italic;
                 overflow: hidden;
-                text-overflow: ellipsis;
+                text-overflow: ellipsis; 
                 white-space: nowrap;
                 margin: 0.3em 0;
             }
+        }
+        
+        .chatroom-topic {
+          color: $chatroom-topic-color;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap; 
+          font-style: italic;
+          margin: 0.3em 0 0;
         }
     }
 

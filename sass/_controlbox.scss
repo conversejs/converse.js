@@ -29,10 +29,10 @@
         }
 
         &.logged-out {
-            .controlbox-head {
-                background-color: white;
-                .chatbox-btn {
-                    color: $controlbox-head-color;
+            .box-flyout {
+                .controlbox-pane {
+                    position: relative;
+                    overflow-y: auto;
                 }
             }
         }
@@ -62,15 +62,15 @@
         }
 
         #converse-register {
+            @include fade-in;
             background: white;
             .title {
                 font-weight: bold;
             }
             .info {
-                font-style: italic;
                 color: green;
-                font-size: 85%;
-                margin: 5px 0;
+                font-size: 90%;
+                margin: 1.5em 0;
             }
             .form-errors {
                 color: red;
@@ -128,8 +128,8 @@
         }
 
         .brand-heading-container {
-            text-align: center;
             .brand-heading {
+                text-align: left;
                 font-size: 150%;
             }
             .brand-name {
@@ -140,12 +140,16 @@
         .toggle-register-login {
             font-weight: bold;
         }
+
         .oauth-login {
+            margin-left: 0;
             color: $text-color;
+            .icon-social:before {
+                font-size: $font-size-large;
+            }
         }
 
         #converse-register, #converse-login {
-            margin: 2em 0;
             .login-anon {
                 height: auto;
                 white-space: normal;
@@ -157,6 +161,12 @@
                 width: 100%;
                 margin: 1em 0;
             }
+            .form-url {
+                display: block;
+                font-weight: normal;
+                margin: 1em 0;
+            }
+
         }
         #users {
             .add-converse-contact {
@@ -442,7 +452,8 @@
         }
 
         .controlbox-panes {
-            background-color: white;
+            height: 100%;
+            overflow-y: scroll;
         }
 
         .controlbox-pane {
@@ -451,10 +462,17 @@
             border: 0;
             font-size: $font-size;
             position: absolute;
+            left: 0;
             text-align: center;
             width: 100%;
             overflow-y: auto;
             overflow-x: hidden;
+            .switch-form {
+                padding-bottom: 2em;
+                p {
+                    margin-top: 0.5em;
+                }
+            }
             label {
                 font-size: $font-size;
                 font-weight: bold;

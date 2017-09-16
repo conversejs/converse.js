@@ -1120,6 +1120,22 @@
     #conversejs {
       width: 100%;
       width: 100vw; } }
+  #converse-embedded-chat .fade-in,
+  #conversejs .fade-in {
+    opacity: 0;
+    /* make things invisible upon start */
+    -webkit-animation-name: fadein;
+    -moz-animation-name: fadein;
+    animation-name: fadein;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-timing-function: ease;
+    animation-timing-function: ease; }
   #converse-embedded-chat ::-webkit-input-placeholder,
   #conversejs ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
@@ -1267,7 +1283,8 @@
     color: #A53214; }
   #converse-embedded-chat .reg-feedback,
   #conversejs .reg-feedback {
-    font-size: 85%; }
+    font-size: 85%;
+    margin-bottom: 1em; }
   #converse-embedded-chat .reg-feedback,
   #converse-embedded-chat #converse-login .conn-feedback,
   #conversejs .reg-feedback,
@@ -1295,7 +1312,7 @@
     padding: 0.5em 0; }
   #converse-embedded-chat .pure-button,
   #conversejs .pure-button {
-    border-radius: 4px; }
+    border-radius: 5px; }
   #converse-embedded-chat .button-primary,
   #conversejs .button-primary {
     color: white;
@@ -1316,7 +1333,7 @@
     #conversejs form.pure-form.converse-form legend {
       color: #777;
       font-size: 125%;
-      margin-bottom: 2em; }
+      margin-bottom: 1em; }
     #converse-embedded-chat form.pure-form.converse-form input[type=checkbox],
     #conversejs form.pure-form.converse-form input[type=checkbox] {
       display: block; }
@@ -1885,10 +1902,9 @@
       #conversejs #controlbox .controlbox-head {
         border-top-left-radius: 0;
         border-top-right-radius: 0; } }
-  #conversejs #controlbox.logged-out .controlbox-head {
-    background-color: white; }
-    #conversejs #controlbox.logged-out .controlbox-head .chatbox-btn {
-      color: #578EA9; }
+  #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
+    position: relative;
+    overflow-y: auto; }
   #conversejs #controlbox form.search-xmpp-contact {
     margin: 0;
     padding-left: 5px;
@@ -1907,14 +1923,27 @@
     padding-left: 2em;
     font-weight: bold; }
   #conversejs #controlbox #converse-register {
+    opacity: 0;
+    /* make things invisible upon start */
+    -webkit-animation-name: fadein;
+    -moz-animation-name: fadein;
+    animation-name: fadein;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-timing-function: ease;
+    animation-timing-function: ease;
     background: white; }
     #conversejs #controlbox #converse-register .title {
       font-weight: bold; }
     #conversejs #controlbox #converse-register .info {
-      font-style: italic;
       color: green;
-      font-size: 85%;
-      margin: 5px 0; }
+      font-size: 90%;
+      margin: 1.5em 0; }
     #conversejs #controlbox #converse-register .form-errors {
       color: red;
       display: none; }
@@ -1952,26 +1981,30 @@
       font-weight: bold; }
     #conversejs #controlbox .conn-feedback p.error {
       color: #A53214; }
-  #conversejs #controlbox .brand-heading-container {
-    text-align: center; }
-    #conversejs #controlbox .brand-heading-container .brand-heading {
-      font-size: 150%; }
-    #conversejs #controlbox .brand-heading-container .brand-name {
-      font-size: 120%; }
+  #conversejs #controlbox .brand-heading-container .brand-heading {
+    text-align: left;
+    font-size: 150%; }
+  #conversejs #controlbox .brand-heading-container .brand-name {
+    font-size: 120%; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
   #conversejs #controlbox .oauth-login {
+    margin-left: 0;
     color: #777; }
-  #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
-    margin: 2em 0; }
-    #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
-      height: auto;
-      white-space: normal; }
-    #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
-      color: #3AA569; }
-    #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
-      width: 100%;
-      margin: 1em 0; }
+    #conversejs #controlbox .oauth-login .icon-social:before {
+      font-size: 16px; }
+  #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
+    height: auto;
+    white-space: normal; }
+  #conversejs #controlbox #converse-register .save-submit, #conversejs #controlbox #converse-login .save-submit {
+    color: #3AA569; }
+  #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
+    width: 100%;
+    margin: 1em 0; }
+  #conversejs #controlbox #converse-register .form-url, #conversejs #controlbox #converse-login .form-url {
+    display: block;
+    font-weight: normal;
+    margin: 1em 0; }
   #conversejs #controlbox #users .add-converse-contact {
     margin: 0 0 0.75em 0; }
   #conversejs #controlbox #chatrooms form.add-chatroom {
@@ -2194,17 +2227,23 @@
     padding: 1px;
     float: right; }
   #conversejs #controlbox .controlbox-panes {
-    background-color: white; }
+    height: 100%;
+    overflow-y: scroll; }
   #conversejs #controlbox .controlbox-pane {
     padding: 1em;
     background-color: white;
     border: 0;
     font-size: 14px;
     position: absolute;
+    left: 0;
     text-align: center;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden; }
+    #conversejs #controlbox .controlbox-pane .switch-form {
+      padding-bottom: 2em; }
+      #conversejs #controlbox .controlbox-pane .switch-form p {
+        margin-top: 0.5em; }
     #conversejs #controlbox .controlbox-pane label {
       font-size: 14px;
       font-weight: bold;
@@ -2258,6 +2297,8 @@
   height: 289px;
   height: -webkit-calc(100% - 55px);
   height: calc(100% - 55px); }
+#conversejs #controlbox .brand-heading-container .brand-heading {
+  margin-left: 1em; }
 
 #conversejs #controlbox .available-chatroom.unread-msgs .msgs-indicator {
   border-radius: 10%;

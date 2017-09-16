@@ -18,6 +18,7 @@
             "tpl!register_panel",
             "tpl!registration_form",
             "tpl!registration_request",
+            "tpl!form_input",
             "tpl!spinner",
             "converse-controlbox"
     ], factory);
@@ -30,6 +31,7 @@
             tpl_register_panel,
             tpl_registration_form,
             tpl_registration_request,
+            tpl_form_input,
             tpl_spinner
         ) {
 
@@ -132,18 +134,11 @@
             const { _converse } = this,
                 { __ } = _converse;
 
-            // Add new templates
-            _converse.templates.form_username = tpl_form_username;
-            _converse.templates.register_panel = tpl_register_panel;
-            _converse.templates.registration_form = tpl_registration_form;
-            _converse.templates.registration_request = tpl_registration_request;
-
             _converse.api.settings.update({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
-
 
             _converse.RegistrationRouter = Backbone.Router.extend({
 
@@ -169,7 +164,7 @@
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "converse-register-panel",
-                className: 'controlbox-pane',
+                className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-register': 'onProviderChosen'
                 },
@@ -242,7 +237,9 @@
                     }
                     // Send an IQ stanza to get all required data fields
                     conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
-                    conn.send($iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree());
+                    const stanza = $iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree();
+                    stanza.setAttribute("id", conn.getUniqueId("sendIQ"));
+                    conn.send(stanza);
                     conn.connected = false;
                     return true;
                 },
@@ -253,6 +250,13 @@
                      *  Parameters:
                      *    (XMLElement) elem - The query stanza.
                      */
+                    if (stanza.getAttribute("type") === "error") {
+                        _converse.connection._changeConnectStatus(
+                            Strophe.Status.REGIFAIL,
+                            __('Something went wrong while establishing a connection with "%1$s". Are you sure it exists?', this.domain)
+                        );
+                        return false;
+                    }
                     if (stanza.getElementsByTagName("query").length !== 1) {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
@@ -383,6 +387,40 @@
                     }
                 },
 
+                renderLegacyRegistrationForm (form) {
+                    _.each(_.keys(this.fields), (key) => {
+                        if (key === "username") {
+                            form.insertAdjacentHTML(
+                                'beforeend',
+                                tpl_form_username({
+                                    'domain': ` @${this.domain}`,
+                                    'name': key,
+                                    'type': "text",
+                                    'label': key,
+                                    'value': '',
+                                    'required': true
+                                })
+                            );
+                        } else {
+                            form.insertAdjacentHTML(
+                                'beforeend',
+                                tpl_form_input({
+                                    'label': key, 
+                                    'name': key,
+                                    'placeholder': key,
+                                    'required': true,
+                                    'type': (key === 'password' || key === 'email') ? key : "text",
+                                    'value': ''
+                                })
+                            );
+                        }
+                    });
+                    // Show urls
+                    _.each(this.urls, (url) => {
+                        $(form).append($('<a target="blank"></a>').attr('href', url).text(url));
+                    });
+                },
+
                 renderRegistrationForm (stanza) {
                     /* Renders the registration form based on the XForm fields
                      * received from the XMPP server.
@@ -392,44 +430,29 @@
                      */
                     this.model.set('registration_form_rendered', true);
 
-                    const $form = this.$('form'),
-                        $stanza = $(stanza);
-                    let $fields, $input;
-                    $form.empty().append(tpl_registration_form({
+                    const form = this.el.querySelector('form'),
+                          $form = $(form),
+                          $stanza = $(stanza);
+                    let $fields;
+
+                    // Hide and show at the end so that we get a fade-in animation
+                    form.classList.add('hidden');
+
+                    form.innerHTML = tpl_registration_form({
+                        '__': _converse.__,
                         'domain': this.domain,
                         'title': this.title,
                         'instructions': this.instructions
-                    }));
+                    });
                     if (this.form_type === 'xform') {
-                        $fields = $stanza.find('field');
-                        _.each($fields, (field) => {
-                            $form.append(utils.xForm2webForm.bind(this, field, stanza));
+                        _.each(stanza.querySelectorAll('field'), (field) => {
+                            form.insertAdjacentHTML(
+                                'beforeend',
+                                utils.xForm2webForm(field, stanza, this.domain)
+                            );
                         });
                     } else {
-                        // Show fields
-                        _.each(_.keys(this.fields), (key) => {
-                            if (key === "username") {
-                                $input = tpl_form_username({
-                                    domain: ` @${this.domain}`,
-                                    name: key,
-                                    type: "text",
-                                    label: key,
-                                    value: '',
-                                    required: 1
-                                });
-                            } else {
-                                $form.append(`<label>${key}</label>`);
-                                $input = $(`<input placeholder="${key}" name="${key}"></input>`);
-                                if (key === 'password' || key === 'email') {
-                                    $input.attr('type', key);
-                                }
-                            }
-                            $form.append($input);
-                        });
-                        // Show urls
-                        _.each(this.urls, (url) => {
-                            $form.append($('<a target="blank"></a>').attr('href', url).text(url));
-                        });
+                        this.renderLegacyRegistrationForm(form);
                     }
                     if (this.fields) {
                         $form.append(`<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`);
@@ -443,6 +466,7 @@
                     if (_converse.registration_domain) {
                         $form.find('input[type=button]').hide();
                     }
+                    form.classList.remove('hidden');
                 },
 
                 reportErrors (stanza) {

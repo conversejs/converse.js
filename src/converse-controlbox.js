@@ -202,7 +202,7 @@
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox',
+                className: 'chatbox fade-in',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
@@ -273,9 +273,12 @@
                 },
 
                  createBrandHeadingElement () {
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_brand_heading();
-                    return div.firstChild;
+                    return tpl_brand_heading();
+                },
+
+                insertBrandHeading () {
+                    const el = this.el.querySelector('.controlbox-head');
+                    el.insertAdjacentHTML('beforeend', this.createBrandHeadingElement());
                 },
 
                 renderLoginPanel () {
@@ -285,8 +288,7 @@
                     });
                     this.loginpanel.render();
                     this.el.classList.add("logged-out");
-                    const el = document.getElementById('converse-login-panel');
-                    el.parentNode.insertBefore(this.createBrandHeadingElement(), el.parentNode.firstChild);
+                    this.insertBrandHeading();
                     return this;
                 },
 
@@ -343,13 +345,11 @@
                 },
 
                 onControlBoxToggleHidden () {
-                    const that = this;
-                    utils.fadeIn(this.el, function () {
-                        _converse.controlboxtoggle.updateOnlineCount();
-                        utils.refreshWebkit();
-                        that.model.set('closed', false);
-                        _converse.emit('controlBoxOpened', that);
-                    });
+                    _converse.controlboxtoggle.updateOnlineCount();
+                    utils.refreshWebkit();
+                    this.model.set('closed', false);
+                    this.el.classList.remove('hidden');
+                    _converse.emit('controlBoxOpened', this);
                 },
 
                 show () {
@@ -389,7 +389,7 @@
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "converse-login-panel",
-                className: 'controlbox-pane',
+                className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-login': 'authenticate'
                 },
@@ -422,7 +422,6 @@
                         'label_username': __('Jabber ID:'),
                         'label_password': __('Password:'),
                         'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In'),
                         'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
                         'placeholder_password': __('password')
                     })

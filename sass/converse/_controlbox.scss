@@ -6,5 +6,11 @@
             height: 289px;
             @include calc(height, '100% - #{$controlbox-head-height}');
         }
+
+        .brand-heading-container {
+            .brand-heading {
+                margin-left: 1em;
+            }
+        }
     }
 }

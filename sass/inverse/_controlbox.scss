@@ -14,7 +14,9 @@
         }
 
         .brand-heading-container {
+            text-align: center;
             .brand-heading {
+                text-align: center;
                 font-size: 600%;
                 padding: 0.7em 0 0 0;
                 opacity: 0.8;
@@ -31,6 +33,7 @@
         }
 
         &.logged-out {
+            @include fade-in;
             width: 100%;
             .box-flyout {
                 width: 100%;
@@ -52,23 +55,27 @@
             padding: 6px 0 6px 0;
             margin-top: 0.5em;
         }
-        #converse-register,
-        #converse-login {
-            margin: 3em 30% 3em 30%;
-        }
-        @media screen and (max-width: $mobile-portrait-length) {
-            #converse-register,
-            #converse-login {
-                margin: 3em 10% 3em 10%;
-            }
-        }
         #converse-register, #converse-login {
+            margin: 3em 30% 3em 30%;
             .title, .instructions, label {
                 margin: 1em 0;
             }
             input[type=submit],
             input[type=button] {
                 width: auto;
+            }
+            input {
+                width: 100%;
+                margin: 1em 0;
+                &.pure-button {
+                    margin: 1em 0.5em;
+                }
+            }
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            #converse-register,
+            #converse-login {
+                margin: 3em 10% 3em 10%;
             }
         }
         #controlbox-tabs {
@@ -86,10 +93,11 @@
                 }
             }
         }
+        .controlbox-panes {
+            background-color: white;
+        }
         .controlbox-pane {
             @include calc(height, '100% - #{$controlbox-head-height}');
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
         }
     }
 }

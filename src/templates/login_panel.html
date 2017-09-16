@@ -12,13 +12,13 @@
 
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{label_username}}}</label>
-            <p class="form-help invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
+            <p class="form-help fade-in invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
             <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
                 <label>{{{label_password}}}</label>
                 <input type="password" name="password" placeholder="{{{placeholder_password}}}">
             {[ } ]}
-            <input class="pure-button button-primary" type="submit" value="{{{label_login}}}">
+            <input class="pure-button button-primary" type="submit" value="{{{__('Submit')}}}">
         {[ } ]}
         {[ if (authentication == ANONYMOUS) { ]}
             <input class="pure-button button-primary login-anon" type="submit" value="{{{label_anon_login}}}"/>

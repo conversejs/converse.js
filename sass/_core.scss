@@ -1,3 +1,11 @@
+@mixin fade-in {
+    opacity:0;  /* make things invisible upon start */
+    @include animation-name(fadein);
+    @include animation-fill-mode(forwards);
+    @include animation-duration(1s);
+    @include animation-timing-function(ease);
+}
+
 #converse-embedded-chat,
 #conversejs {
     bottom: 0;
@@ -20,6 +28,9 @@
         width: 100vw;
     }
 
+    .fade-in {
+        @include fade-in;
+    }
 
 	::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: $subdued-color;
@@ -143,6 +154,7 @@
     }
     .reg-feedback {
         font-size: 85%;
+        margin-bottom: 1em;
     }
 
     .reg-feedback,
@@ -173,7 +185,7 @@
         padding: 0.5em 0;
     }
     .pure-button {
-        border-radius: $chatbox-border-radius;
+        border-radius: $button-border-radius;
     }
     .button-primary {
         color: white;
@@ -195,7 +207,7 @@
             legend {
                 color: $text-color;
                 font-size: 125%;
-                margin-bottom: 2em;
+                margin-bottom: 1em;
             }
             input[type=checkbox] {
                 display: block;

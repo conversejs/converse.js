@@ -55,6 +55,11 @@
                     const div = document.createElement('div');
                     div.innerHTML = tpl_brand_heading();
                     return div.firstChild;
+                },
+
+                insertBrandHeading () {
+                    const el = document.getElementById('converse-login-panel');
+                    el.parentNode.insertBefore(this.createBrandHeadingElement(), el.parentNode.firstChild);
                 }
             },
 

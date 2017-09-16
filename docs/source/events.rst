@@ -19,13 +19,14 @@ The core events, which are also promises are:
 
 * `cachedRoster`_
 * `chatBoxesFetched`_
+* `controlboxInitialized`_ (only via the `converse-controlbox` plugin)
 * `pluginsInitialized`_
-* `roster`_
+* `roomsPanelRendered`_ (only via the `converse-muc` plugin)
 * `rosterContactsFetched`_
 * `rosterGroupsFetched`_
 * `rosterInitialized`_
+* `roster`_
 * `statusInitialized`_
-* `roomsPanelRendered`_ (only via the `converse-muc` plugin)
 
 For more info on how to use (or add promises), you can read the
 :ref:`promises-grouping` in the API documentation.
@@ -183,6 +184,25 @@ contactStatusMessageChanged
 When a chat buddy's custom status message has changed.
 
 ``_converse.on('contactStatusMessageChanged', function (data) { ... });``
+
+controlboxInitialized
+~~~~~~~~~~~~~~~~~~~~~
+
+Called when the controlbox has been initialized and therefore exists.
+
+The controlbox contains the login and register forms when
+the user is logged out and a list of the user's contacts and group chats when
+logged in.
+
+``_converse.on('controlboxInitialized', function () { ... });``
+
+Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
+
+.. code-block:: javascript
+
+    _converse.api.waitUntil('controlboxInitialized').then(function () {
+        // Your code here...
+    });
 
 discoInitialized
 ~~~~~~~~~~~~~~~~

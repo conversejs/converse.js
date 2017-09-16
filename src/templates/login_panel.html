@@ -8,6 +8,8 @@
         <span class="spinner login-submit"/>
     {[ } ]}
     {[ if (!auto_login) { ]}
+        <legend>{{{__("Login")}}}</legend>
+
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{label_username}}}</label>
             <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
@@ -24,8 +26,4 @@
             <p>Disconnected.</p>
         {[ } ]}
     {[ } ]}
-</form>
-
-<form class="pure-form pure-form-stacked converse-form" id="converse-register" method="post">
-    <p>{{{ __("Don't have a chat account?") }}} <a class="register-account" href="#register">{{{__("Register an account here")}}}</a></p>
 </form>

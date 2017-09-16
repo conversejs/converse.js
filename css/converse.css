@@ -1315,7 +1315,8 @@
     #converse-embedded-chat form.pure-form.converse-form legend,
     #conversejs form.pure-form.converse-form legend {
       color: #777;
-      font-size: 125%; }
+      font-size: 125%;
+      margin-bottom: 2em; }
     #converse-embedded-chat form.pure-form.converse-form input[type=checkbox],
     #conversejs form.pure-form.converse-form input[type=checkbox] {
       display: block; }
@@ -1948,14 +1949,16 @@
       font-weight: bold; }
     #conversejs #controlbox .conn-feedback p.error {
       color: #A53214; }
-  #conversejs #controlbox #login-dialog .brand-heading {
-    font-size: 150%; }
-  #conversejs #controlbox #login-dialog .brand-name {
-    font-size: 120%; }
-  #conversejs #controlbox #login-dialog .register-account {
+  #conversejs #controlbox .brand-heading-container {
+    text-align: center; }
+    #conversejs #controlbox .brand-heading-container .brand-heading {
+      font-size: 150%; }
+    #conversejs #controlbox .brand-heading-container .brand-name {
+      font-size: 120%; }
+  #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
-    margin-top: 2em; }
+    margin: 2em 0; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {
       height: auto;
       white-space: normal; }
@@ -1963,7 +1966,7 @@
       color: #3AA569; }
     #conversejs #controlbox #converse-register input, #conversejs #controlbox #converse-login input {
       width: 100%;
-      margin: 0.5em 0; }
+      margin: 1em 0; }
   #conversejs #controlbox #users .add-converse-contact {
     margin: 0 0 0.75em 0; }
   #conversejs #controlbox #chatrooms form.add-chatroom {
@@ -2185,6 +2188,8 @@
     width: 40px;
     padding: 1px;
     float: right; }
+  #conversejs #controlbox .controlbox-panes {
+    background-color: white; }
   #conversejs #controlbox .controlbox-pane {
     padding: 1em;
     background-color: white;

@@ -9,15 +9,24 @@
             padding-top: 2em;
         }
 
-        #login-dialog {
+        .toggle-register-login {
+            line-height: $line-height-huge;
+        }
+
+        .brand-heading-container {
             .brand-heading {
                 font-size: 600%;
-                margin: 0.5em 0 0 0;
+                padding: 0.7em 0 0 0;
                 opacity: 0.8;
                 color: $blue;
             }
             .brand-subtitle {
                 font-size: 90%;
+            }
+            @media screen and (max-width: $mobile-portrait-length) {
+                .brand-heading {
+                    font-size: 400%;
+                }
             }
         }
 
@@ -38,15 +47,19 @@
             background-color: $controlbox-head-color;
         }
         .controlbox-head {
-            height: $controlbox-head-height;
+            height: 0;
             padding: 6px 0 6px 0;
             margin-top: 0.5em;
         }
-        #converse-register {
-            margin: 4em 30% 0 30%;
-        }
+        #converse-register,
         #converse-login {
-            margin: 4em 30% 4em 30%;
+            margin: 3em 30% 3em 30%;
+        }
+        @media screen and (max-width: $mobile-portrait-length) {
+            #converse-register,
+            #converse-login {
+                margin: 3em 10% 3em 10%;
+            }
         }
         #converse-register, #converse-login {
             .title, .instructions, label {

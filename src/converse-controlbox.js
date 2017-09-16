@@ -282,7 +282,7 @@
                     });
                     this.loginpanel.render();
                     this.el.classList.add("logged-out");
-                    const el = document.getElementById('converse-login');
+                    const el = document.getElementById('converse-login-panel');
                     el.parentNode.insertBefore(this.createBrandHeadingElement(), el.parentNode.firstChild);
                     return this;
                 },
@@ -385,33 +385,14 @@
 
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "login-dialog",
+                id: "converse-login-panel",
                 className: 'controlbox-pane',
                 events: {
                     'submit form#converse-login': 'authenticate'
                 },
 
                 initialize (cfg) {
-                    cfg.$parent.html(this.$el.html(
-                        tpl_login_panel({
-                            '__': __,
-                            'ANONYMOUS': _converse.ANONYMOUS,
-                            'EXTERNAL': _converse.EXTERNAL,
-                            'LOGIN': _converse.LOGIN,
-                            'PREBIND': _converse.PREBIND,
-                            'auto_login': _converse.auto_login,
-                            'authentication': _converse.authentication,
-                            'conn_feedback_class': _converse.connfeedback.get('klass'),
-                            'conn_feedback_subject': _converse.connfeedback.get('subject'),
-                            'conn_feedback_message': _converse.connfeedback.get('message'),
-                            'label_username': __('Jabber ID:'),
-                            'label_password': __('Password:'),
-                            'label_anon_login': __('Click here to log in anonymously'),
-                            'label_login': __('Log In'),
-                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
-                            'placeholder_password': __('password')
-                        })
-                    ));
+                    this.insertIntoDOM(cfg);
                     _converse.connfeedback.on('change', this.showConnectionFeedback, this);
                 },
 
@@ -421,6 +402,28 @@
                         this.$el.show();
                     }
                     return this;
+                },
+
+                insertIntoDOM (cfg) {
+                    this.el.innerHTML = tpl_login_panel({
+                        '__': __,
+                        'ANONYMOUS': _converse.ANONYMOUS,
+                        'EXTERNAL': _converse.EXTERNAL,
+                        'LOGIN': _converse.LOGIN,
+                        'PREBIND': _converse.PREBIND,
+                        'auto_login': _converse.auto_login,
+                        'authentication': _converse.authentication,
+                        'conn_feedback_class': _converse.connfeedback.get('klass'),
+                        'conn_feedback_subject': _converse.connfeedback.get('subject'),
+                        'conn_feedback_message': _converse.connfeedback.get('message'),
+                        'label_username': __('Jabber ID:'),
+                        'label_password': __('Password:'),
+                        'label_anon_login': __('Click here to log in anonymously'),
+                        'label_login': __('Log In'),
+                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
+                        'placeholder_password': __('password')
+                    })
+                    cfg.$parent.html(this.el);
                 },
 
                 showConnectionFeedback () {

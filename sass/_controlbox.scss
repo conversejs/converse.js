@@ -127,20 +127,22 @@
             }
         }
 
-        #login-dialog {
+        .brand-heading-container {
+            text-align: center;
             .brand-heading {
                 font-size: 150%;
             }
             .brand-name {
                 font-size: 120%;
             }
-            .register-account {
-                font-weight: bold;
-            }
+        }
+
+        .toggle-register-login {
+            font-weight: bold;
         }
 
         #converse-register, #converse-login {
-            margin-top: 2em;
+            margin: 2em 0;
             .login-anon {
                 height: auto;
                 white-space: normal;
@@ -150,7 +152,7 @@
             }
             input {
                 width: 100%;
-                margin: 0.5em 0;
+                margin: 1em 0;
             }
         }
         #users {
@@ -434,6 +436,10 @@
                 padding: 1px;
                 float: right;
             }
+        }
+
+        .controlbox-panes {
+            background-color: white;
         }
 
         .controlbox-pane {

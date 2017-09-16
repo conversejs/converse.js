@@ -1,12 +1,20 @@
 <form id="converse-register" class="pure-form converse-form">
+    <legend>{{{__("Account Registration")}}}</legend>
     <span class="reg-feedback"></span>
-    <label>{{{label_domain}}}</label>
+
+    <label>{{{__("Please enter the XMPP provider you want to register with:")}}}</label>
+    <p class="form-help">{{{help_providers}}} <a href="{{{href_providers}}}" class="url" target="_blank" rel="noopener">{{{help_providers_link}}}</a>.</p>
+
     {[ if (default_domain) { ]}
     	{{{default_domain}}}
     {[ } ]}
     {[ if (!default_domain) { ]}
     	<input type="text" name="domain" placeholder="{{{domain_placeholder}}}">
-        <p class="form-help">{{{help_providers}}} <a href="{{{href_providers}}}" class="url" target="_blank" rel="noopener">{{{help_providers_link}}}</a>.</p>
         <input class="pure-button button-primary" type="submit" value="{{{label_register}}}">
     {[ } ]}
 </form>
+
+<p style="margin-top: 1em">{{{ __("Already have a Jabber/XMPP chat account?") }}}</p>
+<p style="margin-top: 0.5em">
+    <a class="login-here toggle-register-login" href="#login">{{{__("Log in here")}}}</a>
+</p>

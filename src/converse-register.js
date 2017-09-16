@@ -14,6 +14,7 @@
             "form-utils",
             "converse-core",
             "tpl!form_username",
+            "tpl!register_link",
             "tpl!register_panel",
             "tpl!registration_form",
             "tpl!registration_request",
@@ -25,6 +26,7 @@
             utils,
             converse,
             tpl_form_username,
+            tpl_register_link,
             tpl_register_panel,
             tpl_registration_form,
             tpl_registration_request,
@@ -51,34 +53,37 @@
 
     converse.plugins.add('converse-register', {
 
-        overrides: {
+        'overrides': {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
+        
+            LoginPanel: {
+
+                initialize: function (cfg) {
+                    const _converse = this.__super__._converse;
+                    this.__super__.initialize.apply(this, arguments);
+                    this.registerlink = new _converse.RegisterLink();
+                    this.el.appendChild(this.registerlink.el);
+                }
+            },
 
             ControlBoxView: {
-
-                switchTab (ev) {
-                    const { _converse } = this.__super__;
-                    const result = this.__super__.switchTab.apply(this, arguments);
-                    if (_converse.registration_domain &&
-                            ev.target.getAttribute('data-id') === "register" &&
-                            !this.model.get('registration_form_rendered')) {
-                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
-                    }
-                    return result;
-                },
 
                 renderRegistrationPanel () {
                     const { _converse } = this.__super__;
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
-                            '$parent': this.$el.find('.controlbox-panes'),
                             'model': this.model
                         });
-                        this.registerpanel.render().$el.addClass('hidden');
+                        this.registerpanel.render();
+                        this.registerpanel.el.classList.add('hidden');
+                        this.el.querySelector('#converse-login-panel').insertAdjacentElement(
+                            'afterend',
+                            this.registerpanel.el
+                        );
                     }
                     return this;
                 },
@@ -113,33 +118,61 @@
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
+            _converse.RegisterLink = Backbone.View.extend({
+                tagName: 'div',
+                events: {
+                    'click .register-account': 'showRegistrationForm'
+                },
+
+                initialize () {
+                    this.render();
+                },
+
+                render () {
+                    this.el.innerHTML = tpl_register_link({'__': __});
+                    return this;
+                },
+
+                showRegistrationForm (ev) {
+                    ev.preventDefault();
+                    document.querySelector("#converse-register-panel").classList.remove('hidden');
+                    document.querySelector("#converse-login-panel").classList.add('hidden');
+                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
+                        this.model.save({'active-panel': "register"});
+                    }
+                    if (_converse.registration_domain &&
+                            ev.target.getAttribute('data-id') === "register" &&
+                            !this.model.get('registration_form_rendered')) {
+                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
+                    }
+                }
+            });
+
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "register",
+                id: "converse-register-panel",
                 className: 'controlbox-pane',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen'
+                    'submit form#converse-register': 'onProviderChosen',
+                    'click .login-here': 'showLoginForm'
                 },
 
                 initialize (cfg) {
                     this.reset();
-                    this.$parent = cfg.$parent;
                     this.registerHooks();
                 },
 
                 render () {
                     this.model.set('registration_form_rendered', false);
-                    this.$parent.append(this.$el.html(
-                        tpl_register_panel({
-                            'default_domain': _converse.registration_domain,
-                            'label_domain': __("Your XMPP provider's domain name:"),
-                            'label_register': __('Fetch registration form'),
-                            'help_providers': __('Tip: A list of public XMPP providers is available'),
-                            'help_providers_link': __('here'),
-                            'href_providers': _converse.providers_link,
-                            'domain_placeholder': _converse.domain_placeholder
-                        })
-                    ));
+                    this.el.innerHTML = tpl_register_panel({
+                        '__': __,
+                        'default_domain': _converse.registration_domain,
+                        'label_register': __('Fetch registration form'),
+                        'help_providers': __('Tip: A list of public XMPP providers is available'),
+                        'help_providers_link': __('here'),
+                        'href_providers': _converse.providers_link,
+                        'domain_placeholder': _converse.domain_placeholder
+                    });
                     return this;
                 },
 
@@ -158,6 +191,15 @@
                             }
                         }
                     };
+                },
+
+                showLoginForm (ev) {
+                    ev.preventDefault();
+                    document.querySelector("#converse-login-panel").classList.remove('hidden');
+                    document.querySelector("#converse-register-panel").classList.add('hidden');
+                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
+                        this.model.save({'active-panel': "login"});
+                    }
                 },
 
                 getRegistrationFields (req, _callback, raw) {

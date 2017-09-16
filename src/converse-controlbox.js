@@ -428,9 +428,9 @@
                     function insert (text, el) {
                         el.textContent = text;
                         if (!text) {
-                            el.classList.add('hidden');
+                            el.parentNode.classList.add('hidden');
                         } else {
-                            el.classList.remove('hidden');
+                            el.parentNode.classList.remove('hidden');
                         }
                         el.classList.remove('error');
                         if (klass) {

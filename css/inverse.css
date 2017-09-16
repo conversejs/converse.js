@@ -2343,7 +2343,7 @@ body {
   #conversejs #controlbox #converse-register {
     margin: 4em 30% 0 30%; }
   #conversejs #controlbox #converse-login {
-    margin: 2em 30% 0 30%; }
+    margin: 4em 30% 4em 30%; }
   #conversejs #controlbox #converse-register .title, #conversejs #controlbox #converse-register .instructions, #conversejs #controlbox #converse-register label, #conversejs #controlbox #converse-login .title, #conversejs #controlbox #converse-login .instructions, #conversejs #controlbox #converse-login label {
     margin: 1em 0; }
   #conversejs #controlbox #converse-register input[type=submit],

@@ -5,6 +5,8 @@
 - Don't hang indefinitely and provide nicer error messages when a connection
   can't be established.
 - Remove `Login` and `Registration` tabs and consolidate into one panel.
+- #828 Add routing for the `#converse-login` and `#converse-register` URL
+  fragments, which will render the registration and login forms respectively.
 
 ## 3.2.1 (2017-08-29)
 

@@ -1878,6 +1878,8 @@
         _converse.logIn();
         _converse.registerGlobalEventHandlers();
 
+        Backbone.history.start();
+
         if (!_.isUndefined(_converse.connection) &&
             _converse.connection.service === 'jasmine tests') {
             return _converse;

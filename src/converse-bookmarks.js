@@ -528,7 +528,8 @@
             Promise.all([
                 _converse.api.waitUntil('chatBoxesFetched'),
                 _converse.api.waitUntil('roomsPanelRendered')
-            ]).then(initBookmarks);
+            ]).then(initBookmarks)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

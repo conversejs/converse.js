@@ -187,6 +187,8 @@
                 xhr_user_search_url: ''
             });
 
+            _converse.api.promises.add('controlboxInitialized');
+
             const LABEL_CONTACTS = __('Contacts');
 
             _converse.addControlBox = () => {
@@ -223,6 +225,7 @@
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
+                    _converse.emit('controlboxInitialized');
                 },
 
                 render () {

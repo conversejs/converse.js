@@ -66,11 +66,35 @@
                     const _converse = this.__super__._converse;
                     this.__super__.initialize.apply(this, arguments);
                     this.registerlink = new _converse.RegisterLink();
-                    this.el.appendChild(this.registerlink.el);
+                    const div = document.createElement('div');
+                    div.innerHTML = tpl_register_link({'__': _converse.__})
+                    this.el.appendChild(div);
                 }
             },
 
             ControlBoxView: {
+
+                initialize () {
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
+                },
+
+                showLoginOrRegisterForm (ev) {
+                    const { _converse } = this.__super__;
+                    if (this.model.get('active-form') == "register") {
+                        this.loginpanel.el.classList.add('hidden');
+                        this.registerpanel.el.classList.remove('hidden');
+                        if (_converse.registration_domain &&
+                                ev.target.getAttribute('data-id') === "register" &&
+                                !this.model.get('registration_form_rendered')) {
+                            this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
+                        }
+                    } else {
+                        this.loginpanel.el.classList.remove('hidden');
+                        this.registerpanel.el.classList.add('hidden');
+                    }
+                },
+
 
                 renderRegistrationPanel () {
                     const { _converse } = this.__super__;
@@ -84,6 +108,7 @@
                             'afterend',
                             this.registerpanel.el
                         );
+                        this.showLoginOrRegisterForm();
                     }
                     return this;
                 },
@@ -118,33 +143,37 @@
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
+
+            _converse.RegistrationRouter = Backbone.Router.extend({
+
+                initialize () {
+                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
+                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
+                },
+
+                setActiveForm (value) {
+                    _converse.api.waitUntil('controlboxInitialized').then(() => {
+                        const controlbox = _converse.chatboxes.get('controlbox')
+                        if (controlbox.get('connected')) {
+                            controlbox.save({'active-form': value});
+                        } else {
+                            controlbox.set({'active-form': value});
+                        }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }
+            });
+            const router = new _converse.RegistrationRouter();
+
+
             _converse.RegisterLink = Backbone.View.extend({
                 tagName: 'div',
-                events: {
-                    'click .register-account': 'showRegistrationForm'
-                },
 
                 initialize () {
                     this.render();
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_register_link({'__': __});
                     return this;
-                },
-
-                showRegistrationForm (ev) {
-                    ev.preventDefault();
-                    document.querySelector("#converse-register-panel").classList.remove('hidden');
-                    document.querySelector("#converse-login-panel").classList.add('hidden');
-                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({'active-panel': "register"});
-                    }
-                    if (_converse.registration_domain &&
-                            ev.target.getAttribute('data-id') === "register" &&
-                            !this.model.get('registration_form_rendered')) {
-                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
-                    }
                 }
             });
 
@@ -153,8 +182,7 @@
                 id: "converse-register-panel",
                 className: 'controlbox-pane',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen',
-                    'click .login-here': 'showLoginForm'
+                    'submit form#converse-register': 'onProviderChosen'
                 },
 
                 initialize (cfg) {
@@ -191,15 +219,6 @@
                             }
                         }
                     };
-                },
-
-                showLoginForm (ev) {
-                    ev.preventDefault();
-                    document.querySelector("#converse-login-panel").classList.remove('hidden');
-                    document.querySelector("#converse-register-panel").classList.add('hidden');
-                    if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({'active-panel': "login"});
-                    }
                 },
 
                 getRegistrationFields (req, _callback, raw) {

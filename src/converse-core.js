@@ -1722,12 +1722,13 @@
             if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
                 return;
             }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
+
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
+            } else if (this.auto_login) {
+                if (this.credentials_url) {
                     this.fetchLoginCredentials().then(
                         this.autoLogin.bind(this),
                         this.autoLogin.bind(this)

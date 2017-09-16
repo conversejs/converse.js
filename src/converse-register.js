@@ -63,12 +63,13 @@
             LoginPanel: {
 
                 initialize: function (cfg) {
-                    const _converse = this.__super__._converse;
+                    const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
-                    this.registerlink = new _converse.RegisterLink();
-                    const div = document.createElement('div');
-                    div.innerHTML = tpl_register_link({'__': _converse.__})
-                    this.el.appendChild(div);
+                    if (_converse.allow_registration) {
+                        const div = document.createElement('div');
+                        div.innerHTML = tpl_register_link({'__': _converse.__})
+                        this.el.appendChild(div);
+                    }
                 }
             },
 
@@ -164,18 +165,6 @@
             });
             const router = new _converse.RegistrationRouter();
 
-
-            _converse.RegisterLink = Backbone.View.extend({
-                tagName: 'div',
-
-                initialize () {
-                    this.render();
-                },
-
-                render () {
-                    return this;
-                }
-            });
 
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',

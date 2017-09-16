@@ -1,4 +1,4 @@
-<div class="conn-feedback">
+<div class="conn-feedback hidden">
     <p class="feedback-subject hidden {{{ conn_feedback_class }}}">{{{ conn_feedback_subject }}}</p>
     <p class="feedback-message hidden {{{ conn_feedback_class }}}">{{{ conn_feedback_message }}}</p>
 </div>
@@ -12,6 +12,7 @@
 
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{label_username}}}</label>
+            <p class="form-help invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
             <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
                 <label>{{{label_password}}}</label>

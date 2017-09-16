@@ -140,6 +140,9 @@
         .toggle-register-login {
             font-weight: bold;
         }
+        .oauth-login {
+            color: $text-color;
+        }
 
         #converse-register, #converse-login {
             margin: 2em 0;

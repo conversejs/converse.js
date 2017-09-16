@@ -36,6 +36,7 @@
                 width: 100%;
                 .controlbox-head {
                     background-color: white;
+                    height: 0;
                 }
             }
         }
@@ -47,7 +48,7 @@
             background-color: $controlbox-head-color;
         }
         .controlbox-head {
-            height: 0;
+            height: $controlbox-head-height;
             padding: 6px 0 6px 0;
             margin-top: 0.5em;
         }

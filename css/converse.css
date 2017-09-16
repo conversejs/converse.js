@@ -1364,6 +1364,9 @@
       #converse-embedded-chat form.pure-form.converse-form .form-help:hover,
       #conversejs form.pure-form.converse-form .form-help:hover {
         color: #777; }
+      #converse-embedded-chat form.pure-form.converse-form .form-help.error,
+      #conversejs form.pure-form.converse-form .form-help.error {
+        color: #A53214; }
   #converse-embedded-chat form.pure-form.converse-centered-form,
   #conversejs form.pure-form.converse-centered-form {
     text-align: center;
@@ -1957,6 +1960,8 @@
       font-size: 120%; }
   #conversejs #controlbox .toggle-register-login {
     font-weight: bold; }
+  #conversejs #controlbox .oauth-login {
+    color: #777; }
   #conversejs #controlbox #converse-register, #conversejs #controlbox #converse-login {
     margin: 2em 0; }
     #conversejs #controlbox #converse-register .login-anon, #conversejs #controlbox #converse-login .login-anon {

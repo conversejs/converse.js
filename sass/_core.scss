@@ -235,6 +235,9 @@
                 &:hover {
                     color: $text-color;
                 }
+                &.error {
+                    color: $error-color;
+                }
             }
         }
         &.pure-form.converse-centered-form {

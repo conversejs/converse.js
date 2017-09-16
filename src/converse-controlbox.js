@@ -463,6 +463,7 @@
                         return;
                     }
                     const $jid_input = $form.find('input[name=jid]');
+                    const $jid_error_msg = $form.find('.invalid-jid-msg');
                     const $pw_input = $form.find('input[name=password]');
                     const password = $pw_input.val();
 
@@ -475,6 +476,9 @@
                             _.filter(jid.split('@')).length < 2)) {
                         errors = true;
                         $jid_input.addClass('error');
+                        $jid_error_msg.removeClass('hidden');
+                    } else {
+                        $jid_error_msg.addClass('hidden');
                     }
 
                     if (!password && _converse.authentication !== _converse.EXTERNAL)  {

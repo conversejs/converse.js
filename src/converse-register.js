@@ -77,13 +77,29 @@
 
             ControlBoxView: {
 
+                events: {
+                    'click .toggle-register-login': 'switchToRegisterForm',
+                },
+
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
                 },
 
-                showLoginOrRegisterForm (ev) {
+                switchToRegisterForm (ev) {
+                    ev.preventDefault();
+                    if (this.model.get('active-form') == "register") {
+                        this.model.set('active-form', 'login');
+                    } else {
+                        this.model.set('active-form', 'register');
+                    }
+                },
+
+                showLoginOrRegisterForm () {
                     const { _converse } = this.__super__;
+                    if (_.isNil(this.registerpanel)) {
+                        return;
+                    }
                     if (this.model.get('active-form') == "register") {
                         this.loginpanel.el.classList.add('hidden');
                         this.registerpanel.el.classList.remove('hidden');
@@ -145,11 +161,7 @@
                 setActiveForm (value) {
                     _converse.api.waitUntil('controlboxInitialized').then(() => {
                         const controlbox = _converse.chatboxes.get('controlbox')
-                        if (controlbox.get('connected')) {
-                            controlbox.save({'active-form': value});
-                        } else {
-                            controlbox.set({'active-form': value});
-                        }
+                        controlbox.set({'active-form': value});
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             });
@@ -162,7 +174,7 @@
                 className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-register': 'onProviderChosen',
-                    'click .button-cancel': 'cancelRegistration'
+                    'click .button-cancel': 'cancelRegistration',
                 },
 
                 initialize (cfg) {

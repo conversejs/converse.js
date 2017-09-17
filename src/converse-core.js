@@ -188,6 +188,7 @@
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            Backbone.history.stop();
             delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();

@@ -87,11 +87,6 @@
                     if (this.model.get('active-form') == "register") {
                         this.loginpanel.el.classList.add('hidden');
                         this.registerpanel.el.classList.remove('hidden');
-                        if (_converse.registration_domain &&
-                                ev.target.getAttribute('data-id') === "register" &&
-                                !this.model.get('registration_form_rendered')) {
-                            this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
-                        }
                     } else {
                         this.loginpanel.el.classList.remove('hidden');
                         this.registerpanel.el.classList.add('hidden');
@@ -166,7 +161,8 @@
                 id: "converse-register-panel",
                 className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen'
+                    'submit form#converse-register': 'onProviderChosen',
+                    'click .button-cancel': 'cancelRegistration'
                 },
 
                 initialize (cfg) {
@@ -185,6 +181,11 @@
                         'href_providers': _converse.providers_link,
                         'domain_placeholder': _converse.domain_placeholder
                     });
+                    if (_converse.registration_domain) {
+                        this.fetchRegistrationForm(
+                            _converse.registration_domain
+                        );
+                    }
                     return this;
                 },
 
@@ -262,7 +263,9 @@
                         return false;
                     }
                     this.setFields(stanza);
-                    this.renderRegistrationForm(stanza);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationForm(stanza);
+                    }
                     return false;
                 },
 
@@ -299,17 +302,19 @@
                         return;
                     }
                     $form.find('input[type=submit]').hide();
-                    this.fetchRegistrationForm(domain, __('Cancel'));
+                    this.fetchRegistrationForm(domain);
                 },
 
-                fetchRegistrationForm (domain_name, cancel_label) {
+                fetchRegistrationForm (domain_name) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
                      * Parameters:
-                     *      (Domain name) domain_name - XMPP server domain
+                     *      (String) domain_name - XMPP server domain
                      */
-                    this.renderRegistrationRequest(cancel_label);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationRequest();
+                    }
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
@@ -318,28 +323,50 @@
                     return false;
                 },
 
-                renderRegistrationRequest (cancel_label) {
-                    const form = this.el.querySelector('#converse-register');
-                    const markup = tpl_registration_request({
-                        'cancel': cancel_label,
-                        'info_message': _converse.__('Requesting a registration form from the XMPP server')
-                    });
-                    form.appendChild(utils.createFragmentFromText(markup));
-                    if (!_converse.registration_domain) {
-                        const cancel_button = document.querySelector('button.button-cancel');
-                        cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
-                    }
+                renderRegistrationRequest () {
+                    /* Clear the form and inform the user that the registration
+                     * form is being fetched.
+                     */
+                    this.clearRegistrationForm().insertAdjacentHTML(
+                        'beforeend',
+                        tpl_registration_request({
+                            '__': _converse.__,
+                            'cancel': _converse.registration_domain,
+                        })
+                    );
                 },
 
                 giveFeedback (message, klass) {
-                    this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
+                    let feedback = this.el.querySelector('.reg-feedback');
+                    if (_.isNull(feedback)) {
+                        const form = this.el.querySelector('form');
+                        form.insertAdjacentHTML(
+                            'afterbegin',
+                            '<span class="reg-feedback"></span>'
+                        );
+                        feedback = form.querySelector('.reg-feedback');
+                    }
+                    feedback.setAttribute('class', 'reg-feedback');
+                    feedback.textContent = message;
                     if (klass) {
                         $('.reg-feedback').addClass(klass);
                     }
                 },
 
+                clearRegistrationForm () {
+                    const form = this.el.querySelector('form');
+                    form.innerHTML = '';
+                    return form;
+                },
+
+                showRegistrationForm () {
+                    const form = this.el.querySelector('form');
+                    form.classList.remove('hidden');
+                    return form;
+                },
+
                 onRegistering (status, error) {
-                    let that;
+                    /* Callback function called by Strophe */
                     _converse.log('onRegistering');
                     if (_.includes([
                                 Strophe.Status.DISCONNECTED,
@@ -353,9 +380,12 @@
                             `Problem during registration: Strophe.Status is: ${status}`,
                             Strophe.LogLevel.ERROR
                         );
-                        this.cancelRegistration();
+                        this.cancelRegistration(error);
                         if (error) {
-                            this.giveFeedback(error, 'error');
+                            this.giveFeedback(__(
+                                'Something went wrong while establishing a connection with "%1$s". The returned error message is "%2$s"',
+                                this.domain, error
+                            ), 'error');
                         } else {
                             this.giveFeedback(__(
                                 'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
@@ -363,27 +393,26 @@
                             ), 'error');
                         }
                     } else if (status === Strophe.Status.REGISTERED) {
+                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
+                        this.model.set('registration_form_rendered', false);
                         _converse.connection.reset();
-                        that = this;
-                        this.$('form').hide(function () {
-                            $(this).replaceWith(tpl_spinner);
-                            if (that.fields.password && that.fields.username) {
-                                // automatically log the user in
-                                _converse.connection.connect(
-                                    that.fields.username.toLowerCase()+'@'+that.domain.toLowerCase(),
-                                    that.fields.password,
-                                    _converse.onConnectStatusChanged
-                                );
-                                _converse.chatboxviews.get('controlbox')
-                                    .switchTab({'target': that.$tabs.find('.current')});
-                                _converse.giveFeedback(__('Now logging you in'));
-                            } else {
-                                _converse.chatboxviews.get('controlbox').renderLoginPanel();
-                                _converse.giveFeedback(__('Registered successfully'));
-                            }
-                            that.reset();
-                        });
+                        const form = this.el.querySelector('form');
+                        form.innerHTML = tpl_spinner();
+
+                        if (this.fields.password && this.fields.username) {
+                            // automatically log the user in
+                            _converse.connection.connect(
+                                this.fields.username.toLowerCase()+'@'+this.domain.toLowerCase(),
+                                this.fields.password,
+                                _converse.onConnectStatusChanged
+                            );
+                            this.giveFeedback(__('Now logging you in'));
+                        } else {
+                            _converse.chatboxviews.get('controlbox').renderLoginPanel();
+                            _converse.giveFeedback(__('Registered successfully'));
+                        }
+                        this.reset();
                     }
                 },
 
@@ -428,16 +457,7 @@
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
                      */
-                    this.model.set('registration_form_rendered', true);
-
-                    const form = this.el.querySelector('form'),
-                          $form = $(form),
-                          $stanza = $(stanza);
-                    let $fields;
-
-                    // Hide and show at the end so that we get a fade-in animation
-                    form.classList.add('hidden');
-
+                    const form = this.el.querySelector('form');
                     form.innerHTML = tpl_registration_form({
                         '__': _converse.__,
                         'domain': this.domain,
@@ -455,18 +475,27 @@
                         this.renderLegacyRegistrationForm(form);
                     }
                     if (this.fields) {
-                        $form.append(`<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`);
-                        $form.on('submit', this.submitRegistrationForm.bind(this));
-                        $form.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                        form.insertAdjacentHTML(
+                            'beforeend',
+                            `<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`
+                        );
+                        if (!_converse.registration_domain) {
+                            form.insertAdjacentHTML(
+                                'beforeend',
+                                `<input type="button" class="pure-button button-cancel" value="${__('Choose a different provider')}"/>`
+                            );
+                        }
+                        form.addEventListener('submit', this.submitRegistrationForm.bind(this));
                     } else {
-                        $form.append(`<input type="button" class="submit" value="${__('Return')}"/>`);
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                        form.insertAdjacentHTML(
+                            'beforeend',
+                            `<input type="button" class="submit" value="${__('Return')}"/>`
+                        );
+                        form.querySelector('input[type=button]').addEventListener(
+                            'click', this.cancelRegistration.bind(this));
                     }
-                    if (_converse.registration_domain) {
-                        $form.find('input[type=button]').hide();
-                    }
-                    form.classList.remove('hidden');
+                    this.model.set('registration_form_rendered', true);
+                    this.showRegistrationForm();
                 },
 
                 reportErrors (stanza) {
@@ -493,10 +522,10 @@
                         $flash.empty();
                     }
                     $errmsgs.each(function (idx, txt) {
-                        $flash.append($('<p>').text($(txt).text()));
+                        $flash.append($('<p class="form-help error">').text($(txt).text()));
                     });
                     if (!$errmsgs.length) {
-                        $flash.append($('<p>').text(
+                        $flash.append($('<p class="form-help error">').text(
                             __('The provider rejected your registration attempt. '+
                             'Please check the values you entered for correctness.')));
                     }
@@ -507,15 +536,14 @@
                     /* Handler, when the user cancels the registration form.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    _converse.connection._proto._abortAllRequests();
                     _converse.connection.reset();
-                    this.model.set('registration_form_rendered', false);
-                    this.render();
-                    if (_converse.registration_domain) {
-                        document.querySelector('button.button-cancel').onclick = 
-                            _.bind(
-                                this.fetchRegistrationForm, this,
-                                _converse.registration_domain, __('Retry')
-                            );
+                    if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
+                        this.fetchRegistrationForm(
+                            _converse.registration_domain
+                        );
+                    } else {
+                        this.render();
                     }
                 },
 
@@ -528,7 +556,8 @@
                      *      (Event) ev - the submit event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'),
+                    const has_empty_inputs = _.reduce(
+                        this.el.querySelectorAll('input.required'),
                         function (result, input) {
                             if (input.value === '') {
                                 input.classList.add('error');
@@ -551,7 +580,6 @@
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
-                    this.model.set('registration_form_rendered', false);
                     _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                     _converse.connection.send(iq);
                     this.setFields(iq.tree());

@@ -97,7 +97,7 @@
                             'value': value,
                             'label': option.getAttribute('label'),
                             'selected': _.startsWith(values, value),
-                            'required': _.isNil(field.querySelector('required'))
+                            'required': !_.isNil(field.querySelector('required'))
                         })
                     }
                 );
@@ -106,7 +106,7 @@
                     'label': field.getAttribute('label'),
                     'options': options.join(''),
                     'multiple': (field.getAttribute('type') === 'list-multi'),
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             } else if (field.getAttribute('type') === 'fixed') {
                 const text = _.get(field.querySelector('value'), 'textContent');
@@ -116,7 +116,7 @@
                     'name': field.getAttribute('var'),
                     'label': field.getAttribute('label') || '',
                     'value': _.get(field.querySelector('value'), 'textContent'),
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             } else if (field.getAttribute('type') === 'boolean') {
                 return tpl_form_checkbox({
@@ -124,7 +124,7 @@
                     'type': XFORM_TYPE_MAP[field.getAttribute('type')],
                     'label': field.getAttribute('label') || '',
                     'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             } else if (field.getAttribute('var') === 'url') {
                 return tpl_form_url({
@@ -138,14 +138,14 @@
                     'type': XFORM_TYPE_MAP[field.getAttribute('type')],
                     'label': field.getAttribute('label') || '',
                     'value': _.get(field.querySelector('value'), 'textContent'),
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             } else {
                 return tpl_form_input({
                     'label': field.getAttribute('label') || '',
                     'name': field.getAttribute('var'),
                     'placeholder': null,
-                    'required': _.isNil(field.querySelector('required')),
+                    'required': !_.isNil(field.querySelector('required')),
                     'type': XFORM_TYPE_MAP[field.getAttribute('type')],
                     'value': _.get(field.querySelector('value'), 'textContent')
                 });
@@ -159,7 +159,7 @@
                     'name': field.getAttribute('var'),
                     'data': _.get(el, 'textContent'),
                     'type': uri.getAttribute('type'),
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             }
         }

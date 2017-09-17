@@ -97,7 +97,7 @@
             background-color: white;
         }
         .controlbox-pane {
-            @include calc(height, '100% - #{$controlbox-head-height}');
+            height: auto;
         }
     }
 }

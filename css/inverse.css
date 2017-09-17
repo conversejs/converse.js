@@ -2462,8 +2462,7 @@ body {
   #conversejs #controlbox .controlbox-panes {
     background-color: white; }
   #conversejs #controlbox .controlbox-pane {
-    height: -webkit-calc(100% - 63px);
-    height: calc(100% - 63px); }
+    height: auto; }
 
 #conversejs #converse-roster {
   text-align: left;

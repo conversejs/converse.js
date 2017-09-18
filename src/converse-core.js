@@ -100,7 +100,7 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    const PRETTY_CONNECTION_STATUS = {
+    _converse.PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -495,7 +495,7 @@
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
+            _converse.log(`Status changed to: ${_converse.PRETTY_CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 _converse.giveFeedback();
                 // By default we always want to send out an initial presence stanza.

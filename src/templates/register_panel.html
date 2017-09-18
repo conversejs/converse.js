@@ -1,9 +1,9 @@
 <form id="converse-register" class="pure-form converse-form">
     <legend>{{{__("Account Registration")}}}</legend>
-    <span class="reg-feedback"></span>
 
     <label>{{{__("Please enter the XMPP provider to register with:")}}}</label>
     <p class="form-help">{{{help_providers}}} <a href="{{{href_providers}}}" class="url" target="_blank" rel="noopener">{{{help_providers_link}}}</a>.</p>
+    <div class="form-errors hidden"></div>
 
     {[ if (default_domain) { ]}
     	{{{default_domain}}}

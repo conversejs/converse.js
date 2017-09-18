@@ -145,6 +145,11 @@
             const { _converse } = this,
                 { __ } = _converse;
 
+            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
+
             _converse.api.settings.update({
                 allow_registration: true,
                 domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
@@ -174,7 +179,7 @@
                 className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-register': 'onProviderChosen',
-                    'click .button-cancel': 'cancelRegistration',
+                    'click .button-cancel': 'renderProviderChoiceForm',
                 },
 
                 initialize (cfg) {
@@ -231,6 +236,9 @@
                     const body = conn._proto._reqToData(req);
                     if (!body) { return; }
                     if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
+                        this.showValidationError(
+                            __("Sorry, we're unable to connect to your chosen provider.")
+                        );
                         return false;
                     }
                     const register = body.getElementsByTagName("register");
@@ -240,12 +248,11 @@
                         return false;
                     }
                     if (register.length === 0) {
-                        conn._changeConnectStatus(
-                            Strophe.Status.REGIFAIL,
+                        conn._changeConnectStatus(Strophe.Status.REGIFAIL);
+                        this.showValidationError(
                             __("Sorry, the given provider does not support in "+
                                "band account registration. Please try with a "+
-                               "different provider.")
-                        );
+                               "different provider."))
                         return true;
                     }
                     // Send an IQ stanza to get all required data fields
@@ -266,12 +273,16 @@
                     if (stanza.getAttribute("type") === "error") {
                         _converse.connection._changeConnectStatus(
                             Strophe.Status.REGIFAIL,
-                            __('Something went wrong while establishing a connection with "%1$s". Are you sure it exists?', this.domain)
+                            __('Something went wrong while establishing a connection with "%1$s".'+
+                               'Are you sure it exists?', this.domain)
                         );
                         return false;
                     }
                     if (stanza.getElementsByTagName("query").length !== 1) {
-                        _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
+                        _converse.connection._changeConnectStatus(
+                            Strophe.Status.REGIFAIL,
+                            "unknown"
+                        );
                         return false;
                     }
                     this.setFields(stanza);
@@ -331,7 +342,9 @@
                         domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
                     });
-                    _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
+                    _converse.connection.connect(
+                        this.domain, "", this.onConnectStatusChanged.bind(this)
+                    );
                     return false;
                 },
 
@@ -350,18 +363,18 @@
 
                 giveFeedback (message, klass) {
                     let feedback = this.el.querySelector('.reg-feedback');
-                    if (_.isNull(feedback)) {
-                        const form = this.el.querySelector('form');
-                        form.insertAdjacentHTML(
-                            'afterbegin',
-                            '<span class="reg-feedback"></span>'
-                        );
-                        feedback = form.querySelector('.reg-feedback');
+                    if (!_.isNull(feedback)) {
+                        feedback.parentNode.removeChild(feedback);
                     }
-                    feedback.setAttribute('class', 'reg-feedback');
+                    const form = this.el.querySelector('form');
+                    form.insertAdjacentHTML(
+                        'afterbegin',
+                        '<span class="reg-feedback"></span>'
+                    );
+                    feedback = form.querySelector('.reg-feedback');
                     feedback.textContent = message;
                     if (klass) {
-                        $('.reg-feedback').addClass(klass);
+                        feedback.classList.add(klass);
                     }
                 },
 
@@ -377,34 +390,31 @@
                     return form;
                 },
 
-                onRegistering (status, error) {
-                    /* Callback function called by Strophe */
-                    _converse.log('onRegistering');
+                onConnectStatusChanged(status_code) {
+                    /* Callback function called by Strophe whenever the
+                     * connection status changes.
+                     *
+                     * Passed to Strophe specifically during a registration
+                     * attempt.
+                     *
+                     * Parameters:
+                     *      (Integer) status_code - The Stroph.Status status code
+                     */
+                    _converse.log('converse-register: onConnectStatusChanged');
                     if (_.includes([
                                 Strophe.Status.DISCONNECTED,
                                 Strophe.Status.CONNFAIL,
                                 Strophe.Status.REGIFAIL,
                                 Strophe.Status.NOTACCEPTABLE,
                                 Strophe.Status.CONFLICT
-                            ], status)) {
+                            ], status_code)) {
 
                         _converse.log(
-                            `Problem during registration: Strophe.Status is: ${status}`,
+                            `Problem during registration: Strophe.Status is ${_converse.PRETTY_CONNECTION_STATUS[status_code]}`,
                             Strophe.LogLevel.ERROR
                         );
-                        this.cancelRegistration(error);
-                        if (error) {
-                            this.giveFeedback(__(
-                                'Something went wrong while establishing a connection with "%1$s". The returned error message is "%2$s"',
-                                this.domain, error
-                            ), 'error');
-                        } else {
-                            this.giveFeedback(__(
-                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
-                                this.domain
-                            ), 'error');
-                        }
-                    } else if (status === Strophe.Status.REGISTERED) {
+                        this.abortRegistration();
+                    } else if (status_code === Strophe.Status.REGISTERED) {
                         router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         this.model.set('registration_form_rendered', false);
@@ -419,7 +429,7 @@
                                 this.fields.password,
                                 _converse.onConnectStatusChanged
                             );
-                            this.giveFeedback(__('Now logging you in'));
+                            this.giveFeedback(__('Now logging you in'), 'info');
                         } else {
                             _converse.chatboxviews.get('controlbox').renderLoginPanel();
                             _converse.giveFeedback(__('Registered successfully'));
@@ -504,10 +514,32 @@
                             `<input type="button" class="submit" value="${__('Return')}"/>`
                         );
                         form.querySelector('input[type=button]').addEventListener(
-                            'click', this.cancelRegistration.bind(this));
+                            'click', this.renderProviderChoiceForm.bind(this));
                     }
                     this.model.set('registration_form_rendered', true);
                     this.showRegistrationForm();
+                },
+
+                showValidationError (message) {
+                    const form = this.el.querySelector('form');
+                    let flash = form.querySelector('.form-errors');
+                    if (_.isNull(flash)) {
+                        flash = '<div class="form-errors hidden"></div>';
+                        const instructions = form.querySelector('p.instructions');
+                        if (_.isNull(instructions)) {
+                            form.insertAdjacentHTML('afterbegin', flash);
+                        } else {
+                            instructions.insertAdjacentHTML('afterend', flash);
+                        }
+                        flash = form.querySelector('.form-errors');
+                    } else {
+                        flash.innerHTML = '';
+                    }
+                    flash.insertAdjacentHTML(
+                        'beforeend',
+                        '<p class="form-help error">'+message+'</p>'
+                    );
+                    flash.classList.remove('hidden');
                 },
 
                 reportErrors (stanza) {
@@ -518,42 +550,33 @@
                      *      (XMLElement) stanza - The IQ stanza received from the
                      *      XMPP server.
                      */
-                    const $form= this.$('form'),
-                          $errmsgs = $(stanza).find('error text');
-
-                    let $flash = $form.find('.form-errors');
-                    if (!$flash.length) {
-                    const flash = '<legend class="form-errors"></legend>';
-                        if ($form.find('p.instructions').length) {
-                            $form.find('p.instructions').append(flash);
-                        } else {
-                            $form.prepend(flash);
-                        }
-                        $flash = $form.find('.form-errors');
-                    } else {
-                        $flash.empty();
-                    }
-                    $errmsgs.each(function (idx, txt) {
-                        $flash.append($('<p class="form-help error">').text($(txt).text()));
+                    const errors = stanza.querySelectorAll('error');
+                    _.each(errors, (error) => {
+                        this.showValidationError(error.textContent);
                     });
-                    if (!$errmsgs.length) {
-                        $flash.append($('<p class="form-help error">').text(
-                            __('The provider rejected your registration attempt. '+
-                            'Please check the values you entered for correctness.')));
+                    if (!errors.length) {
+                        const message = __('The provider rejected your registration attempt. '+
+                            'Please check the values you entered for correctness.');
+                        this.showValidationError(message);
                     }
-                    $flash.show();
                 },
 
-                cancelRegistration (ev) {
-                    /* Handler, when the user cancels the registration form.
-                     */
+                renderProviderChoiceForm (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     _converse.connection._proto._abortAllRequests();
                     _converse.connection.reset();
-                    if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
-                        this.fetchRegistrationForm(
-                            _converse.registration_domain
-                        );
+                    this.render();
+                },
+
+                abortRegistration () {
+                    _converse.connection._proto._abortAllRequests();
+                    _converse.connection.reset();
+                    if (this.model.get('registration_form_rendered')) {
+                        if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
+                            this.fetchRegistrationForm(
+                                _converse.registration_domain
+                            );
+                        }
                     } else {
                         this.render();
                     }
@@ -657,14 +680,11 @@
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza.
                      */
-                    let error = null,
-                        query = stanza.getElementsByTagName("query");
-                    if (query.length > 0) {
-                        query = query[0];
-                    }
                     if (stanza.getAttribute("type") === "error") {
                         _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
-                        error = stanza.getElementsByTagName("error");
+                        this.reportErrors(stanza);
+
+                        let error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                             return false;
@@ -677,16 +697,10 @@
                         } else {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                         }
-                        this.reportErrors(stanza);
                     } else {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                     }
                     return false;
-                },
-
-                remove () {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
         }

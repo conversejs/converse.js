@@ -73,8 +73,8 @@
                 margin: 1.5em 0;
             }
             .form-errors {
-                color: red;
-                display: none;
+                color: $error-color;
+                margin: 1em 0;
             }
             .provider-title {
                 font-size: $font-size-huge;

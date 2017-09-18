@@ -32,6 +32,12 @@
             }
         }
 
+        .controlbox-panes {
+            background-color: white;
+        }
+        .controlbox-pane {
+            @include calc(height, '100% - #{$controlbox-head-height}');
+        }
         &.logged-out {
             @include fade-in;
             width: 100%;
@@ -40,6 +46,9 @@
                 .controlbox-head {
                     background-color: white;
                     height: 0;
+                }
+                .controlbox-pane {
+                    height: auto;
                 }
             }
         }
@@ -92,12 +101,6 @@
                     font-size: $font-size-large;
                 }
             }
-        }
-        .controlbox-panes {
-            background-color: white;
-        }
-        .controlbox-pane {
-            height: auto;
         }
     }
 }

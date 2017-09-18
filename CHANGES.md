@@ -7,6 +7,8 @@
 - Remove `Login` and `Registration` tabs and consolidate into one panel.
 - Add validation message for an invalid JID in the login form.
 - Don't require `auto_login` to be `true` when using the API to log in.
+- Use CSS3 fade transitions to render various elements.
+- Consolidate error and validation reporting on the registration form.
 - #828 Add routing for the `#converse-login` and `#converse-register` URL
   fragments, which will render the registration and login forms respectively.
 

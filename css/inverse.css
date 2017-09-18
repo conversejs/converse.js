@@ -1281,6 +1281,9 @@
   #converse-embedded-chat .error,
   #conversejs .error {
     color: #A53214; }
+  #converse-embedded-chat .info,
+  #conversejs .info {
+    color: #1E9652; }
   #converse-embedded-chat .reg-feedback,
   #conversejs .reg-feedback {
     font-size: 85%;
@@ -2033,8 +2036,8 @@ body {
       font-size: 90%;
       margin: 1.5em 0; }
     #conversejs #controlbox #converse-register .form-errors {
-      color: red;
-      display: none; }
+      color: #A53214;
+      margin: 1em 0; }
     #conversejs #controlbox #converse-register .provider-title {
       font-size: 26px;
       margin: 0; }
@@ -2401,6 +2404,11 @@ body {
     @media screen and (max-width: 480px) {
       #conversejs #controlbox .brand-heading-container .brand-heading {
         font-size: 400%; } }
+  #conversejs #controlbox .controlbox-panes {
+    background-color: white; }
+  #conversejs #controlbox .controlbox-pane {
+    height: -webkit-calc(100% - 63px);
+    height: calc(100% - 63px); }
   #conversejs #controlbox.logged-out {
     opacity: 0;
     /* make things invisible upon start */
@@ -2422,6 +2430,8 @@ body {
       #conversejs #controlbox.logged-out .box-flyout .controlbox-head {
         background-color: white;
         height: 0; }
+      #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
+        height: auto; }
   #conversejs #controlbox .box-flyout {
     border: 0;
     min-width: 250px;
@@ -2459,10 +2469,6 @@ body {
         font-size: 18px; }
         #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
           height: 63px; }
-  #conversejs #controlbox .controlbox-panes {
-    background-color: white; }
-  #conversejs #controlbox .controlbox-pane {
-    height: auto; }
 
 #conversejs #converse-roster {
   text-align: left;

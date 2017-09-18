@@ -1281,6 +1281,9 @@
   #converse-embedded-chat .error,
   #conversejs .error {
     color: #A53214; }
+  #converse-embedded-chat .info,
+  #conversejs .info {
+    color: #1E9652; }
   #converse-embedded-chat .reg-feedback,
   #conversejs .reg-feedback {
     font-size: 85%;
@@ -1945,8 +1948,8 @@
       font-size: 90%;
       margin: 1.5em 0; }
     #conversejs #controlbox #converse-register .form-errors {
-      color: red;
-      display: none; }
+      color: #A53214;
+      margin: 1em 0; }
     #conversejs #controlbox #converse-register .provider-title {
       font-size: 20px;
       margin: 0; }

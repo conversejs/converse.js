@@ -10,8 +10,7 @@
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define(["jquery.noconflict",
-            "form-utils",
+    define(["form-utils",
             "converse-core",
             "tpl!form_username",
             "tpl!register_link",
@@ -23,7 +22,6 @@
             "converse-controlbox"
     ], factory);
 }(this, function (
-            $,
             utils,
             converse,
             tpl_form_username,
@@ -38,7 +36,7 @@
     "use strict";
 
     // Strophe methods for building stanzas
-    const { Strophe, Backbone, $iq, _ } = converse.env;
+    const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -178,7 +176,7 @@
                 id: "converse-register-panel",
                 className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen',
+                    'submit form#converse-register': 'onFormSubmission',
                     'click .button-cancel': 'renderProviderChoiceForm',
                 },
 
@@ -309,22 +307,37 @@
                     }
                 },
 
-                onProviderChosen (ev) {
+                onFormSubmission (ev) {
+                    /* Event handler when the #converse-register form is
+                     * submitted.
+                     *
+                     * Depending on the available input fields, we delegate to
+                     * other methods.
+                     */
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (_.isNull(ev.target.querySelector('input[name=domain]'))) {
+                        this.submitRegistrationForm(ev.target);
+                    } else {
+                        this.onProviderChosen(ev.target);
+                    }
+
+                },
+
+                onProviderChosen (form) {
                     /* Callback method that gets called when the user has chosen an
                      * XMPP provider.
                      *
                      * Parameters:
-                     *      (Submit Event) ev - Form submission event.
+                     *      (HTMLElement) form - The form that was submitted
                      */
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const $form = $(ev.target),
-                        $domain_input = $form.find('input[name=domain]'),
-                        domain = $domain_input.val();
+                    const domain_input = form.querySelector('input[name=domain]'),
+                        domain = _.get(domain_input, 'value');
                     if (!domain) {
-                        $domain_input.addClass('error');
+                        // TODO: add validation message
+                        domain_input.classList.add('error');
                         return;
                     }
-                    $form.find('input[type=submit]').hide();
+                    form.querySelector('input[type=submit]').classList.add('hidden');
                     this.fetchRegistrationForm(domain);
                 },
 
@@ -468,7 +481,10 @@
                     });
                     // Show urls
                     _.each(this.urls, (url) => {
-                        $(form).append($('<a target="blank"></a>').attr('href', url).text(url));
+                        form.insertAdjacentHTML(
+                            'afterend',
+                            '<a target="blank" rel="noopener" href="'+url+'">'+url+'</a>'
+                        );
                     });
                 },
 
@@ -507,14 +523,11 @@
                                 `<input type="button" class="pure-button button-cancel" value="${__('Choose a different provider')}"/>`
                             );
                         }
-                        form.addEventListener('submit', this.submitRegistrationForm.bind(this));
                     } else {
                         form.insertAdjacentHTML(
                             'beforeend',
-                            `<input type="button" class="submit" value="${__('Return')}"/>`
+                            `<input type="button" class="pure-button button-cancel" value="${__('Return')}"/>`
                         );
-                        form.querySelector('input[type=button]').addEventListener(
-                            'click', this.renderProviderChoiceForm.bind(this));
                     }
                     this.model.set('registration_form_rendered', true);
                     this.showRegistrationForm();
@@ -582,15 +595,14 @@
                     }
                 },
 
-                submitRegistrationForm (ev) {
+                submitRegistrationForm (form) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
                      *
                      * Parameters:
-                     *      (Event) ev - the submit event.
+                     *      (HTMLElement) form - The HTML form that was submitted
                      */
-                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const has_empty_inputs = _.reduce(
                         this.el.querySelectorAll('input.required'),
                         function (result, input) {
@@ -601,18 +613,18 @@
                             return result;
                         }, 0);
                     if (has_empty_inputs) { return; }
-                    const $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+
+                    const inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
                         iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 
                     if (this.form_type === 'xform') {
                         iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
-                        $inputs.each(function () {
-                            iq.cnode(utils.webForm2xForm(this)).up();
+                        _.each(inputs, (input) => {
+                            iq.cnode(utils.webForm2xForm(input)).up();
                         });
                     } else {
-                        $inputs.each(function () {
-                            const $input = $(this);
-                            iq.c($input.attr('name'), {}, $input.val());
+                        _.each(inputs, (input) => {
+                            iq.c(input.getAttribute('name'), {}, input.value);
                         });
                     }
                     _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
@@ -627,28 +639,23 @@
                      * Parameters:
                      *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                      */
-                    const $query = $(stanza).find('query');
-                    if ($query.length > 0) {
-                        const $xform = $query.find(`x[xmlns="${Strophe.NS.XFORM}"]`);
-                        if ($xform.length > 0) {
-                            this._setFieldsFromXForm($xform);
-                        } else {
-                            this._setFieldsFromLegacy($query);
-                        }
+                    const query = stanza.querySelector('query');
+                    const xform = sizzle(`x[xmlns="${Strophe.NS.XFORM}"]`, query);
+                    if (xform.length > 0) {
+                        this._setFieldsFromXForm(xform.pop());
+                    } else {
+                        this._setFieldsFromLegacy(query);
                     }
                 },
 
-                _setFieldsFromLegacy ($query) {
-                    $query.children().each((idx, field) => {
-                        const $field = $(field);
+                _setFieldsFromLegacy (query) {
+                    _.each(query.children, (field) => {
                         if (field.tagName.toLowerCase() === 'instructions') {
                             this.instructions = Strophe.getText(field);
                             return;
                         } else if (field.tagName.toLowerCase() === 'x') {
-                            if ($field.attr('xmlns') === 'jabber:x:oob') {
-                                $field.find('url').each((idx, url) => {
-                                    this.urls.push($(url).text());
-                                });
+                            if (field.getAttribute('xmlns') === 'jabber:x:oob') {
+                                this.urls.concat(_.map(field.querySelectorAll('url'), 'textContent'));
                             }
                             return;
                         }
@@ -657,13 +664,13 @@
                     this.form_type = 'legacy';
                 },
 
-                _setFieldsFromXForm ($xform) {
-                    this.title = $xform.find('title').text();
-                    this.instructions = $xform.find('instructions').text();
-                    $xform.find('field').each((idx, field) => {
+                _setFieldsFromXForm (xform) {
+                    this.title = _.get(xform.querySelector('title'), 'textContent');
+                    this.instructions = _.get(xform.querySelector('instructions'), 'textContent');
+                    _.each(xform.querySelectorAll('field'), (field) => {
                         const _var = field.getAttribute('var');
                         if (_var) {
-                            this.fields[_var.toLowerCase()] = $(field).children('value').text();
+                            this.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');
                         } else {
                             // TODO: other option seems to be type="fixed"
                             _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);

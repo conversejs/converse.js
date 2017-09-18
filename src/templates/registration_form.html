@@ -2,3 +2,10 @@
 <p class="title">{{{title}}}</p>
 <p class="instructions">{{{instructions}}}</p>
 <div class="form-errors hidden"></div>
+
+<fieldset class="buttons">
+    <input type="submit" class="pure-button button-primary" value="{{{__('Register')}}}"/>
+    {[ if (!registration_domain) { ]}
+        <input type="button" class="pure-button button-cancel" value="{{{__('Choose a different provider')}}}"/>
+    {[ } ]}
+</fieldset>

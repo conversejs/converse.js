@@ -500,34 +500,23 @@
                         '__': _converse.__,
                         'domain': this.domain,
                         'title': this.title,
-                        'instructions': this.instructions
+                        'instructions': this.instructions,
+                        'registration_domain': _converse.registration_domain
                     });
+
+                    const buttons = form.querySelector('fieldset.buttons');
                     if (this.form_type === 'xform') {
                         _.each(stanza.querySelectorAll('field'), (field) => {
-                            form.insertAdjacentHTML(
-                                'beforeend',
+                            buttons.insertAdjacentHTML(
+                                'beforebegin',
                                 utils.xForm2webForm(field, stanza, this.domain)
                             );
                         });
                     } else {
                         this.renderLegacyRegistrationForm(form);
                     }
-                    if (this.fields) {
-                        form.insertAdjacentHTML(
-                            'beforeend',
-                            `<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`
-                        );
-                        if (!_converse.registration_domain) {
-                            form.insertAdjacentHTML(
-                                'beforeend',
-                                `<input type="button" class="pure-button button-cancel" value="${__('Choose a different provider')}"/>`
-                            );
-                        }
-                    } else {
-                        form.insertAdjacentHTML(
-                            'beforeend',
-                            `<input type="button" class="pure-button button-cancel" value="${__('Return')}"/>`
-                        );
+                    if (!this.fields) {
+                        form.querySelector('.button-primary').classList.add('hidden');
                     }
                     this.model.set('registration_form_rendered', true);
                     this.showRegistrationForm();

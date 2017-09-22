@@ -8,7 +8,7 @@
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{__("Jabber ID:")}}}</label>
             <p class="form-help fade-in invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
-            <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
+            <input autofocus type="text" name="jid" placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
                 <label>{{{__("Password:")}}}</label>
                 <input type="password" name="password" placeholder="{{{__('password')}}}">

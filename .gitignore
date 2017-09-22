@@ -12,6 +12,7 @@
 .idea
 .su?
 builds/*
+.settings
 
 analytics.js
 inverse-analytics.js
@@ -59,3 +60,5 @@ develop-eggs
 # Builds
 .sv?
 /vendor/
+/.classpath
+/.tern-project

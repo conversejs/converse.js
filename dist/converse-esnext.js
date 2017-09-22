@@ -44745,10 +44745,6 @@ require(["strophe-polyfill"]);
 }));
 /* jshint ignore:end */
 ;
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -44759,31 +44755,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 /*global define, escape, locales, window, Jed */
 (function (root, factory) {
-    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe"], factory);
-})(undefined, function (sizzle, Promise, jQBrowser, _, locales, moment, Strophe) {
+    define('utils',[
+        "sizzle",
+        "es6-promise",
+        "jquery.browser",
+        "lodash.noconflict",
+        "locales",
+        "moment_with_locales",
+        "strophe",
+    ], factory);
+}(this, function (
+        sizzle,
+        Promise,
+        jQBrowser,
+        _,
+        locales,
+        moment,
+        Strophe
+    ) {
     "use strict";
-
     locales = locales || {};
-    var b64_sha1 = Strophe.SHA1.b64_sha1;
+    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
-    var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
+    const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
-    var logger = _.assign({
+    const logger = _.assign({
         'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
         'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
         'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
-    var afterAnimationEnd = function afterAnimationEnd(el, callback) {
+    var afterAnimationEnd = function (el, callback) {
         el.classList.remove('visible');
         if (_.isFunction(callback)) {
             callback();
         }
     };
 
-    var unescapeHTML = function unescapeHTML(htmlEscapedText) {
+    var unescapeHTML = function (htmlEscapedText) {
         /* Helper method that replace HTML-escaped symbols with equivalent characters
          * (e.g. transform occurrences of '&amp;' to '&')
          *
@@ -44795,8 +44806,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return div.innerText;
     };
 
-    var isImage = function isImage(url) {
-        return new Promise(function (resolve, reject) {
+    var isImage = function (url) {
+        return new Promise((resolve, reject) => {
             var img = new Image();
             var timer = window.setTimeout(function () {
                 reject(new Error("Could not determine whether it's an image"));
@@ -44814,7 +44825,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    function calculateSlideStep(height) {
+    function calculateSlideStep (height) {
         if (height > 100) {
             return 10;
         } else if (height > 50) {
@@ -44824,22 +44835,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     }
 
-    function calculateElementHeight(el) {
+    function calculateElementHeight (el) {
         /* Return the height of the passed in DOM element,
          * based on the heights of its children.
          */
-        return _.reduce(el.children, function (result, child) {
-            return result + child.offsetHeight;
-        }, 0);
+        return _.reduce(
+            el.children,
+            (result, child) => result + child.offsetHeight, 0
+        );
     }
 
-    function slideOutWrapup(el) {
+    function slideOutWrapup (el) {
         /* Wrapup function for slideOut. */
         el.removeAttribute('data-slider-marker');
         el.classList.remove('collapsed');
         el.style.overflow = "";
         el.style.height = "";
     }
+
 
     var u = {};
 
@@ -44856,8 +44869,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.jed = new Jed(window.JSON.parse(locales[this.locale]));
         }
         var t = this.jed.translate(str);
-        if (arguments.length > 1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 1));
+        if (arguments.length>1) {
+            return t.fetch.apply(t, [].slice.call(arguments,1));
         } else {
             return t.fetch();
         }
@@ -44891,12 +44904,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     u.addHyperlinks = function (text) {
-        var list = text.match(URL_REGEX) || [];
+        const list = text.match(URL_REGEX) || [];
         var links = [];
-        _.each(list, function (match) {
-            var prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
-            var url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-            var a = '<a target="_blank" rel="noopener" href="' + url + '">' + _.escape(match) + '</a>';
+        _.each(list, (match) => {
+            const prot = match.indexOf('http://') === 0 || match.indexOf('https://') === 0 ? '' : 'http://';
+            const url = prot + encodeURI(decodeURI(match)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+            const  a = '<a target="_blank" rel="noopener" href="' + url + '">'+ _.escape(match) + '</a>';
             // We first insert a hash of the code that will be inserted, and
             // then later replace that with the code itself. That way we avoid
             // issues when some matches are substrings of others.
@@ -44904,28 +44917,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             text = text.replace(match, b64_sha1(a));
         });
         while (links.length) {
-            var a = links.pop();
+            const a = links.pop();
             text = text.replace(b64_sha1(a), a);
         }
         return text;
     };
 
     u.renderImageURLs = function (obj) {
-        var list = obj.textContent.match(URL_REGEX) || [];
+        const list = obj.textContent.match(URL_REGEX) || [];
         _.forEach(list, function (url) {
             isImage(url).then(function (img) {
                 img.className = 'chat-image';
-                var anchors = sizzle("a[href=\"" + url + "\"]", obj);
-                _.each(anchors, function (a) {
-                    a.innerHTML = img.outerHTML;
-                });
+                var anchors = sizzle(`a[href="${url}"]`, obj);
+                _.each(anchors, (a) => { a.innerHTML = img.outerHTML; });
             });
         });
         return obj;
     };
 
     u.slideInAllElements = function (elements) {
-        return Promise.all(_.map(elements, _.partial(u.slideIn, _, 600)));
+        return Promise.all(
+            _.map(
+                elements,
+                _.partial(u.slideIn, _, 600)
+            ));
     };
 
     u.slideToggleElement = function (el) {
@@ -44936,39 +44951,36 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    u.slideOut = function (el) {
-        var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 900;
-
+    u.slideOut = function (el, duration=900) {
         /* Shows/expands an element by sliding it out of itself
          *
          * Parameters:
          *      (HTMLElement) el - The HTML string
          *      (Number) duration - The duration amount in milliseconds
          */
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
-                var err = "Undefined or null element passed into slideOut";
+                const err = "Undefined or null element passed into slideOut"
                 logger.warn(err);
                 reject(new Error(err));
                 return;
             }
-            var interval_marker = el.getAttribute('data-slider-marker');
+            let interval_marker = el.getAttribute('data-slider-marker');
             if (interval_marker) {
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            var end_height = calculateElementHeight(el);
-            if (window.converse_disable_effects) {
-                // Effects are disabled (for tests)
+            const end_height = calculateElementHeight(el);
+            if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
                 slideOutWrapup(el);
                 resolve();
                 return;
             }
 
-            var step = calculateSlideStep(end_height),
-                interval = end_height / duration * step;
-            var h = 0;
+            const step = calculateSlideStep(end_height),
+                  interval = end_height/duration*step;
+            let h = 0;
 
             interval_marker = window.setInterval(function () {
                 h += step;
@@ -44988,31 +45000,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    u.slideIn = function (el) {
-        var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
-
+    u.slideIn = function (el, duration=600) {
         /* Hides/collapses an element by sliding it into itself. */
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (_.isNil(el)) {
-                var err = "Undefined or null element passed into slideIn";
+                const err = "Undefined or null element passed into slideIn";
                 logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
-            } else if (window.converse_disable_effects) {
-                // Effects are disabled (for tests)
+            } else if (window.converse_disable_effects) { // Effects are disabled (for tests)
                 el.classList.add('collapsed');
                 el.style.height = "";
                 return resolve();
             }
-            var interval_marker = el.getAttribute('data-slider-marker');
+            let interval_marker = el.getAttribute('data-slider-marker');
             if (interval_marker) {
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            var h = el.offsetHeight;
-            var step = calculateSlideStep(h),
-                interval = h / duration * step;
+            let h = el.offsetHeight;
+            const step = calculateSlideStep(h),
+                  interval = h/duration*step;
 
             el.style.overflow = 'hidden';
 
@@ -45036,8 +45045,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (_.isNil(el)) {
             logger.warn("Undefined or null element passed into fadeIn");
         }
-        if (window.converse_disable_effects) {
-            // Effects are disabled (for tests)
+        if (window.converse_disable_effects) { // Effects are disabled (for tests)
             el.classList.remove('hidden');
             if (_.isFunction(callback)) {
                 callback();
@@ -45058,7 +45066,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     u.isSameBareJID = function (jid1, jid2) {
-        return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
+        return Strophe.getBareJidFromJid(jid1).toLowerCase() ===
+                Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
 
     u.isNewMessage = function (message) {
@@ -45066,7 +45075,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * message, i.e. not a MAM archived one.
          */
         if (message instanceof Element) {
-            return !sizzle('result[xmlns="' + Strophe.NS.MAM + '"]', message).length;
+            return !(sizzle('result[xmlns="'+Strophe.NS.MAM+'"]', message).length);
         } else {
             return !message.get('archive_id');
         }
@@ -45074,7 +45083,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     u.isOTRMessage = function (message) {
         var body = message.querySelector('body'),
-            text = !_.isNull(body) ? body.textContent : undefined;
+            text = (!_.isNull(body) ? body.textContent: undefined);
         return text && !!text.match(/^\?OTR/);
     };
 
@@ -45083,7 +45092,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (message.getAttribute('type') === 'headline') {
             return true;
         }
-        if (message.getAttribute('type') !== 'error' && !_.isNil(from_jid) && !_.includes(from_jid, '@')) {
+        if (message.getAttribute('type') !== 'error' &&
+                !_.isNil(from_jid) &&
+                !_.includes(from_jid, '@')) {
             // Some servers (I'm looking at you Prosody) don't set the message
             // type to "headline" when sending server messages. For now we
             // check if an @ signal is included, and if not, we assume it's
@@ -45093,7 +45104,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return false;
     };
 
-    u.merge = function merge(first, second) {
+    u.merge = function merge (first, second) {
         /* Merge the second object into the first one.
          */
         for (var k in second) {
@@ -45105,7 +45116,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    u.applyUserSettings = function applyUserSettings(context, settings, user_settings) {
+    u.applyUserSettings = function applyUserSettings (context, settings, user_settings) {
         /* Configuration settings might be nested objects. We only want to
          * add settings which are whitelisted.
          */
@@ -45153,7 +45164,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          *      (DOMElement) el - The DOM element
          *      (String) selector - The selector
          */
-        return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+        return (
+            el.matches ||
+            el.matchesSelector ||
+            el.msMatchesSelector ||
+            el.mozMatchesSelector ||
+            el.webkitMatchesSelector ||
+            el.oMatchesSelector
+        ).call(el, selector);
     };
 
     u.queryChildren = function (el, selector) {
@@ -45170,7 +45188,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     u.contains = function (attr, query) {
         return function (item) {
-            if ((typeof attr === "undefined" ? "undefined" : _typeof(attr)) === 'object') {
+            if (typeof attr === 'object') {
                 var value = false;
                 _.forEach(attr, function (a) {
                     value = value || _.includes(item.get(a).toLowerCase(), query.toLowerCase());
@@ -45183,6 +45201,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         };
     };
+
 
     u.detectLocale = function (library_check) {
         /* Determine which locale is supported by the user's system as well
@@ -45197,7 +45216,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
         }
         if (window.navigator.languages && !locale) {
-            for (i = 0; i < window.navigator.languages.length && !locale; i++) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
                 locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
             }
         }
@@ -45214,16 +45233,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     u.isConverseLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
+        if (!_.isString(locale)) { return false; }
         return _.includes(_.keys(locales || {}), locale);
     };
 
-    u.isMomentLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
+    u.isMomentLocale  = function (locale) {
+        if (!_.isString(locale)) { return false; }
         return moment.locale() !== moment.locale(locale);
     };
 
@@ -45256,7 +45271,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     u.contains.not = function (attr, query) {
         return function (item) {
-            return !u.contains(attr, query)(item);
+            return !(u.contains(attr, query)(item));
         };
     };
 
@@ -45266,16 +45281,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         // http://stackoverflow.com/questions/9334645/create-node-from-markup-string
         var frag = document.createDocumentFragment(),
-            tmp = document.createElement('body'),
-            child;
+            tmp = document.createElement('body'), child;
         tmp.innerHTML = markup;
         // Append elements in a loop to a DocumentFragment, so that the
         // browser does not re-render the document for each node.
-        while (child = tmp.firstChild) {
-            // eslint-disable-line no-cond-assign
+        while (child = tmp.firstChild) {  // eslint-disable-line no-cond-assign
             frag.appendChild(child);
         }
-        return frag;
+        return frag
     };
 
     u.addEmoji = function (_converse, emojione, text) {
@@ -45284,39 +45297,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else {
             return emojione.shortnameToUnicode(text);
         }
-    };
+    }
 
     u.getEmojisByCategory = function (_converse, emojione) {
         /* Return a dict of emojis with the categories as keys and
          * lists of emojis in that category as values.
          */
         if (_.isUndefined(_converse.emojis_by_category)) {
-            var emojis = _.values(_.mapValues(emojione.emojioneList, function (value, key, o) {
+            const emojis = _.values(_.mapValues(emojione.emojioneList, function (value, key, o) {
                 value._shortname = key;
-                return value;
+                return value
             }));
-            var tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
-            var excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
-            var excluded_substrings = [':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'];
-            var excluded_categories = ['modifier', 'regional'];
-            var categories = _.difference(_.uniq(_.map(emojis, _.partial(_.get, _, 'category'))), excluded_categories);
-            var emojis_by_category = {};
-            _.forEach(categories, function (cat) {
-                var list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
-                list = _.filter(list, function (item) {
-                    return !_.includes(_.concat(tones, excluded), item._shortname) && !_.some(excluded_substrings, _.partial(_.includes, item._shortname));
-                });
+            const tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
+            const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
+            const excluded_substrings = [
+                ':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'
+            ];
+            const excluded_categories = ['modifier', 'regional'];
+            const categories = _.difference(
+                _.uniq(_.map(emojis, _.partial(_.get, _, 'category'))),
+                excluded_categories
+            );
+            const emojis_by_category = {};
+            _.forEach(categories, (cat) => {
+                let list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
+                list = _.filter(
+                    list,
+                    (item) => !_.includes(_.concat(tones, excluded), item._shortname) &&
+                              !_.some(excluded_substrings, _.partial(_.includes, item._shortname))
+                );
                 if (cat === 'people') {
-                    var idx = _.findIndex(list, ['uc_base', '1f600']);
-                    list = _.union(_.slice(list, idx), _.slice(list, 0, idx + 1));
+                    const idx = _.findIndex(list, ['uc_base', '1f600']);
+                    list = _.union(_.slice(list, idx), _.slice(list, 0, idx+1));
                 } else if (cat === 'activity') {
-                    list = _.union(_.slice(list, 27 - 1), _.slice(list, 0, 27));
+                    list = _.union(_.slice(list, 27-1), _.slice(list, 0, 27));
                 } else if (cat === 'objects') {
-                    list = _.union(_.slice(list, 24 - 1), _.slice(list, 0, 24));
+                    list = _.union(_.slice(list, 24-1), _.slice(list, 0, 24));
                 } else if (cat === 'travel') {
-                    list = _.union(_.slice(list, 17 - 1), _.slice(list, 0, 17));
+                    list = _.union(_.slice(list, 17-1), _.slice(list, 0, 17));
                 } else if (cat === 'symbols') {
-                    list = _.union(_.slice(list, 60 - 1), _.slice(list, 0, 60));
+                    list = _.union(_.slice(list, 60-1), _.slice(list, 0, 60));
                 }
                 emojis_by_category[cat] = list;
             });
@@ -45326,11 +45346,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     u.getTonedEmojis = function (_converse) {
-        _converse.toned_emojis = _.uniq(_.map(_.filter(u.getEmojisByCategory(_converse).people, function (person) {
-            return _.includes(person._shortname, '_tone');
-        }), function (person) {
-            return person._shortname.replace(/_tone[1-5]/, '');
-        }));
+        _converse.toned_emojis = _.uniq(
+            _.map(
+                _.filter(
+                    u.getEmojisByCategory(_converse).people,
+                    (person) => _.includes(person._shortname, '_tone')
+                ),
+                (person) => person._shortname.replace(/_tone[1-5]/, '')
+            ));
         return _converse.toned_emojis;
     };
 
@@ -45339,11 +45362,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     u.getWrappedPromise = function () {
-        var wrapper = {};
-        wrapper.promise = new Promise(function (resolve, reject) {
+        const wrapper = {};
+        wrapper.promise = new Promise((resolve, reject) => {
             wrapper.resolve = resolve;
             wrapper.reject = reject;
-        });
+        })
         return wrapper;
     };
 
@@ -45353,10 +45376,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else {
             model.set(attributes);
         }
-    };
+    }
     return u;
-});
-//# sourceMappingURL=utils.js.map;
+}));
+
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define('pluggable',['exports', 'lodash'], factory);
@@ -47931,8 +47954,6 @@ return Backbone.BrowserStorage;
     return Backbone.Overview;
 }));
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -47941,8 +47962,21 @@ return Backbone.BrowserStorage;
 //
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
-})(undefined, function (sizzle, Promise, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+    define('converse-core',["sizzle",
+            "es6-promise",
+            "lodash.noconflict",
+            "polyfill",
+            "utils",
+            "moment_with_locales",
+            "strophe",
+            "pluggable",
+            "backbone.noconflict",
+            "backbone.browserStorage",
+            "backbone.overview",
+    ], factory);
+}(this, function (
+        sizzle, Promise, _, polyfill,
+        utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -47950,13 +47984,8 @@ return Backbone.BrowserStorage;
     // "use strict";
 
     // Strophe globals
-    var _Strophe = Strophe,
-        $build = _Strophe.$build,
-        $iq = _Strophe.$iq,
-        $msg = _Strophe.$msg,
-        $pres = _Strophe.$pres;
-
-    var b64_sha1 = Strophe.SHA1.b64_sha1;
+    const { $build, $iq, $msg, $pres } = Strophe;
+    const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
     // Use Mustache style syntax for variable interpolation
@@ -47969,38 +47998,57 @@ return Backbone.BrowserStorage;
         'interpolate': /\{\{([\s\S]+?)\}\}/g
     };
 
-    var _converse = {
+    const _converse = {
         'templates': {},
         'promises': {}
-    };
+    }
 
     _.extend(_converse, Backbone.Events);
 
-    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
+    _converse.core_plugins = [
+        'converse-bookmarks',
+        'converse-chatboxes',
+        'converse-chatview',
+        'converse-controlbox',
+        'converse-core',
+        'converse-disco',
+        'converse-dragresize',
+        'converse-headline',
+        'converse-mam',
+        'converse-minimize',
+        'converse-muc',
+        'converse-notification',
+        'converse-otr',
+        'converse-ping',
+        'converse-register',
+        'converse-roomslist',
+        'converse-rosterview',
+        'converse-vcard'
+    ];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
 
     // Module-level constants
     _converse.STATUS_WEIGHTS = {
-        'offline': 6,
-        'unavailable': 5,
-        'xa': 4,
-        'away': 3,
-        'dnd': 2,
-        'chat': 1, // We currently don't differentiate between "chat" and "online"
-        'online': 1
+        'offline':      6,
+        'unavailable':  5,
+        'xa':           4,
+        'away':         3,
+        'dnd':          2,
+        'chat':         1, // We currently don't differentiate between "chat" and "online"
+        'online':       1
     };
     _converse.PRETTY_CHAT_STATUS = {
-        'offline': 'Offline',
-        'unavailable': 'Unavailable',
-        'xa': 'Extended Away',
-        'away': 'Away',
-        'dnd': 'Do not disturb',
-        'chat': 'Chattty',
-        'online': 'Online'
+        'offline':      'Offline',
+        'unavailable':  'Unavailable',
+        'xa':           'Extended Away',
+        'away':         'Away',
+        'dnd':          'Do not disturb',
+        'chat':         'Chattty',
+        'online':       'Online'
     };
-    _converse.ANONYMOUS = "anonymous";
+    _converse.ANONYMOUS  = "anonymous";
     _converse.CLOSED = 'closed';
     _converse.EXTERNAL = "external";
     _converse.LOGIN = "login";
@@ -48008,7 +48056,7 @@ return Backbone.BrowserStorage;
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    var PRETTY_CONNECTION_STATUS = {
+    const PRETTY_CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -48028,38 +48076,48 @@ return Backbone.BrowserStorage;
         if (message instanceof Error) {
             message = message.stack;
         }
-        var logger = _.assign({
-            'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
-            'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
-        }, console);
+        const logger = _.assign({
+                'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+            }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
-                logger.trace("ERROR: " + message);
+                logger.trace(`ERROR: ${message}`);
             } else {
-                logger.error("ERROR: " + message);
+                logger.error(`ERROR: ${message}`);
             }
         } else if (level === Strophe.LogLevel.WARN) {
-            logger.warn("WARNING: " + message);
+            logger.warn(`WARNING: ${message}`);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace("FATAL: " + message);
+                logger.trace(`FATAL: ${message}`);
             } else {
-                logger.error("FATAL: " + message);
+                logger.error(`FATAL: ${message}`);
             }
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
-                logger.debug("DEBUG: " + message);
+                logger.debug(`DEBUG: ${message}`);
             } else {
-                logger.info("INFO: " + message);
+                logger.info(`INFO: ${message}`);
             }
         }
     };
 
-    var PROMISES = ['initialized', 'cachedRoster', 'connectionInitialized', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
+    const PROMISES = [
+        'initialized',
+        'cachedRoster',
+        'connectionInitialized',
+        'pluginsInitialized',
+        'roster',
+        'rosterContactsFetched',
+        'rosterGroupsFetched',
+        'rosterInitialized',
+        'statusInitialized'
+    ];
 
-    function addPromise(promise) {
+    function addPromise (promise) {
         /* Private function, used to add a new promise to the ones already
          * available via the `waitUntil` api method.
          */
@@ -48069,7 +48127,7 @@ return Backbone.BrowserStorage;
     _converse.emit = function (name) {
         /* Event emitter and promise resolver */
         _converse.trigger.apply(this, arguments);
-        var promise = _converse.promises[name];
+        const promise = _converse.promises[name];
         if (!_.isUndefined(promise)) {
             promise.resolve();
         }
@@ -48077,11 +48135,8 @@ return Backbone.BrowserStorage;
 
     _converse.initialize = function (settings, callback) {
         "use strict";
-
-        var _this = this;
-
         settings = !_.isUndefined(settings) ? settings : {};
-        var init_promise = utils.getWrappedPromise();
+        const init_promise = utils.getWrappedPromise();
 
         _.each(PROMISES, addPromise);
 
@@ -48096,7 +48151,7 @@ return Backbone.BrowserStorage;
             _converse._tearDown();
         }
 
-        var unloadevent = void 0;
+        let unloadevent;
         if ('onpagehide' in window) {
             // Pagehide gets thrown in more cases than unload. Specifically it
             // gets thrown when the page is cached and not just
@@ -48110,12 +48165,8 @@ return Backbone.BrowserStorage;
         }
 
         // Logging
-        Strophe.log = function (level, msg) {
-            _converse.log(level + ' ' + msg, level);
-        };
-        Strophe.error = function (msg) {
-            _converse.log(msg, Strophe.LogLevel.ERROR);
-        };
+        Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
+        Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
         // Add Strophe Namespaces
         Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
@@ -48132,8 +48183,8 @@ return Backbone.BrowserStorage;
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
-            'PAUSED': 10000,
-            'INACTIVE': 90000
+            'PAUSED':     10000,
+            'INACTIVE':   90000
         };
 
         // Internationalization
@@ -48143,7 +48194,7 @@ return Backbone.BrowserStorage;
             moment.locale = moment.lang;
         }
         moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        var __ = _converse.__ = utils.__.bind(_converse);
+        const __ = _converse.__ = utils.__.bind(_converse);
         _converse.___ = utils.___;
 
         // XEP-0085 Chat states
@@ -48197,7 +48248,7 @@ return Backbone.BrowserStorage;
             websocket_url: undefined,
             whitelisted_plugins: [],
             xhr_custom_status: false,
-            xhr_custom_status_url: ''
+            xhr_custom_status_url: '',
         };
         _.assignIn(this, this.default_settings);
         // Allow only whitelisted configuration attributes to be overwritten
@@ -48205,7 +48256,9 @@ return Backbone.BrowserStorage;
 
         if (this.authentication === _converse.ANONYMOUS) {
             if (this.auto_login && !this.jid) {
-                throw new Error("Config Error: you need to provide the server's " + "domain via the 'jid' option when using anonymous " + "authentication with auto_login.");
+                throw new Error("Config Error: you need to provide the server's " +
+                      "domain via the 'jid' option when using anonymous " +
+                      "authentication with auto_login.");
             }
         }
 
@@ -48227,9 +48280,7 @@ return Backbone.BrowserStorage;
         // Module-level functions
         // ----------------------
 
-        this.generateResource = function () {
-            return "/converse.js-" + Math.floor(Math.random() * 139749825).toString();
-        };
+        this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
 
         this.sendCSI = function (stat) {
             /* Send out a Chat Status Notification (XEP-0352)
@@ -48239,8 +48290,8 @@ return Backbone.BrowserStorage;
              */
             /* Send out a Chat Status Notification (XEP-0352) */
             // XXX if (converse.features[Strophe.NS.CSI] || true) {
-            _converse.connection.send($build(stat, { xmlns: Strophe.NS.CSI }));
-            _converse.inactive = stat === _converse.INACTIVE ? true : false;
+            _converse.connection.send($build(stat, {xmlns: Strophe.NS.CSI}));
+            _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
         };
 
         this.onUserActivity = function () {
@@ -48273,15 +48324,21 @@ return Backbone.BrowserStorage;
                 // This can happen when the connection reconnects.
                 return;
             }
-            var stat = _converse.xmppstatus.getStatus();
+            const stat = _converse.xmppstatus.getStatus();
             _converse.idle_seconds++;
-            if (_converse.csi_waiting_time > 0 && _converse.idle_seconds > _converse.csi_waiting_time && !_converse.inactive) {
+            if (_converse.csi_waiting_time > 0 &&
+                    _converse.idle_seconds > _converse.csi_waiting_time &&
+                    !_converse.inactive) {
                 _converse.sendCSI(_converse.INACTIVE);
             }
-            if (_converse.auto_away > 0 && _converse.idle_seconds > _converse.auto_away && stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
+            if (_converse.auto_away > 0 &&
+                    _converse.idle_seconds > _converse.auto_away &&
+                    stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('away');
-            } else if (_converse.auto_xa > 0 && _converse.idle_seconds > _converse.auto_xa && stat !== 'xa' && stat !== 'dnd') {
+            } else if (_converse.auto_xa > 0 &&
+                    _converse.idle_seconds > _converse.auto_xa &&
+                    stat !== 'xa' && stat !== 'dnd') {
                 _converse.auto_changed_status = true;
                 _converse.xmppstatus.setStatus('xa');
             }
@@ -48306,7 +48363,7 @@ return Backbone.BrowserStorage;
         };
 
         this.giveFeedback = function (subject, klass, message) {
-            _.forEach(document.querySelectorAll('.conn-feedback'), function (el) {
+            _.forEach(document.querySelectorAll('.conn-feedback'), (el) => {
                 el.classList.add('conn-feedback');
                 el.textContent = subject;
                 if (klass) {
@@ -48330,21 +48387,23 @@ return Backbone.BrowserStorage;
              *      is being canceled.
              *    (String) message - An optional message to the user
              */
-            var pres = $pres({ to: jid, type: "unsubscribed" });
-            if (message && message !== "") {
-                pres.c("status").t(message);
-            }
+            const pres = $pres({to: jid, type: "unsubscribed"});
+            if (message && message !== "") { pres.c("status").t(message); }
             _converse.connection.send(pres);
         };
 
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(__("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.'));
+            _converse.giveFeedback(
+                __("Reconnecting"),
+                'warn',
+                __('The connection has dropped, attempting to reconnect.')
+            );
             _converse.connection.reconnecting = true;
             _converse._tearDown();
             _converse.logIn(null, true);
-        }, 3000, { 'leading': true });
+        }, 3000, {'leading': true});
 
         this.disconnect = function () {
             _converse.log('DISCONNECTED');
@@ -48369,7 +48428,9 @@ return Backbone.BrowserStorage;
                 } else {
                     return _converse.disconnect();
                 }
-            } else if (_converse.disconnection_cause === _converse.LOGOUT || _converse.disconnection_reason === "host-unknown" || !_converse.auto_reconnect) {
+            } else if (_converse.disconnection_cause === _converse.LOGOUT ||
+                    _converse.disconnection_reason === "host-unknown" ||
+                    !_converse.auto_reconnect) {
                 return _converse.disconnect();
             }
             _converse.emit('will-reconnect');
@@ -48394,7 +48455,7 @@ return Backbone.BrowserStorage;
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log("Status changed to: " + PRETTY_CONNECTION_STATUS[status]);
+            _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
@@ -48415,7 +48476,10 @@ return Backbone.BrowserStorage;
                 _converse.setDisconnectionCause(status, condition);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(__('Connection error'), 'error', __('An error occurred while connecting to the chat server.'));
+                _converse.giveFeedback(
+                    __('Connection error'), 'error',
+                    __('An error occurred while connecting to the chat server.')
+                );
             } else if (status === Strophe.Status.CONNECTING) {
                 _converse.giveFeedback(__('Connecting'));
             } else if (status === Strophe.Status.AUTHENTICATING) {
@@ -48425,7 +48489,10 @@ return Backbone.BrowserStorage;
                 _converse.setDisconnectionCause(status, condition, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
-                _converse.giveFeedback(__('Connection failed'), 'error', __('An error occurred while connecting to the chat server: ' + condition));
+                _converse.giveFeedback(
+                    __('Connection failed'), 'error',
+                    __('An error occurred while connecting to the chat server: '+condition)
+                );
                 _converse.setDisconnectionCause(status, condition);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 _converse.setDisconnectionCause(status, condition);
@@ -48434,11 +48501,13 @@ return Backbone.BrowserStorage;
 
         this.incrementMsgCounter = function () {
             this.msg_counter += 1;
-            var unreadMsgCount = this.msg_counter;
+            const unreadMsgCount = this.msg_counter;
             if (document.title.search(/^Messages \(\d+\) /) === -1) {
-                document.title = "Messages (" + unreadMsgCount + ") " + document.title;
+                document.title = `Messages (${unreadMsgCount}) ${document.title}`;
             } else {
-                document.title = document.title.replace(/^Messages \(\d+\) /, "Messages (" + unreadMsgCount + ") ");
+                document.title = document.title.replace(
+                    /^Messages \(\d+\) /, `Messages (${unreadMsgCount}) `
+                );
             }
         };
 
@@ -48449,24 +48518,23 @@ return Backbone.BrowserStorage;
             }
         };
 
-        this.initStatus = function () {
-            return new Promise(function (resolve, reject) {
-                var promise = new utils.getWrappedPromise();
-                _this.xmppstatus = new _this.XMPPStatus();
-                var id = b64_sha1("converse.xmppstatus-" + _converse.bare_jid);
-                _this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-                _this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-                _this.xmppstatus.fetch({
+        this.initStatus = () => 
+            new Promise((resolve, reject) => {
+                const promise = new utils.getWrappedPromise();
+                this.xmppstatus = new this.XMPPStatus();
+                const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
+                this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
+                this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                this.xmppstatus.fetch({
                     success: resolve,
                     error: resolve
                 });
                 _converse.emit('statusInitialized');
             });
-        };
 
         this.initSession = function () {
             _converse.session = new Backbone.Model();
-            var id = b64_sha1('converse.bosh-session');
+            const id = b64_sha1('converse.bosh-session');
             _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
             _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
             _converse.session.fetch();
@@ -48496,8 +48564,8 @@ return Backbone.BrowserStorage;
             // XXX: eventually we should be able to just use
             // document.visibilityState (when we drop support for older
             // browsers).
-            var state = void 0;
-            var event_map = {
+            let state;
+            const event_map = {
                 'focus': "visible",
                 'focusin': "visible",
                 'pageshow': "visible",
@@ -48511,17 +48579,17 @@ return Backbone.BrowserStorage;
             } else {
                 state = document[hidden] ? "hidden" : "visible";
             }
-            if (state === 'visible') {
+            if (state  === 'visible') {
                 _converse.clearMsgCounter();
             }
             _converse.windowState = state;
-            _converse.emit('windowStateChanged', { state: state });
+            _converse.emit('windowStateChanged', {state});
         };
 
         this.registerGlobalEventHandlers = function () {
             // Taken from:
             // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
-            var hidden = "hidden";
+            let hidden = "hidden";
             // Standards:
             if (hidden in document) {
                 document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
@@ -48539,30 +48607,31 @@ return Backbone.BrowserStorage;
                 window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(_converse.saveWindowState, _, hidden);
             }
             // set the initial state (but only if browser supports the Page Visibility API)
-            if (document[hidden] !== undefined) {
-                _.partial(_converse.saveWindowState, _, hidden)({ type: document[hidden] ? "blur" : "focus" });
+            if( document[hidden] !== undefined ) {
+                _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
             }
         };
 
         this.enableCarbons = function () {
-            var _this2 = this;
-
             /* Ask the XMPP server to enable Message Carbons
              * See XEP-0280 https://xmpp.org/extensions/xep-0280.html#enabling
              */
             if (!this.message_carbons || this.session.get('carbons_enabled')) {
                 return;
             }
-            var carbons_iq = new Strophe.Builder('iq', {
+            const carbons_iq = new Strophe.Builder('iq', {
                 from: this.connection.jid,
                 id: 'enablecarbons',
                 type: 'set'
-            }).c('enable', { xmlns: Strophe.NS.CARBONS });
-            this.connection.addHandler(function (iq) {
+              })
+              .c('enable', {xmlns: Strophe.NS.CARBONS});
+            this.connection.addHandler((iq) => {
                 if (iq.querySelectorAll('error').length > 0) {
-                    _converse.log('An error occured while trying to enable message carbons.', Strophe.LogLevel.ERROR);
+                    _converse.log(
+                        'An error occured while trying to enable message carbons.',
+                        Strophe.LogLevel.ERROR);
                 } else {
-                    _this2.session.save({ carbons_enabled: true });
+                    this.session.save({carbons_enabled: true});
                     _converse.log('Message carbons have been enabled.');
                 }
             }, null, "iq", null, "enablecarbons");
@@ -48574,9 +48643,11 @@ return Backbone.BrowserStorage;
              * roster and the roster groups.
              */
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.contacts-" + _converse.bare_jid));
+            _converse.roster.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1(`converse.contacts-${_converse.bare_jid}`));
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.roster.groups" + _converse.bare_jid));
+            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage.session(
+                b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
             _converse.emit('rosterInitialized');
         };
 
@@ -48602,11 +48673,13 @@ return Backbone.BrowserStorage;
 
         this.registerPresenceHandler = function () {
             _converse.unregisterPresenceHandler();
-            _converse.presence_ref = _converse.connection.addHandler(function (presence) {
-                _converse.roster.presenceHandler(presence);
-                return true;
-            }, null, 'presence', null);
+            _converse.presence_ref = _converse.connection.addHandler(
+                function (presence) {
+                    _converse.roster.presenceHandler(presence);
+                    return true;
+                }, null, 'presence', null);
         };
+
 
         this.sendInitialPresence = function () {
             if (_converse.send_initial_presence) {
@@ -48667,7 +48740,11 @@ return Backbone.BrowserStorage;
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                _converse.initStatus().then(_.partial(_converse.onStatusInitialized, false), _.partial(_converse.onStatusInitialized, false)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                _converse.initStatus()
+                    .then(
+                        _.partial(_converse.onStatusInitialized, false),
+                        _.partial(_converse.onStatusInitialized, false))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 _converse.emit('connected');
             }
         };
@@ -48682,33 +48759,29 @@ return Backbone.BrowserStorage;
                 'image': _converse.DEFAULT_IMAGE,
                 'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
-                'status': ''
+                'status': '',
             },
 
-            initialize: function initialize(attributes) {
-                var _this3 = this;
-
-                var jid = attributes.jid;
-
-                var bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
-                var resource = Strophe.getResourceFromJid(jid);
+            initialize (attributes) {
+                const { jid } = attributes;
+                const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
+                const resource = Strophe.getResourceFromJid(jid);
                 attributes.jid = bare_jid;
                 this.set(_.assignIn({
                     'id': bare_jid,
                     'jid': bare_jid,
                     'fullname': bare_jid,
                     'user_id': Strophe.getNodeFromJid(jid),
-                    'resources': resource ? { resource: 0 } : {}
+                    'resources': resource ? {resource :0} : {},
                 }, attributes));
 
-                this.on('destroy', function () {
-                    _this3.removeFromRoster();
-                });
+                this.on('destroy', () => { this.removeFromRoster(); });
                 this.on('change:chat_status', function (item) {
                     _converse.emit('contactStatusChanged', item.attributes);
                 });
             },
-            subscribe: function subscribe(message) {
+
+            subscribe (message) {
                 /* Send a presence subscription request to this roster contact
                  *
                  * Parameters:
@@ -48716,18 +48789,19 @@ return Backbone.BrowserStorage;
                  *      reason for the subscription request.
                  */
                 this.save('ask', "subscribe"); // ask === 'subscribe' Means we have ask to subscribe to them.
-                var pres = $pres({ to: this.get('jid'), type: "subscribe" });
+                const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                var nick = _converse.xmppstatus.get('fullname');
+                const nick = _converse.xmppstatus.get('fullname');
                 if (nick && nick !== "") {
-                    pres.c('nick', { 'xmlns': Strophe.NS.NICK }).t(nick).up();
+                    pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
                 _converse.connection.send(pres);
                 return this;
             },
-            ackSubscribe: function ackSubscribe() {
+
+            ackSubscribe () {
                 /* Upon receiving the presence stanza of type "subscribed",
                  * the user SHOULD acknowledge receipt of that subscription
                  * state notification by sending a presence stanza of type
@@ -48738,7 +48812,8 @@ return Backbone.BrowserStorage;
                     'to': this.get('jid')
                 }));
             },
-            ackUnsubscribe: function ackUnsubscribe() {
+
+            ackUnsubscribe () {
                 /* Upon receiving the presence stanza of type "unsubscribed",
                  * the user SHOULD acknowledge receipt of that subscription state
                  * notification by sending a presence stanza of type "unsubscribe"
@@ -48747,10 +48822,11 @@ return Backbone.BrowserStorage;
                  *  Parameters:
                  *    (String) jid - The Jabber ID of the user who is unsubscribing
                  */
-                _converse.connection.send($pres({ 'type': 'unsubscribe', 'to': this.get('jid') }));
+                _converse.connection.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.destroy(); // Will cause removeFromRoster to be called.
             },
-            unauthorize: function unauthorize(message) {
+
+            unauthorize (message) {
                 /* Unauthorize this contact's presence subscription
                  * Parameters:
                  *   (String) message - Optional message to send to the person being unauthorized
@@ -48758,42 +48834,46 @@ return Backbone.BrowserStorage;
                 _converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },
-            authorize: function authorize(message) {
+
+            authorize (message) {
                 /* Authorize presence subscription
                  * Parameters:
                  *   (String) message - Optional message to send to the person being authorized
                  */
-                var pres = $pres({ to: this.get('jid'), type: "subscribed" });
+                const pres = $pres({to: this.get('jid'), type: "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
                 }
                 _converse.connection.send(pres);
                 return this;
             },
-            addResource: function addResource(presence) {
+
+            addResource (presence) {
                 /* Adds a new resource and it's associated attributes as taken
                  * from the passed in presence stanza.
                  *
                  * Also updates the contact's chat_status if the presence has
                  * higher priority (and is newer).
                  */
-                var jid = presence.getAttribute('from'),
+                const jid = presence.getAttribute('from'),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
                     resource = Strophe.getResourceFromJid(jid),
-                    delay = presence.querySelector("delay[xmlns=\"" + Strophe.NS.DELAY + "\"]"),
+                    delay = presence.querySelector(
+                        `delay[xmlns="${Strophe.NS.DELAY}"]`
+                    ),
                     timestamp = _.isNull(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
 
-                var priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
+                let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
                 priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
 
-                var resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
+                const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
                 resources[resource] = {
                     'priority': priority,
                     'status': chat_status,
                     'timestamp': timestamp
                 };
-                var changed = { 'resources': resources };
-                var hpr = this.getHighestPriorityResource();
+                const changed = {'resources': resources};
+                const hpr = this.getHighestPriorityResource();
                 if (priority == hpr.priority && timestamp == hpr.timestamp) {
                     // Only set the chat status if this is the newest resource
                     // with the highest priority
@@ -48802,13 +48882,14 @@ return Backbone.BrowserStorage;
                 this.save(changed);
                 return resources;
             },
-            removeResource: function removeResource(resource) {
+
+            removeResource (resource) {
                 /* Remove the passed in resource from the contact's resources map.
                  *
                  * Also recomputes the chat_status given that there's one less
                  * resource.
                  */
-                var resources = this.get('resources');
+                let resources = this.get('resources');
                 if (!_.isObject(resources)) {
                     resources = {};
                 } else {
@@ -48816,49 +48897,60 @@ return Backbone.BrowserStorage;
                 }
                 this.save({
                     'resources': resources,
-                    'chat_status': _.propertyOf(this.getHighestPriorityResource())('status') || 'offline'
+                    'chat_status': _.propertyOf(
+                        this.getHighestPriorityResource())('status') || 'offline'
                 });
             },
-            getHighestPriorityResource: function getHighestPriorityResource() {
+
+            getHighestPriorityResource () {
                 /* Return the resource with the highest priority.
                  *
                  * If multiple resources have the same priority, take the
                  * newest one.
                  */
-                var resources = this.get('resources');
+                const resources = this.get('resources');
                 if (_.isObject(resources) && _.size(resources)) {
-                    var val = _.flow(_.values, _.partial(_.sortBy, _, ['priority', 'timestamp']), _.reverse)(resources)[0];
+                    const val = _.flow(
+                            _.values,
+                            _.partial(_.sortBy, _, ['priority', 'timestamp']),
+                            _.reverse
+                        )(resources)[0];
                     if (!_.isUndefined(val)) {
                         return val;
                     }
                 }
             },
-            removeFromRoster: function removeFromRoster(callback) {
+
+            removeFromRoster (callback) {
                 /* Instruct the XMPP server to remove this contact from our roster
                  * Parameters:
                  *   (Function) callback
                  */
-                var iq = $iq({ type: 'set' }).c('query', { xmlns: Strophe.NS.ROSTER }).c('item', { jid: this.get('jid'), subscription: "remove" });
+                const iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', {jid: this.get('jid'), subscription: "remove"});
                 _converse.connection.sendIQ(iq, callback, callback);
                 return this;
             }
         });
 
+
         this.RosterContacts = Backbone.Collection.extend({
             model: _converse.RosterContact,
 
-            comparator: function comparator(contact1, contact2) {
-                var status1 = contact1.get('chat_status') || 'offline';
-                var status2 = contact2.get('chat_status') || 'offline';
+            comparator (contact1, contact2) {
+                const status1 = contact1.get('chat_status') || 'offline';
+                const status2 = contact2.get('chat_status') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
-                    var name1 = contact1.get('fullname').toLowerCase();
-                    var name2 = contact2.get('fullname').toLowerCase();
-                    return name1 < name2 ? -1 : name1 > name2 ? 1 : 0;
-                } else {
+                    const name1 = contact1.get('fullname').toLowerCase();
+                    const name2 = contact2.get('fullname').toLowerCase();
+                    return name1 < name2 ? -1 : (name1 > name2? 1 : 0);
+                } else  {
                     return _converse.STATUS_WEIGHTS[status1] < _converse.STATUS_WEIGHTS[status2] ? -1 : 1;
                 }
             },
-            onConnected: function onConnected() {
+
+            onConnected () {
                 /* Called as soon as the connection has been established
                  * (either after initial login, or after reconnection).
                  *
@@ -48867,29 +48959,37 @@ return Backbone.BrowserStorage;
                 this.registerRosterHandler();
                 this.registerRosterXHandler();
             },
-            registerRosterHandler: function registerRosterHandler() {
+
+            registerRosterHandler () {
                 /* Register a handler for roster IQ "set" stanzas, which update
                  * roster contacts.
                  */
-                _converse.connection.addHandler(_converse.roster.onRosterPush.bind(_converse.roster), Strophe.NS.ROSTER, 'iq', "set");
+                _converse.connection.addHandler(
+                    _converse.roster.onRosterPush.bind(_converse.roster),
+                    Strophe.NS.ROSTER, 'iq', "set"
+                );
             },
-            registerRosterXHandler: function registerRosterXHandler() {
+
+            registerRosterXHandler () {
                 /* Register a handler for RosterX message stanzas, which are
                  * used to suggest roster contacts to a user.
                  */
-                var t = 0;
-                _converse.connection.addHandler(function (msg) {
-                    window.setTimeout(function () {
-                        _converse.connection.flush();
-                        _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
-                    }, t);
-                    t += msg.querySelectorAll('item').length * 250;
-                    return true;
-                }, Strophe.NS.ROSTERX, 'message', null);
+                let t = 0;
+                _converse.connection.addHandler(
+                    function (msg) {
+                        window.setTimeout(
+                            function () {
+                                _converse.connection.flush();
+                                _converse.roster.subscribeToSuggestedItems.bind(_converse.roster)(msg);
+                            }, t);
+                        t += msg.querySelectorAll('item').length*250;
+                        return true;
+                    },
+                    Strophe.NS.ROSTERX, 'message', null
+                );
             },
-            fetchRosterContacts: function fetchRosterContacts() {
-                var _this4 = this;
 
+            fetchRosterContacts () {
                 /* Fetches the roster contacts, first by trying the
                  * sessionStorage cache, and if that's empty, then by querying
                  * the XMPP server.
@@ -48897,10 +48997,10 @@ return Backbone.BrowserStorage;
                  * Returns a promise which resolves once the contacts have been
                  * fetched.
                  */
-                return new Promise(function (resolve, reject) {
-                    _this4.fetch({
+                return new Promise((resolve, reject) => {
+                    this.fetch({
                         add: true,
-                        success: function success(collection) {
+                        success (collection) {
                             if (collection.length === 0) {
                                 /* We don't have any roster contacts stored in sessionStorage,
                                 * so lets fetch the roster from the XMPP server. We pass in
@@ -48918,18 +49018,25 @@ return Backbone.BrowserStorage;
                     });
                 });
             },
-            subscribeToSuggestedItems: function subscribeToSuggestedItems(msg) {
+
+            subscribeToSuggestedItems (msg) {
                 _.each(msg.querySelectorAll('item'), function (item) {
                     if (item.getAttribute('action') === 'add') {
-                        _converse.roster.addAndSubscribe(item.getAttribute('jid'), null, _converse.xmppstatus.get('fullname'));
+                        _converse.roster.addAndSubscribe(
+                            item.getAttribute('jid'),
+                            null,
+                            _converse.xmppstatus.get('fullname')
+                        );
                     }
                 });
                 return true;
             },
-            isSelf: function isSelf(jid) {
+
+            isSelf (jid) {
                 return utils.isSameBareJID(jid, _converse.connection.jid);
             },
-            addAndSubscribe: function addAndSubscribe(jid, name, groups, message, attributes) {
+
+            addAndSubscribe (jid, name, groups, message, attributes) {
                 /* Add a roster contact and then once we have confirmation from
                  * the XMPP server we subscribe to that contact's presence updates.
                  *  Parameters:
@@ -48940,14 +49047,15 @@ return Backbone.BrowserStorage;
                  *      reason for the subscription request.
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                var handler = function handler(contact) {
+                const handler = (contact) => {
                     if (contact instanceof _converse.RosterContact) {
                         contact.subscribe(message);
                     }
-                };
+                }
                 this.addContact(jid, name, groups, attributes).then(handler, handler);
             },
-            sendContactAddIQ: function sendContactAddIQ(jid, name, groups, callback, errback) {
+
+            sendContactAddIQ (jid, name, groups, callback, errback) {
                 /*  Send an IQ stanza to the XMPP server to add a new roster contact.
                  *
                  *  Parameters:
@@ -48957,16 +49065,15 @@ return Backbone.BrowserStorage;
                  *    (Function) callback - A function to call once the IQ is returned
                  *    (Function) errback - A function to call if an error occured
                  */
-                name = _.isEmpty(name) ? jid : name;
-                var iq = $iq({ type: 'set' }).c('query', { xmlns: Strophe.NS.ROSTER }).c('item', { jid: jid, name: name });
-                _.each(groups, function (group) {
-                    iq.c('group').t(group).up();
-                });
+                name = _.isEmpty(name)? jid: name;
+                const iq = $iq({type: 'set'})
+                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                    .c('item', { jid, name });
+                _.each(groups, function (group) { iq.c('group').t(group).up(); });
                 _converse.connection.sendIQ(iq, callback, errback);
             },
-            addContact: function addContact(jid, name, groups, attributes) {
-                var _this5 = this;
 
+            addContact (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
@@ -48978,116 +49085,123 @@ return Backbone.BrowserStorage;
                  *    (Array of Strings) groups - Any roster groups the user might belong to
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                return new Promise(function (resolve, reject) {
+                return new Promise((resolve, reject) => {
                     groups = groups || [];
-                    name = _.isEmpty(name) ? jid : name;
-                    _this5.sendContactAddIQ(jid, name, groups, function () {
-                        var contact = _this5.create(_.assignIn({
-                            ask: undefined,
-                            fullname: name,
-                            groups: groups,
-                            jid: jid,
-                            requesting: false,
-                            subscription: 'none'
-                        }, attributes), { sort: false });
-                        resolve(contact);
-                    }, function (err) {
-                        alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
-                        _converse.log(err, Strophe.LogLevel.ERROR);
-                        resolve(err);
-                    });
+                    name = _.isEmpty(name)? jid: name;
+                    this.sendContactAddIQ(jid, name, groups,
+                        () => {
+                            const contact = this.create(_.assignIn({
+                                ask: undefined,
+                                fullname: name,
+                                groups,
+                                jid,
+                                requesting: false,
+                                subscription: 'none'
+                            }, attributes), {sort: false});
+                            resolve(contact);
+                        },
+                        function (err) {
+                            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+                            _converse.log(err, Strophe.LogLevel.ERROR);
+                            resolve(err);
+                        }
+                    );
                 });
             },
-            subscribeBack: function subscribeBack(bare_jid) {
-                var contact = this.get(bare_jid);
+
+            subscribeBack (bare_jid) {
+                const contact = this.get(bare_jid);
                 if (contact instanceof _converse.RosterContact) {
                     contact.authorize().subscribe();
                 } else {
                     // Can happen when a subscription is retried or roster was deleted
-                    var handler = function handler(contact) {
+                    const handler = (contact) => {
                         if (contact instanceof _converse.RosterContact) {
                             contact.authorize().subscribe();
                         }
-                    };
+                    }
                     this.addContact(bare_jid, '', [], { 'subscription': 'from' }).then(handler, handler);
                 }
             },
-            getNumOnlineContacts: function getNumOnlineContacts() {
-                var ignored = ['offline', 'unavailable'];
+
+            getNumOnlineContacts () {
+                let ignored = ['offline', 'unavailable'];
                 if (_converse.show_only_online_users) {
                     ignored = _.union(ignored, ['dnd', 'xa', 'away']);
                 }
-                return _.sum(this.models.filter(function (model) {
-                    return !_.includes(ignored, model.get('chat_status'));
-                }));
+                return _.sum(this.models.filter((model) => !_.includes(ignored, model.get('chat_status'))));
             },
-            onRosterPush: function onRosterPush(iq) {
+
+            onRosterPush (iq) {
                 /* Handle roster updates from the XMPP server.
                  * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
                  *
                  * Parameters:
                  *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
                  */
-                var id = iq.getAttribute('id');
-                var from = iq.getAttribute('from');
+                const id = iq.getAttribute('id');
+                const from = iq.getAttribute('from');
                 if (from && from !== "" && Strophe.getBareJidFromJid(from) !== _converse.bare_jid) {
                     // Receiving client MUST ignore stanza unless it has no from or from = user's bare JID.
                     // XXX: Some naughty servers apparently send from a full
                     // JID so we need to explicitly compare bare jids here.
                     // https://github.com/jcbrand/converse.js/issues/493
-                    _converse.connection.send($iq({ type: 'error', id: id, from: _converse.connection.jid }).c('error', { 'type': 'cancel' }).c('service-unavailable', { 'xmlns': Strophe.NS.ROSTER }));
+                    _converse.connection.send(
+                        $iq({type: 'error', id, from: _converse.connection.jid})
+                            .c('error', {'type': 'cancel'})
+                            .c('service-unavailable', {'xmlns': Strophe.NS.ROSTER })
+                    );
                     return true;
                 }
-                _converse.connection.send($iq({ type: 'result', id: id, from: _converse.connection.jid }));
-                var items = sizzle("query[xmlns=\"" + Strophe.NS.ROSTER + "\"] item", iq);
+                _converse.connection.send($iq({type: 'result', id, from: _converse.connection.jid}));
+                const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('rosterPush', iq);
                 return true;
             },
-            fetchFromServer: function fetchFromServer(callback) {
-                var _this6 = this,
-                    _arguments = arguments;
 
+            fetchFromServer (callback) {
                 /* Get the roster from the XMPP server */
-                var iq = $iq({ type: 'get', 'id': _converse.connection.getUniqueId('roster') }).c('query', { xmlns: Strophe.NS.ROSTER });
-                return _converse.connection.sendIQ(iq, function (iq) {
-                    _this6.onReceivedFromServer(iq);
-                    callback.apply(_this6, _arguments);
+                const iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
+                    .c('query', {xmlns: Strophe.NS.ROSTER});
+                return _converse.connection.sendIQ(iq, (iq) => {
+                    this.onReceivedFromServer(iq);
+                    callback.apply(this, arguments);
                 });
             },
-            onReceivedFromServer: function onReceivedFromServer(iq) {
+
+            onReceivedFromServer (iq) {
                 /* An IQ stanza containing the roster has been received from
                  * the XMPP server.
                  */
-                var items = sizzle("query[xmlns=\"" + Strophe.NS.ROSTER + "\"] item", iq);
+                const items = sizzle(`query[xmlns="${Strophe.NS.ROSTER}"] item`, iq);
                 _.each(items, this.updateContact.bind(this));
                 _converse.emit('roster', iq);
             },
-            updateContact: function updateContact(item) {
+
+            updateContact (item) {
                 /* Update or create RosterContact models based on items
                  * received in the IQ from the server.
                  */
-                var jid = item.getAttribute('jid');
-                if (this.isSelf(jid)) {
-                    return;
-                }
+                const jid = item.getAttribute('jid');
+                if (this.isSelf(jid)) { return; }
 
-                var contact = this.get(jid),
-                    subscription = item.getAttribute("subscription"),
-                    ask = item.getAttribute("ask"),
-                    groups = _.map(item.getElementsByTagName('group'), Strophe.getText);
+                const contact = this.get(jid),
+                      subscription = item.getAttribute("subscription"),
+                      ask = item.getAttribute("ask"),
+                      groups = _.map(item.getElementsByTagName('group'), Strophe.getText);
 
                 if (!contact) {
-                    if (subscription === "none" && ask === null || subscription === "remove") {
+                    if ((subscription === "none" && ask === null) || (subscription === "remove")) {
                         return; // We're lazy when adding contacts.
                     }
                     this.create({
-                        ask: ask,
+                        ask,
                         fullname: item.getAttribute("name") || jid,
-                        groups: groups,
-                        jid: jid,
-                        subscription: subscription
-                    }, { sort: false });
+                        groups,
+                        jid,
+                        subscription
+                    }, {sort: false});
                 } else {
                     if (subscription === "remove") {
                         return contact.destroy(); // will trigger removeFromRoster
@@ -49097,47 +49211,52 @@ return Backbone.BrowserStorage;
                     // here, we know they aren't requesting anymore.
                     // see docs/DEVELOPER.rst
                     contact.save({
-                        subscription: subscription,
-                        ask: ask,
+                        subscription,
+                        ask,
                         requesting: null,
-                        groups: groups
+                        groups
                     });
                 }
             },
-            createRequestingContact: function createRequestingContact(presence) {
+
+            createRequestingContact (presence) {
                 /* Creates a Requesting Contact.
                  *
                  * Note: this method gets completely overridden by converse-vcard.js
                  */
-                var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                    nick_el = presence.querySelector("nick[xmlns=\"" + Strophe.NS.NICK + "\"]");
-                var user_data = {
+                const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
+                      nick_el = presence.querySelector(`nick[xmlns="${Strophe.NS.NICK}"]`);
+                const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
                     requesting: true,
-                    fullname: nick_el && nick_el.textContent || bare_jid
+                    fullname: nick_el && nick_el.textContent || bare_jid,
                 };
                 this.create(user_data);
                 _converse.emit('contactRequest', user_data);
             },
-            handleIncomingSubscription: function handleIncomingSubscription(presence) {
-                var jid = presence.getAttribute('from'),
-                    bare_jid = Strophe.getBareJidFromJid(jid),
-                    contact = this.get(bare_jid);
+
+            handleIncomingSubscription (presence) {
+                const jid = presence.getAttribute('from'),
+                      bare_jid = Strophe.getBareJidFromJid(jid),
+                      contact = this.get(bare_jid);
 
                 if (!_converse.allow_contact_requests) {
-                    _converse.rejectPresenceSubscription(jid, __("This client does not allow presence subscriptions"));
+                    _converse.rejectPresenceSubscription(
+                        jid,
+                        __("This client does not allow presence subscriptions")
+                    );
                 }
                 if (_converse.auto_subscribe) {
-                    if (!contact || contact.get('subscription') !== 'to') {
+                    if ((!contact) || (contact.get('subscription') !== 'to')) {
                         this.subscribeBack(bare_jid);
                     } else {
                         contact.authorize();
                     }
                 } else {
                     if (contact) {
-                        if (contact.get('subscription') !== 'none') {
+                        if (contact.get('subscription') !== 'none')  {
                             contact.authorize();
                         } else if (contact.get('ask') === "subscribe") {
                             contact.authorize();
@@ -49147,13 +49266,12 @@ return Backbone.BrowserStorage;
                     }
                 }
             },
-            presenceHandler: function presenceHandler(presence) {
-                var presence_type = presence.getAttribute('type');
-                if (presence_type === 'error') {
-                    return true;
-                }
 
-                var jid = presence.getAttribute('from'),
+            presenceHandler (presence) {
+                const presence_type = presence.getAttribute('type');
+                if (presence_type === 'error') { return true; }
+
+                const jid = presence.getAttribute('from'),
                     bare_jid = Strophe.getBareJidFromJid(jid),
                     resource = Strophe.getResourceFromJid(jid),
                     chat_status = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
@@ -49161,21 +49279,24 @@ return Backbone.BrowserStorage;
                     contact = this.get(bare_jid);
 
                 if (this.isSelf(bare_jid)) {
-                    if (_converse.connection.jid !== jid && presence_type !== 'unavailable' && (_converse.synchronize_availability === true || _converse.synchronize_availability === resource)) {
+                    if ((_converse.connection.jid !== jid) &&
+                        (presence_type !== 'unavailable') &&
+                        (_converse.synchronize_availability === true ||
+                         _converse.synchronize_availability === resource)) {
                         // Another resource has changed its status and
                         // synchronize_availability option set to update,
                         // we'll update ours as well.
-                        _converse.xmppstatus.save({ 'status': chat_status });
+                        _converse.xmppstatus.save({'status': chat_status});
                         if (status_message) {
-                            _converse.xmppstatus.save({ 'status_message': status_message });
+                            _converse.xmppstatus.save({'status_message': status_message});
                         }
                     }
                     return;
-                } else if (sizzle("query[xmlns=\"" + Strophe.NS.MUC + "\"]", presence).length) {
+                } else if (sizzle(`query[xmlns="${Strophe.NS.MUC}"]`, presence).length) {
                     return; // Ignore MUC
                 }
-                if (contact && status_message !== contact.get('status')) {
-                    contact.save({ 'status': status_message });
+                if (contact && (status_message !== contact.get('status'))) {
+                    contact.save({'status': status_message});
                 }
                 if (presence_type === 'subscribed' && contact) {
                     contact.ackSubscribe();
@@ -49194,8 +49315,9 @@ return Backbone.BrowserStorage;
             }
         });
 
+
         this.RosterGroup = Backbone.Model.extend({
-            initialize: function initialize(attributes) {
+            initialize (attributes) {
                 this.set(_.assignIn({
                     description: __('Click to hide these contacts'),
                     state: _converse.OPENED
@@ -49205,30 +49327,30 @@ return Backbone.BrowserStorage;
             }
         });
 
+
         this.RosterGroups = Backbone.Collection.extend({
             model: _converse.RosterGroup,
 
-            fetchRosterGroups: function fetchRosterGroups() {
-                var _this7 = this;
-
+            fetchRosterGroups () {
                 /* Fetches all the roster groups from sessionStorage.
                  *
                  * Returns a promise which resolves once the groups have been
                  * returned.
                  */
-                return new Promise(function (resolve, reject) {
-                    _this7.fetch({
+                return new Promise((resolve, reject) => {
+                    this.fetch({
                         silent: true, // We need to first have all groups before
-                        // we can start positioning them, so we set
-                        // 'silent' to true.
+                                    // we can start positioning them, so we set
+                                    // 'silent' to true.
                         success: resolve
                     });
                 });
             }
         });
 
+
         this.Message = Backbone.Model.extend({
-            defaults: function defaults() {
+            defaults(){
                 return {
                     msgid: _converse.connection.getUniqueId()
                 };
@@ -49249,40 +49371,48 @@ return Backbone.BrowserStorage;
                 'url': ''
             },
 
-            initialize: function initialize() {
+            initialize () {
                 this.messages = new _converse.Messages();
-                this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](b64_sha1("converse.messages" + this.get('jid') + _converse.bare_jid));
+                this.messages.browserStorage = new Backbone.BrowserStorage[_converse.message_storage](
+                    b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                 this.save({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-                    'box_id': b64_sha1(this.get('jid')),
+                    'box_id' : b64_sha1(this.get('jid')),
                     'time_opened': this.get('time_opened') || moment().valueOf(),
-                    'user_id': Strophe.getNodeFromJid(this.get('jid'))
+                    'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                 });
             },
-            getMessageBody: function getMessageBody(message) {
-                var type = message.getAttribute('type');
-                return type === 'error' ? _.propertyOf(message.querySelector('error text'))('textContent') : _.propertyOf(message.querySelector('body'))('textContent');
+
+            getMessageBody (message) {
+                const type = message.getAttribute('type');
+                return (type === 'error') ?
+                    _.propertyOf(message.querySelector('error text'))('textContent') :
+                        _.propertyOf(message.querySelector('body'))('textContent');
             },
-            getMessageAttributes: function getMessageAttributes(message, delay, original_stanza) {
+
+            getMessageAttributes (message, delay, original_stanza) {
                 delay = delay || message.querySelector('delay');
-                var type = message.getAttribute('type'),
-                    body = this.getMessageBody(message);
+                const type = message.getAttribute('type'),
+                      body = this.getMessageBody(message);
 
-                var delayed = !_.isNull(delay),
+                const delayed = !_.isNull(delay),
                     is_groupchat = type === 'groupchat',
-                    chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+                    chat_state = message.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                        message.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
+                        message.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
+                        message.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
+                        message.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                var from = void 0;
+                let from;
                 if (is_groupchat) {
                     from = Strophe.unescapeNode(Strophe.getResourceFromJid(message.getAttribute('from')));
                 } else {
                     from = Strophe.getBareJidFromJid(message.getAttribute('from'));
                 }
-                var time = delayed ? delay.getAttribute('stamp') : moment().format();
-                var sender = void 0,
-                    fullname = void 0;
-                if (is_groupchat && from === this.get('nick') || !is_groupchat && from === _converse.bare_jid) {
+                const time = delayed ? delay.getAttribute('stamp') : moment().format();
+                let sender, fullname;
+                if ((is_groupchat && from === this.get('nick')) || (!is_groupchat && from === _converse.bare_jid)) {
                     sender = 'me';
                     fullname = _converse.xmppstatus.get('fullname') || from;
                 } else {
@@ -49300,16 +49430,22 @@ return Backbone.BrowserStorage;
                     'time': time
                 };
             },
-            createMessage: function createMessage(message, delay, original_stanza) {
+
+            createMessage (message, delay, original_stanza) {
                 return this.messages.create(this.getMessageAttributes.apply(this, arguments));
             },
-            newMessageWillBeHidden: function newMessageWillBeHidden() {
+
+            newMessageWillBeHidden () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
                  */
-                return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
+                return this.get('hidden') ||
+                    this.get('minimized') ||
+                    this.isScrolledUp() ||
+                    _converse.windowState === 'hidden';
             },
-            incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+
+            incrementUnreadMsgCounter (stanza) {
                 /* Given a newly received message, update the unread counter if
                  * necessary.
                  */
@@ -49317,44 +49453,51 @@ return Backbone.BrowserStorage;
                     return; // The message has no text
                 }
                 if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-                    this.save({ 'num_unread': this.get('num_unread') + 1 });
+                    this.save({'num_unread': this.get('num_unread') + 1});
                     _converse.incrementMsgCounter();
                 }
             },
-            clearUnreadMsgCounter: function clearUnreadMsgCounter() {
-                this.save({ 'num_unread': 0 });
+
+            clearUnreadMsgCounter() {
+                this.save({'num_unread': 0});
             },
-            isScrolledUp: function isScrolledUp() {
+
+            isScrolledUp () {
                 return this.get('scrolled', true);
             }
         });
 
         this.XMPPStatus = Backbone.Model.extend({
-            initialize: function initialize() {
-                var _this8 = this;
-
+            initialize () {
                 this.set({
-                    'status': this.getStatus()
+                    'status' : this.getStatus()
                 });
-                this.on('change', function (item) {
+                this.on('change', (item) => {
                     if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', _this8.get('status'));
+                        _converse.emit('statusChanged', this.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', _this8.get('status_message'));
+                        _converse.emit('statusMessageChanged', this.get('status_message'));
                     }
                 });
             },
-            constructPresence: function constructPresence(type, status_message) {
-                var presence = void 0;
-                type = _.isString(type) ? type : this.get('status') || _converse.default_state;
+
+            constructPresence (type, status_message) {
+                let presence;
+                type = _.isString(type) ? type : (this.get('status') || _converse.default_state);
                 status_message = _.isString(status_message) ? status_message : undefined;
                 // Most of these presence types are actually not explicitly sent,
                 // but I add all of them here for reference and future proofing.
-                if (type === 'unavailable' || type === 'probe' || type === 'error' || type === 'unsubscribe' || type === 'unsubscribed' || type === 'subscribe' || type === 'subscribed') {
-                    presence = $pres({ 'type': type });
+                if ((type === 'unavailable') ||
+                        (type === 'probe') ||
+                        (type === 'error') ||
+                        (type === 'unsubscribe') ||
+                        (type === 'unsubscribed') ||
+                        (type === 'subscribe') ||
+                        (type === 'subscribed')) {
+                    presence = $pres({'type': type});
                 } else if (type === 'offline') {
-                    presence = $pres({ 'type': 'unavailable' });
+                    presence = $pres({'type': 'unavailable'});
                 } else if (type === 'online') {
                     presence = $pres();
                 } else {
@@ -49363,29 +49506,35 @@ return Backbone.BrowserStorage;
                 if (status_message) {
                     presence.c('status').t(status_message).up();
                 }
-                presence.c('priority').t(_.isNaN(Number(_converse.priority)) ? 0 : _converse.priority);
+                presence.c('priority').t(
+                    _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
+                );
                 return presence;
             },
-            sendPresence: function sendPresence(type, status_message) {
+
+            sendPresence (type, status_message) {
                 _converse.connection.send(this.constructPresence(type, status_message));
             },
-            setStatus: function setStatus(value) {
+
+            setStatus (value) {
                 this.sendPresence(value);
-                this.save({ 'status': value });
+                this.save({'status': value});
             },
-            getStatus: function getStatus() {
+
+            getStatus () {
                 return this.get('status') || _converse.default_state;
             },
-            setStatusMessage: function setStatusMessage(status_message) {
+
+            setStatusMessage (status_message) {
                 this.sendPresence(this.getStatus(), status_message);
-                this.save({ 'status_message': status_message });
+                this.save({'status_message': status_message});
                 if (this.xhr_custom_status) {
-                    var xhr = new XMLHttpRequest();
+                    const xhr = new XMLHttpRequest();
                     xhr.open('POST', this.xhr_custom_status_url, true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                    xhr.send({ 'msg': status_message });
+                    xhr.send({'msg': status_message});
                 }
-                var prev_status = this.get('status_message');
+                const prev_status = this.get('status_message');
                 if (prev_status === status_message) {
                     this.trigger("update-status-ui", this);
                 }
@@ -49406,14 +49555,14 @@ return Backbone.BrowserStorage;
             }
         };
 
-        this.fetchLoginCredentials = function () {
-            return new Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
+        this.fetchLoginCredentials = () =>
+            new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
                 xhr.open('GET', _converse.credentials_url, true);
                 xhr.setRequestHeader('Accept', "application/json, text/javascript");
-                xhr.onload = function () {
+                xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
-                        var data = JSON.parse(xhr.responseText);
+                        const data = JSON.parse(xhr.responseText);
                         resolve({
                             'jid': data.jid,
                             'password': data.password
@@ -49429,16 +49578,17 @@ return Backbone.BrowserStorage;
                 };
                 xhr.send();
             });
-        };
 
         this.startNewBOSHSession = function () {
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.prebind_url, true);
             xhr.setRequestHeader('Accept', "application/json, text/javascript");
-            xhr.onload = function () {
+            xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 400) {
-                    var data = JSON.parse(xhr.responseText);
-                    _converse.connection.attach(data.jid, data.sid, data.rid, _converse.onConnectStatusChanged);
+                    const data = JSON.parse(xhr.responseText);
+                    _converse.connection.attach(
+                            data.jid, data.sid, data.rid,
+                            _converse.onConnectStatusChanged);
                 } else {
                     xhr.onerror();
                 }
@@ -49453,7 +49603,8 @@ return Backbone.BrowserStorage;
         this.restoreBOSHSession = function (jid_is_required) {
             /* Tries to restore a cached BOSH session. */
             if (!this.jid) {
-                var msg = "restoreBOSHSession: tried to restore a \"keepalive\" session " + "but we don't have the JID for the user!";
+                const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
+                    "but we don't have the JID for the user!";
                 if (jid_is_required) {
                     throw new Error(msg);
                 } else {
@@ -49464,7 +49615,9 @@ return Backbone.BrowserStorage;
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
                 return true;
             } catch (e) {
-                _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message);
+                _converse.log(
+                    "Could not restore session for jid: "+
+                    this.jid+" Error message: "+e.message);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 return false;
             }
@@ -49480,13 +49633,18 @@ return Backbone.BrowserStorage;
                 }
                 // No keepalive, or session resumption has failed.
                 if (this.jid && this.sid && this.rid) {
-                    return this.connection.attach(this.jid, this.sid, this.rid, this.onConnectStatusChanged);
+                    return this.connection.attach(
+                        this.jid, this.sid, this.rid,
+                        this.onConnectStatusChanged
+                    );
                 }
             }
             if (this.prebind_url) {
                 return this.startNewBOSHSession();
             } else {
-                throw new Error("attemptPreboundSession: If you use prebind and not keepalive, " + "then you MUST supply JID, RID and SID values or a prebind_url.");
+                throw new Error(
+                    "attemptPreboundSession: If you use prebind and not keepalive, "+
+                    "then you MUST supply JID, RID and SID values or a prebind_url.");
             }
         };
 
@@ -49506,9 +49664,18 @@ return Backbone.BrowserStorage;
                     // or credentials fetching via HTTP
                     this.autoLogin(credentials);
                 } else if (this.credentials_url) {
-                    this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
+                    this.fetchLoginCredentials().then(
+                        this.autoLogin.bind(this),
+                        this.autoLogin.bind(this)
+                    );
                 } else if (!this.jid) {
-                    throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
+                    throw new Error(
+                        "attemptNonPreboundSession: If you use auto_login, "+
+                        "you also need to give either a jid value (and if "+
+                        "applicable a password) or you need to pass in a URL "+
+                        "from where the username and password can be fetched "+
+                        "(via credentials_url)."
+                    );
                 } else {
                     this.autoLogin(); // Probably ANONYMOUS login
                 }
@@ -49525,27 +49692,31 @@ return Backbone.BrowserStorage;
             }
             if (this.authentication === _converse.ANONYMOUS) {
                 if (!this.jid) {
-                    throw new Error("Config Error: when using anonymous login " + "you need to provide the server's domain via the 'jid' option. " + "Either when calling converse.initialize, or when calling " + "_converse.api.user.login.");
+                    throw new Error("Config Error: when using anonymous login " +
+                        "you need to provide the server's domain via the 'jid' option. " +
+                        "Either when calling converse.initialize, or when calling " +
+                        "_converse.api.user.login.");
                 }
                 if (!this.connection.reconnecting) {
                     this.connection.reset();
                 }
                 this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
             } else if (this.authentication === _converse.LOGIN) {
-                var password = _.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
+                const password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
                 if (!password) {
                     if (this.auto_login) {
-                        throw new Error("initConnection: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
+                        throw new Error("initConnection: If you use auto_login and "+
+                            "authentication='login' then you also need to provide a password.");
                     }
                     _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
                     _converse.disconnect();
                     return;
                 }
-                var resource = Strophe.getResourceFromJid(this.jid);
+                const resource = Strophe.getResourceFromJid(this.jid);
                 if (!resource) {
                     this.jid = this.jid.toLowerCase() + _converse.generateResource();
                 } else {
-                    this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase() + '/' + resource;
+                    this.jid = Strophe.getBareJidFromJid(this.jid).toLowerCase()+'/'+resource;
                 }
                 if (!this.connection.reconnecting) {
                     this.connection.reset();
@@ -49566,13 +49737,16 @@ return Backbone.BrowserStorage;
 
         this.initConnection = function () {
             if (!this.connection) {
-                if (!this.bosh_service_url && !this.websocket_url) {
+                if (!this.bosh_service_url && ! this.websocket_url) {
                     throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
                 }
                 if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
                     this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
                 } else if (this.bosh_service_url) {
-                    this.connection = new Strophe.Connection(this.bosh_service_url, _.assignIn(this.connection_options, { 'keepalive': this.keepalive }));
+                    this.connection = new Strophe.Connection(
+                        this.bosh_service_url,
+                        _.assignIn(this.connection_options, {'keepalive': this.keepalive})
+                    );
                 } else {
                     throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
                 }
@@ -49610,14 +49784,19 @@ return Backbone.BrowserStorage;
             // If initialize is called for the first time, then this array is empty
             // in any case.
             _converse.pluggable.initialized_plugins = [];
-            var whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
+            const whitelist = _converse.core_plugins.concat(
+                _converse.whitelisted_plugins);
 
             _converse.pluggable.initializePlugins({
-                'updateSettings': function updateSettings() {
-                    _converse.log("(DEPRECATION) " + "The `updateSettings` method has been deprecated. " + "Please use `_converse.api.settings.update` instead.", Strophe.LogLevel.WARN);
+                'updateSettings' () {
+                    _converse.log(
+                        "(DEPRECATION) "+
+                        "The `updateSettings` method has been deprecated. "+
+                        "Please use `_converse.api.settings.update` instead.",
+                        Strophe.LogLevel.WARN
+                    )
                     _converse.api.settings.update.apply(_converse, arguments);
                 },
-
                 '_converse': _converse
             }, whitelist, _converse.blacklisted_plugins);
             _converse.emit('pluginsInitialized');
@@ -49635,7 +49814,8 @@ return Backbone.BrowserStorage;
         _converse.logIn();
         _converse.registerGlobalEventHandlers();
 
-        if (!_.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+        if (!_.isUndefined(_converse.connection) &&
+            _converse.connection.service === 'jasmine tests') {
             return _converse;
         } else {
             return init_promise.promise;
@@ -49645,35 +49825,33 @@ return Backbone.BrowserStorage;
     // API methods only available to plugins
     _converse.api = {
         'connection': {
-            'connected': function connected() {
+            'connected' () {
                 return _converse.connection && _converse.connection.connected || false;
             },
-            'disconnect': function disconnect() {
+            'disconnect' () {
                 _converse.connection.disconnect();
-            }
+            },
         },
-        'emit': function emit() {
+        'emit' () {
             _converse.emit.apply(_converse, arguments);
         },
-
         'user': {
-            'jid': function jid() {
+            'jid' () {
                 return _converse.connection.jid;
             },
-            'login': function login(credentials) {
+            'login' (credentials) {
                 _converse.initConnection();
                 _converse.logIn(credentials);
             },
-            'logout': function logout() {
+            'logout' () {
                 _converse.logOut();
             },
-
             'status': {
-                'get': function get() {
+                'get' () {
                     return _converse.xmppstatus.get('status');
                 },
-                'set': function set(value, message) {
-                    var data = { 'status': value };
+                'set' (value, message) {
+                    const data = {'status': value};
                     if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
                         throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                     }
@@ -49683,30 +49861,29 @@ return Backbone.BrowserStorage;
                     _converse.xmppstatus.sendPresence(value);
                     _converse.xmppstatus.save(data);
                 },
-
                 'message': {
-                    'get': function get() {
+                    'get' () {
                         return _converse.xmppstatus.get('status_message');
                     },
-                    'set': function set(stat) {
-                        _converse.xmppstatus.save({ 'status_message': stat });
+                    'set' (stat) {
+                        _converse.xmppstatus.save({'status_message': stat});
                     }
                 }
-            }
+            },
         },
         'settings': {
-            'update': function update(settings) {
+            'update' (settings) {
                 utils.merge(_converse.default_settings, settings);
                 utils.merge(_converse, settings);
                 utils.applyUserSettings(_converse, settings, _converse.user_settings);
             },
-            'get': function get(key) {
+            'get' (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
                     return _converse[key];
                 }
             },
-            'set': function set(key, val) {
-                var o = {};
+            'set' (key, val) {
+                const o = {};
                 if (_.isObject(key)) {
                     _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
                 } else if (_.isString("string")) {
@@ -49716,15 +49893,15 @@ return Backbone.BrowserStorage;
             }
         },
         'promises': {
-            'add': function add(promises) {
-                promises = _.isArray(promises) ? promises : [promises];
+            'add' (promises) {
+                promises = _.isArray(promises) ? promises : [promises]
                 _.each(promises, addPromise);
             }
         },
         'contacts': {
-            'get': function get(jids) {
-                var _transform = function _transform(jid) {
-                    var contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
+            'get' (jids) {
+                const _transform = function (jid) {
+                    const contact = _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (contact) {
                         return contact.attributes;
                     }
@@ -49737,15 +49914,15 @@ return Backbone.BrowserStorage;
                 }
                 return _.map(jids, _transform);
             },
-            'add': function add(jid, name) {
+            'add' (jid, name) {
                 if (!_.isString(jid) || !_.includes(jid, '@')) {
                     throw new TypeError('contacts.add: invalid jid');
                 }
-                _converse.roster.addAndSubscribe(jid, _.isEmpty(name) ? jid : name);
+                _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
         'tokens': {
-            'get': function get(id) {
+            'get' (id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                     return null;
                 }
@@ -49760,39 +49937,48 @@ return Backbone.BrowserStorage;
             'once': _converse.once.bind(_converse),
             'on': _converse.on.bind(_converse),
             'not': _converse.off.bind(_converse),
-            'stanza': function stanza(name, options, handler) {
+            'stanza' (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;
                     options = {};
                 } else {
                     options = options || {};
                 }
-                _converse.connection.addHandler(handler, options.ns, name, options.type, options.id, options.from, options);
-            }
+                _converse.connection.addHandler(
+                    handler,
+                    options.ns,
+                    name,
+                    options.type,
+                    options.id,
+                    options.from,
+                    options
+                );
+            },
         },
-        'waitUntil': function waitUntil(name) {
-            var promise = _converse.promises[name];
+        'waitUntil' (name) {
+            const promise = _converse.promises[name];
             if (_.isUndefined(promise)) {
                 return null;
             }
             return promise.promise;
         },
-        'send': function send(stanza) {
+        'send' (stanza) {
             _converse.connection.send(stanza);
-        }
+        },
     };
 
     // The public API
     return {
-        'initialize': function initialize(settings, callback) {
+        'initialize' (settings, callback) {
             return _converse.initialize(settings, callback);
         },
-
         'plugins': {
-            'add': function add(name, plugin) {
+            'add' (name, plugin) {
                 plugin.__name__ = name;
                 if (!_.isUndefined(_converse.pluggable.plugins[name])) {
-                    throw new TypeError("Error: plugin with name \"" + name + "\" has already been " + 'registered!');
+                    throw new TypeError(
+                        `Error: plugin with name "${name}" has already been `+
+                        'registered!');
                 } else {
                     _converse.pluggable.plugins[name] = plugin;
                 }
@@ -49807,15 +49993,13 @@ return Backbone.BrowserStorage;
             'Promise': Promise,
             'Strophe': Strophe,
             '_': _,
-            'b64_sha1': b64_sha1,
+            'b64_sha1':  b64_sha1,
             'moment': moment,
             'sizzle': sizzle,
             'utils': utils
         }
     };
-});
-//# sourceMappingURL=converse-core.js.map;
-
+}));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -49827,16 +50011,9 @@ return Backbone.BrowserStorage;
 
 (function (root, factory) {
     define('converse-chatboxes',["converse-core"], factory);
-})(undefined, function (converse) {
+}(this, function (converse) {
     "use strict";
-
-    var _converse$env = converse.env,
-        Backbone = _converse$env.Backbone,
-        Strophe = _converse$env.Strophe,
-        b64_sha1 = _converse$env.b64_sha1,
-        utils = _converse$env.utils,
-        _ = _converse$env._;
-
+    const { Backbone, Strophe, b64_sha1, utils, _ } = converse.env;
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -49845,124 +50022,135 @@ return Backbone.BrowserStorage;
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
 
-            disconnect: function disconnect() {
-                var _converse = this.__super__._converse;
-
+            disconnect: function () {
+                const { _converse } = this.__super__;
                 _converse.chatboxviews.closeAllChatBoxes();
                 return this.__super__.disconnect.apply(this, arguments);
             },
 
-            logOut: function logOut() {
-                var _converse = this.__super__._converse;
-
+            logOut: function () {
+                const { _converse } = this.__super__;
                 _converse.chatboxviews.closeAllChatBoxes();
                 return this.__super__.logOut.apply(this, arguments);
             },
 
-            initStatus: function initStatus() {
-                var _converse = this.__super__._converse;
-
+            initStatus: function () {
+                const { _converse } = this.__super__;
                 _converse.chatboxviews.closeAllChatBoxes();
                 return this.__super__.initStatus.apply(this, arguments);
             },
 
-            onStatusInitialized: function onStatusInitialized() {
-                var _converse = this.__super__._converse;
-
+            onStatusInitialized: function () {
+                const { _converse } = this.__super__;
                 _converse.chatboxes.onConnected();
                 return this.__super__.onStatusInitialized.apply(this, arguments);
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
-
-            _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized']);
+            _converse.api.promises.add([
+                'chatBoxesFetched',
+                'chatBoxesInitialized'
+            ]);
 
             _converse.ChatBoxes = Backbone.Collection.extend({
                 comparator: 'time_opened',
 
-                model: function model(attrs, options) {
+                model (attrs, options) {
                     return new _converse.ChatBox(attrs, options);
                 },
-                registerMessageHandler: function registerMessageHandler() {
-                    _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                    _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
+
+                registerMessageHandler () {
+                    _converse.connection.addHandler(
+                        this.onMessage.bind(this), null, 'message', 'chat'
+                    );
+                    _converse.connection.addHandler(
+                        this.onErrorMessage.bind(this), null, 'message', 'error'
+                    );
                 },
-                chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+
+                chatBoxMayBeShown (chatbox) {
                     return true;
                 },
-                onChatBoxesFetched: function onChatBoxesFetched(collection) {
-                    var _this = this;
 
+                onChatBoxesFetched (collection) {
                     /* Show chat boxes upon receiving them from sessionStorage
                     *
                     * This method gets overridden entirely in src/converse-controlbox.js
                     * if the controlbox plugin is active.
                     */
-                    collection.each(function (chatbox) {
-                        if (_this.chatBoxMayBeShown(chatbox)) {
+                    collection.each((chatbox) => {
+                        if (this.chatBoxMayBeShown(chatbox)) {
                             chatbox.trigger('show');
                         }
                     });
                     _converse.emit('chatBoxesFetched');
                 },
-                onConnected: function onConnected() {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-" + _converse.bare_jid));
+
+                onConnected () {
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
                     this.registerMessageHandler();
                     this.fetch({
                         add: true,
                         success: this.onChatBoxesFetched.bind(this)
                     });
                 },
-                onErrorMessage: function onErrorMessage(message) {
+
+                onErrorMessage (message) {
                     /* Handler method for all incoming error message stanzas
                     */
                     // TODO: we can likely just reuse "onMessage" below
-                    var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
                     if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
                         return true;
                     }
                     // Get chat box, but only create a new one when the message has a body.
-                    var chatbox = this.getChatBox(from_jid);
+                    const chatbox = this.getChatBox(from_jid);
                     if (!chatbox) {
                         return true;
                     }
                     chatbox.createMessage(message, null, message);
                     return true;
                 },
-                onMessage: function onMessage(message) {
+
+                onMessage (message) {
                     /* Handler method for all incoming single-user chat "message"
                     * stanzas.
                     */
-                    var contact_jid = void 0,
-                        delay = void 0,
-                        resource = void 0,
+                    let contact_jid, delay, resource,
                         from_jid = message.getAttribute('from'),
                         to_jid = message.getAttribute('to');
 
-                    var original_stanza = message,
+                    const original_stanza = message,
                         to_resource = Strophe.getResourceFromJid(to_jid),
-                        is_carbon = !_.isNull(message.querySelector("received[xmlns=\"" + Strophe.NS.CARBONS + "\"]"));
+                        is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
-                    if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
-                        _converse.log("onMessage: Ignoring incoming message intended for a different resource: " + to_jid, Strophe.LogLevel.INFO);
+                    if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+                        _converse.log(
+                            `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
+                            Strophe.LogLevel.INFO
+                        );
                         return true;
                     } else if (utils.isHeadlineMessage(message)) {
                         // XXX: Ideally we wouldn't have to check for headline
                         // messages, but Prosody sends headline messages with the
                         // wrong type ('chat'), so we need to filter them out here.
-                        _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: " + from_jid, Strophe.LogLevel.INFO);
+                        _converse.log(
+                            `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
+                            Strophe.LogLevel.INFO
+                        );
                         return true;
                     }
-                    var forwarded = message.querySelector('forwarded');
+                    const forwarded = message.querySelector('forwarded');
                     if (!_.isNull(forwarded)) {
-                        var forwarded_message = forwarded.querySelector('message');
-                        var forwarded_from = forwarded_message.getAttribute('from');
+                        const forwarded_message = forwarded.querySelector('message');
+                        const forwarded_from = forwarded_message.getAttribute('from');
                         if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                             // Prevent message forging via carbons
                             //
@@ -49975,7 +50163,7 @@ return Backbone.BrowserStorage;
                         to_jid = message.getAttribute('to');
                     }
 
-                    var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+                    const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                         from_resource = Strophe.getResourceFromJid(from_jid),
                         is_me = from_bare_jid === _converse.bare_jid;
 
@@ -49988,11 +50176,11 @@ return Backbone.BrowserStorage;
                         resource = from_resource;
                     }
                     // Get chat box, but only create a new one when the message has a body.
-                    var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
+                    const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
                         msgid = message.getAttribute('id');
 
                     if (chatbox) {
-                        var messages = msgid && chatbox.messages.findWhere({ msgid: msgid }) || [];
+                        const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
                         if (_.isEmpty(messages)) {
                             // Only create the message when we're sure it's not a
                             // duplicate
@@ -50000,10 +50188,11 @@ return Backbone.BrowserStorage;
                             chatbox.createMessage(message, delay, original_stanza);
                         }
                     }
-                    _converse.emit('message', { 'stanza': original_stanza, 'chatbox': chatbox });
+                    _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
                     return true;
                 },
-                createChatBox: function createChatBox(jid, attrs) {
+
+                createChatBox (jid, attrs) {
                     /* Creates a chat box
                     *
                     * Parameters:
@@ -50011,31 +50200,34 @@ return Backbone.BrowserStorage;
                     *      gets created.
                     *    (Object) attrs - Optional chat box atributes.
                     */
-                    var bare_jid = Strophe.getBareJidFromJid(jid),
+                    const bare_jid = Strophe.getBareJidFromJid(jid),
                         roster_item = _converse.roster.get(bare_jid);
-                    var roster_info = {};
+                    let roster_info = {};
 
-                    if (!_.isUndefined(roster_item)) {
+                    if (! _.isUndefined(roster_item)) {
                         roster_info = {
-                            'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
                             'image_type': roster_item.get('image_type'),
                             'image': roster_item.get('image'),
-                            'url': roster_item.get('url')
+                            'url': roster_item.get('url'),
                         };
                     } else if (!_converse.allow_non_roster_messaging) {
-                        _converse.log("Could not get roster item for JID " + bare_jid + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
+                        _converse.log(`Could not get roster item for JID ${bare_jid}`+
+                            ' and allow_non_roster_messaging is set to false',
+                            Strophe.LogLevel.ERROR);
                         return;
                     }
                     return this.create(_.assignIn({
-                        'id': bare_jid,
-                        'jid': bare_jid,
-                        'fullname': jid,
-                        'image_type': _converse.DEFAULT_IMAGE_TYPE,
-                        'image': _converse.DEFAULT_IMAGE,
-                        'url': ''
-                    }, roster_info, attrs || {}));
+                            'id': bare_jid,
+                            'jid': bare_jid,
+                            'fullname': jid,
+                            'image_type': _converse.DEFAULT_IMAGE_TYPE,
+                            'image': _converse.DEFAULT_IMAGE,
+                            'url': '',
+                        }, roster_info, attrs || {}));
                 },
-                getChatBox: function getChatBox(jid, create, attrs) {
+
+                getChatBox (jid, create, attrs) {
                     /* Returns a chat box or optionally return a newly
                     * created one if one doesn't exist.
                     *
@@ -50045,7 +50237,7 @@ return Backbone.BrowserStorage;
                     *    (Object) attrs - Optional chat box atributes.
                     */
                     jid = jid.toLowerCase();
-                    var chatbox = this.get(Strophe.getBareJidFromJid(jid));
+                    let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                     if (!chatbox && create) {
                         chatbox = this.createChatBox(jid, attrs);
                     }
@@ -50054,16 +50246,18 @@ return Backbone.BrowserStorage;
             });
 
             _converse.ChatBoxViews = Backbone.Overview.extend({
-                initialize: function initialize() {
+
+                initialize () {
                     this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
                 },
-                _ensureElement: function _ensureElement() {
+
+                _ensureElement () {
                     /* Override method from backbone.js
                     * If the #conversejs element doesn't exist, create it.
                     */
                     if (!this.el) {
-                        var el = document.querySelector('#conversejs');
+                        let el = document.querySelector('#conversejs');
                         if (_.isNull(el)) {
                             el = document.createElement('div');
                             el.setAttribute('id', 'conversejs');
@@ -50076,43 +50270,47 @@ return Backbone.BrowserStorage;
                         this.setElement(_.result(this, 'el'), false);
                     }
                 },
-                onChatBoxAdded: function onChatBoxAdded(item) {
+
+                onChatBoxAdded (item) {
                     // Views aren't created here, since the core code doesn't
                     // contain any views. Instead, they're created in overrides in
                     // plugins, such as in converse-chatview.js and converse-muc.js
                     return this.get(item.get('id'));
                 },
-                removeChat: function removeChat(item) {
+
+                removeChat (item) {
                     this.remove(item.get('id'));
                 },
-                closeAllChatBoxes: function closeAllChatBoxes() {
+
+                closeAllChatBoxes () {
                     /* This method gets overridden in src/converse-controlbox.js if
                     * the controlbox plugin is active.
                     */
-                    this.each(function (view) {
-                        view.close();
-                    });
+                    this.each(function (view) { view.close(); });
                     return this;
                 },
-                chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
+
+                chatBoxMayBeShown (chatbox) {
                     return this.model.chatBoxMayBeShown(chatbox);
                 },
-                getChatBox: function getChatBox(attrs, create) {
-                    var chatbox = this.model.get(attrs.jid);
+
+                getChatBox (attrs, create) {
+                    let chatbox  = this.model.get(attrs.jid);
                     if (!chatbox && create) {
                         chatbox = this.model.create(attrs, {
-                            'error': function error(model, response) {
+                            'error' (model, response) {
                                 _converse.log(response.responseText);
                             }
                         });
                     }
                     return chatbox;
                 },
-                showChat: function showChat(attrs) {
+
+                showChat (attrs) {
                     /* Find the chat box and show it (if it may be shown).
                     * If it doesn't exist, create it.
                     */
-                    var chatbox = this.getChatBox(attrs, true);
+                    const chatbox = this.getChatBox(attrs, true);
                     if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show', true);
                     }
@@ -50121,7 +50319,7 @@ return Backbone.BrowserStorage;
             });
 
             // BEGIN: Event handlers
-            _converse.api.listen.on('pluginsInitialized', function () {
+            _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
                 _converse.chatboxviews = new _converse.ChatBoxViews({
                     'model': _converse.chatboxes
@@ -50129,36 +50327,38 @@ return Backbone.BrowserStorage;
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('beforeTearDown', function () {
+            _converse.api.listen.on('beforeTearDown', () => {
                 _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
                 delete _converse.chatboxes.browserStorage;
             });
             // END: Event handlers
 
             _converse.getViewForChatBox = function (chatbox) {
-                if (!chatbox) {
-                    return;
-                }
+                if (!chatbox) { return; }
                 return _converse.chatboxviews.get(chatbox.get('id'));
             };
 
             /* We extend the default converse.js API */
             _.extend(_converse.api, {
                 'chats': {
-                    'open': function open(jids, attrs) {
+                    'open' (jids, attrs) {
                         if (_.isUndefined(jids)) {
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids, true, attrs).trigger('show'));
+                            return _converse.getViewForChatBox(
+                                _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
+                            );
                         }
-                        return _.map(jids, function (jid) {
-                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
-                        });
+                        return _.map(jids, (jid) =>
+                            _converse.getViewForChatBox(
+                                _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
+                            )
+                        );
                     },
-                    'get': function get(jids) {
+                    'get' (jids) {
                         if (_.isUndefined(jids)) {
-                            var result = [];
+                            const result = [];
                             _converse.chatboxes.each(function (chatbox) {
                                 // FIXME: Leaky abstraction from MUC. We need to add a
                                 // base type for chat boxes, and check for that.
@@ -50170,15 +50370,22 @@ return Backbone.BrowserStorage;
                         } else if (_.isString(jids)) {
                             return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
                         }
-                        return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
+                        return _.map(jids,
+                            _.partial(
+                                _.flow(
+                                    _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
+                                    _converse.getViewForChatBox.bind(_converse)
+                                ), _, true
+                            )
+                        );
                     }
                 }
             });
         }
     });
     return converse;
-});
-//# sourceMappingURL=converse-chatboxes.js.map;
+}));
+
 /* jshint maxerr: 10000 */
 /* jslint unused: true */
 /* jshint shadow: true */
@@ -52768,8 +52975,6 @@ __p += '<span class="spinner centered"/>\n';
 return __p
 };});
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -52779,21 +52984,42 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-chatview',["jquery.noconflict", "converse-core", "converse-chatboxes", "emojione", "xss", "tpl!chatbox", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!avatar", "tpl!spinner"], factory);
-})(undefined, function ($, converse, dummy, emojione, xss, tpl_chatbox, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_avatar, tpl_spinner) {
+    define('converse-chatview',[
+            "jquery.noconflict",
+            "converse-core",
+            "converse-chatboxes",
+            "emojione",
+            "xss",
+            "tpl!chatbox",
+            "tpl!new_day",
+            "tpl!action",
+            "tpl!emojis",
+            "tpl!message",
+            "tpl!help_message",
+            "tpl!toolbar",
+            "tpl!avatar",
+            "tpl!spinner"
+    ], factory);
+}(this, function (
+            $,
+            converse,
+            dummy,
+            emojione,
+            xss,
+            tpl_chatbox,
+            tpl_new_day,
+            tpl_action,
+            tpl_emojis,
+            tpl_message,
+            tpl_help_message,
+            tpl_toolbar,
+            tpl_avatar,
+            tpl_spinner
+    ) {
     "use strict";
+    const { $msg, Backbone, Strophe, _, b64_sha1, moment, utils } = converse.env;
 
-    var _converse$env = converse.env,
-        $msg = _converse$env.$msg,
-        Backbone = _converse$env.Backbone,
-        Strophe = _converse$env.Strophe,
-        _ = _converse$env._,
-        b64_sha1 = _converse$env.b64_sha1,
-        moment = _converse$env.moment,
-        utils = _converse$env.utils;
-
-
-    var KEY = {
+    const KEY = {
         ENTER: 13,
         FORWARD_SLASH: 47
     };
@@ -52807,23 +53033,27 @@ return __p
             //
             // New functions which don't exist yet can also be added.
             //
-            registerGlobalEventHandlers: function registerGlobalEventHandlers() {
+            registerGlobalEventHandlers: function () {
                 this.__super__.registerGlobalEventHandlers();
-                document.addEventListener('click', function (ev) {
-                    if (_.includes(ev.target.classList, 'toggle-toolbar-menu') || _.includes(ev.target.classList, 'insert-emoji')) {
-                        return;
+                document.addEventListener(
+                    'click', function (ev) {
+                        if (_.includes(ev.target.classList, 'toggle-toolbar-menu') ||
+                            _.includes(ev.target.classList, 'insert-emoji')) {
+                            return;
+                        }
+                        utils.slideInAllElements(
+                            document.querySelectorAll('.toolbar-menu')
+                        )
                     }
-                    utils.slideInAllElements(document.querySelectorAll('.toolbar-menu'));
-                });
+                );
             },
 
             ChatBoxViews: {
-                onChatBoxAdded: function onChatBoxAdded(item) {
-                    var _converse = this.__super__._converse;
-
-                    var view = this.get(item.get('id'));
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
+                    let view = this.get(item.get('id'));
                     if (!view) {
-                        view = new _converse.ChatBoxView({ model: item });
+                        view = new _converse.ChatBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
                     } else {
@@ -52833,13 +53063,12 @@ return __p
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
-
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.settings.update({
                 'use_emojione': true,
@@ -52852,26 +53081,26 @@ return __p
                     'emoji': true,
                     'call': false,
                     'clear': true
-                }
+                },
             });
             emojione.imagePathPNG = _converse.emojione_image_path;
             emojione.ascii = true;
 
-            function onWindowStateChanged(data) {
+            function onWindowStateChanged (data) {
                 _converse.chatboxviews.each(function (chatboxview) {
                     chatboxview.onWindowStateChanged(data.state);
                 });
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
-            _converse.EmojiPicker = Backbone.Model.extend({
+            _converse.EmojiPicker = Backbone.Model.extend({ 
                 defaults: {
                     'current_category': 'people',
                     'current_skintone': '',
                     'scroll_position': 0
                 },
-                initialize: function initialize() {
-                    var id = "converse.emoji-" + _converse.bare_jid;
+                initialize () {
+                    const id = `converse.emoji-${_converse.bare_jid}`;
                     this.id = id;
                     this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 }
@@ -52884,29 +53113,32 @@ return __p
                     'click .emoji-skintone-picker li.emoji-skintone': 'chooseSkinTone'
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on('change:current_skintone', this.render, this);
                     this.model.on('change:current_category', this.render, this);
                     this.setScrollPosition = _.debounce(this.setScrollPosition, 50);
                 },
-                render: function render() {
-                    var _this = this;
 
-                    var emojis_html = tpl_emojis(_.extend(this.model.toJSON(), {
-                        'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                        'emojis_by_category': utils.getEmojisByCategory(_converse, emojione),
-                        'toned_emojis': utils.getTonedEmojis(_converse),
-                        'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
-                        'shouldBeHidden': this.shouldBeHidden
-                    }));
+                render () {
+                    var emojis_html = tpl_emojis(
+                        _.extend(
+                            this.model.toJSON(), {
+                                'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
+                                'emojis_by_category': utils.getEmojisByCategory(_converse, emojione),
+                                'toned_emojis': utils.getTonedEmojis(_converse),
+                                'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
+                                'shouldBeHidden': this.shouldBeHidden
+                            }
+                        ));
                     this.el.innerHTML = emojis_html;
-                    _.forEach(this.el.querySelectorAll('.emoji-picker'), function (el) {
-                        el.addEventListener('scroll', _this.setScrollPosition.bind(_this));
+                    _.forEach(this.el.querySelectorAll('.emoji-picker'), (el) => {
+                        el.addEventListener('scroll', this.setScrollPosition.bind(this));
                     });
                     this.restoreScrollPosition();
                     return this;
                 },
-                shouldBeHidden: function shouldBeHidden(shortname, current_skintone, toned_emojis) {
+
+                shouldBeHidden (shortname, current_skintone, toned_emojis) {
                     /* Helper method for the template which decides whether an
                      * emoji should be hidden, based on which skin tone is
                      * currently being applied.
@@ -52922,31 +53154,40 @@ return __p
                     }
                     return false;
                 },
-                restoreScrollPosition: function restoreScrollPosition() {
-                    var current_picker = _.difference(this.el.querySelectorAll('.emoji-picker'), this.el.querySelectorAll('.emoji-picker.hidden'));
+
+                restoreScrollPosition () {
+                    const current_picker = _.difference(
+                        this.el.querySelectorAll('.emoji-picker'),
+                        this.el.querySelectorAll('.emoji-picker.hidden')
+                    );
                     if (current_picker.length === 1 && this.model.get('scroll_position')) {
                         current_picker[0].scrollTop = this.model.get('scroll_position');
                     }
                 },
-                setScrollPosition: function setScrollPosition(ev) {
+
+                setScrollPosition (ev) {
                     this.model.save('scroll_position', ev.target.scrollTop);
                 },
-                chooseSkinTone: function chooseSkinTone(ev) {
+
+                chooseSkinTone (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                    var skintone = target.getAttribute("data-skintone").trim();
+                    const target = ev.target.nodeName === 'IMG' ?
+                        ev.target.parentElement : ev.target;
+                    const skintone = target.getAttribute("data-skintone").trim();
                     if (this.model.get('current_skintone') === skintone) {
-                        this.model.save({ 'current_skintone': '' });
+                        this.model.save({'current_skintone': ''});
                     } else {
-                        this.model.save({ 'current_skintone': skintone });
+                        this.model.save({'current_skintone': skintone});
                     }
                 },
-                chooseCategory: function chooseCategory(ev) {
+
+                chooseCategory (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
-                    var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-                    var category = target.getAttribute("data-category").trim();
+                    const target = ev.target.nodeName === 'IMG' ?
+                        ev.target.parentElement : ev.target;
+                    const category = target.getAttribute("data-category").trim();
                     this.model.save({
                         'current_category': category,
                         'scroll_position': 0
@@ -52958,7 +53199,7 @@ return __p
                 length: 200,
                 tagName: 'div',
                 className: 'chatbox hidden',
-                is_chatroom: false, // Leaky abstraction from MUC
+                is_chatroom: false,  // Leaky abstraction from MUC
 
                 events: {
                     'click .close-chatbox-button': 'close',
@@ -52971,7 +53212,7 @@ return __p
                     'click .new-msgs-indicator': 'viewUnreadMessages'
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.markScrolled = _.debounce(this.markScrolled, 100);
 
                     this.createEmojiPicker();
@@ -52988,24 +53229,31 @@ return __p
                     this.render().fetchMessages();
                     _converse.emit('chatBoxInitialized', this);
                 },
-                render: function render() {
-                    this.$el.attr('id', this.model.get('box_id')).html(tpl_chatbox(_.extend(this.model.toJSON(), {
-                        show_toolbar: _converse.show_toolbar,
-                        show_textarea: true,
-                        show_send_button: _converse.show_send_button,
-                        title: this.model.get('fullname'),
-                        unread_msgs: __('You have unread messages'),
-                        info_close: __('Close this chat box'),
-                        label_personal_message: __('Personal message'),
-                        label_send: __('Send')
-                    })));
+
+                render () {
+                    this.$el.attr('id', this.model.get('box_id'))
+                        .html(tpl_chatbox(
+                                _.extend(this.model.toJSON(), {
+                                        show_toolbar: _converse.show_toolbar,
+                                        show_textarea: true,
+                                        show_send_button: _converse.show_send_button,
+                                        title: this.model.get('fullname'),
+                                        unread_msgs: __('You have unread messages'),
+                                        info_close: __('Close this chat box'),
+                                        label_personal_message: __('Personal message'),
+                                        label_send: __('Send')
+                                    }
+                                )
+                            )
+                        );
                     this.$content = this.$el.find('.chat-content');
                     this.renderToolbar().renderAvatar();
                     _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this.showStatusMessage();
                 },
-                createEmojiPicker: function createEmojiPicker() {
+
+                createEmojiPicker () {
                     if (_.isUndefined(_converse.emojipicker)) {
                         _converse.emojipicker = new _converse.EmojiPicker();
                         _converse.emojipicker.fetch();
@@ -53014,7 +53262,8 @@ return __p
                         'model': _converse.emojipicker
                     });
                 },
-                afterMessagesFetched: function afterMessagesFetched() {
+
+                afterMessagesFetched () {
                     this.insertIntoDOM();
                     this.scrollDown();
                     // We only start listening for the scroll event after
@@ -53022,50 +53271,57 @@ return __p
                     this.$content.on('scroll', this.markScrolled.bind(this));
                     _converse.emit('afterMessagesFetched', this);
                 },
-                fetchMessages: function fetchMessages() {
+
+                fetchMessages () {
                     this.model.messages.fetch({
                         'add': true,
                         'success': this.afterMessagesFetched.bind(this),
-                        'error': this.afterMessagesFetched.bind(this)
+                        'error': this.afterMessagesFetched.bind(this),
                     });
                     return this;
                 },
-                insertIntoDOM: function insertIntoDOM() {
+
+                insertIntoDOM () {
                     /* This method gets overridden in src/converse-controlbox.js
                      * as well as src/converse-muc.js (if those plugins are
                      * enabled).
                      */
-                    var container = document.querySelector('#conversejs');
+                    const container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
                         container.insertBefore(this.el, container.firstChild);
                     }
                     return this;
                 },
-                clearStatusNotification: function clearStatusNotification() {
+
+                clearStatusNotification () {
                     this.$content.find('div.chat-event').remove();
                 },
-                showStatusNotification: function showStatusNotification(message, keep_old, permanent) {
+
+                showStatusNotification (message, keep_old, permanent) {
                     if (!keep_old) {
                         this.clearStatusNotification();
                     }
-                    var $el = $('<div class="chat-info"></div>').text(message);
+                    const $el = $('<div class="chat-info"></div>').text(message);
                     if (!permanent) {
                         $el.addClass('chat-event');
                     }
                     this.$content.append($el);
                     this.scrollDown();
                 },
-                addSpinner: function addSpinner() {
+
+                addSpinner () {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
                         this.$content.prepend(tpl_spinner);
                     }
                 },
-                clearSpinner: function clearSpinner() {
+
+                clearSpinner () {
                     if (this.$content.children(':first').is('span.spinner')) {
                         this.$content.children(':first').remove();
                     }
                 },
-                insertDayIndicator: function insertDayIndicator(date, prepend) {
+
+                insertDayIndicator (date, prepend) {
                     /* Appends (or prepends if "prepend" is truthy) an indicator
                      * into the chat area, showing the day as given by the
                      * passed in date.
@@ -53073,16 +53329,15 @@ return __p
                      * Parameters:
                      *  (String) date - An ISO8601 date string.
                      */
-                    var day_date = moment(date).startOf('day');
-                    var insert = prepend ? this.$content.prepend : this.$content.append;
+                    const day_date = moment(date).startOf('day');
+                    const insert = prepend ? this.$content.prepend: this.$content.append;
                     insert.call(this.$content, tpl_new_day({
                         isodate: day_date.format(),
                         datestring: day_date.format("dddd MMM Do YYYY")
                     }));
                 },
-                insertMessage: function insertMessage(attrs, prepend) {
-                    var _this2 = this;
 
+                insertMessage (attrs, prepend) {
                     /* Helper method which appends a message (or prepends if the
                      * 2nd parameter is set to true) to the end of the chat box's
                      * content area.
@@ -53090,13 +53345,16 @@ return __p
                      * Parameters:
                      *  (Object) attrs: An object containing the message attributes.
                      */
-                    var insert = prepend ? this.$content.prepend : this.$content.append;
-                    _.flow(function ($el) {
-                        insert.call(_this2.$content, $el);
-                        return $el;
-                    }, this.scrollDown.bind(this))(this.renderMessage(attrs));
+                    const insert = prepend ? this.$content.prepend : this.$content.append;
+                    _.flow(($el) => {
+                            insert.call(this.$content, $el);
+                            return $el;
+                        },
+                        this.scrollDown.bind(this)
+                    )(this.renderMessage(attrs));
                 },
-                showMessage: function showMessage(attrs) {
+
+                showMessage (attrs) {
                     /* Inserts a chat message into the content area of the chat box.
                      * Will also insert a new day indicator if the message is on a
                      * different day.
@@ -53108,9 +53366,9 @@ return __p
                      *  (Object) attrs: An object containing the message
                      *      attributes.
                      */
-                    var current_msg_date = moment(attrs.time) || moment;
-                    var $first_msg = this.$content.find('.chat-message:first'),
-                        first_msg_date = $first_msg.data('isodate');
+                    let current_msg_date = moment(attrs.time) || moment;
+                    const $first_msg = this.$content.find('.chat-message:first'),
+                          first_msg_date = $first_msg.data('isodate');
 
                     if (!first_msg_date) {
                         // This is the first received message, so we insert a
@@ -53120,8 +53378,9 @@ return __p
                         return;
                     }
 
-                    var last_msg_date = this.$content.find('.chat-message:last').data('isodate');
-                    if (current_msg_date.isAfter(last_msg_date) || current_msg_date.isSame(last_msg_date)) {
+                    const last_msg_date = this.$content.find('.chat-message:last').data('isodate');
+                    if (current_msg_date.isAfter(last_msg_date) ||
+                            current_msg_date.isSame(last_msg_date)) {
                         // The new message is after the last message
                         if (current_msg_date.isAfter(last_msg_date, 'day')) {
                             // Append a new day indicator
@@ -53130,7 +53389,8 @@ return __p
                         this.insertMessage(attrs);
                         return;
                     }
-                    if (current_msg_date.isBefore(first_msg_date) || current_msg_date.isSame(first_msg_date)) {
+                    if (current_msg_date.isBefore(first_msg_date) ||
+                            current_msg_date.isSame(first_msg_date)) {
                         // The message is before the first, but on the same day.
                         // We need to prepend the message immediately before the
                         // first message (so that it'll still be after the day
@@ -53145,20 +53405,24 @@ return __p
                     }
                     // Find the correct place to position the message
                     current_msg_date = current_msg_date.format();
-                    var msg_dates = _.map(this.$content.find('.chat-message'), function (el) {
-                        return $(el).data('isodate');
-                    });
+                    const msg_dates = _.map(
+                        this.$content.find('.chat-message'),
+                        (el) => $(el).data('isodate')
+                    );
                     msg_dates.push(current_msg_date);
                     msg_dates.sort();
 
-                    var idx = msg_dates.indexOf(current_msg_date) - 1;
-                    var $latest_message = this.$content.find(".chat-message[data-isodate=\"" + msg_dates[idx] + "\"]:last");
-                    _.flow(function ($el) {
-                        $el.insertAfter($latest_message);
-                        return $el;
-                    }, this.scrollDown.bind(this))(this.renderMessage(attrs));
+                    const idx = msg_dates.indexOf(current_msg_date)-1;
+                    const $latest_message = this.$content.find(`.chat-message[data-isodate="${msg_dates[idx]}"]:last`);
+                    _.flow(($el) => {
+                            $el.insertAfter($latest_message);
+                            return $el;
+                        },
+                        this.scrollDown.bind(this)
+                    )(this.renderMessage(attrs));
                 },
-                getExtraMessageTemplateAttributes: function getExtraMessageTemplateAttributes() {
+
+                getExtraMessageTemplateAttributes () {
                     /* Provides a hook for sending more attributes to the
                      * message template.
                      *
@@ -53167,10 +53431,12 @@ return __p
                      */
                     return {};
                 },
-                getExtraMessageClasses: function getExtraMessageClasses(attrs) {
+
+                getExtraMessageClasses (attrs) {
                     return attrs.delayed && 'delayed' || '';
                 },
-                renderMessage: function renderMessage(attrs) {
+
+                renderMessage (attrs) {
                     /* Renders a chat message based on the passed in attributes.
                      *
                      * Parameters:
@@ -53179,22 +53445,21 @@ return __p
                      *  Returns:
                      *      The DOM element representing the message.
                      */
-                    var text = attrs.message,
+                    let text = attrs.message,
                         fullname = this.model.get('fullname') || attrs.fullname,
-                        template = void 0,
-                        username = void 0;
+                        template, username;
 
-                    var match = text.match(/^\/(.*?)(?: (.*))?$/);
-                    if (match && match[1] === 'me') {
+                    const match = text.match(/^\/(.*?)(?: (.*))?$/);
+                    if ((match) && (match[1] === 'me')) {
                         text = text.replace(/^\/me/, '');
                         template = tpl_action;
                         if (attrs.sender === 'me') {
                             fullname = _converse.xmppstatus.get('fullname') || attrs.fullname;
-                            username = _.isNil(fullname) ? _converse.bare_jid : fullname;
+                            username = _.isNil(fullname)? _converse.bare_jid: fullname;
                         } else {
                             username = attrs.fullname;
                         }
-                    } else {
+                    } else  {
                         template = tpl_message;
                         username = attrs.sender === 'me' && __('me') || fullname;
                     }
@@ -53202,28 +53467,35 @@ return __p
 
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
-                        this.showStatusNotification(__("A very large message has been received." + "This might be due to an attack meant to degrade the chat performance." + "Output has been shortened."), true, true);
+                        this.showStatusNotification(
+                            __("A very large message has been received."+
+                               "This might be due to an attack meant to degrade the chat performance."+
+                               "Output has been shortened."),
+                            true, true);
                     }
-                    var msg_time = moment(attrs.time) || moment;
-                    var $msg = $(template(_.extend(this.getExtraMessageTemplateAttributes(attrs), {
-                        'msgid': attrs.msgid,
-                        'sender': attrs.sender,
-                        'time': msg_time.format(_converse.time_format),
-                        'isodate': msg_time.format(),
-                        'username': username,
-                        'extra_classes': this.getExtraMessageClasses(attrs)
-                    })));
-                    var msg_content = $msg[0].querySelector('.chat-msg-content');
-                    msg_content.innerHTML = utils.addEmoji(_converse, emojione, utils.addHyperlinks(xss.filterXSS(text, { 'whiteList': {} })));
+                    const msg_time = moment(attrs.time) || moment;
+                    const $msg = $(template(
+                        _.extend(this.getExtraMessageTemplateAttributes(attrs), {
+                            'msgid': attrs.msgid,
+                            'sender': attrs.sender,
+                            'time': msg_time.format(_converse.time_format),
+                            'isodate': msg_time.format(),
+                            'username': username,
+                            'extra_classes': this.getExtraMessageClasses(attrs)
+                        })
+                    ));
+                    const msg_content = $msg[0].querySelector('.chat-msg-content');
+                    msg_content.innerHTML = utils.addEmoji(
+                        _converse, emojione, utils.addHyperlinks(xss.filterXSS(text, {'whiteList': {}}))
+                    );
                     utils.renderImageURLs(msg_content);
                     return $msg;
                 },
-                showHelpMessages: function showHelpMessages(msgs, type, spinner) {
-                    var _this3 = this;
 
-                    _.each(msgs, function (msg) {
-                        _this3.$content.append($(tpl_help_message({
-                            'type': type || 'info',
+                showHelpMessages (msgs, type, spinner) {
+                    _.each(msgs, (msg) => {
+                        this.$content.append($(tpl_help_message({
+                            'type': type||'info',
                             'message': msgs
                         })));
                     });
@@ -53234,30 +53506,33 @@ return __p
                     }
                     return this.scrollDown();
                 },
-                handleChatStateMessage: function handleChatStateMessage(message) {
+
+                handleChatStateMessage (message) {
                     if (message.get('chat_state') === _converse.COMPOSING) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Typing from another device'));
                         } else {
-                            this.showStatusNotification(message.get('fullname') + ' ' + __('is typing'));
+                            this.showStatusNotification(message.get('fullname')+' '+__('is typing'));
                         }
                         this.clear_status_timeout = window.setTimeout(this.clearStatusNotification.bind(this), 30000);
                     } else if (message.get('chat_state') === _converse.PAUSED) {
                         if (message.get('sender') === 'me') {
                             this.showStatusNotification(__('Stopped typing on the other device'));
                         } else {
-                            this.showStatusNotification(message.get('fullname') + ' ' + __('has stopped typing'));
+                            this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
                         }
                     } else if (_.includes([_converse.INACTIVE, _converse.ACTIVE], message.get('chat_state'))) {
                         this.$content.find('div.chat-event').remove();
                     } else if (message.get('chat_state') === _converse.GONE) {
-                        this.showStatusNotification(message.get('fullname') + ' ' + __('has gone away'));
+                        this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
                     }
                 },
-                shouldShowOnTextMessage: function shouldShowOnTextMessage() {
+
+                shouldShowOnTextMessage () {
                     return !this.$el.is(':visible');
                 },
-                handleTextMessage: function handleTextMessage(message) {
+
+                handleTextMessage (message) {
                     this.showMessage(_.clone(message.attributes));
                     if (utils.isNewMessage(message) && message.get('sender') === 'me') {
                         // We remove the "scrolled" flag so that the chat area
@@ -53276,14 +53551,16 @@ return __p
                         this.scrollDown();
                     }
                 },
-                handleErrorMessage: function handleErrorMessage(message) {
-                    var $message = $("[data-msgid=" + message.get('msgid') + "]");
+
+                handleErrorMessage (message) {
+                    const $message = $(`[data-msgid=${message.get('msgid')}]`);
                     if ($message.length) {
                         $message.after($('<div class="chat-info chat-error"></div>').text(message.get('message')));
                         this.scrollDown();
                     }
                 },
-                onMessageAdded: function onMessageAdded(message) {
+
+                onMessageAdded (message) {
                     /* Handler that gets called when a new message object is created.
                      *
                      * Parameters:
@@ -53305,15 +53582,18 @@ return __p
                         'chatbox': this.model
                     });
                 },
-                createMessageStanza: function createMessageStanza(message) {
+
+                createMessageStanza (message) {
                     return $msg({
-                        from: _converse.connection.jid,
-                        to: this.model.get('jid'),
-                        type: 'chat',
-                        id: message.get('msgid')
-                    }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, { 'xmlns': Strophe.NS.CHATSTATES }).up();
+                                from: _converse.connection.jid,
+                                to: this.model.get('jid'),
+                                type: 'chat',
+                                id: message.get('msgid')
+                        }).c('body').t(message.get('message')).up()
+                            .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
                 },
-                sendMessage: function sendMessage(message) {
+
+                sendMessage (message) {
                     /* Responsible for sending off a text message.
                      *
                      *  Parameters:
@@ -53321,14 +53601,20 @@ return __p
                      */
                     // TODO: We might want to send to specfic resources.
                     // Especially in the OTR case.
-                    var messageStanza = this.createMessageStanza(message);
+                    const messageStanza = this.createMessageStanza(message);
                     _converse.connection.send(messageStanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
-                        _converse.connection.send($msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') }).c('forwarded', { xmlns: 'urn:xmpp:forward:0' }).c('delay', { xmns: 'urn:xmpp:delay', stamp: new Date().getTime() }).up().cnode(messageStanza.tree()));
+                        _converse.connection.send(
+                            $msg({ to: _converse.bare_jid, type: 'chat', id: message.get('msgid') })
+                            .c('forwarded', {xmlns:'urn:xmpp:forward:0'})
+                            .c('delay', {xmns:'urn:xmpp:delay',stamp:(new Date()).getTime()}).up()
+                            .cnode(messageStanza.tree())
+                        );
                     }
                 },
-                onMessageSubmitted: function onMessageSubmitted(text) {
+
+                onMessageSubmitted (text) {
                     /* This method gets called once the user has typed a message
                      * and then pressed enter in a chat box.
                      *
@@ -53336,37 +53622,53 @@ return __p
                      *    (string) text - The chat message text.
                      */
                     if (!_converse.connection.authenticated) {
-                        return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
+                        return this.showHelpMessages(
+                            ['Sorry, the connection has been lost, '+
+                                'and your message could not be sent'],
+                            'error'
+                        );
                     }
-                    var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
                         if (match[1] === "clear") {
                             return this.clearMessages();
-                        } else if (match[1] === "help") {
-                            var msgs = ["<strong>/help</strong>:" + __('Show this menu'), "<strong>/me</strong>:" + __('Write in the third person'), "<strong>/clear</strong>:" + __('Remove messages')];
+                        }
+                        else if (match[1] === "help") {
+                            const msgs = [
+                                `<strong>/help</strong>:${__('Show this menu')}`,
+                                `<strong>/me</strong>:${__('Write in the third person')}`,
+                                `<strong>/clear</strong>:${__('Remove messages')}`
+                                ];
                             this.showHelpMessages(msgs);
                             return;
                         }
                     }
-                    var fullname = _converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname) ? _converse.bare_jid : fullname;
+                    let fullname = _converse.xmppstatus.get('fullname');
+                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
 
-                    var message = this.model.messages.create({
-                        fullname: fullname,
+                    const message = this.model.messages.create({
+                        fullname,
                         sender: 'me',
                         time: moment().format(),
                         message: text
                     });
                     this.sendMessage(message);
                 },
-                sendChatState: function sendChatState() {
+
+                sendChatState () {
                     /* Sends a message with the status of the user in this chat session
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    _converse.connection.send($msg({ 'to': this.model.get('jid'), 'type': 'chat' }).c(this.model.get('chat_state'), { 'xmlns': Strophe.NS.CHATSTATES }).up().c('no-store', { 'xmlns': Strophe.NS.HINTS }).up().c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS }));
+                    _converse.connection.send(
+                        $msg({'to':this.model.get('jid'), 'type': 'chat'})
+                            .c(this.model.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
                 },
-                setChatState: function setChatState(state, no_save) {
+
+                setChatState (state, no_save) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
                      * setting new ones if necessary.
@@ -53383,19 +53685,22 @@ return __p
                         delete this.chat_state_timeout;
                     }
                     if (state === _converse.COMPOSING) {
-                        this.chat_state_timeout = window.setTimeout(this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                        this.chat_state_timeout = window.setTimeout(
+                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
                     } else if (state === _converse.PAUSED) {
-                        this.chat_state_timeout = window.setTimeout(this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                        this.chat_state_timeout = window.setTimeout(
+                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
                     }
                     return this;
                 },
-                onFormSubmitted: function onFormSubmitted(ev) {
+
+                onFormSubmitted (ev) {
                     ev.preventDefault();
-                    var textarea = this.el.querySelector('.chat-textarea'),
-                        message = textarea.value;
+                    const textarea = this.el.querySelector('.chat-textarea'),
+                          message = textarea.value;
                     textarea.value = '';
                     textarea.focus();
                     if (message !== '') {
@@ -53404,7 +53709,8 @@ return __p
                     }
                     this.setChatState(_converse.ACTIVE);
                 },
-                keyPressed: function keyPressed(ev) {
+
+                keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
                     if (ev.keyCode === KEY.ENTER) {
@@ -53415,11 +53721,10 @@ return __p
                         this.setChatState(_converse.COMPOSING, ev.keyCode === KEY.FORWARD_SLASH);
                     }
                 },
-                clearMessages: function clearMessages(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
+
+                clearMessages (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const result = confirm(__("Are you sure you want to clear the messages from this chat box?"));
                     if (result === true) {
                         this.$content.empty();
                         this.model.messages.reset();
@@ -53427,71 +53732,87 @@ return __p
                     }
                     return this;
                 },
-                insertIntoTextArea: function insertIntoTextArea(value) {
-                    var $textbox = this.$el.find('textarea.chat-textarea');
-                    var existing = $textbox.val();
-                    if (existing && existing[existing.length - 1] !== ' ') {
+
+                insertIntoTextArea (value) {
+                    const $textbox = this.$el.find('textarea.chat-textarea');
+                    let existing = $textbox.val();
+                    if (existing && (existing[existing.length-1] !== ' ')) {
                         existing = existing + ' ';
                     }
-                    $textbox.focus().val(existing + value + ' ');
+                    $textbox.focus().val(existing+value+' ');
                 },
-                insertEmoji: function insertEmoji(ev) {
+
+                insertEmoji (ev) {
                     ev.stopPropagation();
                     this.toggleEmojiMenu();
-                    var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+                    const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                     this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
-                toggleEmojiMenu: function toggleEmojiMenu(ev) {
+
+                toggleEmojiMenu (ev) {
                     if (!_.isUndefined(ev)) {
                         ev.stopPropagation();
-                        if (ev.target.classList.contains('emoji-category-picker') || ev.target.classList.contains('emoji-skintone-picker') || ev.target.classList.contains('emoji-category')) {
+                        if (ev.target.classList.contains('emoji-category-picker') ||
+                            ev.target.classList.contains('emoji-skintone-picker') ||
+                                ev.target.classList.contains('emoji-category')) {
                             return;
                         }
                     }
-                    var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [this.emoji_picker_view.el]);
-                    utils.slideInAllElements(elements).then(_.partial(utils.slideToggleElement, this.emoji_picker_view.el));
+                    const elements = _.difference(
+                        document.querySelectorAll('.toolbar-menu'),
+                        [this.emoji_picker_view.el]
+                    );
+                    utils.slideInAllElements(elements).then(
+                        _.partial(
+                            utils.slideToggleElement,
+                            this.emoji_picker_view.el
+                        )
+                    );
                 },
-                toggleCall: function toggleCall(ev) {
+
+                toggleCall (ev) {
                     ev.stopPropagation();
                     _converse.emit('callButtonClicked', {
                         connection: _converse.connection,
                         model: this.model
                     });
                 },
-                onChatStatusChanged: function onChatStatusChanged(item) {
-                    var chat_status = item.get('chat_status');
-                    var fullname = item.get('fullname');
-                    fullname = _.isEmpty(fullname) ? item.get('jid') : fullname;
+
+                onChatStatusChanged (item) {
+                    const chat_status = item.get('chat_status');
+                    let fullname = item.get('fullname');
+                    fullname = _.isEmpty(fullname)? item.get('jid'): fullname;
                     if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
-                            this.showStatusNotification(fullname + ' ' + __('has gone offline'));
+                            this.showStatusNotification(fullname+' '+__('has gone offline'));
                         } else if (chat_status === 'away') {
-                            this.showStatusNotification(fullname + ' ' + __('has gone away'));
-                        } else if (chat_status === 'dnd') {
-                            this.showStatusNotification(fullname + ' ' + __('is busy'));
+                            this.showStatusNotification(fullname+' '+__('has gone away'));
+                        } else if ((chat_status === 'dnd')) {
+                            this.showStatusNotification(fullname+' '+__('is busy'));
                         } else if (chat_status === 'online') {
                             this.$el.find('div.chat-event').remove();
                         }
                     }
                 },
-                onStatusChanged: function onStatusChanged(item) {
+
+                onStatusChanged (item) {
                     this.showStatusMessage();
                     _converse.emit('contactStatusMessageChanged', {
                         'contact': item.attributes,
                         'message': item.get('status')
                     });
                 },
-                showStatusMessage: function showStatusMessage(msg) {
+
+                showStatusMessage (msg) {
                     msg = msg || this.model.get('status');
                     if (_.isString(msg)) {
                         this.$el.find('p.user-custom-message').text(msg).attr('title', msg);
                     }
                     return this;
                 },
-                close: function close(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+
+                close (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
@@ -53507,22 +53828,25 @@ return __p
                     _converse.emit('chatBoxClosed', this);
                     return this;
                 },
-                getToolbarOptions: function getToolbarOptions(options) {
+
+                getToolbarOptions (options) {
                     return _.extend(options || {}, {
                         'label_clear': __('Clear all messages'),
                         'label_insert_smiley': __('Insert a smiley'),
                         'label_start_call': __('Start a call'),
                         'show_call_button': _converse.visible_toolbar_buttons.call,
                         'show_clear_button': _converse.visible_toolbar_buttons.clear,
-                        'use_emoji': _converse.visible_toolbar_buttons.emoji
+                        'use_emoji': _converse.visible_toolbar_buttons.emoji,
                     });
                 },
-                renderToolbar: function renderToolbar(toolbar, options) {
-                    if (!_converse.show_toolbar) {
-                        return;
-                    }
+
+                renderToolbar (toolbar, options) {
+                    if (!_converse.show_toolbar) { return; }
                     toolbar = toolbar || tpl_toolbar;
-                    options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
+                    options = _.assign(
+                        this.model.toJSON(),
+                        this.getToolbarOptions(options || {})
+                    );
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
 
                     var toggle = this.el.querySelector('.toggle-smiley');
@@ -53530,46 +53854,51 @@ return __p
                     toggle.appendChild(this.emoji_picker_view.render().el);
                     return this;
                 },
-                renderAvatar: function renderAvatar() {
+
+                renderAvatar () {
                     if (!this.model.get('image')) {
                         return;
                     }
-                    var width = _converse.chatview_avatar_width;
-                    var height = _converse.chatview_avatar_height;
-                    var img_src = "data:" + this.model.get('image_type') + ";base64," + this.model.get('image'),
+                    const width = _converse.chatview_avatar_width;
+                    const height = _converse.chatview_avatar_height;
+                    const img_src = `data:${this.model.get('image_type')};base64,${this.model.get('image')}`,
                         canvas = $(tpl_avatar({
-                        'width': width,
-                        'height': height
-                    })).get(0);
+                            'width': width,
+                            'height': height
+                        })).get(0);
 
                     if (!(canvas.getContext && canvas.getContext('2d'))) {
                         return this;
                     }
-                    var ctx = canvas.getContext('2d');
-                    var img = new Image(); // Create new Image object
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();   // Create new Image object
                     img.onload = function () {
-                        var ratio = img.width / img.height;
+                        const ratio = img.width/img.height;
                         if (ratio < 1) {
-                            ctx.drawImage(img, 0, 0, width, height * (1 / ratio));
+                            ctx.drawImage(img, 0,0, width, height*(1/ratio));
                         } else {
-                            ctx.drawImage(img, 0, 0, width, height * ratio);
+                            ctx.drawImage(img, 0,0, width, height*ratio);
                         }
+
                     };
                     img.src = img_src;
                     this.$el.find('.chat-title').before(canvas);
                     return this;
                 },
-                focus: function focus() {
+
+                focus () {
                     this.$el.find('.chat-textarea').focus();
                     _converse.emit('chatBoxFocused', this);
                     return this;
                 },
-                hide: function hide() {
+
+                hide () {
                     this.el.classList.add('hidden');
                     utils.refreshWebkit();
                     return this;
                 },
-                afterShown: function afterShown(focus) {
+
+                afterShown (focus) {
                     if (utils.isPersistableModel(this.model)) {
                         this.model.save();
                     }
@@ -53579,45 +53908,43 @@ return __p
                         this.focus();
                     }
                 },
-                _show: function _show(focus) {
+
+                _show (focus) {
                     /* Inner show method that gets debounced */
                     if (this.$el.is(':visible') && this.$el.css('opacity') === "1") {
-                        if (focus) {
-                            this.focus();
-                        }
+                        if (focus) { this.focus(); }
                         return;
                     }
                     utils.fadeIn(this.el, _.bind(this.afterShown, this, focus));
                 },
-                show: function show(focus) {
+
+                show (focus) {
                     if (_.isUndefined(this.debouncedShow)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
                          * Debouncing it on the class-level is too broad.
                          */
-                        this.debouncedShow = _.debounce(this._show, 250, { 'leading': true });
+                        this.debouncedShow = _.debounce(this._show, 250, {'leading': true});
                     }
                     this.debouncedShow.apply(this, arguments);
                     return this;
                 },
-                hideNewMessagesIndicator: function hideNewMessagesIndicator() {
-                    var new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
+
+                hideNewMessagesIndicator () {
+                    const new_msgs_indicator = this.el.querySelector('.new-msgs-indicator');
                     if (!_.isNull(new_msgs_indicator)) {
                         new_msgs_indicator.classList.add('hidden');
                     }
                 },
 
-
-                markScrolled: function markScrolled(ev) {
+                markScrolled: function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
                      * from what the user is reading when new messages are
                      * received.
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (this.model.get('auto_scrolled')) {
                         this.model.set({
                             'scrolled': false,
@@ -53625,36 +53952,41 @@ return __p
                         });
                         return;
                     }
-                    var scrolled = true;
-                    var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight - 10;
+                    let scrolled = true;
+                    const is_at_bottom =
+                        (this.$content.scrollTop() + this.$content.innerHeight()) >=
+                            this.$content[0].scrollHeight-10;
 
                     if (is_at_bottom) {
                         scrolled = false;
                         this.onScrolledDown();
                     }
-                    utils.safeSave(this.model, { 'scrolled': scrolled });
+                    utils.safeSave(this.model, {'scrolled': scrolled});
                 },
 
-                viewUnreadMessages: function viewUnreadMessages() {
+                viewUnreadMessages () {
                     this.model.save('scrolled', false);
                     this.scrollDown();
                 },
-                _scrollDown: function _scrollDown() {
+
+                _scrollDown () {
                     /* Inner method that gets debounced */
                     if (this.$content.is(':visible') && !this.model.get('scrolled')) {
                         this.$content.scrollTop(this.$content[0].scrollHeight);
                         this.onScrolledDown();
-                        this.model.save({ 'auto_scrolled': true });
+                        this.model.save({'auto_scrolled': true});
                     }
                 },
-                onScrolledDown: function onScrolledDown() {
+
+                onScrolledDown() {
                     this.hideNewMessagesIndicator();
                     if (_converse.windowState !== 'hidden') {
                         this.model.clearUnreadMsgCounter();
                     }
-                    _converse.emit('chatBoxScrolledDown', { 'chatbox': this.model });
+                    _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
                 },
-                scrollDown: function scrollDown() {
+
+                scrollDown () {
                     if (_.isUndefined(this.debouncedScrollDown)) {
                         /* We wrap the method in a debouncer and set it on the
                          * instance, so that we have it debounced per instance.
@@ -53665,7 +53997,8 @@ return __p
                     this.debouncedScrollDown.apply(this, arguments);
                     return this;
                 },
-                onWindowStateChanged: function onWindowStateChanged(state) {
+
+                onWindowStateChanged (state) {
                     if (this.model.get('num_unread', 0) && !this.model.newMessageWillBeHidden()) {
                         this.model.clearUnreadMsgCounter();
                     }
@@ -53675,8 +54008,8 @@ return __p
     });
 
     return converse;
-});
-//# sourceMappingURL=converse-chatview.js.map;
+}));
+
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -55220,8 +55553,6 @@ __p += '\n\n\n';
 return __p
 };});
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -55231,18 +55562,27 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-rosterview',["jquery.noconflict", "converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "converse-chatboxes"], factory);
-})(undefined, function ($, converse, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item) {
+    define('converse-rosterview',["jquery.noconflict",
+            "converse-core",
+            "tpl!group_header",
+            "tpl!pending_contact",
+            "tpl!requesting_contact",
+            "tpl!roster",
+            "tpl!roster_filter",
+            "tpl!roster_item",
+            "converse-chatboxes"
+    ], factory);
+}(this, function (
+            $,
+            converse, 
+            tpl_group_header,
+            tpl_pending_contact,
+            tpl_requesting_contact,
+            tpl_roster,
+            tpl_roster_filter,
+            tpl_roster_item) {
     "use strict";
-
-    var _converse$env = converse.env,
-        Backbone = _converse$env.Backbone,
-        utils = _converse$env.utils,
-        Strophe = _converse$env.Strophe,
-        $iq = _converse$env.$iq,
-        b64_sha1 = _converse$env.b64_sha1,
-        sizzle = _converse$env.sizzle,
-        _ = _converse$env._;
+    const { Backbone, utils, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
 
     converse.plugins.add('converse-rosterview', {
@@ -55253,10 +55593,11 @@ return __p
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-            afterReconnected: function afterReconnected() {
+            afterReconnected () {
                 this.__super__.afterReconnected.apply(this, arguments);
             },
-            _tearDown: function _tearDown() {
+
+            _tearDown () {
                 /* Remove the rosterview when tearing down. It gets created
                  * anew when reconnecting or logging in.
                  */
@@ -55266,35 +55607,33 @@ return __p
                 }
             },
 
-
             RosterGroups: {
-                comparator: function comparator() {
+                comparator () {
                     // RosterGroupsComparator only gets set later (once i18n is
                     // set up), so we need to wrap it in this nameless function.
-                    var _converse = this.__super__._converse;
-
+                    const { _converse } = this.__super__;
                     return _converse.RosterGroupsComparator.apply(this, arguments);
                 }
             }
         },
 
-        initialize: function initialize() {
+
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
-
+            const { _converse } = this,
+                { __,
+                ___ } = _converse;
 
             _converse.api.settings.update({
                 allow_chat_pending_contacts: true,
                 allow_contact_removal: true,
-                show_toolbar: true
+                show_toolbar: true,
             });
             _converse.api.promises.add('rosterViewInitialized');
 
-            var STATUSES = {
+            const STATUSES = {
                 'dnd': __('This contact is busy'),
                 'online': __('This contact is online'),
                 'offline': __('This contact is offline'),
@@ -55302,17 +55641,17 @@ return __p
                 'xa': __('This contact is away for an extended period'),
                 'away': __('This contact is away')
             };
-            var LABEL_CONTACTS = __('Contacts');
-            var LABEL_GROUPS = __('Groups');
-            var HEADER_CURRENT_CONTACTS = __('My contacts');
-            var HEADER_PENDING_CONTACTS = __('Pending contacts');
-            var HEADER_REQUESTING_CONTACTS = __('Contact requests');
-            var HEADER_UNGROUPED = __('Ungrouped');
-            var HEADER_WEIGHTS = {};
+            const LABEL_CONTACTS = __('Contacts');
+            const LABEL_GROUPS = __('Groups');
+            const HEADER_CURRENT_CONTACTS =  __('My contacts');
+            const HEADER_PENDING_CONTACTS = __('Pending contacts');
+            const HEADER_REQUESTING_CONTACTS = __('Contact requests');
+            const HEADER_UNGROUPED = __('Ungrouped');
+            const HEADER_WEIGHTS = {};
             HEADER_WEIGHTS[HEADER_REQUESTING_CONTACTS] = 0;
-            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS] = 1;
-            HEADER_WEIGHTS[HEADER_UNGROUPED] = 2;
-            HEADER_WEIGHTS[HEADER_PENDING_CONTACTS] = 3;
+            HEADER_WEIGHTS[HEADER_CURRENT_CONTACTS]    = 1;
+            HEADER_WEIGHTS[HEADER_UNGROUPED]           = 2;
+            HEADER_WEIGHTS[HEADER_PENDING_CONTACTS]    = 3;
 
             _converse.RosterGroupsComparator = function (a, b) {
                 /* Groups are sorted alphabetically, ignoring case.
@@ -55321,28 +55660,29 @@ return __p
                  */
                 a = a.get('name');
                 b = b.get('name');
-                var special_groups = _.keys(HEADER_WEIGHTS);
-                var a_is_special = _.includes(special_groups, a);
-                var b_is_special = _.includes(special_groups, b);
-                if (!a_is_special && !b_is_special) {
-                    return a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0;
+                const special_groups = _.keys(HEADER_WEIGHTS);
+                const a_is_special = _.includes(special_groups, a);
+                const b_is_special = _.includes(special_groups, b);
+                if (!a_is_special && !b_is_special ) {
+                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
                 } else if (a_is_special && b_is_special) {
-                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0;
+                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
                 } else if (!a_is_special && b_is_special) {
-                    return b === HEADER_REQUESTING_CONTACTS ? 1 : -1;
+                    return (b === HEADER_REQUESTING_CONTACTS) ? 1 : -1;
                 } else if (a_is_special && !b_is_special) {
-                    return a === HEADER_REQUESTING_CONTACTS ? -1 : 1;
+                    return (a === HEADER_REQUESTING_CONTACTS) ? -1 : 1;
                 }
             };
 
+
             _converse.RosterFilter = Backbone.Model.extend({
-                initialize: function initialize() {
+                initialize () {
                     this.set({
                         'filter_text': '',
                         'filter_type': 'contacts',
                         'chat_state': ''
                     });
-                }
+                },
             });
 
             _converse.RosterFilterView = Backbone.View.extend({
@@ -55356,58 +55696,59 @@ return __p
                     "change .state-type": "changeChatStateFilter"
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on('change:filter_type', this.render, this);
                     this.model.on('change:filter_text', this.renderClearButton, this);
                 },
-                render: function render() {
-                    this.el.innerHTML = tpl_roster_filter(_.extend(this.model.toJSON(), {
-                        placeholder: __('Filter'),
-                        label_contacts: LABEL_CONTACTS,
-                        label_groups: LABEL_GROUPS,
-                        label_state: __('State'),
-                        label_any: __('Any'),
-                        label_unread_messages: __('Unread'),
-                        label_online: __('Online'),
-                        label_chatty: __('Chatty'),
-                        label_busy: __('Busy'),
-                        label_away: __('Away'),
-                        label_xa: __('Extended Away'),
-                        label_offline: __('Offline')
-                    }));
+
+                render () {
+                    this.el.innerHTML = tpl_roster_filter(
+                        _.extend(this.model.toJSON(), {
+                            placeholder: __('Filter'),
+                            label_contacts: LABEL_CONTACTS,
+                            label_groups: LABEL_GROUPS,
+                            label_state: __('State'),
+                            label_any: __('Any'),
+                            label_unread_messages: __('Unread'),
+                            label_online: __('Online'),
+                            label_chatty: __('Chatty'),
+                            label_busy: __('Busy'),
+                            label_away: __('Away'),
+                            label_xa: __('Extended Away'),
+                            label_offline: __('Offline')
+                        }));
                     this.renderClearButton();
                     return this.$el;
                 },
-                renderClearButton: function renderClearButton() {
-                    var roster_filter = this.el.querySelector('.roster-filter');
+
+                renderClearButton () {
+                    const roster_filter = this.el.querySelector('.roster-filter');
                     if (_.isNull(roster_filter)) {
                         return;
                     }
                     roster_filter.classList[this.tog(roster_filter.value)]('x');
                 },
-                tog: function tog(v) {
-                    return v ? 'add' : 'remove';
+
+                tog (v) {
+                    return v?'add':'remove';
                 },
-                toggleX: function toggleX(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var el = ev.target;
-                    el.classList[this.tog(el.offsetWidth - 18 < ev.clientX - el.getBoundingClientRect().left)]('onX');
+
+                toggleX (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const el = ev.target;
+                    el.classList[this.tog(el.offsetWidth-18 < ev.clientX-el.getBoundingClientRect().left)]('onX');
                 },
-                changeChatStateFilter: function changeChatStateFilter(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+
+                changeChatStateFilter (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.model.save({
                         'chat_state': this.el.querySelector('.state-type').value
                     });
                 },
-                changeTypeFilter: function changeTypeFilter(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var type = ev.target.value;
+
+                changeTypeFilter (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const type = ev.target.value;
                     if (type === 'state') {
                         this.model.save({
                             'filter_type': type,
@@ -55421,7 +55762,6 @@ return __p
                     }
                 },
 
-
                 liveFilter: _.debounce(function (ev) {
                     this.model.save({
                         'filter_type': this.el.querySelector('.filter-type').value,
@@ -55429,33 +55769,31 @@ return __p
                     });
                 }, 250),
 
-                submitFilter: function submitFilter(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+                submitFilter (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     this.liveFilter();
                     this.render();
                 },
-                isActive: function isActive() {
+
+                isActive () {
                     /* Returns true if the filter is enabled (i.e. if the user
                      * has added values to the filter).
                      */
-                    if (this.model.get('filter_type') === 'state' || this.model.get('filter_text')) {
+                    if (this.model.get('filter_type') === 'state' ||
+                        this.model.get('filter_text')) {
                         return true;
                     }
                     return false;
                 },
-                show: function show() {
-                    if (this.$el.is(':visible')) {
-                        return this;
-                    }
+
+                show () {
+                    if (this.$el.is(':visible')) { return this; }
                     this.$el.show();
                     return this;
                 },
-                hide: function hide() {
-                    if (!this.$el.is(':visible')) {
-                        return this;
-                    }
+
+                hide () {
+                    if (!this.$el.is(':visible')) { return this; }
                     if (this.el.querySelector('.roster-filter').value.length > 0) {
                         // Don't hide if user is currently filtering.
                         return;
@@ -55467,7 +55805,8 @@ return __p
                     this.$el.hide();
                     return this;
                 },
-                clearFilter: function clearFilter(ev) {
+
+                clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                         $(ev.target).removeClass('x onX').val('');
@@ -55482,7 +55821,7 @@ return __p
                 tagName: 'div',
                 id: 'converse-roster',
 
-                initialize: function initialize() {
+                initialize () {
                     _converse.roster.on("add", this.onContactAdd, this);
                     _converse.roster.on('change', this.onContactChange, this);
                     _converse.roster.on("destroy", this.update, this);
@@ -55493,7 +55832,8 @@ return __p
                     _converse.on('rosterContactsFetched', this.update, this);
                     this.createRosterFilter();
                 },
-                render: function render() {
+
+                render () {
                     this.renderRoster();
                     this.$el.html(this.filter_view.render());
                     if (!_converse.allow_contact_requests) {
@@ -55503,20 +55843,21 @@ return __p
                     }
                     return this;
                 },
-                renderRoster: function renderRoster() {
+
+                renderRoster () {
                     this.$roster = $(tpl_roster());
                     this.roster = this.$roster[0];
                 },
-                createRosterFilter: function createRosterFilter() {
+
+                createRosterFilter () {
                     // Create a model on which we can store filter properties
-                    var model = new _converse.RosterFilter();
-                    model.id = b64_sha1("_converse.rosterfilter" + _converse.bare_jid);
+                    const model = new _converse.RosterFilter();
+                    model.id = b64_sha1(`_converse.rosterfilter${_converse.bare_jid}`);
                     model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
-                    this.filter_view = new _converse.RosterFilterView({ 'model': model });
+                    this.filter_view = new _converse.RosterFilterView({'model': model});
                     this.filter_view.model.on('change', this.updateFilter, this);
                     this.filter_view.model.fetch();
                 },
-
 
                 updateFilter: _.debounce(function () {
                     /* Filter the roster again.
@@ -55526,7 +55867,7 @@ return __p
                      * Debounced so that it doesn't get called for every
                      * contact fetched from browser storage.
                      */
-                    var type = this.filter_view.model.get('filter_type');
+                    const type = this.filter_view.model.get('filter_type');
                     if (type === 'state') {
                         this.filter(this.filter_view.model.get('chat_state'), type);
                     } else {
@@ -55541,7 +55882,7 @@ return __p
                     return this.showHideFilter();
                 }, _converse.animate ? 100 : 0),
 
-                showHideFilter: function showHideFilter() {
+                showHideFilter () {
                     if (!this.$el.is(':visible')) {
                         return;
                     }
@@ -55552,7 +55893,8 @@ return __p
                     }
                     return this;
                 },
-                filter: function filter(query, type) {
+
+                filter (query, type) {
                     // First we make sure the filter is restored to its
                     // original state
                     _.each(this.getAll(), function (view) {
@@ -55576,23 +55918,27 @@ return __p
                         });
                     }
                 },
-                reset: function reset() {
+
+                reset () {
                     _converse.roster.reset();
                     this.removeAll();
                     this.renderRoster();
                     this.render().update();
                     return this;
                 },
-                onGroupAdd: function onGroupAdd(group) {
-                    var view = new _converse.RosterGroupView({ model: group });
+
+                onGroupAdd (group) {
+                    const view = new _converse.RosterGroupView({model: group});
                     this.add(group.get('name'), view.render());
                     this.positionGroup(view);
                 },
-                onContactAdd: function onContactAdd(contact) {
+
+                onContactAdd (contact) {
                     this.addRosterContact(contact).update();
                     this.updateFilter();
                 },
-                onContactChange: function onContactChange(contact) {
+
+                onContactChange (contact) {
                     this.updateChatBox(contact).update();
                     if (_.has(contact.changed, 'subscription')) {
                         if (contact.changed.subscription === 'from') {
@@ -55609,8 +55955,9 @@ return __p
                     }
                     this.updateFilter();
                 },
-                updateChatBox: function updateChatBox(contact) {
-                    var chatbox = _converse.chatboxes.get(contact.get('jid')),
+
+                updateChatBox (contact) {
+                    const chatbox = _converse.chatboxes.get(contact.get('jid')),
                         changes = {};
                     if (!chatbox) {
                         return this;
@@ -55624,7 +55971,8 @@ return __p
                     chatbox.save(changes);
                     return this;
                 },
-                positionFetchedGroups: function positionFetchedGroups() {
+
+                positionFetchedGroups () {
                     /* Instead of throwing an add event for each group
                      * fetched, we wait until they're all fetched and then
                      * we position them.
@@ -55633,12 +55981,12 @@ return __p
                      * positioned aren't already in inserted into the
                      * roster DOM element.
                      */
-                    var that = this;
+                    const that = this;
                     this.model.sort();
                     this.model.each(function (group, idx) {
-                        var view = that.get(group.get('name'));
+                        let view = that.get(group.get('name'));
                         if (!view) {
-                            view = new _converse.RosterGroupView({ model: group });
+                            view = new _converse.RosterGroupView({model: group});
                             that.add(group.get('name'), view.render());
                         }
                         if (idx === 0) {
@@ -55648,26 +55996,28 @@ return __p
                         }
                     });
                 },
-                positionGroup: function positionGroup(view) {
+
+                positionGroup (view) {
                     /* Place the group's DOM element in the correct alphabetical
                      * position amongst the other groups in the roster.
                      */
-                    var $groups = this.$roster.find('.roster-group'),
+                    const $groups = this.$roster.find('.roster-group'),
                         index = $groups.length ? this.model.indexOf(view.model) : 0;
                     if (index === 0) {
                         this.$roster.prepend(view.$el);
-                    } else if (index === this.model.length - 1) {
+                    } else if (index === (this.model.length-1)) {
                         this.appendGroup(view);
                     } else {
                         $($groups.eq(index)).before(view.$el);
                     }
                     return this;
                 },
-                appendGroup: function appendGroup(view) {
+
+                appendGroup (view) {
                     /* Add the group at the bottom of the roster
                      */
-                    var $last = this.$roster.find('.roster-group').last();
-                    var $siblings = $last.siblings('dd');
+                    const $last = this.$roster.find('.roster-group').last();
+                    const $siblings = $last.siblings('dd');
                     if ($siblings.length > 0) {
                         $siblings.last().after(view.$el);
                     } else {
@@ -55675,21 +56025,24 @@ return __p
                     }
                     return this;
                 },
-                getGroup: function getGroup(name) {
+
+                getGroup (name) {
                     /* Returns the group as specified by name.
                      * Creates the group if it doesn't exist.
                      */
-                    var view = this.get(name);
+                    const view =  this.get(name);
                     if (view) {
                         return view.model;
                     }
-                    return this.model.create({ name: name, id: b64_sha1(name) });
+                    return this.model.create({name, id: b64_sha1(name)});
                 },
-                addContactToGroup: function addContactToGroup(contact, name) {
+
+                addContactToGroup (contact, name) {
                     this.getGroup(name).contacts.add(contact);
                 },
-                addExistingContact: function addExistingContact(contact) {
-                    var groups = void 0;
+
+                addExistingContact (contact) {
+                    let groups;
                     if (_converse.roster_groups) {
                         groups = contact.get('groups');
                         if (groups.length === 0) {
@@ -55700,11 +56053,12 @@ return __p
                     }
                     _.each(groups, _.bind(this.addContactToGroup, this, contact));
                 },
-                addRosterContact: function addRosterContact(contact) {
+
+                addRosterContact (contact) {
                     if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
                         this.addExistingContact(contact);
                     } else {
-                        if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
+                        if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS);
                         } else if (contact.get('requesting') === true) {
                             this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
@@ -55713,6 +56067,7 @@ return __p
                     return this;
                 }
             });
+
 
             _converse.RosterContactView = Backbone.View.extend({
                 tagName: 'dd',
@@ -55724,34 +56079,40 @@ return __p
                     "click .remove-xmpp-contact": "removeContact"
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on("change", this.render, this);
                     this.model.on("remove", this.remove, this);
                     this.model.on("destroy", this.remove, this);
                     this.model.on("open", this.openChat, this);
                 },
-                render: function render() {
-                    var that = this;
+
+                render () {
+                    const that = this;
                     if (!this.mayBeShown()) {
                         this.$el.hide();
                         return this;
                     }
-                    var item = this.model,
+                    const item = this.model,
                         ask = item.get('ask'),
                         chat_status = item.get('chat_status'),
-                        requesting = item.get('requesting'),
+                        requesting  = item.get('requesting'),
                         subscription = item.get('subscription');
 
-                    var classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
+                    const classes_to_remove = [
+                        'current-xmpp-contact',
+                        'pending-xmpp-contact',
+                        'requesting-xmpp-contact'
+                        ].concat(_.keys(STATUSES));
 
-                    _.each(classes_to_remove, function (cls) {
-                        if (_.includes(that.el.className, cls)) {
-                            that.el.classList.remove(cls);
-                        }
-                    });
+                    _.each(classes_to_remove,
+                        function (cls) {
+                            if (_.includes(that.el.className, cls)) {
+                                that.el.classList.remove(cls);
+                            }
+                        });
                     this.$el.addClass(chat_status).data('status', chat_status);
 
-                    if (ask === 'subscribe' || subscription === 'from') {
+                    if ((ask === 'subscribe') || (subscription === 'from')) {
                         /* ask === 'subscribe'
                          *      Means we have asked to subscribe to them.
                          *
@@ -55764,17 +56125,21 @@ return __p
                          *  So in both cases the user is a "pending" contact.
                          */
                         this.el.classList.add('pending-xmpp-contact');
-                        this.$el.html(tpl_pending_contact(_.extend(item.toJSON(), {
-                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
-                        })));
+                        this.$el.html(tpl_pending_contact(
+                            _.extend(item.toJSON(), {
+                                'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                                'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            })
+                        ));
                     } else if (requesting === true) {
                         this.el.classList.add('requesting-xmpp-contact');
-                        this.$el.html(tpl_requesting_contact(_.extend(item.toJSON(), {
-                            'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
-                            'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
-                            'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
-                        })));
+                        this.$el.html(tpl_requesting_contact(
+                            _.extend(item.toJSON(), {
+                                'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
+                                'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
+                                'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
+                            })
+                        ));
                     } else if (subscription === 'both' || subscription === 'to') {
                         this.el.classList.add('current-xmpp-contact');
                         this.el.classList.remove(_.without(['both', 'to'], subscription)[0]);
@@ -55783,19 +56148,23 @@ return __p
                     }
                     return this;
                 },
-                renderRosterItem: function renderRosterItem(item) {
-                    var chat_status = item.get('chat_status');
-                    this.$el.html(tpl_roster_item(_.extend(item.toJSON(), {
-                        'desc_status': STATUSES[chat_status || 'offline'],
-                        'desc_chat': __('Click to chat with this contact'),
-                        'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
-                        'title_fullname': __('Name'),
-                        'allow_contact_removal': _converse.allow_contact_removal,
-                        'num_unread': item.get('num_unread') || 0
-                    })));
+
+                renderRosterItem (item) {
+                    const chat_status = item.get('chat_status');
+                    this.$el.html(tpl_roster_item(
+                        _.extend(item.toJSON(), {
+                            'desc_status': STATUSES[chat_status||'offline'],
+                            'desc_chat': __('Click to chat with this contact'),
+                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                            'title_fullname': __('Name'),
+                            'allow_contact_removal': _converse.allow_contact_removal,
+                            'num_unread': item.get('num_unread') || 0
+                        })
+                    ));
                     return this;
                 },
-                isGroupCollapsed: function isGroupCollapsed() {
+
+                isGroupCollapsed () {
                     /* Check whether the group in which this contact appears is
                      * collapsed.
                      */
@@ -55805,78 +56174,81 @@ return __p
                     // If roster group items were inside the group elements, we
                     // would simplify things by not having to check whether the
                     // group is collapsed or not.
-                    var name = this.$el.prevAll('dt:first').data('group');
-                    var group = _.head(_converse.rosterview.model.where({ 'name': name.toString() }));
+                    const name = this.$el.prevAll('dt:first').data('group');
+                    const group = _.head(_converse.rosterview.model.where({'name': name.toString()}));
                     if (group.get('state') === _converse.CLOSED) {
                         return true;
                     }
                     return false;
                 },
-                mayBeShown: function mayBeShown() {
+
+                mayBeShown () {
                     /* Return a boolean indicating whether this contact should
                      * generally be visible in the roster.
                      *
                      * It doesn't check for the more specific case of whether
                      * the group it's in is collapsed (see isGroupCollapsed).
                      */
-                    var chatStatus = this.model.get('chat_status');
-                    if (_converse.show_only_online_users && chatStatus !== 'online' || _converse.hide_offline_users && chatStatus === 'offline') {
+                    const chatStatus = this.model.get('chat_status');
+                    if ((_converse.show_only_online_users && chatStatus !== 'online') ||
+                        (_converse.hide_offline_users && chatStatus === 'offline')) {
                         // If pending or requesting, show
-                        if (this.model.get('ask') === 'subscribe' || this.model.get('subscription') === 'from' || this.model.get('requesting') === true) {
+                        if ((this.model.get('ask') === 'subscribe') ||
+                                (this.model.get('subscription') === 'from') ||
+                                (this.model.get('requesting') === true)) {
                             return true;
                         }
                         return false;
                     }
                     return true;
                 },
-                openChat: function openChat(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+
+                openChat (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     return _converse.chatboxviews.showChat(this.model.attributes, true);
                 },
-                removeContact: function removeContact(ev) {
-                    var _this = this;
 
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    if (!_converse.allow_contact_removal) {
-                        return;
-                    }
-                    var result = confirm(__("Are you sure you want to remove this contact?"));
+                removeContact (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (!_converse.allow_contact_removal) { return; }
+                    const result = confirm(__("Are you sure you want to remove this contact?"));
                     if (result === true) {
-                        var iq = $iq({ type: 'set' }).c('query', { xmlns: Strophe.NS.ROSTER }).c('item', { jid: this.model.get('jid'), subscription: "remove" });
-                        _converse.connection.sendIQ(iq, function (iq) {
-                            _this.model.destroy();
-                            _this.remove();
-                        }, function (err) {
-                            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
-                            _converse.log(err, Strophe.LogLevel.ERROR);
-                        });
+                        const iq = $iq({type: 'set'})
+                            .c('query', {xmlns: Strophe.NS.ROSTER})
+                            .c('item', {jid: this.model.get('jid'), subscription: "remove"});
+                        _converse.connection.sendIQ(iq,
+                            (iq) => {
+                                this.model.destroy();
+                                this.remove();
+                            },
+                            function (err) {
+                                alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
+                                _converse.log(err, Strophe.LogLevel.ERROR);
+                            }
+                        );
                     }
                 },
-                acceptRequest: function acceptRequest(ev) {
-                    var _this2 = this;
 
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.get('fullname'), [], function () {
-                        _this2.model.authorize().subscribe();
-                    });
+                acceptRequest (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    _converse.roster.sendContactAddIQ(
+                        this.model.get('jid'),
+                        this.model.get('fullname'),
+                        [],
+                        () => { this.model.authorize().subscribe(); }
+                    );
                 },
-                declineRequest: function declineRequest(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var result = confirm(__("Are you sure you want to decline this contact request?"));
+
+                declineRequest (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const result = confirm(__("Are you sure you want to decline this contact request?"));
                     if (result === true) {
                         this.model.unauthorize().destroy();
                     }
                     return this;
                 }
             });
+
 
             _converse.RosterGroupView = Backbone.Overview.extend({
                 tagName: 'dt',
@@ -55885,7 +56257,7 @@ return __p
                     "click a.group-toggle": "toggle"
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.contacts.on("add", this.addContact, this);
                     this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                     this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
@@ -55899,9 +56271,10 @@ return __p
                     this.model.contacts.on("remove", this.onRemove, this);
                     _converse.roster.on('change:groups', this.onContactGroupChange, this);
                 },
-                render: function render() {
+
+                render () {
                     this.el.setAttribute('data-group', this.model.get('name'));
-                    var html = tpl_group_header({
+                    const html = tpl_group_header({
                         label_group: this.model.get('name'),
                         desc_group_toggle: this.model.get('description'),
                         toggle_state: this.model.get('state')
@@ -55909,42 +56282,39 @@ return __p
                     this.el.innerHTML = html;
                     return this;
                 },
-                addContact: function addContact(contact) {
-                    var view = new _converse.RosterContactView({ model: contact });
+
+                addContact (contact) {
+                    let view = new _converse.RosterContactView({model: contact});
                     this.add(contact.get('id'), view);
                     view = this.positionContact(contact).render();
                     if (view.mayBeShown()) {
                         if (this.model.get('state') === _converse.CLOSED) {
-                            if (view.$el[0].style.display !== "none") {
-                                view.$el.hide();
-                            }
-                            if (!this.$el.is(':visible')) {
-                                this.$el.show();
-                            }
+                            if (view.$el[0].style.display !== "none") { view.$el.hide(); }
+                            if (!this.$el.is(':visible')) { this.$el.show(); }
                         } else {
-                            if (this.$el[0].style.display !== "block") {
-                                this.show();
-                            }
+                            if (this.$el[0].style.display !== "block") { this.show(); }
                         }
                     }
                 },
-                positionContact: function positionContact(contact) {
+
+                positionContact (contact) {
                     /* Place the contact's DOM element in the correct alphabetical
                      * position amongst the other contacts in this group.
                      */
-                    var view = this.get(contact.get('id'));
-                    var index = this.model.contacts.indexOf(contact);
+                    const view = this.get(contact.get('id'));
+                    const index = this.model.contacts.indexOf(contact);
                     view.$el.detach();
                     if (index === 0) {
                         this.$el.after(view.$el);
-                    } else if (index === this.model.contacts.length - 1) {
+                    } else if (index === (this.model.contacts.length-1)) {
                         this.$el.nextUntil('dt').last().after(view.$el);
                     } else {
                         this.$el.nextUntil('dt').eq(index).before(view.$el);
                     }
                     return view;
                 },
-                show: function show() {
+
+                show () {
                     this.$el.show();
                     _.each(this.getAll(), function (view) {
                         if (view.mayBeShown() && !view.isGroupCollapsed()) {
@@ -55953,26 +56323,28 @@ return __p
                     });
                     return this;
                 },
-                hide: function hide() {
+
+                hide () {
                     this.$el.nextUntil('dt').addBack().hide();
                 },
-                filter: function filter(q, type) {
-                    var _this3 = this;
 
+                filter (q, type) {
                     /* Filter the group's contacts based on the query "q".
                      * The query is matched against the contact's full name.
                      * If all contacts are filtered out (i.e. hidden), then the
                      * group must be filtered out as well.
                      */
-                    var matches = void 0;
+                    let matches;
                     if (q.length === 0) {
                         if (this.model.get('state') === _converse.OPENED) {
-                            this.model.contacts.each(function (item) {
-                                var view = _this3.get(item.get('id'));
-                                if (view.mayBeShown() && !view.isGroupCollapsed()) {
-                                    view.$el.show();
+                            this.model.contacts.each(
+                                (item) => {
+                                    const view = this.get(item.get('id'));
+                                    if (view.mayBeShown() && !view.isGroupCollapsed()) {
+                                        view.$el.show();
+                                    }
                                 }
-                            });
+                            );
                         }
                         this.showIfNecessary();
                     } else {
@@ -55982,82 +56354,95 @@ return __p
                                 // When filtering by chat state, we still want to
                                 // show requesting contacts, even though they don't
                                 // have the state in question.
-                                matches = this.model.contacts.filter(function (contact) {
-                                    return utils.contains.not('chat_status', q)(contact) && !contact.get('requesting');
-                                });
+                                matches = this.model.contacts.filter(
+                                    (contact) => utils.contains.not('chat_status', q)(contact) && !contact.get('requesting')
+                                );
                             } else if (q === 'unread_messages') {
-                                matches = this.model.contacts.filter({ 'num_unread': 0 });
+                                matches = this.model.contacts.filter({'num_unread': 0});
                             } else {
-                                matches = this.model.contacts.filter(utils.contains.not('chat_status', q));
+                                matches = this.model.contacts.filter(
+                                    utils.contains.not('chat_status', q)
+                                );
                             }
-                        } else {
-                            matches = this.model.contacts.filter(utils.contains.not('fullname', q));
+                        } else  {
+                            matches = this.model.contacts.filter(
+                                utils.contains.not('fullname', q)
+                            );
                         }
                         if (matches.length === this.model.contacts.length) {
                             // hide the whole group
                             this.hide();
                         } else {
-                            _.each(matches, function (item) {
-                                _this3.get(item.get('id')).$el.hide();
+                            _.each(matches, (item) => {
+                                this.get(item.get('id')).$el.hide();
                             });
                             if (this.model.get('state') === _converse.OPENED) {
-                                _.each(this.model.contacts.reject(utils.contains.not('fullname', q)), function (item) {
-                                    _this3.get(item.get('id')).$el.show();
-                                });
+                                _.each(this.model.contacts.reject(
+                                    utils.contains.not('fullname', q)),
+                                    (item) => {
+                                        this.get(item.get('id')).$el.show();
+                                    });
                             }
                             this.showIfNecessary();
                         }
                     }
                 },
-                showIfNecessary: function showIfNecessary() {
+
+                showIfNecessary () {
                     if (!this.$el.is(':visible') && this.model.contacts.length > 0) {
                         this.$el.show();
                     }
                 },
-                toggle: function toggle(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var $el = $(ev.target);
+
+                toggle (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
                         this.$el.nextUntil('dt').slideUp();
-                        this.model.save({ state: _converse.CLOSED });
+                        this.model.save({state: _converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
-                        this.model.save({ state: _converse.OPENED });
-                        this.filter(_converse.rosterview.$('.roster-filter').val() || '', _converse.rosterview.$('.filter-type').val());
+                        this.model.save({state: _converse.OPENED});
+                        this.filter(
+                            _converse.rosterview.$('.roster-filter').val() || '',
+                            _converse.rosterview.$('.filter-type').val()
+                        );
                     }
                 },
-                onContactGroupChange: function onContactGroupChange(contact) {
-                    var in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
-                    var cid = contact.get('id');
-                    var in_this_overview = !this.get(cid);
+
+                onContactGroupChange (contact) {
+                    const in_this_group = _.includes(contact.get('groups'), this.model.get('name'));
+                    const cid = contact.get('id');
+                    const in_this_overview = !this.get(cid);
                     if (in_this_group && !in_this_overview) {
                         this.model.contacts.remove(cid);
                     } else if (!in_this_group && in_this_overview) {
                         this.addContact(contact);
                     }
                 },
-                onContactSubscriptionChange: function onContactSubscriptionChange(contact) {
-                    if (this.model.get('name') === HEADER_PENDING_CONTACTS && contact.get('subscription') !== 'from') {
+
+                onContactSubscriptionChange (contact) {
+                    if ((this.model.get('name') === HEADER_PENDING_CONTACTS) && contact.get('subscription') !== 'from') {
                         this.model.contacts.remove(contact.get('id'));
                     }
                 },
-                onContactRequestChange: function onContactRequestChange(contact) {
-                    if (this.model.get('name') === HEADER_REQUESTING_CONTACTS && !contact.get('requesting')) {
+
+                onContactRequestChange (contact) {
+                    if ((this.model.get('name') === HEADER_REQUESTING_CONTACTS) && !contact.get('requesting')) {
                         /* We suppress events, otherwise the remove event will
                          * also cause the contact's view to be removed from the
                          * "Pending Contacts" group.
                          */
-                        this.model.contacts.remove(contact.get('id'), { 'silent': true });
+                        this.model.contacts.remove(contact.get('id'), {'silent': true});
                         // Since we suppress events, we make sure the view and
                         // contact are removed from this group.
                         this.get(contact.get('id')).remove();
                         this.onRemove(contact);
                     }
                 },
-                onRemove: function onRemove(contact) {
+
+                onRemove (contact) {
                     this.remove(contact.get('id'));
                     if (this.model.contacts.length === 0) {
                         this.$el.hide();
@@ -56067,53 +56452,53 @@ return __p
 
             /* -------- Event Handlers ----------- */
 
-            var onChatBoxMaximized = function onChatBoxMaximized(chatboxview) {
+            const onChatBoxMaximized = function (chatboxview) {
                 /* When a chat box gets maximized, the num_unread counter needs
                  * to be cleared, but if chatbox is scrolled up, then num_unread should not be cleared.
                  */
-                var chatbox = chatboxview.model;
+                const chatbox = chatboxview.model;
                 if (chatbox.get('type') !== 'chatroom') {
-                    var contact = _.head(_converse.roster.where({ 'jid': chatbox.get('jid') }));
+                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                     if (!_.isUndefined(contact) && !chatbox.isScrolledUp()) {
-                        contact.save({ 'num_unread': 0 });
+                        contact.save({'num_unread': 0});
                     }
                 }
             };
 
-            var onMessageReceived = function onMessageReceived(data) {
+            const onMessageReceived = function (data) {
                 /* Given a newly received message, update the unread counter on
                  * the relevant roster contact.
                  */
-                var chatbox = data.chatbox;
-
+                const { chatbox } = data;
                 if (_.isUndefined(chatbox)) {
                     return;
                 }
                 if (_.isNull(data.stanza.querySelector('body'))) {
                     return; // The message has no text
                 }
-                if (chatbox.get('type') !== 'chatroom' && utils.isNewMessage(data.stanza) && chatbox.newMessageWillBeHidden()) {
+                if (chatbox.get('type') !== 'chatroom' &&
+                    utils.isNewMessage(data.stanza) &&
+                    chatbox.newMessageWillBeHidden()) {
 
-                    var contact = _.head(_converse.roster.where({ 'jid': chatbox.get('jid') }));
+                    const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                     if (!_.isUndefined(contact)) {
-                        contact.save({ 'num_unread': contact.get('num_unread') + 1 });
+                        contact.save({'num_unread': contact.get('num_unread') + 1});
                     }
                 }
             };
 
-            var onChatBoxScrolledDown = function onChatBoxScrolledDown(data) {
-                var chatbox = data.chatbox;
-
+            const onChatBoxScrolledDown = function (data) {
+                const { chatbox } = data;
                 if (_.isUndefined(chatbox)) {
                     return;
                 }
-                var contact = _.head(_converse.roster.where({ 'jid': chatbox.get('jid') }));
+                const contact = _.head(_converse.roster.where({'jid': chatbox.get('jid')}));
                 if (!_.isUndefined(contact)) {
-                    contact.save({ 'num_unread': 0 });
+                    contact.save({'num_unread': 0});
                 }
             };
 
-            var initRoster = function initRoster() {
+            const initRoster = function () {
                 /* Create an instance of RosterView once the RosterGroups
                  * collection has been created (in converse-core.js)
                  */
@@ -56130,9 +56515,7 @@ return __p
             _converse.api.listen.on('chatBoxScrolledDown', onChatBoxScrolledDown);
         }
     });
-});
-//# sourceMappingURL=converse-rosterview.js.map;
-
+}));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -56143,19 +56526,48 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!login_tab", "tpl!search_contact", "tpl!status_option", "converse-chatview", "converse-rosterview"], factory);
-})(undefined, function ($, converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_login_tab, tpl_search_contact, tpl_status_option) {
+    define('converse-controlbox',["jquery.noconflict",
+            "converse-core",
+            "lodash.fp",
+            "tpl!add_contact_dropdown",
+            "tpl!add_contact_form",
+            "tpl!change_status_message",
+            "tpl!chat_status",
+            "tpl!choose_status",
+            "tpl!contacts_panel",
+            "tpl!contacts_tab",
+            "tpl!controlbox",
+            "tpl!controlbox_toggle",
+            "tpl!login_panel",
+            "tpl!login_tab",
+            "tpl!search_contact",
+            "tpl!status_option",
+            "converse-chatview",
+            "converse-rosterview"
+    ], factory);
+}(this, function (
+            $,
+            converse,
+            fp,
+            tpl_add_contact_dropdown,
+            tpl_add_contact_form,
+            tpl_change_status_message,
+            tpl_chat_status,
+            tpl_choose_status,
+            tpl_contacts_panel,
+            tpl_contacts_tab,
+            tpl_controlbox,
+            tpl_controlbox_toggle,
+            tpl_login_panel,
+            tpl_login_tab,
+            tpl_search_contact,
+            tpl_status_option
+        ) {
     "use strict";
 
-    var USERS_PANEL_ID = 'users';
-    var CHATBOX_TYPE = 'chatbox';
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        Backbone = _converse$env.Backbone,
-        Promise = _converse$env.Promise,
-        utils = _converse$env.utils,
-        _ = _converse$env._,
-        moment = _converse$env.moment;
+    const USERS_PANEL_ID = 'users';
+    const CHATBOX_TYPE = 'chatbox';
+    const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
 
 
     converse.plugins.add('converse-controlbox', {
@@ -56167,7 +56579,7 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown: function _tearDown() {
+            _tearDown () {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
                     // Removes roster groups
@@ -56179,63 +56591,66 @@ return __p
                     this.rosterview.removeAll().remove();
                 }
             },
-            clearSession: function clearSession() {
+
+            clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
-                var controlbox = this.chatboxes.get('controlbox');
-                if (controlbox && controlbox.collection && controlbox.collection.browserStorage) {
-                    controlbox.save({ 'connected': false });
+                const controlbox = this.chatboxes.get('controlbox');
+                if (controlbox &&
+                        controlbox.collection &&
+                        controlbox.collection.browserStorage) {
+                    controlbox.save({'connected': false});
                 }
             },
 
-
             ChatBoxes: {
-                chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
+                chatBoxMayBeShown (chatbox) {
+                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
+                           chatbox.get('id') !== 'controlbox';
                 },
-                onChatBoxesFetched: function onChatBoxesFetched(collection, resp) {
-                    this.__super__.onChatBoxesFetched.apply(this, arguments);
-                    var _converse = this.__super__._converse;
 
+                onChatBoxesFetched (collection, resp) {
+                    this.__super__.onChatBoxesFetched.apply(this, arguments);
+                    const { _converse } = this.__super__;
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
                         _converse.addControlBox();
                     }
-                    this.get('controlbox').save({ connected: true });
-                }
+                    this.get('controlbox').save({connected:true});
+                },
             },
 
             ChatBoxViews: {
-                onChatBoxAdded: function onChatBoxAdded(item) {
-                    var _converse = this.__super__._converse;
-
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
                     if (item.get('box_id') === 'controlbox') {
-                        var view = this.get(item.get('id'));
+                        let view = this.get(item.get('id'));
                         if (view) {
                             view.model = item;
                             view.initialize();
                             return view;
                         } else {
-                            view = new _converse.ControlBoxView({ model: item });
+                            view = new _converse.ControlBoxView({model: item});
                             return this.add(item.get('id'), view);
                         }
                     } else {
                         return this.__super__.onChatBoxAdded.apply(this, arguments);
                     }
                 },
-                closeAllChatBoxes: function closeAllChatBoxes() {
-                    var _converse = this.__super__._converse;
 
+                closeAllChatBoxes () {
+                    const { _converse } = this.__super__;
                     this.each(function (view) {
-                        if (view.model.get('id') === 'controlbox' && (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
+                        if (view.model.get('id') === 'controlbox' &&
+                                (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
                             return;
                         }
                         view.close();
                     });
                     return this;
                 },
-                getChatBoxWidth: function getChatBoxWidth(view) {
-                    var _converse = this.__super__._converse;
 
-                    var controlbox = this.get('controlbox');
+                getChatBoxWidth (view) {
+                    const { _converse } = this.__super__;
+                    const controlbox = this.get('controlbox');
                     if (view.model.get('id') === 'controlbox') {
                         /* We return the width of the controlbox or its toggle,
                          * depending on which is visible.
@@ -56252,20 +56667,20 @@ return __p
             },
 
             ChatBox: {
-                initialize: function initialize() {
+                initialize () {
                     if (this.get('id') === 'controlbox') {
-                        this.set({ 'time_opened': moment(0).valueOf() });
+                        this.set({'time_opened': moment(0).valueOf()});
                     } else {
                         this.__super__.initialize.apply(this, arguments);
                     }
-                }
+                },
             },
 
             ChatBoxView: {
-                insertIntoDOM: function insertIntoDOM() {
-                    var view = this.__super__._converse.chatboxviews.get("controlbox");
+                insertIntoDOM () {
+                    const view = this.__super__._converse.chatboxviews.get("controlbox");
                     if (view) {
-                        view.el.insertAdjacentElement('afterend', this.el);
+                        view.el.insertAdjacentElement('afterend', this.el)
                     } else {
                         this.__super__.insertIntoDOM.apply(this, arguments);
                     }
@@ -56274,13 +56689,12 @@ return __p
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
-
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.settings.update({
                 allow_logout: true,
@@ -56292,15 +56706,15 @@ return __p
                 xhr_user_search_url: ''
             });
 
-            var LABEL_CONTACTS = __('Contacts');
+            const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = function () {
+            _converse.addControlBox = () => {
                 _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
-                });
+                })
             };
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
@@ -56309,10 +56723,10 @@ return __p
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
-                    'click ul#controlbox-tabs li a': 'switchTab'
+                    'click ul#controlbox-tabs li a': 'switchTab',
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     if (_.isUndefined(_converse.controlboxtoggle)) {
                         _converse.controlboxtoggle = new _converse.ControlBoxToggle();
                         this.$el.insertAfter(_converse.controlboxtoggle.$el);
@@ -56324,10 +56738,13 @@ return __p
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 },
-                render: function render() {
+
+                render () {
                     if (this.model.get('connected')) {
                         if (_.isUndefined(this.model.get('closed'))) {
                             this.model.set('closed', !_converse.show_controlbox_by_default);
@@ -56338,31 +56755,40 @@ return __p
                     } else {
                         this.hide();
                     }
-                    this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON(), {
-                        'sticky_controlbox': _converse.sticky_controlbox
-                    }));
+                    this.el.innerHTML = tpl_controlbox(
+                        _.extend(this.model.toJSON(), {
+                            'sticky_controlbox': _converse.sticky_controlbox
+                        }));
 
-                    if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
+                    if (!_converse.connection.connected ||
+                            !_converse.connection.authenticated ||
+                            _converse.connection.disconnecting) {
                         this.renderLoginPanel();
-                    } else if (this.model.get('connected') && (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
+                    } else if (this.model.get('connected') &&
+                            (!this.contactspanel || !this.contactspanel.$el.is(':visible'))) {
                         this.renderContactsPanel();
                     }
                     return this;
                 },
-                onConnected: function onConnected() {
+
+                onConnected () {
                     if (this.model.get('connected')) {
                         this.render();
-                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         this.model.save();
                     }
                 },
-                insertRoster: function insertRoster() {
+
+                insertRoster () {
                     /* Place the rosterview inside the "Contacts" panel.
                      */
                     this.contactspanel.$el.append(_converse.rosterview.$el);
                     return this;
                 },
-                renderLoginPanel: function renderLoginPanel() {
+
+                renderLoginPanel () {
                     this.loginpanel = new _converse.LoginPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': this
@@ -56370,9 +56796,10 @@ return __p
                     this.loginpanel.render();
                     return this;
                 },
-                renderContactsPanel: function renderContactsPanel() {
+
+                renderContactsPanel () {
                     if (_.isUndefined(this.model.get('active-panel'))) {
-                        this.model.save({ 'active-panel': USERS_PANEL_ID });
+                        this.model.save({'active-panel': USERS_PANEL_ID});
                     }
                     this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')
@@ -56384,29 +56811,30 @@ return __p
                     });
                     _converse.xmppstatusview.render();
                 },
-                close: function close(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+
+                close (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     if (_converse.sticky_controlbox) {
                         return;
                     }
                     if (_converse.connection.connected && !_converse.connection.disconnecting) {
-                        this.model.save({ 'closed': true });
+                        this.model.save({'closed': true});
                     } else {
                         this.model.trigger('hide');
                     }
                     _converse.emit('controlBoxClosed', this);
                     return this;
                 },
-                ensureClosedState: function ensureClosedState() {
+
+                ensureClosedState () {
                     if (this.model.get('closed')) {
                         this.hide();
                     } else {
                         this.show();
                     }
                 },
-                hide: function hide(callback) {
+
+                hide (callback) {
                     if (_converse.sticky_controlbox) {
                         return;
                     }
@@ -56419,8 +56847,9 @@ return __p
                     _converse.controlboxtoggle.show(callback);
                     return this;
                 },
-                onControlBoxToggleHidden: function onControlBoxToggleHidden() {
-                    var that = this;
+
+                onControlBoxToggleHidden () {
+                    const that = this;
                     utils.fadeIn(this.el, function () {
                         _converse.controlboxtoggle.updateOnlineCount();
                         utils.refreshWebkit();
@@ -56428,16 +56857,18 @@ return __p
                         _converse.emit('controlBoxOpened', that);
                     });
                 },
-                show: function show() {
-                    _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
+
+                show () {
+                    _converse.controlboxtoggle.hide(
+                        this.onControlBoxToggleHidden.bind(this)
+                    );
                     return this;
                 },
-                switchTab: function switchTab(ev) {
+
+                switchTab (ev) {
                     // TODO: automatically focus the relevant input
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var $tab = $(ev.target),
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const $tab = $(ev.target),
                         $sibling = $tab.parent().siblings('li').children('a'),
                         $tab_panel = $($tab.attr('href'));
                     $($sibling.attr('href')).addClass('hidden');
@@ -56445,11 +56876,12 @@ return __p
                     $tab.addClass('current');
                     $tab_panel.removeClass('hidden');
                     if (!_.isUndefined(_converse.chatboxes.browserStorage)) {
-                        this.model.save({ 'active-panel': $tab.data('id') });
+                        this.model.save({'active-panel': $tab.data('id')});
                     }
                     return this;
                 },
-                showHelpMessages: function showHelpMessages() {
+
+                showHelpMessages () {
                     /* Override showHelpMessages in ChatBoxView, for now do nothing.
                      *
                      * Parameters:
@@ -56459,6 +56891,7 @@ return __p
                 }
             });
 
+
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "login-dialog",
@@ -56467,61 +56900,64 @@ return __p
                     'submit form#converse-login': 'authenticate'
                 },
 
-                initialize: function initialize(cfg) {
-                    cfg.$parent.html(this.$el.html(tpl_login_panel({
-                        'ANONYMOUS': _converse.ANONYMOUS,
-                        'EXTERNAL': _converse.EXTERNAL,
-                        'LOGIN': _converse.LOGIN,
-                        'PREBIND': _converse.PREBIND,
-                        'auto_login': _converse.auto_login,
-                        'authentication': _converse.authentication,
-                        'label_username': __('XMPP Username:'),
-                        'label_password': __('Password:'),
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
-                        'placeholder_password': __('password')
-                    })));
+                initialize (cfg) {
+                    cfg.$parent.html(this.$el.html(
+                        tpl_login_panel({
+                            'ANONYMOUS': _converse.ANONYMOUS,
+                            'EXTERNAL': _converse.EXTERNAL,
+                            'LOGIN': _converse.LOGIN,
+                            'PREBIND': _converse.PREBIND,
+                            'auto_login': _converse.auto_login,
+                            'authentication': _converse.authentication,
+                            'label_username': __('XMPP Username:'),
+                            'label_password': __('Password:'),
+                            'label_anon_login': __('Click here to log in anonymously'),
+                            'label_login': __('Log In'),
+                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
+                            'placeholder_password': __('password')
+                        })
+                    ));
                     this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                 },
-                render: function render() {
-                    this.$tabs.append(tpl_login_tab({ label_sign_in: __('Sign in') }));
+
+                render () {
+                    this.$tabs.append(tpl_login_tab({label_sign_in: __('Sign in')}));
                     this.$el.find('input#jid').focus();
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
                     }
                     return this;
                 },
-                authenticate: function authenticate(ev) {
+
+                authenticate (ev) {
                     /* Authenticate the user based on a form submission event.
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var $form = $(ev.target);
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
                         this.connect($form, _converse.jid, null);
                         return;
                     }
-                    var $jid_input = $form.find('input[name=jid]');
-                    var $pw_input = $form.find('input[name=password]');
-                    var password = $pw_input.val();
+                    const $jid_input = $form.find('input[name=jid]');
+                    const $pw_input = $form.find('input[name=password]');
+                    const password = $pw_input.val();
 
-                    var jid = $jid_input.val(),
+                    let jid = $jid_input.val(),
                         errors = false;
 
-                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
+                    if (!jid || (
+                            !_converse.locked_domain &&
+                            !_converse.default_domain &&
+                            _.filter(jid.split('@')).length < 2)) {
                         errors = true;
                         $jid_input.addClass('error');
                     }
 
-                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
+                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
                         errors = true;
                         $pw_input.addClass('error');
                     }
-                    if (errors) {
-                        return;
-                    }
+                    if (errors) { return; }
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
@@ -56530,8 +56966,9 @@ return __p
                     this.connect($form, jid, password);
                     return false;
                 },
-                connect: function connect($form, jid, password) {
-                    var resource = void 0;
+
+                connect ($form, jid, password) {
+                    let resource;
                     if ($form) {
                         $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
                     }
@@ -56540,17 +56977,19 @@ return __p
                         if (!resource) {
                             jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
-                            jid = Strophe.getBareJidFromJid(jid).toLowerCase() + '/' + resource;
+                            jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                         }
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
                 },
-                remove: function remove() {
+
+                remove () {
                     this.$tabs.empty();
                     this.$el.parent().empty();
                 }
             });
+
 
             _converse.XMPPStatusView = Backbone.View.extend({
                 el: "form#set-xmpp-status",
@@ -56561,24 +57000,26 @@ return __p
                     "click .dropdown dd ul li a": "setStatus"
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on("change:status", this.updateStatusUI, this);
                     this.model.on("change:status_message", this.updateStatusUI, this);
                     this.model.on("update-status-ui", this.updateStatusUI, this);
                 },
-                render: function render() {
+
+                render () {
                     // Replace the default dropdown with something nicer
-                    var $select = this.$el.find('select#select-xmpp-status');
-                    var chat_status = this.model.get('status') || 'offline';
-                    var options = $('option', $select);
-                    var options_list = [];
+                    const $select = this.$el.find('select#select-xmpp-status');
+                    const chat_status = this.model.get('status') || 'offline';
+                    const options = $('option', $select);
+                    const options_list = [];
                     this.$el.html(tpl_choose_status());
-                    this.$el.find('#fancy-xmpp-status-select').html(tpl_chat_status({
-                        'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
-                        'chat_status': chat_status,
-                        'desc_custom_status': __('Click here to write a custom status message'),
-                        'desc_change_status': __('Click to change your chat status')
-                    }));
+                    this.$el.find('#fancy-xmpp-status-select')
+                            .html(tpl_chat_status({
+                                'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
+                                'chat_status': chat_status,
+                                'desc_custom_status': __('Click here to write a custom status message'),
+                                'desc_change_status': __('Click to change your chat status')
+                                }));
                     // iterate through all the <option> elements and add option values
                     options.each(function () {
                         options_list.push(tpl_status_option({
@@ -56586,36 +57027,42 @@ return __p
                             'text': this.text
                         }));
                     });
-                    var $options_target = this.$el.find("#target dd ul").hide();
+                    const $options_target = this.$el.find("#target dd ul").hide();
                     $options_target.append(options_list.join(''));
                     $select.remove();
                     return this;
                 },
-                toggleOptions: function toggleOptions(ev) {
+
+                toggleOptions (ev) {
                     ev.preventDefault();
-                    utils.slideInAllElements(document.querySelectorAll('#conversejs .contact-form-container'));
+                    utils.slideInAllElements(
+                        document.querySelectorAll('#conversejs .contact-form-container')
+                    );
                     $(ev.target).parent().parent().siblings('dd').find('ul').toggle('fast');
                 },
-                renderStatusChangeForm: function renderStatusChangeForm(ev) {
+
+                renderStatusChangeForm (ev) {
                     ev.preventDefault();
-                    var status_message = _converse.xmppstatus.get('status_message') || '';
-                    var input = tpl_change_status_message({
+                    const status_message = _converse.xmppstatus.get('status_message') || '';
+                    const input = tpl_change_status_message({
                         'status_message': status_message,
                         'label_custom_status': __('Custom status'),
                         'label_save': __('Save')
                     });
-                    var $xmppstatus = this.$el.find('.xmpp-status');
+                    const $xmppstatus = this.$el.find('.xmpp-status');
                     $xmppstatus.parent().addClass('no-border');
                     $xmppstatus.replaceWith(input);
                     this.$el.find('.custom-xmpp-status').focus().focus();
                 },
-                setStatusMessage: function setStatusMessage(ev) {
+
+                setStatusMessage (ev) {
                     ev.preventDefault();
                     this.model.setStatusMessage($(ev.target).find('input').val());
                 },
-                setStatus: function setStatus(ev) {
+
+                setStatus (ev) {
                     ev.preventDefault();
-                    var $el = $(ev.currentTarget),
+                    const $el = $(ev.currentTarget),
                         value = $el.attr('data-value');
                     if (value === 'logout') {
                         this.$el.find(".dropdown dd ul").hide();
@@ -56625,7 +57072,8 @@ return __p
                         this.$el.find(".dropdown dd ul").hide();
                     }
                 },
-                getPrettyStatus: function getPrettyStatus(stat) {
+
+                getPrettyStatus (stat) {
                     if (stat === 'chat') {
                         return __('online');
                     } else if (stat === 'dnd') {
@@ -56640,19 +57088,22 @@ return __p
                         return __(stat) || __('online');
                     }
                 },
-                updateStatusUI: function updateStatusUI(model) {
-                    var stat = model.get('status');
+
+                updateStatusUI (model) {
+                    const stat = model.get('status');
                     // For translators: the %1$s part gets replaced with the status
                     // Example, I am online
-                    var status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
-                    this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(tpl_chat_status({
-                        'chat_status': stat,
-                        'status_message': status_message,
-                        'desc_custom_status': __('Click here to write a custom status message'),
-                        'desc_change_status': __('Click to change your chat status')
-                    }));
+                    const status_message = model.get('status_message') || __("I am %1$s", this.getPrettyStatus(stat));
+                    this.$el.find('#fancy-xmpp-status-select').removeClass('no-border').html(
+                        tpl_chat_status({
+                            'chat_status': stat,
+                            'status_message': status_message,
+                            'desc_custom_status': __('Click here to write a custom status message'),
+                            'desc_change_status': __('Click to change your chat status')
+                        }));
                 }
             });
+
 
             _converse.ContactsPanel = Backbone.View.extend({
                 tagName: 'div',
@@ -56665,16 +57116,17 @@ return __p
                     'click a.subscribe-to-user': 'addContactFromList'
                 },
 
-                initialize: function initialize(cfg) {
+                initialize (cfg) {
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
                     _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
-                render: function render() {
+
+                render () {
                     this.renderTab();
 
-                    var widgets = tpl_contacts_panel({
+                    let widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
                         label_away: __('Away'),
@@ -56691,30 +57143,31 @@ return __p
                     }
                     this.el.innerHTML = widgets;
 
-                    var controlbox = _converse.chatboxes.get('controlbox');
+                    const controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== USERS_PANEL_ID) {
                         this.el.classList.add('hidden');
                     }
                     return this;
                 },
-                renderTab: function renderTab() {
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    var chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
+
+                renderTab () {
+                    const controlbox = _converse.chatboxes.get('controlbox');
+                    const chats = fp.filter(_.partial(utils.isOfType, CHATBOX_TYPE), _converse.chatboxes.models);
                     this.tab_el.innerHTML = tpl_contacts_tab({
                         'label_contacts': LABEL_CONTACTS,
                         'is_current': controlbox.get('active-panel') === USERS_PANEL_ID,
                         'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chats))
                     });
                 },
-                insertIntoDOM: function insertIntoDOM() {
+
+                insertIntoDOM () {
                     this.parent_el.appendChild(this.render().el);
                     this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
                     this.tabs.appendChild(this.tab_el);
                     return this;
                 },
-                generateAddContactHTML: function generateAddContactHTML() {
-                    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+                generateAddContactHTML (settings={}) {
                     if (_converse.xhr_user_search) {
                         return tpl_search_contact({
                             label_contact_name: __('Contact name'),
@@ -56729,49 +57182,61 @@ return __p
                         }, settings));
                     }
                 },
-                toggleContactForm: function toggleContactForm(ev) {
+
+                toggleContactForm (ev) {
                     ev.preventDefault();
                     this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
                     var dropdown = this.el.querySelector('.contact-form-container');
-                    utils.slideToggleElement(dropdown).then(function () {
+                    utils.slideToggleElement(dropdown).then(() => {
                         if ($(dropdown).is(':visible')) {
                             $(dropdown).find('input.username').focus();
                         }
                     });
                 },
-                searchContacts: function searchContacts(ev) {
+
+                searchContacts (ev) {
                     ev.preventDefault();
-                    $.getJSON(_converse.xhr_user_search_url + "?q=" + $(ev.target).find('input.username').val(), function (data) {
-                        var $ul = $('.search-xmpp ul');
+                    $.getJSON(_converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        const $ul= $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
                         if (!data.length) {
-                            $ul.append("<li class=\"chat-info\">" + __('No users found') + "</li>");
+                            $ul.append(`<li class="chat-info">${__('No users found')}</li>`);
                         }
                         $(data).each(function (idx, obj) {
-                            $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"" + __('Click to add as a chat contact') + "\"></a>").attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
+                            $ul.append(
+                                $('<li class="found-user"></li>')
+                                .append(
+                                    $(`<a class="subscribe-to-user" href="#" title="${__('Click to add as a chat contact')}"></a>`)
+                                    .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
+                                    .text(obj.fullname)
+                                )
+                            );
                         });
                     });
                 },
-                addContactFromForm: function addContactFromForm(ev) {
+
+                addContactFromForm (ev) {
                     ev.preventDefault();
-                    var $input = $(ev.target).find('input');
-                    var jid = $input.val();
+                    const $input = $(ev.target).find('input');
+                    const jid = $input.val();
                     if (!jid || _.filter(jid.split('@')).length < 2) {
-                        this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
-                            error_message: __('Please enter a valid XMPP username'),
-                            label_contact_username: __('e.g. user@example.org'),
-                            label_add: __('Add'),
-                            value: jid
-                        });
+                        this.el.querySelector('.search-xmpp div').innerHTML =
+                            this.generateAddContactHTML({
+                                error_message: __('Please enter a valid XMPP username'),
+                                label_contact_username: __('e.g. user@example.org'),
+                                label_add: __('Add'),
+                                value: jid
+                            });
                         return;
                     }
                     _converse.roster.addAndSubscribe(jid);
                     utils.slideIn(this.el.querySelector('.contact-form-container'));
                 },
-                addContactFromList: function addContactFromList(ev) {
+
+                addContactFromList (ev) {
                     ev.preventDefault();
-                    var $target = $(ev.target),
+                    const $target = $(ev.target),
                         jid = $target.attr('data-recipient'),
                         name = $target.text();
                     _converse.roster.addAndSubscribe(jid, name);
@@ -56779,6 +57244,7 @@ return __p
                     utils.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
+
 
             _converse.ControlBoxToggle = Backbone.View.extend({
                 tagName: 'a',
@@ -56791,64 +57257,67 @@ return __p
                     'href': "#"
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
-                    var that = this;
-                    _converse.api.waitUntil('initialized').then(function () {
+                    const that = this;
+                    _converse.api.waitUntil('initialized').then(() => {
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
-                render: function render() {
+
+                render () {
                     // We let the render method of ControlBoxView decide whether
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     this.el.innerHTML = tpl_controlbox_toggle({
                         'label_toggle': __('Toggle chat')
-                    });
+                    })
                     return this;
                 },
-
 
                 updateOnlineCount: _.debounce(function () {
                     if (_.isUndefined(_converse.roster)) {
                         return;
                     }
-                    var $count = this.$('#online-count');
-                    $count.text("(" + _converse.roster.getNumOnlineContacts() + ")");
+                    const $count = this.$('#online-count');
+                    $count.text(`(${_converse.roster.getNumOnlineContacts()})`);
                     if (!$count.is(':visible')) {
                         $count.show();
                     }
                 }, _converse.animate ? 100 : 0),
 
-                hide: function hide(callback) {
+                hide (callback) {
                     this.el.classList.add('hidden');
                     callback();
                 },
-                show: function show(callback) {
+
+                show (callback) {
                     utils.fadeIn(this.el, callback);
                 },
-                showControlBox: function showControlBox() {
-                    var controlbox = _converse.chatboxes.get('controlbox');
+
+                showControlBox () {
+                    let controlbox = _converse.chatboxes.get('controlbox');
                     if (!controlbox) {
                         controlbox = _converse.addControlBox();
                     }
                     if (_converse.connection.connected) {
-                        controlbox.save({ closed: false });
+                        controlbox.save({closed: false});
                     } else {
                         controlbox.trigger('show');
                     }
                 },
-                onClick: function onClick(e) {
+
+                onClick (e) {
                     e.preventDefault();
                     if ($("div#controlbox").is(':visible')) {
-                        var controlbox = _converse.chatboxes.get('controlbox');
+                        const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
-                            controlbox.save({ closed: true });
+                            controlbox.save({closed: true});
                         } else {
                             controlbox.trigger('hide');
                         }
@@ -56858,36 +57327,40 @@ return __p
                 }
             });
 
-            Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(_converse.addControlBox)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
-            var disconnect = function disconnect() {
+            const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if
                  * we reconnect,
                  * "onConnected" will be called, to fetch the roster again and
                  * to send out a presence stanza.
                  */
-                var view = _converse.chatboxviews.get('controlbox');
-                view.model.set({ connected: false });
+                const view = _converse.chatboxviews.get('controlbox');
+                view.model.set({connected:false});
                 view.$('#controlbox-tabs').empty();
                 view.renderLoginPanel();
             };
             _converse.on('disconnected', disconnect);
 
-            var afterReconnected = function afterReconnected() {
+            const afterReconnected = function () {
                 /* After reconnection makes sure the controlbox's is aware.
                  */
-                var view = _converse.chatboxviews.get('controlbox');
+                const view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {
                     _converse.chatboxviews.get("controlbox").onConnected();
                 } else {
-                    view.model.set({ connected: true });
+                    view.model.set({connected:true});
                 }
             };
             _converse.on('reconnected', afterReconnected);
         }
     });
-});
-//# sourceMappingURL=converse-controlbox.js.map;
+}));
+
 
 define('tpl!field', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -58607,8 +59080,6 @@ Strophe.addConnectionPlugin('disco',
 });
 }));
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -58621,34 +59092,29 @@ Strophe.addConnectionPlugin('disco',
 /*global Backbone, define, window, document */
 (function (root, factory) {
     define('converse-disco',["converse-core", "sizzle", "strophe.disco"], factory);
-})(undefined, function (converse, sizzle) {
-    var _converse$env = converse.env,
-        Backbone = _converse$env.Backbone,
-        Promise = _converse$env.Promise,
-        Strophe = _converse$env.Strophe,
-        b64_sha1 = _converse$env.b64_sha1,
-        _ = _converse$env._;
+}(this, function (converse, sizzle) {
 
+    const { Backbone, Promise, Strophe, b64_sha1, _ } = converse.env;
 
     converse.plugins.add('converse-disco', {
-        initialize: function initialize() {
+
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
-
-            function onDiscoItems(stanza) {
-                _.each(stanza.querySelectorAll('query item'), function (item) {
+            function onDiscoItems (stanza) {
+                _.each(stanza.querySelectorAll('query item'), (item) => {
                     if (item.getAttribute("node")) {
                         // XXX: ignore nodes for now.
                         // See: https://xmpp.org/extensions/xep-0030.html#items-nodes
                         return;
                     }
-                    var jid = item.getAttribute('jid');
-                    var entities = _converse.disco_entities;
+                    const jid = item.getAttribute('jid');
+                    const entities = _converse.disco_entities;
                     if (_.isUndefined(entities.get(jid))) {
-                        entities.create({ 'jid': jid });
+                        entities.create({'jid': jid});
                     }
                 });
             }
@@ -58664,52 +59130,59 @@ Strophe.addConnectionPlugin('disco',
                 */
                 idAttribute: 'jid',
 
-                initialize: function initialize() {
+                initialize () {
                     this.features = new Backbone.Collection();
-                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.features-" + this.get('jid')));
+                    this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.features-${this.get('jid')}`)
+                    );
                     this.features.on('add', this.onFeatureAdded);
 
                     this.identities = new Backbone.Collection();
-                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.identities-" + this.get('jid')));
+                    this.identities.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.identities-${this.get('jid')}`)
+                    );
                     this.fetchFeatures();
                 },
-                onFeatureAdded: function onFeatureAdded(feature) {
+
+                onFeatureAdded (feature) {
                     _converse.emit('serviceDiscovered', feature);
                 },
-                fetchFeatures: function fetchFeatures() {
+
+                fetchFeatures () {
                     if (this.features.browserStorage.records.length === 0) {
                         this.queryInfo();
                     } else {
-                        this.features.fetch({ add: true });
-                        this.identities.fetch({ add: true });
+                        this.features.fetch({add: true});
+                        this.identities.fetch({add: true});
                     }
                 },
-                queryInfo: function queryInfo() {
+
+                queryInfo () {
                     _converse.connection.disco.info(this.get('jid'), null, this.onInfo.bind(this));
                 },
-                queryForItems: function queryForItems() {
-                    if (_.isEmpty(this.identities.where({ 'category': 'server' }))) {
+
+                queryForItems () {
+                    if (_.isEmpty(this.identities.where({'category': 'server'}))) {
                         // Don't fetch features and items if this is not a
                         // server or a conference component.
                         return;
                     }
                     _converse.connection.disco.items(this.get('jid'), null, onDiscoItems);
                 },
-                onInfo: function onInfo(stanza) {
-                    var _this = this;
 
-                    _.forEach(stanza.querySelectorAll('identity'), function (identity) {
-                        _this.identities.create({
+                onInfo (stanza) {
+                    _.forEach(stanza.querySelectorAll('identity'), (identity) => {
+                        this.identities.create({
                             'category': identity.getAttribute('category'),
                             'type': stanza.getAttribute('type'),
                             'name': stanza.getAttribute('name')
                         });
                     });
-                    if (stanza.querySelector('feature[var="' + Strophe.NS.DISCO_ITEMS + '"]')) {
+                    if (stanza.querySelector('feature[var="'+Strophe.NS.DISCO_ITEMS+'"]')) {
                         this.queryForItems();
                     }
-                    _.forEach(stanza.querySelectorAll('feature'), function (feature) {
-                        _this.features.create({
+                    _.forEach(stanza.querySelectorAll('feature'), (feature) => {
+                        this.features.create({
                             'var': feature.getAttribute('var'),
                             'from': stanza.getAttribute('from')
                         });
@@ -58721,31 +59194,35 @@ Strophe.addConnectionPlugin('disco',
             _converse.DiscoEntities = Backbone.Collection.extend({
                 model: _converse.DiscoEntity,
 
-                initialize: function initialize() {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.disco-entities-" + _converse.bare_jid));
-                    this.fetchEntities().then(_.partial(_converse.emit, 'discoInitialized'), _.partial(_converse.emit, 'discoInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                initialize () {
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.disco-entities-${_converse.bare_jid}`)
+                    );
+                    this.fetchEntities().then(
+                        _.partial(_converse.emit, 'discoInitialized'),
+                        _.partial(_converse.emit, 'discoInitialized')
+                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
-                fetchEntities: function fetchEntities() {
-                    var _this2 = this;
 
-                    return new Promise(function (resolve, reject) {
-                        _this2.fetch({
+                fetchEntities () {
+                    return new Promise((resolve, reject) => {
+                        this.fetch({
                             add: true,
                             success: function (collection) {
                                 if (collection.length === 0 || !collection.get(_converse.domain)) {
-                                    this.create({ 'jid': _converse.domain });
+                                    this.create({'jid': _converse.domain});
                                 }
                                 resolve();
-                            }.bind(_this2),
-                            error: function error() {
-                                reject(new Error("Could not fetch disco entities"));
+                            }.bind(this),
+                            error () {
+                                reject (new Error("Could not fetch disco entities"));
                             }
                         });
                     });
                 }
             });
 
-            function addClientFeatures() {
+            function addClientFeatures () {
                 /* The strophe.disco.js plugin keeps a list of features which
                  * it will advertise to any #info queries made to it.
                  *
@@ -58766,16 +59243,16 @@ Strophe.addConnectionPlugin('disco',
                 return this;
             }
 
-            function initializeDisco() {
+            function initializeDisco () {
                 addClientFeatures();
                 _converse.disco_entities = new _converse.DiscoEntities();
             }
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 
-            _converse.api.listen.on('beforeTearDown', function () {
+            _converse.api.listen.on('beforeTearDown', () => {
                 if (_converse.disco_entities) {
-                    _converse.disco_entities.each(function (entity) {
+                    _converse.disco_entities.each((entity) => {
                         entity.features.reset();
                         entity.features.browserStorage._clear();
                     });
@@ -58785,9 +59262,7 @@ Strophe.addConnectionPlugin('disco',
             });
         }
     });
-});
-//# sourceMappingURL=converse-disco.js.map;
-
+}));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -58801,37 +59276,79 @@ Strophe.addConnectionPlugin('disco',
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define('converse-muc',["jquery.noconflict", "form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco"], factory);
-})(undefined, function ($, utils, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
+    define('converse-muc',[
+            "jquery.noconflict",
+            "form-utils",
+            "converse-core",
+            "lodash.fp",
+            "tpl!chatarea",
+            "tpl!chatroom",
+            "tpl!chatroom_disconnect",
+            "tpl!chatroom_features",
+            "tpl!chatroom_form",
+            "tpl!chatroom_head",
+            "tpl!chatroom_invite",
+            "tpl!chatroom_nickname_form",
+            "tpl!chatroom_password_form",
+            "tpl!chatroom_sidebar",
+            "tpl!chatroom_toolbar",
+            "tpl!chatrooms_tab",
+            "tpl!info",
+            "tpl!occupant",
+            "tpl!room_description",
+            "tpl!room_item",
+            "tpl!room_panel",
+            "tpl!spinner",
+            "awesomplete",
+            "converse-chatview",
+            "converse-disco"
+    ], factory);
+}(this, function (
+            $,
+            utils,
+            converse,
+            fp,
+            tpl_chatarea,
+            tpl_chatroom,
+            tpl_chatroom_disconnect,
+            tpl_chatroom_features,
+            tpl_chatroom_form,
+            tpl_chatroom_head,
+            tpl_chatroom_invite,
+            tpl_chatroom_nickname_form,
+            tpl_chatroom_password_form,
+            tpl_chatroom_sidebar,
+            tpl_chatroom_toolbar,
+            tpl_chatrooms_tab,
+            tpl_info,
+            tpl_occupant,
+            tpl_room_description,
+            tpl_room_item,
+            tpl_room_panel,
+            tpl_spinner,
+            Awesomplete
+    ) {
 
     "use strict";
+    const ROOMS_PANEL_ID = 'chatrooms';
+    const CHATROOMS_TYPE = 'chatroom';
 
-    var ROOMS_PANEL_ID = 'chatrooms';
-    var CHATROOMS_TYPE = 'chatroom';
-
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        Backbone = _converse$env.Backbone,
-        Promise = _converse$env.Promise,
-        $iq = _converse$env.$iq,
-        $build = _converse$env.$build,
-        $msg = _converse$env.$msg,
-        $pres = _converse$env.$pres,
-        b64_sha1 = _converse$env.b64_sha1,
-        sizzle = _converse$env.sizzle,
-        _ = _converse$env._,
-        moment = _converse$env.moment;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
 
     // Add Strophe Namespaces
-
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
     Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
     Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
     Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
-    var ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'public', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
-    var ROOM_FEATURES_MAP = {
+    const ROOM_FEATURES = [
+        'passwordprotected', 'unsecured', 'hidden',
+        'public', 'membersonly', 'open', 'persistent',
+        'temporary', 'nonanonymous', 'semianonymous',
+        'moderated', 'unmoderated', 'mam_enabled'
+    ];
+    const ROOM_FEATURES_MAP = {
         'passwordprotected': 'unsecured',
         'unsecured': 'passwordprotected',
         'hidden': 'public',
@@ -58877,36 +59394,34 @@ Strophe.addConnectionPlugin('disco',
             //
             // New functions which don't exist yet can also be added.
 
-            _tearDown: function _tearDown() {
-                var rooms = this.chatboxes.where({ 'type': CHATROOMS_TYPE });
+            _tearDown () {
+                const rooms = this.chatboxes.where({'type': CHATROOMS_TYPE});
                 _.each(rooms, function (room) {
-                    utils.safeSave(room, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+                    utils.safeSave(room, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
                 this.__super__._tearDown.call(this, arguments);
             },
 
-
             ChatBoxes: {
-                model: function model(attrs, options) {
-                    var _converse = this.__super__._converse;
-
+                model (attrs, options) {
+                    const { _converse } = this.__super__;
                     if (attrs.type == CHATROOMS_TYPE) {
                         return new _converse.ChatRoom(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
                     }
-                }
+                },
             },
 
             ControlBoxView: {
-                renderRoomsPanel: function renderRoomsPanel() {
-                    var _converse = this.__super__._converse;
-
+                renderRoomsPanel () {
+                    const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
                         'model': new (Backbone.Model.extend({
-                            id: b64_sha1("converse.roomspanel" + _converse.bare_jid), // Required by sessionStorage
-                            browserStorage: new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.roomspanel" + _converse.bare_jid))
+                            id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
+                            browserStorage: new Backbone.BrowserStorage[_converse.storage](
+                                b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });
                     this.roomspanel.insertIntoDOM().model.fetch();
@@ -58917,47 +59432,45 @@ Strophe.addConnectionPlugin('disco',
                     }
                     _converse.emit('roomsPanelRendered');
                 },
-                renderContactsPanel: function renderContactsPanel() {
-                    var _converse = this.__super__._converse;
 
+                renderContactsPanel () {
+                    const { _converse } = this.__super__;
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.renderRoomsPanel();
                     }
                 },
-                featureAdded: function featureAdded(feature) {
-                    var _converse = this.__super__._converse;
 
-                    if (feature.get('var') === Strophe.NS.MUC && _converse.allow_muc) {
+                featureAdded (feature) {
+                    const { _converse } = this.__super__;
+                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
                         this.setMUCDomain(feature.get('from'));
                     }
                 },
-                getMUCDomainFromDisco: function getMUCDomainFromDisco() {
-                    var _this = this;
 
+                getMUCDomainFromDisco () {
                     /* Check whether service discovery for the user's domain
                      * returned MUC information and use that to automatically
                      * set the MUC domain for the "Rooms" panel of the
                      * controlbox.
                      */
-                    var _converse = this.__super__._converse;
-
-                    _converse.api.waitUntil('discoInitialized').then(function () {
-                        _converse.api.listen.on('serviceDiscovered', _this.featureAdded, _this);
+                    const { _converse } = this.__super__;
+                    _converse.api.waitUntil('discoInitialized').then(() => {
+                        _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        var entity = _converse.disco_entities[_converse.domain];
+                        const entity = _converse.disco_entities[_converse.domain];
                         if (!_.isUndefined(entity)) {
-                            var feature = entity.features.findWhere({ 'var': Strophe.NS.MUC });
+                            const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
                             if (feature) {
-                                _this.featureAdded(feature);
+                                this.featureAdded(feature);
                             }
                         }
                     });
                 },
-                onConnected: function onConnected() {
-                    var _converse = this.__super__._converse;
 
+                onConnected () {
+                    const { _converse } = this.__super__;
                     this.__super__.onConnected.apply(this, arguments);
                     if (!this.model.get('connected')) {
                         return;
@@ -58968,12 +59481,12 @@ Strophe.addConnectionPlugin('disco',
                         this.setMUCDomain(_converse.muc_domain);
                     }
                 },
-                setMUCDomain: function setMUCDomain(domain) {
-                    var _converse = this.__super__._converse;
 
+                setMUCDomain (domain) {
+                    const { _converse } = this.__super__;
                     _converse.muc_domain = domain;
-                    this.roomspanel.model.save({ 'muc_domain': domain });
-                    var $server = this.$el.find('input.new-chatroom-server');
+                    this.roomspanel.model.save({'muc_domain': domain});
+                    const $server= this.$el.find('input.new-chatroom-server');
                     if (!$server.is(':focus')) {
                         $server.val(this.roomspanel.model.get('muc_domain'));
                     }
@@ -58981,12 +59494,11 @@ Strophe.addConnectionPlugin('disco',
             },
 
             ChatBoxViews: {
-                onChatBoxAdded: function onChatBoxAdded(item) {
-                    var _converse = this.__super__._converse;
-
-                    var view = this.get(item.get('id'));
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
+                    let view = this.get(item.get('id'));
                     if (!view && item.get('type') === CHATROOMS_TYPE) {
-                        view = new _converse.ChatRoomView({ 'model': item });
+                        view = new _converse.ChatRoomView({'model': item});
                         return this.add(item.get('id'), view);
                     } else {
                         return this.__super__.onChatBoxAdded.apply(this, arguments);
@@ -58995,13 +59507,13 @@ Strophe.addConnectionPlugin('disco',
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+            const { _converse } = this,
+                { __,
+                ___ } = _converse;
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -59094,7 +59606,7 @@ Strophe.addConnectionPlugin('disco',
                 muc_show_join_leave: true,
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
-                }
+                },
             });
             _converse.api.promises.add('roomsPanelRendered');
 
@@ -59108,61 +59620,69 @@ Strophe.addConnectionPlugin('disco',
                 }
                 settings.type = CHATROOMS_TYPE;
                 settings.id = settings.jid;
-                settings.box_id = b64_sha1(settings.jid);
+                settings.box_id = b64_sha1(settings.jid)
                 return _converse.chatboxviews.showChat(settings, bring_to_foreground);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
-                defaults: function defaults() {
-                    return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)), {
-                        // For group chats, we distinguish between generally unread
-                        // messages and those ones that specifically mention the
-                        // user.
-                        //
-                        // To keep things simple, we reuse `num_unread` from
-                        // _converse.ChatBox to indicate unread messages which
-                        // mention the user and `num_unread_general` to indicate
-                        // generally unread messages (which *includes* mentions!).
-                        'num_unread_general': 0,
 
-                        'affiliation': null,
-                        'connection_status': converse.ROOMSTATUS.DISCONNECTED,
-                        'name': '',
-                        'description': '',
-                        'features_fetched': false,
-                        'roomconfig': {},
-                        'type': CHATROOMS_TYPE
-                    });
+                defaults () {
+                    return _.assign(
+                        _.clone(_converse.ChatBox.prototype.defaults),
+                        _.zipObject(ROOM_FEATURES, _.map(ROOM_FEATURES, _.stubFalse)),
+                        {
+                          // For group chats, we distinguish between generally unread
+                          // messages and those ones that specifically mention the
+                          // user.
+                          //
+                          // To keep things simple, we reuse `num_unread` from
+                          // _converse.ChatBox to indicate unread messages which
+                          // mention the user and `num_unread_general` to indicate
+                          // generally unread messages (which *includes* mentions!).
+                          'num_unread_general': 0,
+
+                          'affiliation': null,
+                          'connection_status': converse.ROOMSTATUS.DISCONNECTED,
+                          'name': '',
+                          'description': '',
+                          'features_fetched': false,
+                          'roomconfig': {},
+                          'type': CHATROOMS_TYPE,
+                        }
+                    );
                 },
-                isUserMentioned: function isUserMentioned(message) {
+
+                isUserMentioned (message) {
                     /* Returns a boolean to indicate whether the current user
                      * was mentioned in a message.
                      *
                      * Parameters:
                      *  (String): The text message
                      */
-                    return new RegExp("\\b" + this.get('nick') + "\\b").test(message);
+                    return (new RegExp(`\\b${this.get('nick')}\\b`)).test(message);
                 },
-                incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+
+                incrementUnreadMsgCounter (stanza) {
                     /* Given a newly received message, update the unread counter if
                      * necessary.
                      *
                      * Parameters:
                      *  (XMLElement): The <messsage> stanza
                      */
-                    var body = stanza.querySelector('body');
+                    const body = stanza.querySelector('body');
                     if (_.isNull(body)) {
                         return; // The message has no text
                     }
                     if (utils.isNewMessage(stanza) && this.newMessageWillBeHidden()) {
-                        this.save({ 'num_unread_general': this.get('num_unread_general') + 1 });
+                        this.save({'num_unread_general': this.get('num_unread_general') + 1});
                         if (this.isUserMentioned(body.textContent)) {
-                            this.save({ 'num_unread': this.get('num_unread') + 1 });
+                            this.save({'num_unread': this.get('num_unread') + 1});
                             _converse.incrementMsgCounter();
                         }
                     }
                 },
-                clearUnreadMsgCounter: function clearUnreadMsgCounter() {
+
+                clearUnreadMsgCounter() {
                     utils.safeSave(this, {
                         'num_unread': 0,
                         'num_unread_general': 0
@@ -59192,9 +59712,7 @@ Strophe.addConnectionPlugin('disco',
                     'click .send-button': 'onSendButtonClicked'
                 },
 
-                initialize: function initialize() {
-                    var _this2 = this;
-
+                initialize () {
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
@@ -59209,19 +59727,20 @@ Strophe.addConnectionPlugin('disco',
                     this.render().insertIntoDOM();
                     this.registerHandlers();
 
-                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
-                        var handler = function handler() {
-                            _this2.join();
-                            _this2.fetchMessages();
-                            _converse.emit('chatRoomOpened', _this2);
-                        };
+                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                        const handler = () => {
+                            this.join();
+                            this.fetchMessages();
+                            _converse.emit('chatRoomOpened', this);
+                        }
                         this.getRoomFeatures().then(handler, handler);
                     } else {
                         this.fetchMessages();
                         _converse.emit('chatRoomOpened', this);
                     }
                 },
-                render: function render() {
+
+                render () {
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
@@ -59232,51 +59751,59 @@ Strophe.addConnectionPlugin('disco',
                     utils.refreshWebkit();
                     return this;
                 },
-                renderHeading: function renderHeading() {
+
+                renderHeading () {
                     /* Render the heading UI of the chat room. */
                     this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
                 },
-                renderChatArea: function renderChatArea() {
+
+                renderChatArea () {
                     /* Render the UI container in which chat room messages will
                      * appear.
                      */
                     if (!this.$('.chat-area').length) {
-                        this.$('.chatroom-body').empty().append(tpl_chatarea({
-                            'label_message': __('Message'),
-                            'label_send': __('Send'),
-                            'show_send_button': _converse.show_send_button,
-                            'show_toolbar': _converse.show_toolbar,
-                            'unread_msgs': __('You have unread messages')
-                        })).append(this.occupantsview.$el);
+                        this.$('.chatroom-body').empty()
+                            .append(tpl_chatarea({
+                                    'label_message': __('Message'),
+                                    'label_send': __('Send'),
+                                    'show_send_button': _converse.show_send_button,
+                                    'show_toolbar': _converse.show_toolbar,
+                                    'unread_msgs': __('You have unread messages')
+                                }))
+                            .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
                         this.$content = this.$el.find('.chat-content');
                     }
                     this.toggleOccupants(null, true);
                     return this;
                 },
-                createOccupantsView: function createOccupantsView() {
+
+                createOccupantsView () {
                     /* Create the ChatRoomOccupantsView Backbone.View
                      */
-                    var model = new _converse.ChatRoomOccupants();
+                    const model = new _converse.ChatRoomOccupants();
                     model.chatroomview = this;
-                    this.occupantsview = new _converse.ChatRoomOccupantsView({ 'model': model });
-                    var id = b64_sha1("converse.occupants" + _converse.bare_jid + this.model.get('jid'));
+                    this.occupantsview = new _converse.ChatRoomOccupantsView({'model': model});
+                    const id = b64_sha1(`converse.occupants${_converse.bare_jid}${this.model.get('jid')}`);
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
-                    this.occupantsview.model.fetch({ add: true });
+                    this.occupantsview.model.fetch({add:true});
                     return this;
                 },
-                generateHeadingHTML: function generateHeadingHTML() {
+
+                generateHeadingHTML () {
                     /* Returns the heading HTML to be rendered.
                      */
-                    return tpl_chatroom_head(_.extend(this.model.toJSON(), {
-                        Strophe: Strophe,
-                        info_close: __('Close and leave this room'),
-                        info_configure: __('Configure this room'),
-                        description: this.model.get('description') || ''
+                    return tpl_chatroom_head(
+                        _.extend(this.model.toJSON(), {
+                            Strophe: Strophe,
+                            info_close: __('Close and leave this room'),
+                            info_configure: __('Configure this room'),
+                            description: this.model.get('description') || ''
                     }));
                 },
-                afterShown: function afterShown() {
+
+                afterShown () {
                     /* Override from converse-chatview, specifically to avoid
                      * the 'active' chat state from being sent out prematurely.
                      *
@@ -59289,36 +59816,46 @@ Strophe.addConnectionPlugin('disco',
                     }
                     this.occupantsview.setOccupantsHeight();
                 },
-                afterConnected: function afterConnected() {
+
+                afterConnected () {
                     if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                         this.setChatState(_converse.ACTIVE);
                         this.scrollDown();
                         this.focus();
                     }
                 },
-                getExtraMessageClasses: function getExtraMessageClasses(attrs) {
-                    var extra_classes = _converse.ChatBoxView.prototype.getExtraMessageClasses.apply(this, arguments);
 
-                    if (this.is_chatroom && attrs.sender === 'them' && this.model.isUserMentioned(attrs.message)) {
+                getExtraMessageClasses (attrs) {
+                    let extra_classes = _converse.ChatBoxView.prototype
+                            .getExtraMessageClasses.apply(this, arguments);
+
+                    if (this.is_chatroom && attrs.sender === 'them' &&
+                            this.model.isUserMentioned(attrs.message)) {
                         // Add special class to mark groupchat messages
                         // in which we are mentioned.
                         extra_classes += ' mentioned';
                     }
                     return extra_classes;
                 },
-                getToolbarOptions: function getToolbarOptions() {
-                    return _.extend(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
-                        label_hide_occupants: __('Hide the list of occupants'),
-                        show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
-                    });
+
+                getToolbarOptions () {
+                    return _.extend(
+                        _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
+                        {
+                          label_hide_occupants: __('Hide the list of occupants'),
+                          show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+                        }
+                    );
                 },
-                close: function close(ev) {
+
+                close (ev) {
                     /* Close this chat box, which implies leaving the room as
                      * well.
                      */
                     this.leave();
                 },
-                toggleOccupants: function toggleOccupants(ev, preserve_state) {
+
+                toggleOccupants (ev, preserve_state) {
                     /* Show or hide the right sidebar containing the chat
                      * occupants (and the invite widget).
                      */
@@ -59328,29 +59865,31 @@ Strophe.addConnectionPlugin('disco',
                     }
                     if (preserve_state) {
                         // Bit of a hack, to make sure that the sidebar's state doesn't change
-                        this.model.set({ hidden_occupants: !this.model.get('hidden_occupants') });
+                        this.model.set({hidden_occupants: !this.model.get('hidden_occupants')});
                     }
                     if (!this.model.get('hidden_occupants')) {
-                        this.model.save({ hidden_occupants: true });
+                        this.model.save({hidden_occupants: true});
                         this.$('.icon-hide-users').removeClass('icon-hide-users').addClass('icon-show-users');
                         this.$('.occupants').addClass('hidden');
                         this.$('.chat-area').addClass('full');
                         this.scrollDown();
                     } else {
-                        this.model.save({ hidden_occupants: false });
+                        this.model.save({hidden_occupants: false});
                         this.$('.icon-show-users').removeClass('icon-show-users').addClass('icon-hide-users');
                         this.$('.chat-area').removeClass('full');
                         this.$('div.occupants').removeClass('hidden');
                         this.scrollDown();
                     }
                 },
-                onOccupantClicked: function onOccupantClicked(ev) {
+
+                onOccupantClicked (ev) {
                     /* When an occupant is clicked, insert their nickname into
                      * the chat textarea input.
                      */
                     this.insertIntoTextArea(ev.target.textContent);
                 },
-                requestMemberList: function requestMemberList(chatroom_jid, affiliation) {
+
+                requestMemberList (chatroom_jid, affiliation) {
                     /* Send an IQ stanza to the server, asking it for the
                      * member-list of this room.
                      *
@@ -59366,24 +59905,29 @@ Strophe.addConnectionPlugin('disco',
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
-                    return new Promise(function (resolve, reject) {
+                    return new Promise((resolve, reject) => {
                         affiliation = affiliation || 'member';
-                        var iq = $iq({ to: chatroom_jid, type: "get" }).c("query", { xmlns: Strophe.NS.MUC_ADMIN }).c("item", { 'affiliation': affiliation });
+                        const iq = $iq({to: chatroom_jid, type: "get"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                                .c("item", {'affiliation': affiliation});
                         _converse.connection.sendIQ(iq, resolve, reject);
                     });
                 },
-                parseMemberListIQ: function parseMemberListIQ(iq) {
+
+                parseMemberListIQ (iq) {
                     /* Given an IQ stanza with a member list, create an array of member
                      * objects.
                      */
-                    return _.map($(iq).find("query[xmlns=\"" + Strophe.NS.MUC_ADMIN + "\"] item"), function (item) {
-                        return {
+                    return _.map(
+                        $(iq).find(`query[xmlns="${Strophe.NS.MUC_ADMIN}"] item`),
+                        (item) => ({
                             'jid': item.getAttribute('jid'),
-                            'affiliation': item.getAttribute('affiliation')
-                        };
-                    });
+                            'affiliation': item.getAttribute('affiliation'),
+                        })
+                    );
                 },
-                computeAffiliationsDelta: function computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list) {
+
+                computeAffiliationsDelta (exclude_existing, remove_absentees, new_list, old_list) {
                     /* Given two lists of objects with 'jid', 'affiliation' and
                      * 'reason' properties, return a new list containing
                      * those objects that are new, changed or removed
@@ -59410,17 +59954,18 @@ Strophe.addConnectionPlugin('disco',
                      *  (Array) new_list: Array containing the new affiliations
                      *  (Array) old_list: Array containing the old affiliations
                      */
-                    var new_jids = _.map(new_list, 'jid');
-                    var old_jids = _.map(old_list, 'jid');
+                    const new_jids = _.map(new_list, 'jid');
+                    const old_jids = _.map(old_list, 'jid');
 
                     // Get the new affiliations
-                    var delta = _.map(_.difference(new_jids, old_jids), function (jid) {
-                        return new_list[_.indexOf(new_jids, jid)];
-                    });
+                    let delta = _.map(
+                        _.difference(new_jids, old_jids),
+                        (jid) => new_list[_.indexOf(new_jids, jid)]
+                    );
                     if (!exclude_existing) {
                         // Get the changed affiliations
                         delta = delta.concat(_.filter(new_list, function (item) {
-                            var idx = _.indexOf(old_jids, item.jid);
+                            const idx = _.indexOf(old_jids, item.jid);
                             if (idx >= 0) {
                                 return item.affiliation !== old_list[idx].affiliation;
                             }
@@ -59429,13 +59974,17 @@ Strophe.addConnectionPlugin('disco',
                     }
                     if (remove_absentees) {
                         // Get the removed affiliations
-                        delta = delta.concat(_.map(_.difference(old_jids, new_jids), function (jid) {
-                            return { 'jid': jid, 'affiliation': 'none' };
-                        }));
+                        delta = delta.concat(
+                            _.map(
+                                _.difference(old_jids, new_jids),
+                                (jid) => ({'jid': jid, 'affiliation': 'none'})
+                            )
+                        );
                     }
                     return delta;
                 },
-                sendAffiliationIQ: function sendAffiliationIQ(chatroom_jid, affiliation, member) {
+
+                sendAffiliationIQ (chatroom_jid, affiliation, member) {
                     /* Send an IQ stanza specifying an affiliation change.
                      *
                      * Paremeters:
@@ -59445,18 +59994,21 @@ Strophe.addConnectionPlugin('disco',
                      *  (Object) member: Map containing the member's jid and
                      *      optionally a reason and affiliation.
                      */
-                    return new Promise(function (resolve, reject) {
-                        var iq = $iq({ to: chatroom_jid, type: "set" }).c("query", { xmlns: Strophe.NS.MUC_ADMIN }).c("item", {
-                            'affiliation': member.affiliation || affiliation,
-                            'jid': member.jid
-                        });
+                    return new Promise((resolve, reject) => {
+                        const iq = $iq({to: chatroom_jid, type: "set"})
+                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {
+                                'affiliation': member.affiliation || affiliation,
+                                'jid': member.jid
+                            });
                         if (!_.isUndefined(member.reason)) {
                             iq.c("reason", member.reason);
                         }
                         _converse.connection.sendIQ(iq, resolve, reject);
                     });
                 },
-                setAffiliation: function setAffiliation(affiliation, members) {
+
+                setAffiliation (affiliation, members) {
                     /* Send IQ stanzas to the server to set an affiliation for
                      * the provided JIDs.
                      *
@@ -59478,18 +60030,21 @@ Strophe.addConnectionPlugin('disco',
                      *  A promise which resolves and fails depending on the
                      *  XMPP server response.
                      */
-                    members = _.filter(members, function (member) {
-                        return (
-                            // We only want those members who have the right
-                            // affiliation (or none, which implies the provided
-                            // one).
-                            _.isUndefined(member.affiliation) || member.affiliation === affiliation
-                        );
-                    });
-                    var promises = _.map(members, _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation));
+                    members = _.filter(members, (member) =>
+                        // We only want those members who have the right
+                        // affiliation (or none, which implies the provided
+                        // one).
+                        _.isUndefined(member.affiliation) ||
+                                member.affiliation === affiliation
+                    );
+                    const promises = _.map(
+                        members,
+                        _.partial(this.sendAffiliationIQ, this.model.get('jid'), affiliation)
+                    );
                     return Promise.all(promises);
                 },
-                setAffiliations: function setAffiliations(members) {
+
+                setAffiliations (members) {
                     /* Send IQ stanzas to the server to modify the
                      * affiliations in this room.
                      *
@@ -59500,10 +60055,11 @@ Strophe.addConnectionPlugin('disco',
                      *  (Function) onSuccess: callback for a succesful response
                      *  (Function) onError: callback for an error response
                      */
-                    var affiliations = _.uniq(_.map(members, 'affiliation'));
+                    const affiliations = _.uniq(_.map(members, 'affiliation'));
                     _.each(affiliations, _.partial(this.setAffiliation.bind(this), _, members));
                 },
-                marshallAffiliationIQs: function marshallAffiliationIQs() {
+
+                marshallAffiliationIQs () {
                     /* Marshall a list of IQ stanzas into a map of JIDs and
                      * affiliations.
                      *
@@ -59513,23 +60069,24 @@ Strophe.addConnectionPlugin('disco',
                      */
                     return _.flatMap(arguments, this.parseMemberListIQ);
                 },
-                getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
-                    var _this3 = this;
 
+                getJidsWithAffiliations (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
                      */
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    return new Promise(function (resolve, reject) {
-                        var promises = _.map(affiliations, _.partial(_this3.requestMemberList, _this3.model.get('jid')));
-                        Promise.all(promises).then(_.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve), _.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve));
+                    return new Promise((resolve, reject) => {
+                        const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
+                        Promise.all(promises).then(
+                            _.flow(this.marshallAffiliationIQs.bind(this), resolve),
+                            _.flow(this.marshallAffiliationIQs.bind(this), resolve)
+                        );
                     });
                 },
-                updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
-                    var _this4 = this;
 
+                updateMemberLists (members, affiliations, deltaFunc) {
                     /* Fetch the lists of users with the given affiliations.
                      * Then compute the delta between those users and
                      * the passed in members, and if it exists, send the delta
@@ -59547,11 +60104,12 @@ Strophe.addConnectionPlugin('disco',
                      *  updated or once it's been established there's no need
                      *  to update the list.
                      */
-                    this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-                        _this4.setAffiliations(deltaFunc(members, old_members));
+                    this.getJidsWithAffiliations(affiliations).then((old_members) => {
+                        this.setAffiliations(deltaFunc(members, old_members));
                     });
                 },
-                directInvite: function directInvite(recipient, reason) {
+
+                directInvite (recipient, reason) {
                     /* Send a direct invitation as per XEP-0249
                      *
                      * Parameters:
@@ -59563,21 +60121,21 @@ Strophe.addConnectionPlugin('disco',
                         // the person to the member list by giving them an
                         // affiliation of 'member' (if they're not affiliated
                         // already), otherwise they won't be able to join.
-                        var map = {};map[recipient] = 'member';
-                        var deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
-                        this.updateMemberLists([{ 'jid': recipient, 'affiliation': 'member', 'reason': reason }], ['member', 'owner', 'admin'], deltaFunc);
+                        const map = {}; map[recipient] = 'member';
+                        const deltaFunc = _.partial(this.computeAffiliationsDelta, true, false);
+                        this.updateMemberLists(
+                            [{'jid': recipient, 'affiliation': 'member', 'reason': reason}],
+                            ['member', 'owner', 'admin'],
+                            deltaFunc
+                        );
                     }
-                    var attrs = {
+                    const attrs = {
                         'xmlns': 'jabber:x:conference',
                         'jid': this.model.get('jid')
                     };
-                    if (reason !== null) {
-                        attrs.reason = reason;
-                    }
-                    if (this.model.get('password')) {
-                        attrs.password = this.model.get('password');
-                    }
-                    var invitation = $msg({
+                    if (reason !== null) { attrs.reason = reason; }
+                    if (this.model.get('password')) { attrs.password = this.model.get('password'); }
+                    const invitation = $msg({
                         from: _converse.connection.jid,
                         to: recipient,
                         id: _converse.connection.getUniqueId()
@@ -59589,7 +60147,8 @@ Strophe.addConnectionPlugin('disco',
                         'reason': reason
                     });
                 },
-                handleChatStateMessage: function handleChatStateMessage(message) {
+
+                handleChatStateMessage (message) {
                     /* Override the method on the ChatBoxView base class to
                      * ignore <gone/> notifications in groupchats.
                      *
@@ -59606,79 +60165,92 @@ Strophe.addConnectionPlugin('disco',
                         _converse.ChatBoxView.prototype.handleChatStateMessage.apply(this, arguments);
                     }
                 },
-                sendChatState: function sendChatState() {
+
+                sendChatState () {
                     /* Sends a message with the status of the user in this chat session
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
+                    if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
-                    var chat_state = this.model.get('chat_state');
+                    const chat_state = this.model.get('chat_state');
                     if (chat_state === _converse.GONE) {
                         // <gone/> is not applicable within MUC context
                         return;
                     }
-                    _converse.connection.send($msg({ 'to': this.model.get('jid'), 'type': 'groupchat' }).c(chat_state, { 'xmlns': Strophe.NS.CHATSTATES }).up().c('no-store', { 'xmlns': Strophe.NS.HINTS }).up().c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS }));
+                    _converse.connection.send(
+                        $msg({'to':this.model.get('jid'), 'type': 'groupchat'})
+                            .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                    );
                 },
-                sendChatRoomMessage: function sendChatRoomMessage(text) {
+
+                sendChatRoomMessage (text) {
                     /* Constuct a message stanza to be sent to this chat room,
                      * and send it to the server.
                      *
                      * Parameters:
                      *  (String) text: The message text to be sent.
                      */
-                    var msgid = _converse.connection.getUniqueId();
-                    var msg = $msg({
+                    const msgid = _converse.connection.getUniqueId();
+                    const msg = $msg({
                         to: this.model.get('jid'),
                         from: _converse.connection.jid,
                         type: 'groupchat',
                         id: msgid
-                    }).c("body").t(text).up().c("x", { xmlns: "jabber:x:event" }).c(_converse.COMPOSING);
+                    }).c("body").t(text).up()
+                    .c("x", {xmlns: "jabber:x:event"}).c(_converse.COMPOSING);
                     _converse.connection.send(msg);
                     this.model.messages.create({
                         fullname: this.model.get('nick'),
                         sender: 'me',
                         time: moment().format(),
                         message: text,
-                        msgid: msgid
+                        msgid
                     });
                 },
-                modifyRole: function modifyRole(room, nick, role, reason, onSuccess, onError) {
-                    var item = $build("item", { nick: nick, role: role });
-                    var iq = $iq({ to: room, type: "set" }).c("query", { xmlns: Strophe.NS.MUC_ADMIN }).cnode(item.node);
-                    if (reason !== null) {
-                        iq.c("reason", reason);
-                    }
+
+                modifyRole(room, nick, role, reason, onSuccess, onError) {
+                    const item = $build("item", {nick, role});
+                    const iq = $iq({to: room, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                    if (reason !== null) { iq.c("reason", reason); }
                     return _converse.connection.sendIQ(iq.tree(), onSuccess, onError);
                 },
-                validateRoleChangeCommand: function validateRoleChangeCommand(command, args) {
+
+                validateRoleChangeCommand (command, args) {
                     /* Check that a command to change a chat room user's role or
                      * affiliation has anough arguments.
                      */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
-                        this.showStatusNotification(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
+                        this.showStatusNotification(
+                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
+                                command),
+                            true
+                        );
                         return false;
                     }
                     return true;
                 },
-                clearChatRoomMessages: function clearChatRoomMessages(ev) {
+
+                clearChatRoomMessages (ev) {
                     /* Remove all messages from the chat room UI.
                      */
-                    if (!_.isUndefined(ev)) {
-                        ev.stopPropagation();
-                    }
-                    var result = confirm(__("Are you sure you want to clear the messages from this room?"));
+                    if (!_.isUndefined(ev)) { ev.stopPropagation(); }
+                    const result = confirm(__("Are you sure you want to clear the messages from this room?"));
                     if (result === true) {
                         this.$content.empty();
                     }
                     return this;
                 },
-                onCommandError: function onCommandError() {
+
+                onCommandError () {
                     this.showStatusNotification(__("Error: could not execute the command"), true);
                 },
-                onMessageSubmitted: function onMessageSubmitted(text) {
+
+                onMessageSubmitted (text) {
                     /* Gets called when the user presses enter to send off a
                      * message in a chat room.
                      *
@@ -59688,57 +60260,71 @@ Strophe.addConnectionPlugin('disco',
                     if (_converse.muc_disable_moderator_commands) {
                         return this.sendChatRoomMessage(text);
                     }
-                    var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                         args = match[2] && match[2].splitOnce(' ') || [],
                         command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.setAffiliation('admin', [{ 'jid': args[0],
-                                'reason': args[1]
-                            }]).then(null, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.setAffiliation('admin',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'ban':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.setAffiliation('outcast', [{ 'jid': args[0],
-                                'reason': args[1]
-                            }]).then(null, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.setAffiliation('outcast',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'clear':
                             this.clearChatRoomMessages();
                             break;
                         case 'deop':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.modifyRole(this.model.get('jid'), args[0], 'occupant', args[1], undefined, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.modifyRole(
+                                    this.model.get('jid'), args[0], 'occupant', args[1],
+                                    undefined, this.onCommandError.bind(this));
                             break;
                         case 'help':
-                            this.showHelpMessages(["<strong>/admin</strong>: " + __("Change user's affiliation to admin"), "<strong>/ban</strong>: " + __('Ban user from room'), "<strong>/clear</strong>: " + __('Remove messages'), "<strong>/deop</strong>: " + __('Change user role to occupant'), "<strong>/help</strong>: " + __('Show this menu'), "<strong>/kick</strong>: " + __('Kick user from room'), "<strong>/me</strong>: " + __('Write in 3rd person'), "<strong>/member</strong>: " + __('Grant membership to a user'), "<strong>/mute</strong>: " + __("Remove user's ability to post messages"), "<strong>/nick</strong>: " + __('Change your nickname'), "<strong>/op</strong>: " + __('Grant moderator role to user'), "<strong>/owner</strong>: " + __('Grant ownership of this room'), "<strong>/revoke</strong>: " + __("Revoke user's membership"), "<strong>/subject</strong>: " + __('Set room subject'), "<strong>/topic</strong>: " + __('Set room subject (alias for /subject)'), "<strong>/voice</strong>: " + __('Allow muted user to post messages')]);
+                            this.showHelpMessages([
+                                `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
+                                `<strong>/ban</strong>: ${__('Ban user from room')}`,
+                                `<strong>/clear</strong>: ${__('Remove messages')}`,
+                                `<strong>/deop</strong>: ${__('Change user role to occupant')}`,
+                                `<strong>/help</strong>: ${__('Show this menu')}`,
+                                `<strong>/kick</strong>: ${__('Kick user from room')}`,
+                                `<strong>/me</strong>: ${__('Write in 3rd person')}`,
+                                `<strong>/member</strong>: ${__('Grant membership to a user')}`,
+                                `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`,
+                                `<strong>/nick</strong>: ${__('Change your nickname')}`,
+                                `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
+                                `<strong>/owner</strong>: ${__('Grant ownership of this room')}`,
+                                `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
+                                `<strong>/subject</strong>: ${__('Set room subject')}`,
+                                `<strong>/topic</strong>: ${__('Set room subject (alias for /subject)')}`,
+                                `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
+                            ]);
                             break;
                         case 'kick':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.modifyRole(
+                                    this.model.get('jid'), args[0], 'none', args[1],
+                                    undefined, this.onCommandError.bind(this));
                             break;
                         case 'mute':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.modifyRole(
+                                    this.model.get('jid'), args[0], 'visitor', args[1],
+                                    undefined, this.onCommandError.bind(this));
                             break;
                         case 'member':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.setAffiliation('member', [{ 'jid': args[0],
-                                'reason': args[1]
-                            }]).then(null, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.setAffiliation('member',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'nick':
                             _converse.connection.send($pres({
@@ -59748,65 +60334,68 @@ Strophe.addConnectionPlugin('disco',
                             }).tree());
                             break;
                         case 'owner':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.setAffiliation('owner', [{ 'jid': args[0],
-                                'reason': args[1]
-                            }]).then(null, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.setAffiliation('owner',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'op':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.modifyRole(
+                                    this.model.get('jid'), args[0], 'moderator', args[1],
+                                    undefined, this.onCommandError.bind(this));
                             break;
                         case 'revoke':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.setAffiliation('none', [{ 'jid': args[0],
-                                'reason': args[1]
-                            }]).then(null, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.setAffiliation('none',
+                                    [{ 'jid': args[0],
+                                       'reason': args[1]
+                                    }]).then(null, this.onCommandError.bind(this));
                             break;
                         case 'topic':
                         case 'subject':
-                            _converse.connection.send($msg({
-                                to: this.model.get('jid'),
-                                from: _converse.connection.jid,
-                                type: "groupchat"
-                            }).c("subject", { xmlns: "jabber:client" }).t(match[2]).tree());
+                            _converse.connection.send(
+                                $msg({
+                                    to: this.model.get('jid'),
+                                    from: _converse.connection.jid,
+                                    type: "groupchat"
+                                }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
+                            );
                             break;
                         case 'voice':
-                            if (!this.validateRoleChangeCommand(command, args)) {
-                                break;
-                            }
-                            this.modifyRole(this.model.get('jid'), args[0], 'occupant', args[1], undefined, this.onCommandError.bind(this));
+                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            this.modifyRole(
+                                    this.model.get('jid'), args[0], 'occupant', args[1],
+                                    undefined, this.onCommandError.bind(this));
                             break;
                         default:
                             this.sendChatRoomMessage(text);
-                            break;
+                        break;
                     }
                 },
-                handleMUCMessage: function handleMUCMessage(stanza) {
+
+                handleMUCMessage (stanza) {
                     /* Handler for all MUC messages sent to this chat room.
                      *
                      * Parameters:
                      *  (XMLElement) stanza: The message stanza.
                      */
-                    var configuration_changed = stanza.querySelector("status[code='104']");
-                    var logging_enabled = stanza.querySelector("status[code='170']");
-                    var logging_disabled = stanza.querySelector("status[code='171']");
-                    var room_no_longer_anon = stanza.querySelector("status[code='172']");
-                    var room_now_semi_anon = stanza.querySelector("status[code='173']");
-                    var room_now_fully_anon = stanza.querySelector("status[code='173']");
-                    if (configuration_changed || logging_enabled || logging_disabled || room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
+                    const configuration_changed = stanza.querySelector("status[code='104']");
+                    const logging_enabled = stanza.querySelector("status[code='170']");
+                    const logging_disabled = stanza.querySelector("status[code='171']");
+                    const room_no_longer_anon = stanza.querySelector("status[code='172']");
+                    const room_now_semi_anon = stanza.querySelector("status[code='173']");
+                    const room_now_fully_anon = stanza.querySelector("status[code='173']");
+                    if (configuration_changed || logging_enabled || logging_disabled ||
+                            room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
                         this.getRoomFeatures();
                     }
                     _.flow(this.showStatusMessages.bind(this), this.onChatRoomMessage.bind(this))(stanza);
                     return true;
                 },
-                getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
+
+                getRoomJIDAndNick (nick) {
                     /* Utility method to construct the JID for the current user
                      * as occupant of the room.
                      *
@@ -59816,25 +60405,35 @@ Strophe.addConnectionPlugin('disco',
                      * For example: room@conference.example.org/nickname
                      */
                     if (nick) {
-                        this.model.save({ 'nick': nick });
+                        this.model.save({'nick': nick});
                     } else {
                         nick = this.model.get('nick');
                     }
-                    var room = this.model.get('jid');
-                    var node = Strophe.getNodeFromJid(room);
-                    var domain = Strophe.getDomainFromJid(room);
-                    return node + "@" + domain + (nick !== null ? "/" + nick : "");
+                    const room = this.model.get('jid');
+                    const node = Strophe.getNodeFromJid(room);
+                    const domain = Strophe.getDomainFromJid(room);
+                    return node + "@" + domain + (nick !== null ? `/${nick}` : "");
                 },
-                registerHandlers: function registerHandlers() {
+
+                registerHandlers () {
                     /* Register presence and message handlers for this chat
                      * room
                      */
-                    var room_jid = this.model.get('jid');
+                    const room_jid = this.model.get('jid');
                     this.removeHandlers();
-                    this.presence_handler = _converse.connection.addHandler(this.onChatRoomPresence.bind(this), Strophe.NS.MUC, 'presence', null, null, room_jid, { 'ignoreNamespaceFragment': true, 'matchBareFromJid': true });
-                    this.message_handler = _converse.connection.addHandler(this.handleMUCMessage.bind(this), null, 'message', 'groupchat', null, room_jid, { 'matchBareFromJid': true });
+                    this.presence_handler = _converse.connection.addHandler(
+                        this.onChatRoomPresence.bind(this),
+                        Strophe.NS.MUC, 'presence', null, null, room_jid,
+                        {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
+                    );
+                    this.message_handler = _converse.connection.addHandler(
+                        this.handleMUCMessage.bind(this),
+                        null, 'message', 'groupchat', null, room_jid,
+                        {'matchBareFromJid': true}
+                    );
                 },
-                removeHandlers: function removeHandlers() {
+
+                removeHandlers () {
                     /* Remove the presence and message handlers that were
                      * registered for this chat room.
                      */
@@ -59848,7 +60447,8 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return this;
                 },
-                join: function join(nick, password) {
+
+                join (nick, password) {
                     /* Join the chat room.
                      *
                      * Parameters:
@@ -59865,10 +60465,11 @@ Strophe.addConnectionPlugin('disco',
                         // so we don't send out a presence stanza again.
                         return this;
                     }
-                    var stanza = $pres({
+                    const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
-                    }).c("x", { 'xmlns': Strophe.NS.MUC }).c("history", { 'maxstanzas': _converse.muc_history_max_stanzas }).up();
+                    }).c("x", {'xmlns': Strophe.NS.MUC})
+                      .c("history", {'maxstanzas': _converse.muc_history_max_stanzas}).up();
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }
@@ -59876,8 +60477,9 @@ Strophe.addConnectionPlugin('disco',
                     _converse.connection.send(stanza);
                     return this;
                 },
-                sendUnavailablePresence: function sendUnavailablePresence(exit_msg) {
-                    var presence = $pres({
+
+                sendUnavailablePresence (exit_msg) {
+                    const presence = $pres({
                         type: "unavailable",
                         from: _converse.connection.jid,
                         to: this.getRoomJIDAndNick()
@@ -59887,7 +60489,8 @@ Strophe.addConnectionPlugin('disco',
                     }
                     _converse.connection.sendPresence(presence);
                 },
-                leave: function leave(exit_msg) {
+
+                leave(exit_msg) {
                     /* Leave the chat room.
                      *
                      * Parameters:
@@ -59900,13 +60503,15 @@ Strophe.addConnectionPlugin('disco',
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
-                    utils.safeSave(this.model, { 'connection_status': converse.ROOMSTATUS.DISCONNECTED });
+                    utils.safeSave(
+                        this.model,
+                        {'connection_status': converse.ROOMSTATUS.DISCONNECTED}
+                    );
                     this.removeHandlers();
                     _converse.ChatBoxView.prototype.close.apply(this, arguments);
                 },
-                renderConfigurationForm: function renderConfigurationForm(stanza) {
-                    var _this5 = this;
 
+                renderConfigurationForm (stanza) {
                     /* Renders a form given an IQ stanza containing the current
                      * room configuration.
                      *
@@ -59917,18 +60522,18 @@ Strophe.addConnectionPlugin('disco',
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      config.
                      */
-                    var $body = this.$('.chatroom-body');
+                    const $body = this.$('.chatroom-body');
                     $body.children().addClass('hidden');
                     // Remove any existing forms
                     $body.find('form.chatroom-form').remove();
                     $body.append(tpl_chatroom_form());
 
-                    var $form = $body.find('form.chatroom-form');
-                    var $fieldset = $form.children('fieldset:first');
-                    var $stanza = $(stanza),
-                        $fields = $stanza.find('field'),
-                        title = $stanza.find('title').text(),
-                        instructions = $stanza.find('instructions').text();
+                    const $form = $body.find('form.chatroom-form');
+                    let $fieldset = $form.children('fieldset:first');
+                    const $stanza = $(stanza),
+                          $fields = $stanza.find('field'),
+                          title = $stanza.find('title').text(),
+                          instructions = $stanza.find('instructions').text();
                     $fieldset.find('span.spinner').remove();
                     $fieldset.append($('<legend>').text(title));
                     if (instructions && instructions !== title) {
@@ -59939,18 +60544,21 @@ Strophe.addConnectionPlugin('disco',
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
-                    $fieldset.append("<input type=\"submit\" class=\"pure-button button-primary\" value=\"" + __('Save') + "\"/>");
-                    $fieldset.append("<input type=\"button\" class=\"pure-button button-cancel\" value=\"" + __('Cancel') + "\"/>");
-                    $fieldset.find('input[type=button]').on('click', function (ev) {
+                    $fieldset.append(`<input type="submit" class="pure-button button-primary" value="${__('Save')}"/>`);
+                    $fieldset.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
+                    $fieldset.find('input[type=button]').on('click', (ev) => {
                         ev.preventDefault();
-                        _this5.cancelConfiguration();
+                        this.cancelConfiguration();
                     });
-                    $form.on('submit', function (ev) {
+                    $form.on('submit', (ev) => {
                         ev.preventDefault();
-                        _this5.saveConfiguration(ev.target).then(_this5.getRoomFeatures.bind(_this5));
+                        this.saveConfiguration(ev.target).then(
+                            this.getRoomFeatures.bind(this)
+                        );
                     });
                 },
-                sendConfiguration: function sendConfiguration(config, onSuccess, onError) {
+
+                sendConfiguration(config, onSuccess, onError) {
                     /* Send an IQ stanza with the room configuration.
                      *
                      * Parameters:
@@ -59964,17 +60572,16 @@ Strophe.addConnectionPlugin('disco',
                      *      room configuration.
                      *      The second is the response IQ from the server.
                      */
-                    var iq = $iq({ to: this.model.get('jid'), type: "set" }).c("query", { xmlns: Strophe.NS.MUC_OWNER }).c("x", { xmlns: Strophe.NS.XFORM, type: "submit" });
-                    _.each(config || [], function (node) {
-                        iq.cnode(node).up();
-                    });
+                    const iq = $iq({to: this.model.get('jid'), type: "set"})
+                        .c("query", {xmlns: Strophe.NS.MUC_OWNER})
+                        .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
+                    _.each(config || [], function (node) { iq.cnode(node).up(); });
                     onSuccess = _.isUndefined(onSuccess) ? _.noop : _.partial(onSuccess, iq.nodeTree);
                     onError = _.isUndefined(onError) ? _.noop : _.partial(onError, iq.nodeTree);
                     return _converse.connection.sendIQ(iq, onSuccess, onError);
                 },
-                saveConfiguration: function saveConfiguration(form) {
-                    var _this6 = this;
 
+                saveConfiguration (form) {
                     /* Submit the room configuration form by sending an IQ
                      * stanza to the server.
                      *
@@ -59984,22 +60591,21 @@ Strophe.addConnectionPlugin('disco',
                      * Parameters:
                      *  (HTMLElement) form: The configuration form DOM element.
                      */
-                    return new Promise(function (resolve, reject) {
-                        var $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
+                    return new Promise((resolve, reject) => {
+                        const $inputs = $(form).find(':input:not([type=button]):not([type=submit])'),
                             configArray = [];
                         $inputs.each(function () {
                             configArray.push(utils.webForm2xForm(this));
                         });
-                        _this6.sendConfiguration(configArray, resolve, reject);
-                        _this6.$el.find('div.chatroom-form-container').hide(function (el) {
+                        this.sendConfiguration(configArray, resolve, reject);
+                        this.$el.find('div.chatroom-form-container').hide((el) => {
                             $(el).remove();
-                            _this6.renderAfterTransition();
+                            this.renderAfterTransition();
                         });
                     });
                 },
-                autoConfigureChatRoom: function autoConfigureChatRoom() {
-                    var _this7 = this;
 
+                autoConfigureChatRoom () {
                     /* Automatically configure room based on the
                      * 'roomconfig' data on this view's model.
                      *
@@ -60010,18 +60616,18 @@ Strophe.addConnectionPlugin('disco',
                      *  (XMLElement) stanza: IQ stanza from the server,
                      *       containing the configuration.
                      */
-                    var that = this;
-                    return new Promise(function (resolve, reject) {
-                        _this7.fetchRoomConfiguration().then(function (stanza) {
-                            var configArray = [],
+                    const that = this;
+                    return new Promise((resolve, reject) => {
+                        this.fetchRoomConfiguration().then(function (stanza) {
+                            const configArray = [],
                                 fields = stanza.querySelectorAll('field'),
                                 config = that.model.get('roomconfig');
-                            var count = fields.length;
+                            let count = fields.length;
 
                             _.each(fields, function (field) {
-                                var fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
+                                const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
                                     type = field.getAttribute('type');
-                                var value = void 0;
+                                let value;
                                 if (fieldname in config) {
                                     switch (type) {
                                         case 'boolean':
@@ -60037,28 +60643,26 @@ Strophe.addConnectionPlugin('disco',
                                     field.innerHTML = $build('value').t(value);
                                 }
                                 configArray.push(field);
-                                if (! --count) {
+                                if (!--count) {
                                     that.sendConfiguration(configArray, resolve, reject);
                                 }
                             });
                         });
                     });
                 },
-                cancelConfiguration: function cancelConfiguration() {
-                    var _this8 = this;
 
+                cancelConfiguration () {
                     /* Remove the configuration form without submitting and
                      * return to the chat view.
                      */
-                    this.$el.find('div.chatroom-form-container').hide(function (el) {
-                        $(el).remove();
-                        _this8.renderAfterTransition();
-                    });
+                    this.$el.find('div.chatroom-form-container').hide(
+                        (el) => {
+                            $(el).remove();
+                            this.renderAfterTransition();
+                        });
                 },
-                fetchRoomConfiguration: function fetchRoomConfiguration(handler) {
-                    var _this9 = this,
-                        _arguments = arguments;
 
+                fetchRoomConfiguration (handler) {
                     /* Send an IQ stanza to fetch the room configuration data.
                      * Returns a promise which resolves once the response IQ
                      * has been received.
@@ -60066,20 +60670,24 @@ Strophe.addConnectionPlugin('disco',
                      * Parameters:
                      *  (Function) handler: The handler for the response IQ
                      */
-                    return new Promise(function (resolve, reject) {
-                        _converse.connection.sendIQ($iq({
-                            'to': _this9.model.get('jid'),
-                            'type': "get"
-                        }).c("query", { xmlns: Strophe.NS.MUC_OWNER }), function (iq) {
-                            if (handler) {
-                                handler.apply(_this9, _arguments);
-                            }
-                            resolve(iq);
-                        }, reject // errback
+                    return new Promise((resolve, reject) => {
+                        _converse.connection.sendIQ(
+                            $iq({
+                                'to': this.model.get('jid'),
+                                'type': "get"
+                            }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
+                            (iq) => {
+                                if (handler) {
+                                    handler.apply(this, arguments);
+                                }
+                                resolve(iq);
+                            },
+                            reject // errback
                         );
                     });
                 },
-                parseRoomFeatures: function parseRoomFeatures(iq) {
+
+                parseRoomFeatures (iq) {
                     /* See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
                      *
                      *  <identity
@@ -60095,12 +60703,12 @@ Strophe.addConnectionPlugin('disco',
                      *  <feature var='muc_nonanonymous'/>
                      *  <feature var='urn:xmpp:mam:0'/>
                      */
-                    var features = {
+                    const features = {
                         'features_fetched': true,
                         'name': iq.querySelector('identity').getAttribute('name')
-                    };
+                    }
                     _.each(iq.querySelectorAll('feature'), function (field) {
-                        var fieldname = field.getAttribute('var');
+                        const fieldname = field.getAttribute('var');
                         if (!fieldname.startsWith('muc_')) {
                             if (fieldname === Strophe.NS.MAM) {
                                 features.mam_enabled = true;
@@ -60109,25 +60717,29 @@ Strophe.addConnectionPlugin('disco',
                         }
                         features[fieldname.replace('muc_', '')] = true;
                     });
-                    var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
+                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
                     if (!_.isNull(desc_field)) {
                         features.description = desc_field.textContent;
                     }
                     this.model.save(features);
                 },
-                getRoomFeatures: function getRoomFeatures() {
-                    var _this10 = this;
 
+                getRoomFeatures () {
                     /* Fetch the room disco info, parse it and then
                      * save it on the Backbone.Model of this chat rooms.
                      */
-                    return new Promise(function (resolve, reject) {
-                        _converse.connection.disco.info(_this10.model.get('jid'), null, _.flow(_this10.parseRoomFeatures.bind(_this10), resolve), function () {
-                            reject(new Error("Could not parse the room features"));
-                        }, 5000);
+                    return new Promise((resolve, reject) => {
+                        _converse.connection.disco.info(
+                            this.model.get('jid'),
+                            null,
+                            _.flow(this.parseRoomFeatures.bind(this), resolve),
+                            () => { reject(new Error("Could not parse the room features")) },
+                            5000
+                        );
                     });
                 },
-                getAndRenderConfigurationForm: function getAndRenderConfigurationForm(ev) {
+
+                getAndRenderConfigurationForm (ev) {
                     /* Start the process of configuring a chat room, either by
                      * rendering a configuration form, or by auto-configuring
                      * based on the "roomconfig" data stored on the
@@ -60143,42 +60755,52 @@ Strophe.addConnectionPlugin('disco',
                      *      the settings.
                      */
                     this.showSpinner();
-                    this.fetchRoomConfiguration().then(this.renderConfigurationForm.bind(this));
+                    this.fetchRoomConfiguration().then(
+                        this.renderConfigurationForm.bind(this));
                 },
-                submitNickname: function submitNickname(ev) {
+
+                submitNickname (ev) {
                     /* Get the nickname value from the form and then join the
                      * chat room with it.
                      */
                     ev.preventDefault();
-                    var nick_el = ev.target.nick;
-                    var nick = nick_el.value;
+                    const nick_el = ev.target.nick;
+                    const nick = nick_el.value;
                     if (!nick) {
                         nick_el.classList.add('error');
                         return;
-                    } else {
+                    }
+                    else {
                         nick_el.classList.remove('error');
                     }
-                    this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
+                    this.$el.find('.chatroom-form-container')
+                        .replaceWith(tpl_spinner);
                     this.join(nick);
                 },
-                checkForReservedNick: function checkForReservedNick() {
+
+                checkForReservedNick () {
                     /* User service-discovery to ask the XMPP server whether
                      * this user has a reserved nickname for this room.
                      * If so, we'll use that, otherwise we render the nickname
                      * form.
                      */
                     this.showSpinner();
-                    _converse.connection.sendIQ($iq({
-                        'to': this.model.get('jid'),
-                        'from': _converse.connection.jid,
-                        'type': "get"
-                    }).c("query", {
-                        'xmlns': Strophe.NS.DISCO_INFO,
-                        'node': 'x-roomuser-item'
-                    }), this.onNickNameFound.bind(this), this.onNickNameNotFound.bind(this));
+                    _converse.connection.sendIQ(
+                        $iq({
+                            'to': this.model.get('jid'),
+                            'from': _converse.connection.jid,
+                            'type': "get"
+                        }).c("query", {
+                            'xmlns': Strophe.NS.DISCO_INFO,
+                            'node': 'x-roomuser-item'
+                        }),
+                        this.onNickNameFound.bind(this),
+                        this.onNickNameNotFound.bind(this)
+                    );
                     return this;
                 },
-                onNickNameFound: function onNickNameFound(iq) {
+
+                onNickNameFound (iq) {
                     /* We've received an IQ response from the server which
                      * might contain the user's reserved nickname.
                      * If no nickname is found we either render a form for
@@ -60188,14 +60810,17 @@ Strophe.addConnectionPlugin('disco',
                      * Parameters:
                      *  (XMLElement) iq: The received IQ stanza
                      */
-                    var nick = $(iq).find('query[node="x-roomuser-item"] identity').attr('name');
+                    const nick = $(iq)
+                        .find('query[node="x-roomuser-item"] identity')
+                        .attr('name');
                     if (!nick) {
                         this.onNickNameNotFound();
                     } else {
                         this.join(nick);
                     }
                 },
-                onNickNameNotFound: function onNickNameNotFound(message) {
+
+                onNickNameNotFound (message) {
                     if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
@@ -60204,7 +60829,8 @@ Strophe.addConnectionPlugin('disco',
                         this.renderNicknameForm(message);
                     }
                 },
-                getDefaultNickName: function getDefaultNickName() {
+
+                getDefaultNickName () {
                     /* The default nickname (used when muc_nickname_from_jid is true)
                      * is the node part of the user's JID.
                      * We put this in a separate method so that it can be
@@ -60212,7 +60838,8 @@ Strophe.addConnectionPlugin('disco',
                      */
                     return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
                 },
-                onNicknameClash: function onNicknameClash(presence) {
+
+                onNicknameClash (presence) {
                     /* When the nickname is already taken, we either render a
                      * form for the user to choose a new nickname, or we
                      * try to make the nickname unique by adding an integer to
@@ -60222,19 +60849,23 @@ Strophe.addConnectionPlugin('disco',
                      * muc_nickname_from_jid.
                      */
                     if (_converse.muc_nickname_from_jid) {
-                        var nick = presence.getAttribute('from').split('/')[1];
+                        const nick = presence.getAttribute('from').split('/')[1];
                         if (nick === this.getDefaultNickName()) {
                             this.join(nick + '-2');
                         } else {
-                            var del = nick.lastIndexOf("-");
-                            var num = nick.substring(del + 1, nick.length);
-                            this.join(nick.substring(0, del + 1) + String(Number(num) + 1));
+                            const del= nick.lastIndexOf("-");
+                            const num = nick.substring(del+1, nick.length);
+                            this.join(nick.substring(0, del+1) + String(Number(num)+1));
                         }
                     } else {
-                        this.renderNicknameForm(__("The nickname you chose is reserved or " + "currently in use, please choose a different one."));
+                        this.renderNicknameForm(
+                            __("The nickname you chose is reserved or "+
+                               "currently in use, please choose a different one.")
+                        );
                     }
                 },
-                renderNicknameForm: function renderNicknameForm(message) {
+
+                renderNicknameForm (message) {
                     /* Render a form which allows the user to choose their
                      * nickname.
                      */
@@ -60243,33 +60874,38 @@ Strophe.addConnectionPlugin('disco',
                     if (!_.isString(message)) {
                         message = '';
                     }
-                    this.$('.chatroom-body').append(tpl_chatroom_nickname_form({
-                        heading: __('Please choose your nickname'),
-                        label_nickname: __('Nickname'),
-                        label_join: __('Enter room'),
-                        validation_message: message
-                    }));
+                    this.$('.chatroom-body').append(
+                        tpl_chatroom_nickname_form({
+                            heading: __('Please choose your nickname'),
+                            label_nickname: __('Nickname'),
+                            label_join: __('Enter room'),
+                            validation_message: message
+                        }));
                     this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitNickname.bind(this));
                 },
-                submitPassword: function submitPassword(ev) {
+
+                submitPassword (ev) {
                     ev.preventDefault();
-                    var password = this.$el.find('.chatroom-form').find('input[type=password]').val();
+                    const password = this.$el.find('.chatroom-form').find('input[type=password]').val();
                     this.$el.find('.chatroom-form-container').replaceWith(tpl_spinner);
                     this.join(this.model.get('nick'), password);
                 },
-                renderPasswordForm: function renderPasswordForm() {
+
+                renderPasswordForm () {
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$('span.centered.spinner').remove();
-                    this.$('.chatroom-body').append(tpl_chatroom_password_form({
-                        heading: __('This chatroom requires a password'),
-                        label_password: __('Password: '),
-                        label_submit: __('Submit')
-                    }));
+                    this.$('.chatroom-body').append(
+                        tpl_chatroom_password_form({
+                            heading: __('This chatroom requires a password'),
+                            label_password: __('Password: '),
+                            label_submit: __('Submit')
+                        }));
                     this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
                     this.$('.chatroom-form').on('submit', this.submitPassword.bind(this));
                 },
-                showDisconnectMessage: function showDisconnectMessage(msg) {
+
+                showDisconnectMessage (msg) {
                     this.$('.chat-area').addClass('hidden');
                     this.$('.occupants').addClass('hidden');
                     this.$('span.centered.spinner').remove();
@@ -60277,21 +60913,20 @@ Strophe.addConnectionPlugin('disco',
                         'disconnect_message': msg
                     }));
                 },
-                getMessageFromStatus: function getMessageFromStatus(stat, stanza, is_self) {
+
+                getMessageFromStatus (stat, stanza, is_self) {
                     /* Parameters:
                      *  (XMLElement) stat: A <status> element.
                      *  (Boolean) is_self: Whether the element refers to the
                      *                     current user.
                      *  (XMLElement) stanza: The original stanza received.
                      */
-                    var code = stat.getAttribute('code');
-                    if (code === '110') {
-                        return;
-                    }
+                    const code = stat.getAttribute('code');
+                    if (code === '110') { return; }
                     if (code in _converse.muc.info_messages) {
                         return _converse.muc.info_messages[code];
                     }
-                    var nick = void 0;
+                    let nick;
                     if (!is_self) {
                         if (code in _converse.muc.action_info_messages) {
                             nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
@@ -60307,68 +60942,69 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return;
                 },
-                saveAffiliationAndRole: function saveAffiliationAndRole(pres) {
+
+                saveAffiliationAndRole (pres) {
                     /* Parse the presence stanza for the current user's
                      * affiliation.
                      *
                      * Parameters:
                      *  (XMLElement) pres: A <presence> stanza.
                      */
-                    var item = sizzle("x[xmlns=\"" + Strophe.NS.MUC_USER + "\"] item", pres).pop();
-                    var is_self = pres.querySelector("status[code='110']");
+                    const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
+                    const is_self = pres.querySelector("status[code='110']");
                     if (is_self && !_.isNil(item)) {
-                        var affiliation = item.getAttribute('affiliation');
-                        var role = item.getAttribute('role');
+                        const affiliation = item.getAttribute('affiliation');
+                        const role = item.getAttribute('role');
                         if (affiliation) {
-                            this.model.save({ 'affiliation': affiliation });
+                            this.model.save({'affiliation': affiliation});
                         }
                         if (role) {
-                            this.model.save({ 'role': role });
+                            this.model.save({'role': role});
                         }
                     }
                 },
-                parseXUserElement: function parseXUserElement(x, stanza, is_self) {
+
+                parseXUserElement (x, stanza, is_self) {
                     /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
                      * element and construct a map containing relevant
                      * information.
                      */
                     // 1. Get notification messages based on the <status> elements.
-                    var statuses = x.querySelectorAll('status');
-                    var mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
-                    var notification = {};
-                    var messages = _.reject(_.map(statuses, mapper), _.isUndefined);
+                    const statuses = x.querySelectorAll('status');
+                    const mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
+                    const notification = {};
+                    const messages = _.reject(_.map(statuses, mapper), _.isUndefined);
                     if (messages.length) {
                         notification.messages = messages;
                     }
                     // 2. Get disconnection messages based on the <status> elements
-                    var codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-                    var disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
-                    var disconnected = is_self && disconnection_codes.length > 0;
+                    const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
+                    const disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
+                    const disconnected = is_self && disconnection_codes.length > 0;
                     if (disconnected) {
                         notification.disconnected = true;
                         notification.disconnection_message = _converse.muc.disconnect_messages[disconnection_codes[0]];
                     }
                     // 3. Find the reason and actor from the <item> element
-                    var item = x.querySelector('item');
+                    const item = x.querySelector('item');
                     // By using querySelector above, we assume here there is
                     // one <item> per <x xmlns='http://jabber.org/protocol/muc#user'>
                     // element. This appears to be a safe assumption, since
                     // each <x/> element pertains to a single user.
                     if (!_.isNull(item)) {
-                        var reason = item.querySelector('reason');
+                        const reason = item.querySelector('reason');
                         if (reason) {
                             notification.reason = reason ? reason.textContent : undefined;
                         }
-                        var actor = item.querySelector('actor');
+                        const actor = item.querySelector('actor');
                         if (actor) {
                             notification.actor = actor ? actor.getAttribute('nick') : undefined;
                         }
                     }
                     return notification;
                 },
-                displayNotificationsforUser: function displayNotificationsforUser(notification) {
-                    var _this11 = this;
 
+                displayNotificationsforUser (notification) {
                     /* Given the notification object generated by
                      * parseXUserElement, display any relevant messages and
                      * information to the user.
@@ -60384,8 +61020,8 @@ Strophe.addConnectionPlugin('disco',
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
                     }
-                    _.each(notification.messages, function (message) {
-                        _this11.$content.append(tpl_info({ 'message': message }));
+                    _.each(notification.messages, (message) => {
+                        this.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
                         this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
@@ -60394,34 +61030,36 @@ Strophe.addConnectionPlugin('disco',
                         this.scrollDown();
                     }
                 },
-                getJoinLeaveMessages: function getJoinLeaveMessages(stanza) {
+
+                getJoinLeaveMessages (stanza) {
                     /* Parse the given stanza and return notification messages
                      * for join/leave events.
                      */
                     // XXX: some mangling required to make the returned
                     // result look like the structure returned by
                     // parseXUserElement. Not nice...
-                    var nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
-                    var stat = stanza.querySelector('status');
+                    const nick = Strophe.getResourceFromJid(stanza.getAttribute('from'));
+                    const stat = stanza.querySelector('status');
                     if (stanza.getAttribute('type') === 'unavailable') {
                         if (!_.isNull(stat) && stat.textContent) {
-                            return [{ 'messages': [__(nick + ' has left the room. "' + stat.textContent + '"')] }];
+                            return [{'messages': [__(nick+' has left the room. "'+stat.textContent+'"')]}];
                         } else {
-                            return [{ 'messages': [__(nick + ' has left the room')] }];
+                            return [{'messages': [__(nick+' has left the room')]}];
                         }
                     }
-                    if (!this.occupantsview.model.find({ 'nick': nick })) {
+                    if (!this.occupantsview.model.find({'nick': nick})) {
                         // Only show join message if we don't already have the
                         // occupant model. Doing so avoids showing duplicate
                         // join messages.
                         if (!_.isNull(stat) && stat.textContent) {
-                            return [{ 'messages': [__(nick + ' has joined the room. "' + stat.textContent + '"')] }];
+                            return [{'messages': [__(nick+' has joined the room. "'+stat.textContent+'"')]}];
                         } else {
-                            return [{ 'messages': [__(nick + ' has joined the room.')] }];
+                            return [{'messages': [__(nick+' has joined the room.')]}];
                         }
                     }
                 },
-                showStatusMessages: function showStatusMessages(stanza) {
+
+                showStatusMessages (stanza) {
                     /* Check for status codes and communicate their purpose to the user.
                      * See: http://xmpp.org/registrar/mucstatus.html
                      *
@@ -60429,19 +61067,24 @@ Strophe.addConnectionPlugin('disco',
                      *  (XMLElement) stanza: The message or presence stanza
                      *      containing the status codes.
                      */
-                    var elements = sizzle("x[xmlns=\"" + Strophe.NS.MUC_USER + "\"]", stanza);
-                    var is_self = stanza.querySelectorAll("status[code='110']").length;
-                    var iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
-                    var notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
-                    if (_.isEmpty(notifications) && _converse.muc_show_join_leave && stanza.nodeName === 'presence' && this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+                    const elements = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza);
+                    const is_self = stanza.querySelectorAll("status[code='110']").length;
+                    const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
+                    let notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
+                    if (_.isEmpty(notifications) &&
+                            _converse.muc_show_join_leave &&
+                            stanza.nodeName === 'presence' &&
+                            this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED
+                        ) {
                         notifications = this.getJoinLeaveMessages(stanza);
                     }
                     _.each(notifications, this.displayNotificationsforUser.bind(this));
                     return stanza;
                 },
-                showErrorMessage: function showErrorMessage(presence) {
+
+                showErrorMessage (presence) {
                     // We didn't enter the room, so we must remove it from the MUC add-on
-                    var error = presence.querySelector('error');
+                    const error = presence.querySelector('error');
                     if (error.getAttribute('type') === 'auth') {
                         if (!_.isNull(error.querySelector('not-authorized'))) {
                             this.renderPasswordForm();
@@ -60468,7 +61111,8 @@ Strophe.addConnectionPlugin('disco',
                         }
                     }
                 },
-                renderAfterTransition: function renderAfterTransition() {
+
+                renderAfterTransition () {
                     /* Rerender the room after some kind of transition. For
                      * example after the spinner has been removed or after a
                      * form has been submitted and removed.
@@ -60484,23 +61128,26 @@ Strophe.addConnectionPlugin('disco',
                         this.scrollDown();
                     }
                 },
-                showSpinner: function showSpinner() {
+
+                showSpinner () {
                     this.$('.chatroom-body').children().addClass('hidden');
                     this.$el.find('.chatroom-body').prepend(tpl_spinner);
                 },
-                hideSpinner: function hideSpinner() {
+
+                hideSpinner () {
                     /* Check if the spinner is being shown and if so, hide it.
                      * Also make sure then that the chat area and occupants
                      * list are both visible.
                      */
-                    var spinner = this.el.querySelector('.spinner');
+                    const spinner = this.el.querySelector('.spinner');
                     if (!_.isNull(spinner)) {
                         spinner.parentNode.removeChild(spinner);
                         this.renderAfterTransition();
                     }
                     return this;
                 },
-                onOwnChatRoomPresence: function onOwnChatRoomPresence(pres) {
+
+                onOwnChatRoomPresence (pres) {
                     /* Handles a received presence relating to the current
                      * user.
                      *
@@ -60518,7 +61165,7 @@ Strophe.addConnectionPlugin('disco',
                      */
                     this.saveAffiliationAndRole(pres);
 
-                    var locked_room = pres.querySelector("status[code='201']");
+                    const locked_room = pres.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.model.get('auto_configure')) {
                             this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
@@ -60543,7 +61190,8 @@ Strophe.addConnectionPlugin('disco',
                     }
                     this.model.save('connection_status', converse.ROOMSTATUS.ENTERED);
                 },
-                onChatRoomPresence: function onChatRoomPresence(pres) {
+
+                onChatRoomPresence (pres) {
                     /* Handles all MUC presence stanzas.
                      *
                      * Parameters:
@@ -60554,7 +61202,7 @@ Strophe.addConnectionPlugin('disco',
                         this.showErrorMessage(pres);
                         return true;
                     }
-                    var is_self = pres.querySelector("status[code='110']");
+                    const is_self = pres.querySelector("status[code='110']");
                     if (is_self && pres.getAttribute('type') !== 'unavailable') {
                         this.onOwnChatRoomPresence(pres);
                     }
@@ -60562,19 +61210,23 @@ Strophe.addConnectionPlugin('disco',
                     // This must be called after showStatusMessages so that
                     // "join" messages are correctly shown.
                     this.occupantsview.updateOccupantsOnPresence(pres);
-                    if (this.model.get('role') !== 'none' && this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                    if (this.model.get('role') !== 'none' &&
+                            this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
                         this.model.save('connection_status', converse.ROOMSTATUS.CONNECTED);
                     }
                     return true;
                 },
-                setChatRoomSubject: function setChatRoomSubject(sender, subject) {
+
+                setChatRoomSubject (sender, subject) {
                     // For translators: the %1$s and %2$s parts will get
                     // replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
-                    this.$content.append(tpl_info({ 'message': __('Topic set by %1$s to: %2$s', sender, subject) }));
+                    this.$content.append(
+                        tpl_info({'message': __('Topic set by %1$s to: %2$s', sender, subject)}));
                     this.scrollDown();
                 },
-                isDuplicateBasedOnTime: function isDuplicateBasedOnTime(message) {
+
+                isDuplicateBasedOnTime (message) {
                     /* Checks whether a received messages is actually a
                      * duplicate based on whether it has a "ts" attribute
                      * with a unix timestamp.
@@ -60583,53 +61235,54 @@ Strophe.addConnectionPlugin('disco',
                      * gateway, which doesn't use message IDs but instead the
                      * aforementioned "ts" attributes.
                      */
-                    var entity = _converse.disco_entities.get(_converse.domain);
-                    if (entity.identities.where({ 'name': "Slack-XMPP" })) {
-                        var ts = message.getAttribute('ts');
+                    const entity = _converse.disco_entities.get(_converse.domain);
+                    if (entity.identities.where({'name': "Slack-XMPP"})) {
+                        const ts = message.getAttribute('ts');
                         if (_.isNull(ts)) {
                             return false;
                         } else {
                             return this.model.messages.where({
                                 'sender': 'me',
                                 'message': this.model.getMessageBody(message)
-                            }).filter(function (msg) {
-                                return Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000;
-                            }).length > 0;
+                            }).filter(
+                                (msg) => Math.abs(moment(msg.get('time')).diff(moment.unix(ts))) < 5000
+                            ).length > 0;
                         }
                     }
                     return false;
                 },
-                isDuplicate: function isDuplicate(message) {
-                    var msgid = message.getAttribute('id'),
-                        jid = message.getAttribute('from'),
-                        resource = Strophe.getResourceFromJid(jid),
-                        sender = resource && Strophe.unescapeNode(resource) || '';
+
+                isDuplicate (message) {
+                    const msgid = message.getAttribute('id'),
+                          jid = message.getAttribute('from'),
+                          resource = Strophe.getResourceFromJid(jid),
+                          sender = resource && Strophe.unescapeNode(resource) || '';
                     if (msgid) {
                         return this.model.messages.filter(
-                        // Some bots (like HAL in the prosody chatroom)
-                        // respond to commands with the same ID as the
-                        // original message. So we also check the sender.
-                        function (msg) {
-                            return msg.get('msgid') === msgid && msg.get('fullname') === sender;
-                        }).length > 0;
+                            // Some bots (like HAL in the prosody chatroom)
+                            // respond to commands with the same ID as the
+                            // original message. So we also check the sender.
+                            (msg) => msg.get('msgid') === msgid && msg.get('fullname') === sender
+                        ).length > 0;
                     }
                     return this.isDuplicateBasedOnTime(message);
                 },
-                onChatRoomMessage: function onChatRoomMessage(message) {
+
+                onChatRoomMessage (message) {
                     /* Given a <message> stanza, create a message
                      * Backbone.Model if appropriate.
                      *
                      * Parameters:
                      *  (XMLElement) msg: The received message stanza
                      */
-                    var original_stanza = message,
+                    const original_stanza = message,
                         forwarded = message.querySelector('forwarded');
-                    var delay = void 0;
+                    let delay;
                     if (!_.isNull(forwarded)) {
                         message = forwarded.querySelector('message');
                         delay = forwarded.querySelector('delay');
                     }
-                    var jid = message.getAttribute('from'),
+                    const jid = message.getAttribute('from'),
                         resource = Strophe.getResourceFromJid(jid),
                         sender = resource && Strophe.unescapeNode(resource) || '',
                         subject = _.propertyOf(message.querySelector('subject'))('textContent');
@@ -60647,40 +61300,48 @@ Strophe.addConnectionPlugin('disco',
                     this.model.createMessage(message, delay, original_stanza);
                     if (sender !== this.model.get('nick')) {
                         // We only emit an event if it's not our own message
-                        _converse.emit('message', { 'stanza': original_stanza, 'chatbox': this.model });
+                        _converse.emit(
+                            'message',
+                            {'stanza': original_stanza, 'chatbox': this.model}
+                        );
                     }
                     return true;
                 }
             });
 
             _converse.ChatRoomOccupant = Backbone.Model.extend({
-                initialize: function initialize(attributes) {
+                initialize (attributes) {
                     this.set(_.extend({
-                        'id': _converse.connection.getUniqueId()
+                        'id': _converse.connection.getUniqueId(),
                     }, attributes));
                 }
             });
 
             _converse.ChatRoomOccupantView = Backbone.View.extend({
                 tagName: 'li',
-                initialize: function initialize() {
+                initialize () {
                     this.model.on('change', this.render, this);
                     this.model.on('destroy', this.destroy, this);
                 },
-                render: function render() {
-                    var show = this.model.get('show') || 'online';
-                    var new_el = tpl_occupant(_.extend({ 'jid': '',
-                        'show': show,
-                        'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                        'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
-                        'desc_moderator': __('This user is a moderator.'),
-                        'desc_occupant': __('This user can send messages in this room.'),
-                        'desc_visitor': __('This user can NOT send messages in this room.')
-                    }, this.model.toJSON()));
-                    var $parents = this.$el.parents();
+
+                render () {
+                    const show = this.model.get('show') || 'online';
+                    const new_el = tpl_occupant(
+                        _.extend(
+                            { 'jid': '',
+                              'show': show,
+                              'hint_show': _converse.PRETTY_CHAT_STATUS[show],
+                              'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
+                              'desc_moderator': __('This user is a moderator.'),
+                              'desc_occupant': __('This user can send messages in this room.'),
+                              'desc_visitor': __('This user can NOT send messages in this room.')
+                            }, this.model.toJSON()
+                        )
+                    );
+                    const $parents = this.$el.parents();
                     if ($parents.length) {
                         this.$el.replaceWith(new_el);
-                        this.setElement($parents.first().children("#" + this.model.get('id')), true);
+                        this.setElement($parents.first().children(`#${this.model.get('id')}`), true);
                         this.delegateEvents();
                     } else {
                         this.$el.replaceWith(new_el);
@@ -60688,7 +61349,8 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return this;
                 },
-                destroy: function destroy() {
+
+                destroy () {
                     this.$el.remove();
                 }
             });
@@ -60701,7 +61363,7 @@ Strophe.addConnectionPlugin('disco',
                 tagName: 'div',
                 className: 'occupants',
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on("add", this.onOccupantAdded, this);
                     this.chatroomview = this.model.chatroomview;
                     this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
@@ -60720,24 +61382,30 @@ Strophe.addConnectionPlugin('disco',
                     this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
                 },
-                render: function render() {
-                    this.el.innerHTML = tpl_chatroom_sidebar(_.extend(this.chatroomview.model.toJSON(), {
-                        'allow_muc_invitations': _converse.allow_muc_invitations,
-                        'label_occupants': __('Occupants')
-                    }));
+
+                render () {
+                    this.el.innerHTML = tpl_chatroom_sidebar(
+                        _.extend(this.chatroomview.model.toJSON(), {
+                            'allow_muc_invitations': _converse.allow_muc_invitations,
+                            'label_occupants': __('Occupants')
+                        })
+                    );
                     if (_converse.allow_muc_invitations) {
-                        _converse.api.waitUntil('rosterContactsFetched').then(this.renderInviteWidget.bind(this));
+                        _converse.api.waitUntil('rosterContactsFetched').then(
+                            this.renderInviteWidget.bind(this)
+                        );
                     }
                     return this.renderRoomFeatures();
                 },
-                renderInviteWidget: function renderInviteWidget() {
-                    var form = this.el.querySelector('form.room-invite');
+
+                renderInviteWidget () {
+                    let form = this.el.querySelector('form.room-invite');
                     if (this.shouldInviteWidgetBeShown()) {
                         if (_.isNull(form)) {
-                            var heading = this.el.querySelector('.occupants-heading');
+                            const heading = this.el.querySelector('.occupants-heading');
                             form = tpl_chatroom_invite({
                                 'error_message': null,
-                                'label_invitation': __('Invite')
+                                'label_invitation': __('Invite'),
                             });
                             heading.insertAdjacentHTML('afterend', form);
                             this.initInviteWidget();
@@ -60749,47 +61417,48 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return this;
                 },
-                renderRoomFeatures: function renderRoomFeatures() {
-                    var picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
-                        iteratee = function iteratee(a, v) {
-                        return a || v;
-                    },
+
+                renderRoomFeatures () {
+                    const picks = _.pick(this.chatroomview.model.attributes, ROOM_FEATURES),
+                        iteratee = (a, v) => a || v,
                         el = this.el.querySelector('.chatroom-features');
 
-                    el.innerHTML = tpl_chatroom_features(_.extend(this.chatroomview.model.toJSON(), {
-                        'has_features': _.reduce(_.values(picks), iteratee),
-                        'label_features': __('Features'),
-                        'label_hidden': __('Hidden'),
-                        'label_mam_enabled': __('Message archiving'),
-                        'label_membersonly': __('Members only'),
-                        'label_moderated': __('Moderated'),
-                        'label_nonanonymous': __('Non-anonymous'),
-                        'label_open': __('Open'),
-                        'label_passwordprotected': __('Password protected'),
-                        'label_persistent': __('Persistent'),
-                        'label_public': __('Public'),
-                        'label_semianonymous': __('Semi-anonymous'),
-                        'label_temporary': __('Temporary'),
-                        'label_unmoderated': __('Unmoderated'),
-                        'label_unsecured': __('Unsecured'),
-                        'tt_hidden': __('This room is not publicly searchable'),
-                        'tt_mam_enabled': __('Messages are archived on the server'),
-                        'tt_membersonly': __('This room is restricted to members only'),
-                        'tt_moderated': __('This room is being moderated'),
-                        'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
-                        'tt_open': __('Anyone can join this room'),
-                        'tt_passwordprotected': __('This room requires a password before entry'),
-                        'tt_persistent': __('This room persists even if it\'s unoccupied'),
-                        'tt_public': __('This room is publicly searchable'),
-                        'tt_semianonymous': __('Only moderators can see your XMPP username'),
-                        'tt_temporary': __('This room will disappear once the last person leaves'),
-                        'tt_unmoderated': __('This room is not being moderated'),
-                        'tt_unsecured': __('This room does not require a password upon entry')
-                    }));
+                    el.innerHTML = tpl_chatroom_features(
+                            _.extend(this.chatroomview.model.toJSON(), {
+                                'has_features': _.reduce(_.values(picks), iteratee),
+                                'label_features': __('Features'),
+                                'label_hidden': __('Hidden'),
+                                'label_mam_enabled': __('Message archiving'),
+                                'label_membersonly': __('Members only'),
+                                'label_moderated': __('Moderated'),
+                                'label_nonanonymous': __('Non-anonymous'),
+                                'label_open': __('Open'),
+                                'label_passwordprotected': __('Password protected'),
+                                'label_persistent': __('Persistent'),
+                                'label_public': __('Public'),
+                                'label_semianonymous': __('Semi-anonymous'),
+                                'label_temporary': __('Temporary'),
+                                'label_unmoderated': __('Unmoderated'),
+                                'label_unsecured': __('Unsecured'),
+                                'tt_hidden': __('This room is not publicly searchable'),
+                                'tt_mam_enabled': __('Messages are archived on the server'),
+                                'tt_membersonly': __('This room is restricted to members only'),
+                                'tt_moderated': __('This room is being moderated'),
+                                'tt_nonanonymous': __('All other room occupants can see your XMPP username'),
+                                'tt_open': __('Anyone can join this room'),
+                                'tt_passwordprotected': __('This room requires a password before entry'),
+                                'tt_persistent': __('This room persists even if it\'s unoccupied'),
+                                'tt_public': __('This room is publicly searchable'),
+                                'tt_semianonymous': __('Only moderators can see your XMPP username'),
+                                'tt_temporary': __('This room will disappear once the last person leaves'),
+                                'tt_unmoderated': __('This room is not being moderated'),
+                                'tt_unsecured': __('This room does not require a password upon entry')
+                            }));
                     this.setOccupantsHeight();
                     return this;
                 },
-                onFeatureChanged: function onFeatureChanged(model) {
+
+                onFeatureChanged (model) {
                     /* When a feature has been changed, it's logical opposite
                      * must be set to the opposite value.
                      *
@@ -60800,25 +61469,34 @@ Strophe.addConnectionPlugin('disco',
                      * sure the features widget gets updated.
                      */
                     if (_.isUndefined(this.debouncedRenderRoomFeatures)) {
-                        this.debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100, { 'leading': false });
+                        this.debouncedRenderRoomFeatures = _.debounce(
+                            this.renderRoomFeatures, 100, {'leading': false}
+                        );
                     }
-                    var changed_features = {};
+                    const changed_features = {};
                     _.each(_.keys(model.changed), function (k) {
                         if (!_.isNil(ROOM_FEATURES_MAP[k])) {
                             changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
                         }
                     });
-                    this.chatroomview.model.save(changed_features, { 'silent': true });
+                    this.chatroomview.model.save(changed_features, {'silent': true});
                     this.debouncedRenderRoomFeatures();
                 },
-                setOccupantsHeight: function setOccupantsHeight() {
-                    var el = this.el.querySelector('.chatroom-features');
-                    this.el.querySelector('.occupant-list').style.cssText = "height: calc(100% - " + el.offsetHeight + "px - 5em);";
+
+
+                setOccupantsHeight () {
+                    const el = this.el.querySelector('.chatroom-features');
+                    this.el.querySelector('.occupant-list').style.cssText =
+                        `height: calc(100% - ${el.offsetHeight}px - 5em);`;
                 },
-                onOccupantAdded: function onOccupantAdded(item) {
-                    var view = this.get(item.get('id'));
+
+                onOccupantAdded (item) {
+                    let view = this.get(item.get('id'));
                     if (!view) {
-                        view = this.add(item.get('id'), new _converse.ChatRoomOccupantView({ model: item }));
+                        view = this.add(
+                            item.get('id'),
+                            new _converse.ChatRoomOccupantView({model: item})
+                        );
                     } else {
                         delete view.model; // Remove ref to old model to help garbage collection
                         view.model = item;
@@ -60826,9 +61504,10 @@ Strophe.addConnectionPlugin('disco',
                     }
                     this.$('.occupant-list').append(view.render().$el);
                 },
-                parsePresence: function parsePresence(pres) {
-                    var id = Strophe.getResourceFromJid(pres.getAttribute("from"));
-                    var data = {
+
+                parsePresence (pres) {
+                    const id = Strophe.getResourceFromJid(pres.getAttribute("from"));
+                    const data = {
                         nick: id,
                         type: pres.getAttribute("type"),
                         states: []
@@ -60862,7 +61541,8 @@ Strophe.addConnectionPlugin('disco',
                     });
                     return data;
                 },
-                findOccupant: function findOccupant(data) {
+
+                findOccupant (data) {
                     /* Try to find an existing occupant based on the passed in
                      * data object.
                      *
@@ -60870,32 +61550,31 @@ Strophe.addConnectionPlugin('disco',
                      * otherwise we use the nick. We don't always have both,
                      * but should have at least one or the other.
                      */
-                    var jid = Strophe.getBareJidFromJid(data.jid);
+                    const jid = Strophe.getBareJidFromJid(data.jid);
                     if (jid !== null) {
-                        return this.model.where({ 'jid': jid }).pop();
+                        return this.model.where({'jid': jid}).pop();
                     } else {
-                        return this.model.where({ 'nick': data.nick }).pop();
+                        return this.model.where({'nick': data.nick}).pop();
                     }
                 },
-                updateOccupantsOnPresence: function updateOccupantsOnPresence(pres) {
+
+                updateOccupantsOnPresence (pres) {
                     /* Given a presence stanza, update the occupant models
                      * based on its contents.
                      *
                      * Parameters:
                      *  (XMLElement) pres: The presence stanza
                      */
-                    var data = this.parsePresence(pres);
+                    const data = this.parsePresence(pres);
                     if (data.type === 'error') {
                         return true;
                     }
-                    var occupant = this.findOccupant(data);
+                    const occupant = this.findOccupant(data);
                     if (data.type === 'unavailable') {
-                        if (occupant) {
-                            occupant.destroy();
-                        }
+                        if (occupant) { occupant.destroy(); }
                     } else {
-                        var jid = Strophe.getBareJidFromJid(data.jid);
-                        var attributes = _.extend(data, {
+                        const jid = Strophe.getBareJidFromJid(data.jid);
+                        const attributes = _.extend(data, {
                             'jid': jid ? jid : undefined,
                             'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
                         });
@@ -60906,26 +61585,31 @@ Strophe.addConnectionPlugin('disco',
                         }
                     }
                 },
-                promptForInvite: function promptForInvite(suggestion) {
-                    var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
+
+                promptForInvite (suggestion) {
+                    const reason = prompt(
+                        __('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) +
+                        __("You may optionally include a message, explaining the reason for the invitation.")
+                    );
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);
                     }
-                    var form = suggestion.target.form,
-                        error = form.querySelector('.pure-form-message.error');
+                    const form = suggestion.target.form,
+                          error = form.querySelector('.pure-form-message.error');
                     if (!_.isNull(error)) {
                         error.parentNode.removeChild(error);
                     }
                     suggestion.target.value = '';
                 },
-                inviteFormSubmitted: function inviteFormSubmitted(evt) {
+
+                inviteFormSubmitted (evt) {
                     evt.preventDefault();
-                    var el = evt.target.querySelector('input.invited-contact'),
-                        jid = el.value;
+                    const el = evt.target.querySelector('input.invited-contact'),
+                          jid = el.value;
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         evt.target.outerHTML = tpl_chatroom_invite({
                             'error_message': __('Please enter a valid XMPP username'),
-                            'label_invitation': __('Invite')
+                            'label_invitation': __('Invite'),
                         });
                         this.initInviteWidget();
                         return;
@@ -60935,27 +61619,33 @@ Strophe.addConnectionPlugin('disco',
                         'text': {
                             'label': jid,
                             'value': jid
-                        } });
+                        }});
                 },
-                shouldInviteWidgetBeShown: function shouldInviteWidgetBeShown() {
-                    return _converse.allow_muc_invitations && (this.chatroomview.model.get('open') || this.chatroomview.model.get('affiliation') === "owner");
+
+                shouldInviteWidgetBeShown () {
+                    return _converse.allow_muc_invitations &&
+                        (this.chatroomview.model.get('open') ||
+                            this.chatroomview.model.get('affiliation') === "owner"
+                        );
                 },
-                initInviteWidget: function initInviteWidget() {
-                    var form = this.el.querySelector('form.room-invite');
+
+                initInviteWidget () {
+                    const form = this.el.querySelector('form.room-invite');
                     if (_.isNull(form)) {
                         return;
                     }
                     form.addEventListener('submit', this.inviteFormSubmitted.bind(this));
-                    var el = this.el.querySelector('input.invited-contact');
-                    var list = _converse.roster.map(function (item) {
-                        var label = item.get('fullname') || item.get('jid');
-                        return { 'label': label, 'value': item.get('jid') };
-                    });
-                    var awesomplete = new Awesomplete(el, {
+                    const el = this.el.querySelector('input.invited-contact');
+                    const list = _converse.roster.map(function (item) {
+                            const label = item.get('fullname') || item.get('jid');
+                            return {'label': label, 'value':item.get('jid')};
+                        });
+                    const awesomplete = new Awesomplete(el, {
                         'minChars': 1,
                         'list': list
                     });
-                    el.addEventListener('awesomplete-selectcomplete', this.promptForInvite.bind(this));
+                    el.addEventListener('awesomplete-selectcomplete',
+                        this.promptForInvite.bind(this));
                 }
             });
 
@@ -60978,7 +61668,7 @@ Strophe.addConnectionPlugin('disco',
                     'change input[name=nick]': 'setNick'
                 },
 
-                initialize: function initialize(cfg) {
+                initialize (cfg) {
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
@@ -60986,7 +61676,8 @@ Strophe.addConnectionPlugin('disco',
                     _converse.chatboxes.on('change:num_unread', this.renderTab, this);
                     _converse.chatboxes.on('add', _.debounce(this.renderTab, 100), this);
                 },
-                render: function render() {
+
+                render () {
                     this.el.innerHTML = tpl_room_panel({
                         'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
                         'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
@@ -60997,64 +61688,77 @@ Strophe.addConnectionPlugin('disco',
                         'label_show_rooms': __('Show rooms')
                     });
                     this.renderTab();
-                    var controlbox = _converse.chatboxes.get('controlbox');
+                    const controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
                         this.el.classList.add('hidden');
                     }
                     return this;
                 },
-                renderTab: function renderTab() {
-                    var controlbox = _converse.chatboxes.get('controlbox');
-                    var chatrooms = fp.filter(_.partial(utils.isOfType, CHATROOMS_TYPE), _converse.chatboxes.models);
+
+                renderTab () {
+                    const controlbox = _converse.chatboxes.get('controlbox');
+                    const chatrooms = fp.filter(
+                        _.partial(utils.isOfType, CHATROOMS_TYPE),
+                        _converse.chatboxes.models
+                    );
                     this.tab_el.innerHTML = tpl_chatrooms_tab({
                         'label_rooms': __('Rooms'),
                         'is_current': controlbox.get('active-panel') === ROOMS_PANEL_ID,
                         'num_unread': fp.sum(fp.map(fp.curry(utils.getAttribute)('num_unread'), chatrooms))
                     });
                 },
-                insertIntoDOM: function insertIntoDOM() {
+
+                insertIntoDOM () {
                     this.parent_el.appendChild(this.render().el);
                     this.tabs = this.parent_el.parentNode.querySelector('#controlbox-tabs');
                     this.tabs.appendChild(this.tab_el);
                     return this;
                 },
-                onDomainChange: function onDomainChange(model) {
-                    var $server = this.$el.find('input.new-chatroom-server');
+
+                onDomainChange (model) {
+                    const $server = this.$el.find('input.new-chatroom-server');
                     $server.val(model.get('muc_domain'));
                     if (_converse.auto_list_rooms) {
                         this.updateRoomsList();
                     }
                 },
-                onNickChange: function onNickChange(model) {
-                    var $nick = this.$el.find('input.new-chatroom-nick');
+
+                onNickChange (model) {
+                    const $nick = this.$el.find('input.new-chatroom-nick');
                     $nick.val(model.get('nick'));
                 },
-                informNoRoomsFound: function informNoRoomsFound() {
-                    var $available_chatrooms = this.$el.find('#available-chatrooms');
+
+                informNoRoomsFound () {
+                    const $available_chatrooms = this.$el.find('#available-chatrooms');
                     // For translators: %1$s is a variable and will be replaced with the XMPP server name
-                    $available_chatrooms.html("<dt>" + __('No rooms on %1$s', this.model.get('muc_domain')) + "</dt>");
+                    $available_chatrooms.html(`<dt>${__('No rooms on %1$s', this.model.get('muc_domain'))}</dt>`);
                     $('input#show-rooms').show().siblings('span.spinner').remove();
                 },
-                onRoomsFound: function onRoomsFound(iq) {
+
+                onRoomsFound (iq) {
                     /* Handle the IQ stanza returned from the server, containing
                      * all its public rooms.
                      */
-                    var $available_chatrooms = this.$el.find('#available-chatrooms');
+                    const $available_chatrooms = this.$el.find('#available-chatrooms');
                     this.rooms = $(iq).find('query').find('item');
                     if (this.rooms.length) {
                         // For translators: %1$s is a variable and will be
                         // replaced with the XMPP server name
-                        $available_chatrooms.html("<dt>" + __('Rooms on %1$s', this.model.get('muc_domain')) + "</dt>");
-                        var fragment = document.createDocumentFragment();
-                        for (var i = 0; i < this.rooms.length; i++) {
-                            var name = Strophe.unescapeNode($(this.rooms[i]).attr('name') || $(this.rooms[i]).attr('jid'));
-                            var jid = $(this.rooms[i]).attr('jid');
-                            fragment.appendChild($(tpl_room_item({
-                                'name': name,
-                                'jid': jid,
-                                'open_title': __('Click to open this room'),
-                                'info_title': __('Show more information on this room')
-                            }))[0]);
+                        $available_chatrooms.html(`<dt>${__('Rooms on %1$s',this.model.get('muc_domain'))}</dt>`);
+                        const fragment = document.createDocumentFragment();
+                        for (let i=0; i<this.rooms.length; i++) {
+                            const name = Strophe.unescapeNode(
+                                $(this.rooms[i]).attr('name')||$(this.rooms[i]).attr('jid')
+                            );
+                            const jid = $(this.rooms[i]).attr('jid');
+                            fragment.appendChild($(
+                                tpl_room_item({
+                                    'name':name,
+                                    'jid':jid,
+                                    'open_title': __('Click to open this room'),
+                                    'info_title': __('Show more information on this room')
+                                    })
+                                )[0]);
                         }
                         $available_chatrooms.append(fragment);
                         $('input#show-rooms').show().siblings('span.spinner').remove();
@@ -61063,19 +61767,25 @@ Strophe.addConnectionPlugin('disco',
                     }
                     return true;
                 },
-                updateRoomsList: function updateRoomsList() {
+
+                updateRoomsList () {
                     /* Send and IQ stanza to the server asking for all rooms
                      */
-                    _converse.connection.sendIQ($iq({
-                        to: this.model.get('muc_domain'),
-                        from: _converse.connection.jid,
-                        type: "get"
-                    }).c("query", { xmlns: Strophe.NS.DISCO_ITEMS }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this));
+                    _converse.connection.sendIQ(
+                        $iq({
+                            to: this.model.get('muc_domain'),
+                            from: _converse.connection.jid,
+                            type: "get"
+                        }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
+                        this.onRoomsFound.bind(this),
+                        this.informNoRoomsFound.bind(this)
+                    );
                 },
-                showRooms: function showRooms() {
-                    var $available_chatrooms = this.$el.find('#available-chatrooms');
-                    var $server = this.$el.find('input.new-chatroom-server');
-                    var server = $server.val();
+
+                showRooms () {
+                    const $available_chatrooms = this.$el.find('#available-chatrooms');
+                    const $server = this.$el.find('input.new-chatroom-server');
+                    const server = $server.val();
                     if (!server) {
                         $server.addClass('error');
                         return;
@@ -61084,10 +61794,11 @@ Strophe.addConnectionPlugin('disco',
                     $server.removeClass('error');
                     $available_chatrooms.empty();
                     $('input#show-rooms').hide().after(tpl_spinner);
-                    this.model.save({ muc_domain: server });
+                    this.model.save({muc_domain: server});
                     this.updateRoomsList();
                 },
-                insertRoomInfo: function insertRoomInfo(el, stanza) {
+
+                insertRoomInfo (el, stanza) {
                     /* Insert room info (based on returned #disco IQ stanza)
                      *
                      * Parameters:
@@ -61096,105 +61807,105 @@ Strophe.addConnectionPlugin('disco',
                      *  (XMLElement) stanza: The IQ stanza containing the room
                      *      info.
                      */
-                    var $stanza = $(stanza);
+                    const $stanza = $(stanza);
                     // All MUC features found here: http://xmpp.org/registrar/disco-features.html
-                    el.querySelector('span.spinner').outerHTML = tpl_room_description({
-                        'jid': stanza.getAttribute('from'),
-                        'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
-                        'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
-                        'hidden': $stanza.find('feature[var="muc_hidden"]').length,
-                        'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
-                        'moderated': $stanza.find('feature[var="muc_moderated"]').length,
-                        'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
-                        'open': $stanza.find('feature[var="muc_open"]').length,
-                        'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
-                        'persistent': $stanza.find('feature[var="muc_persistent"]').length,
-                        'publicroom': $stanza.find('feature[var="muc_public"]').length,
-                        'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
-                        'temporary': $stanza.find('feature[var="muc_temporary"]').length,
-                        'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
-                        'label_desc': __('Description:'),
-                        'label_jid': __('Room Address (JID):'),
-                        'label_occ': __('Occupants:'),
-                        'label_features': __('Features:'),
-                        'label_requires_auth': __('Requires authentication'),
-                        'label_hidden': __('Hidden'),
-                        'label_requires_invite': __('Requires an invitation'),
-                        'label_moderated': __('Moderated'),
-                        'label_non_anon': __('Non-anonymous'),
-                        'label_open_room': __('Open room'),
-                        'label_permanent_room': __('Permanent room'),
-                        'label_public': __('Public'),
-                        'label_semi_anon': __('Semi-anonymous'),
-                        'label_temp_room': __('Temporary room'),
-                        'label_unmoderated': __('Unmoderated')
-                    });
+                    el.querySelector('span.spinner').outerHTML =
+                        tpl_room_description({
+                            'jid': stanza.getAttribute('from'),
+                            'desc': $stanza.find('field[var="muc#roominfo_description"] value').text(),
+                            'occ': $stanza.find('field[var="muc#roominfo_occupants"] value').text(),
+                            'hidden': $stanza.find('feature[var="muc_hidden"]').length,
+                            'membersonly': $stanza.find('feature[var="muc_membersonly"]').length,
+                            'moderated': $stanza.find('feature[var="muc_moderated"]').length,
+                            'nonanonymous': $stanza.find('feature[var="muc_nonanonymous"]').length,
+                            'open': $stanza.find('feature[var="muc_open"]').length,
+                            'passwordprotected': $stanza.find('feature[var="muc_passwordprotected"]').length,
+                            'persistent': $stanza.find('feature[var="muc_persistent"]').length,
+                            'publicroom': $stanza.find('feature[var="muc_public"]').length,
+                            'semianonymous': $stanza.find('feature[var="muc_semianonymous"]').length,
+                            'temporary': $stanza.find('feature[var="muc_temporary"]').length,
+                            'unmoderated': $stanza.find('feature[var="muc_unmoderated"]').length,
+                            'label_desc': __('Description:'),
+                            'label_jid': __('Room Address (JID):'),
+                            'label_occ': __('Occupants:'),
+                            'label_features': __('Features:'),
+                            'label_requires_auth': __('Requires authentication'),
+                            'label_hidden': __('Hidden'),
+                            'label_requires_invite': __('Requires an invitation'),
+                            'label_moderated': __('Moderated'),
+                            'label_non_anon': __('Non-anonymous'),
+                            'label_open_room': __('Open room'),
+                            'label_permanent_room': __('Permanent room'),
+                            'label_public': __('Public'),
+                            'label_semi_anon':  __('Semi-anonymous'),
+                            'label_temp_room':  __('Temporary room'),
+                            'label_unmoderated': __('Unmoderated')
+                        })
                 },
-                toggleRoomInfo: function toggleRoomInfo(ev) {
+
+                toggleRoomInfo (ev) {
                     /* Show/hide extra information about a room in the listing.
                      */
-                    var target = ev.target,
+                    const { target } = ev,
                         $parent = $(target).parent('dd'),
                         $div = $parent.find('div.room-info');
-
                     if ($div.length) {
                         $div.remove();
                     } else {
                         $parent.find('span.spinner').remove();
                         $parent.append(tpl_spinner);
-                        _converse.connection.disco.info($(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0]));
+                        _converse.connection.disco.info(
+                            $(target).attr('data-room-jid'), null, _.partial(this.insertRoomInfo, $parent[0])
+                        );
                     }
                 },
-                parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-                    var name = void 0,
-                        $name = void 0,
-                        server = void 0,
-                        $server = void 0,
-                        jid = void 0;
+
+                parseRoomDataFromEvent (ev) {
+                    let name, $name, server, $server, jid;
                     if (ev.type === 'click') {
                         name = $(ev.target).text();
                         jid = $(ev.target).attr('data-room-jid');
                     } else {
-                        var _$name = this.$el.find('input.new-chatroom-name');
-                        var _$server = this.$el.find('input.new-chatroom-server');
-                        var _server = _$server.val();
-                        name = _$name.val().trim();
-                        _$name.val(''); // Clear the input
-                        if (name && _server) {
-                            jid = Strophe.escapeNode(name.toLowerCase()) + '@' + _server.toLowerCase();
-                            _$name.removeClass('error');
-                            _$server.removeClass('error');
-                            this.model.save({ muc_domain: _server });
+                        const $name = this.$el.find('input.new-chatroom-name');
+                        const $server= this.$el.find('input.new-chatroom-server');
+                        const server = $server.val();
+                        name = $name.val().trim();
+                        $name.val(''); // Clear the input
+                        if (name && server) {
+                            jid = Strophe.escapeNode(name.toLowerCase()) + '@' + server.toLowerCase();
+                            $name.removeClass('error');
+                            $server.removeClass('error');
+                            this.model.save({muc_domain: server});
                         } else {
-                            if (!name) {
-                                _$name.addClass('error');
-                            }
-                            if (!_server) {
-                                _$server.addClass('error');
-                            }
+                            if (!name) { $name.addClass('error'); }
+                            if (!server) { $server.addClass('error'); }
                             return;
                         }
                     }
                     return {
                         'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
-                    };
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
+                    }
                 },
-                openChatRoom: function openChatRoom(ev) {
+
+                openChatRoom (ev) {
                     ev.preventDefault();
-                    var data = this.parseRoomDataFromEvent(ev);
+                    const data = this.parseRoomDataFromEvent(ev);
                     if (!_.isUndefined(data)) {
                         _converse.openChatRoom(data);
                     }
                 },
-                setDomain: function setDomain(ev) {
-                    this.model.save({ muc_domain: ev.target.value });
+
+                setDomain (ev) {
+                    this.model.save({muc_domain: ev.target.value});
                 },
-                setNick: function setNick(ev) {
-                    this.model.save({ nick: ev.target.value });
+
+                setNick (ev) {
+                    this.model.save({nick: ev.target.value});
                 }
             });
             /************************ End of ChatRoomView **********************/
+
 
             _converse.onDirectMUCInvitation = function (message) {
                 /* A direct MUC invitation to join a room has been received
@@ -61204,27 +61915,32 @@ Strophe.addConnectionPlugin('disco',
                  *  (XMLElement) message: The message stanza containing the
                  *        invitation.
                  */
-                var $message = $(message),
+                const $message = $(message),
                     $x = $message.children('x[xmlns="jabber:x:conference"]'),
                     from = Strophe.getBareJidFromJid($message.attr('from')),
                     room_jid = $x.attr('jid'),
                     reason = $x.attr('reason');
-                var contact = _converse.roster.get(from),
-                    result = void 0;
+                let contact = _converse.roster.get(from),
+                    result;
 
                 if (_converse.auto_join_on_invite) {
                     result = true;
                 } else {
                     // Invite request might come from someone not your roster list
-                    contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
+                    contact = contact? contact.get('fullname'): Strophe.getNodeFromJid(from);
                     if (!reason) {
-                        result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
+                        result = confirm(
+                            __("%1$s has invited you to join a chat room: %2$s", contact, room_jid)
+                        );
                     } else {
-                        result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
+                        result = confirm(
+                            __('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"',
+                                contact, room_jid, reason)
+                        );
                     }
                 }
                 if (result === true) {
-                    var chatroom = _converse.openChatRoom({
+                    const chatroom = _converse.openChatRoom({
                         'jid': room_jid,
                         'password': $x.attr('password')
                     });
@@ -61235,17 +61951,18 @@ Strophe.addConnectionPlugin('disco',
             };
 
             if (_converse.allow_muc_invitations) {
-                var registerDirectInvitationHandler = function registerDirectInvitationHandler() {
-                    _converse.connection.addHandler(function (message) {
-                        _converse.onDirectMUCInvitation(message);
-                        return true;
-                    }, 'jabber:x:conference', 'message');
+                const registerDirectInvitationHandler = function () {
+                    _converse.connection.addHandler(
+                        function (message) {
+                            _converse.onDirectMUCInvitation(message);
+                            return true;
+                        }, 'jabber:x:conference', 'message');
                 };
                 _converse.on('connected', registerDirectInvitationHandler);
                 _converse.on('reconnected', registerDirectInvitationHandler);
             }
 
-            function autoJoinRooms() {
+            function autoJoinRooms () {
                 /* Automatically join chat rooms, based on the
                  * "auto_join_rooms" configuration setting, which is an array
                  * of strings (room JIDs) or objects (with room JID and other
@@ -61257,7 +61974,9 @@ Strophe.addConnectionPlugin('disco',
                     } else if (_.isObject(room)) {
                         _converse.api.rooms.open(room.jid, room.nick);
                     } else {
-                        _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
+                        _converse.log(
+                            'Invalid room criteria specified for "auto_join_rooms"',
+                            Strophe.LogLevel.ERROR);
                     }
                 });
             }
@@ -61279,7 +61998,7 @@ Strophe.addConnectionPlugin('disco',
              */
             _.extend(_converse.api, {
                 'rooms': {
-                    'close': function close(jids) {
+                    'close' (jids) {
                         if (_.isUndefined(jids)) {
                             _converse.chatboxviews.each(function (view) {
                                 if (view.is_chatroom && view.model) {
@@ -61287,22 +62006,18 @@ Strophe.addConnectionPlugin('disco',
                                 }
                             });
                         } else if (_.isString(jids)) {
-                            var view = _converse.chatboxviews.get(jids);
-                            if (view) {
-                                view.close();
-                            }
+                            const view = _converse.chatboxviews.get(jids);
+                            if (view) { view.close(); }
                         } else {
                             _.each(jids, function (jid) {
-                                var view = _converse.chatboxviews.get(jid);
-                                if (view) {
-                                    view.close();
-                                }
+                                const view = _converse.chatboxviews.get(jid);
+                                if (view) { view.close(); }
                             });
                         }
                     },
-                    'open': function open(jids, attrs) {
+                    'open' (jids, attrs) {
                         if (_.isString(attrs)) {
-                            attrs = { 'nick': attrs };
+                            attrs = {'nick': attrs};
                         } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
@@ -61319,14 +62034,14 @@ Strophe.addConnectionPlugin('disco',
                         }
                         return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
                     },
-                    'get': function get(jids, attrs, create) {
+                    'get' (jids, attrs, create) {
                         if (_.isString(attrs)) {
-                            attrs = { 'nick': attrs };
+                            attrs = {'nick': attrs};
                         } else if (_.isUndefined(attrs)) {
                             attrs = {};
                         }
                         if (_.isUndefined(jids)) {
-                            var result = [];
+                            const result = [];
                             _converse.chatboxes.each(function (chatbox) {
                                 if (chatbox.get('type') === CHATROOMS_TYPE) {
                                     result.push(_converse.getViewForChatBox(chatbox));
@@ -61334,7 +62049,7 @@ Strophe.addConnectionPlugin('disco',
                             });
                             return result;
                         }
-                        var fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
+                        const fetcher = _.partial(_converse.chatboxviews.getChatBox.bind(_converse.chatboxviews), _, create);
                         if (!attrs.nick) {
                             attrs.nick = Strophe.getNodeFromJid(_converse.bare_jid);
                         }
@@ -61347,7 +62062,7 @@ Strophe.addConnectionPlugin('disco',
             });
 
             /* Event handlers */
-            _converse.on('addClientFeatures', function () {
+            _converse.on('addClientFeatures', () => {
                 if (_converse.allow_muc) {
                     _converse.connection.disco.addFeature(Strophe.NS.MUC);
                 }
@@ -61356,7 +62071,7 @@ Strophe.addConnectionPlugin('disco',
                 }
             });
 
-            _converse.on('reconnected', function reconnectToChatRooms() {
+            _converse.on('reconnected', function reconnectToChatRooms () {
                 /* Upon a reconnection event from converse, join again
                  * all the open chat rooms.
                  */
@@ -61370,7 +62085,7 @@ Strophe.addConnectionPlugin('disco',
                 });
             });
 
-            function disconnectChatRooms() {
+            function disconnectChatRooms () {
                 /* When disconnecting, or reconnecting, mark all chat rooms as
                  * disconnected, so that they will be properly entered again
                  * when fetched from session storage.
@@ -61385,8 +62100,8 @@ Strophe.addConnectionPlugin('disco',
             _converse.on('disconnecting', disconnectChatRooms);
         }
     });
-});
-//# sourceMappingURL=converse-muc.js.map;
+}));
+
 
 define('tpl!chatroom_bookmark_form', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -61481,8 +62196,6 @@ __e(label_bookmarks) +
 return __p
 };});
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -61495,17 +62208,28 @@ return __p
  * in XEP-0048.
  */
 (function (root, factory) {
-    define('converse-bookmarks',["jquery.noconflict", "utils", "converse-core", "converse-muc", "tpl!chatroom_bookmark_form", "tpl!chatroom_bookmark_toggle", "tpl!bookmark", "tpl!bookmarks_list"], factory);
-})(undefined, function ($, utils, converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
-    var _converse$env = converse.env,
-        Backbone = _converse$env.Backbone,
-        Promise = _converse$env.Promise,
-        Strophe = _converse$env.Strophe,
-        $iq = _converse$env.$iq,
-        b64_sha1 = _converse$env.b64_sha1,
-        sizzle = _converse$env.sizzle,
-        _ = _converse$env._;
+    define('converse-bookmarks',["jquery.noconflict",
+            "utils",
+            "converse-core",
+            "converse-muc",
+            "tpl!chatroom_bookmark_form",
+            "tpl!chatroom_bookmark_toggle",
+            "tpl!bookmark",
+            "tpl!bookmarks_list"
+        ],
+        factory);
+}(this, function (
+        $,
+        utils,
+        converse,
+        muc,
+        tpl_chatroom_bookmark_form,
+        tpl_chatroom_bookmark_toggle,
+        tpl_bookmark,
+        tpl_bookmarks_list
+    ) {
 
+    const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-bookmarks', {
         overrides: {
@@ -61515,7 +62239,7 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            clearSession: function clearSession() {
+            clearSession () {
                 this.__super__.clearSession.apply(this, arguments);
                 if (!_.isUndefined(this.bookmarks)) {
                     this.bookmarks.reset();
@@ -61524,67 +62248,71 @@ return __p
                 }
             },
 
-
             ChatRoomView: {
                 events: {
                     'click .toggle-bookmark': 'toggleBookmark'
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:bookmarked', this.onBookmarked, this);
                     this.setBookmarkState();
                 },
-                generateHeadingHTML: function generateHeadingHTML() {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__,
-                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
 
+                generateHeadingHTML () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse,
+                        html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     if (_converse.allow_bookmarks) {
-                        var div = document.createElement('div');
+                        const div = document.createElement('div');
                         div.innerHTML = html;
-                        var bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
-                            info_toggle_bookmark: __('Bookmark this room'),
-                            bookmarked: this.model.get('bookmarked')
-                        }));
-                        var close_button = div.querySelector('.close-chatbox-button');
+                        const bookmark_button = tpl_chatroom_bookmark_toggle(
+                            _.assignIn(
+                                this.model.toJSON(),
+                                {
+                                    info_toggle_bookmark: __('Bookmark this room'),
+                                    bookmarked: this.model.get('bookmarked')
+                                }
+                            ));
+                        const close_button = div.querySelector('.close-chatbox-button');
                         close_button.insertAdjacentHTML('afterend', bookmark_button);
                         return div.innerHTML;
                     }
                     return html;
                 },
-                checkForReservedNick: function checkForReservedNick() {
+
+                checkForReservedNick () {
                     /* Check if the user has a bookmark with a saved nickanme
                      * for this room, and if so use it.
                      * Otherwise delegate to the super method.
                      */
-                    var _converse = this.__super__._converse;
-
+                    const { _converse } = this.__super__;
                     if (_.isUndefined(_converse.bookmarks) || !_converse.allow_bookmarks) {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
-                    var model = _converse.bookmarks.findWhere({ 'jid': this.model.get('jid') });
+                    const model = _converse.bookmarks.findWhere({'jid': this.model.get('jid')});
                     if (!_.isUndefined(model) && model.get('nick')) {
                         this.join(model.get('nick'));
                     } else {
                         return this.__super__.checkForReservedNick.apply(this, arguments);
                     }
                 },
-                onBookmarked: function onBookmarked() {
-                    var icon = this.el.querySelector('.icon-pushpin');
+
+                onBookmarked () {
+                    const icon = this.el.querySelector('.icon-pushpin');
                     if (this.model.get('bookmarked')) {
                         icon.classList.add('button-on');
                     } else {
                         icon.classList.remove('button-on');
                     }
                 },
-                setBookmarkState: function setBookmarkState() {
+
+                setBookmarkState () {
                     /* Set whether the room is bookmarked or not.
                      */
-                    var _converse = this.__super__._converse;
-
+                    const { _converse } = this.__super__;
                     if (!_.isUndefined(_converse.bookmarks)) {
-                        var models = _converse.bookmarks.where({ 'jid': this.model.get('jid') });
+                        const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                         if (!models.length) {
                             this.model.save('bookmarked', false);
                         } else {
@@ -61592,58 +62320,67 @@ return __p
                         }
                     }
                 },
-                renderBookmarkForm: function renderBookmarkForm() {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__,
-                        body = this.el.querySelector('.chatroom-body');
 
+                renderBookmarkForm () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse,
+                        body = this.el.querySelector('.chatroom-body');
 
                     _.each(body.children, function (child) {
                         child.classList.add('hidden');
                     });
                     // Remove any existing forms
-                    var form = body.querySelector('form.chatroom-form');
+                    let form = body.querySelector('form.chatroom-form');
                     if (!_.isNull(form)) {
                         form.parentNode.removeChild(form);
                     }
-                    body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
-                        heading: __('Bookmark this room'),
-                        label_name: __('The name for this bookmark:'),
-                        label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
-                        label_nick: __('What should your nickname for this room be?'),
-                        default_nick: this.model.get('nick'),
-                        label_submit: __('Save'),
-                        label_cancel: __('Cancel')
-                    }));
+                    body.insertAdjacentHTML(
+                        'beforeend', 
+                        tpl_chatroom_bookmark_form({
+                            heading: __('Bookmark this room'),
+                            label_name: __('The name for this bookmark:'),
+                            label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
+                            label_nick: __('What should your nickname for this room be?'),
+                            default_nick: this.model.get('nick'),
+                            label_submit: __('Save'),
+                            label_cancel: __('Cancel')
+                        })
+                    );
                     form = body.querySelector('form.chatroom-form');
-                    form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
-                    form.querySelector('.button-cancel').addEventListener('click', this.cancelConfiguration.bind(this));
+                    form.addEventListener(
+                        'submit',
+                        this.onBookmarkFormSubmitted.bind(this)
+                    );
+                    form.querySelector('.button-cancel').addEventListener(
+                        'click',
+                        this.cancelConfiguration.bind(this)
+                    );
                 },
-                onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
-                    ev.preventDefault();
-                    var _converse = this.__super__._converse;
 
-                    var $form = $(ev.target),
-                        that = this;
+                onBookmarkFormSubmitted (ev) {
+                    ev.preventDefault();
+                    const { _converse } = this.__super__;
+                    const $form = $(ev.target), that = this;
                     _converse.bookmarks.createBookmark({
                         'jid': this.model.get('jid'),
                         'autojoin': $form.find('input[name="autojoin"]').prop('checked'),
-                        'name': $form.find('input[name=name]').val(),
-                        'nick': $form.find('input[name=nick]').val()
+                        'name':  $form.find('input[name=name]').val(),
+                        'nick':  $form.find('input[name=nick]').val()
                     });
-                    this.$el.find('div.chatroom-form-container').hide(function () {
-                        $(this).remove();
-                        that.renderAfterTransition();
-                    });
+                    this.$el.find('div.chatroom-form-container').hide(
+                        function () {
+                            $(this).remove();
+                            that.renderAfterTransition();
+                        });
                 },
-                toggleBookmark: function toggleBookmark(ev) {
+
+                toggleBookmark (ev) {
                     if (ev) {
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
-                    var _converse = this.__super__._converse;
-
-                    var models = _converse.bookmarks.where({ 'jid': this.model.get('jid') });
+                    const { _converse } = this.__super__;
+                    const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
                         this.renderBookmarkForm();
                     } else {
@@ -61656,13 +62393,13 @@ return __p
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+            const { _converse } = this,
+                { __,
+                ___ } = _converse;
 
             // Configuration values for this plugin
             // ====================================
@@ -61677,62 +62414,67 @@ return __p
 
             // Pure functions on the _converse object
             _.extend(_converse, {
-                removeBookmarkViaEvent: function removeBookmarkViaEvent(ev) {
+                removeBookmarkViaEvent (ev) {
                     /* Remove a bookmark as determined by the passed in
                      * event.
                      */
                     ev.preventDefault();
-                    var name = ev.target.getAttribute('data-bookmark-name');
-                    var jid = ev.target.getAttribute('data-room-jid');
+                    const name = ev.target.getAttribute('data-bookmark-name');
+                    const jid = ev.target.getAttribute('data-room-jid');
                     if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.invokeMap(_converse.bookmarks.where({ 'jid': jid }), Backbone.Model.prototype.destroy);
+                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
                     }
                 },
-                addBookmarkViaEvent: function addBookmarkViaEvent(ev) {
+
+                addBookmarkViaEvent (ev) {
                     /* Add a bookmark as determined by the passed in
                      * event.
                      */
                     ev.preventDefault();
-                    var jid = ev.target.getAttribute('data-room-jid');
-                    var chatroom = _converse.openChatRoom({ 'jid': jid }, true);
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const chatroom = _converse.openChatRoom({'jid': jid}, true);
                     _converse.chatboxviews.get(jid).renderBookmarkForm();
-                }
+                },
             });
 
             _converse.Bookmark = Backbone.Model;
 
             _converse.BookmarksList = Backbone.Model.extend({
                 defaults: {
-                    "toggle-state": _converse.OPENED
+                    "toggle-state":  _converse.OPENED
                 }
             });
 
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
 
-                initialize: function initialize() {
+                initialize () {
                     this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
-                    var cache_key = "converse.room-bookmarks" + _converse.bare_jid;
-                    this.fetched_flag = b64_sha1(cache_key + 'fetched');
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cache_key));
+                    const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+                    this.fetched_flag = b64_sha1(cache_key+'fetched');
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(cache_key)
+                    );
                 },
-                openBookmarkedRoom: function openBookmarkedRoom(bookmark) {
+
+                openBookmarkedRoom (bookmark) {
                     if (bookmark.get('autojoin')) {
                         _converse.api.rooms.open(bookmark.get('jid'), bookmark.get('nick'));
                     }
                     return bookmark;
                 },
-                fetchBookmarks: function fetchBookmarks() {
-                    var deferred = utils.getWrappedPromise();
+
+                fetchBookmarks () {
+                    const deferred = utils.getWrappedPromise();
                     if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
-                            'error': _.bind(this.onCachedBookmarksFetched, this, deferred)
+                            'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
                         });
-                    } else if (!window.sessionStorage.getItem(this.fetched_flag)) {
+                    } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
                         // There aren't any cached bookmarks and the
                         // `fetched_flag` is off, so we query the XMPP server.
                         // If nothing is returned from the XMPP server, we set
@@ -61743,30 +62485,45 @@ return __p
                     }
                     return deferred.promise;
                 },
-                onCachedBookmarksFetched: function onCachedBookmarksFetched(deferred) {
+
+                onCachedBookmarksFetched (deferred) {
                     return deferred.resolve();
                 },
-                createBookmark: function createBookmark(options) {
+
+                createBookmark (options) {
                     _converse.bookmarks.create(options);
                     _converse.bookmarks.sendBookmarkStanza();
                 },
-                sendBookmarkStanza: function sendBookmarkStanza() {
-                    var stanza = $iq({
-                        'type': 'set',
-                        'from': _converse.connection.jid
-                    }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB }).c('publish', { 'node': 'storage:bookmarks' }).c('item', { 'id': 'current' }).c('storage', { 'xmlns': 'storage:bookmarks' });
+
+                sendBookmarkStanza () {
+                    let stanza = $iq({
+                            'type': 'set',
+                            'from': _converse.connection.jid,
+                        })
+                        .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('publish', {'node': 'storage:bookmarks'})
+                                .c('item', {'id': 'current'})
+                                    .c('storage', {'xmlns':'storage:bookmarks'});
                     this.each(function (model) {
                         stanza = stanza.c('conference', {
                             'name': model.get('name'),
                             'autojoin': model.get('autojoin'),
-                            'jid': model.get('jid')
+                            'jid': model.get('jid'),
                         }).c('nick').t(model.get('nick')).up().up();
                     });
                     stanza.up().up().up();
-                    stanza.c('publish-options').c('x', { 'xmlns': Strophe.NS.XFORM, 'type': 'submit' }).c('field', { 'var': 'FORM_TYPE', 'type': 'hidden' }).c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up().c('field', { 'var': 'pubsub#persist_items' }).c('value').t('true').up().up().c('field', { 'var': 'pubsub#access_model' }).c('value').t('whitelist');
+                    stanza.c('publish-options')
+                        .c('x', {'xmlns': Strophe.NS.XFORM, 'type':'submit'})
+                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                .c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up()
+                            .c('field', {'var':'pubsub#persist_items'})
+                                .c('value').t('true').up().up()
+                            .c('field', {'var':'pubsub#access_model'})
+                                .c('value').t('whitelist');
                     _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
                 },
-                onBookmarkError: function onBookmarkError(iq) {
+
+                onBookmarkError (iq) {
                     _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
                     _converse.log(iq);
                     // We remove all locally cached bookmarks and fetch them
@@ -61775,28 +62532,39 @@ return __p
                     this.fetchBookmarksFromServer(null);
                     window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
                 },
-                fetchBookmarksFromServer: function fetchBookmarksFromServer(deferred) {
-                    var stanza = $iq({
+
+                fetchBookmarksFromServer (deferred) {
+                    const stanza = $iq({
                         'from': _converse.connection.jid,
-                        'type': 'get'
-                    }).c('pubsub', { 'xmlns': Strophe.NS.PUBSUB }).c('items', { 'node': 'storage:bookmarks' });
-                    _converse.connection.sendIQ(stanza, _.bind(this.onBookmarksReceived, this, deferred), _.bind(this.onBookmarksReceivedError, this, deferred));
+                        'type': 'get',
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('items', {'node': 'storage:bookmarks'});
+                    _converse.connection.sendIQ(
+                        stanza,
+                        _.bind(this.onBookmarksReceived, this, deferred),
+                        _.bind(this.onBookmarksReceivedError, this, deferred)
+                    );
                 },
-                markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
-                    var room = _converse.chatboxes.get(bookmark.get('jid'));
+
+                markRoomAsBookmarked (bookmark) {
+                    const room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', true);
                     }
                 },
-                markRoomAsUnbookmarked: function markRoomAsUnbookmarked(bookmark) {
-                    var room = _converse.chatboxes.get(bookmark.get('jid'));
+
+                markRoomAsUnbookmarked (bookmark) {
+                    const room = _converse.chatboxes.get(bookmark.get('jid'));
                     if (!_.isUndefined(room)) {
                         room.save('bookmarked', false);
                     }
                 },
-                onBookmarksReceived: function onBookmarksReceived(deferred, iq) {
-                    var bookmarks = $(iq).find('items[node="storage:bookmarks"] item[id="current"] storage conference');
-                    var that = this;
+
+                onBookmarksReceived (deferred, iq) {
+                    const bookmarks = $(iq).find(
+                        'items[node="storage:bookmarks"] item[id="current"] storage conference'
+                    );
+                    const that = this;
                     _.forEach(bookmarks, function (bookmark) {
                         that.create({
                             'jid': bookmark.getAttribute('jid'),
@@ -61809,7 +62577,8 @@ return __p
                         return deferred.resolve();
                     }
                 },
-                onBookmarksReceivedError: function onBookmarksReceivedError(deferred, iq) {
+
+                onBookmarksReceivedError (deferred, iq) {
                     window.sessionStorage.setItem(this.fetched_flag, true);
                     _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
                     _converse.log(iq, Strophe.LogLevel.DEBUG);
@@ -61828,20 +62597,23 @@ return __p
                     'click .remove-bookmark': 'removeBookmark'
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.model.on('add', this.renderBookmarkListElement, this);
                     this.model.on('remove', this.removeBookmarkListElement, this);
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
-                    var cachekey = "converse.room-bookmarks" + _converse.bare_jid + "-list-model";
+                    const cachekey = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                     this.list_model = new _converse.BookmarksList();
                     this.list_model.id = cachekey;
-                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(cachekey)
+                    );
                     this.list_model.fetch();
                     this.render();
                 },
-                render: function render() {
+
+                render () {
                     this.$el.html(tpl_bookmarks_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_bookmarks': __('Click to toggle the bookmarks list'),
@@ -61851,35 +62623,35 @@ return __p
                         this.$('.bookmarks').hide();
                     }
                     this.model.each(this.renderBookmarkListElement.bind(this));
-                    var controlboxview = _converse.chatboxviews.get('controlbox');
+                    const controlboxview = _converse.chatboxviews.get('controlbox');
                     if (!_.isUndefined(controlboxview)) {
                         this.$el.prependTo(controlboxview.$('#chatrooms'));
                     }
                     return this.$el;
                 },
 
-
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
 
-                renderBookmarkListElement: function renderBookmarkListElement(item) {
+                renderBookmarkListElement (item) {
                     if (item instanceof _converse.ChatBox) {
-                        item = _.head(this.model.where({ 'jid': item.get('jid') }));
+                        item = _.head(this.model.where({'jid': item.get('jid')}));
                         if (_.isNil(item)) {
                             // A chat box has been closed, but we don't have a
                             // bookmark for it, so nothing further to do here.
                             return;
                         }
                     }
-                    if (_converse.hide_open_bookmarks && _converse.chatboxes.where({ 'jid': item.get('jid') }).length) {
+                    if (_converse.hide_open_bookmarks &&
+                            _converse.chatboxes.where({'jid': item.get('jid')}).length) {
                         // A chat box has been opened, and we don't show
                         // bookmarks for open chats, so we remove it.
                         this.removeBookmarkListElement(item);
                         return;
                     }
 
-                    var list_el = this.el.querySelector('.bookmarks');
-                    var div = document.createElement('div');
+                    const list_el = this.el.querySelector('.bookmarks');
+                    const div = document.createElement('div');
                     div.innerHTML = tpl_bookmark({
                         'bookmarked': true,
                         'info_leave_room': __('Leave this room'),
@@ -61890,7 +62662,9 @@ return __p
                         'name': item.get('name'),
                         'open_title': __('Click to open this room')
                     });
-                    var el = _.head(sizzle(".available-chatroom[data-room-jid=\"" + item.get('jid') + "\"]", list_el));
+                    const el = _.head(sizzle(
+                        `.available-chatroom[data-room-jid="${item.get('jid')}"]`,
+                        list_el));
 
                     if (el) {
                         el.innerHTML = div.firstChild.innerHTML;
@@ -61899,17 +62673,20 @@ return __p
                     }
                     this.show();
                 },
-                show: function show() {
+
+                show () {
                     if (!this.$el.is(':visible')) {
                         this.$el.show();
                     }
                 },
-                hide: function hide() {
+
+                hide () {
                     this.$el.hide();
                 },
-                removeBookmarkListElement: function removeBookmarkListElement(item) {
-                    var list_el = this.el.querySelector('.bookmarks');
-                    var el = _.head(sizzle(".available-chatroom[data-room-jid=\"" + item.get('jid') + "\"]", list_el));
+
+                removeBookmarkListElement (item) {
+                    const list_el = this.el.querySelector('.bookmarks');
+                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
                     if (el) {
                         list_el.removeChild(el);
                     }
@@ -61917,37 +62694,41 @@ return __p
                         this.hide();
                     }
                 },
-                toggleBookmarksList: function toggleBookmarksList(ev) {
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var $el = $(ev.target);
+
+                toggleBookmarksList (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const $el = $(ev.target);
                     if ($el.hasClass("icon-opened")) {
                         this.$('.bookmarks').slideUp('fast');
-                        this.list_model.save({ 'toggle-state': _converse.CLOSED });
+                        this.list_model.save({'toggle-state': _converse.CLOSED});
                         $el.removeClass("icon-opened").addClass("icon-closed");
                     } else {
                         $el.removeClass("icon-closed").addClass("icon-opened");
                         this.$('.bookmarks').slideDown('fast');
-                        this.list_model.save({ 'toggle-state': _converse.OPENED });
+                        this.list_model.save({'toggle-state': _converse.OPENED});
                     }
                 }
             });
 
-            var initBookmarks = function initBookmarks() {
+            const initBookmarks = function () {
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
                 _converse.bookmarks = new _converse.Bookmarks();
                 _converse.bookmarks.fetchBookmarks().then(function () {
-                    _converse.bookmarksview = new _converse.BookmarksView({ 'model': _converse.bookmarks });
+                    _converse.bookmarksview = new _converse.BookmarksView(
+                        {'model': _converse.bookmarks}
+                    );
                     _converse.emit('bookmarksInitialized');
                 });
             };
 
-            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks);
+            Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('roomsPanelRendered')
+            ]).then(initBookmarks);
 
-            var afterReconnection = function afterReconnection() {
+            const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {
                     return;
                 }
@@ -61960,8 +62741,8 @@ return __p
             _converse.on('reconnected', afterReconnection);
         }
     });
-});
-//# sourceMappingURL=converse-bookmarks.js.map;
+}));
+
 
 define('tpl!rooms_list', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -62043,8 +62824,6 @@ __e(info_title) +
 return __p
 };});
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -62057,15 +62836,14 @@ return __p
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define('converse-roomslist',["utils", "converse-core", "converse-muc", "tpl!rooms_list", "tpl!rooms_list_item"], factory);
-})(undefined, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
-    var _converse$env = converse.env,
-        Backbone = _converse$env.Backbone,
-        Promise = _converse$env.Promise,
-        b64_sha1 = _converse$env.b64_sha1,
-        sizzle = _converse$env.sizzle,
-        _ = _converse$env._;
-
+    define('converse-roomslist',["utils",
+            "converse-core",
+            "converse-muc",
+            "tpl!rooms_list",
+            "tpl!rooms_list_item"
+        ], factory);
+}(this, function (utils, converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+    const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-roomslist', {
 
@@ -62083,18 +62861,16 @@ return __p
          */
         optional_dependencies: ["converse-bookmarks"],
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
-
+            const { _converse } = this,
+                  { __, ___ } = _converse;
 
             _converse.RoomsList = Backbone.Model.extend({
                 defaults: {
-                    "toggle-state": _converse.OPENED
+                    "toggle-state":  _converse.OPENED
                 }
             });
 
@@ -62105,11 +62881,11 @@ return __p
                     'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
                     'click .open-rooms-toggle': 'toggleRoomsList',
-                    'click .remove-bookmark': 'removeBookmark'
+                    'click .remove-bookmark': 'removeBookmark',
                 },
 
-                initialize: function initialize() {
-                    this.toggleRoomsList = _.debounce(this.toggleRoomsList, 600, { 'leading': true });
+                initialize () {
+                    this.toggleRoomsList = _.debounce(this.toggleRoomsList, 600, {'leading': true});
 
                     this.model.on('add', this.renderRoomsListElement, this);
                     this.model.on('change:bookmarked', this.renderRoomsListElement, this);
@@ -62118,15 +62894,19 @@ return __p
                     this.model.on('change:num_unread_general', this.renderRoomsListElement, this);
                     this.model.on('remove', this.removeRoomsListElement, this);
 
-                    var cachekey = "converse.roomslist" + _converse.bare_jid;
+                    const cachekey = `converse.roomslist${_converse.bare_jid}`;
                     this.list_model = new _converse.RoomsList();
                     this.list_model.id = cachekey;
-                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(cachekey)
+                    );
                     this.list_model.fetch();
                     this.render();
                 },
-                render: function render() {
-                    this.el.innerHTML = tpl_rooms_list({
+
+                render () {
+                    this.el.innerHTML =
+                        tpl_rooms_list({
                         'toggle_state': this.list_model.get('toggle-state'),
                         'desc_rooms': __('Click to toggle the rooms list'),
                         'label_rooms': __('Open Rooms')
@@ -62136,45 +62916,49 @@ return __p
                         this.el.querySelector('.open-rooms-list').classList.add('collapsed');
                     }
                     this.model.each(this.renderRoomsListElement.bind(this));
-                    var controlboxview = _converse.chatboxviews.get('controlbox');
+                    const controlboxview = _converse.chatboxviews.get('controlbox');
 
-                    if (!_.isUndefined(controlboxview) && !document.body.contains(this.el)) {
-                        var container = controlboxview.el.querySelector('#chatrooms');
+                    if (!_.isUndefined(controlboxview) &&
+                            !document.body.contains(this.el)) {
+                        const container = controlboxview.el.querySelector('#chatrooms');
                         if (!_.isNull(container)) {
                             container.insertBefore(this.el, container.firstChild);
                         }
                     }
                     return this.el;
                 },
-                hide: function hide() {
+
+                hide () {
                     this.el.classList.add('hidden');
                 },
-                show: function show() {
+
+                show () {
                     this.el.classList.remove('hidden');
                 },
-                closeRoom: function closeRoom(ev) {
+
+                closeRoom (ev) {
                     ev.preventDefault();
-                    var name = ev.target.getAttribute('data-room-name');
-                    var jid = ev.target.getAttribute('data-room-jid');
+                    const name = ev.target.getAttribute('data-room-name');
+                    const jid = ev.target.getAttribute('data-room-jid');
                     if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
-                renderRoomsListElement: function renderRoomsListElement(item) {
+
+                renderRoomsListElement (item) {
                     if (item.get('type') !== 'chatroom') {
                         return;
                     }
                     this.removeRoomsListElement(item);
 
-                    var name = void 0,
-                        bookmark = void 0;
+                    let name, bookmark;
                     if (item.get('bookmarked')) {
-                        bookmark = _.head(_converse.bookmarksview.model.where({ 'jid': item.get('jid') }));
+                        bookmark = _.head(_converse.bookmarksview.model.where({'jid': item.get('jid')}));
                         name = bookmark.get('name');
                     } else {
                         name = item.get('name');
                     }
-                    var div = document.createElement('div');
+                    const div = document.createElement('div');
                     div.innerHTML = tpl_rooms_list_item(_.extend(item.toJSON(), {
                         'allow_bookmarks': _converse.allow_bookmarks,
                         'info_leave_room': __('Leave this room'),
@@ -62188,13 +62972,12 @@ return __p
                     this.show();
                 },
 
-
                 removeBookmark: _converse.removeBookmarkViaEvent,
                 addBookmark: _converse.addBookmarkViaEvent,
 
-                removeRoomsListElement: function removeRoomsListElement(item) {
-                    var list_el = this.el.querySelector('.open-rooms-list');
-                    var el = _.head(sizzle(".available-chatroom[data-room-jid=\"" + item.get('jid') + "\"]", list_el));
+                removeRoomsListElement (item) {
+                    const list_el = this.el.querySelector('.open-rooms-list');
+                    const el = _.head(sizzle(`.available-chatroom[data-room-jid="${item.get('jid')}"]`, list_el));
                     if (el) {
                         list_el.removeChild(el);
                     }
@@ -62202,22 +62985,19 @@ return __p
                         this.hide();
                     }
                 },
-                toggleRoomsList: function toggleRoomsList(ev) {
-                    var _this = this;
 
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var el = ev.target;
+                toggleRoomsList (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const el = ev.target;
                     if (el.classList.contains("icon-opened")) {
-                        utils.slideIn(this.el.querySelector('.open-rooms-list')).then(function () {
-                            _this.list_model.save({ 'toggle-state': _converse.CLOSED });
+                        utils.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
+                            this.list_model.save({'toggle-state': _converse.CLOSED});
                             el.classList.remove("icon-opened");
                             el.classList.add("icon-closed");
                         });
                     } else {
-                        utils.slideOut(this.el.querySelector('.open-rooms-list')).then(function () {
-                            _this.list_model.save({ 'toggle-state': _converse.OPENED });
+                        utils.slideOut(this.el.querySelector('.open-rooms-list')).then(() => {
+                            this.list_model.save({'toggle-state': _converse.OPENED});
                             el.classList.remove("icon-closed");
                             el.classList.add("icon-opened");
                         });
@@ -62225,19 +63005,26 @@ return __p
                 }
             });
 
-            var initRoomsListView = function initRoomsListView() {
-                _converse.rooms_list_view = new _converse.RoomsListView({ 'model': _converse.chatboxes });
+            const initRoomsListView = function () {
+                _converse.rooms_list_view = new _converse.RoomsListView(
+                    {'model': _converse.chatboxes}
+                );
             };
 
-            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(function () {
+            Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('roomsPanelRendered')
+            ]).then(() => {
                 if (_converse.allow_bookmarks) {
-                    _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
+                    _converse.api.waitUntil('bookmarksInitialized').then(
+                        initRoomsListView
+                    );
                 } else {
                     initRoomsListView();
                 }
             });
 
-            var afterReconnection = function afterReconnection() {
+            const afterReconnection = function () {
                 if (_.isUndefined(_converse.rooms_list_view)) {
                     initRoomsListView();
                 } else {
@@ -62247,8 +63034,8 @@ return __p
             _converse.api.listen.on('reconnected', afterReconnection);
         }
     });
-});
-//# sourceMappingURL=converse-roomslist.js.map;
+}));
+
 // http://xmpp.org/extensions/xep-0059.html
 
 (function (root, factory) {
@@ -62330,8 +63117,6 @@ Strophe.RSM.prototype = {
 };
 }));
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -62343,48 +63128,46 @@ Strophe.RSM.prototype = {
 // XEP-0059 Result Set Management
 
 (function (root, factory) {
-    define('converse-mam',["jquery.noconflict", "converse-core", "converse-disco", "converse-chatview", // Could be made a soft dependency
-    "converse-muc", // Could be made a soft dependency
-    "strophe.rsm"], factory);
-})(undefined, function ($, converse) {
+    define('converse-mam',["jquery.noconflict",
+            "converse-core",
+            "converse-disco",
+            "converse-chatview", // Could be made a soft dependency
+            "converse-muc", // Could be made a soft dependency
+            "strophe.rsm"
+    ], factory);
+}(this, function ($, converse) {
     "use strict";
+    const { Promise, Strophe, $iq, _, moment } = converse.env;
 
-    var _converse$env = converse.env,
-        Promise = _converse$env.Promise,
-        Strophe = _converse$env.Strophe,
-        $iq = _converse$env.$iq,
-        _ = _converse$env._,
-        moment = _converse$env.moment;
-
-
-    var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
+    const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
-    var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+    const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-    function checkMAMSupport(_converse) {
+    function checkMAMSupport (_converse) {
         /* Returns a promise which resolves when MAM is supported
          * for this user, or which rejects if not.
          */
-        return _converse.api.waitUntil('discoInitialized').then(function () {
-            return new Promise(function (resolve, reject) {
+        return _converse.api.waitUntil('discoInitialized').then(() =>
+            new Promise((resolve, reject) => {
 
-                function fulfillPromise(entity) {
-                    if (entity.features.findWhere({ 'var': Strophe.NS.MAM })) {
+                function fulfillPromise (entity) {
+                    if (entity.features.findWhere({'var': Strophe.NS.MAM})) {
                         resolve(true);
                     } else {
                         resolve(false);
                     }
                 }
-                var entity = _converse.disco_entities.get(_converse.bare_jid);
+                let entity = _converse.disco_entities.get(_converse.bare_jid);
                 if (_.isUndefined(entity)) {
-                    entity = _converse.disco_entities.create({ 'jid': _converse.bare_jid });
+                    entity = _converse.disco_entities.create({'jid': _converse.bare_jid});
                     entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
                 } else {
                     fulfillPromise(entity);
                 }
-            });
-        });
+            })
+        );
     }
+
 
     converse.plugins.add('converse-mam', {
 
@@ -62395,167 +63178,185 @@ Strophe.RSM.prototype = {
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
-                getMessageAttributes: function getMessageAttributes($message, $delay, original_stanza) {
-                    var attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    attrs.archive_id = $(original_stanza).find("result[xmlns=\"" + Strophe.NS.MAM + "\"]").attr('id');
+                getMessageAttributes ($message, $delay, original_stanza) {
+                    const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
+                    attrs.archive_id = $(original_stanza).find(`result[xmlns="${Strophe.NS.MAM}"]`).attr('id');
                     return attrs;
                 }
             },
 
             ChatBoxView: {
-                render: function render() {
-                    var result = this.__super__.render.apply(this, arguments);
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
-                fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
-                    var _this = this;
 
+                fetchArchivedMessagesIfNecessary () {
                     /* Check if archived messages should be fetched, and if so, do so. */
                     if (this.disable_mam || this.model.get('mam_initialized')) {
                         return;
                     }
-                    var _converse = this.__super__._converse;
-
+                    const { _converse } = this.__super__;
                     this.addSpinner();
 
-                    checkMAMSupport(_converse).then(function (supported) {
-                        // Success
-                        if (supported) {
-                            _this.fetchArchivedMessages();
-                        } else {
-                            _this.clearSpinner();
+                    checkMAMSupport(_converse).then(
+                        (supported) => { // Success
+                            if (supported) {
+                                this.fetchArchivedMessages();
+                            } else {
+                                this.clearSpinner();
+                            }
+                            this.model.save({'mam_initialized': true});
+                        },
+                        () => { // Error
+                            this.clearSpinner();
+                            _converse.log(
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
                         }
-                        _this.model.save({ 'mam_initialized': true });
-                    }, function () {
-                        // Error
-                        _this.clearSpinner();
-                        _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
-                    }).catch(function (msg) {
-                        _this.clearSpinner();
+                    ).catch((msg) => {
+                        this.clearSpinner();
                         _converse.log(msg, Strophe.LogLevel.FATAL);
                     });
                 },
-                fetchArchivedMessages: function fetchArchivedMessages(options) {
-                    var _this2 = this;
 
+                fetchArchivedMessages (options) {
                     /* Fetch archived chat messages from the XMPP server.
                      *
                      * Then, upon receiving them, call onMessage on the chat
                      * box, so that they are displayed inside it.
                      */
-                    var _converse = this.__super__._converse;
+                    const { _converse } = this.__super__;
+                    if (!_converse.disco_entities.get(_converse.bare_jid)
+                            .features.findWhere({'var': Strophe.NS.MAM})) {
 
-                    if (!_converse.disco_entities.get(_converse.bare_jid).features.findWhere({ 'var': Strophe.NS.MAM })) {
-
-                        _converse.log("Attempted to fetch archived messages but this " + "user's server doesn't support XEP-0313", Strophe.LogLevel.WARN);
+                        _converse.log(
+                            "Attempted to fetch archived messages but this "+
+                            "user's server doesn't support XEP-0313",
+                            Strophe.LogLevel.WARN);
                         return;
                     }
                     if (this.disable_mam) {
                         return;
                     }
                     this.addSpinner();
-                    _converse.queryForArchivedMessages(_.extend({
-                        'before': '', // Page backwards from the most recent message
-                        'max': _converse.archived_messages_page_size,
-                        'with': this.model.get('jid')
-                    }, options), function (messages) {
-                        // Success
-                        _this2.clearSpinner();
-                        if (messages.length) {
-                            _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
+                    _converse.queryForArchivedMessages(
+                        _.extend({
+                            'before': '', // Page backwards from the most recent message
+                            'max': _converse.archived_messages_page_size,
+                            'with': this.model.get('jid'),
+                        }, options),
+                        (messages) => { // Success
+                            this.clearSpinner();
+                            if (messages.length) {
+                                _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
+                            }
+                        },
+                        () => { // Error
+                            this.clearSpinner();
+                            _converse.log(
+                                "Error or timeout while trying to fetch "+
+                                "archived messages", Strophe.LogLevel.ERROR);
                         }
-                    }, function () {
-                        // Error
-                        _this2.clearSpinner();
-                        _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
-                    });
+                    );
                 },
-                onScroll: function onScroll(ev) {
-                    var _converse = this.__super__._converse;
 
+                onScroll (ev) {
+                    const { _converse } = this.__super__;
                     if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
                         this.fetchArchivedMessages({
                             'before': this.model.messages.at(0).get('archive_id')
                         });
                     }
-                }
+                },
             },
 
             ChatRoomView: {
-                initialize: function initialize() {
-                    var _converse = this.__super__._converse;
 
+                initialize () {
+                    const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
                     this.model.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
                 },
-                render: function render() {
-                    var result = this.__super__.render.apply(this, arguments);
+
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
                     if (!this.disable_mam) {
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
                 },
-                handleMUCMessage: function handleMUCMessage(stanza) {
+
+                handleMUCMessage (stanza) {
                     /* MAM (message archive management XEP-0313) messages are
                      * ignored, since they're handled separately.
                      */
-                    var is_mam = $(stanza).find("[xmlns=\"" + Strophe.NS.MAM + "\"]").length > 0;
+                    const is_mam = $(stanza).find(`[xmlns="${Strophe.NS.MAM}"]`).length > 0;
                     if (is_mam) {
                         return true;
                     }
                     return this.__super__.handleMUCMessage.apply(this, arguments);
                 },
-                fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
-                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED || !this.model.get('mam_enabled') || this.model.get('mam_initialized')) {
+
+                fetchArchivedMessagesIfNecessary () {
+                    if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
+                        !this.model.get('mam_enabled') ||
+                        this.model.get('mam_initialized')) {
 
                         return;
                     }
                     this.fetchArchivedMessages();
-                    this.model.save({ 'mam_initialized': true });
+                    this.model.save({'mam_initialized': true});
                 },
-                fetchArchivedMessages: function fetchArchivedMessages(options) {
+
+                fetchArchivedMessages (options) {
                     /* Fetch archived chat messages for this Chat Room
                      *
                      * Then, upon receiving them, call onChatRoomMessage
                      * so that they are displayed inside it.
                      */
                     this.addSpinner();
-                    var that = this;
-                    var _converse = this.__super__._converse;
-
-                    _converse.api.archive.query(_.extend({
-                        'groupchat': true,
-                        'before': '', // Page backwards from the most recent message
-                        'with': this.model.get('jid'),
-                        'max': _converse.archived_messages_page_size
-                    }, options), function (messages) {
-                        that.clearSpinner();
-                        if (messages.length) {
-                            _.each(messages, that.onChatRoomMessage.bind(that));
+                    const that = this;
+                    const { _converse } = this.__super__;
+                    _converse.api.archive.query(
+                        _.extend({
+                            'groupchat': true,
+                            'before': '', // Page backwards from the most recent message
+                            'with': this.model.get('jid'),
+                            'max': _converse.archived_messages_page_size
+                        }, options),
+                        function (messages) {
+                            that.clearSpinner();
+                            if (messages.length) {
+                                _.each(messages, that.onChatRoomMessage.bind(that));
+                            }
+                        },
+                        function () {
+                            that.clearSpinner();
+                            _converse.log(
+                                "Error while trying to fetch archived messages",
+                                Strophe.LogLevel.WARN);
                         }
-                    }, function () {
-                        that.clearSpinner();
-                        _converse.log("Error while trying to fetch archived messages", Strophe.LogLevel.WARN);
-                    });
+                    );
                 }
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by Converse.js's plugin machinery.
              */
-            var _converse = this._converse;
-
+            const { _converse } = this;
 
             _converse.api.settings.update({
                 archived_messages_page_size: '50',
                 message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
-                message_archiving_timeout: 8000 // Time (in milliseconds) to wait before aborting MAM request
+                message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
 
             _converse.queryForArchivedMessages = function (options, callback, errback) {
@@ -62576,35 +63377,38 @@ Strophe.RSM.prototype = {
                  * can be called before passing it in again to this method, to
                  * get the next or previous page in the result set.
                  */
-                var date = void 0;
+                let date;
                 if (_.isFunction(options)) {
                     callback = options;
                     errback = callback;
                 }
-                var queryid = _converse.connection.getUniqueId();
-                var attrs = { 'type': 'set' };
+                const queryid = _converse.connection.getUniqueId();
+                const attrs = {'type':'set'};
                 if (!_.isUndefined(options) && options.groupchat) {
-                    if (!options['with']) {
-                        // eslint-disable-line dot-notation
-                        throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
+                    if (!options['with']) { // eslint-disable-line dot-notation
+                        throw new Error(
+                            'You need to specify a "with" value containing '+
+                            'the chat room JID, when querying groupchat messages.');
                     }
                     attrs.to = options['with']; // eslint-disable-line dot-notation
                 }
-                var stanza = $iq(attrs).c('query', { 'xmlns': Strophe.NS.MAM, 'queryid': queryid });
+                const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
                 if (!_.isUndefined(options)) {
-                    stanza.c('x', { 'xmlns': Strophe.NS.XFORM, 'type': 'submit' }).c('field', { 'var': 'FORM_TYPE', 'type': 'hidden' }).c('value').t(Strophe.NS.MAM).up().up();
+                    stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
+                            .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
+                            .c('value').t(Strophe.NS.MAM).up().up();
 
-                    if (options['with'] && !options.groupchat) {
-                        // eslint-disable-line dot-notation
-                        stanza.c('field', { 'var': 'with' }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
+                    if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
+                        stanza.c('field', {'var':'with'}).c('value')
+                            .t(options['with']).up().up(); // eslint-disable-line dot-notation
                     }
                     _.each(['start', 'end'], function (t) {
                         if (options[t]) {
                             date = moment(options[t]);
                             if (date.isValid()) {
-                                stanza.c('field', { 'var': t }).c('value').t(date.format()).up().up();
+                                stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
                             } else {
-                                throw new TypeError("archive.query: invalid date provided for: " + t);
+                                throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                             }
                         }
                     });
@@ -62616,29 +63420,32 @@ Strophe.RSM.prototype = {
                     }
                 }
 
-                var messages = [];
-                var message_handler = _converse.connection.addHandler(function (message) {
-                    var result = message.querySelector('result');
+                const messages = [];
+                const message_handler = _converse.connection.addHandler(function (message) {
+                    const result = message.querySelector('result');
                     if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
                         messages.push(message);
                     }
                     return true;
                 }, Strophe.NS.MAM);
 
-                _converse.connection.sendIQ(stanza, function (iq) {
-                    _converse.connection.deleteHandler(message_handler);
-                    if (_.isFunction(callback)) {
-                        var set = iq.querySelector('set');
-                        var rsm = new Strophe.RSM({ xml: set });
-                        _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
-                        callback(messages, rsm);
-                    }
-                }, function () {
-                    _converse.connection.deleteHandler(message_handler);
-                    if (_.isFunction(errback)) {
-                        errback.apply(this, arguments);
-                    }
-                }, _converse.message_archiving_timeout);
+                _converse.connection.sendIQ(
+                    stanza,
+                    function (iq) {
+                        _converse.connection.deleteHandler(message_handler);
+                        if (_.isFunction(callback)) {
+                            const set = iq.querySelector('set');
+                            const rsm = new Strophe.RSM({xml: set});
+                            _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                            callback(messages, rsm);
+                        }
+                    },
+                    function () {
+                        _converse.connection.deleteHandler(message_handler);
+                        if (_.isFunction(errback)) { errback.apply(this, arguments); }
+                    },
+                    _converse.message_archiving_timeout
+                );
             };
 
             _.extend(_converse.api, {
@@ -62651,9 +63458,13 @@ Strophe.RSM.prototype = {
 
             _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
-                    _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
+                    _converse.log(
+                        "Message Archive Management (XEP-0313) not supported by this server",
+                        Strophe.LogLevel.WARN);
                 } else {
-                    _converse.log("An error occured while trying to set archiving preferences.", Strophe.LogLevel.ERROR);
+                    _converse.log(
+                        "An error occured while trying to set archiving preferences.",
+                        Strophe.LogLevel.ERROR);
                     _converse.log(iq);
                 }
             };
@@ -62669,46 +63480,53 @@ Strophe.RSM.prototype = {
                  * Per JID preferences will be set in chat boxes, so it'll
                  * probbaly be handled elsewhere in any case.
                  */
-                var $prefs = $(iq).find("prefs[xmlns=\"" + Strophe.NS.MAM + "\"]");
-                var default_pref = $prefs.attr('default');
-                var stanza = void 0;
+                const $prefs = $(iq).find(`prefs[xmlns="${Strophe.NS.MAM}"]`);
+                const default_pref = $prefs.attr('default');
+                let stanza;
                 if (default_pref !== _converse.message_archiving) {
-                    stanza = $iq({ 'type': 'set' }).c('prefs', { 'xmlns': Strophe.NS.MAM, 'default': _converse.message_archiving });
+                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
                     $prefs.children().each(function (idx, child) {
                         stanza.cnode(child).up();
                     });
                     _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
-                        // XXX: Strictly speaking, the server should respond with the updated prefs
-                        // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-                        // but Prosody doesn't do this, so we don't rely on it.
-                        feature.save({ 'preferences': { 'default': _converse.message_archiving } });
-                    }, feature), _converse.onMAMError);
+                            // XXX: Strictly speaking, the server should respond with the updated prefs
+                            // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+                            // but Prosody doesn't do this, so we don't rely on it.
+                            feature.save({'preferences': {'default':_converse.message_archiving}});
+                        }, feature),
+                        _converse.onMAMError
+                    );
                 } else {
-                    feature.save({ 'preferences': { 'default': _converse.message_archiving } });
+                    feature.save({'preferences': {'default':_converse.message_archiving}});
                 }
             };
 
             /* Event handlers */
-            _converse.on('serviceDiscovered', function (feature) {
-                var prefs = feature.get('preferences') || {};
-                if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
-                !_.isUndefined(_converse.message_archiving)) {
+            _converse.on('serviceDiscovered', (feature) => {
+                const prefs = feature.get('preferences') || {};
+                if (feature.get('var') === Strophe.NS.MAM &&
+                        prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
+                        !_.isUndefined(_converse.message_archiving) ) {
                     // Ask the server for archiving preferences
-                    _converse.connection.sendIQ($iq({ 'type': 'get' }).c('prefs', { 'xmlns': Strophe.NS.MAM }), _.partial(_converse.onMAMPreferences, feature), _.partial(_converse.onMAMError, feature));
+                    _converse.connection.sendIQ(
+                        $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
+                        _.partial(_converse.onMAMPreferences, feature),
+                        _.partial(_converse.onMAMError, feature)
+                    );
                 }
             });
 
-            _converse.on('addClientFeatures', function () {
+            _converse.on('addClientFeatures', () => {
                 _converse.connection.disco.addFeature(Strophe.NS.MAM);
             });
 
-            _converse.on('afterMessagesFetched', function (chatboxview) {
+            _converse.on('afterMessagesFetched', (chatboxview) => {
                 chatboxview.fetchArchivedMessagesIfNecessary();
             });
         }
     });
-});
-//# sourceMappingURL=converse-mam.js.map;
+}));
+
 /* Plugin to implement the vCard extension.
  *  http://xmpp.org/extensions/xep-0054.html
  *
@@ -62780,8 +63598,6 @@ Strophe.RSM.prototype = {
     });
 }));
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -62792,15 +63608,9 @@ Strophe.RSM.prototype = {
 
 (function (root, factory) {
     define('converse-vcard',["converse-core", "strophe.vcard"], factory);
-})(undefined, function (converse) {
+}(this, function (converse) {
     "use strict";
-
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        _ = _converse$env._,
-        moment = _converse$env.moment,
-        sizzle = _converse$env.sizzle;
-
+    const { Strophe, _, moment, sizzle } = converse.env;
 
     converse.plugins.add('converse-vcard', {
 
@@ -62812,35 +63622,40 @@ Strophe.RSM.prototype = {
             // New functions which don't exist yet can also be added.
 
             RosterContacts: {
-                createRequestingContact: function createRequestingContact(presence) {
-                    var _converse = this.__super__._converse;
-
-                    var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
-                    _converse.getVCard(bare_jid, _.partial(_converse.createRequestingContactFromVCard, presence), function (iq, jid) {
-                        _converse.log("Error while retrieving vcard for " + jid, Strophe.LogLevel.ERROR);
-                        _converse.createRequestingContactFromVCard(presence, iq, jid);
-                    });
+                createRequestingContact (presence) {
+                    const { _converse } = this.__super__;
+                    const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
+                    _converse.getVCard(
+                        bare_jid,
+                        _.partial(_converse.createRequestingContactFromVCard, presence),
+                        function (iq, jid) {
+                            _converse.log(
+                                `Error while retrieving vcard for ${jid}`,
+                                Strophe.LogLevel.ERROR
+                            );
+                            _converse.createRequestingContactFromVCard(presence, iq, jid);
+                        }
+                    );
                 }
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
-
+            const { _converse } = this;
             _converse.api.settings.update({
-                use_vcards: true
+                use_vcards: true,
             });
 
             _converse.createRequestingContactFromVCard = function (presence, iq, jid, fullname, img, img_type, url) {
-                var bare_jid = Strophe.getBareJidFromJid(jid);
+                const bare_jid = Strophe.getBareJidFromJid(jid);
                 if (!fullname) {
-                    var nick_el = sizzle("nick[xmlns=\"" + Strophe.NS.NICK + "\"]", presence);
+                    const nick_el = sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence);
                     fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
                 }
-                var user_data = {
+                const user_data = {
                     jid: bare_jid,
                     subscription: 'none',
                     ask: null,
@@ -62848,7 +63663,7 @@ Strophe.RSM.prototype = {
                     fullname: fullname,
                     image: img,
                     image_type: img_type,
-                    url: url,
+                    url,
                     vcard_updated: moment().format()
                 };
                 _converse.roster.create(user_data);
@@ -62856,24 +63671,22 @@ Strophe.RSM.prototype = {
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                var contact = _.get(_converse.roster, jid);
+                const contact = _.get(_converse.roster, jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
-                if (errback) {
-                    errback(iq, jid);
-                }
+                if (errback) { errback(iq, jid); }
             };
 
             _converse.onVCardData = function (jid, iq, callback) {
-                var vcard = iq.querySelector('vCard'),
+                const vcard = iq.querySelector('vCard'),
                     img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
                     img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
                     url = _.get(vcard.querySelector('URL'), 'textContent'),
                     fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
                 if (jid) {
-                    var contact = _converse.roster.get(jid);
+                    const contact = _converse.roster.get(jid);
                     if (contact) {
                         contact.save({
                             'fullname': fullname || _.get(contact, 'fullname', jid),
@@ -62901,45 +63714,53 @@ Strophe.RSM.prototype = {
                  *      while trying to fetch the VCard.
                  */
                 if (!_converse.use_vcards) {
-                    if (callback) {
-                        callback(null, jid);
-                    }
+                    if (callback) { callback(null, jid); }
                 } else {
-                    _converse.connection.vcard.get(_.partial(_converse.onVCardData, jid, _, callback), jid, _.partial(_converse.onVCardError, jid, _, errback));
+                    _converse.connection.vcard.get(
+                        _.partial(_converse.onVCardData, jid, _, callback),
+                        jid,
+                        _.partial(_converse.onVCardError, jid, _, errback));
                 }
             };
 
             /* Event handlers */
-            _converse.on('addClientFeatures', function () {
+            _converse.on('addClientFeatures', () => {
                 if (_converse.use_vcards) {
                     _converse.connection.disco.addFeature(Strophe.NS.VCARD);
                 }
             });
 
-            var updateVCardForChatBox = function updateVCardForChatBox(chatbox) {
+            const updateVCardForChatBox = function (chatbox) {
                 if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
-                _converse.api.waitUntil('rosterInitialized').then(function () {
-                    var jid = chatbox.model.get('jid'),
+                _converse.api.waitUntil('rosterInitialized').then(() => {
+                    const jid = chatbox.model.get('jid'),
                         contact = _converse.roster.get(jid);
-                    if (contact && !contact.get('vcard_updated')) {
-                        _converse.getVCard(jid, function (iq, jid, fullname, image, image_type, url) {
-                            chatbox.model.save({
-                                'fullname': fullname || jid,
-                                'url': url,
-                                'image_type': image_type,
-                                'image': image
-                            });
-                        }, function () {
-                            _converse.log("updateVCardForChatBox: Error occured while fetching vcard", Strophe.LogLevel.ERROR);
-                        });
+                    if ((contact) && (!contact.get('vcard_updated'))) {
+                        _converse.getVCard(
+                            jid,
+                            function (iq, jid, fullname, image, image_type, url) {
+                                chatbox.model.save({
+                                    'fullname' : fullname || jid,
+                                    'url': url,
+                                    'image_type': image_type,
+                                    'image': image
+                                });
+                            },
+                            function () {
+                                _converse.log(
+                                    "updateVCardForChatBox: Error occured while fetching vcard",
+                                    Strophe.LogLevel.ERROR
+                                );
+                            }
+                        );
                     }
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             };
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
-            var onContactAdd = function onContactAdd(contact) {
+            const onContactAdd = function (contact) {
                 if (!contact.get('vcard_updated')) {
                     // This will update the vcard, which triggers a change
                     // request which will rerender the roster contact.
@@ -62950,18 +63771,20 @@ Strophe.RSM.prototype = {
                 _converse.roster.on("add", onContactAdd);
             });
 
-            _converse.on('statusInitialized', function fetchOwnVCard() {
+            _converse.on('statusInitialized', function fetchOwnVCard () {
                 if (_converse.xmppstatus.get('fullname') === undefined) {
-                    _converse.getVCard(null, // No 'to' attr when getting one's own vCard
-                    function (iq, jid, fullname) {
-                        _converse.xmppstatus.save({ 'fullname': fullname });
-                    });
+                    _converse.getVCard(
+                        null, // No 'to' attr when getting one's own vCard
+                        function (iq, jid, fullname) {
+                            _converse.xmppstatus.save({'fullname': fullname});
+                        }
+                    );
                 }
             });
         }
     });
-});
-//# sourceMappingURL=converse-vcard.js.map;
+}));
+
 
 define('tpl!toolbar_otr', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -70263,8 +71086,6 @@ CryptoJS.mode.CTR = (function () {
   }
 
 }));
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -70278,32 +71099,38 @@ CryptoJS.mode.CTR = (function () {
  */
 (function (root, factory) {
 
-    define('converse-otr',["jquery.noconflict", "converse-chatview", "tpl!toolbar_otr", 'otr'], factory);
-})(undefined, function ($, converse, tpl_toolbar_otr, otr) {
+    define('converse-otr',["jquery.noconflict",
+            "converse-chatview",
+            "tpl!toolbar_otr",
+            'otr'
+    ], factory);
+}(this, function ($, converse, tpl_toolbar_otr, otr) {
     "use strict";
 
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        utils = _converse$env.utils,
-        b64_sha1 = _converse$env.b64_sha1,
-        _ = _converse$env._;
+    const { Strophe, utils, b64_sha1, _ } = converse.env;
 
+    const HAS_CSPRNG = _.isUndefined(window.crypto) ? false : (
+        _.isFunction(window.crypto.randomBytes) ||
+        _.isFunction(window.crypto.getRandomValues)
+    );
 
-    var HAS_CSPRNG = _.isUndefined(window.crypto) ? false : _.isFunction(window.crypto.randomBytes) || _.isFunction(window.crypto.getRandomValues);
+    const HAS_CRYPTO = HAS_CSPRNG && (
+        (!_.isUndefined(otr.OTR)) &&
+        (!_.isUndefined(otr.DSA))
+    );
 
-    var HAS_CRYPTO = HAS_CSPRNG && !_.isUndefined(otr.OTR) && !_.isUndefined(otr.DSA);
+    const UNENCRYPTED = 0;
+    const UNVERIFIED= 1;
+    const VERIFIED= 2;
+    const FINISHED = 3;
 
-    var UNENCRYPTED = 0;
-    var UNVERIFIED = 1;
-    var VERIFIED = 2;
-    var FINISHED = 3;
-
-    var OTR_TRANSLATED_MAPPING = {}; // Populated in initialize
-    var OTR_CLASS_MAPPING = {};
+    const OTR_TRANSLATED_MAPPING  = {}; // Populated in initialize
+    const OTR_CLASS_MAPPING = {};
     OTR_CLASS_MAPPING[UNENCRYPTED] = 'unencrypted';
     OTR_CLASS_MAPPING[UNVERIFIED] = 'unverified';
     OTR_CLASS_MAPPING[VERIFIED] = 'verified';
     OTR_CLASS_MAPPING[FINISHED] = 'finished';
+
 
     converse.plugins.add('converse-otr', {
 
@@ -70313,28 +71140,30 @@ CryptoJS.mode.CTR = (function () {
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
+ 
             ChatBox: {
-                initialize: function initialize() {
+                initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     if (this.get('box_id') !== 'controlbox') {
-                        this.save({ 'otr_status': this.get('otr_status') || UNENCRYPTED });
+                        this.save({'otr_status': this.get('otr_status') || UNENCRYPTED});
                     }
                 },
-                shouldPlayNotification: function shouldPlayNotification($message) {
+
+                shouldPlayNotification ($message) {
                     /* Don't play a notification if this is an OTR message but
                      * encryption is not yet set up. That would mean that the
                      * OTR session is still being established, so there are no
                      * "visible" OTR messages being exchanged.
                      */
-                    return this.__super__.shouldPlayNotification.apply(this, arguments) && !(utils.isOTRMessage($message[0]) && !_.includes([UNVERIFIED, VERIFIED], this.get('otr_status')));
+                    return this.__super__.shouldPlayNotification.apply(this, arguments) &&
+                        !(utils.isOTRMessage($message[0]) && !_.includes([UNVERIFIED, VERIFIED], this.get('otr_status')));
                 },
-                createMessage: function createMessage(message, delay, original_stanza) {
-                    var _converse = this.__super__._converse,
+
+                createMessage (message, delay, original_stanza) {
+                    const { _converse } = this.__super__,
                         text = _.propertyOf(message.querySelector('body'))('textContent');
 
-
-                    if (!text || !_converse.allow_otr) {
+                    if ((!text) || (!_converse.allow_otr)) {
                         return this.__super__.createMessage.apply(this, arguments);
                     }
 
@@ -70354,12 +71183,11 @@ CryptoJS.mode.CTR = (function () {
                     // Normal unencrypted message (or archived message)
                     return this.__super__.createMessage.apply(this, arguments);
                 },
-                generatePrivateKey: function generatePrivateKey(instance_tag) {
-                    var _converse = this.__super__._converse;
 
-                    var key = new otr.DSA();
-                    var jid = _converse.connection.jid;
-
+                generatePrivateKey (instance_tag) {
+                    const { _converse } = this.__super__;
+                    const key = new otr.DSA();
+                    const { jid } = _converse.connection;
                     if (_converse.cache_otr_key) {
                         this.save({
                             'otr_priv_key': key.packPrivate(),
@@ -70368,13 +71196,11 @@ CryptoJS.mode.CTR = (function () {
                     }
                     return key;
                 },
-                getSession: function getSession(callback) {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
-
-                    var instance_tag = void 0,
-                        saved_key = void 0,
-                        encrypted_key = void 0;
+                
+                getSession (callback) {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
+                    let instance_tag, saved_key, encrypted_key;
                     if (_converse.cache_otr_key) {
                         encrypted_key = this.get('otr_priv_key');
                         if (_.isString(encrypted_key)) {
@@ -70391,9 +71217,13 @@ CryptoJS.mode.CTR = (function () {
                         }
                     }
                     // We need to generate a new key and instance tag
-                    this.trigger('showHelpMessages', [__('Generating private key.'), __('Your browser might become unresponsive.')], null, true // show spinner
+                    this.trigger('showHelpMessages', [
+                        __('Generating private key.'),
+                        __('Your browser might become unresponsive.')],
+                        null,
+                        true // show spinner
                     );
-                    var that = this;
+                    const that = this;
                     window.setTimeout(function () {
                         callback({
                             'key': that.generatePrivateKey(instance_tag),
@@ -70401,97 +71231,101 @@ CryptoJS.mode.CTR = (function () {
                         });
                     }, 500);
                 },
-                updateOTRStatus: function updateOTRStatus(state) {
+
+                updateOTRStatus (state) {
                     switch (state) {
                         case otr.OTR.CONST.STATUS_AKE_SUCCESS:
                             if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_ENCRYPTED) {
-                                this.save({ 'otr_status': UNVERIFIED });
+                                this.save({'otr_status': UNVERIFIED});
                             }
                             break;
                         case otr.OTR.CONST.STATUS_END_OTR:
                             if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_FINISHED) {
-                                this.save({ 'otr_status': FINISHED });
+                                this.save({'otr_status': FINISHED});
                             } else if (this.otr.msgstate === otr.OTR.CONST.MSGSTATE_PLAINTEXT) {
-                                this.save({ 'otr_status': UNENCRYPTED });
+                                this.save({'otr_status': UNENCRYPTED});
                             }
                             break;
                     }
                 },
-                onSMP: function onSMP(type, data) {
+
+                onSMP (type, data) {
                     // Event handler for SMP (Socialist's Millionaire Protocol)
                     // used by OTR (off-the-record).
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
-
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
                     switch (type) {
                         case 'question':
-                            this.otr.smpSecret(prompt(__('Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s', [this.get('fullname'), data])));
+                            this.otr.smpSecret(prompt(__(
+                                'Authentication request from %1$s\n\nYour chat contact is attempting to verify your identity, by asking you the question below.\n\n%2$s',
+                                [this.get('fullname'), data])));
                             break;
                         case 'trust':
                             if (data === true) {
-                                this.save({ 'otr_status': VERIFIED });
+                                this.save({'otr_status': VERIFIED});
                             } else {
-                                this.trigger('showHelpMessages', [__("Could not verify this user's identify.")], 'error');
-                                this.save({ 'otr_status': UNVERIFIED });
+                                this.trigger(
+                                    'showHelpMessages',
+                                    [__("Could not verify this user's identify.")],
+                                    'error');
+                                this.save({'otr_status': UNVERIFIED});
                             }
                             break;
                         default:
                             throw new TypeError('ChatBox.onSMP: Unknown type for SMP');
                     }
                 },
-                initiateOTR: function initiateOTR(query_msg) {
-                    var _this = this;
 
+                initiateOTR (query_msg) {
                     // Sets up an OTR object through which we can send and receive
                     // encrypted messages.
                     //
                     // If 'query_msg' is passed in, it means there is an alread incoming
                     // query message from our contact. Otherwise, it is us who will
                     // send the query message to them.
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
-
-                    this.save({ 'otr_status': UNENCRYPTED });
-                    this.getSession(function (session) {
-                        var _converse = _this.__super__._converse;
-
-                        _this.otr = new otr.OTR({
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
+                    this.save({'otr_status': UNENCRYPTED});
+                    this.getSession((session) => {
+                        const { _converse } = this.__super__;
+                        this.otr = new otr.OTR({
                             fragment_size: 140,
                             send_interval: 200,
                             priv: session.key,
                             instance_tag: session.instance_tag,
-                            debug: _this.debug
+                            debug: this.debug
                         });
-                        _this.otr.on('status', _this.updateOTRStatus.bind(_this));
-                        _this.otr.on('smp', _this.onSMP.bind(_this));
+                        this.otr.on('status', this.updateOTRStatus.bind(this));
+                        this.otr.on('smp', this.onSMP.bind(this));
 
-                        _this.otr.on('ui', function (msg) {
-                            _this.trigger('showReceivedOTRMessage', msg);
+                        this.otr.on('ui', (msg) => {
+                            this.trigger('showReceivedOTRMessage', msg);
                         });
-                        _this.otr.on('io', function (msg) {
-                            _this.trigger('sendMessage', new _converse.Message({ message: msg }));
+                        this.otr.on('io', (msg) => {
+                            this.trigger('sendMessage', new _converse.Message({ message: msg }));
                         });
-                        _this.otr.on('error', function (msg) {
-                            _this.trigger('showOTRError', msg);
+                        this.otr.on('error', (msg) => {
+                            this.trigger('showOTRError', msg);
                         });
 
-                        _this.trigger('showHelpMessages', [__('Exchanging private key with contact.')]);
+                        this.trigger('showHelpMessages', [__('Exchanging private key with contact.')]);
                         if (query_msg) {
-                            _this.otr.receiveMsg(query_msg);
+                            this.otr.receiveMsg(query_msg);
                         } else {
-                            _this.otr.sendQueryMsg();
+                            this.otr.sendQueryMsg();
                         }
                     });
                 },
-                endOTR: function endOTR() {
+
+                endOTR () {
                     if (this.otr) {
                         this.otr.endOtr();
                     }
-                    this.save({ 'otr_status': UNENCRYPTED });
+                    this.save({'otr_status': UNENCRYPTED});
                 }
             },
 
-            ChatBoxView: {
+            ChatBoxView:  {
                 events: {
                     'click .toggle-otr': 'toggleOTRMenu',
                     'click .start-otr': 'startOTRFromToolbar',
@@ -70499,41 +71333,48 @@ CryptoJS.mode.CTR = (function () {
                     'click .auth-otr': 'authOTR'
                 },
 
-                initialize: function initialize() {
-                    var _converse = this.__super__._converse;
-
+                initialize () {
+                    const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:otr_status', this.onOTRStatusChanged, this);
                     this.model.on('showOTRError', this.showOTRError, this);
                     this.model.on('showSentOTRMessage', function (text) {
-                        this.showMessage({ 'message': text, 'sender': 'me' });
+                        this.showMessage({'message': text, 'sender': 'me'});
                     }, this);
                     this.model.on('showReceivedOTRMessage', function (text) {
-                        this.showMessage({ 'message': text, 'sender': 'them' });
+                        this.showMessage({'message': text, 'sender': 'them'});
                     }, this);
-                    if (_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status')) || _converse.use_otr_by_default) {
+                    if ((_.includes([UNVERIFIED, VERIFIED], this.model.get('otr_status'))) || _converse.use_otr_by_default) {
                         this.model.initiateOTR();
                     }
                 },
-                createMessageStanza: function createMessageStanza() {
-                    var stanza = this.__super__.createMessageStanza.apply(this, arguments);
+
+                createMessageStanza () {
+                    const stanza = this.__super__.createMessageStanza.apply(this, arguments);
                     if (this.model.get('otr_status') !== UNENCRYPTED || utils.isOTRMessage(stanza.nodeTree)) {
                         // OTR messages aren't carbon copied
-                        stanza.c('private', { 'xmlns': Strophe.NS.CARBONS }).up().c('no-store', { 'xmlns': Strophe.NS.HINTS }).up().c('no-permanent-store', { 'xmlns': Strophe.NS.HINTS }).up().c('no-copy', { 'xmlns': Strophe.NS.HINTS });
+                        stanza.c('private', {'xmlns': Strophe.NS.CARBONS}).up()
+                              .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS}).up()
+                              .c('no-copy', {'xmlns': Strophe.NS.HINTS});
                     }
                     return stanza;
                 },
-                onMessageSubmitted: function onMessageSubmitted(text) {
-                    var _converse = this.__super__._converse;
 
+                onMessageSubmitted (text) {
+                    const { _converse } = this.__super__;
                     if (!_converse.connection.authenticated) {
-                        return this.showHelpMessages(['Sorry, the connection has been lost, ' + 'and your message could not be sent'], 'error');
+                        return this.showHelpMessages(
+                            ['Sorry, the connection has been lost, '+
+                              'and your message could not be sent'],
+                            'error'
+                        );
                     }
-                    var match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
+                    const match = text.replace(/^\s*/, "").match(/^\/(.*)\s*$/);
                     if (match) {
-                        if (_converse.allow_otr && match[1] === "endotr") {
+                        if ((_converse.allow_otr) && (match[1] === "endotr")) {
                             return this.endOTR();
-                        } else if (_converse.allow_otr && match[1] === "otr") {
+                        } else if ((_converse.allow_otr) && (match[1] === "otr")) {
                             return this.model.initiateOTR();
                         }
                     }
@@ -70545,15 +71386,16 @@ CryptoJS.mode.CTR = (function () {
                         this.__super__.onMessageSubmitted.apply(this, arguments);
                     }
                 },
-                onOTRStatusChanged: function onOTRStatusChanged() {
+
+                onOTRStatusChanged () {
                     this.renderToolbar().informOTRChange();
                 },
-                informOTRChange: function informOTRChange() {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__,
+
+                informOTRChange () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse,
                         data = this.model.toJSON(),
                         msgs = [];
-
                     if (data.otr_status === UNENCRYPTED) {
                         msgs.push(__("Your messages are not encrypted anymore"));
                     } else if (data.otr_status === UNVERIFIED) {
@@ -70565,47 +71407,56 @@ CryptoJS.mode.CTR = (function () {
                     }
                     return this.showHelpMessages(msgs, 'info', false);
                 },
-                showOTRError: function showOTRError(msg) {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
 
+                showOTRError (msg) {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
                     if (msg === 'Message cannot be sent at this time.') {
-                        this.showHelpMessages([__('Your message could not be sent')], 'error');
+                        this.showHelpMessages(
+                            [__('Your message could not be sent')], 'error');
                     } else if (msg === 'Received an unencrypted message.') {
-                        this.showHelpMessages([__('We received an unencrypted message')], 'error');
+                        this.showHelpMessages(
+                            [__('We received an unencrypted message')], 'error');
                     } else if (msg === 'Received an unreadable encrypted message.') {
-                        this.showHelpMessages([__('We received an unreadable encrypted message')], 'error');
+                        this.showHelpMessages(
+                            [__('We received an unreadable encrypted message')],
+                            'error');
                     } else {
-                        this.showHelpMessages(["Encryption error occured: " + msg], 'error');
+                        this.showHelpMessages([`Encryption error occured: ${msg}`], 'error');
                     }
-                    _converse.log("OTR ERROR:" + msg, Strophe.LogLevel.ERROR);
+                    _converse.log(`OTR ERROR:${msg}`, Strophe.LogLevel.ERROR);
                 },
-                startOTRFromToolbar: function startOTRFromToolbar(ev) {
+
+                startOTRFromToolbar (ev) {
                     ev.stopPropagation();
                     this.model.initiateOTR();
                 },
-                endOTR: function endOTR(ev) {
+
+                endOTR (ev) {
                     if (!_.isUndefined(ev)) {
                         ev.preventDefault();
                         ev.stopPropagation();
                     }
                     this.model.endOTR();
                 },
-                authOTR: function authOTR(ev) {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__,
-                        _$$data = $(ev.target).data(),
-                        scheme = _$$data.scheme;
 
-                    var result = void 0,
-                        question = void 0,
-                        answer = void 0;
+                authOTR (ev) {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse,
+                        { scheme } = $(ev.target).data();
+                    let result, question, answer;
                     if (scheme === 'fingerprint') {
-                        result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [this.model.get('fullname'), _converse.xmppstatus.get('fullname') || _converse.bare_jid, this.model.otr.priv.fingerprint(), this.model.otr.their_priv_pk.fingerprint()]));
+                        result = confirm(__('Here are the fingerprints, please confirm them with %1$s, outside of this chat.\n\nFingerprint for you, %2$s: %3$s\n\nFingerprint for %1$s: %4$s\n\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.', [
+                                this.model.get('fullname'),
+                                _converse.xmppstatus.get('fullname')||_converse.bare_jid,
+                                this.model.otr.priv.fingerprint(),
+                                this.model.otr.their_priv_pk.fingerprint()
+                            ]
+                        ));
                         if (result === true) {
-                            this.model.save({ 'otr_status': VERIFIED });
+                            this.model.save({'otr_status': VERIFIED});
                         } else {
-                            this.model.save({ 'otr_status': UNVERIFIED });
+                            this.model.save({'otr_status': UNVERIFIED});
                         }
                     } else if (scheme === 'smp') {
                         alert(__('You will be prompted to provide a security question and then an answer to that question.\n\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.'));
@@ -70618,17 +71469,26 @@ CryptoJS.mode.CTR = (function () {
                         this.showHelpMessages([__('Invalid authentication scheme provided')], 'error');
                     }
                 },
-                toggleOTRMenu: function toggleOTRMenu(ev) {
-                    ev.stopPropagation();
-                    var menu = this.el.querySelector('.toggle-otr ul');
-                    var elements = _.difference(document.querySelectorAll('.toolbar-menu'), [menu]);
-                    utils.slideInAllElements(elements).then(_.partial(utils.slideToggleElement, menu));
-                },
-                getOTRTooltip: function getOTRTooltip() {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__,
-                        data = this.model.toJSON();
 
+                toggleOTRMenu (ev) {
+                    ev.stopPropagation();
+                    const menu = this.el.querySelector('.toggle-otr ul');
+                    const elements = _.difference(
+                        document.querySelectorAll('.toolbar-menu'),
+                        [menu]
+                    );
+                    utils.slideInAllElements(elements).then(
+                        _.partial(
+                            utils.slideToggleElement,
+                            menu
+                        )
+                    );
+                },
+                
+                getOTRTooltip () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse,
+                        data = this.model.toJSON();
                     if (data.otr_status === UNENCRYPTED) {
                         return __('Your messages are not encrypted. Click here to enable OTR encryption.');
                     } else if (data.otr_status === UNVERIFIED) {
@@ -70639,19 +71499,19 @@ CryptoJS.mode.CTR = (function () {
                         return __('Your contact has closed their end of the private session, you should do the same');
                     }
                 },
-                renderToolbar: function renderToolbar(toolbar, options) {
-                    var _converse = this.__super__._converse,
-                        __ = _converse.__;
 
+                renderToolbar (toolbar, options) {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
                     if (!_converse.show_toolbar) {
                         return;
                     }
-                    var data = this.model.toJSON();
+                    const data = this.model.toJSON();
                     options = _.extend(options || {}, {
-                        FINISHED: FINISHED,
-                        UNENCRYPTED: UNENCRYPTED,
-                        UNVERIFIED: UNVERIFIED,
-                        VERIFIED: VERIFIED,
+                        FINISHED,
+                        UNENCRYPTED,
+                        UNVERIFIED,
+                        VERIFIED,
                         // FIXME: Leaky abstraction MUC
                         allow_otr: _converse.allow_otr && !this.is_chatroom,
                         label_end_encrypted_conversation: __('End encrypted conversation'),
@@ -70662,22 +71522,24 @@ CryptoJS.mode.CTR = (function () {
                         label_whats_this: __("What\'s this?"),
                         otr_status_class: OTR_CLASS_MAPPING[data.otr_status],
                         otr_tooltip: this.getOTRTooltip(),
-                        otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status]
+                        otr_translated_status: OTR_TRANSLATED_MAPPING[data.otr_status],
                     });
                     this.__super__.renderToolbar.apply(this, arguments);
-                    this.$el.find('.chat-toolbar').append(tpl_toolbar_otr(_.extend(this.model.toJSON(), options || {})));
+                    this.$el.find('.chat-toolbar').append(
+                        tpl_toolbar_otr(
+                            _.extend(this.model.toJSON(), options || {})
+                        ));
                     return this;
                 }
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
-
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.api.settings.update({
                 allow_otr: true,
@@ -70702,8 +71564,8 @@ CryptoJS.mode.CTR = (function () {
             _converse.use_otr_by_default = _converse.use_otr_by_default && _converse.allow_otr;
         }
     });
-});
-//# sourceMappingURL=converse-otr.js.map;
+}));
+
 
 define('tpl!register_panel', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -70788,8 +71650,6 @@ __p += '\n';
 return __p
 };});
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -70802,32 +71662,46 @@ return __p
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define('converse-register',["jquery.noconflict", "form-utils", "converse-core", "tpl!form_username", "tpl!register_panel", "tpl!register_tab", "tpl!registration_form", "tpl!registration_request", "tpl!spinner", "converse-controlbox"], factory);
-})(undefined, function ($, utils, converse, tpl_form_username, tpl_register_panel, tpl_register_tab, tpl_registration_form, tpl_registration_request, tpl_spinner) {
+    define('converse-register',["jquery.noconflict",
+            "form-utils",
+            "converse-core",
+            "tpl!form_username",
+            "tpl!register_panel",
+            "tpl!register_tab",
+            "tpl!registration_form",
+            "tpl!registration_request",
+            "tpl!spinner",
+            "converse-controlbox"
+    ], factory);
+}(this, function (
+            $,
+            utils,
+            converse,
+            tpl_form_username,
+            tpl_register_panel,
+            tpl_register_tab,
+            tpl_registration_form,
+            tpl_registration_request,
+            tpl_spinner
+        ) {
 
     "use strict";
 
     // Strophe methods for building stanzas
-
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        Backbone = _converse$env.Backbone,
-        $iq = _converse$env.$iq,
-        _ = _converse$env._;
+    const { Strophe, Backbone, $iq, _ } = converse.env;
 
     // Add Strophe Namespaces
-
     Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
     // Add Strophe Statuses
-    var i = 0;
+    let i = 0;
     _.each(_.keys(Strophe.Status), function (key) {
         i = Math.max(i, Strophe.Status[key]);
     });
-    Strophe.Status.REGIFAIL = i + 1;
-    Strophe.Status.REGISTERED = i + 2;
-    Strophe.Status.CONFLICT = i + 3;
-    Strophe.Status.NOTACCEPTABLE = i + 5;
+    Strophe.Status.REGIFAIL        = i + 1;
+    Strophe.Status.REGISTERED      = i + 2;
+    Strophe.Status.CONFLICT        = i + 3;
+    Strophe.Status.NOTACCEPTABLE   = i + 5;
 
     converse.plugins.add('converse-register', {
 
@@ -70839,18 +71713,20 @@ return __p
             // New functions which don't exist yet can also be added.
 
             ControlBoxView: {
-                switchTab: function switchTab(ev) {
-                    var _converse = this.__super__._converse;
 
-                    var result = this.__super__.switchTab.apply(this, arguments);
-                    if (_converse.registration_domain && ev.target.getAttribute('data-id') === "register" && !this.model.get('registration_form_rendered')) {
+                switchTab (ev) {
+                    const { _converse } = this.__super__;
+                    const result = this.__super__.switchTab.apply(this, arguments);
+                    if (_converse.registration_domain &&
+                            ev.target.getAttribute('data-id') === "register" &&
+                            !this.model.get('registration_form_rendered')) {
                         this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
                     }
                     return result;
                 },
-                renderRegistrationPanel: function renderRegistrationPanel() {
-                    var _converse = this.__super__._converse;
 
+                renderRegistrationPanel () {
+                    const { _converse } = this.__super__;
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
                             '$parent': this.$el.find('.controlbox-panes'),
@@ -70860,7 +71736,8 @@ return __p
                     }
                     return this;
                 },
-                renderLoginPanel: function renderLoginPanel() {
+
+                renderLoginPanel () {
                     /* Also render a registration panel, when rendering the
                      * login panel.
                      */
@@ -70871,12 +71748,12 @@ return __p
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
+            const { _converse } = this,
+                { __ } = _converse;
 
             // Add new templates
             _converse.templates.form_username = tpl_form_username;
@@ -70887,8 +71764,8 @@ return __p
 
             _converse.api.settings.update({
                 allow_registration: true,
-                domain_placeholder: __(" e.g. conversejs.org"), // Placeholder text shown in the domain input on the registration form
-                providers_link: 'https://xmpp.net/directory.php' // Link to XMPP providers shown on registration page
+                domain_placeholder: __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
+                providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
             _converse.RegisterPanel = Backbone.View.extend({
@@ -70899,78 +71776,85 @@ return __p
                     'submit form#converse-register': 'onProviderChosen'
                 },
 
-                initialize: function initialize(cfg) {
+                initialize (cfg) {
                     this.reset();
                     this.$parent = cfg.$parent;
                     this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     this.registerHooks();
                 },
-                render: function render() {
+
+                render () {
                     this.model.set('registration_form_rendered', false);
-                    this.$parent.append(this.$el.html(tpl_register_panel({
-                        'default_domain': _converse.registration_domain,
-                        'label_domain': __("Your XMPP provider's domain name:"),
-                        'label_register': __('Fetch registration form'),
-                        'help_providers': __('Tip: A list of public XMPP providers is available'),
-                        'help_providers_link': __('here'),
-                        'href_providers': _converse.providers_link,
-                        'domain_placeholder': _converse.domain_placeholder
-                    })));
-                    this.$tabs.append(tpl_register_tab({ label_register: __('Register') }));
+                    this.$parent.append(this.$el.html(
+                        tpl_register_panel({
+                            'default_domain': _converse.registration_domain,
+                            'label_domain': __("Your XMPP provider's domain name:"),
+                            'label_register': __('Fetch registration form'),
+                            'help_providers': __('Tip: A list of public XMPP providers is available'),
+                            'help_providers_link': __('here'),
+                            'href_providers': _converse.providers_link,
+                            'domain_placeholder': _converse.domain_placeholder
+                        })
+                    ));
+                    this.$tabs.append(tpl_register_tab({label_register: __('Register')}));
                     return this;
                 },
-                registerHooks: function registerHooks() {
-                    var _this = this;
 
+                registerHooks () {
                     /* Hook into Strophe's _connect_cb, so that we can send an IQ
                      * requesting the registration fields.
                      */
-                    var conn = _converse.connection;
-                    var connect_cb = conn._connect_cb.bind(conn);
-                    conn._connect_cb = function (req, callback, raw) {
-                        if (!_this._registering) {
+                    const conn = _converse.connection;
+                    const connect_cb = conn._connect_cb.bind(conn);
+                    conn._connect_cb = (req, callback, raw) => {
+                        if (!this._registering) {
                             connect_cb(req, callback, raw);
                         } else {
-                            if (_this.getRegistrationFields(req, callback, raw)) {
-                                _this._registering = false;
+                            if (this.getRegistrationFields(req, callback, raw)) {
+                                this._registering = false;
                             }
                         }
                     };
                 },
-                getRegistrationFields: function getRegistrationFields(req, _callback, raw) {
+
+                getRegistrationFields (req, _callback, raw) {
                     /*  Send an IQ stanza to the XMPP server asking for the
                      *  registration fields.
                      *  Parameters:
                      *    (Strophe.Request) req - The current request
                      *    (Function) callback
                      */
-                    var conn = _converse.connection;
+                    const conn = _converse.connection;
                     conn.connected = true;
 
-                    var body = conn._proto._reqToData(req);
-                    if (!body) {
-                        return;
-                    }
+                    const body = conn._proto._reqToData(req);
+                    if (!body) { return; }
                     if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
                         return false;
                     }
-                    var register = body.getElementsByTagName("register");
-                    var mechanisms = body.getElementsByTagName("mechanism");
+                    const register = body.getElementsByTagName("register");
+                    const mechanisms = body.getElementsByTagName("mechanism");
                     if (register.length === 0 && mechanisms.length === 0) {
                         conn._proto._no_auth_received(_callback);
                         return false;
                     }
                     if (register.length === 0) {
-                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, __("Sorry, the given provider does not support in " + "band account registration. Please try with a " + "different provider."));
+                        conn._changeConnectStatus(
+                            Strophe.Status.REGIFAIL,
+                            __("Sorry, the given provider does not support in "+
+                               "band account registration. Please try with a "+
+                               "different provider.")
+                        );
                         return true;
                     }
                     // Send an IQ stanza to get all required data fields
                     conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
-                    conn.send($iq({ type: "get" }).c("query", { xmlns: Strophe.NS.REGISTER }).tree());
+                    conn.send($iq({type: "get"}).c("query", {xmlns: Strophe.NS.REGISTER}).tree());
                     conn.connected = false;
                     return true;
                 },
-                onRegistrationFields: function onRegistrationFields(stanza) {
+
+                onRegistrationFields (stanza) {
                     /*  Handler for Registration Fields Request.
                      *
                      *  Parameters:
@@ -70984,8 +71868,9 @@ return __p
                     this.renderRegistrationForm(stanza);
                     return false;
                 },
-                reset: function reset(settings) {
-                    var defaults = {
+
+                reset (settings) {
+                    const defaults = {
                         fields: {},
                         urls: [],
                         title: "",
@@ -71000,17 +71885,16 @@ return __p
                         _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
-                onProviderChosen: function onProviderChosen(ev) {
+
+                onProviderChosen (ev) {
                     /* Callback method that gets called when the user has chosen an
                      * XMPP provider.
                      *
                      * Parameters:
                      *      (Submit Event) ev - Form submission event.
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var $form = $(ev.target),
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const $form = $(ev.target),
                         $domain_input = $form.find('input[name=domain]'),
                         domain = $domain_input.val();
                     if (!domain) {
@@ -71020,7 +71904,8 @@ return __p
                     $form.find('input[type=submit]').hide();
                     this.fetchRegistrationForm(domain, __('Cancel'));
                 },
-                fetchRegistrationForm: function fetchRegistrationForm(domain_name, cancel_label) {
+
+                fetchRegistrationForm (domain_name, cancel_label) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
@@ -71035,35 +71920,50 @@ return __p
                     _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
                     return false;
                 },
-                renderRegistrationRequest: function renderRegistrationRequest(cancel_label) {
-                    var form = this.el.querySelector('#converse-register');
-                    var markup = tpl_registration_request({
+
+                renderRegistrationRequest (cancel_label) {
+                    const form = this.el.querySelector('#converse-register');
+                    const markup = tpl_registration_request({
                         'cancel': cancel_label,
                         'info_message': _converse.__('Requesting a registration form from the XMPP server')
                     });
                     form.appendChild(utils.createFragmentFromText(markup));
                     if (!_converse.registration_domain) {
-                        var cancel_button = document.querySelector('button.button-cancel');
+                        const cancel_button = document.querySelector('button.button-cancel');
                         cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
                     }
                 },
-                giveFeedback: function giveFeedback(message, klass) {
+
+                giveFeedback (message, klass) {
                     this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
                     if (klass) {
                         $('.reg-feedback').addClass(klass);
                     }
                 },
-                onRegistering: function onRegistering(status, error) {
-                    var that = void 0;
-                    _converse.log('onRegistering');
-                    if (_.includes([Strophe.Status.DISCONNECTED, Strophe.Status.CONNFAIL, Strophe.Status.REGIFAIL, Strophe.Status.NOTACCEPTABLE, Strophe.Status.CONFLICT], status)) {
 
-                        _converse.log("Problem during registration: Strophe.Status is: " + status, Strophe.LogLevel.ERROR);
+                onRegistering (status, error) {
+                    let that;
+                    _converse.log('onRegistering');
+                    if (_.includes([
+                                Strophe.Status.DISCONNECTED,
+                                Strophe.Status.CONNFAIL,
+                                Strophe.Status.REGIFAIL,
+                                Strophe.Status.NOTACCEPTABLE,
+                                Strophe.Status.CONFLICT
+                            ], status)) {
+
+                        _converse.log(
+                            `Problem during registration: Strophe.Status is: ${status}`,
+                            Strophe.LogLevel.ERROR
+                        );
                         this.cancelRegistration();
                         if (error) {
                             this.giveFeedback(error, 'error');
                         } else {
-                            this.giveFeedback(__('Something went wrong while establishing a connection with "%1$s". Are you sure it exists?', this.domain), 'error');
+                            this.giveFeedback(__(
+                                'Something went wrong while establishing a connection with "%1$s". Are you sure it exists?',
+                                this.domain
+                            ), 'error');
                         }
                     } else if (status === Strophe.Status.REGISTERED) {
                         _converse.log("Registered successfully.");
@@ -71073,8 +71973,13 @@ return __p
                             $(this).replaceWith(tpl_spinner);
                             if (that.fields.password && that.fields.username) {
                                 // automatically log the user in
-                                _converse.connection.connect(that.fields.username.toLowerCase() + '@' + that.domain.toLowerCase(), that.fields.password, _converse.onConnectStatusChanged);
-                                _converse.chatboxviews.get('controlbox').switchTab({ 'target': that.$tabs.find('.current') });
+                                _converse.connection.connect(
+                                    that.fields.username.toLowerCase()+'@'+that.domain.toLowerCase(),
+                                    that.fields.password,
+                                    _converse.onConnectStatusChanged
+                                );
+                                _converse.chatboxviews.get('controlbox')
+                                    .switchTab({'target': that.$tabs.find('.current')});
                                 _converse.giveFeedback(__('Now logging you in'));
                             } else {
                                 _converse.chatboxviews.get('controlbox').renderLoginPanel();
@@ -71084,9 +71989,8 @@ return __p
                         });
                     }
                 },
-                renderRegistrationForm: function renderRegistrationForm(stanza) {
-                    var _this2 = this;
 
+                renderRegistrationForm (stanza) {
                     /* Renders the registration form based on the XForm fields
                      * received from the XMPP server.
                      *
@@ -71095,10 +71999,9 @@ return __p
                      */
                     this.model.set('registration_form_rendered', true);
 
-                    var $form = this.$('form'),
+                    const $form = this.$('form'),
                         $stanza = $(stanza);
-                    var $fields = void 0,
-                        $input = void 0;
+                    let $fields, $input;
                     $form.empty().append(tpl_registration_form({
                         'domain': this.domain,
                         'title': this.title,
@@ -71106,15 +72009,15 @@ return __p
                     }));
                     if (this.form_type === 'xform') {
                         $fields = $stanza.find('field');
-                        _.each($fields, function (field) {
-                            $form.append(utils.xForm2webForm.bind(_this2, field, stanza));
+                        _.each($fields, (field) => {
+                            $form.append(utils.xForm2webForm.bind(this, field, stanza));
                         });
                     } else {
                         // Show fields
-                        _.each(_.keys(this.fields), function (key) {
+                        _.each(_.keys(this.fields), (key) => {
                             if (key === "username") {
                                 $input = tpl_form_username({
-                                    domain: " @" + _this2.domain,
+                                    domain: ` @${this.domain}`,
                                     name: key,
                                     type: "text",
                                     label: key,
@@ -71122,8 +72025,8 @@ return __p
                                     required: 1
                                 });
                             } else {
-                                $form.append("<label>" + key + "</label>");
-                                $input = $("<input placeholder=\"" + key + "\" name=\"" + key + "\"></input>");
+                                $form.append(`<label>${key}</label>`);
+                                $input = $(`<input placeholder="${key}" name="${key}"></input>`);
                                 if (key === 'password' || key === 'email') {
                                     $input.attr('type', key);
                                 }
@@ -71131,24 +72034,25 @@ return __p
                             $form.append($input);
                         });
                         // Show urls
-                        _.each(this.urls, function (url) {
+                        _.each(this.urls, (url) => {
                             $form.append($('<a target="blank"></a>').attr('href', url).text(url));
                         });
                     }
                     if (this.fields) {
-                        $form.append("<input type=\"submit\" class=\"pure-button button-primary\" value=\"" + __('Register') + "\"/>");
+                        $form.append(`<input type="submit" class="pure-button button-primary" value="${__('Register')}"/>`);
                         $form.on('submit', this.submitRegistrationForm.bind(this));
-                        $form.append("<input type=\"button\" class=\"pure-button button-cancel\" value=\"" + __('Cancel') + "\"/>");
+                        $form.append(`<input type="button" class="pure-button button-cancel" value="${__('Cancel')}"/>`);
                         $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                     } else {
-                        $form.append("<input type=\"button\" class=\"submit\" value=\"" + __('Return') + "\"/>");
+                        $form.append(`<input type="button" class="submit" value="${__('Return')}"/>`);
                         $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
                     }
                     if (_converse.registration_domain) {
                         $form.find('input[type=button]').hide();
                     }
                 },
-                reportErrors: function reportErrors(stanza) {
+
+                reportErrors (stanza) {
                     /* Report back to the user any error messages received from the
                      * XMPP server after attempted registration.
                      *
@@ -71156,12 +72060,12 @@ return __p
                      *      (XMLElement) stanza - The IQ stanza received from the
                      *      XMPP server.
                      */
-                    var $form = this.$('form'),
-                        $errmsgs = $(stanza).find('error text');
+                    const $form= this.$('form'),
+                          $errmsgs = $(stanza).find('error text');
 
-                    var $flash = $form.find('.form-errors');
+                    let $flash = $form.find('.form-errors');
                     if (!$flash.length) {
-                        var flash = '<legend class="form-errors"></legend>';
+                    const flash = '<legend class="form-errors"></legend>';
                         if ($form.find('p.instructions').length) {
                             $form.find('p.instructions').append(flash);
                         } else {
@@ -71175,24 +72079,30 @@ return __p
                         $flash.append($('<p>').text($(txt).text()));
                     });
                     if (!$errmsgs.length) {
-                        $flash.append($('<p>').text(__('The provider rejected your registration attempt. ' + 'Please check the values you entered for correctness.')));
+                        $flash.append($('<p>').text(
+                            __('The provider rejected your registration attempt. '+
+                            'Please check the values you entered for correctness.')));
                     }
                     $flash.show();
                 },
-                cancelRegistration: function cancelRegistration(ev) {
+
+                cancelRegistration (ev) {
                     /* Handler, when the user cancels the registration form.
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
                     _converse.connection.reset();
                     this.model.set('registration_form_rendered', false);
                     this.render();
                     if (_converse.registration_domain) {
-                        document.querySelector('button.button-cancel').onclick = _.bind(this.fetchRegistrationForm, this, _converse.registration_domain, __('Retry'));
+                        document.querySelector('button.button-cancel').onclick = 
+                            _.bind(
+                                this.fetchRegistrationForm, this,
+                                _converse.registration_domain, __('Retry')
+                            );
                     }
                 },
-                submitRegistrationForm: function submitRegistrationForm(ev) {
+
+                submitRegistrationForm (ev) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
@@ -71200,30 +72110,27 @@ return __p
                      * Parameters:
                      *      (Event) ev - the submit event.
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
-                    var has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'), function (result, input) {
-                        if (input.value === '') {
-                            input.classList.add('error');
-                            return result + 1;
-                        }
-                        return result;
-                    }, 0);
-                    if (has_empty_inputs) {
-                        return;
-                    }
-                    var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
-                        iq = $iq({ type: "set" }).c("query", { xmlns: Strophe.NS.REGISTER });
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    const has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'),
+                        function (result, input) {
+                            if (input.value === '') {
+                                input.classList.add('error');
+                                return result + 1;
+                            }
+                            return result;
+                        }, 0);
+                    if (has_empty_inputs) { return; }
+                    const $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+                        iq = $iq({type: "set"}).c("query", {xmlns:Strophe.NS.REGISTER});
 
                     if (this.form_type === 'xform') {
-                        iq.c("x", { xmlns: Strophe.NS.XFORM, type: 'submit' });
+                        iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
                         $inputs.each(function () {
                             iq.cnode(utils.webForm2xForm(this)).up();
                         });
                     } else {
                         $inputs.each(function () {
-                            var $input = $(this);
+                            const $input = $(this);
                             iq.c($input.attr('name'), {}, $input.val());
                         });
                     }
@@ -71232,16 +72139,17 @@ return __p
                     _converse.connection.send(iq);
                     this.setFields(iq.tree());
                 },
-                setFields: function setFields(stanza) {
+
+                setFields (stanza) {
                     /* Stores the values that will be sent to the XMPP server
                      * during attempted registration.
                      *
                      * Parameters:
                      *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                      */
-                    var $query = $(stanza).find('query');
+                    const $query = $(stanza).find('query');
                     if ($query.length > 0) {
-                        var $xform = $query.find("x[xmlns=\"" + Strophe.NS.XFORM + "\"]");
+                        const $xform = $query.find(`x[xmlns="${Strophe.NS.XFORM}"]`);
                         if ($xform.length > 0) {
                             this._setFieldsFromXForm($xform);
                         } else {
@@ -71249,35 +72157,33 @@ return __p
                         }
                     }
                 },
-                _setFieldsFromLegacy: function _setFieldsFromLegacy($query) {
-                    var _this3 = this;
 
-                    $query.children().each(function (idx, field) {
-                        var $field = $(field);
+                _setFieldsFromLegacy ($query) {
+                    $query.children().each((idx, field) => {
+                        const $field = $(field);
                         if (field.tagName.toLowerCase() === 'instructions') {
-                            _this3.instructions = Strophe.getText(field);
+                            this.instructions = Strophe.getText(field);
                             return;
                         } else if (field.tagName.toLowerCase() === 'x') {
                             if ($field.attr('xmlns') === 'jabber:x:oob') {
-                                $field.find('url').each(function (idx, url) {
-                                    _this3.urls.push($(url).text());
+                                $field.find('url').each((idx, url) => {
+                                    this.urls.push($(url).text());
                                 });
                             }
                             return;
                         }
-                        _this3.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                        this.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
                     });
                     this.form_type = 'legacy';
                 },
-                _setFieldsFromXForm: function _setFieldsFromXForm($xform) {
-                    var _this4 = this;
 
+                _setFieldsFromXForm ($xform) {
                     this.title = $xform.find('title').text();
                     this.instructions = $xform.find('instructions').text();
-                    $xform.find('field').each(function (idx, field) {
-                        var _var = field.getAttribute('var');
+                    $xform.find('field').each((idx, field) => {
+                        const _var = field.getAttribute('var');
                         if (_var) {
-                            _this4.fields[_var.toLowerCase()] = $(field).children('value').text();
+                            this.fields[_var.toLowerCase()] = $(field).children('value').text();
                         } else {
                             // TODO: other option seems to be type="fixed"
                             _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
@@ -71285,7 +72191,8 @@ return __p
                     });
                     this.form_type = 'xform';
                 },
-                _onRegisterIQ: function _onRegisterIQ(stanza) {
+
+                _onRegisterIQ (stanza) {
                     /* Callback method that gets called when a return IQ stanza
                      * is received from the XMPP server, after attempting to
                      * register a new user.
@@ -71293,7 +72200,7 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza.
                      */
-                    var error = null,
+                    let error = null,
                         query = stanza.getElementsByTagName("query");
                     if (query.length > 0) {
                         query = query[0];
@@ -71319,15 +72226,16 @@ return __p
                     }
                     return false;
                 },
-                remove: function remove() {
+
+                remove () {
                     this.$tabs.empty();
                     this.$el.parent().empty();
                 }
             });
         }
     });
-});
-//# sourceMappingURL=converse-register.js.map;
+}));
+
 /*
 * Based on Ping Strophejs plugins (https://github.com/metajack/strophejs-plugins/tree/master/ping)
 * This plugin is distributed under the terms of the MIT licence.
@@ -71420,8 +72328,6 @@ return __p
     });
 }));
 
-
-
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -71435,22 +72341,18 @@ return __p
  */
 (function (root, factory) {
     define('converse-ping',["converse-core", "strophe.ping"], factory);
-})(undefined, function (converse) {
+}(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
-
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        _ = _converse$env._;
-
-
+    const { Strophe, _ } = converse.env;
+    
     converse.plugins.add('converse-ping', {
-        initialize: function initialize() {
+
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
-
+            const { _converse } = this;
 
             _converse.api.settings.update({
                 ping_interval: 180 //in seconds
@@ -71467,15 +72369,9 @@ return __p
                 if (_.isNil(jid)) {
                     jid = Strophe.getDomainFromJid(_converse.bare_jid);
                 }
-                if (_.isUndefined(timeout)) {
-                    timeout = null;
-                }
-                if (_.isUndefined(success)) {
-                    success = null;
-                }
-                if (_.isUndefined(error)) {
-                    error = null;
-                }
+                if (_.isUndefined(timeout) ) { timeout = null; }
+                if (_.isUndefined(success) ) { success = null; }
+                if (_.isUndefined(error) ) { error = null; }
                 if (_converse.connection) {
                     _converse.connection.ping.ping(jid, success, error, timeout);
                     return true;
@@ -71507,11 +72403,11 @@ return __p
                         return true;
                     });
                     _converse.connection.addTimedHandler(1000, function () {
-                        var now = new Date();
+                        const now = new Date();
                         if (!_converse.lastStanzaDate) {
                             _converse.lastStanzaDate = now;
                         }
-                        if ((now - _converse.lastStanzaDate) / 1000 > _converse.ping_interval) {
+                        if ((now - _converse.lastStanzaDate)/1000 > _converse.ping_interval) {
                             return _converse.ping();
                         }
                         return true;
@@ -71519,7 +72415,7 @@ return __p
                 }
             };
 
-            var onConnected = function onConnected() {
+            const onConnected = function () {
                 // Wrapper so that we can spy on registerPingHandler in tests
                 _converse.registerPingHandler();
             };
@@ -71527,9 +72423,7 @@ return __p
             _converse.on('reconnected', onConnected);
         }
     });
-});
-//# sourceMappingURL=converse-ping.js.map;
-
+}));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -71541,27 +72435,21 @@ return __p
 
 (function (root, factory) {
     define('converse-notification',["converse-core"], factory);
-})(undefined, function (converse) {
+}(this, function (converse) {
     "use strict";
-
-    var _converse$env = converse.env,
-        utils = _converse$env.utils,
-        Strophe = _converse$env.Strophe,
-        _ = _converse$env._;
-
+    const { utils, Strophe, _ } = converse.env;
 
     converse.plugins.add('converse-notification', {
-        initialize: function initialize() {
+
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse;
+            const { _converse } = this;
 
             // For translations
-
-            var __ = _converse.__;
-            var ___ = _converse.___;
-
+            const { __ } = _converse;
+            const { ___ } = _converse;
 
             _converse.supports_html5_notification = "Notification" in window;
 
@@ -71576,32 +72464,37 @@ return __p
                 notification_icon: '/logo/conversejs128.png'
             });
 
-            _converse.isOnlyChatStateNotification = function (msg) {
-                return (
-                    // See XEP-0085 Chat State Notification
-                    _.isNull(msg.querySelector('body')) && (_.isNull(msg.querySelector(_converse.ACTIVE)) || _.isNull(msg.querySelector(_converse.COMPOSING)) || _.isNull(msg.querySelector(_converse.INACTIVE)) || _.isNull(msg.querySelector(_converse.PAUSED)) || _.isNull(msg.querySelector(_converse.GONE)))
-                );
-            };
+            _converse.isOnlyChatStateNotification = (msg) =>
+                // See XEP-0085 Chat State Notification
+                _.isNull(msg.querySelector('body')) && (
+                        _.isNull(msg.querySelector(_converse.ACTIVE)) ||
+                        _.isNull(msg.querySelector(_converse.COMPOSING)) ||
+                        _.isNull(msg.querySelector(_converse.INACTIVE)) ||
+                        _.isNull(msg.querySelector(_converse.PAUSED)) ||
+                        _.isNull(msg.querySelector(_converse.GONE))
+                    )
+            ;
 
             _converse.shouldNotifyOfGroupMessage = function (message) {
                 /* Is this a group message worthy of notification?
                  */
-                var notify_all = _converse.notify_all_room_messages;
-                var jid = message.getAttribute('from'),
+                let notify_all = _converse.notify_all_room_messages;
+                const jid = message.getAttribute('from'),
                     resource = Strophe.getResourceFromJid(jid),
                     room_jid = Strophe.getBareJidFromJid(jid),
                     sender = resource && Strophe.unescapeNode(resource) || '';
                 if (sender === '' || message.querySelectorAll('delay').length > 0) {
                     return false;
                 }
-                var room = _converse.chatboxes.get(room_jid);
-                var body = message.querySelector('body');
+                const room = _converse.chatboxes.get(room_jid);
+                const body = message.querySelector('body');
                 if (_.isNull(body)) {
                     return false;
                 }
-                var mentioned = new RegExp("\\b" + room.get('nick') + "\\b").test(body.textContent);
-                notify_all = notify_all === true || _.isArray(notify_all) && _.includes(notify_all, room_jid);
-                if (sender === room.get('nick') || !notify_all && !mentioned) {
+                const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
+                notify_all = notify_all === true ||
+                    (_.isArray(notify_all) && _.includes(notify_all, room_jid));
+                if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                     return false;
                 }
                 return true;
@@ -71613,7 +72506,7 @@ return __p
                 if (utils.isOTRMessage(message)) {
                     return false;
                 }
-                var forwarded = message.querySelector('forwarded');
+                const forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
                     return false;
                 } else if (message.getAttribute('type') === 'groupchat') {
@@ -71622,7 +72515,8 @@ return __p
                     // We want to show notifications for headline messages.
                     return true;
                 }
-                var is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
+                const is_me = Strophe.getBareJidFromJid(
+                        message.getAttribute('from')) === _converse.bare_jid;
                 return !_converse.isOnlyChatStateNotification(message) && !is_me;
             };
 
@@ -71632,20 +72526,22 @@ return __p
                 // XXX Eventually this can be refactored to use Notification's sound
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
-                var audio = void 0;
+                let audio;
                 if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
-                    audio = new Audio(_converse.sounds_path + "msg_received.ogg");
+                    audio = new Audio(_converse.sounds_path+"msg_received.ogg");
                     if (audio.canPlayType('/audio/ogg')) {
                         audio.play();
                     } else {
-                        audio = new Audio(_converse.sounds_path + "msg_received.mp3");
+                        audio = new Audio(_converse.sounds_path+"msg_received.mp3");
                         audio.play();
                     }
                 }
             };
 
             _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                var enabled = _converse.supports_html5_notification && _converse.show_desktop_notifications && Notification.permission === "granted";
+                const enabled = _converse.supports_html5_notification &&
+                    _converse.show_desktop_notifications &&
+                    Notification.permission === "granted";
                 if (ignore_hidden) {
                     return enabled;
                 } else {
@@ -71657,10 +72553,9 @@ return __p
                 /* Shows an HTML5 Notification to indicate that a new chat
                  * message was received.
                  */
-                var title = void 0,
-                    roster_item = void 0;
-                var full_from_jid = message.getAttribute('from'),
-                    from_jid = Strophe.getBareJidFromJid(full_from_jid);
+                let title, roster_item;
+                const full_from_jid = message.getAttribute('from'),
+                      from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
                         title = __(___("Notification from %1$s"), from_jid);
@@ -71674,7 +72569,9 @@ return __p
                     title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
-                        _converse.log("Could not send notification, because roster is undefined", Strophe.LogLevel.ERROR);
+                        _converse.log(
+                            "Could not send notification, because roster is undefined",
+                            Strophe.LogLevel.ERROR);
                         return;
                     }
                     roster_item = _converse.roster.get(from_jid);
@@ -71688,11 +72585,11 @@ return __p
                         }
                     }
                 }
-                var n = new Notification(title, {
-                    body: message.querySelector('body').textContent,
-                    lang: _converse.locale,
-                    icon: _converse.notification_icon
-                });
+                const n = new Notification(title, {
+                        body: message.querySelector('body').textContent,
+                        lang: _converse.locale,
+                        icon: _converse.notification_icon
+                    });
                 setTimeout(n.close.bind(n), 5000);
             };
 
@@ -71704,13 +72601,13 @@ return __p
                     // Don't notify if the user is being ignored.
                     return;
                 }
-                var chat_state = contact.chat_status;
-                var message = null;
+                const chat_state = contact.chat_status;
+                let message = null;
                 if (chat_state === 'offline') {
                     message = __('has gone offline');
                 } else if (chat_state === 'away') {
                     message = __('has gone away');
-                } else if (chat_state === 'dnd') {
+                } else if ((chat_state === 'dnd')) {
                     message = __('is busy');
                 } else if (chat_state === 'online') {
                     message = __('has come online');
@@ -71718,30 +72615,30 @@ return __p
                 if (message === null) {
                     return;
                 }
-                var n = new Notification(contact.fullname, {
-                    body: message,
-                    lang: _converse.locale,
-                    icon: _converse.notification_icon
-                });
+                const n = new Notification(contact.fullname, {
+                        body: message,
+                        lang: _converse.locale,
+                        icon: _converse.notification_icon
+                    });
                 setTimeout(n.close.bind(n), 5000);
             };
 
             _converse.showContactRequestNotification = function (contact) {
-                var n = new Notification(contact.fullname, {
-                    body: __('wants to be your contact'),
-                    lang: _converse.locale,
-                    icon: _converse.notification_icon
-                });
+                const n = new Notification(contact.fullname, {
+                        body: __('wants to be your contact'),
+                        lang: _converse.locale,
+                        icon: _converse.notification_icon
+                    });
                 setTimeout(n.close.bind(n), 5000);
             };
 
             _converse.showFeedbackNotification = function (data) {
                 if (data.klass === 'error' || data.klass === 'warn') {
-                    var n = new Notification(data.subject, {
-                        body: data.message,
-                        lang: _converse.locale,
-                        icon: _converse.notification_icon
-                    });
+                    const n = new Notification(data.subject, {
+                            body: data.message,
+                            lang: _converse.locale,
+                            icon: _converse.notification_icon
+                        });
                     setTimeout(n.close.bind(n), 5000);
                 }
             };
@@ -71751,7 +72648,8 @@ return __p
                  * Will show an HTML5 notification to indicate that the chat
                  * status has changed.
                  */
-                if (_converse.areDesktopNotificationsEnabled() && _converse.show_chatstate_notifications) {
+                if (_converse.areDesktopNotificationsEnabled() &&
+                        _converse.show_chatstate_notifications) {
                     _converse.showChatStateNotification(contact);
                 }
             };
@@ -71760,7 +72658,7 @@ return __p
                 /* Event handler for the on('message') event. Will call methods
                  * to play sounds and show HTML5 notifications.
                  */
-                var message = data.stanza;
+                const message = data.stanza;
                 if (!_converse.shouldNotifyOfMessage(message)) {
                     return false;
                 }
@@ -71783,7 +72681,8 @@ return __p
             };
 
             _converse.requestPermission = function () {
-                if (_converse.supports_html5_notification && !_.includes(['denied', 'granted'], Notification.permission)) {
+                if (_converse.supports_html5_notification &&
+                    ! _.includes(['denied', 'granted'], Notification.permission)) {
                     // Ask user to enable HTML5 notifications
                     Notification.requestPermission();
                 }
@@ -71793,17 +72692,1011 @@ return __p
                 // We only register event handlers after all plugins are
                 // registered, because other plugins might override some of our
                 // handlers.
-                _converse.on('contactRequest', _converse.handleContactRequestNotification);
-                _converse.on('contactStatusChanged', _converse.handleChatStateNotification);
-                _converse.on('message', _converse.handleMessageNotification);
+                _converse.on('contactRequest',  _converse.handleContactRequestNotification);
+                _converse.on('contactStatusChanged',  _converse.handleChatStateNotification);
+                _converse.on('message',  _converse.handleMessageNotification);
                 _converse.on('feedback', _converse.handleFeedback);
                 _converse.on('connected', _converse.requestPermission);
             });
         }
     });
-});
-//# sourceMappingURL=converse-notification.js.map;
+}));
 
+
+define('tpl!chatbox_minimize', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<a class="chatbox-btn toggle-chatbox-button icon-minus" title="' +
+__e(info_minimize) +
+'"></a>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!toggle_chats', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p +=
+__e(Minimized) +
+' <span id="minimized-count">(' +
+__e(num_minimized) +
+')</span>\n<span class="unread-message-count\n    ';
+ if (!num_unread) { ;
+__p += ' unread-message-count-hidden ';
+ } ;
+__p += '\n    href="#">' +
+__e(num_unread) +
+'</span>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!trimmed_chat', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<a class="chatbox-btn close-chatbox-button icon-close"></a>\n<a class="chat-head-message-count\n    ';
+ if (!num_unread) { ;
+__p += ' chat-head-message-count-hidden ';
+ } ;
+__p += '"\n    href="#">' +
+__e(num_unread) +
+'</a>\n<a href="#" class="restore-chat" title="' +
+__e(tooltip) +
+'">\n    ' +
+__e( title ) +
+'\n</a>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!chats_panel', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<a id="toggle-minimized-chats" href="#"></a>\n<div class="flyout minimized-chats-flyout"></div>\n';
+
+}
+return __p
+};});
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, window */
+
+(function (root, factory) {
+    define('converse-minimize',["jquery.noconflict",
+            "converse-core",
+            "tpl!chatbox_minimize",
+            "tpl!toggle_chats",
+            "tpl!trimmed_chat",
+            "tpl!chats_panel",
+            "converse-chatview"
+    ], factory);
+}(this, function (
+        $,
+        converse,
+        tpl_chatbox_minimize,
+        tpl_toggle_chats,
+        tpl_trimmed_chat,
+        tpl_chats_panel
+    ) {
+    "use strict";
+
+    const { _ , utils, Backbone, Promise, Strophe, b64_sha1, moment } = converse.env;
+
+    converse.plugins.add('converse-minimize', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-controlbox", "converse-muc"],
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // New functions which don't exist yet can also be added.
+
+            registerGlobalEventHandlers () {
+                const { _converse } = this.__super__;
+                $(window).on("resize", _.debounce(function (ev) {
+                    if (_converse.connection.connected) {
+                        _converse.chatboxviews.trimChats();
+                    }
+                }, 200));
+                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
+            },
+
+            ChatBox: {
+                initialize () {
+                    this.__super__.initialize.apply(this, arguments);
+                    if (this.get('id') === 'controlbox') {
+                        return;
+                    }
+                    this.save({
+                        'minimized': this.get('minimized') || false,
+                        'time_minimized': this.get('time_minimized') || moment(),
+                    });
+                },
+
+                maximize () {
+                    utils.safeSave(this, {
+                        'minimized': false,
+                        'time_opened': moment().valueOf()
+                    });
+                },
+
+                minimize () {
+                    utils.safeSave(this, {
+                        'minimized': true,
+                        'time_minimized': moment().format()
+                    });
+                },
+            },
+
+            ChatBoxView: {
+                events: {
+                    'click .toggle-chatbox-button': 'minimize',
+                },
+
+                initialize () {
+                    this.model.on('change:minimized', this.onMinimizedChanged, this);
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                _show () {
+                    const { _converse } = this.__super__;
+                    if (!this.model.get('minimized')) {
+                        this.__super__._show.apply(this, arguments);
+                        _converse.chatboxviews.trimChats(this);
+                    } else {
+                        this.minimize();
+                    }
+                },
+
+                isNewMessageHidden () {
+                    return this.model.get('minimized') ||
+                        this.__super__.isNewMessageHidden.apply(this, arguments);
+                },
+
+                shouldShowOnTextMessage () {
+                    return !this.model.get('minimized') &&
+                        this.__super__.shouldShowOnTextMessage.apply(this, arguments);
+                },
+
+                setChatBoxHeight (height) {
+                    if (!this.model.get('minimized')) {
+                        return this.__super__.setChatBoxHeight.apply(this, arguments);
+                    }
+                },
+
+                setChatBoxWidth (width) {
+                    if (!this.model.get('minimized')) {
+                        return this.__super__.setChatBoxWidth.apply(this, arguments);
+                    }
+                },
+
+                onMinimizedChanged (item) {
+                    if (item.get('minimized')) {
+                        this.minimize();
+                    } else {
+                        this.maximize();
+                    }
+                },
+
+                maximize () {
+                    // Restores a minimized chat box
+                    const { _converse } = this.__super__;
+                    this.insertIntoDOM();
+
+                    if (!this.model.isScrolledUp()) {
+                        this.model.clearUnreadMsgCounter();
+                    }
+                    this.show();
+                    this.__super__._converse.emit('chatBoxMaximized', this);
+                    return this;
+                },
+
+                minimize (ev) {
+                    const { _converse } = this.__super__;
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    // save the scroll position to restore it on maximize
+                    if (this.model.collection && this.model.collection.browserStorage) {
+                        this.model.save({'scroll': this.$content.scrollTop()});
+                    } else {
+                        this.model.set({'scroll': this.$content.scrollTop()});
+                    }
+                    this.setChatState(_converse.INACTIVE).model.minimize();
+                    this.hide();
+                    _converse.emit('chatBoxMinimized', this);
+                },
+            },
+
+            ChatRoomView: {
+                events: {
+                    'click .toggle-chatbox-button': 'minimize',
+                },
+
+                initialize () {
+                    this.model.on('change:minimized', function (item) {
+                        if (item.get('minimized')) {
+                            this.hide();
+                        } else {
+                            this.maximize();
+                        }
+                    }, this);
+                    const result = this.__super__.initialize.apply(this, arguments);
+                    if (this.model.get('minimized')) {
+                        this.hide();
+                    }
+                    return result;
+                },
+
+                generateHeadingHTML () {
+                    const { _converse } = this.__super__,
+                        { __ } = _converse;
+                    const html = this.__super__.generateHeadingHTML.apply(this, arguments);
+                    const div = document.createElement('div');
+                    div.innerHTML = html;
+                    const button = div.querySelector('.close-chatbox-button');
+                    button.insertAdjacentHTML('afterend',
+                        tpl_chatbox_minimize({
+                            'info_minimize': __('Minimize this chat box')
+                        })
+                    );
+                    return div.innerHTML;
+                }
+            },
+
+            ChatBoxes: {
+                chatBoxMayBeShown (chatbox) {
+                    return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
+                           !chatbox.get('minimized');
+                },
+            },
+
+            ChatBoxViews: {
+                showChat (attrs) {
+                    /* Find the chat box and show it. If it doesn't exist, create it.
+                     */
+                    const chatbox = this.__super__.showChat.apply(this, arguments);
+                    const maximize = _.isUndefined(attrs.maximize) ? true : attrs.maximize;
+                    if (chatbox.get('minimized') && maximize) {
+                        chatbox.maximize();
+                    }
+                    return chatbox;
+                },
+
+                getChatBoxWidth (view) {
+                    if (!view.model.get('minimized') && view.$el.is(':visible')) {
+                        return view.$el.outerWidth(true);
+                    }
+                    return 0;
+                },
+
+                getShownChats () {
+                    return this.filter((view) =>
+                        // The controlbox can take a while to close,
+                        // so we need to check its state. That's why we checked
+                        // the 'closed' state.
+                        !view.model.get('minimized') &&
+                            !view.model.get('closed') &&
+                            view.$el.is(':visible')
+                    );
+                },
+
+                trimChats (newchat) {
+                    /* This method is called when a newly created chat box will
+                     * be shown.
+                     *
+                     * It checks whether there is enough space on the page to show
+                     * another chat box. Otherwise it minimizes the oldest chat box
+                     * to create space.
+                     */
+                    const { _converse } = this.__super__;
+                    const shown_chats = this.getShownChats();
+                    if (_converse.no_trimming || shown_chats.length <= 1) {
+                        return;
+                    }
+                    if (this.getChatBoxWidth(shown_chats[0]) === $('body').outerWidth(true)) {
+                        // If the chats shown are the same width as the body,
+                        // then we're in responsive mode and the chats are
+                        // fullscreen. In this case we don't trim.
+                        return;
+                    }
+                    _converse.api.waitUntil('minimizedChatsInitialized').then(() => {
+                        const $minimized = _.get(_converse.minimized_chats, '$el'),
+                            minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                            new_id = newchat ? newchat.model.get('id') : null;
+
+                        const boxes_width = _.reduce(
+                            this.xget(new_id),
+                            (memo, view) => memo + this.getChatBoxWidth(view),
+                            newchat ? newchat.$el.outerWidth(true) : 0);
+
+                        if ((minimized_width + boxes_width) > $('body').outerWidth(true)) {
+                            const oldest_chat = this.getOldestMaximizedChat([new_id]);
+                            if (oldest_chat) {
+                                // We hide the chat immediately, because waiting
+                                // for the event to fire (and letting the
+                                // ChatBoxView hide it then) causes race
+                                // conditions.
+                                const view = this.get(oldest_chat.get('id'));
+                                if (view) {
+                                    view.hide();
+                                }
+                                oldest_chat.minimize();
+                            }
+                        }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                },
+
+                getOldestMaximizedChat (exclude_ids) {
+                    // Get oldest view (if its id is not excluded)
+                    exclude_ids.push('controlbox');
+                    let i = 0;
+                    let model = this.model.sort().at(i);
+                    while (_.includes(exclude_ids, model.get('id')) ||
+                        model.get('minimized') === true) {
+                        i++;
+                        model = this.model.at(i);
+                        if (!model) {
+                            return null;
+                        }
+                    }
+                    return model;
+                }
+            }
+        },
+
+
+        initialize () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by Converse.js's plugin machinery.
+             */
+            const { _converse } = this,
+                  { __ } = _converse;
+
+            // Add new HTML templates.
+            _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
+            _converse.templates.toggle_chats = tpl_toggle_chats;
+            _converse.templates.trimmed_chat = tpl_trimmed_chat;
+            _converse.templates.chats_panel = tpl_chats_panel;
+
+            _converse.api.settings.update({
+                no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+            });
+
+            _converse.api.promises.add('minimizedChatsInitialized');
+
+            _converse.MinimizedChatBoxView = Backbone.View.extend({
+                tagName: 'div',
+                className: 'chat-head',
+                events: {
+                    'click .close-chatbox-button': 'close',
+                    'click .restore-chat': 'restore'
+                },
+
+                initialize () {
+                    this.model.on('change:num_unread', this.render, this);
+                },
+
+                render () {
+                    const data = _.extend(
+                        this.model.toJSON(),
+                        { 'tooltip': __('Click to restore this chat') }
+                    );
+                    if (this.model.get('type') === 'chatroom') {
+                        data.title = this.model.get('name');
+                        this.$el.addClass('chat-head-chatroom');
+                    } else {
+                        data.title = this.model.get('fullname');
+                        this.$el.addClass('chat-head-chatbox');
+                    }
+                    return this.$el.html(tpl_trimmed_chat(data));
+                },
+
+                close (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.remove();
+                    const view = _converse.chatboxviews.get(this.model.get('id'));
+                    if (view) {
+                        // This will call model.destroy(), removing it from the
+                        // collection and will also emit 'chatBoxClosed'
+                        view.close();
+                    } else {
+                        this.model.destroy();
+                        _converse.emit('chatBoxClosed', this);
+                    }
+                    return this;
+                },
+
+                restore: _.debounce(function (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.model.off('change:num_unread', null, this);
+                    this.remove();
+                    this.model.maximize();
+                }, 200, {'leading': true})
+            });
+
+
+            _converse.MinimizedChats = Backbone.Overview.extend({
+                tagName: 'div',
+                id: "minimized-chats",
+                className: 'hidden',
+                events: {
+                    "click #toggle-minimized-chats": "toggle"
+                },
+
+                initialize () {
+                    this.render();
+                    this.initToggle();
+                    this.addMultipleChats(this.model.where({'minimized': true}));
+                    this.model.on("add", this.onChanged, this);
+                    this.model.on("destroy", this.removeChat, this);
+                    this.model.on("change:minimized", this.onChanged, this);
+                    this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                },
+
+                render () {
+                    if (!this.el.parentElement) {
+                        this.el.innerHTML = tpl_chats_panel();
+                        _converse.chatboxviews.el.appendChild(this.el);
+                    }
+                    if (this.keys().length === 0) {
+                        this.el.classList.add('hidden');
+                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+                        this.el.classList.remove('hidden');
+                        _converse.chatboxviews.trimChats();
+                    }
+                    return this.$el;
+                },
+
+                tearDown () {
+                    this.model.off("add", this.onChanged);
+                    this.model.off("destroy", this.removeChat);
+                    this.model.off("change:minimized", this.onChanged);
+                    this.model.off('change:num_unread', this.updateUnreadMessagesCounter);
+                    return this;
+                },
+
+                initToggle () {
+                    this.toggleview = new _converse.MinimizedChatsToggleView({
+                        model: new _converse.MinimizedChatsToggle()
+                    });
+                    const id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
+                    this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
+                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                    this.toggleview.model.fetch();
+                },
+
+                toggle (ev) {
+                    if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
+                    this.$('.minimized-chats-flyout').toggle();
+                },
+
+                onChanged (item) {
+                    if (item.get('id') === 'controlbox')  {
+                        // The ControlBox has it's own minimize toggle
+                        return;
+                    }
+                    if (item.get('minimized')) {
+                        this.addChat(item);
+                    } else if (this.get(item.get('id'))) {
+                        this.removeChat(item);
+                    }
+                },
+
+                addMultipleChats (items) {
+                    _.each(items, (item) => {
+                        const existing = this.get(item.get('id'));
+                        if (existing && existing.$el.parent().length !== 0) {
+                            return;
+                        }
+                        const view = new _converse.MinimizedChatBoxView({model: item});
+                        this.$('.minimized-chats-flyout').append(view.render());
+                        this.add(item.get('id'), view);
+                    });
+                    this.toggleview.model.set({'num_minimized': this.keys().length});
+                    this.render();
+                },
+
+                addChat (item) {
+                    const existing = this.get(item.get('id'));
+                    if (existing && existing.$el.parent().length !== 0) {
+                        return;
+                    }
+                    const view = new _converse.MinimizedChatBoxView({model: item});
+                    this.$('.minimized-chats-flyout').append(view.render());
+                    this.add(item.get('id'), view);
+                    this.toggleview.model.set({'num_minimized': this.keys().length});
+                    this.render();
+                },
+
+                removeChat (item) {
+                    this.remove(item.get('id'));
+                    this.toggleview.model.set({'num_minimized': this.keys().length});
+                    this.render();
+                },
+
+                updateUnreadMessagesCounter () {
+                    const ls = this.model.pluck('num_unread');
+                    let count = 0, i;
+                    for (i=0; i<ls.length; i++) { count += ls[i]; }
+                    this.toggleview.model.save({'num_unread': count});
+                    this.render();
+                }
+            });
+
+
+            _converse.MinimizedChatsToggle = Backbone.Model.extend({
+                defaults: {
+                    'collapsed': false,
+                    'num_minimized': 0,
+                    'num_unread':  0
+                }
+            });
+
+
+            _converse.MinimizedChatsToggleView = Backbone.View.extend({
+                el: '#toggle-minimized-chats',
+
+                initialize () {
+                    this.model.on('change:num_minimized', this.render, this);
+                    this.model.on('change:num_unread', this.render, this);
+                    this.$flyout = this.$el.siblings('.minimized-chats-flyout');
+                },
+
+                render () {
+                    this.$el.html(tpl_toggle_chats(
+                        _.extend(this.model.toJSON(), {
+                            'Minimized': __('Minimized')
+                        })
+                    ));
+                    if (this.model.get('collapsed')) {
+                        this.$flyout.hide();
+                    } else {
+                        this.$flyout.show();
+                    }
+                    return this.$el;
+                }
+            });
+
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(() => {
+                _converse.minimized_chats = new _converse.MinimizedChats({
+                    model: _converse.chatboxes
+                });
+                _converse.emit('minimizedChatsInitialized');
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxOpened', function renderMinimizeButton (view) {
+                // Inserts a "minimize" button in the chatview's header
+                const $el = view.$el.find('.toggle-chatbox-button');
+                const $new_el = tpl_chatbox_minimize(
+                    {info_minimize: __('Minimize this chat box')}
+                );
+                if ($el.length) {
+                    $el.replaceWith($new_el);
+                } else {
+                    view.$el.find('.close-chatbox-button').after($new_el);
+                }
+            });
+
+            _converse.on('controlBoxOpened', function (chatbox) {
+                // Wrapped in anon method because at scan time, chatboxviews
+                // attr not set yet.
+                if (_converse.connection.connected) {
+                    _converse.chatboxviews.trimChats(chatbox);
+                }
+            });
+
+            const logOut = function () {
+                _converse.minimized_chats.remove();
+            };
+            _converse.on('logout', logOut);
+        }
+    });
+}));
+
+
+define('tpl!dragresize', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="dragresize dragresize-top"></div>\n<div class="dragresize dragresize-topleft"></div>\n<div class="dragresize dragresize-left"></div>\n';
+
+}
+return __p
+};});
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, window */
+
+(function (root, factory) {
+    define('converse-dragresize',["jquery.noconflict",
+            "converse-core",
+            "tpl!dragresize",
+            "converse-chatview",
+            "converse-muc", // XXX: would like to remove this
+            "converse-controlbox"
+    ], factory);
+}(this, function ($, converse, tpl_dragresize) {
+    "use strict";
+    const { _ } = converse.env;
+
+    function renderDragResizeHandles (_converse, view) {
+        const flyout = view.el.querySelector('.box-flyout');
+        const div = document.createElement('div');
+        div.innerHTML = tpl_dragresize();
+        flyout.insertBefore(
+            div,
+            flyout.firstChild
+        );
+    }
+
+
+    converse.plugins.add('converse-dragresize', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-headline"],
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // New functions which don't exist yet can also be added.
+
+            registerGlobalEventHandlers () {
+                const that = this;
+                
+                $(document).on('mousemove', function (ev) {
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
+                    ev.preventDefault();
+                    that.resizing.chatbox.resizeChatBox(ev);
+                });
+
+                $(document).on('mouseup', function (ev) {
+                    if (!that.resizing || !that.allow_dragresize) { return true; }
+                    ev.preventDefault();
+                    const height = that.applyDragResistance(
+                            that.resizing.chatbox.height,
+                            that.resizing.chatbox.model.get('default_height')
+                    );
+                    const width = that.applyDragResistance(
+                            that.resizing.chatbox.width,
+                            that.resizing.chatbox.model.get('default_width')
+                    );
+                    if (that.connection.connected) {
+                        that.resizing.chatbox.model.save({'height': height});
+                        that.resizing.chatbox.model.save({'width': width});
+                    } else {
+                        that.resizing.chatbox.model.set({'height': height});
+                        that.resizing.chatbox.model.set({'width': width});
+                    }
+                    that.resizing = null;
+                });
+
+                return this.__super__.registerGlobalEventHandlers.apply(this, arguments);
+            },
+
+            ChatBox: {
+                initialize () {
+                    const { _converse } = this.__super__;
+                    const result = this.__super__.initialize.apply(this, arguments),
+                        height = this.get('height'), width = this.get('width'),
+                        save = this.get('id') === 'controlbox' ? this.set.bind(this) : this.save.bind(this);
+                    save({
+                        'height': _converse.applyDragResistance(height, this.get('default_height')),
+                        'width': _converse.applyDragResistance(width, this.get('default_width')),
+                    });
+                    return result;
+                }
+            },
+
+            ChatBoxView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    this.__super__.initialize.apply(this, arguments);
+                },
+
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
+                },
+
+                setWidth () {
+                    // If a custom width is applied (due to drag-resizing),
+                    // then we need to set the width of the .chatbox element as well.
+                    if (this.model.get('width')) {
+                        this.$el.css('width', this.model.get('width'));
+                    }
+                },
+
+                _show () {
+                    this.initDragResize().setDimensions();
+                    this.__super__._show.apply(this, arguments);
+                },
+
+                initDragResize () {
+                    /* Determine and store the default box size.
+                     * We need this information for the drag-resizing feature.
+                     */
+                    const { _converse } = this.__super__;
+                    const $flyout = this.$el.find('.box-flyout');
+                    if (_.isUndefined(this.model.get('height'))) {
+                        const height = $flyout.height();
+                        const width = $flyout.width();
+                        this.model.set('height', height);
+                        this.model.set('default_height', height);
+                        this.model.set('width', width);
+                        this.model.set('default_width', width);
+                    }
+                    const min_width = $flyout.css('min-width');
+                    const min_height = $flyout.css('min-height');
+                    this.model.set('min_width', min_width.endsWith('px') ? Number(min_width.replace(/px$/, '')) :0);
+                    this.model.set('min_height', min_height.endsWith('px') ? Number(min_height.replace(/px$/, '')) :0);
+                    // Initialize last known mouse position
+                    this.prev_pageY = 0;
+                    this.prev_pageX = 0;
+                    if (_converse.connection.connected) {
+                        this.height = this.model.get('height');
+                        this.width = this.model.get('width');
+                    }
+                    return this;
+                },
+
+                setDimensions () {
+                    // Make sure the chat box has the right height and width.
+                    this.adjustToViewport();
+                    this.setChatBoxHeight(this.model.get('height'));
+                    this.setChatBoxWidth(this.model.get('width'));
+                },
+
+                setChatBoxHeight (height) {
+                    const { _converse } = this.__super__;
+                    if (height) {
+                        height = _converse.applyDragResistance(height, this.model.get('default_height'))+'px';
+                    } else {
+                        height = "";
+                    }
+                    this.$el.children('.box-flyout')[0].style.height = height;
+                },
+
+                setChatBoxWidth (width) {
+                    const { _converse } = this.__super__;
+                    if (width) {
+                        width = _converse.applyDragResistance(width, this.model.get('default_width'))+'px';
+                    } else {
+                        width = "";
+                    }
+                    this.$el[0].style.width = width;
+                    this.$el.children('.box-flyout')[0].style.width = width;
+                },
+
+
+                adjustToViewport () {
+                    /* Event handler called when viewport gets resized. We remove
+                     * custom width/height from chat boxes.
+                     */
+                    const viewport_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+                    const viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+                    if (viewport_width <= 480) {
+                        this.model.set('height', undefined);
+                        this.model.set('width', undefined);
+                    } else if (viewport_width <= this.model.get('width')) {
+                        this.model.set('width', undefined);
+                    } else if (viewport_height <= this.model.get('height')) {
+                        this.model.set('height', undefined);
+                    }
+                },
+
+                onStartVerticalResize (ev) {
+                    const { _converse } = this.__super__;
+                    if (!_converse.allow_dragresize) { return true; }
+                    // Record element attributes for mouseMove().
+                    this.height = this.$el.children('.box-flyout').height();
+                    _converse.resizing = {
+                        'chatbox': this,
+                        'direction': 'top'
+                    };
+                    this.prev_pageY = ev.pageY;
+                },
+
+                onStartHorizontalResize (ev) {
+                    const { _converse } = this.__super__;
+                    if (!_converse.allow_dragresize) { return true; }
+                    this.width = this.$el.children('.box-flyout').width();
+                    _converse.resizing = {
+                        'chatbox': this,
+                        'direction': 'left'
+                    };
+                    this.prev_pageX = ev.pageX;
+                },
+
+                onStartDiagonalResize (ev) {
+                    const { _converse } = this.__super__;
+                    this.onStartHorizontalResize(ev);
+                    this.onStartVerticalResize(ev);
+                    _converse.resizing.direction = 'topleft';
+                },
+
+                resizeChatBox (ev) {
+                    let diff;
+                    const { _converse } = this.__super__;
+                    if (_converse.resizing.direction.indexOf('top') === 0) {
+                        diff = ev.pageY - this.prev_pageY;
+                        if (diff) {
+                            this.height = ((this.height-diff) > (this.model.get('min_height') || 0)) ? (this.height-diff) : this.model.get('min_height');
+                            this.prev_pageY = ev.pageY;
+                            this.setChatBoxHeight(this.height);
+                        }
+                    }
+                    if (_.includes(_converse.resizing.direction, 'left')) {
+                        diff = this.prev_pageX - ev.pageX;
+                        if (diff) {
+                            this.width = ((this.width+diff) > (this.model.get('min_width') || 0)) ? (this.width+diff) : this.model.get('min_width');
+                            this.prev_pageX = ev.pageX;
+                            this.setChatBoxWidth(this.width);
+                        }
+                    }
+                }
+            },
+
+            HeadlinesBoxView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
+                }
+            },
+
+            ControlBoxView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    this.__super__.initialize.apply(this, arguments);
+                },
+
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
+                },
+
+                renderLoginPanel () {
+                    const result = this.__super__.renderLoginPanel.apply(this, arguments);
+                    this.initDragResize().setDimensions();
+                    return result;
+                },
+
+                renderContactsPanel () {
+                    const result = this.__super__.renderContactsPanel.apply(this, arguments);
+                    this.initDragResize().setDimensions();
+                    return result;
+                }
+            },
+
+            ChatRoomView: {
+                events: {
+                    'mousedown .dragresize-top': 'onStartVerticalResize',
+                    'mousedown .dragresize-left': 'onStartHorizontalResize',
+                    'mousedown .dragresize-topleft': 'onStartDiagonalResize'
+                },
+
+                initialize () {
+                    $(window).on('resize', _.debounce(this.setDimensions.bind(this), 100));
+                    this.__super__.initialize.apply(this, arguments);
+                },
+
+                render () {
+                    const result = this.__super__.render.apply(this, arguments);
+                    renderDragResizeHandles(this.__super__._converse, this);
+                    this.setWidth();
+                    return result;
+                }
+            }
+        },
+
+        initialize () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            const { _converse } = this;
+
+            _converse.api.settings.update({
+                allow_dragresize: true,
+            });
+
+            _converse.applyDragResistance = function (value, default_value) {
+                /* This method applies some resistance around the
+                * default_value. If value is close enough to
+                * default_value, then default_value is returned instead.
+                */
+                if (_.isUndefined(value)) {
+                    return undefined;
+                } else if (_.isUndefined(default_value)) {
+                    return value;
+                }
+                const resistance = 10;
+                if ((value !== default_value) &&
+                    (Math.abs(value- default_value) < resistance)) {
+                    return default_value;
+                }
+                return value;
+            };
+        }
+    });
+}));
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -71814,14 +73707,14 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-headline',["converse-core", "tpl!chatbox", "converse-chatview"], factory);
-})(undefined, function (converse, tpl_chatbox) {
+    define('converse-headline',[
+            "converse-core",
+            "tpl!chatbox",
+            "converse-chatview",
+    ], factory);
+}(this, function (converse, tpl_chatbox) {
     "use strict";
-
-    var _converse$env = converse.env,
-        _ = _converse$env._,
-        utils = _converse$env.utils;
-
+    const { _, utils } = converse.env;
 
     converse.plugins.add('converse-headline', {
 
@@ -71833,12 +73726,11 @@ return __p
             // New functions which don't exist yet can also be added.
 
             ChatBoxViews: {
-                onChatBoxAdded: function onChatBoxAdded(item) {
-                    var _converse = this.__super__._converse;
-
-                    var view = this.get(item.get('id'));
+                onChatBoxAdded (item) {
+                    const { _converse } = this.__super__;
+                    let view = this.get(item.get('id'));
                     if (!view && item.get('type') === 'headline') {
-                        view = new _converse.HeadlinesBoxView({ model: item });
+                        view = new _converse.HeadlinesBoxView({model: item});
                         this.add(item.get('id'), view);
                         return view;
                     } else {
@@ -71848,13 +73740,12 @@ return __p
             }
         },
 
-        initialize: function initialize() {
+        initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
-            var _converse = this._converse,
-                __ = _converse.__;
-
+            const { _converse } = this,
+                { __ } = _converse;
 
             _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
                 className: 'chatbox headlines',
@@ -71865,7 +73756,7 @@ return __p
                     'keypress textarea.chat-textarea': 'keyPressed'
                 },
 
-                initialize: function initialize() {
+                initialize () {
                     this.disable_mam = true; // Don't do MAM queries for this box
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -71874,16 +73765,22 @@ return __p
                     this.render().fetchMessages().insertIntoDOM().hide();
                     _converse.emit('chatBoxInitialized', this);
                 },
-                render: function render() {
-                    this.$el.attr('id', this.model.get('box_id')).html(tpl_chatbox(_.extend(this.model.toJSON(), {
-                        show_toolbar: _converse.show_toolbar,
-                        show_textarea: false,
-                        show_send_button: _converse.show_send_button,
-                        title: this.model.get('fullname'),
-                        unread_msgs: __('You have unread messages'),
-                        info_close: __('Close this box'),
-                        label_personal_message: ''
-                    })));
+
+                render () {
+                    this.$el.attr('id', this.model.get('box_id'))
+                        .html(tpl_chatbox(
+                                _.extend(this.model.toJSON(), {
+                                        show_toolbar: _converse.show_toolbar,
+                                        show_textarea: false,
+                                        show_send_button: _converse.show_send_button,
+                                        title: this.model.get('fullname'),
+                                        unread_msgs: __('You have unread messages'),
+                                        info_close: __('Close this box'),
+                                        label_personal_message: ''
+                                    }
+                                )
+                            )
+                        );
                     this.$content = this.$el.find('.chat-content');
                     _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
@@ -71891,283 +73788,44 @@ return __p
                 }
             });
 
-            function onHeadlineMessage(message) {
+            function onHeadlineMessage (message) {
                 /* Handler method for all incoming messages of type "headline". */
-                var from_jid = message.getAttribute('from');
+                const from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(message)) {
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
-                    var chatbox = _converse.chatboxes.create({
+                    const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
-                        'fullname': from_jid,
+                        'fullname':  from_jid,
                         'type': 'headline'
                     });
                     chatbox.createMessage(message, undefined, message);
-                    _converse.emit('message', { 'chatbox': chatbox, 'stanza': message });
+                    _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
                 return true;
             }
 
-            function registerHeadlineHandler() {
-                _converse.connection.addHandler(onHeadlineMessage, null, 'message');
+            function registerHeadlineHandler () {
+                _converse.connection.addHandler(
+                        onHeadlineMessage, null, 'message');
             }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);
         }
     });
-});
-//# sourceMappingURL=converse-headline.js.map;
+}));
 
-define('tpl!brand_heading', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<span>\n    <h1 class="brand-heading"><i class="icon-conversejs"></i> inVerse</h1>\n    <p><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n<span>\n';
-
-}
-return __p
-};});
-
-
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
-/*global Backbone, define, window, document, JSON */
-
-/* converse-singleton
-/* ******************
- *
- * A non-core plugin which ensures that only one chat, private or group, is
- * visible at any one time. All other ongoing chats are hidden and kept in the
- * background.
- *
- * This plugin makes sense in mobile or fullscreen chat environments.
- */
-(function (root, factory) {
-    define('converse-singleton',["converse-core", "converse-chatview"], factory);
-})(undefined, function (converse) {
-    "use strict";
-
-    var _converse$env = converse.env,
-        _ = _converse$env._,
-        Strophe = _converse$env.Strophe;
-
-
-    function hideChat(view) {
-        if (view.model.get('id') === 'controlbox') {
-            return;
-        }
-        view.model.save({ 'hidden': true });
-        view.hide();
-    }
-
-    converse.plugins.add('converse-singleton', {
-        // It's possible however to make optional dependencies non-optional.
-        // If the setting "strict_plugin_dependencies" is set to true,
-        // an error will be raised if the plugin is not found.
-        //
-        // NB: These plugins need to have already been loaded via require.js.
-        optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
-
-        overrides: {
-            // overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // new functions which don't exist yet can also be added.
-
-            ChatBoxes: {
-                createChatBox: function createChatBox(jid, attrs) {
-                    /* Make sure new chat boxes are hidden by default.
-                     */
-                    attrs = attrs || {};
-                    attrs.hidden = true;
-                    return this.__super__.createChatBox.call(this, jid, attrs);
-                }
-            },
-
-            RoomsPanel: {
-                parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
-                    /* We set hidden to false for rooms opened manually by the
-                     * user. They should always be shown.
-                     */
-                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
-                    if (_.isUndefined(result)) {
-                        return;
-                    }
-                    result.hidden = false;
-                    return result;
-                }
-            },
-
-            ChatBoxViews: {
-                showChat: function showChat(attrs, force) {
-                    /* We only have one chat visible at any one
-                     * time. So before opening a chat, we make sure all other
-                     * chats are hidden.
-                     */
-                    var _converse = this.__super__._converse;
-
-                    var chatbox = this.getChatBox(attrs, true);
-                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
-                    if ((force || !hidden) && _converse.connection.authenticated) {
-                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
-                        chatbox.save({ 'hidden': false });
-                    }
-                    return this.__super__.showChat.apply(this, arguments);
-                }
-            },
-
-            ChatBoxView: {
-                _show: function _show(focus) {
-                    /* We only have one chat visible at any one
-                     * time. So before opening a chat, we make sure all other
-                     * chats are hidden.
-                     */
-                    if (!this.model.get('hidden')) {
-                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                        return this.__super__._show.apply(this, arguments);
-                    }
-                }
-            },
-
-            RosterContactView: {
-                openChat: function openChat(ev) {
-                    /* We only have one chat visible at any one
-                     * time. So before opening a chat, we make sure all other
-                     * chats are hidden.
-                     */
-                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
-                    this.model.save({ 'hidden': false });
-                    return this.__super__.openChat.apply(this, arguments);
-                }
-            }
-        }
-    });
-});
-//# sourceMappingURL=converse-singleton.js.map;
-
-
-// Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
-//
-// Copyright (c) JC Brand <jc@opkode.com>
-// Licensed under the Mozilla Public License (MPLv2)
-//
 /*global define */
-
-(function (root, factory) {
-    define('converse-inverse',["converse-core", "tpl!brand_heading", "converse-chatview", "converse-controlbox", "converse-muc", "converse-singleton"], factory);
-})(undefined, function (converse, tpl_brand_heading) {
-    "use strict";
-
-    var _converse$env = converse.env,
-        Strophe = _converse$env.Strophe,
-        _ = _converse$env._;
-
-
-    function createBrandHeadingElement() {
-        var div = document.createElement('div');
-        div.innerHTML = tpl_brand_heading();
-        return div.firstChild;
-    }
-
-    function isMessageToHiddenChat(_converse, message) {
-        var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-        var model = _converse.chatboxes.get(jid);
-        if (!_.isNil(model)) {
-            return model.get('hidden');
-        }
-        // Not having a chat box is assume to be practically the same
-        // as it being hidden.
-        return true;
-    }
-
-    converse.plugins.add('converse-inverse', {
-
-        overrides: {
-            // overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // new functions which don't exist yet can also be added.
-
-            areDesktopNotificationsEnabled: function areDesktopNotificationsEnabled() {
-                // Call with "ignore_hidden" as true, so that it doesn't check
-                // if the windowState is hidden.
-                return this.__super__.areDesktopNotificationsEnabled.call(this, true);
-            },
-            shouldNotifyOfMessage: function shouldNotifyOfMessage(message) {
-                var _converse = this.__super__._converse;
-
-                var result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
-                return result && isMessageToHiddenChat(_converse, message);
-            },
-
-
-            ControlBoxView: {
-                renderContactsPanel: function renderContactsPanel() {
-                    this.__super__.renderContactsPanel.apply(this, arguments);
-                    this.el.classList.remove("fullscreen");
-                    return this;
-                },
-                renderRegistrationPanel: function renderRegistrationPanel() {
-                    this.__super__.renderRegistrationPanel.apply(this, arguments);
-                    if (this.__super__._converse.allow_registration) {
-                        var el = document.getElementById('converse-register');
-                        el.parentNode.insertBefore(createBrandHeadingElement(), el);
-                    }
-                    return this;
-                },
-                renderLoginPanel: function renderLoginPanel() {
-                    this.__super__.renderLoginPanel.apply(this, arguments);
-                    this.el.classList.add("fullscreen");
-                    var el = document.getElementById('converse-login');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
-                    return this;
-                }
-            },
-
-            ChatRoomView: {
-                afterShown: function afterShown(focus) {
-                    /* Make sure chat rooms are scrolled down when opened
-                     */
-                    this.scrollDown();
-                    if (focus) {
-                        this.focus();
-                    }
-                    return this.__super__.afterShown.apply(this, arguments);
-                }
-            }
-        },
-
-        initialize: function initialize() {
-            this._converse.api.settings.update({
-                chatview_avatar_height: 44,
-                chatview_avatar_width: 44,
-                hide_open_bookmarks: true,
-                show_controlbox_by_default: true,
-                sticky_controlbox: true
-            });
-        }
-    });
-});
-//# sourceMappingURL=converse-inverse.js.map;
-/* Inverse.js components configuration
- *
- * This file is used to tell require.js which components (or plugins) to load
- * when it generates a build of inverse.js (in dist/inverse.js)
- */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
-    define('inverse',[
+    define('converse',[
         "converse-core",
+        // PLEASE NOTE: By default all translations are included.
+        // You can modify the file src/locales.js to include only those
+        // translations that you care about.
+
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.
@@ -72183,11 +73841,11 @@ if (typeof define !== 'undefined') {
         "converse-register",    // XEP-0077 In-band registration
         "converse-ping",        // XEP-0199 XMPP Ping
         "converse-notification",// HTML5 Notifications
+        "converse-minimize",    // Allows chat boxes to be minimized
+        "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
         /* END: Removable components */
-
-        "converse-inverse",     // Inverse plugin for converse.js
-    ], function(converse) {
+    ], function (converse) {
         return converse;
     });
 }
@@ -72197,6 +73855,6 @@ if (typeof define !== 'undefined') {
     //this snippet. Ask almond to synchronously require the
     //module value for 'converse' here and return it as the
     //value to use for the public API for the built file.
-    return require('inverse');
+    return require('converse');
 }));
 /* jshint ignore:end */

@@ -33,9 +33,12 @@
     position: relative;
     
     .avatar {
-      margin-right: 0.5em;
+      margin-right: 7px;
       border-radius: 50%;
       float: left;
+      margin-top: -11px;
+      width: 35px;
+      height: 35px;
     }
     
     &.chat-head-chatbox {
@@ -67,7 +70,7 @@
     cursor: pointer;
     padding: 2px;
     width: 18px;
-    height: 18px;
+/*     height: 18px; */
     box-sizing: border-box;
     text-align: center;
     line-height: $box-close-font-size;
@@ -75,6 +78,10 @@
     &:active {
       position: relative;
       top: 1px;
+    }
+    
+    &:hover {
+      background-color: rgba(255,255,255,0.3);
     }
     
     &.button-on {
@@ -103,7 +110,7 @@
     
     .box-flyout {
       background-color: white;
-      box-shadow: 0 0 0 3px rgba(171, 228, 239, 0.4);
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
       height: $chat-height;
       min-height: $chat-height/2;
       min-width: $chat-width;
@@ -126,14 +133,15 @@
     }
     
     .chat-title {
-      color: $chat-head-text-color;
+      color: $chat-head-text-color; 
       display: block;
-      line-height: 15px;
+      line-height: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       font-weight: 600;
-      font-size: 16px;
+      text-shadow: 0 1px #666;
+      padding: 2px 0;
       
       a {
         color: $chat-head-text-color;
@@ -301,6 +309,7 @@
         padding: 0.5em;
         width: 100%;
         resize: none;
+        box-shadow: none;
       }
       
       .send-button {
@@ -333,6 +342,7 @@
         .chat-toolbar-text {
           font-size: 12px;
           padding-right: 3px;
+          vertical-align: top;
         }
         
         .unencrypted a,
@@ -367,7 +377,7 @@
           cursor: pointer;
           display: inline-block;
           list-style: none;
-          margin-top: 1px;
+/*           margin-top: 1px; */
           padding: 0 3px 0 3px;
           
           &:hover {

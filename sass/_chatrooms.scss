@@ -31,13 +31,14 @@
             }
             
             .chatroom-description {
-                color: white;
-                font-size: 80%;
-                font-style: italic;
-                overflow: hidden;
-                text-overflow: ellipsis; 
-                white-space: nowrap;
-                margin: 0.3em 0;
+/*                 color: white; */
+/*                 font-size: 80%; */
+/*                 font-style: italic; */
+/*                 overflow: hidden; */
+/*                 text-overflow: ellipsis;  */
+/*                 white-space: nowrap; */
+/*                 margin: 0.3em 0; */
+               display: none;
             }
         }
         

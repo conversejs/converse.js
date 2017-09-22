@@ -51587,7 +51587,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="pure-form room-invite">\n    ';
+__p += '<!-- \n<form class="pure-form room-invite">\n    ';
  if (error_message) { ;
 __p += '\n        <span class="pure-form-message error">' +
 __e(error_message) +
@@ -51595,7 +51595,7 @@ __e(error_message) +
  } ;
 __p += '\n    <input class="invited-contact" placeholder="' +
 __e(label_invitation) +
-'" type="text"/>\n</form>\n';
+'" type="text"/>\n</form>\n-->\n';
 
 }
 return __p
@@ -51692,11 +51692,11 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<a class="s rooms-tab\n   ';
+__p += '<a class="s rooms-tab\n    ';
  if (is_current) { ;
 __p += ' current ';
  } ;
-__p += '\n   ';
+__p += '\n    ';
  if (num_unread) { ;
 __p += ' unread-msgs ';
  } ;
@@ -53859,7 +53859,7 @@ var _ = require('./util');
  * @return {String}
  */
 function getTagName (html) {
-  var i = html.indexOf(' ');
+  var i = _.spaceIndex(html);
   if (i === -1) {
     var tagName = html.slice(1, -1);
   } else {
@@ -54003,7 +54003,8 @@ function parseAttr (html, onAttr) {
         }
       }
     }
-    if (c === ' ') {
+    if (/\s|\n|\t/.test(c)) {
+      html = html.replace(/\s|\n|\t/g, ' ');
       if (tmpName === false) {
         j = findNextEqual(html, i);
         if (j === -1) {
@@ -54110,6 +54111,11 @@ module.exports = {
       return str.trim();
     }
     return str.replace(/(^\s*)|(\s*$)/g, '');
+  },
+  spaceIndex: function (str) {
+      var reg = /\s|\n|\t/;
+      var match = reg.exec(str);
+      return match ? match.index : -1;
   }
 };
 
@@ -54147,7 +54153,7 @@ function isNull (obj) {
  *   - {Boolean} closing
  */
 function getAttrs (html) {
-  var i = html.indexOf(' ');
+  var i = _.spaceIndex(html);
   if (i === -1) {
     return {
       html:    '',
@@ -54367,14 +54373,16 @@ function shallowCopyObject (obj) {
  *
  * @param {Object} options
  *   - {Object} whiteList
- *   - {Object} onAttr
- *   - {Object} onIgnoreAttr
+ *   - {Function} onAttr
+ *   - {Function} onIgnoreAttr
+ *   - {Function} safeAttrValue
  */
 function FilterCSS (options) {
   options = shallowCopyObject(options || {});
   options.whiteList = options.whiteList || DEFAULT.whiteList;
   options.onAttr = options.onAttr || DEFAULT.onAttr;
   options.onIgnoreAttr = options.onIgnoreAttr || DEFAULT.onIgnoreAttr;
+  options.safeAttrValue = options.safeAttrValue || DEFAULT.safeAttrValue;
   this.options = options;
 }
 
@@ -54389,6 +54397,7 @@ FilterCSS.prototype.process = function (css) {
   var whiteList = options.whiteList;
   var onAttr = options.onAttr;
   var onIgnoreAttr = options.onIgnoreAttr;
+  var safeAttrValue = options.safeAttrValue;
 
   var retCSS = parseStyle(css, function (sourcePosition, position, name, value, source) {
 
@@ -54398,6 +54407,10 @@ FilterCSS.prototype.process = function (css) {
     else if (typeof check === 'function') isWhite = check(value);
     else if (check instanceof RegExp) isWhite = check.test(value);
     if (isWhite !== true) isWhite = false;
+
+    // 如果过滤后 value 为空则直接忽略
+    value = safeAttrValue(name, value);
+    if (!value) return;
 
     var opts = {
       position: position,
@@ -54810,11 +54823,26 @@ function onIgnoreAttr (name, value, options) {
   // do nothing
 }
 
+var REGEXP_URL_JAVASCRIPT = /javascript\s*\:/img;
+
+/**
+ * 过滤属性值
+ *
+ * @param {String} name
+ * @param {String} value
+ * @return {String}
+ */
+function safeAttrValue(name, value) {
+  if (REGEXP_URL_JAVASCRIPT.test(value)) return '';
+  return value;
+}
+
 
 exports.whiteList = getDefaultWhiteList();
 exports.getDefaultWhiteList = getDefaultWhiteList;
 exports.onAttr = onAttr;
 exports.onIgnoreAttr = onIgnoreAttr;
+exports.safeAttrValue = safeAttrValue;
 
 },{}],8:[function(require,module,exports){
 /**
@@ -59749,7 +59777,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
 __e(label_click_to_chat) +
-'"> ' +
+'">' +
 __e(label_add_contact) +
 '</a>\n    </dt>\n    <dd class="search-xmpp">\n        <div class="contact-form-container collapsed"></div>\n        <ul></ul>\n    </dd>\n</dl>\n';
 
@@ -59815,9 +59843,9 @@ __e(chat_status) +
 __e(status_message) +
 '" href="#" title="' +
 __e(desc_change_status) +
-'">\n        ' +
+'">' +
 __e(status_message) +
-'\n    </a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
+'</a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
 __e(desc_custom_status) +
 '"></a>\n</div>\n';
 
@@ -59872,11 +59900,11 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<a class="s contacts-tab\n   ';
+__p += '<a class="s contacts-tab\n    ';
  if (is_current) { ;
 __p += ' current ';
  } ;
-__p += '\n   ';
+__p += '\n    ';
  if (num_unread) { ;
 __p += ' unread-msgs ';
  } ;
@@ -59913,11 +59941,9 @@ return __p
 
 define('tpl!controlbox_toggle', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '';
 with (obj) {
-__p += '<span class="conn-feedback">' +
-__e(label_toggle) +
-'</span>\n';
+__p += '<span class="conn-feedback icon-toggle_chat"></span>\n';
 
 }
 return __p

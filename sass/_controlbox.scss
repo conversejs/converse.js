@@ -23,9 +23,9 @@
                 border-top-right-radius: 0;
             }
             color: $chat-head-inverse-text-color;
-            height: 33px;
+            height: $chat-head-height;
             margin: 0;
-            padding: 6px 6px 6px 0;
+            padding: 6px 6px 6px 2px;
         }
         form.search-xmpp-contact {
             margin: 0;
@@ -294,51 +294,51 @@
                 list-style: none;
                 padding-left: 0;
                 text-shadow: white 0 1px 0;
-                width: 40%;
+                
                 a {
-                    background-color: white;
-                    border-bottom: 1px solid $border-color;
-                    border-top-left-radius: $button-border-radius;
-                    border-top-right-radius: $button-border-radius;
-                    box-shadow: inset 2px -2px 20px rgba(0, 0, 0, 0.3);
-                    color: $text-color;
-                    display: block;
-                    font-size: $font-size-small;
-                    height: $chat-head-height - 1px;
-                    line-height: $chat-head-height - 1px;
-                    margin: 0;
-                    text-align: center;
-                    text-decoration: none;
-                    &.contacts-tab {
-                        .msgs-indicator {
-                            background-color: $chat-head-color;
-                        }
-                    }
-                    &.rooms-tab {
-                        .msgs-indicator {
-                            background-color: $chatroom-head-color;
-                        }
-                    }
+                  box-shadow: none;
+                  border-bottom: 0;
+                  height: 27px; /* Load from variable*/
+                  line-height: 1;
+                  color: #fff;
+                  background-color: transparent;
+                  padding: 5px 10px;
+                  margin: 0;
+                  font-weight: 300;
+                  text-shadow: 0 1px #666;
+                    
+                  &.contacts-tab {
                     .msgs-indicator {
-                        border: solid white 2px;
-                        opacity: 0.8;
-                        border-top-right-radius: $button-border-radius;
-                        float: right;
+                      background-color: $chat-head-color;
                     }
-                    &:hover {
-                        color: $text-color;
-                        .msgs-indicator {
-                            opacity: 1;
-                        }
+                  }
+                  
+                  &.rooms-tab {
+                  
+                    .msgs-indicator {
+                      background-color: $chatroom-head-color;
                     }
-                    &.current,
-                    &.current:hover {
-                        box-shadow: none;
-                        border-bottom: 0;
-                        height: $chat-head-height;
-                        cursor: default;
-                        color: $text-color;
-                    }
+                  }
+                  
+                  .msgs-indicator {
+                    border: solid white 2px;
+                    opacity: 0.8;
+                    border-top-right-radius: $button-border-radius;
+                    float: right;
+                  }
+                  
+                  &:hover {
+                    color: #fff;
+                    
+                      .msgs-indicator {
+                          opacity: 1;
+                      }
+                  }
+                  
+                  &.current,
+                  &.current:hover {
+                    font-weight: 600;
+                  }
                 }
             }
         }
@@ -357,6 +357,11 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 display: inline-block;
+                
+                span {
+                  font-family: "Open Sans", "Arial", sans-serif;
+                }
+                
                 &:hover {
                     color: $dark-link-color;
                 }

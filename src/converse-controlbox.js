@@ -23,6 +23,8 @@
             "tpl!login_panel",
             "tpl!search_contact",
             "tpl!status_option",
+            "tpl!spinner",
+            "tpl!login_feedback",
             "converse-chatview",
             "converse-rosterview"
     ], factory);
@@ -42,7 +44,9 @@
             tpl_controlbox_toggle,
             tpl_login_panel,
             tpl_search_contact,
-            tpl_status_option
+            tpl_status_option,
+            tpl_spinner,
+            tpl_login_feedback
         ) {
     "use strict";
 
@@ -266,33 +270,54 @@
                 },
 
                 insertRoster () {
-                    /* Place the rosterview inside the "Contacts" panel.
-                     */
-                    this.contactspanel.$el.append(_converse.rosterview.$el);
+                    /* Place the rosterview inside the "Contacts" panel. */
+                    this.contactspanel.el.insertAdjacentElement(
+                        'beforeEnd',
+                        _converse.rosterview.el
+                    );
                     return this;
                 },
 
-                 createBrandHeadingElement () {
+                 createBrandHeadingHTML () {
                     return tpl_brand_heading();
                 },
 
                 insertBrandHeading () {
-                    const el = this.el.querySelector('.controlbox-head');
-                    el.insertAdjacentHTML('beforeend', this.createBrandHeadingElement());
+                    const heading_el = this.el.querySelector('.brand-heading-container');
+                    if (_.isNull(heading_el)) {
+                        const el = this.el.querySelector('.controlbox-head');
+                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+                    } else {
+                        heading_el.outerHTML = this.createBrandHeadingHTML();
+                    }
                 },
 
                 renderLoginPanel () {
-                    this.loginpanel = new _converse.LoginPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
-                        'model': this
-                    });
-                    this.loginpanel.render();
                     this.el.classList.add("logged-out");
-                    this.insertBrandHeading();
+                    if (_.isNil(this.loginpanel)) {
+                        this.loginpanel = new _converse.LoginPanel({'model': this});
+                        const panes = this.el.querySelector('.controlbox-panes');
+                        panes.innerHTML = '';
+                        panes.appendChild(this.loginpanel.render().el);
+                        this.insertBrandHeading();
+                    } else {
+                        this.loginpanel.render();
+                    }
                     return this;
                 },
 
                 renderContactsPanel () {
+                    /* Renders the "Contacts" panel of the controlbox.
+                     *
+                     * This will only be called after the user has already been
+                     * logged in.
+                     */
+                    if (this.loginpanel) {
+                        this.loginpanel.remove();
+                        delete this.loginpanel;
+                    }
+                    this.el.classList.remove("logged-out");
+
                     if (_.isUndefined(this.model.get('active-panel'))) {
                         this.model.save({'active-panel': USERS_PANEL_ID});
                     }
@@ -305,7 +330,6 @@
                         'model': _converse.xmppstatus
                     });
                     _converse.xmppstatusview.render();
-                    this.el.classList.remove("logged-out");
                 },
 
                 close (ev) {
@@ -395,19 +419,10 @@
                 },
 
                 initialize (cfg) {
-                    this.insertIntoDOM(cfg);
-                    _converse.connfeedback.on('change', this.showConnectionFeedback, this);
+                    _converse.connfeedback.on('change', this.renderConnectionFeedback, this);
                 },
 
                 render () {
-                    this.$el.find('input#jid').focus();
-                    if (!this.$el.is(':visible')) {
-                        this.$el.show();
-                    }
-                    return this;
-                },
-
-                insertIntoDOM (cfg) {
                     this.el.innerHTML = tpl_login_panel({
                         '__': __,
                         'ANONYMOUS': _converse.ANONYMOUS,
@@ -416,40 +431,32 @@
                         'PREBIND': _converse.PREBIND,
                         'auto_login': _converse.auto_login,
                         'authentication': _converse.authentication,
+                        'label_anon_login': __('Click here to log in anonymously'),
+                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
+                    })
+                    this.renderConnectionFeedback();
+                    this.$el.find('input#jid').focus();
+                    return this;
+                },
+
+                renderConnectionFeedback () {
+                    const feedback_html = tpl_login_feedback({
                         'conn_feedback_class': _converse.connfeedback.get('klass'),
                         'conn_feedback_subject': _converse.connfeedback.get('subject'),
                         'conn_feedback_message': _converse.connfeedback.get('message'),
-                        'label_username': __('Jabber ID:'),
-                        'label_password': __('Password:'),
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
-                        'placeholder_password': __('password')
-                    })
-                    cfg.$parent.html(this.el);
+                    });
+                    const feedback_el = this.el.querySelector('.conn-feedback');
+                    if (_.isNull(feedback_el)) {
+                        this.el.insertAdjacentHTML('afterbegin', feedback_html);
+                    } else {
+                        feedback_el.outerHTML = feedback_html;
+                    }
                 },
 
-                showConnectionFeedback () {
-                    const klass = _converse.connfeedback.get('klass');
-                    function insert (text, el) {
-                        el.textContent = text;
-                        if (!text) {
-                            el.parentNode.classList.add('hidden');
-                        } else {
-                            el.parentNode.classList.remove('hidden');
-                        }
-                        el.classList.remove('error');
-                        if (klass) {
-                            el.classList.add(klass);
-                        }
-                    }
-                    insert(
-                        _converse.connfeedback.get('subject'),
-                        this.el.querySelector('.conn-feedback .feedback-subject')
-                    )
-                    insert(
-                        _converse.connfeedback.get('message'),
-                        this.el.querySelector('.conn-feedback .feedback-message')
-                    )
+                showSpinner () {
+                    const form = this.el.querySelector('form');
+                    form.innerHTML = tpl_spinner();
+                    return this;
                 },
 
                 authenticate (ev) {
@@ -458,7 +465,7 @@
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
                     const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
-                        this.connect($form, _converse.jid, null);
+                        this.showSpinner().connect(_converse.jid, null);
                         return;
                     }
                     const $jid_input = $form.find('input[name=jid]');
@@ -490,17 +497,13 @@
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect($form, jid, password);
+                    this.showSpinner().connect(jid, password);
                     return false;
                 },
 
-                connect ($form, jid, password) {
-                    let resource;
-                    if ($form) {
-                        $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                    }
+                connect (jid, password) {
                     if (jid) {
-                        resource = Strophe.getResourceFromJid(jid);
+                        const resource = Strophe.getResourceFromJid(jid);
                         if (!resource) {
                             jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
@@ -509,11 +512,6 @@
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-                },
-
-                remove () {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
 
@@ -652,7 +650,6 @@
 
                 render () {
                     this.renderTab();
-
                     let widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),

@@ -1,8 +1,3 @@
-<div class="conn-feedback hidden">
-    <p class="feedback-subject hidden {{{ conn_feedback_class }}}">{{{ conn_feedback_subject }}}</p>
-    <p class="feedback-message hidden {{{ conn_feedback_class }}}">{{{ conn_feedback_message }}}</p>
-</div>
-
 <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
     {[ if (auto_login) { ]}
         <span class="spinner login-submit"/>
@@ -11,12 +6,12 @@
         <legend>{{{__("Login")}}}</legend>
 
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
-            <label>{{{label_username}}}</label>
+            <label>{{{__("Jabber ID:")}}}</label>
             <p class="form-help fade-in invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
             <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
-                <label>{{{label_password}}}</label>
-                <input type="password" name="password" placeholder="{{{placeholder_password}}}">
+                <label>{{{__("Password:")}}}</label>
+                <input type="password" name="password" placeholder="{{{__('password')}}}">
             {[ } ]}
             <input class="pure-button button-primary" type="submit" value="{{{__('Submit')}}}">
         {[ } ]}

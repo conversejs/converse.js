@@ -294,7 +294,7 @@
                     307: __('You have been kicked from this room'),
                     321: __("You have been removed from this room because of an affiliation change"),
                     322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
                 },
 
                 action_info_messages: {

@@ -527,7 +527,10 @@
             } else if (status === Strophe.Status.AUTHENTICATING) {
                 _converse.giveFeedback(__('Authenticating…'));
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication failed: '+message), 'error');
+                if (!message) {
+                    message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                }
+                _converse.giveFeedback(__('Authentication failed'), 'error', message);
                 _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {

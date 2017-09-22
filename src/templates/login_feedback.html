@@ -1,0 +1,8 @@
+<div class="conn-feedback {[ if (!conn_feedback_subject && !conn_feedback_message) { ]} hidden {[ } ]}">
+    <p class="feedback-subject {[ if (!conn_feedback_subject) { ]} hidden {[ } ]} {{{ conn_feedback_class }}}">
+        {{{ conn_feedback_subject }}}
+    </p>
+    <p class="feedback-message {[ if (!conn_feedback_message) { ]} hidden {[ } ]} {{{ conn_feedback_class }}}">
+        {{{ conn_feedback_message }}}
+    </p>
+</div>

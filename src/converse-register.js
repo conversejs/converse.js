@@ -62,14 +62,16 @@
         
             LoginPanel: {
 
-                initialize: function (cfg) {
+                render: function (cfg) {
                     const { _converse } = this.__super__;
-                    this.__super__.initialize.apply(this, arguments);
+                    this.__super__.render.apply(this, arguments);
                     if (_converse.allow_registration) {
-                        const div = document.createElement('div');
-                        div.innerHTML = tpl_register_link({'__': _converse.__})
-                        this.el.appendChild(div);
+                        this.el.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_register_link({'__': _converse.__})
+                        );
                     }
+                    return this;
                 }
             },
 
@@ -394,13 +396,18 @@
                 clearRegistrationForm () {
                     const form = this.el.querySelector('form');
                     form.innerHTML = '';
+                    this.model.set('registration_form_rendered', false);
                     return form;
                 },
 
                 showRegistrationForm () {
+                },
+
+                showSpinner () {
                     const form = this.el.querySelector('form');
-                    form.classList.remove('hidden');
-                    return form;
+                    form.innerHTML = tpl_spinner();
+                    this.model.set('registration_form_rendered', false);
+                    return this;
                 },
 
                 onConnectStatusChanged(status_code) {
@@ -430,10 +437,8 @@
                     } else if (status_code === Strophe.Status.REGISTERED) {
                         router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
-                        this.model.set('registration_form_rendered', false);
                         _converse.connection.reset();
-                        const form = this.el.querySelector('form');
-                        form.innerHTML = tpl_spinner();
+                        this.showSpinner();
 
                         if (this.fields.password && this.fields.username) {
                             // automatically log the user in
@@ -518,8 +523,8 @@
                     if (!this.fields) {
                         form.querySelector('.button-primary').classList.add('hidden');
                     }
+                    form.classList.remove('hidden');
                     this.model.set('registration_form_rendered', true);
-                    this.showRegistrationForm();
                 },
 
                 showValidationError (message) {

@@ -1977,13 +1977,14 @@
       font-size: 85%; }
       #conversejs #controlbox #converse-register .instructions:hover {
         color: #777; }
-  #conversejs #controlbox .conn-feedback p {
-    color: #578EA9;
-    padding-bottom: 0.5em; }
-    #conversejs #controlbox .conn-feedback p.feedback-subject.error {
-      font-weight: bold; }
-    #conversejs #controlbox .conn-feedback p.error {
+  #conversejs #controlbox .conn-feedback {
+    color: #578EA9; }
+    #conversejs #controlbox .conn-feedback.error {
       color: #A53214; }
+    #conversejs #controlbox .conn-feedback p {
+      padding-bottom: 0.5em; }
+      #conversejs #controlbox .conn-feedback p.feedback-subject.error {
+        font-weight: bold; }
   #conversejs #controlbox .brand-heading-container .brand-heading {
     text-align: left;
     font-size: 150%; }

@@ -1,22 +1,38 @@
 <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
-    {[ if (auto_login) { ]}
-        <span class="spinner login-submit"/>
-    {[ } ]}
-    {[ if (!auto_login) { ]}
-        <legend>{{{__("Login")}}}</legend>
+    <legend>{{{__("Login")}}}</legend>
 
+    <div class="conn-feedback fade-in {[ if (!conn_feedback_subject) { ]} hidden {[ } ]} {{{conn_feedback_class}}}">
+        <p class="feedback-subject">{{{ conn_feedback_subject }}}</p>
+        <p class="feedback-message {[ if (!conn_feedback_message) { ]} hidden {[ } ]}">{{{conn_feedback_message}}}</p>
+    </div>
+
+    {[ if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ]}
+        <span class="spinner centered"/>
+    {[ } else { ]}
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{__("Jabber ID:")}}}</label>
-            <p class="form-help fade-in invalid-jid-msg error hidden">{{{_('Please enter a valid XMPP address')}}}</p>
-            <input autofocus type="text" name="jid" placeholder="{{{placeholder_username}}}">
+            <p class="form-help fade-in error {[ if (!_.includes(errors, 'invalid_jid')) { ]} hidden {[ } ]}">
+                {{{_('Please enter a valid XMPP address')}}}
+            </p>
+            <input autofocus
+                   type="text"
+                   name="jid"
+                   class="{[ if (_.includes(errors, 'invalid_jid')) { ]} error {[ } ]}"
+                   placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
                 <label>{{{__("Password:")}}}</label>
-                <input type="password" name="password" placeholder="{{{__('password')}}}">
+                <p class="form-help fade-in error {[ if (!_.includes(errors, 'password_required')) { ]} hidden {[ } ]}">
+                    {{{_('Please enter your password')}}}
+                </p>
+                <input type="password"
+                       name="password"
+                       class="{[ if (_.includes(errors, 'password_required')) { ]} error {[ } ]}"
+                       placeholder="{{{__('password')}}}">
             {[ } ]}
             <input class="pure-button button-primary" type="submit" value="{{{__('Submit')}}}">
         {[ } ]}
         {[ if (authentication == ANONYMOUS) { ]}
-            <input class="pure-button button-primary login-anon" type="submit" value="{{{label_anon_login}}}"/>
+            <input class="pure-button button-primary login-anon" type="submit" value="{{{__('Click here to log in anonymously')}}}"/>
         {[ } ]}
         {[ if (authentication == PREBIND) { ]}
             <p>Disconnected.</p>

@@ -115,14 +115,14 @@
         }
 
         .conn-feedback {
+            color: $controlbox-head-color;
+            &.error {
+                color: $error-color;
+            }
             p {
-                color: $controlbox-head-color;
                 padding-bottom: 0.5em;
                 &.feedback-subject.error {
                     font-weight: bold;
-                }
-                &.error {
-                    color: $error-color;
                 }
             }
         }

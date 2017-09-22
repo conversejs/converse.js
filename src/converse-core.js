@@ -100,7 +100,7 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    _converse.PRETTY_CONNECTION_STATUS = {
+    _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -110,7 +110,8 @@
         6: 'DISCONNECTED',
         7: 'DISCONNECTING',
         8: 'ATTACHED',
-        9: 'REDIRECT'
+        9: 'REDIRECT',
+       10: 'RECONNECTING'
     };
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
@@ -407,10 +408,9 @@
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (subject, klass, message) {
+        this.setConnectionStatus = function (connection_status, message) {
             _converse.connfeedback.set({
-                'subject': subject,
-                'klass': klass,
+                'connection_status': connection_status,
                 'message': message
             });
         };
@@ -431,9 +431,8 @@
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(
-                __("Reconnecting"),
-                'warn',
+            _converse.setConnectionStatus(
+                Strophe.Status.RECONNECTING,
                 __('The connection has dropped, attempting to reconnect.')
             );
             _converse.connection.reconnecting = true;
@@ -495,9 +494,9 @@
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log(`Status changed to: ${_converse.PRETTY_CONNECTION_STATUS[status]}`);
+            _converse.log(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-                _converse.giveFeedback();
+                _converse.setConnectionStatus(status);
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();
@@ -517,20 +516,19 @@
                 _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(
-                    __('Connection error'),
-                    'error',
+                _converse.setConnectionStatus(
+                    status,
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting…'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating…'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHFAIL) {
                 if (!message) {
                     message = __('Your Jabber ID and/or password is incorrect. Please try again.');
                 }
-                _converse.giveFeedback(__('Authentication failed'), 'error', message);
+                _converse.setConnectionStatus(status, message);
                 _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
@@ -541,11 +539,7 @@
                 } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                     feedback = __("The XMPP server did not offer a supported authentication mechanism");
                 }
-                _converse.giveFeedback(
-                    __('Connection failed'),
-                    'error',
-                    feedback
-                );
+                _converse.setConnectionStatus(status, feedback);
                 _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 _converse.setDisconnectionCause(status, message);
@@ -571,7 +565,7 @@
             }
         };
 
-        this.initStatus = () => 
+        this.initStatus = () =>
             new Promise((resolve, reject) => {
                 const promise = new utils.getWrappedPromise();
                 this.xmppstatus = new this.XMPPStatus();
@@ -1521,15 +1515,14 @@
 
         this.ConnectionFeedback = Backbone.Model.extend({
 
-            initialize () {
-                this.on('change', this.emitConnectionFeedbackChange);
+            defaults: {
+                'connection_status': undefined,
+                'message': ''
             },
 
-            emitConnectionFeedbackChange () {
-                _converse.emit('connfeedback', {
-                    'klass': _converse.connfeedback.get('klass'),
-                    'message': _converse.connfeedback.get('message'),
-                    'subject': _converse.connfeedback.get('subject')
+            initialize () {
+                this.on('change', () => {
+                    _converse.emit('connfeedback', _converse.connfeedback);
                 });
             }
         });

@@ -148,10 +148,10 @@
             const { _converse } = this,
                 { __ } = _converse;
 
-            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
-            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
-            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
-            _converse.PRETTY_CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
+            _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+            _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+            _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+            _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
             _converse.api.settings.update({
                 allow_registration: true,
@@ -433,7 +433,7 @@
                             ], status_code)) {
 
                         _converse.log(
-                            `Problem during registration: Strophe.Status is ${_converse.PRETTY_CONNECTION_STATUS[status_code]}`,
+                            `Problem during registration: Strophe.Status is ${_converse.CONNECTION_STATUS[status_code]}`,
                             Strophe.LogLevel.ERROR
                         );
                         this.abortRegistration();

@@ -58,6 +58,43 @@
     const CHATBOX_TYPE = 'chatbox';
     const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
 
+    const CONNECTION_STATUS_CSS_CLASS = {
+       'Error': 'error',
+       'Connecting': 'info',
+       'Connection failure': 'error',
+       'Authenticating': 'info',
+       'Authentication failure': 'error',
+       'Connected': 'info',
+       'Disconnected': 'error',
+       'Disconnecting': 'warn',
+       'Attached': 'info',
+       'Redirect': 'info',
+       'Reconnecting': 'warn'
+    };
+
+    const PRETTY_CONNECTION_STATUS = {
+        0: 'Error',
+        1: 'Connecting',
+        2: 'Connection failure',
+        3: 'Authenticating',
+        4: 'Authentication failure',
+        5: 'Connected',
+        6: 'Disconnected',
+        7: 'Disconnecting',
+        8: 'Attached',
+        9: 'Redirect',
+       10: 'Reconnecting'
+    };
+
+    const REPORTABLE_STATUSES = [
+        0, // ERROR'
+        1, // CONNECTING
+        2, // CONNFAIL
+        3, // AUTHENTICATING
+        4, // AUTHFAIL
+        7, // DISCONNECTING
+       10  // RECONNECTING
+    ];
 
     converse.plugins.add('converse-controlbox', {
 
@@ -299,7 +336,9 @@
                 renderLoginPanel () {
                     this.el.classList.add("logged-out");
                     if (_.isNil(this.loginpanel)) {
-                        this.loginpanel = new _converse.LoginPanel({'model': this});
+                        this.loginpanel = new _converse.LoginPanel({
+                            'model': new _converse.LoginPanelModel()
+                        });
                         const panes = this.el.querySelector('.controlbox-panes');
                         panes.innerHTML = '';
                         panes.appendChild(this.loginpanel.render().el);
@@ -413,31 +452,51 @@
                 }
             });
 
+            _converse.LoginPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'errors': [],
+                }
+            });
 
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
                 id: "converse-login-panel",
                 className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-login': 'authenticate'
+                    'submit form#converse-login': 'authenticate',
+                    'blur   input': 'validate'
                 },
 
                 initialize (cfg) {
-                    _converse.connfeedback.on('change', this.renderConnectionFeedback, this);
+                    this.model.on('change', this.render, this);
+                    this.listenTo(_converse.connfeedback, 'change', this.render);
                 },
 
                 render () {
-                    const html = tpl_login_panel({
-                        '__': __,
-                        'ANONYMOUS': _converse.ANONYMOUS,
-                        'EXTERNAL': _converse.EXTERNAL,
-                        'LOGIN': _converse.LOGIN,
-                        'PREBIND': _converse.PREBIND,
-                        'auto_login': _converse.auto_login,
-                        'authentication': _converse.authentication,
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
-                    });
+                    const connection_status = _converse.connfeedback.get('connection_status');
+                    let feedback_class, pretty_status;
+                    if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+                        pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+                        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+                    }
+                    const html = tpl_login_panel(
+                        _.extend(this.model.toJSON(), {
+                            '__': __,
+                            '_converse': _converse,
+                            'ANONYMOUS': _converse.ANONYMOUS,
+                            'EXTERNAL': _converse.EXTERNAL,
+                            'LOGIN': _converse.LOGIN,
+                            'PREBIND': _converse.PREBIND,
+                            'auto_login': _converse.auto_login,
+                            'authentication': _converse.authentication,
+                            'connection_status': connection_status,
+                            'conn_feedback_class': feedback_class,
+                            'conn_feedback_subject': pretty_status,
+                            'conn_feedback_message': _converse.connfeedback.get('message'),
+                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) &&
+                                                    __('Username') || __('user@domain'),
+                        })
+                    );
                     const form = this.el.querySelector('form');
                     if (_.isNull(form)) {
                         this.el.innerHTML = html;
@@ -445,75 +504,47 @@
                         const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
                         vdom.patch(form, patches);
                     }
-                    this.renderConnectionFeedback();
                     return this;
                 },
 
-                renderConnectionFeedback () {
-                    const feedback_html = tpl_login_feedback({
-                        'conn_feedback_class': _converse.connfeedback.get('klass'),
-                        'conn_feedback_subject': _converse.connfeedback.get('subject'),
-                        'conn_feedback_message': _converse.connfeedback.get('message'),
-                    });
-                    const feedback_el = this.el.querySelector('.conn-feedback');
-                    if (_.isNull(feedback_el)) {
-                        this.el.insertAdjacentHTML('afterbegin', feedback_html);
-                    } else {
-                        feedback_el.outerHTML = feedback_html;
-                    }
-                },
-
-                showSpinner (only_submit_button=false) {
+                validate () {
                     const form = this.el.querySelector('form');
-                    if (only_submit_button) {
-                        const button = form.querySelector('input[type=submit]');
-                        button.classList.add('hidden');
-                        button.insertAdjacentHTML('afterend', '<span class="spinner login-submit"/>');
-                    } else {
-                        form.innerHTML = tpl_spinner();
+                    const jid = form.querySelector('input[name=jid]').value;
+                    const password = _.get(form.querySelector('input[name=password]'), 'value');
+                    const errors = [];
+                    if (!jid || (
+                            !_converse.locked_domain &&
+                            !_converse.default_domain &&
+                            _.filter(jid.split('@')).length < 2)) {
+                        errors.push(errors, 'invalid_jid');
                     }
-                    return this;
+                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
+                        errors.push(errors, 'password_required');
+                    }
+                    this.model.set('errors', errors);
+                    return errors.length == 0;
                 },
 
                 authenticate (ev) {
                     /* Authenticate the user based on a form submission event.
                      */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
-                        this.showSpinner().connect(_converse.jid, null);
+                        this.connect(_converse.jid, null);
                         return;
                     }
-                    const $jid_input = $form.find('input[name=jid]');
-                    const $jid_error_msg = $form.find('.invalid-jid-msg');
-                    const $pw_input = $form.find('input[name=password]');
-                    const password = $pw_input.val();
-
-                    let jid = $jid_input.val(),
-                        errors = false;
-
-                    if (!jid || (
-                            !_converse.locked_domain &&
-                            !_converse.default_domain &&
-                            _.filter(jid.split('@')).length < 2)) {
-                        errors = true;
-                        $jid_input.addClass('error');
-                        $jid_error_msg.removeClass('hidden');
-                    } else {
-                        $jid_error_msg.addClass('hidden');
+                    if (!this.validate()) {
+                        return;
                     }
+                    let jid = ev.target.querySelector('input[name=jid]').value;
+                    const password = _.get(ev.target.querySelector('input[name=password]'), 'value');
 
-                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
-                        errors = true;
-                        $pw_input.addClass('error');
-                    }
-                    if (errors) { return; }
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.showSpinner(true).connect(jid, password);
+                    this.connect(jid, password);
                     return false;
                 },
 

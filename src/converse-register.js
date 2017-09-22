@@ -64,12 +64,15 @@
 
                 render: function (cfg) {
                     const { _converse } = this.__super__;
+                    const form = this.el.querySelector('form');
                     this.__super__.render.apply(this, arguments);
-                    if (_converse.allow_registration) {
-                        this.el.insertAdjacentHTML(
-                            'beforeend',
-                            tpl_register_link({'__': _converse.__})
-                        );
+                    if (_.isNull(form)) {
+                        if (_converse.allow_registration) {
+                            this.el.insertAdjacentHTML(
+                                'beforeend',
+                                tpl_register_link({'__': _converse.__})
+                            );
+                        }
                     }
                     return this;
                 }

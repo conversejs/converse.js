@@ -10,6 +10,8 @@
     define(["jquery.noconflict",
             "converse-core",
             "lodash.fp",
+            "virtual-dom",
+            "vdom-parser",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
             "tpl!converse_brand_heading",
@@ -32,6 +34,8 @@
             $,
             converse,
             fp,
+            vdom,
+            vdom_parser,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
             tpl_brand_heading,
@@ -423,7 +427,7 @@
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_login_panel({
+                    const html = tpl_login_panel({
                         '__': __,
                         'ANONYMOUS': _converse.ANONYMOUS,
                         'EXTERNAL': _converse.EXTERNAL,
@@ -433,9 +437,15 @@
                         'authentication': _converse.authentication,
                         'label_anon_login': __('Click here to log in anonymously'),
                         'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
-                    })
+                    });
+                    const form = this.el.querySelector('form');
+                    if (_.isNull(form)) {
+                        this.el.innerHTML = html;
+                    } else {
+                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
+                        vdom.patch(form, patches);
+                    }
                     this.renderConnectionFeedback();
-                    this.$el.find('input#jid').focus();
                     return this;
                 },
 
@@ -453,9 +463,15 @@
                     }
                 },
 
-                showSpinner () {
+                showSpinner (only_submit_button=false) {
                     const form = this.el.querySelector('form');
-                    form.innerHTML = tpl_spinner();
+                    if (only_submit_button) {
+                        const button = form.querySelector('input[type=submit]');
+                        button.classList.add('hidden');
+                        button.insertAdjacentHTML('afterend', '<span class="spinner login-submit"/>');
+                    } else {
+                        form.innerHTML = tpl_spinner();
+                    }
                     return this;
                 },
 
@@ -497,7 +513,7 @@
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.showSpinner().connect(jid, password);
+                    this.showSpinner(true).connect(jid, password);
                     return false;
                 },
 

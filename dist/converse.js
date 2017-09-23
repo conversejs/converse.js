@@ -48008,7 +48008,7 @@ return Backbone.BrowserStorage;
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    var PRETTY_CONNECTION_STATUS = {
+    _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -48018,7 +48018,8 @@ return Backbone.BrowserStorage;
         6: 'DISCONNECTED',
         7: 'DISCONNECTING',
         8: 'ATTACHED',
-        9: 'REDIRECT'
+        9: 'REDIRECT',
+        10: 'RECONNECTING'
     };
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
@@ -48089,6 +48090,7 @@ return Backbone.BrowserStorage;
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            Backbone.history.stop();
             delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();
@@ -48305,20 +48307,10 @@ return Backbone.BrowserStorage;
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (subject, klass, message) {
-            _.forEach(document.querySelectorAll('.conn-feedback'), function (el) {
-                el.classList.add('conn-feedback');
-                el.textContent = subject;
-                if (klass) {
-                    el.classList.add(klass);
-                } else {
-                    el.classList.remove('error');
-                }
-            });
-            _converse.emit('feedback', {
-                'klass': klass,
-                'message': message,
-                'subject': subject
+        this.setConnectionStatus = function (connection_status, message) {
+            _converse.connfeedback.set({
+                'connection_status': connection_status,
+                'message': message
             });
         };
 
@@ -48340,7 +48332,7 @@ return Backbone.BrowserStorage;
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(__("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.'));
+            _converse.setConnectionStatus(Strophe.Status.RECONNECTING, __('The connection has dropped, attempting to reconnect.'));
             _converse.connection.reconnecting = true;
             _converse._tearDown();
             _converse.logIn(null, true);
@@ -48359,6 +48351,8 @@ return Backbone.BrowserStorage;
              * Will either start a teardown process for converse.js or attempt
              * to reconnect.
              */
+            var reason = _converse.disconnection_reason;
+
             if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
                 if (_converse.credentials_url && _converse.auto_reconnect) {
                     /* In this case, we reconnect, because we might be receiving
@@ -48369,7 +48363,7 @@ return Backbone.BrowserStorage;
                 } else {
                     return _converse.disconnect();
                 }
-            } else if (_converse.disconnection_cause === _converse.LOGOUT || _converse.disconnection_reason === "host-unknown" || !_converse.auto_reconnect) {
+            } else if (_converse.disconnection_cause === _converse.LOGOUT || !_.isUndefined(reason) && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
                 return _converse.disconnect();
             }
             _converse.emit('will-reconnect');
@@ -48389,13 +48383,14 @@ return Backbone.BrowserStorage;
             }
         };
 
-        this.onConnectStatusChanged = function (status, condition) {
+        this.onConnectStatusChanged = function (status, message) {
             /* Callback method called by Strophe as the Strophe.Connection goes
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log("Status changed to: " + PRETTY_CONNECTION_STATUS[status]);
+            _converse.log("Status changed to: " + _converse.CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                _converse.setConnectionStatus(status);
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();
@@ -48412,23 +48407,32 @@ return Backbone.BrowserStorage;
                     _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(__('Connection error'), 'error', __('An error occurred while connecting to the chat server.'));
+                _converse.setConnectionStatus(status, __('An error occurred while connecting to the chat server.'));
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication Failed'), 'error');
-                _converse.setDisconnectionCause(status, condition, true);
+                if (!message) {
+                    message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                }
+                _converse.setConnectionStatus(status, message);
+                _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
-                _converse.giveFeedback(__('Connection failed'), 'error', __('An error occurred while connecting to the chat server: ' + condition));
-                _converse.setDisconnectionCause(status, condition);
+                var feedback = message;
+                if (message === "host-unknown" || message == "remote-connection-failed") {
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") + ("\"" + Strophe.getDomainFromJid(_converse.connection.jid) + "\"");
+                } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+                    feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                }
+                _converse.setConnectionStatus(status, feedback);
+                _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
             }
         };
 
@@ -48632,7 +48636,6 @@ return Backbone.BrowserStorage;
             _converse.roster.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
-            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
                 _converse.xmppstatus.sendPresence();
             } else {
@@ -49329,6 +49332,21 @@ return Backbone.BrowserStorage;
             }
         });
 
+        this.ConnectionFeedback = Backbone.Model.extend({
+
+            defaults: {
+                'connection_status': undefined,
+                'message': ''
+            },
+
+            initialize: function initialize() {
+                this.on('change', function () {
+                    _converse.emit('connfeedback', _converse.connfeedback);
+                });
+            }
+        });
+        this.connfeedback = new this.ConnectionFeedback();
+
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function initialize() {
                 var _this8 = this;
@@ -49500,12 +49518,13 @@ return Backbone.BrowserStorage;
             if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
                 return;
             }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
+
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
+            } else if (this.auto_login) {
+                if (this.credentials_url) {
                     this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
                 } else if (!this.jid) {
                     throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
@@ -49634,6 +49653,8 @@ return Backbone.BrowserStorage;
         _converse.setUpXMLLogging();
         _converse.logIn();
         _converse.registerGlobalEventHandlers();
+
+        Backbone.history.start();
 
         if (!_.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
             return _converse;
@@ -54698,6 +54719,2503 @@ define('lodash.fp',['lodash', 'lodash.converter', 'converse-core'], function (_,
     return fp;
 });
 
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define('virtual-dom',[],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.virtualDom=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var createElement = require("./vdom/create-element.js")
+
+module.exports = createElement
+
+},{"./vdom/create-element.js":15}],2:[function(require,module,exports){
+var diff = require("./vtree/diff.js")
+
+module.exports = diff
+
+},{"./vtree/diff.js":35}],3:[function(require,module,exports){
+var h = require("./virtual-hyperscript/index.js")
+
+module.exports = h
+
+},{"./virtual-hyperscript/index.js":22}],4:[function(require,module,exports){
+var diff = require("./diff.js")
+var patch = require("./patch.js")
+var h = require("./h.js")
+var create = require("./create-element.js")
+var VNode = require('./vnode/vnode.js')
+var VText = require('./vnode/vtext.js')
+
+module.exports = {
+    diff: diff,
+    patch: patch,
+    h: h,
+    create: create,
+    VNode: VNode,
+    VText: VText
+}
+
+},{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":13,"./vnode/vnode.js":31,"./vnode/vtext.js":33}],5:[function(require,module,exports){
+/*!
+ * Cross-Browser Split 1.1.1
+ * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
+ * Available under the MIT License
+ * ECMAScript compliant, uniform cross-browser split method
+ */
+
+/**
+ * Splits a string into an array of strings using a regex or string separator. Matches of the
+ * separator are not included in the result array. However, if `separator` is a regex that contains
+ * capturing groups, backreferences are spliced into the result each time `separator` is matched.
+ * Fixes browser bugs compared to the native `String.prototype.split` and can be used reliably
+ * cross-browser.
+ * @param {String} str String to split.
+ * @param {RegExp|String} separator Regex or string to use for separating the string.
+ * @param {Number} [limit] Maximum number of items to include in the result array.
+ * @returns {Array} Array of substrings.
+ * @example
+ *
+ * // Basic use
+ * split('a b c d', ' ');
+ * // -> ['a', 'b', 'c', 'd']
+ *
+ * // With limit
+ * split('a b c d', ' ', 2);
+ * // -> ['a', 'b']
+ *
+ * // Backreferences in result array
+ * split('..word1 word2..', /([a-z]+)(\d+)/i);
+ * // -> ['..', 'word', '1', ' ', 'word', '2', '..']
+ */
+module.exports = (function split(undef) {
+
+  var nativeSplit = String.prototype.split,
+    compliantExecNpcg = /()??/.exec("")[1] === undef,
+    // NPCG: nonparticipating capturing group
+    self;
+
+  self = function(str, separator, limit) {
+    // If `separator` is not a regex, use `nativeSplit`
+    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
+      return nativeSplit.call(str, separator, limit);
+    }
+    var output = [],
+      flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.extended ? "x" : "") + // Proposed for ES6
+      (separator.sticky ? "y" : ""),
+      // Firefox 3+
+      lastLastIndex = 0,
+      // Make `global` and avoid `lastIndex` issues by working with a copy
+      separator = new RegExp(separator.source, flags + "g"),
+      separator2, match, lastIndex, lastLength;
+    str += ""; // Type-convert
+    if (!compliantExecNpcg) {
+      // Doesn't need flags gy, but they don't hurt
+      separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
+    }
+    /* Values for `limit`, per the spec:
+     * If undefined: 4294967295 // Math.pow(2, 32) - 1
+     * If 0, Infinity, or NaN: 0
+     * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
+     * If negative number: 4294967296 - Math.floor(Math.abs(limit))
+     * If other: Type-convert, then use the above rules
+     */
+    limit = limit === undef ? -1 >>> 0 : // Math.pow(2, 32) - 1
+    limit >>> 0; // ToUint32(limit)
+    while (match = separator.exec(str)) {
+      // `separator.lastIndex` is not reliable cross-browser
+      lastIndex = match.index + match[0].length;
+      if (lastIndex > lastLastIndex) {
+        output.push(str.slice(lastLastIndex, match.index));
+        // Fix browsers whose `exec` methods don't consistently return `undefined` for
+        // nonparticipating capturing groups
+        if (!compliantExecNpcg && match.length > 1) {
+          match[0].replace(separator2, function() {
+            for (var i = 1; i < arguments.length - 2; i++) {
+              if (arguments[i] === undef) {
+                match[i] = undef;
+              }
+            }
+          });
+        }
+        if (match.length > 1 && match.index < str.length) {
+          Array.prototype.push.apply(output, match.slice(1));
+        }
+        lastLength = match[0].length;
+        lastLastIndex = lastIndex;
+        if (output.length >= limit) {
+          break;
+        }
+      }
+      if (separator.lastIndex === match.index) {
+        separator.lastIndex++; // Avoid an infinite loop
+      }
+    }
+    if (lastLastIndex === str.length) {
+      if (lastLength || !separator.test("")) {
+        output.push("");
+      }
+    } else {
+      output.push(str.slice(lastLastIndex));
+    }
+    return output.length > limit ? output.slice(0, limit) : output;
+  };
+
+  return self;
+})();
+
+},{}],6:[function(require,module,exports){
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+var OneVersionConstraint = require('individual/one-version');
+
+var MY_VERSION = '7';
+OneVersionConstraint('ev-store', MY_VERSION);
+
+var hashKey = '__EV_STORE_KEY@' + MY_VERSION;
+
+module.exports = EvStore;
+
+function EvStore(elem) {
+    var hash = elem[hashKey];
+
+    if (!hash) {
+        hash = elem[hashKey] = {};
+    }
+
+    return hash;
+}
+
+},{"individual/one-version":9}],8:[function(require,module,exports){
+(function (global){
+'use strict';
+
+/*global window, global*/
+
+var root = typeof window !== 'undefined' ?
+    window : typeof global !== 'undefined' ?
+    global : {};
+
+module.exports = Individual;
+
+function Individual(key, value) {
+    if (key in root) {
+        return root[key];
+    }
+
+    root[key] = value;
+
+    return value;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],9:[function(require,module,exports){
+'use strict';
+
+var Individual = require('./index.js');
+
+module.exports = OneVersion;
+
+function OneVersion(moduleName, version, defaultValue) {
+    var key = '__INDIVIDUAL_ONE_VERSION_' + moduleName;
+    var enforceKey = key + '_ENFORCE_SINGLETON';
+
+    var versionValue = Individual(enforceKey, version);
+
+    if (versionValue !== version) {
+        throw new Error('Can only have one copy of ' +
+            moduleName + '.\n' +
+            'You already have version ' + versionValue +
+            ' installed.\n' +
+            'This means you cannot install version ' + version);
+    }
+
+    return Individual(key, defaultValue);
+}
+
+},{"./index.js":8}],10:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+if (typeof document !== 'undefined') {
+    module.exports = document;
+} else {
+    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+
+    module.exports = doccy;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":6}],11:[function(require,module,exports){
+"use strict";
+
+module.exports = function isObject(x) {
+	return typeof x === "object" && x !== null;
+};
+
+},{}],12:[function(require,module,exports){
+var nativeIsArray = Array.isArray
+var toString = Object.prototype.toString
+
+module.exports = nativeIsArray || isArray
+
+function isArray(obj) {
+    return toString.call(obj) === "[object Array]"
+}
+
+},{}],13:[function(require,module,exports){
+var patch = require("./vdom/patch.js")
+
+module.exports = patch
+
+},{"./vdom/patch.js":18}],14:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook.js")
+
+module.exports = applyProperties
+
+function applyProperties(node, props, previous) {
+    for (var propName in props) {
+        var propValue = props[propName]
+
+        if (propValue === undefined) {
+            removeProperty(node, propName, propValue, previous);
+        } else if (isHook(propValue)) {
+            removeProperty(node, propName, propValue, previous)
+            if (propValue.hook) {
+                propValue.hook(node,
+                    propName,
+                    previous ? previous[propName] : undefined)
+            }
+        } else {
+            if (isObject(propValue)) {
+                patchObject(node, props, previous, propName, propValue);
+            } else {
+                node[propName] = propValue
+            }
+        }
+    }
+}
+
+function removeProperty(node, propName, propValue, previous) {
+    if (previous) {
+        var previousValue = previous[propName]
+
+        if (!isHook(previousValue)) {
+            if (propName === "attributes") {
+                for (var attrName in previousValue) {
+                    node.removeAttribute(attrName)
+                }
+            } else if (propName === "style") {
+                for (var i in previousValue) {
+                    node.style[i] = ""
+                }
+            } else if (typeof previousValue === "string") {
+                node[propName] = ""
+            } else {
+                node[propName] = null
+            }
+        } else if (previousValue.unhook) {
+            previousValue.unhook(node, propName, propValue)
+        }
+    }
+}
+
+function patchObject(node, props, previous, propName, propValue) {
+    var previousValue = previous ? previous[propName] : undefined
+
+    // Set attributes
+    if (propName === "attributes") {
+        for (var attrName in propValue) {
+            var attrValue = propValue[attrName]
+
+            if (attrValue === undefined) {
+                node.removeAttribute(attrName)
+            } else {
+                node.setAttribute(attrName, attrValue)
+            }
+        }
+
+        return
+    }
+
+    if(previousValue && isObject(previousValue) &&
+        getPrototype(previousValue) !== getPrototype(propValue)) {
+        node[propName] = propValue
+        return
+    }
+
+    if (!isObject(node[propName])) {
+        node[propName] = {}
+    }
+
+    var replacer = propName === "style" ? "" : undefined
+
+    for (var k in propValue) {
+        var value = propValue[k]
+        node[propName][k] = (value === undefined) ? replacer : value
+    }
+}
+
+function getPrototype(value) {
+    if (Object.getPrototypeOf) {
+        return Object.getPrototypeOf(value)
+    } else if (value.__proto__) {
+        return value.__proto__
+    } else if (value.constructor) {
+        return value.constructor.prototype
+    }
+}
+
+},{"../vnode/is-vhook.js":26,"is-object":11}],15:[function(require,module,exports){
+var document = require("global/document")
+
+var applyProperties = require("./apply-properties")
+
+var isVNode = require("../vnode/is-vnode.js")
+var isVText = require("../vnode/is-vtext.js")
+var isWidget = require("../vnode/is-widget.js")
+var handleThunk = require("../vnode/handle-thunk.js")
+
+module.exports = createElement
+
+function createElement(vnode, opts) {
+    var doc = opts ? opts.document || document : document
+    var warn = opts ? opts.warn : null
+
+    vnode = handleThunk(vnode).a
+
+    if (isWidget(vnode)) {
+        return vnode.init()
+    } else if (isVText(vnode)) {
+        return doc.createTextNode(vnode.text)
+    } else if (!isVNode(vnode)) {
+        if (warn) {
+            warn("Item is not a valid virtual dom node", vnode)
+        }
+        return null
+    }
+
+    var node = (vnode.namespace === null) ?
+        doc.createElement(vnode.tagName) :
+        doc.createElementNS(vnode.namespace, vnode.tagName)
+
+    var props = vnode.properties
+    applyProperties(node, props)
+
+    var children = vnode.children
+
+    for (var i = 0; i < children.length; i++) {
+        var childNode = createElement(children[i], opts)
+        if (childNode) {
+            node.appendChild(childNode)
+        }
+    }
+
+    return node
+}
+
+},{"../vnode/handle-thunk.js":24,"../vnode/is-vnode.js":27,"../vnode/is-vtext.js":28,"../vnode/is-widget.js":29,"./apply-properties":14,"global/document":10}],16:[function(require,module,exports){
+// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
+// We don't want to read all of the DOM nodes in the tree so we use
+// the in-order tree indexing to eliminate recursion down certain branches.
+// We only recurse into a DOM node if we know that it contains a child of
+// interest.
+
+var noChild = {}
+
+module.exports = domIndex
+
+function domIndex(rootNode, tree, indices, nodes) {
+    if (!indices || indices.length === 0) {
+        return {}
+    } else {
+        indices.sort(ascending)
+        return recurse(rootNode, tree, indices, nodes, 0)
+    }
+}
+
+function recurse(rootNode, tree, indices, nodes, rootIndex) {
+    nodes = nodes || {}
+
+
+    if (rootNode) {
+        if (indexInRange(indices, rootIndex, rootIndex)) {
+            nodes[rootIndex] = rootNode
+        }
+
+        var vChildren = tree.children
+
+        if (vChildren) {
+
+            var childNodes = rootNode.childNodes
+
+            for (var i = 0; i < tree.children.length; i++) {
+                rootIndex += 1
+
+                var vChild = vChildren[i] || noChild
+                var nextIndex = rootIndex + (vChild.count || 0)
+
+                // skip recursion down the tree if there are no nodes down here
+                if (indexInRange(indices, rootIndex, nextIndex)) {
+                    recurse(childNodes[i], vChild, indices, nodes, rootIndex)
+                }
+
+                rootIndex = nextIndex
+            }
+        }
+    }
+
+    return nodes
+}
+
+// Binary search for an index in the interval [left, right]
+function indexInRange(indices, left, right) {
+    if (indices.length === 0) {
+        return false
+    }
+
+    var minIndex = 0
+    var maxIndex = indices.length - 1
+    var currentIndex
+    var currentItem
+
+    while (minIndex <= maxIndex) {
+        currentIndex = ((maxIndex + minIndex) / 2) >> 0
+        currentItem = indices[currentIndex]
+
+        if (minIndex === maxIndex) {
+            return currentItem >= left && currentItem <= right
+        } else if (currentItem < left) {
+            minIndex = currentIndex + 1
+        } else  if (currentItem > right) {
+            maxIndex = currentIndex - 1
+        } else {
+            return true
+        }
+    }
+
+    return false;
+}
+
+function ascending(a, b) {
+    return a > b ? 1 : -1
+}
+
+},{}],17:[function(require,module,exports){
+var applyProperties = require("./apply-properties")
+
+var isWidget = require("../vnode/is-widget.js")
+var VPatch = require("../vnode/vpatch.js")
+
+var updateWidget = require("./update-widget")
+
+module.exports = applyPatch
+
+function applyPatch(vpatch, domNode, renderOptions) {
+    var type = vpatch.type
+    var vNode = vpatch.vNode
+    var patch = vpatch.patch
+
+    switch (type) {
+        case VPatch.REMOVE:
+            return removeNode(domNode, vNode)
+        case VPatch.INSERT:
+            return insertNode(domNode, patch, renderOptions)
+        case VPatch.VTEXT:
+            return stringPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.WIDGET:
+            return widgetPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.VNODE:
+            return vNodePatch(domNode, vNode, patch, renderOptions)
+        case VPatch.ORDER:
+            reorderChildren(domNode, patch)
+            return domNode
+        case VPatch.PROPS:
+            applyProperties(domNode, patch, vNode.properties)
+            return domNode
+        case VPatch.THUNK:
+            return replaceRoot(domNode,
+                renderOptions.patch(domNode, patch, renderOptions))
+        default:
+            return domNode
+    }
+}
+
+function removeNode(domNode, vNode) {
+    var parentNode = domNode.parentNode
+
+    if (parentNode) {
+        parentNode.removeChild(domNode)
+    }
+
+    destroyWidget(domNode, vNode);
+
+    return null
+}
+
+function insertNode(parentNode, vNode, renderOptions) {
+    var newNode = renderOptions.render(vNode, renderOptions)
+
+    if (parentNode) {
+        parentNode.appendChild(newNode)
+    }
+
+    return parentNode
+}
+
+function stringPatch(domNode, leftVNode, vText, renderOptions) {
+    var newNode
+
+    if (domNode.nodeType === 3) {
+        domNode.replaceData(0, domNode.length, vText.text)
+        newNode = domNode
+    } else {
+        var parentNode = domNode.parentNode
+        newNode = renderOptions.render(vText, renderOptions)
+
+        if (parentNode && newNode !== domNode) {
+            parentNode.replaceChild(newNode, domNode)
+        }
+    }
+
+    return newNode
+}
+
+function widgetPatch(domNode, leftVNode, widget, renderOptions) {
+    var updating = updateWidget(leftVNode, widget)
+    var newNode
+
+    if (updating) {
+        newNode = widget.update(leftVNode, domNode) || domNode
+    } else {
+        newNode = renderOptions.render(widget, renderOptions)
+    }
+
+    var parentNode = domNode.parentNode
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    if (!updating) {
+        destroyWidget(domNode, leftVNode)
+    }
+
+    return newNode
+}
+
+function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
+    var parentNode = domNode.parentNode
+    var newNode = renderOptions.render(vNode, renderOptions)
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    return newNode
+}
+
+function destroyWidget(domNode, w) {
+    if (typeof w.destroy === "function" && isWidget(w)) {
+        w.destroy(domNode)
+    }
+}
+
+function reorderChildren(domNode, moves) {
+    var childNodes = domNode.childNodes
+    var keyMap = {}
+    var node
+    var remove
+    var insert
+
+    for (var i = 0; i < moves.removes.length; i++) {
+        remove = moves.removes[i]
+        node = childNodes[remove.from]
+        if (remove.key) {
+            keyMap[remove.key] = node
+        }
+        domNode.removeChild(node)
+    }
+
+    var length = childNodes.length
+    for (var j = 0; j < moves.inserts.length; j++) {
+        insert = moves.inserts[j]
+        node = keyMap[insert.key]
+        // this is the weirdest bug i've ever seen in webkit
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+    }
+}
+
+function replaceRoot(oldRoot, newRoot) {
+    if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
+        oldRoot.parentNode.replaceChild(newRoot, oldRoot)
+    }
+
+    return newRoot;
+}
+
+},{"../vnode/is-widget.js":29,"../vnode/vpatch.js":32,"./apply-properties":14,"./update-widget":19}],18:[function(require,module,exports){
+var document = require("global/document")
+var isArray = require("x-is-array")
+
+var render = require("./create-element")
+var domIndex = require("./dom-index")
+var patchOp = require("./patch-op")
+module.exports = patch
+
+function patch(rootNode, patches, renderOptions) {
+    renderOptions = renderOptions || {}
+    renderOptions.patch = renderOptions.patch && renderOptions.patch !== patch
+        ? renderOptions.patch
+        : patchRecursive
+    renderOptions.render = renderOptions.render || render
+
+    return renderOptions.patch(rootNode, patches, renderOptions)
+}
+
+function patchRecursive(rootNode, patches, renderOptions) {
+    var indices = patchIndices(patches)
+
+    if (indices.length === 0) {
+        return rootNode
+    }
+
+    var index = domIndex(rootNode, patches.a, indices)
+    var ownerDocument = rootNode.ownerDocument
+
+    if (!renderOptions.document && ownerDocument !== document) {
+        renderOptions.document = ownerDocument
+    }
+
+    for (var i = 0; i < indices.length; i++) {
+        var nodeIndex = indices[i]
+        rootNode = applyPatch(rootNode,
+            index[nodeIndex],
+            patches[nodeIndex],
+            renderOptions)
+    }
+
+    return rootNode
+}
+
+function applyPatch(rootNode, domNode, patchList, renderOptions) {
+    if (!domNode) {
+        return rootNode
+    }
+
+    var newNode
+
+    if (isArray(patchList)) {
+        for (var i = 0; i < patchList.length; i++) {
+            newNode = patchOp(patchList[i], domNode, renderOptions)
+
+            if (domNode === rootNode) {
+                rootNode = newNode
+            }
+        }
+    } else {
+        newNode = patchOp(patchList, domNode, renderOptions)
+
+        if (domNode === rootNode) {
+            rootNode = newNode
+        }
+    }
+
+    return rootNode
+}
+
+function patchIndices(patches) {
+    var indices = []
+
+    for (var key in patches) {
+        if (key !== "a") {
+            indices.push(Number(key))
+        }
+    }
+
+    return indices
+}
+
+},{"./create-element":15,"./dom-index":16,"./patch-op":17,"global/document":10,"x-is-array":12}],19:[function(require,module,exports){
+var isWidget = require("../vnode/is-widget.js")
+
+module.exports = updateWidget
+
+function updateWidget(a, b) {
+    if (isWidget(a) && isWidget(b)) {
+        if ("name" in a && "name" in b) {
+            return a.id === b.id
+        } else {
+            return a.init === b.init
+        }
+    }
+
+    return false
+}
+
+},{"../vnode/is-widget.js":29}],20:[function(require,module,exports){
+'use strict';
+
+var EvStore = require('ev-store');
+
+module.exports = EvHook;
+
+function EvHook(value) {
+    if (!(this instanceof EvHook)) {
+        return new EvHook(value);
+    }
+
+    this.value = value;
+}
+
+EvHook.prototype.hook = function (node, propertyName) {
+    var es = EvStore(node);
+    var propName = propertyName.substr(3);
+
+    es[propName] = this.value;
+};
+
+EvHook.prototype.unhook = function(node, propertyName) {
+    var es = EvStore(node);
+    var propName = propertyName.substr(3);
+
+    es[propName] = undefined;
+};
+
+},{"ev-store":7}],21:[function(require,module,exports){
+'use strict';
+
+module.exports = SoftSetHook;
+
+function SoftSetHook(value) {
+    if (!(this instanceof SoftSetHook)) {
+        return new SoftSetHook(value);
+    }
+
+    this.value = value;
+}
+
+SoftSetHook.prototype.hook = function (node, propertyName) {
+    if (node[propertyName] !== this.value) {
+        node[propertyName] = this.value;
+    }
+};
+
+},{}],22:[function(require,module,exports){
+'use strict';
+
+var isArray = require('x-is-array');
+
+var VNode = require('../vnode/vnode.js');
+var VText = require('../vnode/vtext.js');
+var isVNode = require('../vnode/is-vnode');
+var isVText = require('../vnode/is-vtext');
+var isWidget = require('../vnode/is-widget');
+var isHook = require('../vnode/is-vhook');
+var isVThunk = require('../vnode/is-thunk');
+
+var parseTag = require('./parse-tag.js');
+var softSetHook = require('./hooks/soft-set-hook.js');
+var evHook = require('./hooks/ev-hook.js');
+
+module.exports = h;
+
+function h(tagName, properties, children) {
+    var childNodes = [];
+    var tag, props, key, namespace;
+
+    if (!children && isChildren(properties)) {
+        children = properties;
+        props = {};
+    }
+
+    props = props || properties || {};
+    tag = parseTag(tagName, props);
+
+    // support keys
+    if (props.hasOwnProperty('key')) {
+        key = props.key;
+        props.key = undefined;
+    }
+
+    // support namespace
+    if (props.hasOwnProperty('namespace')) {
+        namespace = props.namespace;
+        props.namespace = undefined;
+    }
+
+    // fix cursor bug
+    if (tag === 'INPUT' &&
+        !namespace &&
+        props.hasOwnProperty('value') &&
+        props.value !== undefined &&
+        !isHook(props.value)
+    ) {
+        props.value = softSetHook(props.value);
+    }
+
+    transformProperties(props);
+
+    if (children !== undefined && children !== null) {
+        addChild(children, childNodes, tag, props);
+    }
+
+
+    return new VNode(tag, props, childNodes, key, namespace);
+}
+
+function addChild(c, childNodes, tag, props) {
+    if (typeof c === 'string') {
+        childNodes.push(new VText(c));
+    } else if (typeof c === 'number') {
+        childNodes.push(new VText(String(c)));
+    } else if (isChild(c)) {
+        childNodes.push(c);
+    } else if (isArray(c)) {
+        for (var i = 0; i < c.length; i++) {
+            addChild(c[i], childNodes, tag, props);
+        }
+    } else if (c === null || c === undefined) {
+        return;
+    } else {
+        throw UnexpectedVirtualElement({
+            foreignObject: c,
+            parentVnode: {
+                tagName: tag,
+                properties: props
+            }
+        });
+    }
+}
+
+function transformProperties(props) {
+    for (var propName in props) {
+        if (props.hasOwnProperty(propName)) {
+            var value = props[propName];
+
+            if (isHook(value)) {
+                continue;
+            }
+
+            if (propName.substr(0, 3) === 'ev-') {
+                // add ev-foo support
+                props[propName] = evHook(value);
+            }
+        }
+    }
+}
+
+function isChild(x) {
+    return isVNode(x) || isVText(x) || isWidget(x) || isVThunk(x);
+}
+
+function isChildren(x) {
+    return typeof x === 'string' || isArray(x) || isChild(x);
+}
+
+function UnexpectedVirtualElement(data) {
+    var err = new Error();
+
+    err.type = 'virtual-hyperscript.unexpected.virtual-element';
+    err.message = 'Unexpected virtual child passed to h().\n' +
+        'Expected a VNode / Vthunk / VWidget / string but:\n' +
+        'got:\n' +
+        errorString(data.foreignObject) +
+        '.\n' +
+        'The parent vnode is:\n' +
+        errorString(data.parentVnode)
+        '\n' +
+        'Suggested fix: change your `h(..., [ ... ])` callsite.';
+    err.foreignObject = data.foreignObject;
+    err.parentVnode = data.parentVnode;
+
+    return err;
+}
+
+function errorString(obj) {
+    try {
+        return JSON.stringify(obj, null, '    ');
+    } catch (e) {
+        return String(obj);
+    }
+}
+
+},{"../vnode/is-thunk":25,"../vnode/is-vhook":26,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vnode.js":31,"../vnode/vtext.js":33,"./hooks/ev-hook.js":20,"./hooks/soft-set-hook.js":21,"./parse-tag.js":23,"x-is-array":12}],23:[function(require,module,exports){
+'use strict';
+
+var split = require('browser-split');
+
+var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
+var notClassId = /^\.|#/;
+
+module.exports = parseTag;
+
+function parseTag(tag, props) {
+    if (!tag) {
+        return 'DIV';
+    }
+
+    var noId = !(props.hasOwnProperty('id'));
+
+    var tagParts = split(tag, classIdSplit);
+    var tagName = null;
+
+    if (notClassId.test(tagParts[1])) {
+        tagName = 'DIV';
+    }
+
+    var classes, part, type, i;
+
+    for (i = 0; i < tagParts.length; i++) {
+        part = tagParts[i];
+
+        if (!part) {
+            continue;
+        }
+
+        type = part.charAt(0);
+
+        if (!tagName) {
+            tagName = part;
+        } else if (type === '.') {
+            classes = classes || [];
+            classes.push(part.substring(1, part.length));
+        } else if (type === '#' && noId) {
+            props.id = part.substring(1, part.length);
+        }
+    }
+
+    if (classes) {
+        if (props.className) {
+            classes.push(props.className);
+        }
+
+        props.className = classes.join(' ');
+    }
+
+    return props.namespace ? tagName : tagName.toUpperCase();
+}
+
+},{"browser-split":5}],24:[function(require,module,exports){
+var isVNode = require("./is-vnode")
+var isVText = require("./is-vtext")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+
+module.exports = handleThunk
+
+function handleThunk(a, b) {
+    var renderedA = a
+    var renderedB = b
+
+    if (isThunk(b)) {
+        renderedB = renderThunk(b, a)
+    }
+
+    if (isThunk(a)) {
+        renderedA = renderThunk(a, null)
+    }
+
+    return {
+        a: renderedA,
+        b: renderedB
+    }
+}
+
+function renderThunk(thunk, previous) {
+    var renderedThunk = thunk.vnode
+
+    if (!renderedThunk) {
+        renderedThunk = thunk.vnode = thunk.render(previous)
+    }
+
+    if (!(isVNode(renderedThunk) ||
+            isVText(renderedThunk) ||
+            isWidget(renderedThunk))) {
+        throw new Error("thunk did not return a valid node");
+    }
+
+    return renderedThunk
+}
+
+},{"./is-thunk":25,"./is-vnode":27,"./is-vtext":28,"./is-widget":29}],25:[function(require,module,exports){
+module.exports = isThunk
+
+function isThunk(t) {
+    return t && t.type === "Thunk"
+}
+
+},{}],26:[function(require,module,exports){
+module.exports = isHook
+
+function isHook(hook) {
+    return hook &&
+      (typeof hook.hook === "function" && !hook.hasOwnProperty("hook") ||
+       typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
+}
+
+},{}],27:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualNode
+
+function isVirtualNode(x) {
+    return x && x.type === "VirtualNode" && x.version === version
+}
+
+},{"./version":30}],28:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualText
+
+function isVirtualText(x) {
+    return x && x.type === "VirtualText" && x.version === version
+}
+
+},{"./version":30}],29:[function(require,module,exports){
+module.exports = isWidget
+
+function isWidget(w) {
+    return w && w.type === "Widget"
+}
+
+},{}],30:[function(require,module,exports){
+module.exports = "2"
+
+},{}],31:[function(require,module,exports){
+var version = require("./version")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+var isVHook = require("./is-vhook")
+
+module.exports = VirtualNode
+
+var noProperties = {}
+var noChildren = []
+
+function VirtualNode(tagName, properties, children, key, namespace) {
+    this.tagName = tagName
+    this.properties = properties || noProperties
+    this.children = children || noChildren
+    this.key = key != null ? String(key) : undefined
+    this.namespace = (typeof namespace === "string") ? namespace : null
+
+    var count = (children && children.length) || 0
+    var descendants = 0
+    var hasWidgets = false
+    var hasThunks = false
+    var descendantHooks = false
+    var hooks
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var property = properties[propName]
+            if (isVHook(property) && property.unhook) {
+                if (!hooks) {
+                    hooks = {}
+                }
+
+                hooks[propName] = property
+            }
+        }
+    }
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isVNode(child)) {
+            descendants += child.count || 0
+
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
+            }
+
+            if (!hasThunks && child.hasThunks) {
+                hasThunks = true
+            }
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
+        } else if (!hasThunks && isThunk(child)) {
+            hasThunks = true;
+        }
+    }
+
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hasThunks = hasThunks
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
+}
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
+
+},{"./is-thunk":25,"./is-vhook":26,"./is-vnode":27,"./is-widget":29,"./version":30}],32:[function(require,module,exports){
+var version = require("./version")
+
+VirtualPatch.NONE = 0
+VirtualPatch.VTEXT = 1
+VirtualPatch.VNODE = 2
+VirtualPatch.WIDGET = 3
+VirtualPatch.PROPS = 4
+VirtualPatch.ORDER = 5
+VirtualPatch.INSERT = 6
+VirtualPatch.REMOVE = 7
+VirtualPatch.THUNK = 8
+
+module.exports = VirtualPatch
+
+function VirtualPatch(type, vNode, patch) {
+    this.type = Number(type)
+    this.vNode = vNode
+    this.patch = patch
+}
+
+VirtualPatch.prototype.version = version
+VirtualPatch.prototype.type = "VirtualPatch"
+
+},{"./version":30}],33:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = VirtualText
+
+function VirtualText(text) {
+    this.text = String(text)
+}
+
+VirtualText.prototype.version = version
+VirtualText.prototype.type = "VirtualText"
+
+},{"./version":30}],34:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook")
+
+module.exports = diffProps
+
+function diffProps(a, b) {
+    var diff
+
+    for (var aKey in a) {
+        if (!(aKey in b)) {
+            diff = diff || {}
+            diff[aKey] = undefined
+        }
+
+        var aValue = a[aKey]
+        var bValue = b[aKey]
+
+        if (aValue === bValue) {
+            continue
+        } else if (isObject(aValue) && isObject(bValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            } else if (isHook(bValue)) {
+                 diff = diff || {}
+                 diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(aValue, bValue)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
+            }
+        } else {
+            diff = diff || {}
+            diff[aKey] = bValue
+        }
+    }
+
+    for (var bKey in b) {
+        if (!(bKey in a)) {
+            diff = diff || {}
+            diff[bKey] = b[bKey]
+        }
+    }
+
+    return diff
+}
+
+function getPrototype(value) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(value)
+  } else if (value.__proto__) {
+    return value.__proto__
+  } else if (value.constructor) {
+    return value.constructor.prototype
+  }
+}
+
+},{"../vnode/is-vhook":26,"is-object":11}],35:[function(require,module,exports){
+var isArray = require("x-is-array")
+
+var VPatch = require("../vnode/vpatch")
+var isVNode = require("../vnode/is-vnode")
+var isVText = require("../vnode/is-vtext")
+var isWidget = require("../vnode/is-widget")
+var isThunk = require("../vnode/is-thunk")
+var handleThunk = require("../vnode/handle-thunk")
+
+var diffProps = require("./diff-props")
+
+module.exports = diff
+
+function diff(a, b) {
+    var patch = { a: a }
+    walk(a, b, patch, 0)
+    return patch
+}
+
+function walk(a, b, patch, index) {
+    if (a === b) {
+        return
+    }
+
+    var apply = patch[index]
+    var applyClear = false
+
+    if (isThunk(a) || isThunk(b)) {
+        thunks(a, b, patch, index)
+    } else if (b == null) {
+
+        // If a is a widget we will add a remove patch for it
+        // Otherwise any child widgets/hooks must be destroyed.
+        // This prevents adding two remove patches for a widget.
+        if (!isWidget(a)) {
+            clearState(a, patch, index)
+            apply = patch[index]
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
+    } else if (isVNode(b)) {
+        if (isVNode(a)) {
+            if (a.tagName === b.tagName &&
+                a.namespace === b.namespace &&
+                a.key === b.key) {
+                var propsPatch = diffProps(a.properties, b.properties)
+                if (propsPatch) {
+                    apply = appendPatch(apply,
+                        new VPatch(VPatch.PROPS, a, propsPatch))
+                }
+                apply = diffChildren(a, b, patch, apply, index)
+            } else {
+                apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+                applyClear = true
+            }
+        } else {
+            apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+            applyClear = true
+        }
+    } else if (isVText(b)) {
+        if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            applyClear = true
+        } else if (a.text !== b.text) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+        }
+    } else if (isWidget(b)) {
+        if (!isWidget(a)) {
+            applyClear = true
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
+    }
+
+    if (apply) {
+        patch[index] = apply
+    }
+
+    if (applyClear) {
+        clearState(a, patch, index)
+    }
+}
+
+function diffChildren(a, b, patch, apply, index) {
+    var aChildren = a.children
+    var orderedSet = reorder(aChildren, b.children)
+    var bChildren = orderedSet.children
+
+    var aLen = aChildren.length
+    var bLen = bChildren.length
+    var len = aLen > bLen ? aLen : bLen
+
+    for (var i = 0; i < len; i++) {
+        var leftNode = aChildren[i]
+        var rightNode = bChildren[i]
+        index += 1
+
+        if (!leftNode) {
+            if (rightNode) {
+                // Excess nodes in b need to be added
+                apply = appendPatch(apply,
+                    new VPatch(VPatch.INSERT, null, rightNode))
+            }
+        } else {
+            walk(leftNode, rightNode, patch, index)
+        }
+
+        if (isVNode(leftNode) && leftNode.count) {
+            index += leftNode.count
+        }
+    }
+
+    if (orderedSet.moves) {
+        // Reorder nodes last
+        apply = appendPatch(apply, new VPatch(
+            VPatch.ORDER,
+            a,
+            orderedSet.moves
+        ))
+    }
+
+    return apply
+}
+
+function clearState(vNode, patch, index) {
+    // TODO: Make this a single walk, not two
+    unhook(vNode, patch, index)
+    destroyWidgets(vNode, patch, index)
+}
+
+// Patch records for all destroyed widgets must be added because we need
+// a DOM node reference for the destroy function
+function destroyWidgets(vNode, patch, index) {
+    if (isWidget(vNode)) {
+        if (typeof vNode.destroy === "function") {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(VPatch.REMOVE, vNode, null)
+            )
+        }
+    } else if (isVNode(vNode) && (vNode.hasWidgets || vNode.hasThunks)) {
+        var children = vNode.children
+        var len = children.length
+        for (var i = 0; i < len; i++) {
+            var child = children[i]
+            index += 1
+
+            destroyWidgets(child, patch, index)
+
+            if (isVNode(child) && child.count) {
+                index += child.count
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+// Create a sub-patch for thunks
+function thunks(a, b, patch, index) {
+    var nodes = handleThunk(a, b)
+    var thunkPatch = diff(nodes.a, nodes.b)
+    if (hasPatches(thunkPatch)) {
+        patch[index] = new VPatch(VPatch.THUNK, null, thunkPatch)
+    }
+}
+
+function hasPatches(patch) {
+    for (var index in patch) {
+        if (index !== "a") {
+            return true
+        }
+    }
+
+    return false
+}
+
+// Execute hooks when two nodes are identical
+function unhook(vNode, patch, index) {
+    if (isVNode(vNode)) {
+        if (vNode.hooks) {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(
+                    VPatch.PROPS,
+                    vNode,
+                    undefinedKeys(vNode.hooks)
+                )
+            )
+        }
+
+        if (vNode.descendantHooks || vNode.hasThunks) {
+            var children = vNode.children
+            var len = children.length
+            for (var i = 0; i < len; i++) {
+                var child = children[i]
+                index += 1
+
+                unhook(child, patch, index)
+
+                if (isVNode(child) && child.count) {
+                    index += child.count
+                }
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+function undefinedKeys(obj) {
+    var result = {}
+
+    for (var key in obj) {
+        result[key] = undefined
+    }
+
+    return result
+}
+
+// List diff, naive left to right reordering
+function reorder(aChildren, bChildren) {
+    // O(M) time, O(M) memory
+    var bChildIndex = keyIndex(bChildren)
+    var bKeys = bChildIndex.keys
+    var bFree = bChildIndex.free
+
+    if (bFree.length === bChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(N) time, O(N) memory
+    var aChildIndex = keyIndex(aChildren)
+    var aKeys = aChildIndex.keys
+    var aFree = aChildIndex.free
+
+    if (aFree.length === aChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(MAX(N, M)) memory
+    var newChildren = []
+
+    var freeIndex = 0
+    var freeCount = bFree.length
+    var deletedItems = 0
+
+    // Iterate through a and match a node in b
+    // O(N) time,
+    for (var i = 0 ; i < aChildren.length; i++) {
+        var aItem = aChildren[i]
+        var itemIndex
+
+        if (aItem.key) {
+            if (bKeys.hasOwnProperty(aItem.key)) {
+                // Match up the old keys
+                itemIndex = bKeys[aItem.key]
+                newChildren.push(bChildren[itemIndex])
+
+            } else {
+                // Remove old keyed items
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        } else {
+            // Match the item in a with the next free item in b
+            if (freeIndex < freeCount) {
+                itemIndex = bFree[freeIndex++]
+                newChildren.push(bChildren[itemIndex])
+            } else {
+                // There are no free items in b to match with
+                // the free items in a, so the extra free nodes
+                // are deleted.
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        }
+    }
+
+    var lastFreeIndex = freeIndex >= bFree.length ?
+        bChildren.length :
+        bFree[freeIndex]
+
+    // Iterate through b and append any new keys
+    // O(M) time
+    for (var j = 0; j < bChildren.length; j++) {
+        var newItem = bChildren[j]
+
+        if (newItem.key) {
+            if (!aKeys.hasOwnProperty(newItem.key)) {
+                // Add any new keyed items
+                // We are adding new items to the end and then sorting them
+                // in place. In future we should insert new items in place.
+                newChildren.push(newItem)
+            }
+        } else if (j >= lastFreeIndex) {
+            // Add any leftover non-keyed items
+            newChildren.push(newItem)
+        }
+    }
+
+    var simulate = newChildren.slice()
+    var simulateIndex = 0
+    var removes = []
+    var inserts = []
+    var simulateItem
+
+    for (var k = 0; k < bChildren.length;) {
+        var wantedItem = bChildren[k]
+        simulateItem = simulate[simulateIndex]
+
+        // remove items
+        while (simulateItem === null && simulate.length) {
+            removes.push(remove(simulate, simulateIndex, null))
+            simulateItem = simulate[simulateIndex]
+        }
+
+        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+            // if we need a key in this position...
+            if (wantedItem.key) {
+                if (simulateItem && simulateItem.key) {
+                    // if an insert doesn't put this key in place, it needs to move
+                    if (bKeys[simulateItem.key] !== k + 1) {
+                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                        simulateItem = simulate[simulateIndex]
+                        // if the remove didn't put the wanted item in place, we need to insert it
+                        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+                            inserts.push({key: wantedItem.key, to: k})
+                        }
+                        // items are matching, so skip ahead
+                        else {
+                            simulateIndex++
+                        }
+                    }
+                    else {
+                        inserts.push({key: wantedItem.key, to: k})
+                    }
+                }
+                else {
+                    inserts.push({key: wantedItem.key, to: k})
+                }
+                k++
+            }
+            // a key in simulate has no matching wanted key, remove it
+            else if (simulateItem && simulateItem.key) {
+                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+            }
+        }
+        else {
+            simulateIndex++
+            k++
+        }
+    }
+
+    // remove all the remaining nodes from simulate
+    while(simulateIndex < simulate.length) {
+        simulateItem = simulate[simulateIndex]
+        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    }
+
+    // If the only moves we have are deletes then we can just
+    // let the delete patch remove these items.
+    if (removes.length === deletedItems && !inserts.length) {
+        return {
+            children: newChildren,
+            moves: null
+        }
+    }
+
+    return {
+        children: newChildren,
+        moves: {
+            removes: removes,
+            inserts: inserts
+        }
+    }
+}
+
+function remove(arr, index, key) {
+    arr.splice(index, 1)
+
+    return {
+        from: index,
+        key: key
+    }
+}
+
+function keyIndex(children) {
+    var keys = {}
+    var free = []
+    var length = children.length
+
+    for (var i = 0; i < length; i++) {
+        var child = children[i]
+
+        if (child.key) {
+            keys[child.key] = i
+        } else {
+            free.push(i)
+        }
+    }
+
+    return {
+        keys: keys,     // A hash of key name to index
+        free: free      // An array of unkeyed item indices
+    }
+}
+
+function appendPatch(apply, patch) {
+    if (apply) {
+        if (isArray(apply)) {
+            apply.push(patch)
+        } else {
+            apply = [apply, patch]
+        }
+
+        return apply
+    } else {
+        return patch
+    }
+}
+
+},{"../vnode/handle-thunk":24,"../vnode/is-thunk":25,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vpatch":32,"./diff-props":34,"x-is-array":12}]},{},[4])(4)
+});
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('vdom-parser',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.vdomParser = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+/**
+ * index.js
+ *
+ * A client-side DOM to vdom parser based on DOMParser API
+ */
+
+
+
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var domParser;
+
+var propertyMap = require('./property-map');
+var namespaceMap = require('./namespace-map');
+
+var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
+module.exports = parser;
+
+/**
+ * DOM/html string to vdom parser
+ *
+ * @param   Mixed   el    DOM element or html string
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode or VText
+ */
+function parser(el, attr) {
+	// empty input fallback to empty text node
+	if (!el) {
+		return createNode(document.createTextNode(''));
+	}
+
+	if (typeof el === 'string') {
+		if ( !('DOMParser' in window) ) {
+			throw new Error('DOMParser is not available, so parsing string to DOM node is not possible.');
+		}
+		domParser = domParser || new DOMParser();
+		var doc = domParser.parseFromString(el, 'text/html');
+
+		// most tags default to body
+		if (doc.body.firstChild) {
+			el = doc.getElementsByTagName('body')[0].firstChild;
+
+		// some tags, like script and style, default to head
+		} else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+			el = doc.head.firstChild;
+
+		// special case for html comment, cdata, doctype
+		} else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+			el = doc.firstChild;
+
+		// other element, such as whitespace, or html/body/head tag, fallback to empty text node
+		} else {
+			el = document.createTextNode('');
+		}
+	}
+
+	if (typeof el !== 'object' || !el || !el.nodeType) {
+		throw new Error('invalid dom node', el);
+	}
+
+	return createNode(el, attr);
+}
+
+/**
+ * Create vdom from dom node
+ *
+ * @param   Object  el    DOM element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode or VText
+ */
+function createNode(el, attr) {
+	// html comment is not currently supported by virtual-dom
+	if (el.nodeType === 3) {
+		return createVirtualTextNode(el);
+
+	// cdata or doctype is not currently supported by virtual-dom
+	} else if (el.nodeType === 1 || el.nodeType === 9) {
+		return createVirtualDomNode(el, attr);
+	}
+
+	// default to empty text node
+	return new VText('');
+}
+
+/**
+ * Create vtext from dom node
+ *
+ * @param   Object  el  Text node
+ * @return  Object      VText
+ */
+function createVirtualTextNode(el) {
+	return new VText(el.nodeValue);
+}
+
+/**
+ * Create vnode from dom node
+ *
+ * @param   Object  el    DOM element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode
+ */
+function createVirtualDomNode(el, attr) {
+	var ns = el.namespaceURI !== HTML_NAMESPACE ? el.namespaceURI : null;
+	var key = attr && el.getAttribute(attr) ? el.getAttribute(attr) : null;
+
+	return new VNode(
+		el.tagName
+		, createProperties(el)
+		, createChildren(el, attr)
+		, key
+		, ns
+	);
+}
+
+/**
+ * Recursively create vdom
+ *
+ * @param   Object  el    Parent element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Array         Child vnode or vtext
+ */
+function createChildren(el, attr) {
+	var children = [];
+	for (var i = 0; i < el.childNodes.length; i++) {
+		children.push(createNode(el.childNodes[i], attr));
+	};
+
+	return children;
+}
+
+/**
+ * Create properties from dom node
+ *
+ * @param   Object  el  DOM element
+ * @return  Object      Node properties and attributes
+ */
+function createProperties(el) {
+	var properties = {};
+
+	if (!el.hasAttributes()) {
+		return properties;
+	}
+
+	var ns;
+	if (el.namespaceURI && el.namespaceURI !== HTML_NAMESPACE) {
+		ns = el.namespaceURI;
+	}
+
+	var attr;
+	for (var i = 0; i < el.attributes.length; i++) {
+		// use built in css style parsing
+		if(el.attributes[i].name == 'style'){
+			attr = createStyleProperty(el);
+		}
+		else if (ns) {
+			attr = createPropertyNS(el.attributes[i]);
+		} else {
+			attr = createProperty(el.attributes[i]);
+		}
+
+		// special case, namespaced attribute, use properties.foobar
+		if (attr.ns) {
+			properties[attr.name] = {
+				namespace: attr.ns
+				, value: attr.value
+			};
+
+		// special case, use properties.attributes.foobar
+		} else if (attr.isAttr) {
+			// init attributes object only when necessary
+			if (!properties.attributes) {
+				properties.attributes = {}
+			}
+			properties.attributes[attr.name] = attr.value;
+
+		// default case, use properties.foobar
+		} else {
+			properties[attr.name] = attr.value;
+		}
+	};
+
+	return properties;
+}
+
+/**
+ * Create property from dom attribute
+ *
+ * @param   Object  attr  DOM attribute
+ * @return  Object        Normalized attribute
+ */
+function createProperty(attr) {
+	var name, value, isAttr;
+
+	// using a map to find the correct case of property name
+	if (propertyMap[attr.name]) {
+		name = propertyMap[attr.name];
+	} else {
+		name = attr.name;
+	}
+	// special cases for data attribute, we default to properties.attributes.data
+	if (name.indexOf('data-') === 0 || name.indexOf('aria-') === 0) {
+		value = attr.value;
+		isAttr = true;
+	} else {
+		value = attr.value;
+	}
+
+	return {
+		name: name
+		, value: value
+		, isAttr: isAttr || false
+	};
+}
+
+/**
+ * Create namespaced property from dom attribute
+ *
+ * @param   Object  attr  DOM attribute
+ * @return  Object        Normalized attribute
+ */
+function createPropertyNS(attr) {
+	var name, value;
+
+	return {
+		name: attr.name
+		, value: attr.value
+		, ns: namespaceMap[attr.name] || ''
+	};
+}
+
+/**
+ * Create style property from dom node
+ *
+ * @param   Object  el  DOM node
+ * @return  Object        Normalized attribute
+ */
+function createStyleProperty(el) {
+	var style = el.style;
+	var output = {};
+	for (var i = 0; i < style.length; ++i) {
+		var item = style.item(i);
+		output[item] = String(style[item]);
+		// hack to workaround browser inconsistency with url()
+		if (output[item].indexOf('url') > -1) {
+			output[item] = output[item].replace(/\"/g, '')
+		}
+	}
+	return { name: 'style', value: output };
+}
+
+},{"./namespace-map":2,"./property-map":10,"virtual-dom/vnode/vnode":8,"virtual-dom/vnode/vtext":9}],2:[function(require,module,exports){
+
+/**
+ * namespace-map.js
+ *
+ * Necessary to map svg attributes back to their namespace
+ */
+
+
+
+// extracted from https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript/svg-attribute-namespace.js
+var DEFAULT_NAMESPACE = null;
+var EV_NAMESPACE = 'http://www.w3.org/2001/xml-events';
+var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+var XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
+
+var namespaces = {
+	'about': DEFAULT_NAMESPACE
+	, 'accent-height': DEFAULT_NAMESPACE
+	, 'accumulate': DEFAULT_NAMESPACE
+	, 'additive': DEFAULT_NAMESPACE
+	, 'alignment-baseline': DEFAULT_NAMESPACE
+	, 'alphabetic': DEFAULT_NAMESPACE
+	, 'amplitude': DEFAULT_NAMESPACE
+	, 'arabic-form': DEFAULT_NAMESPACE
+	, 'ascent': DEFAULT_NAMESPACE
+	, 'attributeName': DEFAULT_NAMESPACE
+	, 'attributeType': DEFAULT_NAMESPACE
+	, 'azimuth': DEFAULT_NAMESPACE
+	, 'bandwidth': DEFAULT_NAMESPACE
+	, 'baseFrequency': DEFAULT_NAMESPACE
+	, 'baseProfile': DEFAULT_NAMESPACE
+	, 'baseline-shift': DEFAULT_NAMESPACE
+	, 'bbox': DEFAULT_NAMESPACE
+	, 'begin': DEFAULT_NAMESPACE
+	, 'bias': DEFAULT_NAMESPACE
+	, 'by': DEFAULT_NAMESPACE
+	, 'calcMode': DEFAULT_NAMESPACE
+	, 'cap-height': DEFAULT_NAMESPACE
+	, 'class': DEFAULT_NAMESPACE
+	, 'clip': DEFAULT_NAMESPACE
+	, 'clip-path': DEFAULT_NAMESPACE
+	, 'clip-rule': DEFAULT_NAMESPACE
+	, 'clipPathUnits': DEFAULT_NAMESPACE
+	, 'color': DEFAULT_NAMESPACE
+	, 'color-interpolation': DEFAULT_NAMESPACE
+	, 'color-interpolation-filters': DEFAULT_NAMESPACE
+	, 'color-profile': DEFAULT_NAMESPACE
+	, 'color-rendering': DEFAULT_NAMESPACE
+	, 'content': DEFAULT_NAMESPACE
+	, 'contentScriptType': DEFAULT_NAMESPACE
+	, 'contentStyleType': DEFAULT_NAMESPACE
+	, 'cursor': DEFAULT_NAMESPACE
+	, 'cx': DEFAULT_NAMESPACE
+	, 'cy': DEFAULT_NAMESPACE
+	, 'd': DEFAULT_NAMESPACE
+	, 'datatype': DEFAULT_NAMESPACE
+	, 'defaultAction': DEFAULT_NAMESPACE
+	, 'descent': DEFAULT_NAMESPACE
+	, 'diffuseConstant': DEFAULT_NAMESPACE
+	, 'direction': DEFAULT_NAMESPACE
+	, 'display': DEFAULT_NAMESPACE
+	, 'divisor': DEFAULT_NAMESPACE
+	, 'dominant-baseline': DEFAULT_NAMESPACE
+	, 'dur': DEFAULT_NAMESPACE
+	, 'dx': DEFAULT_NAMESPACE
+	, 'dy': DEFAULT_NAMESPACE
+	, 'edgeMode': DEFAULT_NAMESPACE
+	, 'editable': DEFAULT_NAMESPACE
+	, 'elevation': DEFAULT_NAMESPACE
+	, 'enable-background': DEFAULT_NAMESPACE
+	, 'end': DEFAULT_NAMESPACE
+	, 'ev:event': EV_NAMESPACE
+	, 'event': DEFAULT_NAMESPACE
+	, 'exponent': DEFAULT_NAMESPACE
+	, 'externalResourcesRequired': DEFAULT_NAMESPACE
+	, 'fill': DEFAULT_NAMESPACE
+	, 'fill-opacity': DEFAULT_NAMESPACE
+	, 'fill-rule': DEFAULT_NAMESPACE
+	, 'filter': DEFAULT_NAMESPACE
+	, 'filterRes': DEFAULT_NAMESPACE
+	, 'filterUnits': DEFAULT_NAMESPACE
+	, 'flood-color': DEFAULT_NAMESPACE
+	, 'flood-opacity': DEFAULT_NAMESPACE
+	, 'focusHighlight': DEFAULT_NAMESPACE
+	, 'focusable': DEFAULT_NAMESPACE
+	, 'font-family': DEFAULT_NAMESPACE
+	, 'font-size': DEFAULT_NAMESPACE
+	, 'font-size-adjust': DEFAULT_NAMESPACE
+	, 'font-stretch': DEFAULT_NAMESPACE
+	, 'font-style': DEFAULT_NAMESPACE
+	, 'font-variant': DEFAULT_NAMESPACE
+	, 'font-weight': DEFAULT_NAMESPACE
+	, 'format': DEFAULT_NAMESPACE
+	, 'from': DEFAULT_NAMESPACE
+	, 'fx': DEFAULT_NAMESPACE
+	, 'fy': DEFAULT_NAMESPACE
+	, 'g1': DEFAULT_NAMESPACE
+	, 'g2': DEFAULT_NAMESPACE
+	, 'glyph-name': DEFAULT_NAMESPACE
+	, 'glyph-orientation-horizontal': DEFAULT_NAMESPACE
+	, 'glyph-orientation-vertical': DEFAULT_NAMESPACE
+	, 'glyphRef': DEFAULT_NAMESPACE
+	, 'gradientTransform': DEFAULT_NAMESPACE
+	, 'gradientUnits': DEFAULT_NAMESPACE
+	, 'handler': DEFAULT_NAMESPACE
+	, 'hanging': DEFAULT_NAMESPACE
+	, 'height': DEFAULT_NAMESPACE
+	, 'horiz-adv-x': DEFAULT_NAMESPACE
+	, 'horiz-origin-x': DEFAULT_NAMESPACE
+	, 'horiz-origin-y': DEFAULT_NAMESPACE
+	, 'id': DEFAULT_NAMESPACE
+	, 'ideographic': DEFAULT_NAMESPACE
+	, 'image-rendering': DEFAULT_NAMESPACE
+	, 'in': DEFAULT_NAMESPACE
+	, 'in2': DEFAULT_NAMESPACE
+	, 'initialVisibility': DEFAULT_NAMESPACE
+	, 'intercept': DEFAULT_NAMESPACE
+	, 'k': DEFAULT_NAMESPACE
+	, 'k1': DEFAULT_NAMESPACE
+	, 'k2': DEFAULT_NAMESPACE
+	, 'k3': DEFAULT_NAMESPACE
+	, 'k4': DEFAULT_NAMESPACE
+	, 'kernelMatrix': DEFAULT_NAMESPACE
+	, 'kernelUnitLength': DEFAULT_NAMESPACE
+	, 'kerning': DEFAULT_NAMESPACE
+	, 'keyPoints': DEFAULT_NAMESPACE
+	, 'keySplines': DEFAULT_NAMESPACE
+	, 'keyTimes': DEFAULT_NAMESPACE
+	, 'lang': DEFAULT_NAMESPACE
+	, 'lengthAdjust': DEFAULT_NAMESPACE
+	, 'letter-spacing': DEFAULT_NAMESPACE
+	, 'lighting-color': DEFAULT_NAMESPACE
+	, 'limitingConeAngle': DEFAULT_NAMESPACE
+	, 'local': DEFAULT_NAMESPACE
+	, 'marker-end': DEFAULT_NAMESPACE
+	, 'marker-mid': DEFAULT_NAMESPACE
+	, 'marker-start': DEFAULT_NAMESPACE
+	, 'markerHeight': DEFAULT_NAMESPACE
+	, 'markerUnits': DEFAULT_NAMESPACE
+	, 'markerWidth': DEFAULT_NAMESPACE
+	, 'mask': DEFAULT_NAMESPACE
+	, 'maskContentUnits': DEFAULT_NAMESPACE
+	, 'maskUnits': DEFAULT_NAMESPACE
+	, 'mathematical': DEFAULT_NAMESPACE
+	, 'max': DEFAULT_NAMESPACE
+	, 'media': DEFAULT_NAMESPACE
+	, 'mediaCharacterEncoding': DEFAULT_NAMESPACE
+	, 'mediaContentEncodings': DEFAULT_NAMESPACE
+	, 'mediaSize': DEFAULT_NAMESPACE
+	, 'mediaTime': DEFAULT_NAMESPACE
+	, 'method': DEFAULT_NAMESPACE
+	, 'min': DEFAULT_NAMESPACE
+	, 'mode': DEFAULT_NAMESPACE
+	, 'name': DEFAULT_NAMESPACE
+	, 'nav-down': DEFAULT_NAMESPACE
+	, 'nav-down-left': DEFAULT_NAMESPACE
+	, 'nav-down-right': DEFAULT_NAMESPACE
+	, 'nav-left': DEFAULT_NAMESPACE
+	, 'nav-next': DEFAULT_NAMESPACE
+	, 'nav-prev': DEFAULT_NAMESPACE
+	, 'nav-right': DEFAULT_NAMESPACE
+	, 'nav-up': DEFAULT_NAMESPACE
+	, 'nav-up-left': DEFAULT_NAMESPACE
+	, 'nav-up-right': DEFAULT_NAMESPACE
+	, 'numOctaves': DEFAULT_NAMESPACE
+	, 'observer': DEFAULT_NAMESPACE
+	, 'offset': DEFAULT_NAMESPACE
+	, 'opacity': DEFAULT_NAMESPACE
+	, 'operator': DEFAULT_NAMESPACE
+	, 'order': DEFAULT_NAMESPACE
+	, 'orient': DEFAULT_NAMESPACE
+	, 'orientation': DEFAULT_NAMESPACE
+	, 'origin': DEFAULT_NAMESPACE
+	, 'overflow': DEFAULT_NAMESPACE
+	, 'overlay': DEFAULT_NAMESPACE
+	, 'overline-position': DEFAULT_NAMESPACE
+	, 'overline-thickness': DEFAULT_NAMESPACE
+	, 'panose-1': DEFAULT_NAMESPACE
+	, 'path': DEFAULT_NAMESPACE
+	, 'pathLength': DEFAULT_NAMESPACE
+	, 'patternContentUnits': DEFAULT_NAMESPACE
+	, 'patternTransform': DEFAULT_NAMESPACE
+	, 'patternUnits': DEFAULT_NAMESPACE
+	, 'phase': DEFAULT_NAMESPACE
+	, 'playbackOrder': DEFAULT_NAMESPACE
+	, 'pointer-events': DEFAULT_NAMESPACE
+	, 'points': DEFAULT_NAMESPACE
+	, 'pointsAtX': DEFAULT_NAMESPACE
+	, 'pointsAtY': DEFAULT_NAMESPACE
+	, 'pointsAtZ': DEFAULT_NAMESPACE
+	, 'preserveAlpha': DEFAULT_NAMESPACE
+	, 'preserveAspectRatio': DEFAULT_NAMESPACE
+	, 'primitiveUnits': DEFAULT_NAMESPACE
+	, 'propagate': DEFAULT_NAMESPACE
+	, 'property': DEFAULT_NAMESPACE
+	, 'r': DEFAULT_NAMESPACE
+	, 'radius': DEFAULT_NAMESPACE
+	, 'refX': DEFAULT_NAMESPACE
+	, 'refY': DEFAULT_NAMESPACE
+	, 'rel': DEFAULT_NAMESPACE
+	, 'rendering-intent': DEFAULT_NAMESPACE
+	, 'repeatCount': DEFAULT_NAMESPACE
+	, 'repeatDur': DEFAULT_NAMESPACE
+	, 'requiredExtensions': DEFAULT_NAMESPACE
+	, 'requiredFeatures': DEFAULT_NAMESPACE
+	, 'requiredFonts': DEFAULT_NAMESPACE
+	, 'requiredFormats': DEFAULT_NAMESPACE
+	, 'resource': DEFAULT_NAMESPACE
+	, 'restart': DEFAULT_NAMESPACE
+	, 'result': DEFAULT_NAMESPACE
+	, 'rev': DEFAULT_NAMESPACE
+	, 'role': DEFAULT_NAMESPACE
+	, 'rotate': DEFAULT_NAMESPACE
+	, 'rx': DEFAULT_NAMESPACE
+	, 'ry': DEFAULT_NAMESPACE
+	, 'scale': DEFAULT_NAMESPACE
+	, 'seed': DEFAULT_NAMESPACE
+	, 'shape-rendering': DEFAULT_NAMESPACE
+	, 'slope': DEFAULT_NAMESPACE
+	, 'snapshotTime': DEFAULT_NAMESPACE
+	, 'spacing': DEFAULT_NAMESPACE
+	, 'specularConstant': DEFAULT_NAMESPACE
+	, 'specularExponent': DEFAULT_NAMESPACE
+	, 'spreadMethod': DEFAULT_NAMESPACE
+	, 'startOffset': DEFAULT_NAMESPACE
+	, 'stdDeviation': DEFAULT_NAMESPACE
+	, 'stemh': DEFAULT_NAMESPACE
+	, 'stemv': DEFAULT_NAMESPACE
+	, 'stitchTiles': DEFAULT_NAMESPACE
+	, 'stop-color': DEFAULT_NAMESPACE
+	, 'stop-opacity': DEFAULT_NAMESPACE
+	, 'strikethrough-position': DEFAULT_NAMESPACE
+	, 'strikethrough-thickness': DEFAULT_NAMESPACE
+	, 'string': DEFAULT_NAMESPACE
+	, 'stroke': DEFAULT_NAMESPACE
+	, 'stroke-dasharray': DEFAULT_NAMESPACE
+	, 'stroke-dashoffset': DEFAULT_NAMESPACE
+	, 'stroke-linecap': DEFAULT_NAMESPACE
+	, 'stroke-linejoin': DEFAULT_NAMESPACE
+	, 'stroke-miterlimit': DEFAULT_NAMESPACE
+	, 'stroke-opacity': DEFAULT_NAMESPACE
+	, 'stroke-width': DEFAULT_NAMESPACE
+	, 'surfaceScale': DEFAULT_NAMESPACE
+	, 'syncBehavior': DEFAULT_NAMESPACE
+	, 'syncBehaviorDefault': DEFAULT_NAMESPACE
+	, 'syncMaster': DEFAULT_NAMESPACE
+	, 'syncTolerance': DEFAULT_NAMESPACE
+	, 'syncToleranceDefault': DEFAULT_NAMESPACE
+	, 'systemLanguage': DEFAULT_NAMESPACE
+	, 'tableValues': DEFAULT_NAMESPACE
+	, 'target': DEFAULT_NAMESPACE
+	, 'targetX': DEFAULT_NAMESPACE
+	, 'targetY': DEFAULT_NAMESPACE
+	, 'text-anchor': DEFAULT_NAMESPACE
+	, 'text-decoration': DEFAULT_NAMESPACE
+	, 'text-rendering': DEFAULT_NAMESPACE
+	, 'textLength': DEFAULT_NAMESPACE
+	, 'timelineBegin': DEFAULT_NAMESPACE
+	, 'title': DEFAULT_NAMESPACE
+	, 'to': DEFAULT_NAMESPACE
+	, 'transform': DEFAULT_NAMESPACE
+	, 'transformBehavior': DEFAULT_NAMESPACE
+	, 'type': DEFAULT_NAMESPACE
+	, 'typeof': DEFAULT_NAMESPACE
+	, 'u1': DEFAULT_NAMESPACE
+	, 'u2': DEFAULT_NAMESPACE
+	, 'underline-position': DEFAULT_NAMESPACE
+	, 'underline-thickness': DEFAULT_NAMESPACE
+	, 'unicode': DEFAULT_NAMESPACE
+	, 'unicode-bidi': DEFAULT_NAMESPACE
+	, 'unicode-range': DEFAULT_NAMESPACE
+	, 'units-per-em': DEFAULT_NAMESPACE
+	, 'v-alphabetic': DEFAULT_NAMESPACE
+	, 'v-hanging': DEFAULT_NAMESPACE
+	, 'v-ideographic': DEFAULT_NAMESPACE
+	, 'v-mathematical': DEFAULT_NAMESPACE
+	, 'values': DEFAULT_NAMESPACE
+	, 'version': DEFAULT_NAMESPACE
+	, 'vert-adv-y': DEFAULT_NAMESPACE
+	, 'vert-origin-x': DEFAULT_NAMESPACE
+	, 'vert-origin-y': DEFAULT_NAMESPACE
+	, 'viewBox': DEFAULT_NAMESPACE
+	, 'viewTarget': DEFAULT_NAMESPACE
+	, 'visibility': DEFAULT_NAMESPACE
+	, 'width': DEFAULT_NAMESPACE
+	, 'widths': DEFAULT_NAMESPACE
+	, 'word-spacing': DEFAULT_NAMESPACE
+	, 'writing-mode': DEFAULT_NAMESPACE
+	, 'x': DEFAULT_NAMESPACE
+	, 'x-height': DEFAULT_NAMESPACE
+	, 'x1': DEFAULT_NAMESPACE
+	, 'x2': DEFAULT_NAMESPACE
+	, 'xChannelSelector': DEFAULT_NAMESPACE
+	, 'xlink:actuate': XLINK_NAMESPACE
+	, 'xlink:arcrole': XLINK_NAMESPACE
+	, 'xlink:href': XLINK_NAMESPACE
+	, 'xlink:role': XLINK_NAMESPACE
+	, 'xlink:show': XLINK_NAMESPACE
+	, 'xlink:title': XLINK_NAMESPACE
+	, 'xlink:type': XLINK_NAMESPACE
+	, 'xml:base': XML_NAMESPACE
+	, 'xml:id': XML_NAMESPACE
+	, 'xml:lang': XML_NAMESPACE
+	, 'xml:space': XML_NAMESPACE
+	, 'y': DEFAULT_NAMESPACE
+	, 'y1': DEFAULT_NAMESPACE
+	, 'y2': DEFAULT_NAMESPACE
+	, 'yChannelSelector': DEFAULT_NAMESPACE
+	, 'z': DEFAULT_NAMESPACE
+	, 'zoomAndPan': DEFAULT_NAMESPACE
+};
+
+module.exports = namespaces;
+
+},{}],3:[function(require,module,exports){
+module.exports = isThunk
+
+function isThunk(t) {
+    return t && t.type === "Thunk"
+}
+
+},{}],4:[function(require,module,exports){
+module.exports = isHook
+
+function isHook(hook) {
+    return hook &&
+      (typeof hook.hook === "function" && !hook.hasOwnProperty("hook") ||
+       typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
+}
+
+},{}],5:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualNode
+
+function isVirtualNode(x) {
+    return x && x.type === "VirtualNode" && x.version === version
+}
+
+},{"./version":7}],6:[function(require,module,exports){
+module.exports = isWidget
+
+function isWidget(w) {
+    return w && w.type === "Widget"
+}
+
+},{}],7:[function(require,module,exports){
+module.exports = "2"
+
+},{}],8:[function(require,module,exports){
+var version = require("./version")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+var isVHook = require("./is-vhook")
+
+module.exports = VirtualNode
+
+var noProperties = {}
+var noChildren = []
+
+function VirtualNode(tagName, properties, children, key, namespace) {
+    this.tagName = tagName
+    this.properties = properties || noProperties
+    this.children = children || noChildren
+    this.key = key != null ? String(key) : undefined
+    this.namespace = (typeof namespace === "string") ? namespace : null
+
+    var count = (children && children.length) || 0
+    var descendants = 0
+    var hasWidgets = false
+    var hasThunks = false
+    var descendantHooks = false
+    var hooks
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var property = properties[propName]
+            if (isVHook(property) && property.unhook) {
+                if (!hooks) {
+                    hooks = {}
+                }
+
+                hooks[propName] = property
+            }
+        }
+    }
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isVNode(child)) {
+            descendants += child.count || 0
+
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
+            }
+
+            if (!hasThunks && child.hasThunks) {
+                hasThunks = true
+            }
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
+        } else if (!hasThunks && isThunk(child)) {
+            hasThunks = true;
+        }
+    }
+
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hasThunks = hasThunks
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
+}
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
+
+},{"./is-thunk":3,"./is-vhook":4,"./is-vnode":5,"./is-widget":6,"./version":7}],9:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = VirtualText
+
+function VirtualText(text) {
+    this.text = String(text)
+}
+
+VirtualText.prototype.version = version
+VirtualText.prototype.type = "VirtualText"
+
+},{"./version":7}],10:[function(require,module,exports){
+
+/**
+ * property-map.js
+ *
+ * Necessary to map dom attributes back to vdom properties
+ */
+
+
+
+// invert of https://www.npmjs.com/package/html-attributes
+var properties = {
+	'abbr': 'abbr'
+	, 'accept': 'accept'
+	, 'accept-charset': 'acceptCharset'
+	, 'accesskey': 'accessKey'
+	, 'action': 'action'
+	, 'allowfullscreen': 'allowFullScreen'
+	, 'allowtransparency': 'allowTransparency'
+	, 'alt': 'alt'
+	, 'async': 'async'
+	, 'autocomplete': 'autoComplete'
+	, 'autofocus': 'autoFocus'
+	, 'autoplay': 'autoPlay'
+	, 'cellpadding': 'cellPadding'
+	, 'cellspacing': 'cellSpacing'
+	, 'challenge': 'challenge'
+	, 'charset': 'charset'
+	, 'checked': 'checked'
+	, 'cite': 'cite'
+	, 'class': 'className'
+	, 'cols': 'cols'
+	, 'colspan': 'colSpan'
+	, 'command': 'command'
+	, 'content': 'content'
+	, 'contenteditable': 'contentEditable'
+	, 'contextmenu': 'contextMenu'
+	, 'controls': 'controls'
+	, 'coords': 'coords'
+	, 'crossorigin': 'crossOrigin'
+	, 'data': 'data'
+	, 'datetime': 'dateTime'
+	, 'default': 'default'
+	, 'defer': 'defer'
+	, 'dir': 'dir'
+	, 'disabled': 'disabled'
+	, 'download': 'download'
+	, 'draggable': 'draggable'
+	, 'dropzone': 'dropzone'
+	, 'enctype': 'encType'
+	, 'for': 'htmlFor'
+	, 'form': 'form'
+	, 'formaction': 'formAction'
+	, 'formenctype': 'formEncType'
+	, 'formmethod': 'formMethod'
+	, 'formnovalidate': 'formNoValidate'
+	, 'formtarget': 'formTarget'
+	, 'frameBorder': 'frameBorder'
+	, 'headers': 'headers'
+	, 'height': 'height'
+	, 'hidden': 'hidden'
+	, 'high': 'high'
+	, 'href': 'href'
+	, 'hreflang': 'hrefLang'
+	, 'http-equiv': 'httpEquiv'
+	, 'icon': 'icon'
+	, 'id': 'id'
+	, 'inputmode': 'inputMode'
+	, 'ismap': 'isMap'
+	, 'itemid': 'itemId'
+	, 'itemprop': 'itemProp'
+	, 'itemref': 'itemRef'
+	, 'itemscope': 'itemScope'
+	, 'itemtype': 'itemType'
+	, 'kind': 'kind'
+	, 'label': 'label'
+	, 'lang': 'lang'
+	, 'list': 'list'
+	, 'loop': 'loop'
+	, 'manifest': 'manifest'
+	, 'max': 'max'
+	, 'maxlength': 'maxLength'
+	, 'media': 'media'
+	, 'mediagroup': 'mediaGroup'
+	, 'method': 'method'
+	, 'min': 'min'
+	, 'minlength': 'minLength'
+	, 'multiple': 'multiple'
+	, 'muted': 'muted'
+	, 'name': 'name'
+	, 'novalidate': 'noValidate'
+	, 'open': 'open'
+	, 'optimum': 'optimum'
+	, 'pattern': 'pattern'
+	, 'ping': 'ping'
+	, 'placeholder': 'placeholder'
+	, 'poster': 'poster'
+	, 'preload': 'preload'
+	, 'radiogroup': 'radioGroup'
+	, 'readonly': 'readOnly'
+	, 'rel': 'rel'
+	, 'required': 'required'
+	, 'role': 'role'
+	, 'rows': 'rows'
+	, 'rowspan': 'rowSpan'
+	, 'sandbox': 'sandbox'
+	, 'scope': 'scope'
+	, 'scoped': 'scoped'
+	, 'scrolling': 'scrolling'
+	, 'seamless': 'seamless'
+	, 'selected': 'selected'
+	, 'shape': 'shape'
+	, 'size': 'size'
+	, 'sizes': 'sizes'
+	, 'sortable': 'sortable'
+	, 'span': 'span'
+	, 'spellcheck': 'spellCheck'
+	, 'src': 'src'
+	, 'srcdoc': 'srcDoc'
+	, 'srcset': 'srcSet'
+	, 'start': 'start'
+	, 'step': 'step'
+	, 'style': 'style'
+	, 'tabindex': 'tabIndex'
+	, 'target': 'target'
+	, 'title': 'title'
+	, 'translate': 'translate'
+	, 'type': 'type'
+	, 'typemustmatch': 'typeMustMatch'
+	, 'usemap': 'useMap'
+	, 'value': 'value'
+	, 'width': 'width'
+	, 'wmode': 'wmode'
+	, 'wrap': 'wrap'
+};
+
+module.exports = properties;
+
+},{}]},{},[1])(1)
+});
 
 define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -54736,6 +57254,17 @@ __e(label_contact_username) +
 '"/>\n    <button class="pure-button button-primary" type="submit">' +
 __e(label_add) +
 '</button>\n</form>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!converse_brand_heading', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="brand-heading-container">\n    <div class="brand-heading">\n        <i class="icon-conversejs"></i>\n        <span class="brand-name">converse</span>\n    </div>\n</span>\n';
 
 }
 return __p
@@ -54871,7 +57400,7 @@ define('tpl!controlbox_toggle', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="conn-feedback">' +
+__p += '<span class="toggle-feedback">' +
 __e(label_toggle) +
 '</span>\n';
 
@@ -54885,34 +57414,68 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
- if (auto_login) { ;
-__p += '\n        <span class="spinner login-submit"/>\n    ';
+__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    <legend>' +
+__e(__("Login")) +
+'</legend>\n\n    <div class="conn-feedback fade-in ';
+ if (!conn_feedback_subject) { ;
+__p += ' hidden ';
  } ;
-__p += '\n    ';
- if (!auto_login) { ;
+__p += ' ' +
+__e(conn_feedback_class) +
+'">\n        <p class="feedback-subject">' +
+__e( conn_feedback_subject ) +
+'</p>\n        <p class="feedback-message ';
+ if (!conn_feedback_message) { ;
+__p += ' hidden ';
+ } ;
+__p += '">' +
+__e(conn_feedback_message) +
+'</p>\n    </div>\n\n    ';
+ if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ;
+__p += '\n        <span class="spinner centered"/>\n    ';
+ } else { ;
 __p += '\n        ';
  if (authentication == LOGIN || authentication == EXTERNAL) { ;
 __p += '\n            <label>' +
-__e(label_username) +
-'</label>\n            <input type="text" name="jid" placeholder="' +
+__e(__("Jabber ID:")) +
+'</label>\n            <p class="form-help fade-in error ';
+ if (!_.includes(errors, 'invalid_jid')) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                ' +
+__e(__('Please enter a valid XMPP address')) +
+'\n            </p>\n            <input autofocus\n                   type="text"\n                   name="jid"\n                   class="';
+ if (_.includes(errors, 'invalid_jid')) { ;
+__p += ' error ';
+ } ;
+__p += '"\n                   placeholder="' +
 __e(placeholder_username) +
 '">\n            ';
  if (authentication !== EXTERNAL) { ;
 __p += '\n                <label>' +
-__e(label_password) +
-'</label>\n                <input type="password" name="password" placeholder="' +
-__e(placeholder_password) +
+__e(__("Password:")) +
+'</label>\n                <p class="form-help fade-in error ';
+ if (!_.includes(errors, 'password_required')) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                    ' +
+__e(__('Please enter your password')) +
+'\n                </p>\n                <input type="password"\n                       name="password"\n                       class="';
+ if (_.includes(errors, 'password_required')) { ;
+__p += ' error ';
+ } ;
+__p += '"\n                       placeholder="' +
+__e(__('password')) +
 '">\n            ';
  } ;
 __p += '\n            <input class="pure-button button-primary" type="submit" value="' +
-__e(label_login) +
-'">\n            <span class="conn-feedback"></span>\n        ';
+__e(__('Submit')) +
+'">\n        ';
  } ;
 __p += '\n        ';
  if (authentication == ANONYMOUS) { ;
 __p += '\n            <input class="pure-button button-primary login-anon" type="submit" value="' +
-__e(label_anon_login) +
+__e(__('Click here to log in anonymously')) +
 '"/>\n        ';
  } ;
 __p += '\n        ';
@@ -54922,19 +57485,6 @@ __p += '\n            <p>Disconnected.</p>\n        ';
 __p += '\n    ';
  } ;
 __p += '\n</form>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!login_tab', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<li><a class="current" data-id="login" href="#login-dialog">' +
-__e(label_sign_in) +
-'</a></li>\n';
 
 }
 return __p
@@ -56117,8 +58667,8 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!login_tab", "tpl!search_contact", "tpl!status_option", "converse-chatview", "converse-rosterview"], factory);
-})(undefined, function ($, converse, fp, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_login_tab, tpl_search_contact, tpl_status_option) {
+    define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "virtual-dom", "vdom-parser", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!converse_brand_heading", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!search_contact", "tpl!status_option", "tpl!spinner", "converse-chatview", "converse-rosterview"], factory);
+})(undefined, function ($, converse, fp, vdom, vdom_parser, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_brand_heading, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_search_contact, tpl_status_option, tpl_spinner) {
     "use strict";
 
     var USERS_PANEL_ID = 'users';
@@ -56131,6 +58681,43 @@ return __p
         _ = _converse$env._,
         moment = _converse$env.moment;
 
+
+    var CONNECTION_STATUS_CSS_CLASS = {
+        'Error': 'error',
+        'Connecting': 'info',
+        'Connection failure': 'error',
+        'Authenticating': 'info',
+        'Authentication failure': 'error',
+        'Connected': 'info',
+        'Disconnected': 'error',
+        'Disconnecting': 'warn',
+        'Attached': 'info',
+        'Redirect': 'info',
+        'Reconnecting': 'warn'
+    };
+
+    var PRETTY_CONNECTION_STATUS = {
+        0: 'Error',
+        1: 'Connecting',
+        2: 'Connection failure',
+        3: 'Authenticating',
+        4: 'Authentication failure',
+        5: 'Connected',
+        6: 'Disconnected',
+        7: 'Disconnecting',
+        8: 'Attached',
+        9: 'Redirect',
+        10: 'Reconnecting'
+    };
+
+    var REPORTABLE_STATUSES = [0, // ERROR'
+    1, // CONNECTING
+    2, // CONNFAIL
+    3, // AUTHENTICATING
+    4, // AUTHFAIL
+    7, // DISCONNECTING
+    10 // RECONNECTING
+    ];
 
     converse.plugins.add('converse-controlbox', {
 
@@ -56266,6 +58853,8 @@ return __p
                 xhr_user_search_url: ''
             });
 
+            _converse.api.promises.add('controlboxInitialized');
+
             var LABEL_CONTACTS = __('Contacts');
 
             _converse.addControlBox = function () {
@@ -56279,7 +58868,7 @@ return __p
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox',
+                className: 'chatbox fade-in',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
@@ -56300,6 +58889,7 @@ return __p
                     if (this.model.get('connected')) {
                         _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
+                    _converse.emit('controlboxInitialized');
                 },
                 render: function render() {
                     if (this.model.get('connected')) {
@@ -56331,20 +58921,49 @@ return __p
                     }
                 },
                 insertRoster: function insertRoster() {
-                    /* Place the rosterview inside the "Contacts" panel.
-                     */
-                    this.contactspanel.$el.append(_converse.rosterview.$el);
+                    /* Place the rosterview inside the "Contacts" panel. */
+                    this.contactspanel.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
                     return this;
                 },
+                createBrandHeadingHTML: function createBrandHeadingHTML() {
+                    return tpl_brand_heading();
+                },
+                insertBrandHeading: function insertBrandHeading() {
+                    var heading_el = this.el.querySelector('.brand-heading-container');
+                    if (_.isNull(heading_el)) {
+                        var el = this.el.querySelector('.controlbox-head');
+                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+                    } else {
+                        heading_el.outerHTML = this.createBrandHeadingHTML();
+                    }
+                },
                 renderLoginPanel: function renderLoginPanel() {
-                    this.loginpanel = new _converse.LoginPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
-                        'model': this
-                    });
-                    this.loginpanel.render();
+                    this.el.classList.add("logged-out");
+                    if (_.isNil(this.loginpanel)) {
+                        this.loginpanel = new _converse.LoginPanel({
+                            'model': new _converse.LoginPanelModel()
+                        });
+                        var panes = this.el.querySelector('.controlbox-panes');
+                        panes.innerHTML = '';
+                        panes.appendChild(this.loginpanel.render().el);
+                        this.insertBrandHeading();
+                    } else {
+                        this.loginpanel.render();
+                    }
                     return this;
                 },
                 renderContactsPanel: function renderContactsPanel() {
+                    /* Renders the "Contacts" panel of the controlbox.
+                     *
+                     * This will only be called after the user has already been
+                     * logged in.
+                     */
+                    if (this.loginpanel) {
+                        this.loginpanel.remove();
+                        delete this.loginpanel;
+                    }
+                    this.el.classList.remove("logged-out");
+
                     if (_.isUndefined(this.model.get('active-panel'))) {
                         this.model.save({ 'active-panel': USERS_PANEL_ID });
                     }
@@ -56394,13 +59013,11 @@ return __p
                     return this;
                 },
                 onControlBoxToggleHidden: function onControlBoxToggleHidden() {
-                    var that = this;
-                    utils.fadeIn(this.el, function () {
-                        _converse.controlboxtoggle.updateOnlineCount();
-                        utils.refreshWebkit();
-                        that.model.set('closed', false);
-                        _converse.emit('controlBoxOpened', that);
-                    });
+                    _converse.controlboxtoggle.updateOnlineCount();
+                    utils.refreshWebkit();
+                    this.model.set('closed', false);
+                    this.el.classList.remove('hidden');
+                    _converse.emit('controlBoxOpened', this);
                 },
                 show: function show() {
                     _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
@@ -56433,38 +59050,70 @@ return __p
                 }
             });
 
+            _converse.LoginPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'errors': []
+                }
+            });
+
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "login-dialog",
-                className: 'controlbox-pane',
+                id: "converse-login-panel",
+                className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-login': 'authenticate'
+                    'submit form#converse-login': 'authenticate',
+                    'blur   input': 'validate'
                 },
 
                 initialize: function initialize(cfg) {
-                    cfg.$parent.html(this.$el.html(tpl_login_panel({
+                    this.model.on('change', this.render, this);
+                    this.listenTo(_converse.connfeedback, 'change', this.render);
+                },
+                render: function render() {
+                    var connection_status = _converse.connfeedback.get('connection_status');
+                    var feedback_class = void 0,
+                        pretty_status = void 0;
+                    if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+                        pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+                        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+                    }
+                    var html = tpl_login_panel(_.extend(this.model.toJSON(), {
+                        '__': __,
+                        '_converse': _converse,
                         'ANONYMOUS': _converse.ANONYMOUS,
                         'EXTERNAL': _converse.EXTERNAL,
                         'LOGIN': _converse.LOGIN,
                         'PREBIND': _converse.PREBIND,
                         'auto_login': _converse.auto_login,
                         'authentication': _converse.authentication,
-                        'label_username': __('XMPP Username:'),
-                        'label_password': __('Password:'),
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
-                        'placeholder_password': __('password')
-                    })));
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-                },
-                render: function render() {
-                    this.$tabs.append(tpl_login_tab({ label_sign_in: __('Sign in') }));
-                    this.$el.find('input#jid').focus();
-                    if (!this.$el.is(':visible')) {
-                        this.$el.show();
+                        'connection_status': connection_status,
+                        'conn_feedback_class': feedback_class,
+                        'conn_feedback_subject': pretty_status,
+                        'conn_feedback_message': _converse.connfeedback.get('message'),
+                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
+                    }));
+                    var form = this.el.querySelector('form');
+                    if (_.isNull(form)) {
+                        this.el.innerHTML = html;
+                    } else {
+                        var patches = vdom.diff(vdom_parser(form), vdom_parser(html));
+                        vdom.patch(form, patches);
                     }
                     return this;
+                },
+                validate: function validate() {
+                    var form = this.el.querySelector('form');
+                    var jid = form.querySelector('input[name=jid]').value;
+                    var password = _.get(form.querySelector('input[name=password]'), 'value');
+                    var errors = [];
+                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
+                        errors.push(errors, 'invalid_jid');
+                    }
+                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
+                        errors.push(errors, 'password_required');
+                    }
+                    this.model.set('errors', errors);
+                    return errors.length == 0;
                 },
                 authenticate: function authenticate(ev) {
                     /* Authenticate the user based on a form submission event.
@@ -56472,45 +59121,27 @@ return __p
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    var $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
-                        this.connect($form, _converse.jid, null);
+                        this.connect(_converse.jid, null);
                         return;
                     }
-                    var $jid_input = $form.find('input[name=jid]');
-                    var $pw_input = $form.find('input[name=password]');
-                    var password = $pw_input.val();
-
-                    var jid = $jid_input.val(),
-                        errors = false;
-
-                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
-                        errors = true;
-                        $jid_input.addClass('error');
-                    }
-
-                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
-                        errors = true;
-                        $pw_input.addClass('error');
-                    }
-                    if (errors) {
+                    if (!this.validate()) {
                         return;
                     }
+                    var jid = ev.target.querySelector('input[name=jid]').value;
+                    var password = _.get(ev.target.querySelector('input[name=password]'), 'value');
+
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect($form, jid, password);
+                    this.connect(jid, password);
                     return false;
                 },
-                connect: function connect($form, jid, password) {
-                    var resource = void 0;
-                    if ($form) {
-                        $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                    }
+                connect: function connect(jid, password) {
                     if (jid) {
-                        resource = Strophe.getResourceFromJid(jid);
+                        var resource = Strophe.getResourceFromJid(jid);
                         if (!resource) {
                             jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
@@ -56519,10 +59150,6 @@ return __p
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-                },
-                remove: function remove() {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
 
@@ -56647,7 +59274,6 @@ return __p
                 },
                 render: function render() {
                     this.renderTab();
-
                     var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
@@ -56716,14 +59342,16 @@ return __p
                 searchContacts: function searchContacts(ev) {
                     ev.preventDefault();
                     $.getJSON(_converse.xhr_user_search_url + "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        var title_subscribe = __('Click to add as a chat contact');
+                        var no_users_text = __('No users found');
                         var $ul = $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
                         if (!data.length) {
-                            $ul.append("<li class=\"chat-info\">" + __('No users found') + "</li>");
+                            $ul.append("<li class=\"chat-info\">" + no_users_text + "</li>");
                         }
                         $(data).each(function (idx, obj) {
-                            $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"" + __('Click to add as a chat contact') + "\"></a>").attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
+                            $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"" + title_subscribe + "\"></a>").attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
                         });
                     });
                 },
@@ -56733,7 +59361,7 @@ return __p
                     var jid = $input.val();
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
-                            error_message: __('Please enter a valid XMPP username'),
+                            error_message: __('Please enter a valid XMPP address'),
                             label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add'),
                             value: jid
@@ -56766,10 +59394,13 @@ return __p
                 },
 
                 initialize: function initialize() {
+                    var _this = this;
+
                     _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
                     var that = this;
                     _converse.api.waitUntil('initialized').then(function () {
+                        _this.render();
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
@@ -56782,7 +59413,7 @@ return __p
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
                     this.el.innerHTML = tpl_controlbox_toggle({
-                        'label_toggle': __('Toggle chat')
+                        'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
                     });
                     return this;
                 },
@@ -56848,7 +59479,7 @@ return __p
             _converse.on('disconnected', disconnect);
 
             var afterReconnected = function afterReconnected() {
-                /* After reconnection makes sure the controlbox's is aware.
+                /* After reconnection makes sure the controlbox is aware.
                  */
                 var view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {
@@ -57019,6 +59650,12 @@ __e(name) +
 '" type="' +
 __e(type) +
 '" \n        ';
+ if (placeholder) { ;
+__p += ' placeholder="' +
+__e(placeholder) +
+'" ';
+ } ;
+__p += '\n        ';
  if (value) { ;
 __p += ' value="' +
 __e(value) +
@@ -57063,6 +59700,23 @@ return __p
 };});
 
 
+define('tpl!form_url', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <a class="form-url" target="_blank" rel="noopener" href="' +
+__e(value) +
+'">' +
+__e(value) +
+'</a>\n</label>\n';
+
+}
+return __p
+};});
+
+
 
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
@@ -57074,8 +59728,8 @@ return __p
 //
 /*global define, escape, locales, Jed */
 (function (root, factory) {
-    define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha"], factory);
-})(undefined, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha) {
+    define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
+})(undefined, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
     "use strict";
 
     var XFORM_TYPE_MAP = {
@@ -57109,7 +59763,7 @@ return __p
         }))[0];
     };
 
-    u.xForm2webForm = function (field, stanza) {
+    u.xForm2webForm = function (field, stanza, domain) {
         /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
          * and turns it into an HTML field.
          *
@@ -57119,73 +59773,79 @@ return __p
          *  Parameters:
          *      (XMLElement) field - the field to convert
          */
-        if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
+        if (field.getAttribute('type')) {
+            if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
 
-            var values = _.map(u.queryChildren(field, 'value'), _.partial(_.get, _, 'textContent'));
-            var options = _.map(u.queryChildren(field, 'option'), function (option) {
-                var value = _.get(option.querySelector('value'), 'textContent');
-                return tpl_select_option({
-                    'value': value,
-                    'label': option.getAttribute('label'),
-                    'selected': _.startsWith(values, value),
-                    'required': _.isNil(field.querySelector('required'))
+                var values = _.map(u.queryChildren(field, 'value'), _.partial(_.get, _, 'textContent'));
+                var options = _.map(u.queryChildren(field, 'option'), function (option) {
+                    var value = _.get(option.querySelector('value'), 'textContent');
+                    return tpl_select_option({
+                        'value': value,
+                        'label': option.getAttribute('label'),
+                        'selected': _.startsWith(values, value),
+                        'required': !_.isNil(field.querySelector('required'))
+                    });
                 });
-            });
-            return tpl_form_select({
-                'name': field.getAttribute('var'),
-                'label': field.getAttribute('label'),
-                'options': options.join(''),
-                'multiple': field.getAttribute('type') === 'list-multi',
-                'required': _.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type') === 'fixed') {
-            var text = _.get(field.querySelector('value'), 'textContent');
-            var el = u.stringToDOM('<p class="form-help">');
-            el.textContent = text;
-            return el;
-        } else if (field.getAttribute('type') === 'jid-multi') {
-            return tpl_form_textarea({
-                'name': field.getAttribute('var'),
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent'),
-                'required': _.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type') === 'boolean') {
-            return tpl_form_checkbox({
-                'name': field.getAttribute('var'),
-                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-                'label': field.getAttribute('label') || '',
-                'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-                'required': _.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type') && field.getAttribute('var') === 'username') {
-            return tpl_form_username({
-                'domain': ' @' + this.domain,
-                'name': field.getAttribute('var'),
-                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent'),
-                'required': _.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type')) {
-            return tpl_form_input({
-                'name': field.getAttribute('var'),
-                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent'),
-                'required': _.isNil(field.querySelector('required'))
-            });
+                return tpl_form_select({
+                    'name': field.getAttribute('var'),
+                    'label': field.getAttribute('label'),
+                    'options': options.join(''),
+                    'multiple': field.getAttribute('type') === 'list-multi',
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('type') === 'fixed') {
+                var text = _.get(field.querySelector('value'), 'textContent');
+                return '<p class="form-help">' + text + '</p>';
+            } else if (field.getAttribute('type') === 'jid-multi') {
+                return tpl_form_textarea({
+                    'name': field.getAttribute('var'),
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('type') === 'boolean') {
+                return tpl_form_checkbox({
+                    'name': field.getAttribute('var'),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'label': field.getAttribute('label') || '',
+                    'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('var') === 'url') {
+                return tpl_form_url({
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent')
+                });
+            } else if (field.getAttribute('var') === 'username') {
+                return tpl_form_username({
+                    'domain': ' @' + domain,
+                    'name': field.getAttribute('var'),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else {
+                return tpl_form_input({
+                    'label': field.getAttribute('label') || '',
+                    'name': field.getAttribute('var'),
+                    'placeholder': null,
+                    'required': !_.isNil(field.querySelector('required')),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'value': _.get(field.querySelector('value'), 'textContent')
+                });
+            }
         } else {
             if (field.getAttribute('var') === 'ocr') {
                 // Captcha
                 var uri = field.querySelector('uri');
-                var _el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
+                var el = sizzle('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
                 return tpl_form_captcha({
                     'label': field.getAttribute('label'),
                     'name': field.getAttribute('var'),
-                    'data': _.get(_el, 'textContent'),
+                    'data': _.get(el, 'textContent'),
                     'type': uri.getAttribute('type'),
-                    'required': _.isNil(field.querySelector('required'))
+                    'required': !_.isNil(field.querySelector('required'))
                 });
             }
         }
@@ -58992,7 +61652,7 @@ Strophe.addConnectionPlugin('disco',
                     307: __('You have been kicked from this room'),
                     321: __("You have been removed from this room because of an affiliation change"),
                     322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
                 },
 
                 action_info_messages: {
@@ -61889,7 +64549,7 @@ return __p
                 });
             };
 
-            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks);
+            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             var afterReconnection = function afterReconnection() {
                 if (!_converse.allow_bookmarks) {
@@ -70649,14 +73309,37 @@ CryptoJS.mode.CTR = (function () {
 });
 //# sourceMappingURL=converse-otr.js.map;
 
+define('tpl!register_link', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="switch-form">\n    <p>' +
+__e( __("Don't have a chat account?") ) +
+'</p>\n    <p><a class="register-account toggle-register-login" href="#converse-register">' +
+__e(__("Register an account")) +
+'</a></p>\n</div>\n';
+
+}
+return __p
+};});
+
+
 define('tpl!register_panel', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form id="converse-register" class="pure-form converse-form">\n    <span class="reg-feedback"></span>\n    <label>' +
-__e(label_domain) +
-'</label>\n    ';
+__p += '<form id="converse-register" class="pure-form converse-form">\n    <legend>' +
+__e(__("Account Registration")) +
+'</legend>\n\n    <label>' +
+__e(__("Please enter the XMPP provider to register with:")) +
+'</label>\n    <p class="form-help">' +
+__e(help_providers) +
+' <a href="' +
+__e(href_providers) +
+'" class="url" target="_blank" rel="noopener">' +
+__e(help_providers_link) +
+'</a>.</p>\n    <div class="form-errors hidden"></div>\n\n    ';
  if (default_domain) { ;
 __p += '\n    	' +
 __e(default_domain) +
@@ -70664,32 +73347,17 @@ __e(default_domain) +
  } ;
 __p += '\n    ';
  if (!default_domain) { ;
-__p += '\n    	<input type="text" name="domain" placeholder="' +
+__p += '\n    	<input autofocus type="text" name="domain" placeholder="' +
 __e(domain_placeholder) +
-'">\n        <p class="form-help">' +
-__e(help_providers) +
-' <a href="' +
-__e(href_providers) +
-'" class="url" target="_blank" rel="noopener">' +
-__e(help_providers_link) +
-'</a>.</p>\n        <input class="pure-button button-primary" type="submit" value="' +
+'">\n        <input class="pure-button button-primary" type="submit" value="' +
 __e(label_register) +
 '">\n    ';
  } ;
-__p += '\n</form>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!register_tab', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<li><a class="s" data-id="register" href="#register">' +
-__e(label_register) +
-'</a></li>\n';
+__p += '\n</form>\n\n<div class="switch-form">\n    <p>' +
+__e( __("Already have a chat account?") ) +
+'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse-login">' +
+__e(__("Log in here")) +
+'</a>\n    </p>\n</div>\n';
 
 }
 return __p
@@ -70698,15 +73366,26 @@ return __p
 
 define('tpl!registration_form', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<p class="provider-title">' +
+__p += '<legend>' +
+__e(__("Account Registration:")) +
+' ' +
 __e(domain) +
-'</p>\n<p class="title">' +
+'</legend>\n<p class="title">' +
 __e(title) +
 '</p>\n<p class="instructions">' +
 __e(instructions) +
-'</p>\n';
+'</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="pure-button button-primary" value="' +
+__e(__('Register')) +
+'"/>\n    ';
+ if (!registration_domain) { ;
+__p += '\n        <input type="button" class="pure-button button-cancel" value="' +
+__e(__('Choose a different provider')) +
+'"/>\n    ';
+ } ;
+__p += '\n</fieldset>\n';
 
 }
 return __p
@@ -70719,11 +73398,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<span class="spinner login-submit"></span>\n<p class="info">' +
-__e(info_message) +
+__e(__("Hold tight, we're fetching the registration form…")) +
 '</p>\n';
  if (cancel) { ;
 __p += '\n	<button class="pure-button button-cancel hor_centered">' +
-__e(cancel) +
+__e(__('Cancel')) +
 '</button>\n';
  } ;
 __p += '\n';
@@ -70746,8 +73425,8 @@ return __p
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define('converse-register',["jquery.noconflict", "form-utils", "converse-core", "tpl!form_username", "tpl!register_panel", "tpl!register_tab", "tpl!registration_form", "tpl!registration_request", "tpl!spinner", "converse-controlbox"], factory);
-})(undefined, function ($, utils, converse, tpl_form_username, tpl_register_panel, tpl_register_tab, tpl_registration_form, tpl_registration_request, tpl_spinner) {
+    define('converse-register',["form-utils", "converse-core", "tpl!form_username", "tpl!register_link", "tpl!register_panel", "tpl!registration_form", "tpl!registration_request", "tpl!form_input", "tpl!spinner", "converse-controlbox"], factory);
+})(undefined, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
 
     "use strict";
 
@@ -70756,6 +73435,7 @@ return __p
     var _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         Backbone = _converse$env.Backbone,
+        sizzle = _converse$env.sizzle,
         $iq = _converse$env.$iq,
         _ = _converse$env._;
 
@@ -70775,32 +73455,72 @@ return __p
 
     converse.plugins.add('converse-register', {
 
-        overrides: {
+        'overrides': {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
 
-            ControlBoxView: {
-                switchTab: function switchTab(ev) {
+            LoginPanel: {
+
+                render: function render(cfg) {
                     var _converse = this.__super__._converse;
 
-                    var result = this.__super__.switchTab.apply(this, arguments);
-                    if (_converse.registration_domain && ev.target.getAttribute('data-id') === "register" && !this.model.get('registration_form_rendered')) {
-                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
+                    var form = this.el.querySelector('form');
+                    this.__super__.render.apply(this, arguments);
+                    if (_.isNull(form)) {
+                        if (_converse.allow_registration) {
+                            this.el.insertAdjacentHTML('beforeend', tpl_register_link({ '__': _converse.__ }));
+                        }
                     }
-                    return result;
+                    return this;
+                }
+            },
+
+            ControlBoxView: {
+
+                events: {
+                    'click .toggle-register-login': 'switchToRegisterForm'
+                },
+
+                initialize: function initialize() {
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this));
+                },
+                switchToRegisterForm: function switchToRegisterForm(ev) {
+                    ev.preventDefault();
+                    if (this.model.get('active-form') == "register") {
+                        this.model.set('active-form', 'login');
+                    } else {
+                        this.model.set('active-form', 'register');
+                    }
+                },
+                showLoginOrRegisterForm: function showLoginOrRegisterForm() {
+                    var _converse = this.__super__._converse;
+
+                    if (_.isNil(this.registerpanel)) {
+                        return;
+                    }
+                    if (this.model.get('active-form') == "register") {
+                        this.loginpanel.el.classList.add('hidden');
+                        this.registerpanel.el.classList.remove('hidden');
+                    } else {
+                        this.loginpanel.el.classList.remove('hidden');
+                        this.registerpanel.el.classList.add('hidden');
+                    }
                 },
                 renderRegistrationPanel: function renderRegistrationPanel() {
                     var _converse = this.__super__._converse;
 
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
-                            '$parent': this.$el.find('.controlbox-panes'),
                             'model': this.model
                         });
-                        this.registerpanel.render().$el.addClass('hidden');
+                        this.registerpanel.render();
+                        this.registerpanel.el.classList.add('hidden');
+                        this.el.querySelector('#converse-login-panel').insertAdjacentElement('afterend', this.registerpanel.el);
+                        this.showLoginOrRegisterForm();
                     }
                     return this;
                 },
@@ -70822,12 +73542,11 @@ return __p
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new templates
-            _converse.templates.form_username = tpl_form_username;
-            _converse.templates.register_panel = tpl_register_panel;
-            _converse.templates.register_tab = tpl_register_tab;
-            _converse.templates.registration_form = tpl_registration_form;
-            _converse.templates.registration_request = tpl_registration_request;
+
+            _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+            _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+            _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+            _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
             _converse.api.settings.update({
                 allow_registration: true,
@@ -70835,32 +73554,47 @@ return __p
                 providers_link: 'https://xmpp.net/directory.php' // Link to XMPP providers shown on registration page
             });
 
+            _converse.RegistrationRouter = Backbone.Router.extend({
+                initialize: function initialize() {
+                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
+                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
+                },
+                setActiveForm: function setActiveForm(value) {
+                    _converse.api.waitUntil('controlboxInitialized').then(function () {
+                        var controlbox = _converse.chatboxes.get('controlbox');
+                        controlbox.set({ 'active-form': value });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }
+            });
+            var router = new _converse.RegistrationRouter();
+
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "register",
-                className: 'controlbox-pane',
+                id: "converse-register-panel",
+                className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen'
+                    'submit form#converse-register': 'onFormSubmission',
+                    'click .button-cancel': 'renderProviderChoiceForm'
                 },
 
                 initialize: function initialize(cfg) {
                     this.reset();
-                    this.$parent = cfg.$parent;
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     this.registerHooks();
                 },
                 render: function render() {
                     this.model.set('registration_form_rendered', false);
-                    this.$parent.append(this.$el.html(tpl_register_panel({
+                    this.el.innerHTML = tpl_register_panel({
+                        '__': __,
                         'default_domain': _converse.registration_domain,
-                        'label_domain': __("Your XMPP provider's domain name:"),
                         'label_register': __('Fetch registration form'),
                         'help_providers': __('Tip: A list of public XMPP providers is available'),
                         'help_providers_link': __('here'),
                         'href_providers': _converse.providers_link,
                         'domain_placeholder': _converse.domain_placeholder
-                    })));
-                    this.$tabs.append(tpl_register_tab({ label_register: __('Register') }));
+                    });
+                    if (_converse.registration_domain) {
+                        this.fetchRegistrationForm(_converse.registration_domain);
+                    }
                     return this;
                 },
                 registerHooks: function registerHooks() {
@@ -70896,6 +73630,7 @@ return __p
                         return;
                     }
                     if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
+                        this.showValidationError(__("Sorry, we're unable to connect to your chosen provider."));
                         return false;
                     }
                     var register = body.getElementsByTagName("register");
@@ -70905,12 +73640,15 @@ return __p
                         return false;
                     }
                     if (register.length === 0) {
-                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, __("Sorry, the given provider does not support in " + "band account registration. Please try with a " + "different provider."));
+                        conn._changeConnectStatus(Strophe.Status.REGIFAIL);
+                        this.showValidationError(__("Sorry, the given provider does not support in " + "band account registration. Please try with a " + "different provider."));
                         return true;
                     }
                     // Send an IQ stanza to get all required data fields
                     conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
-                    conn.send($iq({ type: "get" }).c("query", { xmlns: Strophe.NS.REGISTER }).tree());
+                    var stanza = $iq({ type: "get" }).c("query", { xmlns: Strophe.NS.REGISTER }).tree();
+                    stanza.setAttribute("id", conn.getUniqueId("sendIQ"));
+                    conn.send(stanza);
                     conn.connected = false;
                     return true;
                 },
@@ -70920,12 +73658,18 @@ return __p
                      *  Parameters:
                      *    (XMLElement) elem - The query stanza.
                      */
+                    if (stanza.getAttribute("type") === "error") {
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, __('Something went wrong while establishing a connection with "%1$s".' + 'Are you sure it exists?', this.domain));
+                        return false;
+                    }
                     if (stanza.getElementsByTagName("query").length !== 1) {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
                     this.setFields(stanza);
-                    this.renderRegistrationForm(stanza);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationForm(stanza);
+                    }
                     return false;
                 },
                 reset: function reset(settings) {
@@ -70944,92 +73688,154 @@ return __p
                         _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
-                onProviderChosen: function onProviderChosen(ev) {
-                    /* Callback method that gets called when the user has chosen an
-                     * XMPP provider.
+                onFormSubmission: function onFormSubmission(ev) {
+                    /* Event handler when the #converse-register form is
+                     * submitted.
                      *
-                     * Parameters:
-                     *      (Submit Event) ev - Form submission event.
+                     * Depending on the available input fields, we delegate to
+                     * other methods.
                      */
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    var $form = $(ev.target),
-                        $domain_input = $form.find('input[name=domain]'),
-                        domain = $domain_input.val();
+                    if (_.isNull(ev.target.querySelector('input[name=domain]'))) {
+                        this.submitRegistrationForm(ev.target);
+                    } else {
+                        this.onProviderChosen(ev.target);
+                    }
+                },
+                onProviderChosen: function onProviderChosen(form) {
+                    /* Callback method that gets called when the user has chosen an
+                     * XMPP provider.
+                     *
+                     * Parameters:
+                     *      (HTMLElement) form - The form that was submitted
+                     */
+                    var domain_input = form.querySelector('input[name=domain]'),
+                        domain = _.get(domain_input, 'value');
                     if (!domain) {
-                        $domain_input.addClass('error');
+                        // TODO: add validation message
+                        domain_input.classList.add('error');
                         return;
                     }
-                    $form.find('input[type=submit]').hide();
-                    this.fetchRegistrationForm(domain, __('Cancel'));
+                    form.querySelector('input[type=submit]').classList.add('hidden');
+                    this.fetchRegistrationForm(domain);
                 },
-                fetchRegistrationForm: function fetchRegistrationForm(domain_name, cancel_label) {
+                fetchRegistrationForm: function fetchRegistrationForm(domain_name) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
                      * Parameters:
-                     *      (Domain name) domain_name - XMPP server domain
+                     *      (String) domain_name - XMPP server domain
                      */
-                    this.renderRegistrationRequest(cancel_label);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationRequest();
+                    }
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
                     });
-                    _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
+                    _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
                     return false;
                 },
-                renderRegistrationRequest: function renderRegistrationRequest(cancel_label) {
-                    var form = this.el.querySelector('#converse-register');
-                    var markup = tpl_registration_request({
-                        'cancel': cancel_label,
-                        'info_message': _converse.__('Requesting a registration form from the XMPP server')
-                    });
-                    form.appendChild(utils.createFragmentFromText(markup));
-                    if (!_converse.registration_domain) {
-                        var cancel_button = document.querySelector('button.button-cancel');
-                        cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
-                    }
+                renderRegistrationRequest: function renderRegistrationRequest() {
+                    /* Clear the form and inform the user that the registration
+                     * form is being fetched.
+                     */
+                    this.clearRegistrationForm().insertAdjacentHTML('beforeend', tpl_registration_request({
+                        '__': _converse.__,
+                        'cancel': _converse.registration_domain
+                    }));
                 },
                 giveFeedback: function giveFeedback(message, klass) {
-                    this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
+                    var feedback = this.el.querySelector('.reg-feedback');
+                    if (!_.isNull(feedback)) {
+                        feedback.parentNode.removeChild(feedback);
+                    }
+                    var form = this.el.querySelector('form');
+                    form.insertAdjacentHTML('afterbegin', '<span class="reg-feedback"></span>');
+                    feedback = form.querySelector('.reg-feedback');
+                    feedback.textContent = message;
                     if (klass) {
-                        $('.reg-feedback').addClass(klass);
+                        feedback.classList.add(klass);
                     }
                 },
-                onRegistering: function onRegistering(status, error) {
-                    var that = void 0;
-                    _converse.log('onRegistering');
-                    if (_.includes([Strophe.Status.DISCONNECTED, Strophe.Status.CONNFAIL, Strophe.Status.REGIFAIL, Strophe.Status.NOTACCEPTABLE, Strophe.Status.CONFLICT], status)) {
+                clearRegistrationForm: function clearRegistrationForm() {
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = '';
+                    this.model.set('registration_form_rendered', false);
+                    return form;
+                },
+                showRegistrationForm: function showRegistrationForm() {},
+                showSpinner: function showSpinner() {
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = tpl_spinner();
+                    this.model.set('registration_form_rendered', false);
+                    return this;
+                },
+                onConnectStatusChanged: function onConnectStatusChanged(status_code) {
+                    /* Callback function called by Strophe whenever the
+                     * connection status changes.
+                     *
+                     * Passed to Strophe specifically during a registration
+                     * attempt.
+                     *
+                     * Parameters:
+                     *      (Integer) status_code - The Stroph.Status status code
+                     */
+                    _converse.log('converse-register: onConnectStatusChanged');
+                    if (_.includes([Strophe.Status.DISCONNECTED, Strophe.Status.CONNFAIL, Strophe.Status.REGIFAIL, Strophe.Status.NOTACCEPTABLE, Strophe.Status.CONFLICT], status_code)) {
 
-                        _converse.log("Problem during registration: Strophe.Status is: " + status, Strophe.LogLevel.ERROR);
-                        this.cancelRegistration();
-                        if (error) {
-                            this.giveFeedback(error, 'error');
-                        } else {
-                            this.giveFeedback(__('Something went wrong while establishing a connection with "%1$s". Are you sure it exists?', this.domain), 'error');
-                        }
-                    } else if (status === Strophe.Status.REGISTERED) {
+                        _converse.log("Problem during registration: Strophe.Status is " + _converse.CONNECTION_STATUS[status_code], Strophe.LogLevel.ERROR);
+                        this.abortRegistration();
+                    } else if (status_code === Strophe.Status.REGISTERED) {
+                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         _converse.connection.reset();
-                        that = this;
-                        this.$('form').hide(function () {
-                            $(this).replaceWith(tpl_spinner);
-                            if (that.fields.password && that.fields.username) {
-                                // automatically log the user in
-                                _converse.connection.connect(that.fields.username.toLowerCase() + '@' + that.domain.toLowerCase(), that.fields.password, _converse.onConnectStatusChanged);
-                                _converse.chatboxviews.get('controlbox').switchTab({ 'target': that.$tabs.find('.current') });
-                                _converse.giveFeedback(__('Now logging you in'));
-                            } else {
-                                _converse.chatboxviews.get('controlbox').renderLoginPanel();
-                                _converse.giveFeedback(__('Registered successfully'));
-                            }
-                            that.reset();
-                        });
+                        this.showSpinner();
+
+                        if (this.fields.password && this.fields.username) {
+                            // automatically log the user in
+                            _converse.connection.connect(this.fields.username.toLowerCase() + '@' + this.domain.toLowerCase(), this.fields.password, _converse.onConnectStatusChanged);
+                            this.giveFeedback(__('Now logging you in'), 'info');
+                        } else {
+                            _converse.chatboxviews.get('controlbox').renderLoginPanel();
+                            _converse.giveFeedback(__('Registered successfully'));
+                        }
+                        this.reset();
                     }
                 },
-                renderRegistrationForm: function renderRegistrationForm(stanza) {
+                renderLegacyRegistrationForm: function renderLegacyRegistrationForm(form) {
                     var _this2 = this;
+
+                    _.each(_.keys(this.fields), function (key) {
+                        if (key === "username") {
+                            form.insertAdjacentHTML('beforeend', tpl_form_username({
+                                'domain': " @" + _this2.domain,
+                                'name': key,
+                                'type': "text",
+                                'label': key,
+                                'value': '',
+                                'required': true
+                            }));
+                        } else {
+                            form.insertAdjacentHTML('beforeend', tpl_form_input({
+                                'label': key,
+                                'name': key,
+                                'placeholder': key,
+                                'required': true,
+                                'type': key === 'password' || key === 'email' ? key : "text",
+                                'value': ''
+                            }));
+                        }
+                    });
+                    // Show urls
+                    _.each(this.urls, function (url) {
+                        form.insertAdjacentHTML('afterend', '<a target="blank" rel="noopener" href="' + url + '">' + url + '</a>');
+                    });
+                },
+                renderRegistrationForm: function renderRegistrationForm(stanza) {
+                    var _this3 = this;
 
                     /* Renders the registration form based on the XForm fields
                      * received from the XMPP server.
@@ -71037,62 +73843,50 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
                      */
-                    this.model.set('registration_form_rendered', true);
-
-                    var $form = this.$('form'),
-                        $stanza = $(stanza);
-                    var $fields = void 0,
-                        $input = void 0;
-                    $form.empty().append(tpl_registration_form({
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = tpl_registration_form({
+                        '__': _converse.__,
                         'domain': this.domain,
                         'title': this.title,
-                        'instructions': this.instructions
-                    }));
+                        'instructions': this.instructions,
+                        'registration_domain': _converse.registration_domain
+                    });
+
+                    var buttons = form.querySelector('fieldset.buttons');
                     if (this.form_type === 'xform') {
-                        $fields = $stanza.find('field');
-                        _.each($fields, function (field) {
-                            $form.append(utils.xForm2webForm.bind(_this2, field, stanza));
+                        _.each(stanza.querySelectorAll('field'), function (field) {
+                            buttons.insertAdjacentHTML('beforebegin', utils.xForm2webForm(field, stanza, _this3.domain));
                         });
                     } else {
-                        // Show fields
-                        _.each(_.keys(this.fields), function (key) {
-                            if (key === "username") {
-                                $input = tpl_form_username({
-                                    domain: " @" + _this2.domain,
-                                    name: key,
-                                    type: "text",
-                                    label: key,
-                                    value: '',
-                                    required: 1
-                                });
-                            } else {
-                                $form.append("<label>" + key + "</label>");
-                                $input = $("<input placeholder=\"" + key + "\" name=\"" + key + "\"></input>");
-                                if (key === 'password' || key === 'email') {
-                                    $input.attr('type', key);
-                                }
-                            }
-                            $form.append($input);
-                        });
-                        // Show urls
-                        _.each(this.urls, function (url) {
-                            $form.append($('<a target="blank"></a>').attr('href', url).text(url));
-                        });
+                        this.renderLegacyRegistrationForm(form);
                     }
-                    if (this.fields) {
-                        $form.append("<input type=\"submit\" class=\"pure-button button-primary\" value=\"" + __('Register') + "\"/>");
-                        $form.on('submit', this.submitRegistrationForm.bind(this));
-                        $form.append("<input type=\"button\" class=\"pure-button button-cancel\" value=\"" + __('Cancel') + "\"/>");
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                    if (!this.fields) {
+                        form.querySelector('.button-primary').classList.add('hidden');
+                    }
+                    form.classList.remove('hidden');
+                    this.model.set('registration_form_rendered', true);
+                },
+                showValidationError: function showValidationError(message) {
+                    var form = this.el.querySelector('form');
+                    var flash = form.querySelector('.form-errors');
+                    if (_.isNull(flash)) {
+                        flash = '<div class="form-errors hidden"></div>';
+                        var instructions = form.querySelector('p.instructions');
+                        if (_.isNull(instructions)) {
+                            form.insertAdjacentHTML('afterbegin', flash);
+                        } else {
+                            instructions.insertAdjacentHTML('afterend', flash);
+                        }
+                        flash = form.querySelector('.form-errors');
                     } else {
-                        $form.append("<input type=\"button\" class=\"submit\" value=\"" + __('Return') + "\"/>");
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                        flash.innerHTML = '';
                     }
-                    if (_converse.registration_domain) {
-                        $form.find('input[type=button]').hide();
-                    }
+                    flash.insertAdjacentHTML('beforeend', '<p class="form-help error">' + message + '</p>');
+                    flash.classList.remove('hidden');
                 },
                 reportErrors: function reportErrors(stanza) {
+                    var _this4 = this;
+
                     /* Report back to the user any error messages received from the
                      * XMPP server after attempted registration.
                      *
@@ -71100,53 +73894,42 @@ return __p
                      *      (XMLElement) stanza - The IQ stanza received from the
                      *      XMPP server.
                      */
-                    var $form = this.$('form'),
-                        $errmsgs = $(stanza).find('error text');
-
-                    var $flash = $form.find('.form-errors');
-                    if (!$flash.length) {
-                        var flash = '<legend class="form-errors"></legend>';
-                        if ($form.find('p.instructions').length) {
-                            $form.find('p.instructions').append(flash);
-                        } else {
-                            $form.prepend(flash);
-                        }
-                        $flash = $form.find('.form-errors');
-                    } else {
-                        $flash.empty();
-                    }
-                    $errmsgs.each(function (idx, txt) {
-                        $flash.append($('<p>').text($(txt).text()));
+                    var errors = stanza.querySelectorAll('error');
+                    _.each(errors, function (error) {
+                        _this4.showValidationError(error.textContent);
                     });
-                    if (!$errmsgs.length) {
-                        $flash.append($('<p>').text(__('The provider rejected your registration attempt. ' + 'Please check the values you entered for correctness.')));
+                    if (!errors.length) {
+                        var message = __('The provider rejected your registration attempt. ' + 'Please check the values you entered for correctness.');
+                        this.showValidationError(message);
                     }
-                    $flash.show();
                 },
-                cancelRegistration: function cancelRegistration(ev) {
-                    /* Handler, when the user cancels the registration form.
-                     */
+                renderProviderChoiceForm: function renderProviderChoiceForm(ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
+                    _converse.connection._proto._abortAllRequests();
                     _converse.connection.reset();
-                    this.model.set('registration_form_rendered', false);
                     this.render();
-                    if (_converse.registration_domain) {
-                        document.querySelector('button.button-cancel').onclick = _.bind(this.fetchRegistrationForm, this, _converse.registration_domain, __('Retry'));
+                },
+                abortRegistration: function abortRegistration() {
+                    _converse.connection._proto._abortAllRequests();
+                    _converse.connection.reset();
+                    if (this.model.get('registration_form_rendered')) {
+                        if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
+                            this.fetchRegistrationForm(_converse.registration_domain);
+                        }
+                    } else {
+                        this.render();
                     }
                 },
-                submitRegistrationForm: function submitRegistrationForm(ev) {
+                submitRegistrationForm: function submitRegistrationForm(form) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
                      *
                      * Parameters:
-                     *      (Event) ev - the submit event.
+                     *      (HTMLElement) form - The HTML form that was submitted
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
                     var has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'), function (result, input) {
                         if (input.value === '') {
                             input.classList.add('error');
@@ -71157,21 +73940,20 @@ return __p
                     if (has_empty_inputs) {
                         return;
                     }
-                    var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+
+                    var inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
                         iq = $iq({ type: "set" }).c("query", { xmlns: Strophe.NS.REGISTER });
 
                     if (this.form_type === 'xform') {
                         iq.c("x", { xmlns: Strophe.NS.XFORM, type: 'submit' });
-                        $inputs.each(function () {
-                            iq.cnode(utils.webForm2xForm(this)).up();
+                        _.each(inputs, function (input) {
+                            iq.cnode(utils.webForm2xForm(input)).up();
                         });
                     } else {
-                        $inputs.each(function () {
-                            var $input = $(this);
-                            iq.c($input.attr('name'), {}, $input.val());
+                        _.each(inputs, function (input) {
+                            iq.c(input.getAttribute('name'), {}, input.value);
                         });
                     }
-                    this.model.set('registration_form_rendered', false);
                     _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                     _converse.connection.send(iq);
                     this.setFields(iq.tree());
@@ -71183,45 +73965,40 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                      */
-                    var $query = $(stanza).find('query');
-                    if ($query.length > 0) {
-                        var $xform = $query.find("x[xmlns=\"" + Strophe.NS.XFORM + "\"]");
-                        if ($xform.length > 0) {
-                            this._setFieldsFromXForm($xform);
-                        } else {
-                            this._setFieldsFromLegacy($query);
-                        }
+                    var query = stanza.querySelector('query');
+                    var xform = sizzle("x[xmlns=\"" + Strophe.NS.XFORM + "\"]", query);
+                    if (xform.length > 0) {
+                        this._setFieldsFromXForm(xform.pop());
+                    } else {
+                        this._setFieldsFromLegacy(query);
                     }
                 },
-                _setFieldsFromLegacy: function _setFieldsFromLegacy($query) {
-                    var _this3 = this;
+                _setFieldsFromLegacy: function _setFieldsFromLegacy(query) {
+                    var _this5 = this;
 
-                    $query.children().each(function (idx, field) {
-                        var $field = $(field);
+                    _.each(query.children, function (field) {
                         if (field.tagName.toLowerCase() === 'instructions') {
-                            _this3.instructions = Strophe.getText(field);
+                            _this5.instructions = Strophe.getText(field);
                             return;
                         } else if (field.tagName.toLowerCase() === 'x') {
-                            if ($field.attr('xmlns') === 'jabber:x:oob') {
-                                $field.find('url').each(function (idx, url) {
-                                    _this3.urls.push($(url).text());
-                                });
+                            if (field.getAttribute('xmlns') === 'jabber:x:oob') {
+                                _this5.urls.concat(_.map(field.querySelectorAll('url'), 'textContent'));
                             }
                             return;
                         }
-                        _this3.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                        _this5.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
                     });
                     this.form_type = 'legacy';
                 },
-                _setFieldsFromXForm: function _setFieldsFromXForm($xform) {
-                    var _this4 = this;
+                _setFieldsFromXForm: function _setFieldsFromXForm(xform) {
+                    var _this6 = this;
 
-                    this.title = $xform.find('title').text();
-                    this.instructions = $xform.find('instructions').text();
-                    $xform.find('field').each(function (idx, field) {
+                    this.title = _.get(xform.querySelector('title'), 'textContent');
+                    this.instructions = _.get(xform.querySelector('instructions'), 'textContent');
+                    _.each(xform.querySelectorAll('field'), function (field) {
                         var _var = field.getAttribute('var');
                         if (_var) {
-                            _this4.fields[_var.toLowerCase()] = $(field).children('value').text();
+                            _this6.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');
                         } else {
                             // TODO: other option seems to be type="fixed"
                             _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
@@ -71237,14 +74014,11 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza.
                      */
-                    var error = null,
-                        query = stanza.getElementsByTagName("query");
-                    if (query.length > 0) {
-                        query = query[0];
-                    }
                     if (stanza.getAttribute("type") === "error") {
                         _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
-                        error = stanza.getElementsByTagName("error");
+                        this.reportErrors(stanza);
+
+                        var error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                             return false;
@@ -71257,15 +74031,10 @@ return __p
                         } else {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                         }
-                        this.reportErrors(stanza);
                     } else {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                     }
                     return false;
-                },
-                remove: function remove() {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
         }

@@ -12,7 +12,7 @@
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
             <label>{{{__("Jabber ID:")}}}</label>
             <p class="form-help fade-in error {[ if (!_.includes(errors, 'invalid_jid')) { ]} hidden {[ } ]}">
-                {{{_('Please enter a valid XMPP address')}}}
+                {{{__('Please enter a valid XMPP address')}}}
             </p>
             <input autofocus
                    type="text"
@@ -22,7 +22,7 @@
             {[ if (authentication !== EXTERNAL) { ]}
                 <label>{{{__("Password:")}}}</label>
                 <p class="form-help fade-in error {[ if (!_.includes(errors, 'password_required')) { ]} hidden {[ } ]}">
-                    {{{_('Please enter your password')}}}
+                    {{{__('Please enter your password')}}}
                 </p>
                 <input type="password"
                        name="password"

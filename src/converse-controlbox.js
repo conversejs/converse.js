@@ -26,7 +26,6 @@
             "tpl!search_contact",
             "tpl!status_option",
             "tpl!spinner",
-            "tpl!login_feedback",
             "converse-chatview",
             "converse-rosterview"
     ], factory);
@@ -50,7 +49,6 @@
             tpl_search_contact,
             tpl_status_option,
             tpl_spinner,
-            tpl_login_feedback
         ) {
     "use strict";
 
@@ -768,17 +766,19 @@
                 searchContacts (ev) {
                     ev.preventDefault();
                     $.getJSON(_converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        const title_subscribe = __('Click to add as a chat contact');
+                        const no_users_text = __('No users found');
                         const $ul= $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
                         if (!data.length) {
-                            $ul.append(`<li class="chat-info">${__('No users found')}</li>`);
+                            $ul.append(`<li class="chat-info">${no_users_text}</li>`);
                         }
                         $(data).each(function (idx, obj) {
                             $ul.append(
                                 $('<li class="found-user"></li>')
                                 .append(
-                                    $(`<a class="subscribe-to-user" href="#" title="${__('Click to add as a chat contact')}"></a>`)
+                                    $(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`)
                                     .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
                                     .text(obj.fullname)
                                 )
@@ -919,7 +919,7 @@
             _converse.on('disconnected', disconnect);
 
             const afterReconnected = function () {
-                /* After reconnection makes sure the controlbox's is aware.
+                /* After reconnection makes sure the controlbox is aware.
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {

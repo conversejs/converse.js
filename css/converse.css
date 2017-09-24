@@ -1336,7 +1336,7 @@
     #conversejs form.pure-form.converse-form legend {
       color: #777;
       font-size: 125%;
-      margin-bottom: 1em; }
+      margin-bottom: 1.5em; }
     #converse-embedded-chat form.pure-form.converse-form input[type=checkbox],
     #conversejs form.pure-form.converse-form input[type=checkbox] {
       display: block; }

@@ -1010,7 +1010,7 @@
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     var info_text = view.$el.find('.chat-content .chat-info').text();
-                    expect(info_text).toBe('Your nickname has been automatically set to: thirdwitch');
+                    expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
                     done();
                 });
             }));
@@ -1299,7 +1299,7 @@
                  *  </x>
                  *  </presence>
                  */
-                var __ = utils.__.bind(_converse);
+                var __ = _converse.__;
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'oldnick').then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     var $chat_content = view.$el.find('.chat-content');
@@ -1328,7 +1328,9 @@
 
                     expect($chat_content.find('div.chat-info').length).toBe(2);
                     expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has joined the room.");
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(__(_converse.muc.new_nickname_messages["210"], "oldnick"));
+                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                        __(_converse.muc.new_nickname_messages["210"], "oldnick")
+                    );
 
                     presence = $pres().attrs({
                             from:'lounge@localhost/oldnick',
@@ -1349,7 +1351,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content.find('div.chat-info').length).toBe(3);
                     expect($chat_content.find('div.chat-info').last().html()).toBe(
-                        __(_converse.muc.new_nickname_messages["303"], "newnick"));
+                        __(_converse.muc.new_nickname_messages["303"], "newnick")
+                    );
 
                     $occupants = view.$('.occupant-list');
                     expect($occupants.children().length).toBe(0);
@@ -1370,7 +1373,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content.find('div.chat-info').length).toBe(4);
                     expect($chat_content.find('div.chat-info').get(2).textContent).toBe(
-                        __(_converse.muc.new_nickname_messages["303"], "newnick"));
+                        __(_converse.muc.new_nickname_messages["303"], "newnick")
+                    );
                     expect($chat_content.find('div.chat-info').last().html()).toBe(
                         "newnick has joined the room.");
                     $occupants = view.$('.occupant-list');

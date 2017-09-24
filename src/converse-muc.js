@@ -246,8 +246,8 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __,
-                ___ } = _converse;
+                  { __ } = _converse,
+                  { ___ } = utils;
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -316,8 +316,8 @@
                 },
 
                 new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to: %1$s'),
-                    303: ___('Your nickname has been changed to: %1$s')
+                    210: ___('Your nickname has been automatically set to %1$s'),
+                    303: ___('Your nickname has been changed to %1$s')
                 }
             };
 

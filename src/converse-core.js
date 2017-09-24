@@ -32,6 +32,19 @@
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
+    // Add Strophe Namespaces
+    Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+    Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+    Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+    Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
+
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
@@ -214,34 +227,16 @@
         Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
         Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
-        // Add Strophe Namespaces
-        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-        Strophe.addNamespace('XFORM', 'jabber:x:data');
-
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     10000,
             'INACTIVE':   90000
         };
 
-        // Internationalization
-        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
-        if (!moment.locale) {
-            //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
+        /* Internationalization */
         moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        const __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
+        _converse.locale = utils.getLocale(settings.i18n, utils.isLocaleSupported);
+        const __ = _converse.__ = _.partial(utils.__, _converse);
 
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
@@ -277,6 +272,7 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
+            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -1870,18 +1866,34 @@
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        _converse.initPlugins();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
 
+        // TODO: fallback when global history has already been started
         Backbone.history.start();
+
+        function finishInitialization () {
+            _converse.initPlugins();
+            _converse.initConnection();
+            _converse.setUpXMLLogging();
+            _converse.logIn();
+            _converse.registerGlobalEventHandlers();
+        }
 
         if (!_.isUndefined(_converse.connection) &&
             _converse.connection.service === 'jasmine tests') {
+
+            finishInitialization();
             return _converse;
         } else {
+            utils.fetchLocale(
+                _converse.locale,
+                _converse.locales_url
+            ).then((jed) => {
+                _converse.jed = jed;
+                finishInitialization();
+            }).catch((reason) => {
+                finishInitialization();
+                _converse.log(reason, Strophe.LogLevel.FATAL);
+            });
             return init_promise.promise;
         }
     };

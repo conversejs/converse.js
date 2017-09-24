@@ -45,7 +45,7 @@
             var $registration = $panels.children().last();
 
             var $register_link = cbview.$('a.register-account');
-            expect($register_link.text()).toBe("Register an account");
+            expect($register_link.text()).toBe("Create an account");
             $register_link.click();
             test_utils.waitUntil(function () {
                 return $registration.is(':visible');

@@ -462,7 +462,7 @@
                 className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-login': 'authenticate',
-                    'blur   input': 'validate'
+                    'change input': 'validate'
                 },
 
                 initialize (cfg) {

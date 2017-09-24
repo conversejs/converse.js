@@ -403,9 +403,6 @@
                     return form;
                 },
 
-                showRegistrationForm () {
-                },
-
                 showSpinner () {
                     const form = this.el.querySelector('form');
                     form.innerHTML = tpl_spinner();

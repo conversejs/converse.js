@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-24 00:31+0200\n"
+"POT-Creation-Date: 2017-09-24 10:57+0200\n"
 "PO-Revision-Date: 2016-04-07 10:22+0000\n"
 "Last-Translator: Laconic Team <info@laconic.website>\n"
 "Language-Team: Laconic Team <info@laconic.website>\n"
@@ -53,7 +53,7 @@ msgstr "Кликните, чтобы спрятать эти контакты"
 
 #: dist/converse-no-dependencies.js:11399
 #: dist/converse-no-dependencies.js:18475
-#: dist/converse-no-dependencies.js:24691
+#: dist/converse-no-dependencies.js:24690
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Удалить сообщения"
@@ -99,7 +99,7 @@ msgstr "перестал набирать"
 
 #: dist/converse-no-dependencies.js:11656
 #: dist/converse-no-dependencies.js:11871
-#: dist/converse-no-dependencies.js:23564
+#: dist/converse-no-dependencies.js:23563
 msgid "has gone away"
 msgstr "отошёл"
 
@@ -122,12 +122,12 @@ msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Вы уверены, что хотите очистить сообщения из окна чата?"
 
 #: dist/converse-no-dependencies.js:11869
-#: dist/converse-no-dependencies.js:23562
+#: dist/converse-no-dependencies.js:23561
 msgid "has gone offline"
 msgstr "вышел из сети"
 
 #: dist/converse-no-dependencies.js:11873
-#: dist/converse-no-dependencies.js:23566
+#: dist/converse-no-dependencies.js:23565
 msgid "is busy"
 msgstr "занят"
 
@@ -1247,13 +1247,12 @@ msgid "Don't have a chat account?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22550
-msgid "Register an account"
+msgid "Create an account"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22564
-#, fuzzy
-msgid "Account Registration"
-msgstr "Получить форму регистрации"
+msgid "Create your account"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:22566
 msgid "Please enter the XMPP provider to register with:"
@@ -1320,15 +1319,15 @@ msgstr ""
 "Что-то пошло не так при установке связи с \"%1$s\". Вы уверены, что такой "
 "адрес существует?"
 
-#: dist/converse-no-dependencies.js:23031
+#: dist/converse-no-dependencies.js:23030
 msgid "Now logging you in"
 msgstr "Осуществляется вход"
 
-#: dist/converse-no-dependencies.js:23034
+#: dist/converse-no-dependencies.js:23033
 msgid "Registered successfully"
 msgstr "Зарегистрирован успешно"
 
-#: dist/converse-no-dependencies.js:23133
+#: dist/converse-no-dependencies.js:23132
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1337,45 +1336,49 @@ msgstr ""
 "правильно ли введены значения."
 
 #. XXX: workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:23518
-#: dist/converse-no-dependencies.js:23524
+#: dist/converse-no-dependencies.js:23517
+#: dist/converse-no-dependencies.js:23523
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23526
-#: dist/converse-no-dependencies.js:23534
-#: dist/converse-no-dependencies.js:23537
+#: dist/converse-no-dependencies.js:23525
+#: dist/converse-no-dependencies.js:23533
+#: dist/converse-no-dependencies.js:23536
 #, javascript-format
 msgid "%1$s says"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23568
+#: dist/converse-no-dependencies.js:23567
 #, fuzzy
 msgid "has come online"
 msgstr "вышел из сети"
 
-#: dist/converse-no-dependencies.js:23583
+#: dist/converse-no-dependencies.js:23582
 msgid "wants to be your contact"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:23911
-#: dist/converse-no-dependencies.js:24229
+#: dist/converse-no-dependencies.js:23910
+#: dist/converse-no-dependencies.js:24228
 msgid "Minimize this chat box"
 msgstr "Свернуть окно чата"
 
-#: dist/converse-no-dependencies.js:24045
+#: dist/converse-no-dependencies.js:24044
 msgid "Click to restore this chat"
 msgstr "Кликните, чтобы развернуть чат"
 
-#: dist/converse-no-dependencies.js:24208
+#: dist/converse-no-dependencies.js:24207
 msgid "Minimized"
 msgstr "Свёрнуто"
 
-#: dist/converse-no-dependencies.js:24692
+#: dist/converse-no-dependencies.js:24691
 #, fuzzy
 msgid "Close this box"
 msgstr "Закрыть это окно чата"
+
+#, fuzzy
+#~ msgid "Account Registration"
+#~ msgstr "Получить форму регистрации"
 
 #~ msgid "XMPP Username:"
 #~ msgstr "XMPP Username:"

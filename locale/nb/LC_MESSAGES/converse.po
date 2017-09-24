@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-24 00:31+0200\n"
+"POT-Creation-Date: 2017-09-24 10:57+0200\n"
 "PO-Revision-Date: 2017-09-17 23:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -55,7 +55,7 @@ msgstr "Klikk for å skjule disse kontaktene"
 
 #: dist/converse-no-dependencies.js:11399
 #: dist/converse-no-dependencies.js:18475
-#: dist/converse-no-dependencies.js:24691
+#: dist/converse-no-dependencies.js:24690
 #, fuzzy
 msgid "You have unread messages"
 msgstr "Fjern meldinger"
@@ -105,7 +105,7 @@ msgstr "har stoppet å skrive"
 
 #: dist/converse-no-dependencies.js:11656
 #: dist/converse-no-dependencies.js:11871
-#: dist/converse-no-dependencies.js:23564
+#: dist/converse-no-dependencies.js:23563
 #, fuzzy
 msgid "has gone away"
 msgstr "Kontakten er borte"
@@ -129,13 +129,13 @@ msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Er du sikker på at du vil fjerne meldingene fra denne meldingsboksen?"
 
 #: dist/converse-no-dependencies.js:11869
-#: dist/converse-no-dependencies.js:23562
+#: dist/converse-no-dependencies.js:23561
 #, fuzzy
 msgid "has gone offline"
 msgstr "Kontakten er avlogget"
 
 #: dist/converse-no-dependencies.js:11873
-#: dist/converse-no-dependencies.js:23566
+#: dist/converse-no-dependencies.js:23565
 #, fuzzy
 msgid "is busy"
 msgstr "opptatt"
@@ -1271,13 +1271,13 @@ msgid "Don't have a chat account?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22550
-msgid "Register an account"
+msgid "Create an account"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:22564
 #, fuzzy
-msgid "Account Registration"
-msgstr "Hent registreringsskjema"
+msgid "Create your account"
+msgstr "ønsker å bli kontaktfestet"
 
 #: dist/converse-no-dependencies.js:22566
 msgid "Please enter the XMPP provider to register with:"
@@ -1344,15 +1344,15 @@ msgstr ""
 "Noe gikk galt under etablering av forbindelse med \"%1$s\". Er du sikker på "
 "at denne eksisterer?"
 
-#: dist/converse-no-dependencies.js:23031
+#: dist/converse-no-dependencies.js:23030
 msgid "Now logging you in"
 msgstr "Logger deg inn"
 
-#: dist/converse-no-dependencies.js:23034
+#: dist/converse-no-dependencies.js:23033
 msgid "Registered successfully"
 msgstr "Registrering var vellykket"
 
-#: dist/converse-no-dependencies.js:23133
+#: dist/converse-no-dependencies.js:23132
 #, fuzzy
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
@@ -1360,45 +1360,49 @@ msgid ""
 msgstr "Tilbyderen avviste ditt registreringsforsøk."
 
 #. XXX: workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:23518
-#: dist/converse-no-dependencies.js:23524
+#: dist/converse-no-dependencies.js:23517
+#: dist/converse-no-dependencies.js:23523
 #, fuzzy, javascript-format
 msgid "Notification from %1$s"
 msgstr "XXX: Hack for Prosody som ikke gir typen \"overskrift\""
 
-#: dist/converse-no-dependencies.js:23526
-#: dist/converse-no-dependencies.js:23534
-#: dist/converse-no-dependencies.js:23537
+#: dist/converse-no-dependencies.js:23525
+#: dist/converse-no-dependencies.js:23533
+#: dist/converse-no-dependencies.js:23536
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s sier"
 
-#: dist/converse-no-dependencies.js:23568
+#: dist/converse-no-dependencies.js:23567
 #, fuzzy
 msgid "has come online"
 msgstr "Kontakten er avlogget"
 
-#: dist/converse-no-dependencies.js:23583
+#: dist/converse-no-dependencies.js:23582
 msgid "wants to be your contact"
 msgstr "ønsker å bli kontaktfestet"
 
-#: dist/converse-no-dependencies.js:23911
-#: dist/converse-no-dependencies.js:24229
+#: dist/converse-no-dependencies.js:23910
+#: dist/converse-no-dependencies.js:24228
 msgid "Minimize this chat box"
 msgstr "Minimer dette sludrevinduet"
 
-#: dist/converse-no-dependencies.js:24045
+#: dist/converse-no-dependencies.js:24044
 msgid "Click to restore this chat"
 msgstr "Klikk for å gjenopprette denne samtalen"
 
-#: dist/converse-no-dependencies.js:24208
+#: dist/converse-no-dependencies.js:24207
 msgid "Minimized"
 msgstr "Minimert"
 
-#: dist/converse-no-dependencies.js:24692
+#: dist/converse-no-dependencies.js:24691
 #, fuzzy
 msgid "Close this box"
 msgstr "Klikk for å gjenopprette denne samtalen"
+
+#, fuzzy
+#~ msgid "Account Registration"
+#~ msgstr "Hent registreringsskjema"
 
 #~ msgid "XMPP Username:"
 #~ msgstr "XMPP Brukernavn:"

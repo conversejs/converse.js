@@ -27,6 +27,16 @@
             margin: 0;
             padding: 6px 6px 6px 0;
         }
+
+        &.logged-out {
+            .box-flyout {
+                .controlbox-pane {
+                    position: relative;
+                    overflow-y: auto;
+                }
+            }
+        }
+
         form.search-xmpp-contact {
             margin: 0;
             padding-left: 5px;
@@ -52,19 +62,19 @@
         }
 
         #converse-register {
+            @include fade-in;
             background: white;
             .title {
                 font-weight: bold;
             }
             .info {
-                font-style: italic;
                 color: green;
-                font-size: 85%;
-                margin: 5px 0;
+                font-size: 90%;
+                margin: 1.5em 0;
             }
             .form-errors {
-                color: red;
-                display: none;
+                color: $error-color;
+                margin: 1em 0;
             }
             .provider-title {
                 font-size: $font-size-huge;
@@ -104,8 +114,42 @@
             }
         }
 
+        .conn-feedback {
+            color: $controlbox-head-color;
+            &.error {
+                color: $error-color;
+            }
+            p {
+                padding-bottom: 0.5em;
+                &.feedback-subject.error {
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .brand-heading-container {
+            .brand-heading {
+                text-align: left;
+                font-size: 150%;
+            }
+            .brand-name {
+                font-size: 120%;
+            }
+        }
+
+        .toggle-register-login {
+            font-weight: bold;
+        }
+
+        .oauth-login {
+            margin-left: 0;
+            color: $text-color;
+            .icon-social:before {
+                font-size: $font-size-large;
+            }
+        }
+
         #converse-register, #converse-login {
-            margin-top: 2em;
             .login-anon {
                 height: auto;
                 white-space: normal;
@@ -113,22 +157,16 @@
             .save-submit {
                 color: $save-button-color;
             }
-            .conn-feedback {
-                p {
-                    color: $controlbox-head-color;
-                    padding-bottom: 0.5em;
-                    &.feedback-subject.error {
-                        font-weight: bold;
-                    }
-                    &.error {
-                        color: $error-color;
-                    }
-                }
-            }
             input {
                 width: 100%;
-                margin: 0.5em 0;
+                margin: 1em 0;
             }
+            .form-url {
+                display: block;
+                font-weight: normal;
+                margin: 1em 0;
+            }
+
         }
         #users {
             .add-converse-contact {
@@ -413,16 +451,28 @@
             }
         }
 
+        .controlbox-panes {
+            height: 100%;
+            overflow-y: scroll;
+        }
+
         .controlbox-pane {
             padding: $controlbox-pane-padding;
             background-color: white;
             border: 0;
             font-size: $font-size;
             position: absolute;
+            left: 0;
             text-align: center;
             width: 100%;
             overflow-y: auto;
             overflow-x: hidden;
+            .switch-form {
+                padding-bottom: 2em;
+                p {
+                    margin-top: 0.5em;
+                }
+            }
             label {
                 font-size: $font-size;
                 font-weight: bold;

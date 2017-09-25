@@ -6,49 +6,29 @@
             "domain": "converse",
             "lang": "zh"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
-            null,
-            "保存"
-         ],
-         "Cancel": [
-            null,
-            "取消"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
             ""
          ],
-         "Bookmarks": [
+         "This client does not allow presence subscriptions": [
             null,
             ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "显示次聊天室的更多信息"
-         ],
-         "Click to open this room": [
-            null,
-            "打开聊天室"
          ],
          "Personal message": [
             null,
@@ -106,25 +86,129 @@
             null,
             ""
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "联系人"
+            ""
+         ],
+         "Jabber ID:": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "密码:"
          ],
-         "Log In": [
-            null,
-            "登录"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "登录"
+            "发送"
+         ],
+         "This contact is busy": [
+            null,
+            "对方忙碌中"
+         ],
+         "This contact is online": [
+            null,
+            "对方在线中"
+         ],
+         "This contact is offline": [
+            null,
+            "对方已下线"
+         ],
+         "This contact is unavailable": [
+            null,
+            "对方免打扰"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "对方暂时离开"
+         ],
+         "This contact is away": [
+            null,
+            "对方离开"
+         ],
+         "Contacts": [
+            null,
+            "联系人"
+         ],
+         "Groups": [
+            null,
+            ""
+         ],
+         "My contacts": [
+            null,
+            "我的好友列表"
+         ],
+         "Pending contacts": [
+            null,
+            "保留中的联系人"
+         ],
+         "Contact requests": [
+            null,
+            "来自好友的请求"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "在线"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "忙碌中"
+         ],
+         "Away": [
+            null,
+            "离开"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "离线"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "点击与对方交谈"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -142,6 +226,10 @@
             null,
             "DIY状态"
          ],
+         "Save": [
+            null,
+            "保存"
+         ],
          "online": [
             null,
             "在线"
@@ -157,22 +245,6 @@
          "away": [
             null,
             "离开"
-         ],
-         "Online": [
-            null,
-            "在线"
-         ],
-         "Busy": [
-            null,
-            "忙碌中"
-         ],
-         "Away": [
-            null,
-            "离开"
-         ],
-         "Offline": [
-            null,
-            "离线"
          ],
          "Click to add new chat contacts": [
             null,
@@ -198,21 +270,17 @@
             null,
             "添加"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "点击添加为好友"
+         ],
          "No users found": [
             null,
             "未找到用户"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Minimized": [
-            null,
-            "最小化的"
+            "折叠聊天窗口"
          ],
          "This room is not anonymous": [
             null,
@@ -262,10 +330,6 @@
             null,
             "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "由于服务不可用，您已被移除此房间。"
-         ],
          "Message": [
             null,
             "信息"
@@ -274,7 +338,7 @@
             null,
             ""
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -318,6 +382,10 @@
             null,
             ""
          ],
+         "Cancel": [
+            null,
+            "取消"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -338,15 +406,11 @@
             null,
             "密码:"
          ],
-         "Submit": [
-            null,
-            "发送"
-         ],
          "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
-         "${notification.reason}": [
+         "The reason given is: \"%1$s \"": [
             null,
             ""
          ],
@@ -462,6 +526,18 @@
             null,
             "%1$s 上没有聊天室"
          ],
+         "Rooms on %1$s": [
+            null,
+            "%1$s 上的聊天室"
+         ],
+         "Click to open this room": [
+            null,
+            "打开聊天室"
+         ],
+         "Show more information on this room": [
+            null,
+            "显示次聊天室的更多信息"
+         ],
          "Description:": [
             null,
             "描述: "
@@ -506,15 +582,31 @@
             null,
             ""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -610,11 +702,47 @@
             null,
             "结束了"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
          ],
@@ -630,7 +758,7 @@
             null,
             ""
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
             ""
          ],
@@ -638,11 +766,7 @@
             null,
             ""
          ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            ""
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
             null,
             ""
          ],
@@ -658,85 +782,25 @@
             null,
             ""
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "对方忙碌中"
-         ],
-         "This contact is online": [
-            null,
-            "对方在线中"
-         ],
-         "This contact is offline": [
-            null,
-            "对方已下线"
-         ],
-         "This contact is unavailable": [
-            null,
-            "对方免打扰"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "对方暂时离开"
-         ],
-         "This contact is away": [
-            null,
-            "对方离开"
-         ],
-         "Groups": [
+         "%1$s says": [
             null,
             ""
          ],
-         "My contacts": [
-            null,
-            "我的好友列表"
-         ],
-         "Pending contacts": [
-            null,
-            "保留中的联系人"
-         ],
-         "Contact requests": [
-            null,
-            "来自好友的请求"
-         ],
-         "Ungrouped": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Filter": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "State": [
+         "Minimized": [
             null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "点击与对方交谈"
-         ],
-         "Name": [
-            null,
-            ""
+            "最小化的"
          ]
       }
    }

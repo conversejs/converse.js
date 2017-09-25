@@ -40,7 +40,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                  { __, ___ } = _converse;
+                  { __ } = _converse;
 
             _converse.RoomsList = Backbone.Model.extend({
                 defaults: {
@@ -114,7 +114,7 @@
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },

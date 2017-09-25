@@ -1,9 +1,30 @@
 # Changelog
 
-## 3.2.2 (Unreleased)
+## 3.3.0 (Unreleased)
 
+### Bugfixes
+- Don't require `auto_login` to be `true` when using the API to log in.
+
+### New Features
+- #828 Add routing for the `#converse-login` and `#converse-register` URL
+  fragments, which will render the registration and login forms respectively.
+
+### UX/UI changes
+- Use CSS3 fade transitions to render various elements.
+- Remove `Login` and `Registration` tabs and consolidate into one panel.
+- Show validation error messages on the login form.
 - Don't hang indefinitely and provide nicer error messages when a connection
   can't be established.
+- Consolidate error and validation reporting on the registration form.
+
+### Technical changes
+- Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)
+  and uses it to render the login form.
+- Converse.js no longer includes all the translations in its build. Instead,
+  only the currently relevant translation is requested. This results in a much
+  smaller filesize but means that the translations you want to provide need to
+  be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
+  configuration setting for more info.
 
 ## 3.2.1 (2017-08-29)
 

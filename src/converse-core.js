@@ -32,6 +32,19 @@
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
+    // Add Strophe Namespaces
+    Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+    Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+    Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+    Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
+
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
@@ -100,7 +113,7 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    const PRETTY_CONNECTION_STATUS = {
+    _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -110,7 +123,8 @@
         6: 'DISCONNECTED',
         7: 'DISCONNECTING',
         8: 'ATTACHED',
-        9: 'REDIRECT'
+        9: 'REDIRECT',
+       10: 'RECONNECTING'
     };
 
     _converse.DEFAULT_IMAGE_TYPE = 'image/png';
@@ -188,6 +202,7 @@
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            Backbone.history.stop();
             delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();
@@ -212,34 +227,16 @@
         Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
         Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
-        // Add Strophe Namespaces
-        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-        Strophe.addNamespace('XFORM', 'jabber:x:data');
-
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     10000,
             'INACTIVE':   90000
         };
 
-        // Internationalization
-        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
-        if (!moment.locale) {
-            //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
+        /* Internationalization */
         moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        const __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
+        _converse.locale = utils.getLocale(settings.i18n, utils.isLocaleSupported);
+        const __ = _converse.__ = _.partial(utils.__, _converse);
 
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
@@ -275,6 +272,7 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
+            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -406,10 +404,9 @@
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (subject, klass, message) {
+        this.setConnectionStatus = function (connection_status, message) {
             _converse.connfeedback.set({
-                'subject': subject,
-                'klass': klass,
+                'connection_status': connection_status,
                 'message': message
             });
         };
@@ -430,9 +427,8 @@
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(
-                __("Reconnecting"),
-                'warn',
+            _converse.setConnectionStatus(
+                Strophe.Status.RECONNECTING,
                 __('The connection has dropped, attempting to reconnect.')
             );
             _converse.connection.reconnecting = true;
@@ -494,9 +490,9 @@
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
+            _converse.log(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-                _converse.giveFeedback();
+                _converse.setConnectionStatus(status);
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();
@@ -516,17 +512,19 @@
                 _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(
-                    __('Connection error'),
-                    'error',
+                _converse.setConnectionStatus(
+                    status,
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting…'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating…'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication failed: '+message), 'error');
+                if (!message) {
+                    message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                }
+                _converse.setConnectionStatus(status, message);
                 _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
@@ -537,11 +535,7 @@
                 } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
                     feedback = __("The XMPP server did not offer a supported authentication mechanism");
                 }
-                _converse.giveFeedback(
-                    __('Connection failed'),
-                    'error',
-                    feedback
-                );
+                _converse.setConnectionStatus(status, feedback);
                 _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
                 _converse.setDisconnectionCause(status, message);
@@ -567,7 +561,7 @@
             }
         };
 
-        this.initStatus = () => 
+        this.initStatus = () =>
             new Promise((resolve, reject) => {
                 const promise = new utils.getWrappedPromise();
                 this.xmppstatus = new this.XMPPStatus();
@@ -1517,15 +1511,14 @@
 
         this.ConnectionFeedback = Backbone.Model.extend({
 
-            initialize () {
-                this.on('change', this.emitConnectionFeedbackChange);
+            defaults: {
+                'connection_status': undefined,
+                'message': ''
             },
 
-            emitConnectionFeedbackChange () {
-                _converse.emit('connfeedback', {
-                    'klass': _converse.connfeedback.get('klass'),
-                    'message': _converse.connfeedback.get('message'),
-                    'subject': _converse.connfeedback.get('subject')
+            initialize () {
+                this.on('change', () => {
+                    _converse.emit('connfeedback', _converse.connfeedback);
                 });
             }
         });
@@ -1722,12 +1715,13 @@
             if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
                 return;
             }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
+
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
+            } else if (this.auto_login) {
+                if (this.credentials_url) {
                     this.fetchLoginCredentials().then(
                         this.autoLogin.bind(this),
                         this.autoLogin.bind(this)
@@ -1872,16 +1866,34 @@
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        _converse.initPlugins();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
+
+        // TODO: fallback when global history has already been started
+        Backbone.history.start();
+
+        function finishInitialization () {
+            _converse.initPlugins();
+            _converse.initConnection();
+            _converse.setUpXMLLogging();
+            _converse.logIn();
+            _converse.registerGlobalEventHandlers();
+        }
 
         if (!_.isUndefined(_converse.connection) &&
             _converse.connection.service === 'jasmine tests') {
+
+            finishInitialization();
             return _converse;
         } else {
+            utils.fetchLocale(
+                _converse.locale,
+                _converse.locales_url
+            ).then((jed) => {
+                _converse.jed = jed;
+                finishInitialization();
+            }).catch((reason) => {
+                finishInitialization();
+                _converse.log(reason, Strophe.LogLevel.FATAL);
+            });
             return init_promise.promise;
         }
     };

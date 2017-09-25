@@ -111,19 +111,44 @@
 
     // Translation machinery
     // ---------------------
-    u.__ = function (str) {
+    u.fetchLocale = (locale, locales_url) =>
+        new Promise((resolve, reject) => {
+            if (!u.isLocaleSupported(locale) || locale === 'en') {
+                resolve();
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open(
+                'GET',
+                _.template(locales_url)({'locale': locale}),
+                true
+            );
+            xhr.setRequestHeader(
+                'Accept',
+                "application/json, text/javascript"
+            );
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    resolve(new Jed(window.JSON.parse(xhr.responseText)));
+                } else {
+                    xhr.onerror();
+                }
+            };
+            xhr.onerror = function () {
+                reject(xhr.statusText);
+            };
+            xhr.send();
+        });
+
+    u.__ = function (_converse, str) {
         if (_.isUndefined(window.Jed)) {
             return str;
         }
-        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(window.Jed, arguments);
+        if (_.isUndefined(_converse.jed)) {
+            return Jed.sprintf.apply(window.Jed, [].slice.call(arguments, 1));
         }
-        if (typeof this.jed === "undefined") {
-            this.jed = new Jed(window.JSON.parse(locales[this.locale]));
-        }
-        var t = this.jed.translate(str);
+        var t = _converse.jed.translate(str);
         if (arguments.length>1) {
-            return t.fetch.apply(t, [].slice.call(arguments,1));
+            return t.fetch.apply(t, [].slice.call(arguments, 2));
         } else {
             return t.fetch();
         }
@@ -485,7 +510,8 @@
         return locale || 'en';
     };
 
-    u.isConverseLocale = function (locale) {
+    u.isLocaleSupported = function (locale) {
+        /* Check whether the passed in locale is supported by Converse */
         if (!_.isString(locale)) { return false; }
         return _.includes(_.keys(locales || {}), locale);
     };
@@ -499,12 +525,6 @@
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
-            }
-            try {
-                var obj = window.JSON.parse(preferred_locale);
-                return obj.locale_data.converse[""].lang;
-            } catch (e) {
-                logger.error(e);
             }
         }
         return u.detectLocale(isSupportedByLibrary) || 'en';

@@ -8,6 +8,10 @@ body {
     .brand-heading {
         font-size: 600%;
         margin-left: -10%;
+        &.fade-in {
+            @include fade-in;
+            @include animation-delay(2s);
+        }
         .icon-conversejs {
             font-size: 88%;
         }
@@ -35,14 +39,15 @@ body {
 #conversejs {
     width: 100vw;
     height: 100vh;
+    left: 0;
 
     form {
         &.pure-form.converse-form {
             margin: 1em;
-
             input[type=checkbox] {
                 margin-left: 1em;
                 display: inline;
+                margin-bottom: 2em;
             }
             input[type=text],
             input[type=password],

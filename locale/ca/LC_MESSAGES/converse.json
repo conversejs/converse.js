@@ -7,45 +7,29 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "ca"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Desa"
+            "Aquest client no admet les subscripcions de presència"
          ],
-         "Cancel": [
+         "Click to hide these contacts": [
             null,
-            "Cancel·la"
-         ],
-         "Bookmarks": [
-            null,
-            ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "Mostra més informació d'aquesta sala"
-         ],
-         "Click to open this room": [
-            null,
-            "Feu clic per obrir aquesta sala"
+            "Feu clic per amagar aquests contactes"
          ],
          "Close this chat box": [
             null,
@@ -123,37 +107,145 @@
             null,
             "Inicia una trucada"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Contactes"
+            ""
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "Nom d'usuari XMPP:"
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "Contrasenya:"
          ],
-         "Click here to log in anonymously": [
+         "Please enter your password": [
             null,
-            "Feu clic aquí per iniciar la sessió de manera anònima"
-         ],
-         "Log In": [
-            null,
-            "Inicia la sessió"
-         ],
-         "user@server": [
-            null,
-            "usuari@servidor"
+            ""
          ],
          "password": [
             null,
             "contrasenya"
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Inicia la sessió"
+            "Envia"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Feu clic aquí per iniciar la sessió de manera anònima"
+         ],
+         "This contact is busy": [
+            null,
+            "Aquest contacte està ocupat"
+         ],
+         "This contact is online": [
+            null,
+            "Aquest contacte està en línia"
+         ],
+         "This contact is offline": [
+            null,
+            "Aquest contacte està desconnectat"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Aquest contacte no està disponible"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Aquest contacte està absent durant un període prolongat"
+         ],
+         "This contact is away": [
+            null,
+            "Aquest contacte està absent"
+         ],
+         "Contacts": [
+            null,
+            "Contactes"
+         ],
+         "Groups": [
+            null,
+            "Grups"
+         ],
+         "My contacts": [
+            null,
+            "Els meus contactes"
+         ],
+         "Pending contacts": [
+            null,
+            "Contactes pendents"
+         ],
+         "Contact requests": [
+            null,
+            "Sol·licituds de contacte"
+         ],
+         "Ungrouped": [
+            null,
+            "Sense agrupar"
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "En línia"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "Ocupat"
+         ],
+         "Away": [
+            null,
+            "Absent"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "Desconnectat"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Feu clic per conversar amb aquest contacte"
+         ],
+         "Name": [
+            null,
+            "Nom"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Segur que voleu eliminar aquest contacte?"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -170,6 +262,10 @@
          "Custom status": [
             null,
             "Estat personalitzat"
+         ],
+         "Save": [
+            null,
+            "Desa"
          ],
          "online": [
             null,
@@ -190,22 +286,6 @@
          "offline": [
             null,
             "desconnectat"
-         ],
-         "Online": [
-            null,
-            "En línia"
-         ],
-         "Busy": [
-            null,
-            "Ocupat"
-         ],
-         "Away": [
-            null,
-            "Absent"
-         ],
-         "Offline": [
-            null,
-            "Desconnectat"
          ],
          "Log out": [
             null,
@@ -231,29 +311,17 @@
             null,
             "Afegeix"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Feu clic per afegir com a contacte del xat"
+         ],
          "No users found": [
             null,
             "No s'ha trobat cap usuari"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            "Aquest client no admet les subscripcions de presència"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Feu clic per amagar aquests contactes"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Minimitza aquest quadre del xat"
-         ],
-         "Click to restore this chat": [
-            null,
-            "Feu clic per restaurar aquest xat"
-         ],
-         "Minimized": [
-            null,
-            "Minimitzat"
+            "Canvia de xat"
          ],
          "This room is not anonymous": [
             null,
@@ -303,10 +371,6 @@
             null,
             "Se us ha eliminat d'aquesta sala perquè ara només permet membres i no en sou membre"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Se us ha eliminat d'aquesta sala perquè s'està tancant el servei MUC (xat multiusuari)."
-         ],
          "Message": [
             null,
             "Missatge"
@@ -315,7 +379,7 @@
             null,
             "Amaga la llista d'ocupants"
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -379,6 +443,10 @@
             null,
             "Permet que un usuari silenciat publiqui missatges"
          ],
+         "Cancel": [
+            null,
+            "Cancel·la"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -394,14 +462,6 @@
          "Password: ": [
             null,
             "Contrasenya:"
-         ],
-         "Submit": [
-            null,
-            "Envia"
-         ],
-         "${notification.reason}": [
-            null,
-            ""
          ],
          " has left the room. \"": [
             null,
@@ -519,6 +579,18 @@
             null,
             "No hi ha cap sala a %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Sales a %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Feu clic per obrir aquesta sala"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostra més informació d'aquesta sala"
+         ],
          "Description:": [
             null,
             "Descripció:"
@@ -563,15 +635,27 @@
             null,
             "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -703,13 +787,49 @@
             null,
             "acabat"
          ],
+         "Don't have a chat account?": [
+            null,
+            ""
+         ],
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            "Registre"
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
          " e.g. conversejs.org": [
             null,
             "p. ex. conversejs.org"
-         ],
-         "Your XMPP provider's domain name:": [
-            null,
-            "Nom de domini del vostre proveïdor XMPP:"
          ],
          "Fetch registration form": [
             null,
@@ -723,21 +843,13 @@
             null,
             "aquí"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "Registre"
+            ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."
-         ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "S'està sol·licitant un formulari de registre del servidor XMPP"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
-            "Ha passat alguna cosa mentre s'establia la connexió amb \"%1$s\". Segur que existeix?"
          ],
          "Now logging you in": [
             null,
@@ -751,93 +863,29 @@
             null,
             "El proveïdor ha rebutjat l'intent de registre. Comproveu que els valors que heu introduït siguin correctes."
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "Aquest contacte està ocupat"
-         ],
-         "This contact is online": [
-            null,
-            "Aquest contacte està en línia"
-         ],
-         "This contact is offline": [
-            null,
-            "Aquest contacte està desconnectat"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Aquest contacte no està disponible"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Aquest contacte està absent durant un període prolongat"
-         ],
-         "This contact is away": [
-            null,
-            "Aquest contacte està absent"
-         ],
-         "Groups": [
-            null,
-            "Grups"
-         ],
-         "My contacts": [
-            null,
-            "Els meus contactes"
-         ],
-         "Pending contacts": [
-            null,
-            "Contactes pendents"
-         ],
-         "Contact requests": [
-            null,
-            "Sol·licituds de contacte"
-         ],
-         "Ungrouped": [
-            null,
-            "Sense agrupar"
-         ],
-         "Filter": [
+         "%1$s says": [
             null,
             ""
          ],
-         "State": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Any": [
+         "Minimize this chat box": [
             null,
-            ""
+            "Minimitza aquest quadre del xat"
          ],
-         "Unread": [
+         "Click to restore this chat": [
             null,
-            ""
+            "Feu clic per restaurar aquest xat"
          ],
-         "Chatty": [
+         "Minimized": [
             null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Feu clic per conversar amb aquest contacte"
-         ],
-         "Name": [
-            null,
-            "Nom"
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Segur que voleu eliminar aquest contacte?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"
+            "Minimitzat"
          ]
       }
    }

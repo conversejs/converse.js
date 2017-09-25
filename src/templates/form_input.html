@@ -1,6 +1,7 @@
 <label>
     {{{label}}}
     <input name="{{{name}}}" type="{{{type}}}" 
+        {[ if (placeholder) { ]} placeholder="{{{placeholder}}}" {[ } ]}
         {[ if (value) { ]} value="{{{value}}}" {[ } ]}
         {[ if (required) { ]} class="required" {[ } ]} >
 </label>

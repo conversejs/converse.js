@@ -200,8 +200,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __,
-                ___ } = _converse;
+                  { __ } = _converse;
 
             // Configuration values for this plugin
             // ====================================
@@ -223,7 +222,7 @@
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-bookmark-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
                         _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
                     }
                 },
@@ -528,7 +527,8 @@
             Promise.all([
                 _converse.api.waitUntil('chatBoxesFetched'),
                 _converse.api.waitUntil('roomsPanelRendered')
-            ]).then(initBookmarks);
+            ]).then(initBookmarks)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

@@ -7,49 +7,29 @@
             "plural_forms": "nplurals=2; plural=(n > 1);",
             "lang": "pt_BR"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
-            null,
-            "Salvar"
-         ],
-         "Cancel": [
-            null,
-            "Cancelar"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
             ""
          ],
-         "Bookmarks": [
+         "This client does not allow presence subscriptions": [
             null,
             ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "Mostrar mais informações nessa sala"
-         ],
-         "Click to open this room": [
-            null,
-            "CLique para abrir a sala"
          ],
          "Personal message": [
             null,
@@ -99,25 +79,129 @@
             null,
             ""
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Contatos"
+            ""
+         ],
+         "Jabber ID:": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "Senha:"
          ],
-         "Log In": [
-            null,
-            "Entrar"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Conectar-se"
+            "Enviar"
+         ],
+         "This contact is busy": [
+            null,
+            "Este contato está ocupado"
+         ],
+         "This contact is online": [
+            null,
+            "Este contato está online"
+         ],
+         "This contact is offline": [
+            null,
+            "Este contato está offline"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Este contato está indisponível"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Este contato está ausente por um longo período"
+         ],
+         "This contact is away": [
+            null,
+            "Este contato está ausente"
+         ],
+         "Contacts": [
+            null,
+            "Contatos"
+         ],
+         "Groups": [
+            null,
+            ""
+         ],
+         "My contacts": [
+            null,
+            "Meus contatos"
+         ],
+         "Pending contacts": [
+            null,
+            "Contados pendentes"
+         ],
+         "Contact requests": [
+            null,
+            "Solicitação de contatos"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "Online"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "Ocupado"
+         ],
+         "Away": [
+            null,
+            "Ausente"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "Offline"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Clique para conversar com o contato"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -135,6 +219,10 @@
             null,
             "Status customizado"
          ],
+         "Save": [
+            null,
+            "Salvar"
+         ],
          "online": [
             null,
             "online"
@@ -150,22 +238,6 @@
          "away": [
             null,
             "ausente"
-         ],
-         "Online": [
-            null,
-            "Online"
-         ],
-         "Busy": [
-            null,
-            "Ocupado"
-         ],
-         "Away": [
-            null,
-            "Ausente"
-         ],
-         "Offline": [
-            null,
-            "Offline"
          ],
          "Click to add new chat contacts": [
             null,
@@ -191,21 +263,17 @@
             null,
             "Adicionar"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Clique para adicionar como um contato do chat"
+         ],
          "No users found": [
             null,
             "Não foram encontrados usuários"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Minimized": [
-            null,
-            "Minimizado"
+            "Alternar bate-papo"
          ],
          "This room is not anonymous": [
             null,
@@ -255,10 +323,6 @@
             null,
             "Você foi removido da sala porque ela foi mudada para somente membrose você não é um membro"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Você foi removido da sala devido a MUC (Multi-user chat)o serviço está sendo desligado"
-         ],
          "Message": [
             null,
             "Mensagem"
@@ -267,7 +331,7 @@
             null,
             ""
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -311,6 +375,10 @@
             null,
             ""
          ],
+         "Cancel": [
+            null,
+            "Cancelar"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -331,15 +399,11 @@
             null,
             "Senha: "
          ],
-         "Submit": [
-            null,
-            "Enviar"
-         ],
          "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
-         "${notification.reason}": [
+         "The reason given is: \"%1$s \"": [
             null,
             ""
          ],
@@ -455,6 +519,18 @@
             null,
             "Sem salas em %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Salas em %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "CLique para abrir a sala"
+         ],
+         "Show more information on this room": [
+            null,
+            "Mostrar mais informações nessa sala"
+         ],
          "Description:": [
             null,
             "Descrição:"
@@ -499,15 +575,31 @@
             null,
             ""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -603,11 +695,47 @@
             null,
             "finalizado"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
          ],
@@ -623,7 +751,7 @@
             null,
             ""
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
             ""
          ],
@@ -631,11 +759,7 @@
             null,
             ""
          ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            ""
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
             null,
             ""
          ],
@@ -651,85 +775,25 @@
             null,
             ""
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "Este contato está ocupado"
-         ],
-         "This contact is online": [
-            null,
-            "Este contato está online"
-         ],
-         "This contact is offline": [
-            null,
-            "Este contato está offline"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Este contato está indisponível"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Este contato está ausente por um longo período"
-         ],
-         "This contact is away": [
-            null,
-            "Este contato está ausente"
-         ],
-         "Groups": [
+         "%1$s says": [
             null,
             ""
          ],
-         "My contacts": [
-            null,
-            "Meus contatos"
-         ],
-         "Pending contacts": [
-            null,
-            "Contados pendentes"
-         ],
-         "Contact requests": [
-            null,
-            "Solicitação de contatos"
-         ],
-         "Ungrouped": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Filter": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "State": [
+         "Minimized": [
             null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Clique para conversar com o contato"
-         ],
-         "Name": [
-            null,
-            ""
+            "Minimizado"
          ]
       }
    }

@@ -1,23 +1,28 @@
 <form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">
-    {[ if (auto_login) { ]}
-        <span class="spinner login-submit"/>
-    {[ } ]}
-    <div class="conn-feedback">
-        <p class="feedback-subject {{ conn_feedback_class }}">{{ conn_feedback_subject }}</p>
-        <p class="feedback-message {{ conn_feedback_class }}">{{ conn_feedback_message }} </p>
+    <legend>{{{__("Login")}}}</legend>
+    <div class="conn-feedback fade-in {[ if (!conn_feedback_subject) { ]} hidden {[ } ]} {{{conn_feedback_class}}}">
+        <p class="feedback-subject">{{{ conn_feedback_subject }}}</p>
+        <p class="feedback-message {[ if (!conn_feedback_message) { ]} hidden {[ } ]}">{{{conn_feedback_message}}}</p>
     </div>
-    {[ if (!auto_login) { ]}
+    {[ if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ]}
+        <span class="spinner centered"/>
+    {[ } else { ]}
         {[ if (authentication == LOGIN || authentication == EXTERNAL) { ]}
-            <label>{{{label_username}}}</label>
-            <input type="text" name="jid" placeholder="{{{placeholder_username}}}">
+            <label>{{{__("Jabber ID:")}}}</label>
+            <input autofocus required
+                   type="text"
+                   name="jid"
+                   placeholder="{{{placeholder_username}}}">
             {[ if (authentication !== EXTERNAL) { ]}
-                <label>{{{label_password}}}</label>
-                <input type="password" name="password" placeholder="{{{placeholder_password}}}">
+                <label>{{{__("Password:")}}}</label>
+                <input required
+                       type="password" name="password"
+                       placeholder="{{{__('password')}}}">
             {[ } ]}
-            <input class="pure-button button-primary" type="submit" value="{{{label_login}}}">
+            <input class="pure-button button-primary" type="submit" value="{{{__('Submit')}}}">
         {[ } ]}
         {[ if (authentication == ANONYMOUS) { ]}
-            <input class="pure-button button-primary login-anon" type="submit" value="{{{label_anon_login}}}"/>
+            <input class="pure-button button-primary login-anon" type="submit" value="{{{__('Click here to log in anonymously')}}}"/>
         {[ } ]}
         {[ if (authentication == PREBIND) { ]}
             <p>Disconnected.</p>

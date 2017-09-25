@@ -61,10 +61,10 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.1 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.1 -c
 
 .PHONY: pot
-pot:
+pot: dist/converse-no-dependencies.js
 	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
@@ -189,7 +189,7 @@ dist/converse-no-jquery.js: transpile src locale node_modules *.js
 dist/converse-no-jquery.min.js: src locale node_modules *.js transpile
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-dependencies.js: transpile src locale node_modules *.js
-	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.min.js
+	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: src locale node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
 dist/converse-mobile.js: transpile src locale node_modules *.js

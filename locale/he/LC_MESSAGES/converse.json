@@ -7,45 +7,29 @@
             "plural_forms": "nplurals=2; plural=(n != 1);",
             "lang": "he"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
+         "This client does not allow presence subscriptions": [
             null,
-            "שמור"
+            "לקוח זה לא מתיר הרשמות נוכחות"
          ],
-         "Cancel": [
+         "Click to hide these contacts": [
             null,
-            "ביטול"
-         ],
-         "Bookmarks": [
-            null,
-            ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "הצג עוד מידע אודות חדר זה"
-         ],
-         "Click to open this room": [
-            null,
-            "לחץ כדי לפתוח את חדר זה"
+            "לחץ כדי להסתיר את אנשי קשר אלה"
          ],
          "Personal message": [
             null,
@@ -119,27 +103,23 @@
             null,
             "התחל שיחה"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "אנשי קשר"
+            ""
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "שם משתמש XMPP:"
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "סיסמה:"
          ],
-         "Click here to log in anonymously": [
-            null,
-            "לחץ כאן כדי להתחבר באופן אנונימי"
-         ],
-         "Log In": [
-            null,
-            "כניסה"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
@@ -147,9 +127,121 @@
             null,
             "סיסמה"
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "התחברות"
+            "שלח"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "לחץ כאן כדי להתחבר באופן אנונימי"
+         ],
+         "This contact is busy": [
+            null,
+            "איש קשר זה עסוק"
+         ],
+         "This contact is online": [
+            null,
+            "איש קשר זה מקוון"
+         ],
+         "This contact is offline": [
+            null,
+            "איש קשר זה אינו מקוון"
+         ],
+         "This contact is unavailable": [
+            null,
+            "איש קשר זה לא זמין"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "איש קשר זה נעדר למשך זמן ממושך"
+         ],
+         "This contact is away": [
+            null,
+            "איש קשר זה הינו נעדר"
+         ],
+         "Contacts": [
+            null,
+            "אנשי קשר"
+         ],
+         "Groups": [
+            null,
+            "קבוצות"
+         ],
+         "My contacts": [
+            null,
+            "האנשי קשר שלי"
+         ],
+         "Pending contacts": [
+            null,
+            "אנשי קשר ממתינים"
+         ],
+         "Contact requests": [
+            null,
+            "בקשות איש קשר"
+         ],
+         "Ungrouped": [
+            null,
+            "ללא קבוצה"
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "מקוון"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "עסוק"
+         ],
+         "Away": [
+            null,
+            "נעדר"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "לא מקוון"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "לחץ כדי לשוחח עם איש קשר זה"
+         ],
+         "Name": [
+            null,
+            "שם"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -166,6 +258,10 @@
          "Custom status": [
             null,
             "מצב מותאם"
+         ],
+         "Save": [
+            null,
+            "שמור"
          ],
          "online": [
             null,
@@ -184,22 +280,6 @@
             "נעדר"
          ],
          "offline": [
-            null,
-            "לא מקוון"
-         ],
-         "Online": [
-            null,
-            "מקוון"
-         ],
-         "Busy": [
-            null,
-            "עסוק"
-         ],
-         "Away": [
-            null,
-            "נעדר"
-         ],
-         "Offline": [
             null,
             "לא מקוון"
          ],
@@ -227,29 +307,17 @@
             null,
             "הוסף"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "לחץ כדי להוסיף בתור איש קשר שיחה"
+         ],
          "No users found": [
             null,
             "לא נמצאו משתמשים"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            "לקוח זה לא מתיר הרשמות נוכחות"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "לחץ כדי להסתיר את אנשי קשר אלה"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Click to restore this chat": [
-            null,
-            "לחץ כדי לשחזר את שיחה זו"
-         ],
-         "Minimized": [
-            null,
-            "ממוזער"
+            "הפעל שיח"
          ],
          "This room is not anonymous": [
             null,
@@ -299,15 +367,11 @@
             null,
             "הוסרת מתוך חדר זה משום שהחדר שונה לחברים-בלבד ואינך במעמד של חבר"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "הוסרת מתוך חדר זה משום ששירות שמ״מ (שיחה מרובת משתמשים) זה כעת מצוי בהליכי סגירה."
-         ],
          "Message": [
             null,
             "הודעה"
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -367,6 +431,10 @@
             null,
             "התר למשתמש מושתק לפרסם הודעות"
          ],
+         "Cancel": [
+            null,
+            "ביטול"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -382,14 +450,6 @@
          "Password: ": [
             null,
             "סיסמה: "
-         ],
-         "Submit": [
-            null,
-            "שלח"
-         ],
-         "${notification.reason}": [
-            null,
-            ""
          ],
          " has left the room. \"": [
             null,
@@ -511,6 +571,18 @@
             null,
             "אין חדרים על %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "חדרים על %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "לחץ כדי לפתוח את חדר זה"
+         ],
+         "Show more information on this room": [
+            null,
+            "הצג עוד מידע אודות חדר זה"
+         ],
          "Description:": [
             null,
             "תיאור:"
@@ -555,15 +627,27 @@
             null,
             "%1$s הזמינך להצטרף לחדר שיחה: %2$s, והשאיר את הסיבה הבאה: \"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -695,13 +779,49 @@
             null,
             "מוגמרת"
          ],
+         "Don't have a chat account?": [
+            null,
+            ""
+         ],
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            "הירשם"
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
          " e.g. conversejs.org": [
             null,
             " למשל conversejs.org"
-         ],
-         "Your XMPP provider's domain name:": [
-            null,
-            "שם מתחם של ספק XMPP שלך:"
          ],
          "Fetch registration form": [
             null,
@@ -715,21 +835,13 @@
             null,
             "כאן"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "הירשם"
+            ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "מצטערים, הספק שניתן לא תומך ברישום חשבונות in band. אנא נסה עם ספק אחר."
-         ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "כעת מבקש טופס הרשמה מתוך שרת XMPP"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
-            "משהו השתבש במהלך ביסוס חיבור עם \"%1$s\". האם אתה בטוח כי זה קיים?"
          ],
          "Now logging you in": [
             null,
@@ -739,93 +851,29 @@
             null,
             "נרשם בהצלחה"
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "איש קשר זה עסוק"
-         ],
-         "This contact is online": [
-            null,
-            "איש קשר זה מקוון"
-         ],
-         "This contact is offline": [
-            null,
-            "איש קשר זה אינו מקוון"
-         ],
-         "This contact is unavailable": [
-            null,
-            "איש קשר זה לא זמין"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "איש קשר זה נעדר למשך זמן ממושך"
-         ],
-         "This contact is away": [
-            null,
-            "איש קשר זה הינו נעדר"
-         ],
-         "Groups": [
-            null,
-            "קבוצות"
-         ],
-         "My contacts": [
-            null,
-            "האנשי קשר שלי"
-         ],
-         "Pending contacts": [
-            null,
-            "אנשי קשר ממתינים"
-         ],
-         "Contact requests": [
-            null,
-            "בקשות איש קשר"
-         ],
-         "Ungrouped": [
-            null,
-            "ללא קבוצה"
-         ],
-         "Filter": [
+         "%1$s says": [
             null,
             ""
          ],
-         "State": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Any": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "Unread": [
+         "Click to restore this chat": [
             null,
-            ""
+            "לחץ כדי לשחזר את שיחה זו"
          ],
-         "Chatty": [
+         "Minimized": [
             null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "לחץ כדי לשוחח עם איש קשר זה"
-         ],
-         "Name": [
-            null,
-            "שם"
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "האם אתה בטוח כי ברצונך להסיר את איש קשר זה?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "האם אתה בטוח כי ברצונך לסרב את בקשת איש קשר זה?"
+            "ממוזער"
          ]
       }
    }

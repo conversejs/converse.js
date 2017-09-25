@@ -7,65 +7,33 @@
             "plural_forms": "nplurals=2; plural=n > 1;",
             "lang": "fr"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
-            "Marquer ce salon"
+            "La connexion a été perdue, tentative de reconnexion en cours."
          ],
-         "The name for this bookmark:": [
+         "An error occurred while connecting to the chat server.": [
             null,
-            "Nom de ce marque-page :"
+            "Une erreur est survenue lors de la connexion au serveur de discussion."
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
-            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
+            ""
          ],
-         "What should your nickname for this room be?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
-            "Quel alias devrait être utilisé pour ce salon ?"
+            ""
          ],
-         "Save": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
-            "Enregistrer"
+            ""
          ],
-         "Cancel": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Annuler"
+            "Ce client ne permet pas les mises à jour de disponibilité"
          ],
-         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+         "Click to hide these contacts": [
             null,
-            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
-            null,
-            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."
-         ],
-         "Click to toggle the bookmarks list": [
-            null,
-            "Cliquer pour ouvrir la liste des salons"
-         ],
-         "Bookmarks": [
-            null,
-            "Marques-page"
-         ],
-         "Leave this room": [
-            null,
-            "Quitter ce salon"
-         ],
-         "Remove this bookmark": [
-            null,
-            "Retirer ce marque-page"
-         ],
-         "Unbookmark this room": [
-            null,
-            "Retirer ce salon"
-         ],
-         "Show more information on this room": [
-            null,
-            "Afficher davantage d’informations sur ce salon"
-         ],
-         "Click to open this room": [
-            null,
-            "Cliquer pour ouvrir ce salon"
+            "Cliquez pour cacher ces contacts"
          ],
          "You have unread messages": [
             null,
@@ -147,41 +115,157 @@
             null,
             "Démarrer un appel"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Contacts"
+            ""
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "Nom d’utilisateur XMPP :"
+            ""
          ],
          "Password:": [
             null,
             "Mot de passe :"
          ],
-         "Click here to log in anonymously": [
+         "Please enter your password": [
             null,
-            "Cliquez ici pour se connecter anonymement"
-         ],
-         "Log In": [
-            null,
-            "Se connecter"
-         ],
-         "Username": [
-            null,
-            "Nom"
-         ],
-         "user@server": [
-            null,
-            "utilisateur@serveur"
+            ""
          ],
          "password": [
             null,
             "Mot de passe"
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "S’inscrire"
+            "Soumettre"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Cliquez ici pour se connecter anonymement"
+         ],
+         "This contact is busy": [
+            null,
+            "Ce contact est occupé"
+         ],
+         "This contact is online": [
+            null,
+            "Ce contact est connecté"
+         ],
+         "This contact is offline": [
+            null,
+            "Ce contact est déconnecté"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Ce contact est indisponible"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Ce contact est absent"
+         ],
+         "This contact is away": [
+            null,
+            "Ce contact est absent"
+         ],
+         "Contacts": [
+            null,
+            "Contacts"
+         ],
+         "Groups": [
+            null,
+            "Groupes"
+         ],
+         "My contacts": [
+            null,
+            "Mes contacts"
+         ],
+         "Pending contacts": [
+            null,
+            "Contacts en attente"
+         ],
+         "Contact requests": [
+            null,
+            "Demandes de contacts"
+         ],
+         "Ungrouped": [
+            null,
+            "Sans groupe"
+         ],
+         "Filter": [
+            null,
+            "Filtrer"
+         ],
+         "State": [
+            null,
+            "Status"
+         ],
+         "Any": [
+            null,
+            "Aucun"
+         ],
+         "Unread": [
+            null,
+            "Non lu"
+         ],
+         "Online": [
+            null,
+            "En ligne"
+         ],
+         "Chatty": [
+            null,
+            "Bavard"
+         ],
+         "Busy": [
+            null,
+            "Occupé"
+         ],
+         "Away": [
+            null,
+            "Absent"
+         ],
+         "Extended Away": [
+            null,
+            "Absence longue durée"
+         ],
+         "Offline": [
+            null,
+            "Déconnecté"
+         ],
+         "Click to remove %1$s as a contact": [
+            null,
+            "Cliquez pour retirer le contact « %1$s »"
+         ],
+         "Click to accept the contact request from %1$s": [
+            null,
+            "Cliquez pour accepter la demande de « %1$s »"
+         ],
+         "Click to decline the contact request from %1$s": [
+            null,
+            "Cliquez pour décliner la demande de contact de « %1$s »"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Cliquez pour discuter avec ce contact"
+         ],
+         "Name": [
+            null,
+            "Nom"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Voulez-vous vraiment retirer ce contact ?"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Voulez-vous vraiment décliner cette demande de contact ?"
+         ],
+         "Username": [
+            null,
+            "Nom"
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -198,6 +282,10 @@
          "Custom status": [
             null,
             "Statut personnel"
+         ],
+         "Save": [
+            null,
+            "Enregistrer"
          ],
          "online": [
             null,
@@ -216,22 +304,6 @@
             "absent"
          ],
          "offline": [
-            null,
-            "Déconnecté"
-         ],
-         "Online": [
-            null,
-            "En ligne"
-         ],
-         "Busy": [
-            null,
-            "Occupé"
-         ],
-         "Away": [
-            null,
-            "Absent"
-         ],
-         "Offline": [
             null,
             "Déconnecté"
          ],
@@ -263,33 +335,17 @@
             null,
             "Ajouter"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Cliquer pour ajouter aux contacts"
+         ],
          "No users found": [
             null,
             "Aucun utilisateur trouvé"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            "Ce client ne permet pas les mises à jour de disponibilité"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Cliquez pour cacher ces contacts"
-         ],
-         "Close this box": [
-            null,
-            "Fermer cette fenêtre"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Réduire cette fenêtre de discussion"
-         ],
-         "Click to restore this chat": [
-            null,
-            "Cliquez pour afficher cette discussion"
-         ],
-         "Minimized": [
-            null,
-            "Réduit(s)"
+            "Ouvrir IM"
          ],
          "This room is not anonymous": [
             null,
@@ -347,10 +403,6 @@
             null,
             "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux membres et vous n’êtes pas membre"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Vous avez été retiré de ce salon parce que le service de chat multi-utilisateur a été désactivé."
-         ],
          "%1$s has been banned": [
             null,
             "%1$s a été banni"
@@ -395,9 +447,9 @@
             null,
             "Cacher la liste des participants"
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
-            "${command}"
+            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -463,6 +515,10 @@
             null,
             "Autoriser les utilisateurs muets à poster des messages"
          ],
+         "Cancel": [
+            null,
+            "Annuler"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             "L’alias choisi est réservé ou actuellment utilisé, veuillez en choisir un différent."
@@ -487,10 +543,6 @@
             null,
             "Mot de passe : "
          ],
-         "Submit": [
-            null,
-            "Soumettre"
-         ],
          "This action was done by %1$s.": [
             null,
             "L’action a été réalisée par %1$s."
@@ -498,10 +550,6 @@
          "The reason given is: \"%1$s\".": [
             null,
             "La raison indiquée est : « %1$s »."
-         ],
-         "${notification.reason}": [
-            null,
-            ""
          ],
          " has left the room. \"": [
             null,
@@ -715,6 +763,18 @@
             null,
             "Aucun salon dans %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Salons dans %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Cliquer pour ouvrir ce salon"
+         ],
+         "Show more information on this room": [
+            null,
+            "Afficher davantage d’informations sur ce salon"
+         ],
          "Description:": [
             null,
             "Description :"
@@ -759,21 +819,61 @@
             null,
             "%1$s vous invite à rejoindre le salon : %2$s, avec le message suivant:\"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
-            "Notification depuis %1$s"
+            "Marquer ce salon"
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
-            "%1$s dit"
+            "Nom de ce marque-page :"
          ],
-         "has come online": [
+         "Would you like this room to be automatically joined upon startup?": [
             null,
-            "s’est déconnecté"
+            "Voulez-vous rejoindre automatiquement ce salon au lancement ?"
          ],
-         "wants to be your contact": [
+         "What should your nickname for this room be?": [
             null,
-            "veut être votre contact"
+            "Quel alias devrait être utilisé pour ce salon ?"
+         ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Voulez-vous vraiment retirer le marque-page « %1$s » ?"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            "Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-page."
+         ],
+         "Click to toggle the bookmarks list": [
+            null,
+            "Cliquer pour ouvrir la liste des salons"
+         ],
+         "Bookmarks": [
+            null,
+            "Marques-page"
+         ],
+         "Leave this room": [
+            null,
+            "Quitter ce salon"
+         ],
+         "Remove this bookmark": [
+            null,
+            "Retirer ce marque-page"
+         ],
+         "Unbookmark this room": [
+            null,
+            "Retirer ce salon"
+         ],
+         "Click to toggle the rooms list": [
+            null,
+            "Cliquer pour ouvrir la liste des salons"
+         ],
+         "Open Rooms": [
+            null,
+            "Ouvrir les salons"
+         ],
+         "Are you sure you want to leave the room \"%1$s\"?": [
+            null,
+            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
          ],
          "Re-establishing encrypted session": [
             null,
@@ -903,13 +1003,45 @@
             null,
             "terminé"
          ],
+         "Don't have a chat account?": [
+            null,
+            ""
+         ],
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            "S’enregistrer"
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
          " e.g. conversejs.org": [
             null,
             " e.g. conversejs.org"
-         ],
-         "Your XMPP provider's domain name:": [
-            null,
-            "Votre domaine XMPP :"
          ],
          "Fetch registration form": [
             null,
@@ -923,21 +1055,13 @@
             null,
             "ici"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "S’enregistrer"
+            ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "Désolé, le fournisseur indiqué ne supporte pas l’enregistrement de compte en ligne. Merci d’essayer avec un autre fournisseur."
-         ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "Demande du formulaire enregistrement au serveur XMPP"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
-            "Quelque chose a échoué lors de l’établissement de la connexion avec \"%1$s\". Existe-t-il vraiment ?"
          ],
          "Now logging you in": [
             null,
@@ -951,117 +1075,37 @@
             null,
             "Le fournisseur a rejeté votre demande d’enregistrement."
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
-            "Réessayer"
+            "Notification depuis %1$s"
          ],
-         "Click to toggle the rooms list": [
+         "%1$s says": [
             null,
-            "Cliquer pour ouvrir la liste des salons"
+            "%1$s dit"
          ],
-         "Open Rooms": [
+         "has come online": [
             null,
-            "Ouvrir les salons"
+            "s’est déconnecté"
          ],
-         "Are you sure you want to leave the room \"%1$s\"?": [
+         "wants to be your contact": [
             null,
-            "Voulez-vous vraiment supprimer le marque-page « %1$s » ?"
+            "veut être votre contact"
          ],
-         "This contact is busy": [
+         "Minimize this chat box": [
             null,
-            "Ce contact est occupé"
+            "Réduire cette fenêtre de discussion"
          ],
-         "This contact is online": [
+         "Click to restore this chat": [
             null,
-            "Ce contact est connecté"
+            "Cliquez pour afficher cette discussion"
          ],
-         "This contact is offline": [
+         "Minimized": [
             null,
-            "Ce contact est déconnecté"
+            "Réduit(s)"
          ],
-         "This contact is unavailable": [
+         "Close this box": [
             null,
-            "Ce contact est indisponible"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Ce contact est absent"
-         ],
-         "This contact is away": [
-            null,
-            "Ce contact est absent"
-         ],
-         "Groups": [
-            null,
-            "Groupes"
-         ],
-         "My contacts": [
-            null,
-            "Mes contacts"
-         ],
-         "Pending contacts": [
-            null,
-            "Contacts en attente"
-         ],
-         "Contact requests": [
-            null,
-            "Demandes de contacts"
-         ],
-         "Ungrouped": [
-            null,
-            "Sans groupe"
-         ],
-         "Filter": [
-            null,
-            "Filtrer"
-         ],
-         "State": [
-            null,
-            "Status"
-         ],
-         "Any": [
-            null,
-            "Aucun"
-         ],
-         "Unread": [
-            null,
-            "Non lu"
-         ],
-         "Chatty": [
-            null,
-            "Bavard"
-         ],
-         "Extended Away": [
-            null,
-            "Absence longue durée"
-         ],
-         "Click to remove %1$s as a contact": [
-            null,
-            "Cliquez pour retirer le contact « %1$s »"
-         ],
-         "Click to accept the contact request from %1$s": [
-            null,
-            "Cliquez pour accepter la demande de « %1$s »"
-         ],
-         "Click to decline the contact request from %1$s": [
-            null,
-            "Cliquez pour décliner la demande de contact de « %1$s »"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Cliquez pour discuter avec ce contact"
-         ],
-         "Name": [
-            null,
-            "Nom"
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Voulez-vous vraiment retirer ce contact ?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Voulez-vous vraiment décliner cette demande de contact ?"
+            "Fermer cette fenêtre"
          ]
       }
    }

@@ -246,8 +246,8 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __,
-                ___ } = _converse;
+                  { __ } = _converse,
+                  { ___ } = utils;
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -294,7 +294,7 @@
                     307: __('You have been kicked from this room'),
                     321: __("You have been removed from this room because of an affiliation change"),
                     322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
                 },
 
                 action_info_messages: {
@@ -316,8 +316,8 @@
                 },
 
                 new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to: %1$s'),
-                    303: ___('Your nickname has been changed to: %1$s')
+                    210: ___('Your nickname has been automatically set to %1$s'),
+                    303: ___('Your nickname has been changed to %1$s')
                 }
             };
 

@@ -137,10 +137,16 @@
             .rooms-list-container {
                 text-align: left;
                 margin: 0;
+                
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
                     margin-top: 1em;
+                    
+                    &::before {
+                      padding: 0 0.4em 0 0;
+                    }
+                    
                     &:hover {
                         color: $dark-gray-color;
                     }
@@ -477,22 +483,25 @@
         border: 2px solid #fff;
         color: $controlbox-toggle-text-color;
         height: 54px;
-        margin: 0;
         padding: 11px 10px 7px 10px;
         width: 54px;
         text-align: center;
-        position: absolute;
-        right: 10px;
-        z-index: 99999;
-        bottom: 5px;
+        float: right;
+        margin: -30px 10px 0 5px;
         box-shadow: 0 -2px 9px rgba(0,0,0,.3);
 
         span {
           color: $inverse-link-color; 
-          line-height: 27px;
+          line-height: 0px;
           transform: rotate(-15deg);
-          font-size: 27px;
           display: block;
+          font-size: 0px;
+          
+          &::before {
+            font-size: 27px;
+            line-height: 32px;
+          }
         }
+
     }
 }

@@ -42837,13 +42837,13 @@ __e(extra_classes) +
 __e(isodate) +
 '" data-msgid="' +
 __e(msgid) +
-'">\n    <span class="chat-msg-author chat-msg-' +
+'">\n    <div class="chat-msg-author chat-msg-' +
 __e(sender) +
 '">' +
 __e(time) +
 ' ' +
 __e(username) +
-':&nbsp;</span>\n    <span class="chat-msg-content"><!-- message gets added here via renderMessage --></span>\n</div>\n';
+':&nbsp;</div>\n    <duv class="chat-msg-content"><!-- message gets added here via renderMessage --></div>\n</div>\n';
 
 }
 return __p
@@ -61954,7 +61954,7 @@ __p += ' unread-message-count-hidden ';
  } ;
 __p += '\n    href="#">' +
 __e(num_unread) +
-'</span>\n';
+'</span>';
 
 }
 return __p

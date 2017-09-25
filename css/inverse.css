@@ -1637,11 +1637,12 @@ body {
       font-style: italic; }
     #converse-embedded-chat .chatbox .chat-body .chat-message,
     #conversejs .chatbox .chat-body .chat-message {
-      overflow: auto; }
+      overflow: auto;
+      font-size: 13px; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-author,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-author {
-        font-weight: bold;
-        float: left; }
+        font-weight: 600;
+        word-wrap: break-word; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-them,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-them {
         color: #E77051; }
@@ -1651,7 +1652,7 @@ body {
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-content {
         max-width: 100%;
-        word-wrap: break-word; }
+        font-weight: 400; }
         #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content .emojione,
         #conversejs .chatbox .chat-body .chat-message .chat-msg-content .emojione {
           margin-bottom: -6px; }
@@ -2070,6 +2071,8 @@ body {
       display: block;
       color: #2c2c2c;
       margin-top: 1em; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle::before {
+        padding: 0 0.4em 0 0; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle:hover {
         color: #585B51; }
     #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list {
@@ -2322,21 +2325,21 @@ body {
   border: 2px solid #fff;
   color: #fff;
   height: 54px;
-  margin: 0;
   padding: 11px 10px 7px 10px;
   width: 54px;
   text-align: center;
-  position: absolute;
-  right: 10px;
-  z-index: 99999;
-  bottom: 5px;
+  float: right;
+  margin: -30px 10px 0 5px;
   box-shadow: 0 -2px 9px rgba(0, 0, 0, 0.3); }
   #conversejs .toggle-controlbox span {
     color: #fff;
-    line-height: 27px;
+    line-height: 0px;
     transform: rotate(-15deg);
-    font-size: 27px;
-    display: block; }
+    display: block;
+    font-size: 0px; }
+    #conversejs .toggle-controlbox span::before {
+      font-size: 27px;
+      line-height: 32px; }
 
 #conversejs #controlbox {
   min-width: 250px;

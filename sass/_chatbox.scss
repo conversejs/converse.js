@@ -208,10 +208,11 @@
       
       .chat-message {
         overflow: auto; // Ensures that content stays inside
+        font-size: 13px;
         
         .chat-msg-author {
-          font-weight: bold;
-          float: left;
+          font-weight: 600;
+          word-wrap: break-word;
         }
         
         .chat-msg-them {
@@ -224,7 +225,7 @@
         
         .chat-msg-content {
           max-width: 100%;
-          word-wrap: break-word;
+          font-weight: 400;
           
           .emojione {
             margin-bottom: -6px;

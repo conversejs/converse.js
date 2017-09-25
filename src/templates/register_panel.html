@@ -6,10 +6,10 @@
     <div class="form-errors hidden"></div>
 
     {[ if (default_domain) { ]}
-    	{{{default_domain}}}
+        {{{default_domain}}}
     {[ } ]}
     {[ if (!default_domain) { ]}
-    	<input autofocus type="text" name="domain" placeholder="{{{domain_placeholder}}}">
+        <input autofocus required type="text" name="domain" placeholder="{{{domain_placeholder}}}">
         <input class="pure-button button-primary" type="submit" value="{{{label_register}}}">
     {[ } ]}
 </form>

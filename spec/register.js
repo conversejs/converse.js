@@ -68,13 +68,16 @@
                 }, 300)
             .then(function () {
 
+            test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
             var registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
             spyOn(_converse.connection, 'connect');
-            var $tabs = cbview.$('#controlbox-tabs');
-            $tabs.find('li').last().find('a').click(); // Click the Register tab
+
+            // Open the register panel
+            cbview.el.querySelector('.toggle-register-login').click();
+
             // Check the form layout
             var $form = cbview.$('#converse-register');
             expect($form.find('input').length).toEqual(2);
@@ -82,8 +85,8 @@
             expect($form.find('input').last().attr('type')).toEqual('submit');
             // Check that the input[type=domain] input is required
             $form.find('input[type=submit]').click();
-            expect(registerview.onProviderChosen).toHaveBeenCalled();
-            expect($form.find('input[name=domain]').hasClass('error')).toBeTruthy();
+            expect(registerview.onProviderChosen).not.toHaveBeenCalled();
+
             // Check that the form is accepted if input[type=domain] has a value
             $form.find('input[name=domain]').val('conversejs.org');
             $form.find('input[type=submit]').click();

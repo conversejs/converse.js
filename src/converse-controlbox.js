@@ -48,7 +48,7 @@
             tpl_login_panel,
             tpl_search_contact,
             tpl_status_option,
-            tpl_spinner,
+            tpl_spinner
         ) {
     "use strict";
 
@@ -507,20 +507,16 @@
 
                 validate () {
                     const form = this.el.querySelector('form');
-                    const jid = form.querySelector('input[name=jid]').value;
-                    const password = _.get(form.querySelector('input[name=password]'), 'value');
-                    const errors = [];
-                    if (!jid || (
+                    const jid_element = form.querySelector('input[name=jid]');
+                    if (jid_element.value &&
                             !_converse.locked_domain &&
                             !_converse.default_domain &&
-                            _.filter(jid.split('@')).length < 2)) {
-                        errors.push(errors, 'invalid_jid');
+                            _.filter(jid_element.value.split('@')).length < 2) {
+                        jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
+                        return false;
                     }
-                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
-                        errors.push(errors, 'password_required');
-                    }
-                    this.model.set('errors', errors);
-                    return errors.length == 0;
+                    jid_element.setCustomValidity('');
+                    return true;
                 },
 
                 authenticate (ev) {
@@ -535,15 +531,14 @@
                         return;
                     }
                     let jid = ev.target.querySelector('input[name=jid]').value;
-                    const password = _.get(ev.target.querySelector('input[name=password]'), 'value');
-
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect(jid, password);
-                    return false;
+                    this.connect(
+                        jid, _.get(ev.target.querySelector('input[name=password]'), 'value')
+                    );
                 },
 
                 connect (jid, password) {

@@ -392,7 +392,7 @@
 
             _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'bookmarks-list, rooms-list-container',
+                className: 'bookmarks-list rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',

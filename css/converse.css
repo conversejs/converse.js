@@ -12,8 +12,8 @@
  */
 @font-face {
   font-family: 'Converse-js';
-  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/converse-js.eot?wvi0ht");
-  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/converse-js.eot?wvi0ht#iefix") format("embedded-opentype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/converse-js.ttf?wvi0ht") format("truetype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/converse-js.woff?wvi0ht") format("woff"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.6/fonts/converse-js.svg?wvi0ht#icomoon") format("svg");
+  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.eot?wvi0ht");
+  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.eot?wvi0ht#iefix") format("embedded-opentype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.ttf?wvi0ht") format("truetype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.woff?wvi0ht") format("woff"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.svg?wvi0ht#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 .icon-conversejs {
@@ -31,6 +31,9 @@
 .icon-conversejs:before {
   content: "\e600"; }
 
+#converse-embedded-chat .icon-leave:before,
+#conversejs .icon-leave:before {
+  content: "\e904"; }
 #converse-embedded-chat .icon-unlocked:before,
 #conversejs .icon-unlocked:before {
   content: "\e900"; }
@@ -730,13 +733,59 @@
   #conversejs .pure-form textarea {
     padding: 0.5em 0.6em;
     display: inline-block;
-    border: 1px solid #ccc;
-    box-shadow: inset 0 1px 3px #ddd;
+    border: 1px solid #67e0f5;
     border-radius: 4px;
     vertical-align: middle;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; }
+    #conversejs .pure-form input[type="text"]:hover, #conversejs .pure-form input[type="text"]:active, #conversejs .pure-form input[type="text"]:focus,
+    #conversejs .pure-form input[type="password"]:hover,
+    #conversejs .pure-form input[type="password"]:active,
+    #conversejs .pure-form input[type="password"]:focus,
+    #conversejs .pure-form input[type="email"]:hover,
+    #conversejs .pure-form input[type="email"]:active,
+    #conversejs .pure-form input[type="email"]:focus,
+    #conversejs .pure-form input[type="url"]:hover,
+    #conversejs .pure-form input[type="url"]:active,
+    #conversejs .pure-form input[type="url"]:focus,
+    #conversejs .pure-form input[type="date"]:hover,
+    #conversejs .pure-form input[type="date"]:active,
+    #conversejs .pure-form input[type="date"]:focus,
+    #conversejs .pure-form input[type="month"]:hover,
+    #conversejs .pure-form input[type="month"]:active,
+    #conversejs .pure-form input[type="month"]:focus,
+    #conversejs .pure-form input[type="time"]:hover,
+    #conversejs .pure-form input[type="time"]:active,
+    #conversejs .pure-form input[type="time"]:focus,
+    #conversejs .pure-form input[type="datetime"]:hover,
+    #conversejs .pure-form input[type="datetime"]:active,
+    #conversejs .pure-form input[type="datetime"]:focus,
+    #conversejs .pure-form input[type="datetime-local"]:hover,
+    #conversejs .pure-form input[type="datetime-local"]:active,
+    #conversejs .pure-form input[type="datetime-local"]:focus,
+    #conversejs .pure-form input[type="week"]:hover,
+    #conversejs .pure-form input[type="week"]:active,
+    #conversejs .pure-form input[type="week"]:focus,
+    #conversejs .pure-form input[type="number"]:hover,
+    #conversejs .pure-form input[type="number"]:active,
+    #conversejs .pure-form input[type="number"]:focus,
+    #conversejs .pure-form input[type="search"]:hover,
+    #conversejs .pure-form input[type="search"]:active,
+    #conversejs .pure-form input[type="search"]:focus,
+    #conversejs .pure-form input[type="tel"]:hover,
+    #conversejs .pure-form input[type="tel"]:active,
+    #conversejs .pure-form input[type="tel"]:focus,
+    #conversejs .pure-form input[type="color"]:hover,
+    #conversejs .pure-form input[type="color"]:active,
+    #conversejs .pure-form input[type="color"]:focus,
+    #conversejs .pure-form select:hover,
+    #conversejs .pure-form select:active,
+    #conversejs .pure-form select:focus,
+    #conversejs .pure-form textarea:hover,
+    #conversejs .pure-form textarea:active,
+    #conversejs .pure-form textarea:focus {
+      box-shadow: none; }
   #conversejs .pure-form input:not([type]) {
     padding: 0.5em 0.6em;
     display: inline-block;
@@ -1129,7 +1178,9 @@
   position: fixed;
   right: 0;
   width: auto;
-  z-index: 1031; }
+  z-index: 1031;
+  font-weight: 400 !important;
+  /* Need to override Muikku's font definitions */ }
   @media screen and (max-height: 450px) {
     #converse-embedded-chat,
     #conversejs {
@@ -1301,7 +1352,6 @@
     color: #fff;
     line-height: 14px;
     font-size: 14px;
-    font-weight: 400;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1606,8 +1656,7 @@
         color: #009fe3; }
       #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content,
       #conversejs .chatbox .chat-body .chat-message .chat-msg-content {
-        max-width: 100%;
-        font-weight: 400; }
+        max-width: 100%; }
         #converse-embedded-chat .chatbox .chat-body .chat-message .chat-msg-content .emojione,
         #conversejs .chatbox .chat-body .chat-message .chat-msg-content .emojione {
           margin-bottom: -6px; }
@@ -2001,8 +2050,10 @@
     margin: 0; }
     #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle {
       display: block;
-      color: #2c2c2c;
-      margin-top: 1em; }
+      color: #2c2c2c; }
+      #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle span.rooms-toggle-text {
+        display: iniline-block;
+        font-family: "Open Sans", "Arial", sans-serif; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle::before {
         padding: 0 0.4em 0 0; }
       #conversejs #controlbox #chatrooms .rooms-list-container .rooms-toggle:hover {
@@ -2026,7 +2077,10 @@
         overflow: hidden;
         padding: 0.3em 0;
         text-shadow: 0 1px 0 #FAFAFA;
-        word-wrap: break-word; }
+        word-wrap: break-word;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom a:hover,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom a:hover {
           color: #206485; }
@@ -2034,43 +2088,49 @@
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom.unread-msgs .open-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom.unread-msgs .available-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom.unread-msgs .open-room {
-          max-width: 55%;
-          width: auto;
           font-weight: bold; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom a.room-info:before,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom a.room-info:before {
           font-size: 15px; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom a.open-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom a.open-room {
-          width: 68%;
-          float: left;
+          flex: 2 1;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          padding-right: 0.5em; }
+          padding-right: 0.5em;
+          font-size: 13px; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom a.available-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom a.available-room {
-          width: 85%; }
+          flex: 2 1; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark,
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .close-room,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark,
-        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark {
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark,
+        #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .close-room {
+          flex: 0 0 21px;
           color: #A8ABA1; }
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark.button-on,
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark.button-on,
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .close-room.button-on,
           #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark.button-on,
-          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on {
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on,
+          #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .close-room.button-on {
             color: #009fe3; }
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .add-bookmark.button-on:hover,
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .remove-bookmark.button-on:hover,
+            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .close-room.button-on:hover,
             #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .add-bookmark.button-on:hover,
-            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on:hover {
+            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .remove-bookmark.button-on:hover,
+            #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .close-room.button-on:hover {
               color: #206485; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom .room-info,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom .room-info {
           font-size: 12px;
           font-style: normal;
-          font-weight: normal; }
+          font-weight: normal;
+          flex: 0 0 21px; }
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .available-chatroom li.room-info,
         #conversejs #controlbox #chatrooms .rooms-list-container dl.rooms-list .open-chatroom li.room-info {
           display: block;
@@ -2116,7 +2176,7 @@
   #conversejs #controlbox .dropdown dt a span {
     cursor: pointer;
     display: block;
-    padding: 4px 7px 0 5px; }
+    padding: 0 7px 0 5px; }
   #conversejs #controlbox #select-xmpp-status {
     display: none;
     float: right;
@@ -2160,21 +2220,29 @@
         #conversejs #controlbox #controlbox-tabs li a.current, #conversejs #controlbox #controlbox-tabs li a.current:hover {
           font-weight: 600; }
   #conversejs #controlbox .fancy-dropdown {
-    border: 1px solid #B1BFC4;
     height: 25px;
     border-radius: 3px;
     text-align: left; }
     #conversejs #controlbox .fancy-dropdown .choose-xmpp-status,
     #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form {
       line-height: 25px;
-      text-shadow: 0 1px 0 #ffffff;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      display: inline-block; }
-      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status span,
-      #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form span {
-        font-family: "Open Sans", "Arial", sans-serif; }
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center; }
+      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status span.choose-xmpp-status-text,
+      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status span.toggle-xmpp-contact-form-text,
+      #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form span.choose-xmpp-status-text,
+      #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form span.toggle-xmpp-contact-form-text {
+        font-family: "Open Sans", "Arial", sans-serif;
+        display: inline-block;
+        font-size: 13px;
+        flex: 2 1; }
+      #conversejs #controlbox .fancy-dropdown .choose-xmpp-status.icon-plus::before,
+      #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form.icon-plus::before {
+        flex: 0 1; }
       #conversejs #controlbox .fancy-dropdown .choose-xmpp-status:hover,
       #conversejs #controlbox .fancy-dropdown .toggle-xmpp-contact-form:hover {
         color: #206485; }
@@ -2184,12 +2252,14 @@
     #conversejs #controlbox .fancy-dropdown.no-border {
       border: 0; }
   #conversejs #controlbox #fancy-xmpp-status-select .xmpp-status {
-    padding: 0 0.4em; }
+    padding: 0 0.4em;
+    position: relative; }
   #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message {
     line-height: 25px;
-    float: right;
-    clear: right;
-    width: 12px;
+    position: absolute;
+    right: 5px;
+    top: 0;
+    width: 16px;
     color: #009fe3; }
     #conversejs #controlbox #fancy-xmpp-status-select a.change-xmpp-status-message:hover {
       color: #206485; }
@@ -2212,7 +2282,6 @@
     border: 0;
     font-size: 14px;
     position: absolute;
-    text-align: center;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden; }
@@ -2220,7 +2289,7 @@
       font-size: 14px;
       font-weight: bold;
       height: auto;
-      margin: 4px; }
+      margin: 4px 0; }
     #conversejs #controlbox .controlbox-pane dd {
       margin-left: 0;
       margin-bottom: 0; }
@@ -2248,7 +2317,7 @@
     color: #D24E2B; }
   #conversejs #controlbox .set-xmpp-status {
     background: none;
-    margin: 1em 0 0.5em 0em; }
+    margin: 0 0 2px; }
     #conversejs #controlbox .set-xmpp-status .dropdown dd ul {
       z-index: 22; }
 #conversejs .toggle-controlbox {
@@ -2361,6 +2430,9 @@
         color: #2c2c2c;
         display: block;
         width: 100%; }
+        #conversejs #converse-roster .roster-contacts dt.roster-group .group-toggle span.group-toggle-text {
+          font-family: "Open Sans", "Arial", sans-serif;
+          display: inline-block; }
         #conversejs #converse-roster .roster-contacts dt.roster-group .group-toggle::before {
           padding: 0 0.4em 0 0; }
         #conversejs #converse-roster .roster-contacts dt.roster-group .group-toggle:hover {

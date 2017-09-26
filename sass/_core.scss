@@ -11,6 +11,7 @@
   right: 0;
   width: auto;
   z-index: 1031; // One more than bootstrap navbar
+  font-weight: 400 !important; /* Need to override Muikku's font definitions */
   
   @media screen and (max-height: $mobile-landscape-height) {
     width: 100%;
@@ -171,7 +172,6 @@
     color: $chat-head-text-color;
     line-height: 14px;
     font-size: $font-size;
-    font-weight: 400;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;

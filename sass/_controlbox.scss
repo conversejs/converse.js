@@ -141,7 +141,11 @@
                 .rooms-toggle {
                     display: block;
                     color: $text-color;
-                    margin-top: 1em;
+                    
+                    span.rooms-toggle-text {
+                      display: iniline-block;
+                      font-family: "Open Sans", "Arial", sans-serif;
+                    }
                     
                     &::before {
                       padding: 0 0.4em 0 0;
@@ -172,50 +176,66 @@
                         padding: 0.3em 0;
                         text-shadow: 0 1px 0 $text-shadow-color;
                         word-wrap: break-word;
+                        display: flex;
+                        flex-flow:row nowrap;
+                        align-items: center;
+                        
                         a:hover {
                             color: $dark-link-color;
                         }
+                        
                         &.unread-msgs {
-                            .available-room,
-                            .open-room {
-                                max-width: 55%;
-                                width: auto;
-                                font-weight: bold;
-                            }
+                          .available-room,
+                          .open-room {
+                            font-weight: bold;
+                          }
                         }
+                        
                         a {
                             &.room-info {
-                                &:before {
-                                    font-size: 15px;
-                                }
+                            
+                              &:before {
+                                font-size: 15px;
+                              }
                             }
+                            
                             &.open-room {
-                                width: 68%;
-                                float: left;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                                white-space: nowrap;
-                                padding-right: 0.5em;
+                              flex: 2 1;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+                              white-space: nowrap;
+                              padding-right: 0.5em;
+                              font-size: 13px;
                             }
+                            
                             &.available-room {
-                                width: 85%;
+                              flex: 2 1;
                             }
                         }
+                        
                         .add-bookmark,
-                        .remove-bookmark {
-                            &.button-on {
-                                color: $link-color;
-                                &:hover {
-                                    color: $dark-link-color;
-                                }
+                        .remove-bookmark,
+                        .close-room {
+                          flex: 0 0 21px;
+                          
+                          &.button-on {
+                            color: $link-color;
+                            
+                            &:hover {
+                                color: $dark-link-color;
                             }
-                            color: $subdued-color;
+                          }
+                            
+                          color: $subdued-color;
                         }
+                        
                         .room-info {
-                            font-size: $font-size-small;
-                            font-style: normal;
-                            font-weight: normal;
+                          font-size: $font-size-small;
+                          font-style: normal;
+                          font-weight: normal;
+                          flex: 0 0 21px;
                         }
+                        
                         li.room-info {
                             display: block;
                             margin-left: 5px;
@@ -255,6 +275,7 @@
                     width: 100%;
                     z-index: 21;
                     background-color: $light-background-color;
+                    
                     li:hover {
                         background-color: $highlight-color;
                     }
@@ -278,7 +299,7 @@
             dt a span {
                 cursor: pointer;
                 display: block;
-                padding: 4px 7px 0 5px;
+                padding: 0 7px 0 5px;
             }
         }
 
@@ -350,32 +371,42 @@
         }
 
         .fancy-dropdown {
-            border: 1px solid $light-background-border-color;
             height: $controlbox-dropdown-height;
             border-radius: $button-border-radius;
             text-align: left;
 
             .choose-xmpp-status,
             .toggle-xmpp-contact-form {
-                line-height: $controlbox-dropdown-height;
-                text-shadow: 0 1px 0 #ffffff;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+              line-height: $controlbox-dropdown-height;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center;
+              
+              span.choose-xmpp-status-text,
+              span.toggle-xmpp-contact-form-text {
+                font-family: "Open Sans", "Arial", sans-serif;
                 display: inline-block;
-                
-                span {
-                  font-family: "Open Sans", "Arial", sans-serif;
-                }
-                
-                &:hover {
-                    color: $dark-link-color;
-                }
+                font-size: 13px;
+                flex: 2 1;
+              }
+              
+              &.icon-plus::before {
+                flex: 0 1;
+              }
+              
+              &:hover {
+                  color: $dark-link-color;
+              }
             }
+            
             .toggle-xmpp-contact-form {
-                padding: 0 0.4em;
-                width: 100%;
+              padding: 0 0.4em;
+              width: 100%;
             }
+            
             &.no-border {
                 border: 0;
             }
@@ -384,12 +415,14 @@
         #fancy-xmpp-status-select {
             .xmpp-status {
                 padding: 0 0.4em;
+                position: relative
             }
             a.change-xmpp-status-message {
                 line-height: $controlbox-dropdown-height;
-                float: right;
-                clear: right;
-                width: 12px;
+                position: absolute;
+                right: 5px;
+                top: 0;
+                width: 16px;
                 color: $link-color;
                 &:hover {
                     color: $dark-link-color;
@@ -418,15 +451,15 @@
             border: 0;
             font-size: $font-size;
             position: absolute;
-            text-align: center;
             width: 100%;
             overflow-y: auto;
             overflow-x: hidden;
+            
             label {
                 font-size: $font-size;
                 font-weight: bold;
                 height: auto;
-                margin: 4px;
+                margin: 4px 0;
             }
             dd {
                 margin-left: 0;
@@ -470,7 +503,8 @@
 
         .set-xmpp-status {
             background: none;
-            margin: 1em 0 0.5em 0em;
+            margin: 0 0 2px;
+            
             .dropdown dd ul {
                 z-index: 22;
             }

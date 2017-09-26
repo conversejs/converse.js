@@ -28,6 +28,9 @@
 
 #converse-embedded-chat,
 #conversejs {
+  .icon-leave:before {
+    content: "\e904";
+  }
   .icon-unlocked:before {
     content: "\e900";
   }
@@ -50,7 +53,7 @@
     content: "\e5ca";
   }
   .icon-close:before {
-    content: "\e5cd"; 
+    content: "\e5cd";
   }
   .icon-closed:before {
     content: "\e5ce";

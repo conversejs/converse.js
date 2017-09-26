@@ -55066,9 +55066,9 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<dl class="add-converse-contact dropdown">\n    <dt id="xmpp-contact-search" class="fancy-dropdown">\n        <a class="toggle-xmpp-contact-form icon-plus" href="#" title="' +
 __e(label_click_to_chat) +
-'">' +
+'"><span class="toggle-xmpp-contact-form-text">' +
 __e(label_add_contact) +
-'</a>\n    </dt>\n    <dd class="search-xmpp">\n        <div class="contact-form-container collapsed"></div>\n        <ul></ul>\n    </dd>\n</dl>\n';
+'</span></a>\n    </dt>\n    <dd class="search-xmpp">\n        <div class="contact-form-container collapsed"></div>\n        <ul></ul>\n    </dd>\n</dl>\n';
 
 }
 return __p
@@ -55132,9 +55132,9 @@ __e(chat_status) +
 __e(status_message) +
 '" href="#" title="' +
 __e(desc_change_status) +
-'">' +
+'"><span class="choose-xmpp-status-text">' +
 __e(status_message) +
-'</a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
+'</span></a>\n    <a class="change-xmpp-status-message icon-pencil" href="#" title="' +
 __e(desc_custom_status) +
 '"></a>\n</div>\n';
 
@@ -55342,9 +55342,9 @@ __p += '<a href="#" class="group-toggle icon-' +
 __e(toggle_state) +
 '" title="' +
 __e(desc_group_toggle) +
-'">' +
+'"><span class="group-toggle-text">' +
 __e(label_group) +
-'</a>\n';
+'</span></a>\n';
 
 }
 return __p
@@ -62153,26 +62153,26 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<dd class="available-chatroom" data-room-jid="' +
 __e(jid) +
-'">\n<a class="open-room" data-room-jid="' +
+'">\n  <a class="open-room" data-room-jid="' +
 __e(jid) +
 '" title="' +
 __e(open_title) +
 '" href="#">' +
 __e(name) +
-'</a>\n<a class="right remove-bookmark icon-pushpin ';
+'</a>\n  <a class="room-info icon-room-info" data-room-jid="' +
+__e(jid) +
+'"\n     title="' +
+__e(info_title) +
+'" href="#">&nbsp;</a>\n  <a class="remove-bookmark icon-pushpin ';
  if (bookmarked) { ;
 __p += ' button-on ';
  } ;
-__p += '"\n   data-room-jid="' +
+__p += '"\n     data-room-jid="' +
 __e(jid) +
 '" data-bookmark-name="' +
 __e(name) +
-'"\n   title="' +
+'"\n     title="' +
 __e(info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n<a class="right room-info icon-room-info" data-room-jid="' +
-__e(jid) +
-'"\n   title="' +
-__e(info_title) +
 '" href="#">&nbsp;</a>\n</dd>\n';
 
 }
@@ -62188,9 +62188,9 @@ __p += '<a href="#" class="rooms-toggle bookmarks-toggle icon-' +
 __e(toggle_state) +
 '" title="' +
 __e(desc_bookmarks) +
-'">' +
+'"><span class="rooms-toggle-text">' +
 __e(label_bookmarks) +
-'</a>\n<dl class="bookmarks rooms-list"></dl>\n';
+'</span></a>\n<dl class="bookmarks rooms-list"></dl>\n';
 
 }
 return __p
@@ -62590,7 +62590,7 @@ return __p
 
             _converse.BookmarksView = Backbone.View.extend({
                 tagName: 'div',
-                className: 'bookmarks-list, rooms-list-container',
+                className: 'bookmarks-list rooms-list-container',
                 events: {
                     'click .add-bookmark': 'addBookmark',
                     'click .bookmarks-toggle': 'toggleBookmarksList',
@@ -62752,9 +62752,9 @@ __p += '<a href="#" class="rooms-toggle open-rooms-toggle icon-' +
 __e(toggle_state) +
 '" title="' +
 __e(desc_rooms) +
-'">' +
+'"><span class="rooms-toggle-text">' +
 __e(label_rooms) +
-'</a>\n<dl class="rooms-list open-rooms-list"></dl>\n';
+'</span></a>\n<dl class="rooms-list open-rooms-list"></dl>\n';
 
 }
 return __p
@@ -62784,15 +62784,13 @@ __e(jid) +
 __e(open_title) +
 '" href="#">' +
 __e(name) +
-'</a>\n<a class="right close-room icon-leave"\n   data-room-jid="' +
+'</a>\n\n<a class="room-info icon-room-info" data-room-jid="' +
 __e(jid) +
-'"\n   data-room-name="' +
-__e(name) +
 '"\n   title="' +
-__e(info_leave_room) +
+__e(info_title) +
 '" href="#">&nbsp;</a>\n\n';
  if (allow_bookmarks) { ;
-__p += '\n<a class="right icon-pushpin ';
+__p += '\n<a class="icon-pushpin ';
  if (bookmarked) { ;
 __p += ' remove-bookmark button-on ';
  } else { ;
@@ -62814,10 +62812,12 @@ __e(info_add_bookmark) +
  } ;
 __p += '"\n   href="#">&nbsp;</a>\n';
  } ;
-__p += '\n<a class="right room-info icon-room-info" data-room-jid="' +
+__p += '\n   \n<a class="close-room icon-leave"\n   data-room-jid="' +
 __e(jid) +
+'"\n   data-room-name="' +
+__e(name) +
 '"\n   title="' +
-__e(info_title) +
+__e(info_leave_room) +
 '" href="#">&nbsp;</a>\n</dd>\n';
 
 }

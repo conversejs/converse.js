@@ -5,17 +5,19 @@
 <a class="open-room"
     data-room-jid="{{{jid}}}"
     title="{{{open_title}}}" href="#">{{{name}}}</a>
-<a class="right close-room icon-leave"
-   data-room-jid="{{{jid}}}"
-   data-room-name="{{{name}}}"
-   title="{{{info_leave_room}}}" href="#">&nbsp;</a>
+
+<a class="room-info icon-room-info" data-room-jid="{{{jid}}}"
+   title="{{{info_title}}}" href="#">&nbsp;</a>
 
 {[ if (allow_bookmarks) { ]}
-<a class="right icon-pushpin {[ if (bookmarked) { ]} remove-bookmark button-on {[ } else { ]} add-bookmark {[ } ]}"
+<a class="icon-pushpin {[ if (bookmarked) { ]} remove-bookmark button-on {[ } else { ]} add-bookmark {[ } ]}"
    data-room-jid="{{{jid}}}" data-bookmark-name="{{{name}}}"
    title="{[ if (bookmarked) { ]} {{{info_remove_bookmark}}} {[ } else { ]} {{{info_add_bookmark}}} {[ } ]}"
    href="#">&nbsp;</a>
 {[ } ]}
-<a class="right room-info icon-room-info" data-room-jid="{{{jid}}}"
-   title="{{{info_title}}}" href="#">&nbsp;</a>
+   
+<a class="close-room icon-leave"
+   data-room-jid="{{{jid}}}"
+   data-room-name="{{{name}}}"
+   title="{{{info_leave_room}}}" href="#">&nbsp;</a>
 </dd>

@@ -95,6 +95,11 @@
         
         .group-toggle {
         
+          span.group-toggle-text {
+            font-family: "Open Sans", "Arial", sans-serif;
+            display: inline-block;
+          }
+        
           &::before {
             padding: 0 0.4em 0 0;
           }

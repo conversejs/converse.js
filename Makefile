@@ -153,9 +153,8 @@ watch: stamp-bundler
 watchjs: stamp-npm
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
-.PHONY: transpile
-transpile: stamp-npm
-	$(BABEL) --source-maps --out-dir=./builds ./src
+transpile: stamp-npm src
+	$(BABEL) --source-maps --out-dir=./builds ./src && touch transpile
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
@@ -174,31 +173,31 @@ BUILDS = dist/converse.js \
 
 dist/converse.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse.min.js: src node_modules *.js
+dist/converse.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse-esnext.js: src node_modules *.js transpile
+dist/converse-esnext.js: src node_modules *.js
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src node_modules *.js transpile
+dist/converse-esnext.min.js: src node_modules *.js
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
 dist/inverse.js: transpile src node_modules *.js
 	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
-dist/inverse.min.js: src node_modules *.js
+dist/inverse.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.min.js
 dist/converse-no-jquery.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
-dist/converse-no-jquery.min.js: src node_modules *.js transpile
+dist/converse-no-jquery.min.js: transpile src node_modules *.js transpile
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
 dist/converse-no-dependencies.js: transpile src node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: src node_modules *.js
+dist/converse-no-dependencies.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
 dist/converse-mobile.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
-dist/converse-mobile.min.js: src node_modules *.js
+dist/converse-mobile.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-muc-embedded.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: src node_modules *.js
+dist/converse-muc-embedded.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: jsmin

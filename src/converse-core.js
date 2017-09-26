@@ -197,9 +197,9 @@
         } else {
             return t.fetch();
         }
-    };
+    }
 
-    const detectLocale = function (library_check) {
+    function detectLocale (library_check) {
         /* Determine which locale is supported by the user's system as well
          * as by the relevant library (e.g. converse.js or moment.js).
          *
@@ -226,23 +226,23 @@
             locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
         }
         return locale || 'en';
-    };
+    }
 
-    const isMomentLocale  = function (locale) {
+    function isMomentLocale (locale) {
         if (!_.isString(locale)) { return false; }
         return moment.locale() !== moment.locale(locale);
-    };
+    }
 
-    const getLocale = function (preferred_locale, isSupportedByLibrary) {
+    function getLocale (preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
             }
         }
-        return _converse.detectLocale(isSupportedByLibrary) || 'en';
-    };
+        return detectLocale(isSupportedByLibrary) || 'en';
+    }
 
-    const isLocaleAvailable = function (locale, available) {
+    function isLocaleAvailable (locale, available) {
         /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
          *
          * Parameters:
@@ -257,9 +257,9 @@
                 return sublocale;
             }
         }
-    };
+    }
 
-    const isLocaleSupported = function (locale) {
+    function isLocaleSupported (locale) {
         /* Check whether the passed in locale is supported by Converse
          *
          * Parameters:
@@ -267,25 +267,21 @@
          */
         if (!_.isString(locale)) { return false; }
         return _.includes(_converse.locales, locale);
-    };
+    }
 
-    const fetchLocale = (locale, locale_url) =>
+    function fetchTranslations (locale, locale_url) {
         /* Fetch the translations for the given local at the given URL.
          *
          * Parameters:
          *  (String) locale:      The given i18n locale
          *  (String) locale_url:  The URL from which the translations should be fetched
          */
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!isLocaleSupported(locale) || locale === 'en') {
                 return resolve();
             }
             const xhr = new XMLHttpRequest();
-            xhr.open(
-                'GET',
-                locale_url,
-                true
-            );
+            xhr.open('GET', locale_url, true);
             xhr.setRequestHeader(
                 'Accept',
                 "application/json, text/javascript"
@@ -302,6 +298,7 @@
             };
             xhr.send();
         });
+    }
     // --------------------------
     // END: Translation machinery
     // --------------------------
@@ -377,11 +374,6 @@
             'INACTIVE':   90000
         };
 
-        /* Internationalization */
-        moment.locale(getLocale(settings.i18n, isMomentLocale));
-        _converse.locale = getLocale(settings.i18n, isLocaleSupported);
-        const __ = _converse.__;
-
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
         this.INACTIVE = 'inactive';
@@ -452,6 +444,11 @@
                       "authentication with auto_login.");
             }
         }
+
+        /* Internationalization */
+        moment.locale(getLocale(settings.i18n, isMomentLocale));
+        _converse.locale = getLocale(settings.i18n, isLocaleSupported);
+        const __ = _converse.__;
 
         // Module-level variables
         // ----------------------
@@ -2033,7 +2030,7 @@
             finishInitialization();
             return _converse;
         } else {
-            fetchLocale(
+            fetchTranslations(
                 _converse.locale,
                 _.template(_converse.locales_url)({'locale': _converse.locale})
             ).then((jed) => {

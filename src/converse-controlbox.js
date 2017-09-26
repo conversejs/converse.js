@@ -245,7 +245,7 @@
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox fade-in',
+                className: 'chatbox',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',

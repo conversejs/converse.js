@@ -6,14 +6,13 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, window, Jed */
+/*global define, escape, window */
 (function (root, factory) {
     define([
         "sizzle",
         "es6-promise",
         "jquery.browser",
         "lodash.noconflict",
-        "locales",
         "moment_with_locales",
         "strophe",
     ], factory);
@@ -22,12 +21,10 @@
         Promise,
         jQBrowser,
         _,
-        locales,
         moment,
         Strophe
     ) {
     "use strict";
-    locales = locales || {};
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
@@ -108,78 +105,6 @@
 
 
     var u = {};
-
-    // Translation machinery
-    // ---------------------
-    u.fetchLocale = (locale, locales_url) =>
-        new Promise((resolve, reject) => {
-            if (!u.isLocaleSupported(locale) || locale === 'en') {
-                resolve();
-            }
-            const xhr = new XMLHttpRequest();
-            xhr.open(
-                'GET',
-                _.template(locales_url)({'locale': locale}),
-                true
-            );
-            xhr.setRequestHeader(
-                'Accept',
-                "application/json, text/javascript"
-            );
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    resolve(new Jed(window.JSON.parse(xhr.responseText)));
-                } else {
-                    xhr.onerror();
-                }
-            };
-            xhr.onerror = function () {
-                reject(xhr.statusText);
-            };
-            xhr.send();
-        });
-
-    u.__ = function (_converse, str) {
-        if (_.isUndefined(window.Jed)) {
-            return str;
-        }
-        if (_.isUndefined(_converse.jed)) {
-            return Jed.sprintf.apply(window.Jed, [].slice.call(arguments, 1));
-        }
-        var t = _converse.jed.translate(str);
-        if (arguments.length>1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 2));
-        } else {
-            return t.fetch();
-        }
-    };
-
-    u.___ = function (str) {
-        /* XXX: This is part of a hack to get gettext to scan strings to be
-         * translated. Strings we cannot send to the function above because
-         * they require variable interpolation and we don't yet have the
-         * variables at scan time.
-         *
-         * See actionInfoMessages in src/converse-muc.js
-         */
-        return str;
-    };
-
-    u.isLocaleAvailable = function (locale, available) {
-        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-         *
-         * Parameters:
-         *      (Function) available - returns a boolean indicating whether the locale is supported
-         */
-        if (available(locale)) {
-            return locale;
-        } else {
-            var sublocale = locale.split("-")[0];
-            if (sublocale !== locale && available(sublocale)) {
-                return sublocale;
-            }
-        }
-    };
 
     u.addHyperlinks = function (text) {
         const list = text.match(URL_REGEX) || [];
@@ -478,56 +403,6 @@
                 throw new TypeError('contains: wrong attribute type. Must be string or array.');
             }
         };
-    };
-
-
-    u.detectLocale = function (library_check) {
-        /* Determine which locale is supported by the user's system as well
-         * as by the relevant library (e.g. converse.js or moment.js).
-         *
-         * Parameters:
-         *      (Function) library_check - returns a boolean indicating whether
-         *          the locale is supported.
-         */
-        var locale, i;
-        if (window.navigator.userLanguage) {
-            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
-        }
-        if (window.navigator.languages && !locale) {
-            for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
-            }
-        }
-        if (window.navigator.browserLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-        }
-        if (window.navigator.language && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.language, library_check);
-        }
-        if (window.navigator.systemLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-        }
-        return locale || 'en';
-    };
-
-    u.isLocaleSupported = function (locale) {
-        /* Check whether the passed in locale is supported by Converse */
-        if (!_.isString(locale)) { return false; }
-        return _.includes(_.keys(locales || {}), locale);
-    };
-
-    u.isMomentLocale  = function (locale) {
-        if (!_.isString(locale)) { return false; }
-        return moment.locale() !== moment.locale(locale);
-    };
-
-    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (_.isString(preferred_locale)) {
-            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-                return preferred_locale;
-            }
-        }
-        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
     u.isOfType = function (type, item) {

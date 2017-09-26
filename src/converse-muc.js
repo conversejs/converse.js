@@ -246,8 +246,19 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                  { __ } = _converse,
-                  { ___ } = utils;
+                  { __ } = _converse;
+
+            function ___ (str) {
+                /* This is part of a hack to get gettext to scan strings to be
+                * translated. Strings we cannot send to the function above because
+                * they require variable interpolation and we don't yet have the
+                * variables at scan time.
+                *
+                * See actionInfoMessages further below.
+                */
+                return str;
+            }
+
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,

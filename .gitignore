@@ -39,6 +39,7 @@ Backbone.Overview
 tags
 stamp-npm
 stamp-bundler
+transpile
 
 # Sphinx
 docs/html

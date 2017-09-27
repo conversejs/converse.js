@@ -12,8 +12,8 @@
  */
 @font-face {
   font-family: 'Converse-js';
-  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.eot?wvi0ht");
-  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.eot?wvi0ht#iefix") format("embedded-opentype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.ttf?wvi0ht") format("truetype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.woff?wvi0ht") format("woff"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.7/fonts/converse-js.svg?wvi0ht#icomoon") format("svg");
+  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.8/fonts/converse-js.eot?wvi0ht");
+  src: url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.8/fonts/converse-js.eot?wvi0ht#iefix") format("embedded-opentype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.8/fonts/converse-js.ttf?wvi0ht") format("truetype"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.8/fonts/converse-js.woff?wvi0ht") format("woff"), url("//cdn.muikkuverkko.fi/assets/converse-icons/1.0.8/fonts/converse-js.svg?wvi0ht#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 .icon-conversejs {

@@ -280,12 +280,13 @@
   .icon-offline:before {
     content: "\e002";
   }
-  .icon-busy:before {
+  .icon-dnd:before {
     content: "\e004";
   }
-  .icon-exit:before {
+  .icon-logout:before {
     content: "\e601";
   }
+
 
   [data-icon]:before {
     content: attr(data-icon);

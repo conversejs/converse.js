@@ -283,11 +283,11 @@
 #converse-embedded-chat .icon-offline:before,
 #conversejs .icon-offline:before {
   content: "\e002"; }
-#converse-embedded-chat .icon-busy:before,
-#conversejs .icon-busy:before {
+#converse-embedded-chat .icon-dnd:before,
+#conversejs .icon-dnd:before {
   content: "\e004"; }
-#converse-embedded-chat .icon-exit:before,
-#conversejs .icon-exit:before {
+#converse-embedded-chat .icon-logout:before,
+#conversejs .icon-logout:before {
   content: "\e601"; }
 #converse-embedded-chat [data-icon]:before,
 #conversejs [data-icon]:before {

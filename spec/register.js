@@ -37,16 +37,15 @@
                     return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
                 }, 300)
             .then(function () {
-
             var cbview = _converse.chatboxviews.get('controlbox');
             test_utils.openControlBox();
             var $panels = cbview.$('.controlbox-panes');
             var $login = $panels.children().first();
             var $registration = $panels.children().last();
 
-            var $register_link = cbview.$('a.register-account');
-            expect($register_link.text()).toBe("Create an account");
-            $register_link.click();
+            var register_link = cbview.el.querySelector('a.register-account');
+            expect(register_link.textContent).toBe("Create an account");
+            register_link.click();
             test_utils.waitUntil(function () {
                 return $registration.is(':visible');
             }, 300).then(function () {

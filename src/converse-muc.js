@@ -353,7 +353,22 @@
                     'toggle_occupants': true
                 },
             });
-            _converse.api.promises.add('roomsPanelRendered');
+            _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
+
+            const MUCRouter = Backbone.Router.extend({
+                routes: {
+                    'converse?room=:room': 'openRoom'
+                },
+                openRoom (room) {
+                    _converse.api.waitUntil('roomsAutoJoined').then(() => {
+                        if (utils.isValidJID(room)) {
+                            _converse.api.rooms.open(room);
+                        }
+                    });
+                }
+            });
+            const router = new MUCRouter();
+
 
             _converse.openChatRoom = function (settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
@@ -2724,6 +2739,9 @@
                             Strophe.LogLevel.ERROR);
                     }
                 });
+                // XXX: Could return Promise for api.rooms.open and then wait
+                // until all promises have resolved before emitting this.
+                _converse.emit('roomsAutoJoined');
             }
             _converse.on('chatBoxesFetched', autoJoinRooms);
 

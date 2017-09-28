@@ -80,9 +80,6 @@
 
             ControlBoxView: {
 
-                events: {
-                },
-
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
@@ -101,7 +98,6 @@
                         this.registerpanel.el.classList.add('hidden');
                     }
                 },
-
 
                 renderRegistrationPanel () {
                     const { _converse } = this.__super__;
@@ -149,13 +145,11 @@
                 providers_link: 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
             });
 
-            _converse.RegistrationRouter = Backbone.Router.extend({
-
+            const RegistrationRouter = Backbone.Router.extend({
                 initialize () {
                     this.route('converse-login', _.partial(this.setActiveForm, 'login'));
                     this.route('converse-register', _.partial(this.setActiveForm, 'register'));
                 },
-
                 setActiveForm (value) {
                     _converse.api.waitUntil('controlboxInitialized').then(() => {
                         const controlbox = _converse.chatboxes.get('controlbox')
@@ -163,7 +157,7 @@
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             });
-            const router = new _converse.RegistrationRouter();
+            const router = new RegistrationRouter();
 
 
             _converse.RegisterPanel = Backbone.View.extend({

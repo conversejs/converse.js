@@ -511,7 +511,7 @@
                     if (jid_element.value &&
                             !_converse.locked_domain &&
                             !_converse.default_domain &&
-                            _.filter(jid_element.value.split('@')).length < 2) {
+                            !utils.isValidJID(jid_element.value)) {
                         jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
                         return false;
                     }

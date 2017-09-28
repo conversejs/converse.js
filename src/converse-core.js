@@ -2013,15 +2013,16 @@
             this.connection = settings.connection;
         }
 
-        // TODO: fallback when global history has already been started
-        Backbone.history.start();
-
         function finishInitialization () {
             _converse.initPlugins();
             _converse.initConnection();
             _converse.setUpXMLLogging();
             _converse.logIn();
             _converse.registerGlobalEventHandlers();
+
+            if (!Backbone.history.started) {
+                Backbone.history.start();
+            }
         }
 
         if (!_.isUndefined(_converse.connection) &&

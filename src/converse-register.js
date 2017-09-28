@@ -81,21 +81,11 @@
             ControlBoxView: {
 
                 events: {
-                    'click .toggle-register-login': 'switchToRegisterForm',
                 },
 
                 initialize () {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
-                },
-
-                switchToRegisterForm (ev) {
-                    ev.preventDefault();
-                    if (this.model.get('active-form') == "register") {
-                        this.model.set('active-form', 'login');
-                    } else {
-                        this.model.set('active-form', 'register');
-                    }
                 },
 
                 showLoginOrRegisterForm () {

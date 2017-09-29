@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-09-15 22:46+0000\n"
-"Last-Translator: Murgl Gurgl <h45429@mvrht.net>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
-"translations/de/>\n"
+"PO-Revision-Date: 2017-09-29 18:17+0000\n"
+"Last-Translator: Andreas Kleinert <Andy.Kleinert@gmail.com>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/conversejs/translations/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,19 +33,24 @@ msgstr "Beim Speichern des Formulars ist ein Fehler aufgetreten."
 #: dist/converse-no-dependencies.js:6808
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
 msgstr ""
+"Ihre Jabber-ID und/oder Ihr Passwort ist falsch. Bitte versuchen Sie es "
+"erneut."
 
 #: dist/converse-no-dependencies.js:6816
 msgid "Sorry, we could not connect to the XMPP host with domain: "
 msgstr ""
+"Leider konnten wir keine Verbindung zum XMPP-Host mit der Domain herstellen: "
 
 #: dist/converse-no-dependencies.js:6818
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Der XMPP-Server hat keinen unterstützten Authentifizierungsmechanismus "
+"angeboten"
 
 #: dist/converse-no-dependencies.js:7386
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "Entschuldige, es kam zu einem Fehler bei der Hinzufügung von "
+msgstr "Leider gab es einen Fehler beim Versuch, %1$s als Kontakt hinzuzufügen."
 
 #: dist/converse-no-dependencies.js:7521
 msgid "This client does not allow presence subscriptions"
@@ -151,17 +156,16 @@ msgstr "Beginne ein Gespräch"
 
 #: dist/converse-no-dependencies.js:14784
 msgid "Login"
-msgstr ""
+msgstr "Anmelden"
 
 #: dist/converse-no-dependencies.js:14806
 msgid "Jabber ID:"
-msgstr ""
+msgstr "Jabber-ID:"
 
 #: dist/converse-no-dependencies.js:14812
 #: dist/converse-no-dependencies.js:16730
-#, fuzzy
 msgid "Please enter a valid XMPP address"
-msgstr "Bitte geben Sie eine gültige XMPP/ Jabber ID an"
+msgstr "Bitte eine gültige XMPP/Jabber-ID eingeben"
 
 #: dist/converse-no-dependencies.js:14822
 msgid "Password:"
@@ -169,7 +173,7 @@ msgstr "Passwort:"
 
 #: dist/converse-no-dependencies.js:14828
 msgid "Please enter your password"
-msgstr ""
+msgstr "Bitte geben Sie Ihr Passwort ein"
 
 #: dist/converse-no-dependencies.js:14834
 msgid "password"
@@ -244,7 +248,7 @@ msgstr "Staat"
 
 #: dist/converse-no-dependencies.js:15259
 msgid "Any"
-msgstr ""
+msgstr "Jeder"
 
 #: dist/converse-no-dependencies.js:15260
 msgid "Unread"
@@ -307,9 +311,9 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Wollen Sie diesen Kontakt wirklich entfernen?"
 
 #: dist/converse-no-dependencies.js:15744
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Entschuldige, es kam zu einem Fehler bei der Hinzufügung von "
+msgstr "Leider gab es einen Fehler beim Versuch, %1$s als Kontakt zu entfernen."
 
 #: dist/converse-no-dependencies.js:15763
 msgid "Are you sure you want to decline this contact request?"
@@ -321,7 +325,7 @@ msgstr "Benutzername"
 
 #: dist/converse-no-dependencies.js:16459
 msgid "user@domain"
-msgstr ""
+msgstr "user@domain"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -475,13 +479,12 @@ msgstr ""
 "erlaubt und du kein Mitglied bist"
 
 #: dist/converse-no-dependencies.js:18277
-#, fuzzy
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
-"Sie wurden aus diesem Raum entfernt, da der MUC (Multi-User Chat) Dienst "
-"gerade heruntergefahren wird."
+"Sie wurden aus diesem Raum entfernt, weil der MUC-Dienst (Multi-User-Chat) "
+"heruntergefahren wird."
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -664,9 +667,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "Die angegebene Begründung lautet: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:19617
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s \""
-msgstr "Die angegebene Begründung lautet: \"%1$s\"."
+msgstr "Der angegebene Grund lautet: „%1$s”"
 
 #: dist/converse-no-dependencies.js:19634
 msgid " has left the room. \""
@@ -721,9 +724,9 @@ msgid "Topic set by %1$s to: %2$s"
 msgstr "%1$s hat das Thema zu \"%2$s\" geändert"
 
 #: dist/converse-no-dependencies.js:19901
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "Hier klicken um diesen Raum zu öffnen"
+msgstr "Klicken Sie hier, um %1$s in Ihrer Nachricht zu erwähnen."
 
 #: dist/converse-no-dependencies.js:19902
 msgid "This user is a moderator."
@@ -1224,32 +1227,32 @@ msgstr "erledigt"
 
 #: dist/converse-no-dependencies.js:22548
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Sie haben noch kein Chat-Konto?"
 
 #: dist/converse-no-dependencies.js:22550
 msgid "Create an account"
-msgstr ""
+msgstr "Konto erstellen"
 
 #: dist/converse-no-dependencies.js:22564
-#, fuzzy
 msgid "Create your account"
-msgstr "will dein Kontakt sein"
+msgstr "Erstellen Sie Ihr Konto"
 
 #: dist/converse-no-dependencies.js:22566
 msgid "Please enter the XMPP provider to register with:"
 msgstr ""
+"Bitte geben Sie den XMPP-Provider ein, bei dem Sie sich anmelden möchten:"
 
 #: dist/converse-no-dependencies.js:22588
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Sie haben bereits ein Chat-Konto?"
 
 #: dist/converse-no-dependencies.js:22590
 msgid "Log in here"
-msgstr ""
+msgstr "Hier anmelden"
 
 #: dist/converse-no-dependencies.js:22604
 msgid "Account Registration:"
-msgstr ""
+msgstr "Konto-Registrierung:"
 
 #: dist/converse-no-dependencies.js:22612
 msgid "Register"
@@ -1257,11 +1260,11 @@ msgstr "Registrierung"
 
 #: dist/converse-no-dependencies.js:22616
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Wählen Sie einen anderen Anbieter"
 
 #: dist/converse-no-dependencies.js:22632
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "Bitte warten, das Anmeldeformular wird geladen …"
 
 #: dist/converse-no-dependencies.js:22784
 msgid " e.g. conversejs.org"
@@ -1282,6 +1285,8 @@ msgstr "hier"
 #: dist/converse-no-dependencies.js:22864
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
+"Leider können wir keine Verbindung zu dem von Ihnen gewählten Provider "
+"herstellen."
 
 #: dist/converse-no-dependencies.js:22875
 msgid ""
@@ -1293,13 +1298,13 @@ msgstr ""
 "Zugang beim Provider direkt."
 
 #: dist/converse-no-dependencies.js:22893
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\".Are you "
 "sure it exists?"
 msgstr ""
-"Etwas schlägt fehl beim Versuch eine Verbindung mit \"%1$s\" her zu stellen. "
-"Sicher das \"%1$s\" existiert?"
+"Die Verbindung zu „%1$s” konnte nicht hergestellt werden. Sind Sie sicher, "
+"dass „%1$s” existiert?"
 
 #: dist/converse-no-dependencies.js:23030
 msgid "Now logging you in"

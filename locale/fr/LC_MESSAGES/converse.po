@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-10-05 10:00+0000\n"
-"Last-Translator: anonymous <>\n"
+"PO-Revision-Date: 2017-10-05 10:06+0000\n"
+"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr ""
 "Désolé, il y a eu une erreur lors de la tentative d’ajout de %1$s comme "
-"contact"
+"contact."
 
 #: dist/converse-no-dependencies.js:7521
 msgid "This client does not allow presence subscriptions"
@@ -159,17 +159,16 @@ msgstr "Démarrer un appel"
 
 #: dist/converse-no-dependencies.js:14784
 msgid "Login"
-msgstr ""
+msgstr "Connexion"
 
 #: dist/converse-no-dependencies.js:14806
 msgid "Jabber ID:"
-msgstr ""
+msgstr "Identifiant Jabber :"
 
 #: dist/converse-no-dependencies.js:14812
 #: dist/converse-no-dependencies.js:16730
-#, fuzzy
 msgid "Please enter a valid XMPP address"
-msgstr "Veuillez saisir un identifiant utilisateur XMPP valide"
+msgstr "Veuillez saisir une adresse XMPP valide"
 
 #: dist/converse-no-dependencies.js:14822
 msgid "Password:"
@@ -177,7 +176,7 @@ msgstr "Mot de passe :"
 
 #: dist/converse-no-dependencies.js:14828
 msgid "Please enter your password"
-msgstr ""
+msgstr "Veuillez saisir votre mot de passe"
 
 #: dist/converse-no-dependencies.js:14834
 msgid "password"
@@ -315,9 +314,9 @@ msgid "Are you sure you want to remove this contact?"
 msgstr "Voulez-vous vraiment retirer ce contact ?"
 
 #: dist/converse-no-dependencies.js:15744
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "Désolé, il y a eu une erreur lors de la tentative de retrait "
+msgstr "Désolé, il y a eu une erreur en tentant de retirer %1$s comme contact."
 
 #: dist/converse-no-dependencies.js:15763
 msgid "Are you sure you want to decline this contact request?"
@@ -329,7 +328,7 @@ msgstr "Nom"
 
 #: dist/converse-no-dependencies.js:16459
 msgid "user@domain"
-msgstr ""
+msgstr "utilisateur@domaine"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -483,13 +482,12 @@ msgstr ""
 "membres et vous n’êtes pas membre"
 
 #: dist/converse-no-dependencies.js:18277
-#, fuzzy
 msgid ""
 "You have been removed from this room because the MUC (Multi-user chat) "
 "service is being shut down"
 msgstr ""
 "Vous avez été retiré de ce salon parce que le service de chat multi-"
-"utilisateur a été désactivé."
+"utilisateur (MUC) est en cours d’extinction"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -558,6 +556,8 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
+"Erreur : la commande « %1$s » prend deux paramètres, le pseudo de l’"
+"utilisateur et une raison optionnelle."
 
 #: dist/converse-no-dependencies.js:18898
 msgid "Are you sure you want to clear the messages from this room?"
@@ -669,9 +669,9 @@ msgid "The reason given is: \"%1$s\"."
 msgstr "La raison indiquée est : « %1$s »."
 
 #: dist/converse-no-dependencies.js:19617
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s \""
-msgstr "La raison indiquée est : « %1$s »."
+msgstr "La raison indiquée est : « %1$s »"
 
 #: dist/converse-no-dependencies.js:19634
 msgid " has left the room. \""

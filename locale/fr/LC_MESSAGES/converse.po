@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-10-05 10:06+0000\n"
-"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
+"PO-Revision-Date: 2017-10-05 10:07+0000\n"
+"Last-Translator: anonymous <>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
@@ -726,9 +726,9 @@ msgid "Topic set by %1$s to: %2$s"
 msgstr "Le sujet « %2$s » a été défini par %1$s"
 
 #: dist/converse-no-dependencies.js:19901
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "Cliquer pour citer cet utilisateur dans votre message."
+msgstr "Cliquer pour citer %1$s dans votre message."
 
 #: dist/converse-no-dependencies.js:19902
 msgid "This user is a moderator."

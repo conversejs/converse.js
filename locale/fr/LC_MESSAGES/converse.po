@@ -7,10 +7,10 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-08-23 09:02+0000\n"
+"PO-Revision-Date: 2017-10-05 09:59+0000\n"
 "Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
-"translations/fr/>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/conversejs/translations/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,14 +35,19 @@ msgstr "Une erreur est survenue lors de la connexion au serveur de discussion."
 #: dist/converse-no-dependencies.js:6808
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
 msgstr ""
+"Votre identifiant Jabber ou votre mot de passe est incorrect. Veuillez "
+"réessayer."
 
 #: dist/converse-no-dependencies.js:6816
 msgid "Sorry, we could not connect to the XMPP host with domain: "
 msgstr ""
+"Désolé, nous n’avons pas pu nous connecter à l’hôte XMPP avec le domaine : "
 
 #: dist/converse-no-dependencies.js:6818
 msgid "The XMPP server did not offer a supported authentication mechanism"
 msgstr ""
+"Le serveur XMPP n’a pas proposé un mécanisme d’authentification pris en "
+"charge"
 
 #: dist/converse-no-dependencies.js:7386
 #, fuzzy, javascript-format

@@ -6,10 +6,6 @@
 Features
 ========
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 Off-the-record encryption
 =========================
 
@@ -21,7 +17,7 @@ The OTR protocol not only **encrypts your messages**, it provides ways to
 **plausible deniability** and **perfect forward secrecy** by generating
 new encryption keys for each conversation.
 
-In its current state, Javascript cryptography is fraught with dangers and
+In its current state, JavaScript cryptography is fraught with dangers and
 challenges that make it impossible to reach the same standard of security that
 is available with native "desktop" software.
 
@@ -29,8 +25,8 @@ This is due to its runtime malleability, the way it is "installed" (e.g.
 served) and the browser's lack of cryptographic primitives needed to implement
 secure crypto.
 
-For harsh but fairly valid criticism of Javascript cryptography, read:
-`Javascript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
+For harsh but fairly valid criticism of JavaScript cryptography, read:
+`JavaScript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
 
 To get an idea on how this applies to OTR support in Converse.js, please read
 `my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.

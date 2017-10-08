@@ -10,6 +10,7 @@
     define([
             "jquery.noconflict",
             "converse-core",
+            "converse-chatboxes",
             "emojione",
             "xss",
             "tpl!chatbox",
@@ -25,6 +26,7 @@
 }(this, function (
             $,
             converse,
+            dummy,
             emojione,
             xss,
             tpl_chatbox,
@@ -152,10 +154,8 @@
                             }
                         ));
                     this.el.innerHTML = emojis_html;
-                    this.el.querySelectorAll('.emoji-picker').forEach((el) => {
-                        el.addEventListener(
-                            'scroll', this.setScrollPosition.bind(this)
-                        );
+                    _.forEach(this.el.querySelectorAll('.emoji-picker'), (el) => {
+                        el.addEventListener('scroll', this.setScrollPosition.bind(this));
                     });
                     this.restoreScrollPosition();
                     return this;
@@ -188,7 +188,7 @@
                     }
                 },
 
-                setScrollPosition (ev, position) {
+                setScrollPosition (ev) {
                     this.model.save('scroll_position', ev.target.scrollTop);
                 },
 
@@ -236,6 +236,8 @@
                 },
 
                 initialize () {
+                    this.markScrolled = _.debounce(this.markScrolled, 100);
+
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -303,8 +305,9 @@
                 },
 
                 insertIntoDOM () {
-                    /* This method gets overridden in src/converse-controlbox.js if
-                     * the controlbox plugin is active.
+                    /* This method gets overridden in src/converse-controlbox.js
+                     * as well as src/converse-muc.js (if those plugins are
+                     * enabled).
                      */
                     const container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
@@ -706,10 +709,10 @@
                     }
                     if (state === _converse.COMPOSING) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
+                            this.setChatState.bind(this), _converse.TIMEOUTS.PAUSED, _converse.PAUSED);
                     } else if (state === _converse.PAUSED) {
                         this.chat_state_timeout = window.setTimeout(
-                                this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
+                            this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
                     }
                     if (!no_save && this.model.get('chat_state') !== state) {
                         this.model.set('chat_state', state);
@@ -765,13 +768,8 @@
                 insertEmoji (ev) {
                     ev.stopPropagation();
                     this.toggleEmojiMenu();
-                    const target = ev.target.nodeName === 'IMG' ?
-                        ev.target.parentElement : ev.target;
-
-                    var shortname = target.getAttribute('data-emoji');
-                    this.insertIntoTextArea(
-                        emojione.shortnameToUnicode(shortname)
-                    );
+                    const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
+                    this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
 
                 toggleEmojiMenu (ev) {
@@ -962,7 +960,7 @@
                     }
                 },
 
-                markScrolled: _.debounce(function (ev) {
+                markScrolled: function (ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
@@ -981,12 +979,13 @@
                     const is_at_bottom =
                         (this.$content.scrollTop() + this.$content.innerHeight()) >=
                             this.$content[0].scrollHeight-10;
+
                     if (is_at_bottom) {
                         scrolled = false;
                         this.onScrolledDown();
                     }
                     utils.safeSave(this.model, {'scrolled': scrolled});
-                }, 150),
+                },
 
                 viewUnreadMessages () {
                     this.model.save('scrolled', false);

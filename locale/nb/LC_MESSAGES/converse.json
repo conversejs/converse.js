@@ -4,52 +4,36 @@
       "converse": {
          "": {
             "domain": "converse",
-            "plural_forms": "nplurals=2; plural=(n != 1);",
+            "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "nb"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
-            "Lagre"
+            "En feil inntraff under tillegg av %1$s som kontakt."
          ],
-         "Cancel": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Avbryt"
+            "Denne klienten tillater ikke tilstedeværelsesabonnementer"
          ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Click to hide these contacts": [
             null,
-            ""
-         ],
-         "Bookmarks": [
-            null,
-            ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "Vis mer informasjon om dette rommet"
-         ],
-         "Click to open this room": [
-            null,
-            "Klikk for å åpne dette rommet"
+            "Klikk for å skjule disse kontaktene"
          ],
          "Personal message": [
             null,
@@ -57,19 +41,15 @@
          ],
          "Send": [
             null,
-            ""
+            "Send"
          ],
          "me": [
             null,
             "meg"
          ],
-         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [
-            null,
-            ""
-         ],
          "Typing from another device": [
             null,
-            ""
+            "Skriver fra en annen enhet"
          ],
          "is typing": [
             null,
@@ -77,7 +57,7 @@
          ],
          "Stopped typing on the other device": [
             null,
-            ""
+            "Sluttet å skrive på den andre enheten"
          ],
          "has stopped typing": [
             null,
@@ -105,35 +85,135 @@
          ],
          "Insert a smiley": [
             null,
-            ""
+            "Sett inn et smilefjes"
          ],
          "Start a call": [
             null,
             "Start en samtale"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Kontakter"
+            ""
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "XMPP Brukernavn:"
+            ""
          ],
          "Password:": [
             null,
             "Passord:"
          ],
-         "Log In": [
-            null,
-            "Logg inn"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Innlogging"
+            "Send"
+         ],
+         "This contact is busy": [
+            null,
+            "Denne kontakten er opptatt"
+         ],
+         "This contact is online": [
+            null,
+            "Kontakten er pålogget"
+         ],
+         "This contact is offline": [
+            null,
+            "Kontakten er avlogget"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Kontakten er utilgjengelig"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Kontakten er borte for en lengre periode"
+         ],
+         "This contact is away": [
+            null,
+            "Kontakten er borte"
+         ],
+         "Contacts": [
+            null,
+            "Kontakter"
+         ],
+         "Groups": [
+            null,
+            "Grupper"
+         ],
+         "My contacts": [
+            null,
+            "Mine Kontakter"
+         ],
+         "Pending contacts": [
+            null,
+            "Kontakter som venter på godkjenning"
+         ],
+         "Contact requests": [
+            null,
+            "Kontaktforespørsler"
+         ],
+         "Ungrouped": [
+            null,
+            "Ugrupperte"
+         ],
+         "State": [
+            null,
+            "Tilstand"
+         ],
+         "Any": [
+            null,
+            "Enhver"
+         ],
+         "Unread": [
+            null,
+            "Ulest"
+         ],
+         "Online": [
+            null,
+            "Pålogget"
+         ],
+         "Chatty": [
+            null,
+            "Pratsom"
+         ],
+         "Busy": [
+            null,
+            "Opptatt"
+         ],
+         "Away": [
+            null,
+            "Borte"
+         ],
+         "Extended Away": [
+            null,
+            "Utvidet lediggang"
+         ],
+         "Offline": [
+            null,
+            "Avlogget"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klikk for å chatte med denne kontakten"
+         ],
+         "Name": [
+            null,
+            "Navn"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Er du sikker på at du vil fjerne denne kontakten?"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Er du sikker på at du vil avslå denne kontaktforespørselen?"
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -151,6 +231,10 @@
             null,
             "Personlig status"
          ],
+         "Save": [
+            null,
+            "Lagre"
+         ],
          "online": [
             null,
             "pålogget"
@@ -166,22 +250,6 @@
          "away": [
             null,
             "borte"
-         ],
-         "Online": [
-            null,
-            "Pålogget"
-         ],
-         "Busy": [
-            null,
-            "Opptatt"
-         ],
-         "Away": [
-            null,
-            "Borte"
-         ],
-         "Offline": [
-            null,
-            "Avlogget"
          ],
          "Log out": [
             null,
@@ -205,35 +273,23 @@
          ],
          "e.g. user@example.org": [
             null,
-            ""
+            "f.eks. bruker@eksempel.no"
          ],
          "Add": [
             null,
             "Legg Til"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Klikk for å legge til som meldingskontakt"
+         ],
          "No users found": [
             null,
             "Ingen brukere funnet"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            ""
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Klikk for å skjule disse kontaktene"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Click to restore this chat": [
-            null,
-            "Klikk for å gjenopprette denne samtalen"
-         ],
-         "Minimized": [
-            null,
-            "Minimert"
+            "Endre chatten"
          ],
          "This room is not anonymous": [
             null,
@@ -281,19 +337,11 @@
          ],
          "You have been removed from this room because the room has changed to members-only and you're not a member": [
             null,
-            "Du har blitt fjernet fra dette rommet fordi rommet nå kun tillater medlemmer, noe du ikke er."
-         ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Du har blitt fjernet fra dette rommet fordi MBC (Multi-Bruker-Chat)-tjenesten er stengt ned."
+            "Du har blitt fjernet fra dette rommet fordi rommet nå kun tillater medlemmer, noe du ikke er"
          ],
          "Message": [
             null,
             "Melding"
-         ],
-         "${command}": [
-            null,
-            ""
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -305,7 +353,7 @@
          ],
          "Change user's affiliation to admin": [
             null,
-            ""
+            "Endre brukerens tilknytning til administrator"
          ],
          "Ban user from room": [
             null,
@@ -321,7 +369,7 @@
          ],
          "Grant membership to a user": [
             null,
-            ""
+            "Skjenk medlemskap til en bruker"
          ],
          "Remove user's ability to post messages": [
             null,
@@ -333,23 +381,23 @@
          ],
          "Grant moderator role to user": [
             null,
-            ""
+            "Tildel moderatorrolle til bruker"
          ],
          "Revoke user's membership": [
             null,
-            ""
+            "Tilbakekall brukers medlemskap"
          ],
          "Set room subject (alias for /subject)": [
             null,
-            ""
+            "Sett et romtema (alias for /subject)"
          ],
          "Allow muted user to post messages": [
             null,
             "Tillat stumme brukere å skrive meldinger"
          ],
-         "The nickname you chose is reserved or currently in use, please choose a different one.": [
+         "Cancel": [
             null,
-            ""
+            "Avbryt"
          ],
          "Nickname": [
             null,
@@ -361,27 +409,19 @@
          ],
          "Password: ": [
             null,
-            "Passord:"
-         ],
-         "Submit": [
-            null,
-            "Send"
-         ],
-         "${notification.reason}": [
-            null,
-            ""
+            "Passord: "
          ],
          " has left the room. \"": [
             null,
-            ""
+            " har forlatt rommet. \""
          ],
          " has joined the room. \"": [
             null,
-            ""
+            " har tatt del i rommet. \""
          ],
          " has joined the room.": [
             null,
-            ""
+            " har tatt del i rommet."
          ],
          "Topic set by %1$s to: %2$s": [
             null,
@@ -401,11 +441,11 @@
          ],
          "Message archiving": [
             null,
-            ""
+            "Meldingsarkivering"
          ],
          "Members only": [
             null,
-            ""
+            "Kun for medlemmer"
          ],
          "Moderated": [
             null,
@@ -417,7 +457,7 @@
          ],
          "Persistent": [
             null,
-            ""
+            "Vedvarende"
          ],
          "Public": [
             null,
@@ -433,27 +473,27 @@
          ],
          "Unsecured": [
             null,
-            ""
+            "Usikret"
          ],
          "Messages are archived on the server": [
             null,
-            ""
+            "Meldinger arkiveres på tjeneren"
          ],
          "All other room occupants can see your XMPP username": [
             null,
-            ""
+            "Alle andre romdeltagere kan se ditt XMPP-brukernavn"
          ],
          "This room persists even if it's unoccupied": [
             null,
-            ""
+            "Dette rommet vedvarer selv når det ikke er bemannet"
          ],
          "Only moderators can see your XMPP username": [
             null,
-            ""
+            "Bare moderatorer kan se ditt XMPP-brukernavn"
          ],
          "This room will disappear once the last person leaves": [
             null,
-            ""
+            "Dette rommet vil forsvinne når siste person drar"
          ],
          "You are about to invite %1$s to the chat room \"%2$s\". ": [
             null,
@@ -465,7 +505,7 @@
          ],
          "Please enter a valid XMPP username": [
             null,
-            ""
+            "Skriv inn et gydlig XMPP-brukernavn"
          ],
          "Room name": [
             null,
@@ -487,13 +527,25 @@
             null,
             "Ingen rom på %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Rom på %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Klikk for å åpne dette rommet"
+         ],
+         "Show more information on this room": [
+            null,
+            "Vis mer informasjon om dette rommet"
+         ],
          "Description:": [
             null,
             "Beskrivelse:"
          ],
          "Room Address (JID):": [
             null,
-            ""
+            "Romadresse (JID):"
          ],
          "Occupants:": [
             null,
@@ -531,17 +583,33 @@
             null,
             "%1$s har invitert deg til å bli med i chatterommet: %2$s, og forlot selv av følgende grunn:  \"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
-            ""
+            "Bokmerk dette rommet"
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
-            ""
+            "Bokmerkets navn:"
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
             null,
-            ""
+            "Ønsker du å automatisk ta del i dette rommet ved oppstart?"
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            "Hva lags kallenavn ønsker du for dette rommet?"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            "Noe gikk galt under lagring av ditt bokmerke."
+         ],
+         "Bookmarks": [
+            null,
+            "Bokmerker"
+         ],
+         "Remove this bookmark": [
+            null,
+            "Fjern dette bokmerket"
          ],
          "Re-establishing encrypted session": [
             null,
@@ -671,13 +739,45 @@
             null,
             "ferdig"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
             null,
-            "Din XMPP-tilbyders domenenavn:"
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            "Registrér deg"
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
+            null,
+            " f.eks. conversejs.org"
          ],
          "Fetch registration form": [
             null,
@@ -691,21 +791,13 @@
             null,
             "her"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "Registrér deg"
+            ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "Beklager, den valgte tilbyderen støtter ikke in band kontoregistrering. Vennligst prøv igjen med en annen tilbyder. "
-         ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "Spør etter registreringsskjema fra XMPP-tjeneren"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
-            "Noe gikk galt under etablering av forbindelse med \"%1$s\". Er du sikker på at denne eksisterer?"
          ],
          "Now logging you in": [
             null,
@@ -715,93 +807,25 @@
             null,
             "Registrering var vellykket"
          ],
-         "Retry": [
+         "%1$s says": [
             null,
-            ""
+            "%1$s sier"
          ],
-         "This contact is busy": [
+         "wants to be your contact": [
             null,
-            "Denne kontakten er opptatt"
+            "ønsker å bli kontaktfestet"
          ],
-         "This contact is online": [
+         "Minimize this chat box": [
             null,
-            "Kontakten er pålogget"
+            "Minimer dette sludrevinduet"
          ],
-         "This contact is offline": [
+         "Click to restore this chat": [
             null,
-            "Kontakten er avlogget"
+            "Klikk for å gjenopprette denne samtalen"
          ],
-         "This contact is unavailable": [
+         "Minimized": [
             null,
-            "Kontakten er utilgjengelig"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Kontakten er borte for en lengre periode"
-         ],
-         "This contact is away": [
-            null,
-            "Kontakten er borte"
-         ],
-         "Groups": [
-            null,
-            "Grupper"
-         ],
-         "My contacts": [
-            null,
-            "Mine Kontakter"
-         ],
-         "Pending contacts": [
-            null,
-            "Kontakter som venter på godkjenning"
-         ],
-         "Contact requests": [
-            null,
-            "Kontaktforespørsler"
-         ],
-         "Ungrouped": [
-            null,
-            "Ugrupperte"
-         ],
-         "Filter": [
-            null,
-            ""
-         ],
-         "State": [
-            null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klikk for å chatte med denne kontakten"
-         ],
-         "Name": [
-            null,
-            ""
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Er du sikker på at du vil fjerne denne kontakten?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Er du sikker på at du vil avslå denne kontaktforespørselen?"
+            "Minimert"
          ]
       }
    }

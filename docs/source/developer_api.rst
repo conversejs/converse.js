@@ -6,10 +6,6 @@
 The converse.js developer API
 =============================
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 .. note:: The API documented here is available in Converse.js 0.8.4 and higher.
         Earlier versions of Converse.js might have different API methods or none at all.
 
@@ -50,7 +46,7 @@ Public API methods
 ==================
 
 Publich API methods are those methods that are accessible on the global
-``window.converse`` object. They are public, because any Javascript in the page
+``window.converse`` object. They are public, because any JavaScript in the page
 can call them. Public methods therefore don't expose any sensitive or closured
 data. To do that, you'll need to create a plugin, which has access to the
 private API method.
@@ -188,16 +184,15 @@ two important ways:
 
 Converse.js has the following promises:
 
-* cachedRoster
-* chatBoxesFetched
-* connected
-* pluginsInitialized
-* roster
-* rosterContactsFetched
-* rosterGroupsFetched
-* rosterInitialized
-* statusInitialized
-* roomsPanelRendered (only via the `converse-muc` plugin)
+* :ref:`cachedRoster`
+* :ref:`chatBoxesFetched`
+* :ref:`pluginsInitialized`
+* :ref:`roster`
+* :ref:`rosterContactsFetched`
+* :ref:`rosterGroupsFetched`
+* :ref:`rosterInitialized`
+* :ref:`statusInitialized`
+* :ref:`roomsPanelRendered` (only via the `converse-muc` plugin)
 
 Below is an example from `converse-muc.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-muc.js>`_
 where the `rosterContactsFetched` promise is waited on. The method
@@ -326,7 +321,7 @@ room under the  ``with`` key.
 
 The ``start`` and ``end`` parameters are used to query for messages
 within a certain timeframe. The passed in date values may either be ISO8601
-formatted date strings, or Javascript Date objects.
+formatted date strings, or JavaScript Date objects.
 
 .. code-block:: javascript
 
@@ -903,21 +898,24 @@ The **promises** grouping
 -------------------------
 
 Converse.js and its plugins emit various events which you can listen to via the 
-:refs:`listen-grouping`.
+:ref:`listen-grouping`.
 
-These events can also be turned into promises, and by default some already
-are.
+Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,
+although not all of them could logically act as promises, since some events
+might be fired multpile times whereas promises are to be resolved (or
+rejected) only once.
 
 The core events, which are also promises are:
 
-* cachedRoster
-* chatBoxesFetched
-* pluginsInitialized
-* roster
-* rosterContactsFetched
-* rosterGroupsFetched
-* rosterInitialized
-* statusInitialized
+* :ref:`cachedRoster`
+* :ref:`chatBoxesFetched`
+* :ref:`pluginsInitialized`
+* :ref:`roster`
+* :ref:`rosterContactsFetched`
+* :ref:`rosterGroupsFetched`
+* :ref:`rosterInitialized`
+* :ref:`statusInitialized`
+* :ref:`roomsPanelRendered` (only via the `converse-muc` plugin)
 
 The various plugins might also provide promises, and they do this by using the
 ``promises.add`` api method.
@@ -1068,7 +1066,7 @@ Example:
 The **listen** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own Javascript.
+Converse.js emits events to which you can subscribe from your own JavaScript.
 
 Concerning events, the following methods are available under the "listen"
 grouping:

@@ -1,16 +1,52 @@
 # Changelog
 
-## 3.2.0 (Unreleased)
+## 3.3.0 (Unreleased)
+
+### Bugfixes
+- Don't require `auto_login` to be `true` when using the API to log in.
+
+### New Features
+- #828 Add routing for the `#converse-login` and `#converse-register` URL
+  fragments, which will render the registration and login forms respectively.
+
+### UX/UI changes
+- Use CSS3 fade transitions to render various elements.
+- Remove `Login` and `Registration` tabs and consolidate into one panel.
+- Show validation error messages on the login form.
+- Don't hang indefinitely and provide nicer error messages when a connection
+  can't be established.
+- Consolidate error and validation reporting on the registration form.
+
+### Technical changes
+- Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)
+  and uses it to render the login form.
+- Converse.js no longer includes all the translations in its build. Instead,
+  only the currently relevant translation is requested. This results in a much
+  smaller filesize but means that the translations you want to provide need to
+  be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
+  configuration setting for more info.
+
+## 3.2.1 (2017-08-29)
+
+### Bugfixes
+- Various IE11 fixes.
+- #907 Unnecessary login validation error when `default_domain` or `locked_domain` are set.
+- #908 Login form for inVerse is only 200px when `allow_registration` is set to `false`.
+- #909 Translations written as template literals [aren't parsed properly by xgettext](https://savannah.gnu.org/bugs/?50920).
+- #911 Use `getDefaultNickName` consistently to allow better overrides via plugins.
+- #912 `maximize` method in `converse-minimize` fails if the `controlbox` is not there.
+
+## 3.2.0 (2017-08-09)
 
 ### New Plugins
 - New plugin `converse-disco` which replaces the original support for
   [XEP-0030](https://xmpp.org/extensions/xep-0030.html) and which has been
-  refactored to allow features for multiple entities to be stored. [jcbrand]
+  refactored to allow features for multiple entities to be stored.
 
 ### New features and improvements
-- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>). [jcbrand]
-- Add JID validation to the contact add form, the occupant invite form and the login form. [jcbrand]
-- #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.). [jcbrand]
+- Add support for Emojis (either native, or via <a href="https://www.emojione.com/">Emojione</a>).
+- Add JID validation to the contact add form, the occupant invite form and the login form.
+- #896 Consistently use `XMPP username` in user-facing text (instead of JID, Jabber ID etc.).
 
 ### New configuration settings
 * The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.
@@ -25,20 +61,24 @@
 * ['afterMessagesFetched'](https://conversejs.org/docs/html/development.html#afterMessagesFetched)
 
 ### Code changes
-- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`. [jcbrand]
+- Removed jQuery from `converse-core`, `converse-vcard` and `converse-roomslist`.
 - Remove `jquery.easing` from the full build. Was only being used by the
-  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it. [jcbrand]
-- All promises are now native (or polyfilled) ES2015 Promises instead of jQuery's Deferred. [jcbrand]
-- #866 Add babel in order to support ES2015 syntax [jcbrand]
+  [conversejs.org](https://conversejs.org) website, which has been updated to not rely on it.
+- All promises are now native (or polyfilled) ES2015 Promises instead of jQuery's Deferred.
+- #866 Add babel in order to support ES2015 syntax
 
 #### Bugfixes:
-- Roster filter is not shown when all groups are collapsed. [jcbrand]
-- When filtering, contacts in closed groups appear. [jcbrand]
-- Room name wasn't being updated after changing it in the configuration form. [jcbrand]
-- Server disco features were "forgotten" after logging out and then logging in again. [jcbrand]
-- Don't show duplicate sent groupchat messages in Slack chat rooms. [jcbrand]
-- Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`. [jcbrand]
+- The domain was queried for MAM:2 support, instead of the JID.
+- Roster filter is not shown when all groups are collapsed.
+- When filtering, contacts in closed groups appear.
+- Room name wasn't being updated after changing it in the configuration form.
+- Server disco features were "forgotten" after logging out and then logging in again.
+- Don't show duplicate sent groupchat messages in Slack chat rooms.
+- Bookmark icon shown in the open rooms list when `allow_bookmarks` is to `false`.
+- It wasn't possible to add or remove bookmarks via the "Open Rooms" list.
 - #879 Text in links are converted to smileys leading to non-clickable links.
+- #899: Only touch `stamp-npm` if `npm install` was successful
+- #902 `make build` dependends on non-existing files
 
 ## 3.1.1 (2017-07-12)
 

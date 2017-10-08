@@ -60,6 +60,9 @@
                      * user. They should always be shown.
                      */
                     const result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    if (_.isUndefined(result)) {
+                        return
+                    }
                     result.hidden = false;
                     return result;
                 }

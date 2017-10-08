@@ -1010,7 +1010,7 @@
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     var info_text = view.$el.find('.chat-content .chat-info').text();
-                    expect(info_text).toBe('Your nickname has been automatically set to: thirdwitch');
+                    expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
                     done();
                 });
             }));
@@ -1299,7 +1299,7 @@
                  *  </x>
                  *  </presence>
                  */
-                var __ = utils.__.bind(_converse);
+                var __ = _converse.__;
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'oldnick').then(function () {
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     var $chat_content = view.$el.find('.chat-content');
@@ -1328,7 +1328,9 @@
 
                     expect($chat_content.find('div.chat-info').length).toBe(2);
                     expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has joined the room.");
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(__(_converse.muc.new_nickname_messages["210"], "oldnick"));
+                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                        __(_converse.muc.new_nickname_messages["210"], "oldnick")
+                    );
 
                     presence = $pres().attrs({
                             from:'lounge@localhost/oldnick',
@@ -1349,7 +1351,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content.find('div.chat-info').length).toBe(3);
                     expect($chat_content.find('div.chat-info').last().html()).toBe(
-                        __(_converse.muc.new_nickname_messages["303"], "newnick"));
+                        __(_converse.muc.new_nickname_messages["303"], "newnick")
+                    );
 
                     $occupants = view.$('.occupant-list');
                     expect($occupants.children().length).toBe(0);
@@ -1370,7 +1373,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content.find('div.chat-info').length).toBe(4);
                     expect($chat_content.find('div.chat-info').get(2).textContent).toBe(
-                        __(_converse.muc.new_nickname_messages["303"], "newnick"));
+                        __(_converse.muc.new_nickname_messages["303"], "newnick")
+                    );
                     expect($chat_content.find('div.chat-info').last().html()).toBe(
                         "newnick has joined the room.");
                     $occupants = view.$('.occupant-list');
@@ -1643,9 +1647,11 @@
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
+
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var view = _converse.chatboxviews.get('lounge@localhost'),
                     trimmed_chatboxes = _converse.minimized_chats;
+
                 spyOn(view, 'minimize').and.callThrough();
                 spyOn(view, 'maximize').and.callThrough();
                 spyOn(_converse, 'emit');
@@ -1659,18 +1665,11 @@
                 expect(view.minimize).toHaveBeenCalled();
                 var trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                 trimmedview.$("a.restore-chat").click();
-
-                test_utils.waitUntil(function () {
-                        return view.$el.is(':visible');
-                    }, 300)
-                .then(function () {
-                    expect(view.maximize).toHaveBeenCalled();
-                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-                    expect(view.$el.is(':visible')).toBeTruthy();
-                    expect(view.model.get('minimized')).toBeFalsy();
-                    expect(_converse.emit.calls.count(), 3);
-                    done();
-                });
+                expect(view.maximize).toHaveBeenCalled();
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(view.model.get('minimized')).toBeFalsy();
+                expect(_converse.emit.calls.count(), 3);
+                done();
             }));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",

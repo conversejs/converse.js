@@ -19,10 +19,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this;
-
-            // For translations
             const { __ } = _converse;
-            const { ___ } = _converse;
 
             _converse.supports_html5_notification = "Notification" in window;
 
@@ -131,15 +128,15 @@
                       from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
-                        title = __(___("Notification from %1$s"), from_jid);
+                        title = __("Notification from %1$s", from_jid);
                     } else {
                         return;
                     }
                 } else if (!_.includes(from_jid, '@')) {
                     // XXX: workaround for Prosody which doesn't give type "headline"
-                    title = __(___("Notification from %1$s"), from_jid);
+                    title = __("Notification from %1$s", from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
-                    title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
+                    title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log(
@@ -149,10 +146,10 @@
                     }
                     roster_item = _converse.roster.get(from_jid);
                     if (!_.isUndefined(roster_item)) {
-                        title = __(___("%1$s says"), roster_item.get('fullname'));
+                        title = __("%1$s says", roster_item.get('fullname'));
                     } else {
                         if (_converse.allow_non_roster_messaging) {
-                            title = __(___("%1$s says"), from_jid);
+                            title = __("%1$s says", from_jid);
                         } else {
                             return;
                         }

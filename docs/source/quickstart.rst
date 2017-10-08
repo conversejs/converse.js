@@ -13,7 +13,7 @@ Use the content delivery network
 --------------------------------
 
 Converse.js has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
-which hosts its Javascript and CSS files.
+which hosts its JavaScript and CSS files.
 
 The latest versions of these files are available at these URLs:
 
@@ -44,7 +44,7 @@ Initializing Converse.js
 You'll then need to initialize Converse.js with configuration settings relevant to your requirements.
 Refer to the :ref:`configuration-settings` section for info on all the available configuration settings.
 
-To quickly get started, you can put the following Javascript code at the
+To quickly get started, you can put the following JavaScript code at the
 bottom of your page (after the closing *</body>* element)::
 
     <script>
@@ -75,7 +75,7 @@ for an example of this build being used. There's an additional CSS file called
 ``mobile.min.css`` which should be used with the mobile build.
 
 When you load `conversejs.org <https://conversejs.org>`_ with a mobile device
-then the mobile Javascript build and its CSS will be used.
+then the mobile JavaScript build and its CSS will be used.
 
 Excluding 3rd party dependencies
 --------------------------------

@@ -409,21 +409,21 @@
                         expect(view.insertEmoji).toHaveBeenCalled();
                         test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300).then(function () {
-                            $toolbar.children('li.toggle-smiley').click();
-                            expect(view.toggleEmojiMenu).toHaveBeenCalled();
-                            view.$el.find('textarea.chat-textarea').trigger($.Event('keypress', {keyCode: 13}));
+                        }, 300)
+                    .then(function () {
+                        $toolbar.children('li.toggle-smiley').click();
+                        expect(view.toggleEmojiMenu).toHaveBeenCalled();
 
-                            test_utils.waitUntil(function () {
-                                var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                                return $picker.is(':visible');
-                            }, 300).then(function () {
-                                view.$el.find('.toggle-smiley ul').children('li').last().click();
-                                expect(view.insertEmoji).toHaveBeenCalled();
-                                done();
-                            });
-                        });
-                    });
+                        test_utils.waitUntil(function () {
+                            var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
+                            return $picker.is(':visible');
+                        }, 300)
+                    .then(function () {
+                        view.$el.find('.toggle-smiley ul').children('li').last().click();
+                        expect(view.$el.find('textarea.chat-textarea').val()).toBe(':grinning: ');
+                        expect(view.insertEmoji).toHaveBeenCalled();
+                        done();
+                    }); }); });
                 }));
 
                 it("contains a button for starting an encrypted chat session",
@@ -743,24 +743,23 @@
                         }));
                     });
 
-                    it("will cause the chat area to be scrolled down only if it was at the bottom already",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    it("will cause the chat area to be scrolled down only if it was at the bottom originally",
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
                         test_utils.openContactsPanel(_converse);
 
-                        var message = 'This message is received while the chat area is scrolled up';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
+
                         var chatboxview = _converse.chatboxviews.get(sender_jid);
                         spyOn(chatboxview, 'scrollDown').and.callThrough();
-                        var $chat_content = chatboxview.$el.find('.chat-content');
-                        /* Create enough messages so that there's a
-                         * scrollbar.
-                         */
+
+                        // Create enough messages so that there's a scrollbar.
+                        var message = 'This message is received while the chat area is scrolled up';
                         for (var i=0; i<20; i++) {
                             _converse.chatboxes.onMessage($msg({
                                     from: sender_jid,
@@ -770,14 +769,13 @@
                                 }).c('body').t('Message: '+i).up()
                                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
                         }
-
                         test_utils.waitUntil(function () {
                                 return chatboxview.$content.scrollTop();
-                            }, 300)
+                            }, 1000)
                         .then(function () {
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.model.get('auto_scrolled');
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             chatboxview.$content.scrollTop(0);
                             return test_utils.waitUntil(function () {
@@ -798,7 +796,7 @@
                             expect(msg_txt).toEqual(message);
                             return test_utils.waitUntil(function () {
                                 return chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             expect(chatboxview.model.get('scrolled')).toBe(true);
                             expect(chatboxview.$content.scrollTop()).toBe(0);
@@ -807,15 +805,14 @@
                             chatboxview.$content.scrollTop(chatboxview.$content[0].scrollHeight);
                             return test_utils.waitUntil(function () {
                                 return !chatboxview.$('.new-msgs-indicator').is(':visible');
-                            }, 300);
+                            }, 500);
                         }).then(done);
                     }));
 
                     it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
-
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1450,10 +1447,9 @@
                         });
                     }));
 
-                    it("is sent when the user maximizes a minimized a chat box",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    it("is sent when the user maximizes a minimized a chat box", mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1462,7 +1458,7 @@
 
                         test_utils.waitUntil(function () {
                             return _converse.rosterview.$el.find('dt').length;
-                        }, 300).then(function () {
+                        }, 500).then(function () {
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             var view = _converse.chatboxviews.get(contact_jid);
                             view.model.minimize();
@@ -1471,10 +1467,14 @@
                             view.model.maximize();
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'active';
-                            }, 300);
+                            }, 500);
                         }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(1);
+                            var $stanza = $(calls[0].args[0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('active');
@@ -1488,9 +1488,9 @@
                 describe("A composing notification", function () {
 
                     it("is sent as soon as the user starts typing a message which is not a command",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -1637,7 +1637,12 @@
                             }, 500);
                     }).then(function () {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.argsFor(1)[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(2);
+                            var $stanza = $(calls[1].args[0].tree());
+
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('paused');
@@ -1740,9 +1745,9 @@
                 describe("An inactive notifciation", function () {
 
                     it("is sent if the user has stopped typing since 2 minutes",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                        mock.initConverseWithPromises(
+                            null, ['rosterGroupsFetched'], {},
+                            function (done, _converse) {
 
                         var view, contact_jid;
                         test_utils.createContacts(_converse, 'current');
@@ -1750,33 +1755,48 @@
                         test_utils.openContactsPanel(_converse);
                         test_utils.waitUntil(function () {
                             return _converse.rosterview.$el.find('dt').length;
-                        }, 300).then(function () {
+                        }, 500).then(function () {
                             // Make the timeouts shorter so that we can test
                             _converse.TIMEOUTS.PAUSED = 200;
                             _converse.TIMEOUTS.INACTIVE = 200;
                             contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                             test_utils.openChatBoxFor(_converse, contact_jid);
                             view = _converse.chatboxviews.get(contact_jid);
+                            return test_utils.waitUntil(function () {
+                                return view.model.get('chat_state') === 'active';
+                            }, 500);
+                        }).then(function () {
+                            console.log('chat_state set to active');
+                            view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
                                 target: view.$el.find('textarea.chat-textarea'),
                                 keyCode: 1
                             });
+                            return test_utils.waitUntil(function () {
+                                return view.model.get('chat_state') === 'composing';
+                            }, 500);
+                        }).then(function () {
+                            console.log('chat_state set to composing');
+                            view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
                             return test_utils.waitUntil(function () {
-                                if (view.model.get('chat_state') === 'paused') {
-                                    return true;
-                                }
-                                return false;
-                            }, 250);
+                                return view.model.get('chat_state') === 'paused';
+                            }, 500);
                         }).then(function () {
+                            console.log('chat_state set to paused');
                             return test_utils.waitUntil(function () {
                                 return view.model.get('chat_state') === 'inactive';
-                            }, 250);
+                            }, 500);
                         }).then(function () {
+                            console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var $stanza = $(_converse.connection.send.calls.first().args[0].tree());
+                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                                return call.args[0] instanceof Strophe.Builder;
+                            });
+                            expect(calls.length).toBe(2);
+                            var $stanza = $(calls[0].args[0].tree());
                             expect($stanza.attr('to')).toBe(contact_jid);
                             expect($stanza.children().length).toBe(3);
                             expect($stanza.children().get(0).tagName).toBe('paused');
@@ -1790,7 +1810,7 @@
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }));
 
                     it("is sent when the user a minimizes a chat box",

@@ -9,8 +9,12 @@
 (function (root, factory) {
     define(["jquery.noconflict",
             "converse-core",
+            "lodash.fp",
+            "virtual-dom",
+            "vdom-parser",
             "tpl!add_contact_dropdown",
             "tpl!add_contact_form",
+            "tpl!converse_brand_heading",
             "tpl!change_status_message",
             "tpl!chat_status",
             "tpl!choose_status",
@@ -19,17 +23,21 @@
             "tpl!controlbox",
             "tpl!controlbox_toggle",
             "tpl!login_panel",
-            "tpl!login_tab",
             "tpl!search_contact",
             "tpl!status_option",
+            "tpl!spinner",
             "converse-chatview",
             "converse-rosterview"
     ], factory);
 }(this, function (
             $,
             converse,
+            fp,
+            vdom,
+            vdom_parser,
             tpl_add_contact_dropdown,
             tpl_add_contact_form,
+            tpl_brand_heading,
             tpl_change_status_message,
             tpl_chat_status,
             tpl_choose_status,
@@ -38,16 +46,53 @@
             tpl_controlbox,
             tpl_controlbox_toggle,
             tpl_login_panel,
-            tpl_login_tab,
             tpl_search_contact,
-            tpl_status_option
+            tpl_status_option,
+            tpl_spinner
         ) {
     "use strict";
 
     const USERS_PANEL_ID = 'users';
     const CHATBOX_TYPE = 'chatbox';
-    const { Strophe, Backbone, utils, _, fp, moment } = converse.env;
+    const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
 
+    const CONNECTION_STATUS_CSS_CLASS = {
+       'Error': 'error',
+       'Connecting': 'info',
+       'Connection failure': 'error',
+       'Authenticating': 'info',
+       'Authentication failure': 'error',
+       'Connected': 'info',
+       'Disconnected': 'error',
+       'Disconnecting': 'warn',
+       'Attached': 'info',
+       'Redirect': 'info',
+       'Reconnecting': 'warn'
+    };
+
+    const PRETTY_CONNECTION_STATUS = {
+        0: 'Error',
+        1: 'Connecting',
+        2: 'Connection failure',
+        3: 'Authenticating',
+        4: 'Authentication failure',
+        5: 'Connected',
+        6: 'Disconnected',
+        7: 'Disconnecting',
+        8: 'Attached',
+        9: 'Redirect',
+       10: 'Reconnecting'
+    };
+
+    const REPORTABLE_STATUSES = [
+        0, // ERROR'
+        1, // CONNECTING
+        2, // CONNFAIL
+        3, // AUTHENTICATING
+        4, // AUTHFAIL
+        7, // DISCONNECTING
+       10  // RECONNECTING
+    ];
 
     converse.plugins.add('converse-controlbox', {
 
@@ -57,18 +102,6 @@
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
-
-            initChatBoxes () {
-                this.__super__.initChatBoxes.apply(this, arguments);
-                this.controlboxtoggle = new this.ControlBoxToggle();
-            },
-
-            initConnection () {
-                this.__super__.initConnection.apply(this, arguments);
-                if (this.connection) {
-                    this.addControlBox();
-                }
-            },
 
             _tearDown () {
                 this.__super__._tearDown.apply(this, arguments);
@@ -100,8 +133,8 @@
                 },
 
                 onChatBoxesFetched (collection, resp) {
-                    const { _converse } = this.__super__;
                     this.__super__.onChatBoxesFetched.apply(this, arguments);
+                    const { _converse } = this.__super__;
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
                         _converse.addControlBox();
                     }
@@ -157,7 +190,6 @@
                 }
             },
 
-
             ChatBox: {
                 initialize () {
                     if (this.get('id') === 'controlbox') {
@@ -168,11 +200,14 @@
                 },
             },
 
-
             ChatBoxView: {
                 insertIntoDOM () {
-                    const { _converse } = this.__super__;
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    const view = this.__super__._converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        view.el.insertAdjacentElement('afterend', this.el)
+                    } else {
+                        this.__super__.insertIntoDOM.apply(this, arguments);
+                    }
                     return this;
                 }
             }
@@ -188,22 +223,25 @@
             _converse.api.settings.update({
                 allow_logout: true,
                 default_domain: undefined,
+                locked_domain: undefined,
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,
                 xhr_user_search_url: ''
             });
 
+            _converse.api.promises.add('controlboxInitialized');
+
             const LABEL_CONTACTS = __('Contacts');
 
-            _converse.addControlBox = () =>
+            _converse.addControlBox = () => {
                 _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
                     closed: !_converse.show_controlbox_by_default
                 })
-            ;
+            };
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
@@ -215,7 +253,10 @@
                 },
 
                 initialize () {
-                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    if (_.isUndefined(_converse.controlboxtoggle)) {
+                        _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -223,8 +264,11 @@
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.insertRoster();
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
+                    _converse.emit('controlboxInitialized');
                 },
 
                 render () {
@@ -256,28 +300,65 @@
 
                 onConnected () {
                     if (this.model.get('connected')) {
-                        this.render().insertRoster();
+                        this.render();
+                        _converse.api.waitUntil('rosterViewInitialized')
+                            .then(this.insertRoster.bind(this))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         this.model.save();
                     }
                 },
 
                 insertRoster () {
-                    /* Place the rosterview inside the "Contacts" panel.
-                     */
-                    this.contactspanel.$el.append(_converse.rosterview.$el);
+                    /* Place the rosterview inside the "Contacts" panel. */
+                    this.contactspanel.el.insertAdjacentElement(
+                        'beforeEnd',
+                        _converse.rosterview.el
+                    );
                     return this;
                 },
 
+                 createBrandHeadingHTML () {
+                    return tpl_brand_heading();
+                },
+
+                insertBrandHeading () {
+                    const heading_el = this.el.querySelector('.brand-heading-container');
+                    if (_.isNull(heading_el)) {
+                        const el = this.el.querySelector('.controlbox-head');
+                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+                    } else {
+                        heading_el.outerHTML = this.createBrandHeadingHTML();
+                    }
+                },
+
                 renderLoginPanel () {
-                    this.loginpanel = new _converse.LoginPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
-                        'model': this
-                    });
-                    this.loginpanel.render();
+                    this.el.classList.add("logged-out");
+                    if (_.isNil(this.loginpanel)) {
+                        this.loginpanel = new _converse.LoginPanel({
+                            'model': new _converse.LoginPanelModel()
+                        });
+                        const panes = this.el.querySelector('.controlbox-panes');
+                        panes.innerHTML = '';
+                        panes.appendChild(this.loginpanel.render().el);
+                        this.insertBrandHeading();
+                    } else {
+                        this.loginpanel.render();
+                    }
                     return this;
                 },
 
                 renderContactsPanel () {
+                    /* Renders the "Contacts" panel of the controlbox.
+                     *
+                     * This will only be called after the user has already been
+                     * logged in.
+                     */
+                    if (this.loginpanel) {
+                        this.loginpanel.remove();
+                        delete this.loginpanel;
+                    }
+                    this.el.classList.remove("logged-out");
+
                     if (_.isUndefined(this.model.get('active-panel'))) {
                         this.model.save({'active-panel': USERS_PANEL_ID});
                     }
@@ -329,13 +410,11 @@
                 },
 
                 onControlBoxToggleHidden () {
-                    const that = this;
-                    utils.fadeIn(this.el, function () {
-                        _converse.controlboxtoggle.updateOnlineCount();
-                        utils.refreshWebkit();
-                        that.model.set('closed', false);
-                        _converse.emit('controlBoxOpened', that);
-                    });
+                    _converse.controlboxtoggle.updateOnlineCount();
+                    utils.refreshWebkit();
+                    this.model.set('closed', false);
+                    this.el.classList.remove('hidden');
+                    _converse.emit('controlBoxOpened', this);
                 },
 
                 show () {
@@ -371,83 +450,100 @@
                 }
             });
 
+            _converse.LoginPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'errors': [],
+                }
+            });
 
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "login-dialog",
-                className: 'controlbox-pane',
+                id: "converse-login-panel",
+                className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-login': 'authenticate'
+                    'submit form#converse-login': 'authenticate',
+                    'change input': 'validate'
                 },
 
                 initialize (cfg) {
-                    cfg.$parent.html(this.$el.html(
-                        tpl_login_panel({
+                    this.model.on('change', this.render, this);
+                    this.listenTo(_converse.connfeedback, 'change', this.render);
+                },
+
+                render () {
+                    const connection_status = _converse.connfeedback.get('connection_status');
+                    let feedback_class, pretty_status;
+                    if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+                        pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+                        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+                    }
+                    const html = tpl_login_panel(
+                        _.extend(this.model.toJSON(), {
+                            '__': __,
+                            '_converse': _converse,
                             'ANONYMOUS': _converse.ANONYMOUS,
                             'EXTERNAL': _converse.EXTERNAL,
                             'LOGIN': _converse.LOGIN,
                             'PREBIND': _converse.PREBIND,
                             'auto_login': _converse.auto_login,
                             'authentication': _converse.authentication,
-                            'label_username': __('XMPP Username:'),
-                            'label_password': __('Password:'),
-                            'label_anon_login': __('Click here to log in anonymously'),
-                            'label_login': __('Log In'),
-                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
-                            'placeholder_password': __('password')
+                            'connection_status': connection_status,
+                            'conn_feedback_class': feedback_class,
+                            'conn_feedback_subject': pretty_status,
+                            'conn_feedback_message': _converse.connfeedback.get('message'),
+                            'placeholder_username': (_converse.locked_domain || _converse.default_domain) &&
+                                                    __('Username') || __('user@domain'),
                         })
-                    ));
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-                },
-
-                render () {
-                    this.$tabs.append(tpl_login_tab({label_sign_in: __('Sign in')}));
-                    this.$el.find('input#jid').focus();
-                    if (!this.$el.is(':visible')) {
-                        this.$el.show();
+                    );
+                    const form = this.el.querySelector('form');
+                    if (_.isNull(form)) {
+                        this.el.innerHTML = html;
+                    } else {
+                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
+                        vdom.patch(form, patches);
                     }
                     return this;
                 },
 
+                validate () {
+                    const form = this.el.querySelector('form');
+                    const jid_element = form.querySelector('input[name=jid]');
+                    if (jid_element.value &&
+                            !_converse.locked_domain &&
+                            !_converse.default_domain &&
+                            _.filter(jid_element.value.split('@')).length < 2) {
+                        jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
+                        return false;
+                    }
+                    jid_element.setCustomValidity('');
+                    return true;
+                },
+
                 authenticate (ev) {
+                    /* Authenticate the user based on a form submission event.
+                     */
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
-                    const $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
-                        this.connect($form, _converse.jid, null);
+                        this.connect(_converse.jid, null);
                         return;
                     }
-                    const $jid_input = $form.find('input[name=jid]');
-                    const $pw_input = $form.find('input[name=password]');
-                    const password = $pw_input.val();
-
-                    let jid = $jid_input.val(),
-                        errors = false;
-
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
-                        errors = true;
-                        $jid_input.addClass('error');
+                    if (!this.validate()) {
+                        return;
                     }
-                    if (!password && _converse.authentication !== _converse.EXTERNAL)  {
-                        errors = true;
-                        $pw_input.addClass('error');
-                    }
-                    if (errors) { return; }
+                    let jid = ev.target.querySelector('input[name=jid]').value;
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect($form, jid, password);
-                    return false;
+                    this.connect(
+                        jid, _.get(ev.target.querySelector('input[name=password]'), 'value')
+                    );
                 },
 
-                connect ($form, jid, password) {
-                    let resource;
-                    if ($form) {
-                        $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                    }
+                connect (jid, password) {
                     if (jid) {
-                        resource = Strophe.getResourceFromJid(jid);
+                        const resource = Strophe.getResourceFromJid(jid);
                         if (!resource) {
                             jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
@@ -456,11 +552,6 @@
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-                },
-
-                remove () {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
 
@@ -599,7 +690,6 @@
 
                 render () {
                     this.renderTab();
-
                     let widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
@@ -671,17 +761,19 @@
                 searchContacts (ev) {
                     ev.preventDefault();
                     $.getJSON(_converse.xhr_user_search_url+ "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        const title_subscribe = __('Click to add as a chat contact');
+                        const no_users_text = __('No users found');
                         const $ul= $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
                         if (!data.length) {
-                            $ul.append(`<li class="chat-info">${__('No users found')}</li>`);
+                            $ul.append(`<li class="chat-info">${no_users_text}</li>`);
                         }
                         $(data).each(function (idx, obj) {
                             $ul.append(
                                 $('<li class="found-user"></li>')
                                 .append(
-                                    $(`<a class="subscribe-to-user" href="#" title="${__('Click to add as a chat contact')}"></a>`)
+                                    $(`<a class="subscribe-to-user" href="#" title="${title_subscribe}"></a>`)
                                     .attr('data-recipient', Strophe.getNodeFromJid(obj.id)+"@"+Strophe.getDomainFromJid(obj.id))
                                     .text(obj.fullname)
                                 )
@@ -697,7 +789,7 @@
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
-                                error_message: __('Please enter a valid XMPP username'),
+                                error_message: __('Please enter a valid XMPP address'),
                                 label_contact_username: __('e.g. user@example.org'),
                                 label_add: __('Add'),
                                 value: jid
@@ -732,15 +824,16 @@
                 },
 
                 initialize () {
-                    _converse.chatboxviews.$el.prepend(this.render());
+                    _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
                     const that = this;
-                    _converse.on('initialized', function () {
+                    _converse.api.waitUntil('initialized').then(() => {
+                        this.render();
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 render () {
@@ -748,11 +841,10 @@
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    return this.$el.html(
-                        tpl_controlbox_toggle({
-                            'label_toggle': __('Toggle chat')
-                        })
-                    );
+                    this.el.innerHTML = tpl_controlbox_toggle({
+                        'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
+                    })
+                    return this;
                 },
 
                 updateOnlineCount: _.debounce(function () {
@@ -802,6 +894,12 @@
                 }
             });
 
+            Promise.all([
+                _converse.api.waitUntil('connectionInitialized'),
+                _converse.api.waitUntil('chatBoxesInitialized')
+            ]).then(_converse.addControlBox)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
             const disconnect =  function () {
                 /* Upon disconnection, set connected to `false`, so that if
                  * we reconnect,
@@ -816,7 +914,7 @@
             _converse.on('disconnected', disconnect);
 
             const afterReconnected = function () {
-                /* After reconnection makes sure the controlbox's is aware.
+                /* After reconnection makes sure the controlbox is aware.
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {

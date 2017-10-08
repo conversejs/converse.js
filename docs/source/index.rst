@@ -23,7 +23,7 @@ Introduction
 ============
 
 Converse.js is a free and open-source `XMPP <http://xmpp.org/about-xmpp/>`_
-chat client written in Javascript which can be tightly integrated into any website.
+chat client written in JavaScript which can be tightly integrated into any website.
 
 The benefit of using converse.js as opposed to relying on a SaaS
 (software-as-a-service) solution, is that your users can have a much more

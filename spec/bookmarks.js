@@ -81,7 +81,8 @@
             $form.find('input[name="name"]').val('Play&apos;s the Thing');
             $form.find('input[name="autojoin"]').prop('checked', true);
             $form.find('input[name="nick"]').val('JC');
-            $form.submit();
+            view.$el.find('.button-primary').click();
+
             expect(view.model.get('bookmarked')).toBeTruthy();
             expect($bookmark.hasClass('on-button'), true);
 

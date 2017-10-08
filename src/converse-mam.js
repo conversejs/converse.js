@@ -18,11 +18,37 @@
     ], factory);
 }(this, function ($, converse) {
     "use strict";
-    const { Strophe, $iq, _, moment } = converse.env;
+    const { Promise, Strophe, $iq, _, moment } = converse.env;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+    function checkMAMSupport (_converse) {
+        /* Returns a promise which resolves when MAM is supported
+         * for this user, or which rejects if not.
+         */
+        return _converse.api.waitUntil('discoInitialized').then(() =>
+            new Promise((resolve, reject) => {
+
+                function fulfillPromise (entity) {
+                    if (entity.features.findWhere({'var': Strophe.NS.MAM})) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+                let entity = _converse.disco_entities.get(_converse.bare_jid);
+                if (_.isUndefined(entity)) {
+                    entity = _converse.disco_entities.create({'jid': _converse.bare_jid});
+                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                } else {
+                    fulfillPromise(entity);
+                }
+            })
+        );
+    }
+
 
     converse.plugins.add('converse-mam', {
 
@@ -51,17 +77,32 @@
 
                 fetchArchivedMessagesIfNecessary () {
                     /* Check if archived messages should be fetched, and if so, do so. */
-                    const { _converse } = this.__super__,
-                          entity = _converse.disco_entities.get(_converse.domain),
-                          server_supports_mam = entity.features.findWhere({'var': Strophe.NS.MAM});
-
-                    if (this.disable_mam ||
-                            !server_supports_mam ||
-                            this.model.get('mam_initialized')) {
+                    if (this.disable_mam || this.model.get('mam_initialized')) {
                         return;
                     }
-                    this.fetchArchivedMessages();
-                    this.model.save({'mam_initialized': true});
+                    const { _converse } = this.__super__;
+                    this.addSpinner();
+
+                    checkMAMSupport(_converse).then(
+                        (supported) => { // Success
+                            if (supported) {
+                                this.fetchArchivedMessages();
+                            } else {
+                                this.clearSpinner();
+                            }
+                            this.model.save({'mam_initialized': true});
+                        },
+                        () => { // Error
+                            this.clearSpinner();
+                            _converse.log(
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
+                        }
+                    ).catch((msg) => {
+                        this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
                 },
 
                 fetchArchivedMessages (options) {
@@ -71,7 +112,7 @@
                      * box, so that they are displayed inside it.
                      */
                     const { _converse } = this.__super__;
-                    if (!_converse.disco_entities.get(_converse.domain)
+                    if (!_converse.disco_entities.get(_converse.bare_jid)
                             .features.findWhere({'var': Strophe.NS.MAM})) {
 
                         _converse.log(
@@ -361,9 +402,7 @@
             });
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
-                _converse.api.waitUntil('discoInitialized')
-                    .then(chatboxview.fetchArchivedMessagesIfNecessary.bind(chatboxview))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                chatboxview.fetchArchivedMessagesIfNecessary();
             });
         }
     });

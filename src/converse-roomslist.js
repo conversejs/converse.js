@@ -20,12 +20,27 @@
     const { Backbone, Promise, b64_sha1, sizzle, _ } = converse.env;
 
     converse.plugins.add('converse-roomslist', {
+
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-bookmarks"],
+
         initialize () {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                  { __, ___ } = _converse;
+                  { __ } = _converse;
 
             _converse.RoomsList = Backbone.Model.extend({
                 defaults: {
@@ -37,8 +52,10 @@
                 tagName: 'div',
                 className: 'open-rooms-list rooms-list-container',
                 events: {
+                    'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .open-rooms-toggle': 'toggleRoomsList'
+                    'click .open-rooms-toggle': 'toggleRoomsList',
+                    'click .remove-bookmark': 'removeBookmark',
                 },
 
                 initialize () {
@@ -97,7 +114,7 @@
                     ev.preventDefault();
                     const name = ev.target.getAttribute('data-room-name');
                     const jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
@@ -120,6 +137,7 @@
                         'allow_bookmarks': _converse.allow_bookmarks,
                         'info_leave_room': __('Leave this room'),
                         'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_add_bookmark': __('Bookmark this room'),
                         'info_title': __('Show more information on this room'),
                         'name': name,
                         'open_title': __('Click to open this room')
@@ -127,6 +145,9 @@
                     this.el.querySelector('.open-rooms-list').appendChild(div.firstChild);
                     this.show();
                 },
+
+                removeBookmark: _converse.removeBookmarkViaEvent,
+                addBookmark: _converse.addBookmarkViaEvent,
 
                 removeRoomsListElement (item) {
                     const list_el = this.el.querySelector('.open-rooms-list');

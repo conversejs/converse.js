@@ -7,49 +7,33 @@
             "plural_forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
             "lang": "uk"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
-            null,
-            "Зберегти"
-         ],
-         "Cancel": [
-            null,
-            "Відміна"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
             ""
          ],
-         "Bookmarks": [
+         "This client does not allow presence subscriptions": [
             null,
             ""
          ],
-         "Remove this bookmark": [
+         "Click to hide these contacts": [
             null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "Показати більше інформації про цю кімату"
-         ],
-         "Click to open this room": [
-            null,
-            "Клацніть, щоб увійти в цю кімнату"
+            "Клацніть, щоб приховати ці контакти"
          ],
          "Personal message": [
             null,
@@ -123,29 +107,137 @@
             null,
             "Почати виклик"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Контакти"
+            ""
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "XMPP адреса:"
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "Пароль:"
          ],
-         "Log In": [
-            null,
-            "Ввійти"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Вступити"
+            "Надіслати"
+         ],
+         "This contact is busy": [
+            null,
+            "Цей контакт зайнятий"
+         ],
+         "This contact is online": [
+            null,
+            "Цей контакт на зв'язку"
+         ],
+         "This contact is offline": [
+            null,
+            "Цей контакт поза мережею"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Цей контакт недоступний"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Цей контакт відсутній тривалий час"
+         ],
+         "This contact is away": [
+            null,
+            "Цей контакт відсутній"
+         ],
+         "Contacts": [
+            null,
+            "Контакти"
+         ],
+         "Groups": [
+            null,
+            "Групи"
+         ],
+         "My contacts": [
+            null,
+            "Мої контакти"
+         ],
+         "Pending contacts": [
+            null,
+            "Контакти в очікуванні"
+         ],
+         "Contact requests": [
+            null,
+            "Запити контакту"
+         ],
+         "Ungrouped": [
+            null,
+            "Негруповані"
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "На зв'язку"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "Зайнятий"
+         ],
+         "Away": [
+            null,
+            "Далеко"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "Поза мережею"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Клацніть, щоб почати розмову з цим контактом"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Ви впевнені, що хочете видалити цей контакт?"
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Ви впевнені, що хочете відхилити цей запит контакту?"
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -163,6 +255,10 @@
             null,
             "Власний статус"
          ],
+         "Save": [
+            null,
+            "Зберегти"
+         ],
          "online": [
             null,
             "на зв'язку"
@@ -178,22 +274,6 @@
          "away": [
             null,
             "відсутній"
-         ],
-         "Online": [
-            null,
-            "На зв'язку"
-         ],
-         "Busy": [
-            null,
-            "Зайнятий"
-         ],
-         "Away": [
-            null,
-            "Далеко"
-         ],
-         "Offline": [
-            null,
-            "Поза мережею"
          ],
          "Log out": [
             null,
@@ -223,29 +303,17 @@
             null,
             "Додати"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Клацніть, щоб додати як чат-контакт"
+         ],
          "No users found": [
             null,
             "Жодного користувача не знайдено"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            ""
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Клацніть, щоб приховати ці контакти"
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Click to restore this chat": [
-            null,
-            "Клацніть, щоб відновити цей чат"
-         ],
-         "Minimized": [
-            null,
-            "Мінімізовано"
+            "Включити чат"
          ],
          "This room is not anonymous": [
             null,
@@ -295,15 +363,11 @@
             null,
             "Вас видалено з цієї кімнати, оскільки вона тепер вимагає членства, а Ви ним не є її членом"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "Вас видалено з цієї кімнати, тому що MUC (Чат-сервіс) припиняє роботу."
-         ],
          "Message": [
             null,
             "Повідомлення"
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -363,6 +427,10 @@
             null,
             "Дозволити безголосому користувачу слати повідомлення"
          ],
+         "Cancel": [
+            null,
+            "Відміна"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -378,14 +446,6 @@
          "Password: ": [
             null,
             "Пароль:"
-         ],
-         "Submit": [
-            null,
-            "Надіслати"
-         ],
-         "${notification.reason}": [
-            null,
-            ""
          ],
          " has left the room. \"": [
             null,
@@ -507,6 +567,18 @@
             null,
             "Жодної кімнати на %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Кімнати на %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Клацніть, щоб увійти в цю кімнату"
+         ],
+         "Show more information on this room": [
+            null,
+            "Показати більше інформації про цю кімату"
+         ],
          "Description:": [
             null,
             "Опис:"
@@ -551,15 +623,31 @@
             null,
             "%1$s запрошує Вас приєднатись до чату: %2$s, аргументує ось як: \"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -691,13 +779,49 @@
             null,
             "завершено"
          ],
+         "Don't have a chat account?": [
+            null,
+            ""
+         ],
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            "Реєстрація"
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
          " e.g. conversejs.org": [
             null,
             " напр. conversejs.org"
-         ],
-         "Your XMPP provider's domain name:": [
-            null,
-            "Домен Вашого провайдера XMPP:"
          ],
          "Fetch registration form": [
             null,
@@ -711,21 +835,13 @@
             null,
             "тут"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "Реєстрація"
+            ""
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "Вибачте, вказаний провайдер не підтримує реєстрації онлайн. Спробуйте іншого провайдера."
-         ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "Запитую форму реєстрації з XMPP сервера"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
-            null,
-            "Щось пішло не так при встановленні зв'язку з \"%1$s\". Ви впевнені, що такий існує?"
          ],
          "Now logging you in": [
             null,
@@ -735,93 +851,29 @@
             null,
             "Успішно зареєстровано"
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "Цей контакт зайнятий"
-         ],
-         "This contact is online": [
-            null,
-            "Цей контакт на зв'язку"
-         ],
-         "This contact is offline": [
-            null,
-            "Цей контакт поза мережею"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Цей контакт недоступний"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Цей контакт відсутній тривалий час"
-         ],
-         "This contact is away": [
-            null,
-            "Цей контакт відсутній"
-         ],
-         "Groups": [
-            null,
-            "Групи"
-         ],
-         "My contacts": [
-            null,
-            "Мої контакти"
-         ],
-         "Pending contacts": [
-            null,
-            "Контакти в очікуванні"
-         ],
-         "Contact requests": [
-            null,
-            "Запити контакту"
-         ],
-         "Ungrouped": [
-            null,
-            "Негруповані"
-         ],
-         "Filter": [
+         "%1$s says": [
             null,
             ""
          ],
-         "State": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Any": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "Unread": [
+         "Click to restore this chat": [
             null,
-            ""
+            "Клацніть, щоб відновити цей чат"
          ],
-         "Chatty": [
+         "Minimized": [
             null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Клацніть, щоб почати розмову з цим контактом"
-         ],
-         "Name": [
-            null,
-            ""
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Ви впевнені, що хочете видалити цей контакт?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Ви впевнені, що хочете відхилити цей запит контакту?"
+            "Мінімізовано"
          ]
       }
    }

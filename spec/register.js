@@ -3,48 +3,80 @@
 } (this, function ($, jasmine, mock, converse, test_utils) {
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
+    var _ = converse.env._;
 
     describe("The Registration Panel", function () {
 
-        it("is not available unless allow_registration=true",  mock.initConverse(function (_converse) {
+        it("is not available unless allow_registration=true",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: false },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _converse.chatboxviews.get('controlbox');
+                }, 300)
+            .then(function () {
+
             test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
-            expect(cbview.$('#controlbox-tabs li').length).toBe(1);
-            expect(cbview.$('#controlbox-tabs li').text().trim()).toBe("Sign in");
-
-            }, { auto_login: false,
-                 allow_registration: false,
+            expect(cbview.$('a.register-account').length).toBe(0);
+            done();
+            });
         }));
 
-        it("can be opened by clicking on the registration tab", mock.initConverse(function (_converse) {
+        it("can be opened by clicking on the registration tab",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: true },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
+                }, 300)
+            .then(function () {
             var cbview = _converse.chatboxviews.get('controlbox');
             test_utils.openControlBox();
-            var $tabs = cbview.$('#controlbox-tabs');
             var $panels = cbview.$('.controlbox-panes');
             var $login = $panels.children().first();
             var $registration = $panels.children().last();
-            expect($tabs.find('li').first().text()).toBe('Sign in');
-            expect($tabs.find('li').last().text()).toBe('Register');
 
-            spyOn(cbview, 'switchTab').and.callThrough();
-            cbview.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-            $tabs.find('li').last().find('a').click(); // Click the Register tab
-            expect($login.is(':visible')).toBe(false);
-            expect($registration.is(':visible')).toBe(true);
-            expect(cbview.switchTab).toHaveBeenCalled();
-
-            }, { auto_login: false,
-                 allow_registration: true,
+            var register_link = cbview.el.querySelector('a.register-account');
+            expect(register_link.textContent).toBe("Create an account");
+            register_link.click();
+            test_utils.waitUntil(function () {
+                return $registration.is(':visible');
+            }, 300).then(function () {
+                expect($login.is(':visible')).toBe(false);
+                done();
+            });
+            });
         }));
 
-        it("allows the user to choose an XMPP provider's domain", mock.initConverse(function (_converse) {
+        it("allows the user to choose an XMPP provider's domain",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: true },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
+                }, 300)
+            .then(function () {
+
+            test_utils.openControlBox();
             var cbview = _converse.chatboxviews.get('controlbox');
             var registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             registerview.delegateEvents();  // We need to rebind all events otherwise our spy won't be called
             spyOn(_converse.connection, 'connect');
-            var $tabs = cbview.$('#controlbox-tabs');
-            $tabs.find('li').last().find('a').click(); // Click the Register tab
+
+            // Open the register panel
+            cbview.el.querySelector('.toggle-register-login').click();
+
             // Check the form layout
             var $form = cbview.$('#converse-register');
             expect($form.find('input').length).toEqual(2);
@@ -52,18 +84,29 @@
             expect($form.find('input').last().attr('type')).toEqual('submit');
             // Check that the input[type=domain] input is required
             $form.find('input[type=submit]').click();
-            expect(registerview.onProviderChosen).toHaveBeenCalled();
-            expect($form.find('input[name=domain]').hasClass('error')).toBeTruthy();
+            expect(registerview.onProviderChosen).not.toHaveBeenCalled();
+
             // Check that the form is accepted if input[type=domain] has a value
             $form.find('input[name=domain]').val('conversejs.org');
             $form.find('input[type=submit]').click();
             expect(registerview.onProviderChosen).toHaveBeenCalled();
             expect(_converse.connection.connect).toHaveBeenCalled();
-        }, { auto_login: false,
-              allow_registration: true,
-            }));
+            done();
+            });
+        }));
 
-        it("will render a registration form as received from the XMPP provider", mock.initConverse(function (_converse) {
+        it("will render a registration form as received from the XMPP provider",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: true },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
+                }, 300)
+            .then(function () {
+
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
             var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
@@ -107,14 +150,25 @@
             expect(registerview.$('input').length).toBe(5);
             expect(registerview.$('input[type=submit]').length).toBe(1);
             expect(registerview.$('input[type=button]').length).toBe(1);
-        }, { auto_login: false,
-              allow_registration: true,
-            }));
+            done();
+            });
+        }));
 
-        it("will set form_type to legacy and submit it as legacy", mock.initConverse(function (_converse) {
+        it("will set form_type to legacy and submit it as legacy",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: true },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
+                }, 300)
+            .then(function () {
+
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
-            var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
+            var registerview = cbview.registerpanel;
             spyOn(registerview, 'onProviderChosen').and.callThrough();
             spyOn(registerview, 'getRegistrationFields').and.callThrough();
             spyOn(registerview, 'onRegistrationFields').and.callThrough();
@@ -156,11 +210,22 @@
             var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
             expect($stanza.children('query').children().length).toBe(3);
             expect($stanza.children('query').children()[0].tagName).toBe('username');
-        }, { auto_login: false,
-              allow_registration: true,
-            }));
+            done();
+            });
+        }));
 
-        it("will set form_type to xform and submit it as xform", mock.initConverse(function (_converse) {
+        it("will set form_type to xform and submit it as xform",
+            mock.initConverseWithPromises(
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
+                { auto_login: false,
+                  allow_registration: true },
+                function (done, _converse) {
+
+            test_utils.waitUntil(function () {
+                    return _.get(_converse.chatboxviews.get('controlbox'), 'registerpanel');
+                }, 300)
+            .then(function () {
+
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.$('#controlbox-tabs').find('li').last().find('a').click(); // Click the Register tab
             var registerview = _converse.chatboxviews.get('controlbox').registerpanel;
@@ -208,8 +273,8 @@
             expect($stanza.children('query').children().length).toBe(1);
             expect($stanza.children('query').children().children().length).toBe(3);
             expect($stanza.children('query').children().children()[0].tagName).toBe('field');
-        }, { auto_login: false,
-              allow_registration: true,
-            }));
+            done();
+            });
+        }));
     });
 }));

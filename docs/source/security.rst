@@ -57,7 +57,7 @@ Addititional measures
 Besides the measures mentioned above, integrators and hosts can also take
 further security precautions.
 
-The most effective is to avoid serving untrusted 3rd party Javascript (e.g.
+The most effective is to avoid serving untrusted 3rd party JavaScript (e.g.
 advertisements and analytics).
 
 Another option is to forego the use of a global ``converse`` object (which

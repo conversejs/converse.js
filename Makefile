@@ -61,11 +61,11 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot src/*.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.0-rc -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.2.1 -c
 
 .PHONY: pot
-pot:
-	$(GETTEXT) --language="javascript" 2>&1 > /dev/null; test $$? -eq 0 && exit 0 || $(GETTEXT) --language="python" && exit $$?;
+pot: dist/converse-no-dependencies.js
+	$(GETTEXT) 2>&1 > /dev/null; exit $$?;
 
 .PHONY: po
 po:
@@ -83,7 +83,6 @@ release:
 	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
 	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ src/start.frag
 	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
-	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ bower.json
 	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
 	$(SED) -ri s/--package-version=[0-9]\+\.[0-9]\+\.[0-9]\+/--package-version=$(VERSION)/ Makefile
 	$(SED) -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.zip/v$(VERSION)\.zip/ index.html
@@ -100,8 +99,7 @@ release:
 ## Install dependencies
 
 stamp-npm: package.json
-	npm install
-	touch stamp-npm
+	npm install && touch stamp-npm
 
 stamp-bundler: Gemfile
 	mkdir -p .bundle
@@ -155,9 +153,8 @@ watch: stamp-bundler
 watchjs: stamp-npm
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
-.PHONY: transpile
-transpile: stamp-npm
-	$(BABEL) --source-maps --out-dir=./builds ./src
+transpile: stamp-npm src
+	$(BABEL) --source-maps --out-dir=./builds ./src && touch transpile
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \
@@ -174,41 +171,34 @@ BUILDS = dist/converse.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
-dist/converse.js: src locale node_modules *.js
+dist/converse.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse.js -o dist/converse.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse.min.js >> tmpfile && mv tmpfile dist/converse.min.js
-dist/converse-esnext.js: src locale node_modules *.js transpile
+dist/converse.min.js: transpile src node_modules *.js
+	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
+dist/converse-esnext.js: src node_modules *.js
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src locale node_modules *.js transpile
-	$(UGLIFYJS) --verbose dist/converse-esnext.js -o dist/converse-esnext.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-esnext.min.js >> tmpfile && mv tmpfile dist/converse-esnext.min.js
-dist/inverse.js: src locale node_modules *.js
+dist/converse-esnext.min.js: src node_modules *.js
+	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
+dist/inverse.js: transpile src node_modules *.js
 	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
-dist/inverse.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/inverse.js -o dist/inverse.min.js
-	cat COPYRIGHT > tmpfile && cat dist/inverse.min.js >> tmpfile && mv tmpfile dist/inverse.min.js
-dist/converse-no-jquery.js: src locale node_modules *.js
+dist/inverse.min.js: transpile src node_modules *.js
+	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.min.js
+dist/converse-no-jquery.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
-dist/converse-no-jquery.min.js: src locale node_modules *.js transpile
-	$(UGLIFYJS) --verbose dist/converse-no-jquery.js -o dist/converse-no-jquery.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-no-jquery.min.js >> tmpfile && mv tmpfile dist/converse-no-jquery.min.js
-dist/converse-no-dependencies.js: src locale node_modules *.js
+dist/converse-no-jquery.min.js: transpile src node_modules *.js transpile
+	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
+dist/converse-no-dependencies.js: transpile src node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-no-dependencies.js -o dist/converse-no-dependencies.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-no-dependencies.min.js >> tmpfile && mv tmpfile dist/converse-no-dependencies.min.js
-dist/converse-mobile.js: src locale node_modules *.js
+dist/converse-no-dependencies.min.js: transpile src node_modules *.js
+	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
+dist/converse-mobile.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
-dist/converse-mobile.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-mobile.js -o dist/converse-mobile.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-mobile.min.js >> tmpfile && mv tmpfile dist/converse-mobile.min.js
-dist/converse-muc-embedded.js: src locale node_modules *.js
+dist/converse-mobile.min.js: transpile src node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
+dist/converse-muc-embedded.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: src locale node_modules *.js
-	$(UGLIFYJS) --verbose dist/converse-muc-embedded.js -o dist/converse-muc-embedded.min.js
-	cat COPYRIGHT > tmpfile && cat dist/converse-muc-embedded.min.js >> tmpfile && mv tmpfile dist/converse-muc-embedded.min.js
+dist/converse-muc-embedded.min.js: transpile src node_modules *.js
+	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
 
 .PHONY: jsmin
 jsmin: $(BUILDS)
@@ -217,7 +207,7 @@ jsmin: $(BUILDS)
 dist:: build
 
 .PHONY: build
-build:: dev css
+build:: dev css transpile
 	$(GRUNT) json
 	make jsmin
 
@@ -243,25 +233,3 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
-
-.PHONY: html
-doc: html
-
-.PHONY: epub
-epub:
-	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
-	@echo
-	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
-
-.PHONY: changes
-changes:
-	$(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
-	@echo
-	@echo "The overview file is in $(BUILDDIR)/changes."
-
-.PHONY: linkcheck
-linkcheck:
-	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
-	@echo
-	@echo "Link check complete; look for any errors in the above output " \
-	      "or in $(BUILDDIR)/linkcheck/output.txt."

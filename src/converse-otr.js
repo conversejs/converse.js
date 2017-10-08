@@ -21,9 +21,10 @@
 
     const { Strophe, utils, b64_sha1, _ } = converse.env;
 
-    const HAS_CSPRNG = ((!_.isUndefined(crypto)) &&
-        ((_.isFunction(crypto.randomBytes)) || (_.isFunction(crypto.getRandomValues))
-    ));
+    const HAS_CSPRNG = _.isUndefined(window.crypto) ? false : (
+        _.isFunction(window.crypto.randomBytes) ||
+        _.isFunction(window.crypto.getRandomValues)
+    );
 
     const HAS_CRYPTO = HAS_CSPRNG && (
         (!_.isUndefined(otr.OTR)) &&

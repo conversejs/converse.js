@@ -1,14 +1,14 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2016, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
 
 (function (root, factory) {
     define(["converse-core",
-            "tpl!brand_heading",
+            "tpl!inverse_brand_heading",
             "converse-chatview",
             "converse-controlbox",
             "converse-muc",
@@ -17,12 +17,6 @@
 }(this, function (converse, tpl_brand_heading) {
     "use strict";
     const { Strophe, _ } = converse.env;
-
-    function createBrandHeadingElement () {
-        const div = document.createElement('div');
-        div.innerHTML = tpl_brand_heading();
-        return div.firstChild;
-    }
 
      function isMessageToHiddenChat (_converse, message) {
         const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
@@ -57,27 +51,16 @@
             },
 
             ControlBoxView: {
-                renderContactsPanel () {
-                    this.__super__.renderContactsPanel.apply(this, arguments);
-                    this.el.classList.remove("fullscreen");
-                    return this;
+                 createBrandHeadingHTML() {
+                    return tpl_brand_heading();
                 },
 
-                renderRegistrationPanel () {
-                    this.__super__.renderRegistrationPanel.apply(this, arguments);
-
-                    const el = document.getElementById('converse-register');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
-                    return this;
-                },
-
-                renderLoginPanel () {
-                    this.__super__.renderLoginPanel.apply(this, arguments);
-                    this.el.classList.add("fullscreen");
-
-                    const el = document.getElementById('converse-login');
-                    el.parentNode.insertBefore(createBrandHeadingElement(), el);
-                    return this;
+                insertBrandHeading () {
+                    const el = document.getElementById('converse-login-panel');
+                    el.parentNode.insertAdjacentHTML(
+                        'afterbegin',
+                        this.createBrandHeadingHTML()
+                    );
                 }
             },
 

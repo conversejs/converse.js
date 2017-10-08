@@ -7,49 +7,29 @@
             "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "nl"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
-            null,
-            "Opslaan"
-         ],
-         "Cancel": [
-            null,
-            "Annuleren"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
             ""
          ],
-         "Bookmarks": [
+         "This client does not allow presence subscriptions": [
             null,
             ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "Toon meer informatie over deze room"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik om room te openen"
          ],
          "Personal message": [
             null,
@@ -99,25 +79,129 @@
             null,
             ""
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Contacten"
+            ""
+         ],
+         "Jabber ID:": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "Wachtwoord:"
          ],
-         "Log In": [
-            null,
-            "Aanmelden"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Aanmelden"
+            "Indienen"
+         ],
+         "This contact is busy": [
+            null,
+            "Contact is bezet"
+         ],
+         "This contact is online": [
+            null,
+            "Contact is online"
+         ],
+         "This contact is offline": [
+            null,
+            "Contact is offline"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Contact is niet beschikbaar"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Contact is afwezig voor lange periode"
+         ],
+         "This contact is away": [
+            null,
+            "Conact is afwezig"
+         ],
+         "Contacts": [
+            null,
+            "Contacten"
+         ],
+         "Groups": [
+            null,
+            ""
+         ],
+         "My contacts": [
+            null,
+            "Mijn contacts"
+         ],
+         "Pending contacts": [
+            null,
+            "Conacten in afwachting van"
+         ],
+         "Contact requests": [
+            null,
+            "Contact uitnodiging"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "Online"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "Bezet"
+         ],
+         "Away": [
+            null,
+            "Afwezig"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            ""
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klik om te chatten met contact"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -135,6 +219,10 @@
             null,
             ""
          ],
+         "Save": [
+            null,
+            "Opslaan"
+         ],
          "online": [
             null,
             "online"
@@ -150,22 +238,6 @@
          "away": [
             null,
             "afwezig"
-         ],
-         "Online": [
-            null,
-            "Online"
-         ],
-         "Busy": [
-            null,
-            "Bezet"
-         ],
-         "Away": [
-            null,
-            "Afwezig"
-         ],
-         "Offline": [
-            null,
-            ""
          ],
          "Click to add new chat contacts": [
             null,
@@ -191,19 +263,15 @@
             null,
             "Toevoegen"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Klik om contact toe te voegen"
+         ],
          "No users found": [
             null,
             "Geen gebruikers gevonden"
          ],
-         "This client does not allow presence subscriptions": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Minimized": [
+         "Toggle chat": [
             null,
             ""
          ],
@@ -259,7 +327,7 @@
             null,
             ""
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down": [
             null,
             ""
          ],
@@ -279,7 +347,7 @@
             null,
             ""
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -323,6 +391,10 @@
             null,
             ""
          ],
+         "Cancel": [
+            null,
+            "Annuleren"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -343,15 +415,11 @@
             null,
             "Wachtwoord: "
          ],
-         "Submit": [
-            null,
-            "Indienen"
-         ],
          "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
-         "${notification.reason}": [
+         "The reason given is: \"%1$s \"": [
             null,
             ""
          ],
@@ -467,6 +535,18 @@
             null,
             "Geen room op %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Room op %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Klik om room te openen"
+         ],
+         "Show more information on this room": [
+            null,
+            "Toon meer informatie over deze room"
+         ],
          "Description:": [
             null,
             "Beschrijving"
@@ -511,15 +591,31 @@
             null,
             ""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -627,11 +723,47 @@
             null,
             "klaar"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
          ],
@@ -647,7 +779,7 @@
             null,
             ""
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
             ""
          ],
@@ -655,11 +787,7 @@
             null,
             ""
          ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            ""
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
             null,
             ""
          ],
@@ -675,83 +803,23 @@
             null,
             ""
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "Contact is bezet"
-         ],
-         "This contact is online": [
-            null,
-            "Contact is online"
-         ],
-         "This contact is offline": [
-            null,
-            "Contact is offline"
-         ],
-         "This contact is unavailable": [
-            null,
-            "Contact is niet beschikbaar"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "Contact is afwezig voor lange periode"
-         ],
-         "This contact is away": [
-            null,
-            "Conact is afwezig"
-         ],
-         "Groups": [
+         "%1$s says": [
             null,
             ""
          ],
-         "My contacts": [
-            null,
-            "Mijn contacts"
-         ],
-         "Pending contacts": [
-            null,
-            "Conacten in afwachting van"
-         ],
-         "Contact requests": [
-            null,
-            "Contact uitnodiging"
-         ],
-         "Ungrouped": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Filter": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "State": [
-            null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klik om te chatten met contact"
-         ],
-         "Name": [
+         "Minimized": [
             null,
             ""
          ]

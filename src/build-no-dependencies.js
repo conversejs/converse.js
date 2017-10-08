@@ -36,7 +36,9 @@
         "strophe.vcard",
         "strophe.ping",
         "otr",
-        "lodash"
+        "lodash",
+        "lodash.converter",
+        "lodash.noconflict"
     ],
     paths: {
         "converse-bookmarks":       "builds/converse-bookmarks",

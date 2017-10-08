@@ -69,7 +69,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
-	  _ = browserConvert(_.runInContext());
+      // XXX: Customization in order to be able to run both _ and fp in the
+      // non-AMD usecase.
+	  fp = browserConvert(_.runInContext());
 	}
 	module.exports = browserConvert;
 

@@ -7,53 +7,37 @@
             "plural_forms": "nplurals=2; plural=n != 1;",
             "lang": "af"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
-            "Boekmerk hierdie kletskamer"
+            "Die konneksie is onderbreek, probeer tans tans om te herkonnekteer."
          ],
-         "The name for this bookmark:": [
+         "An error occurred while connecting to the chat server.": [
             null,
-            "Die naam vir hierdie boekmerk:"
+            "A fout het voorgekom tydens verbinding met die kletsbediener."
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
-            "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
+            "U Jabber ID en/of wagwoord is verkeerd. Probeer asseblief weer."
          ],
-         "What should your nickname for this room be?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
-            "Wat sal u bynaam vir hierdie kletskamer wees?"
+            "Jammer, ons kon nie 'n verbinding met hierdie XMPP domein opstel nie: "
          ],
-         "Save": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
-            "Stoor"
+            "Die XMPP bediener het nie 'n bruikbare verifikasiemeganisme aangebied nie"
          ],
-         "Cancel": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
-            "Kanseleer"
+            "Jammer, 'n fout het voorgekom tydens die byvoeging van %1$s as 'n kontak."
          ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "This client does not allow presence subscriptions": [
             null,
-            "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
+            "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
          ],
-         "Click to toggle the bookmarks list": [
+         "Click to hide these contacts": [
             null,
-            "Klik om die boekmerklys te skakel"
-         ],
-         "Are you sure you want to remove the bookmark \"%1$s\"?": [
-            null,
-            "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
-         ],
-         "Remove this bookmark": [
-            null,
-            "Verwyder hierdie boekmerk"
-         ],
-         "Show more information on this room": [
-            null,
-            "Wys meer inligting aangaande hierdie kletskamer"
-         ],
-         "Click to open this room": [
-            null,
-            "Klik om hierdie kletskamer te open"
+            "Klik om hierdie kontakte te verskuil"
          ],
          "You have unread messages": [
             null,
@@ -69,7 +53,7 @@
          ],
          "Send": [
             null,
-            ""
+            "Stuur"
          ],
          "me": [
             null,
@@ -81,7 +65,7 @@
          ],
          "Typing from another device": [
             null,
-            ""
+            "Tik tans op 'n ander toestel"
          ],
          "is typing": [
             null,
@@ -89,7 +73,7 @@
          ],
          "Stopped typing on the other device": [
             null,
-            ""
+            "Het opgehou tik op 'n ander toestel"
          ],
          "has stopped typing": [
             null,
@@ -135,41 +119,165 @@
             null,
             "Begin 'n oproep"
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "Kontakte"
+            "Aanmelding"
          ],
-         "XMPP Username:": [
+         "Jabber ID:": [
             null,
-            "XMPP Gebruikersnaam:"
+            "Jabber ID:"
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            "Verskaf asseblief 'n geldige XMPP address"
          ],
          "Password:": [
             null,
             "Wagwoord:"
          ],
-         "Click here to log in anonymously": [
+         "Please enter your password": [
             null,
-            "Klik hier om anoniem aan te meld"
-         ],
-         "Log In": [
-            null,
-            "Meld aan"
-         ],
-         "Username": [
-            null,
-            "Gebruikersnaam"
-         ],
-         "user@server": [
-            null,
-            "gebruiker@bediener"
+            "Verskaf asseblief u wagwoord"
          ],
          "password": [
             null,
             "wagwoord"
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "Teken in"
+            "Dien in"
+         ],
+         "Click here to log in anonymously": [
+            null,
+            "Klik hier om anoniem aan te meld"
+         ],
+         "This contact is busy": [
+            null,
+            "Hierdie persoon is besig"
+         ],
+         "This contact is online": [
+            null,
+            "Hierdie persoon is aanlyn"
+         ],
+         "This contact is offline": [
+            null,
+            "Hierdie persoon is aflyn"
+         ],
+         "This contact is unavailable": [
+            null,
+            "Hierdie persoon is onbeskikbaar"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "Hierdie persoon is vir lank afwesig"
+         ],
+         "This contact is away": [
+            null,
+            "Hierdie persoon is afwesig"
+         ],
+         "Contacts": [
+            null,
+            "Kontakte"
+         ],
+         "Groups": [
+            null,
+            "Groepe"
+         ],
+         "My contacts": [
+            null,
+            "My kontakte"
+         ],
+         "Pending contacts": [
+            null,
+            "Hangende kontakte"
+         ],
+         "Contact requests": [
+            null,
+            "Kontak versoeke"
+         ],
+         "Ungrouped": [
+            null,
+            "Ongegroepeer"
+         ],
+         "Filter": [
+            null,
+            "Filtreer"
+         ],
+         "State": [
+            null,
+            "Kletsstand"
+         ],
+         "Any": [
+            null,
+            "Enige"
+         ],
+         "Unread": [
+            null,
+            "Ongelees"
+         ],
+         "Online": [
+            null,
+            "Aangemeld"
+         ],
+         "Chatty": [
+            null,
+            "Geselserig"
+         ],
+         "Busy": [
+            null,
+            "Besig"
+         ],
+         "Away": [
+            null,
+            "Afwesig"
+         ],
+         "Extended Away": [
+            null,
+            "Weg vir langer"
+         ],
+         "Offline": [
+            null,
+            "Afgemeld"
+         ],
+         "Click to remove %1$s as a contact": [
+            null,
+            "Klik om %1$s as 'n kontak te verwyder"
+         ],
+         "Click to accept the contact request from %1$s": [
+            null,
+            "Klik om die kontakversoek van %1$s te aanvaar"
+         ],
+         "Click to decline the contact request from %1$s": [
+            null,
+            "Klik om kontakversoek van %1$s te weier"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "Klik om met hierdie kontak te klets"
+         ],
+         "Name": [
+            null,
+            "Naam"
+         ],
+         "Are you sure you want to remove this contact?": [
+            null,
+            "Is u seker u wil hierdie gespreksmaat verwyder?"
+         ],
+         "Sorry, there was an error while trying to remove %1$s as a contact.": [
+            null,
+            "Jammer, 'n fout het voorgekom tydens die verwydering van %1$s as 'n kontak."
+         ],
+         "Are you sure you want to decline this contact request?": [
+            null,
+            "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+         ],
+         "Username": [
+            null,
+            "Gebruikersnaam"
+         ],
+         "user@domain": [
+            null,
+            "gebruiker@domein"
          ],
          "I am %1$s": [
             null,
@@ -186,6 +294,10 @@
          "Custom status": [
             null,
             "Doelgemaakte status"
+         ],
+         "Save": [
+            null,
+            "Stoor"
          ],
          "online": [
             null,
@@ -206,22 +318,6 @@
          "offline": [
             null,
             "afgemeld"
-         ],
-         "Online": [
-            null,
-            "Aangemeld"
-         ],
-         "Busy": [
-            null,
-            "Besig"
-         ],
-         "Away": [
-            null,
-            "Afwesig"
-         ],
-         "Offline": [
-            null,
-            "Afgemeld"
          ],
          "Log out": [
             null,
@@ -251,33 +347,17 @@
             null,
             "Voeg by"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "Klik om as kletskontak by te voeg"
+         ],
          "No users found": [
             null,
             "Geen gebruikers gevind"
          ],
-         "This client does not allow presence subscriptions": [
+         "Toggle chat": [
             null,
-            "Hierdie klient laat nie beskikbaarheidsinskrywings toe nie"
-         ],
-         "Click to hide these contacts": [
-            null,
-            "Klik om hierdie kontakte te verskuil"
-         ],
-         "Close this box": [
-            null,
-            "Maak hierdie kletskas toe"
-         ],
-         "Minimize this chat box": [
-            null,
-            "Minimeer hierdie kletskas"
-         ],
-         "Click to restore this chat": [
-            null,
-            "Klik om hierdie klets te herstel"
-         ],
-         "Minimized": [
-            null,
-            "Geminimaliseer"
+            "Klets"
          ],
          "This room is not anonymous": [
             null,
@@ -335,9 +415,9 @@
             null,
             "Jy is vanuit die kamer verwyder omdat die kamer nou slegs tot lede beperk word en jy nie 'n lid is nie"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
+         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down": [
             null,
-            "Jy is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
+            "U is van hierdie kamer verwyder aangesien die MUC (Multi-user chat) diens nou afgeskakel word."
          ],
          "%1$s has been banned": [
             null,
@@ -383,9 +463,9 @@
             null,
             "Verskuil die lys van deelnemers"
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
-            ""
+            "Fout: die \"%1$s\" opdrag neem twee argumente, die gebruiker se bynaam en opsioneel daarby 'n rede."
          ],
          "Are you sure you want to clear the messages from this room?": [
             null,
@@ -451,6 +531,10 @@
             null,
             "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
          ],
+         "Cancel": [
+            null,
+            "Kanseleer"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             "Die bynaam wat u gekies het is gereserveer of tans in gebruik, kies asb. 'n ander een."
@@ -475,10 +559,6 @@
             null,
             "Wagwoord: "
          ],
-         "Submit": [
-            null,
-            "Dien in"
-         ],
          "This action was done by %1$s.": [
             null,
             "Hierdie aksie is uitgevoer deur: %1$s."
@@ -487,9 +567,9 @@
             null,
             "Die gegewe rede is: \"%1$s\"."
          ],
-         "${notification.reason}": [
+         "The reason given is: \"%1$s \"": [
             null,
-            ""
+            "Die gegewe rede is: \"%1$s\""
          ],
          " has left the room. \"": [
             null,
@@ -538,6 +618,10 @@
          "Topic set by %1$s to: %2$s": [
             null,
             "Onderwerp deur %1$s bygewerk na: %2$s"
+         ],
+         "Click to mention %1$s in your message.": [
+            null,
+            "Klik om %1$s in u boodskap te noem "
          ],
          "This user is a moderator.": [
             null,
@@ -631,6 +715,10 @@
             null,
             "Hierdie kletskamer word gemodereer"
          ],
+         "All other room occupants can see your XMPP username": [
+            null,
+            "Alle ander deelnemers can u Jabber ID sien"
+         ],
          "Anyone can join this room": [
             null,
             "Enige iemand kan hierdie kletskamer binnekom"
@@ -646,6 +734,10 @@
          "This room is publicly searchable": [
             null,
             "Hierdie kletskamer is publiek opspoorbaar"
+         ],
+         "Only moderators can see your XMPP username": [
+            null,
+            "Slegs moderators kan u Jabber ID sien"
          ],
          "This room will disappear once the last person leaves": [
             null,
@@ -669,7 +761,7 @@
          ],
          "Please enter a valid XMPP username": [
             null,
-            ""
+            "Verskaf asseblief 'n geldige XMPP adres"
          ],
          "Room name": [
             null,
@@ -695,13 +787,25 @@
             null,
             "Geen kletskamers op %1$s"
          ],
+         "Rooms on %1$s": [
+            null,
+            "Kletskamers op %1$s"
+         ],
+         "Click to open this room": [
+            null,
+            "Klik om hierdie kletskamer te open"
+         ],
+         "Show more information on this room": [
+            null,
+            "Wys meer inligting aangaande hierdie kletskamer"
+         ],
          "Description:": [
             null,
             "Beskrywing:"
          ],
          "Room Address (JID):": [
             null,
-            ""
+            "Kletskameradres (JID):"
          ],
          "Occupants:": [
             null,
@@ -739,21 +843,61 @@
             null,
             "%1$s het u uitgenooi om die kletskamer %2$s te besoek, en het die volgende rede verskaf: \"%3$s\""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
-            "Kennisgewing van %1$s"
+            "Boekmerk hierdie kletskamer"
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
-            "%1$s sê"
+            "Die naam vir hierdie boekmerk:"
          ],
-         "has come online": [
+         "Would you like this room to be automatically joined upon startup?": [
             null,
-            "het aanlyn gekom"
+            "Moet hierdie kletskamer outomaties betree word tydens aanmelding?"
          ],
-         "wants to be your contact": [
+         "What should your nickname for this room be?": [
             null,
-            "wil jou kontak wees"
+            "Wat sal u bynaam vir hierdie kletskamer wees?"
+         ],
+         "Are you sure you want to remove the bookmark \"%1$s\"?": [
+            null,
+            "Is u seker u wil die boekmerk \"%1$s\" verwyder?"
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
+         ],
+         "Click to toggle the bookmarks list": [
+            null,
+            "Klik om die boekmerklys te skakel"
+         ],
+         "Bookmarks": [
+            null,
+            "Kletskamerboekmerke"
+         ],
+         "Leave this room": [
+            null,
+            "Verlaat hierdie kletskamer"
+         ],
+         "Remove this bookmark": [
+            null,
+            "Verwyder hierdie boekmerk"
+         ],
+         "Unbookmark this room": [
+            null,
+            "Verwyder die boekmerk"
+         ],
+         "Click to toggle the rooms list": [
+            null,
+            "Klik om die boekmerklys te skakel"
+         ],
+         "Open Rooms": [
+            null,
+            "Oop kletskamers"
+         ],
+         "Are you sure you want to leave the room \"%1$s\"?": [
+            null,
+            "Is u seker u wil die kletskaner \"%1$s\" verlaat?"
          ],
          "Re-establishing encrypted session": [
             null,
@@ -883,17 +1027,53 @@
             null,
             "afgesluit"
          ],
+         "Don't have a chat account?": [
+            null,
+            "Geen kletsrekening nie?"
+         ],
+         "Create an account": [
+            null,
+            "Skep 'n rekening"
+         ],
+         "Create your account": [
+            null,
+            "Skep u rekening"
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            "Verskaf asseblief die XMPP verskaffer om mee te registreer:"
+         ],
+         "Already have a chat account?": [
+            null,
+            "Het u reeds 'n kletsrekening?"
+         ],
+         "Log in here": [
+            null,
+            "Meld hier aan"
+         ],
+         "Account Registration:": [
+            null,
+            "Registreer 'n rekening:"
+         ],
+         "Register": [
+            null,
+            "Registreer"
+         ],
+         "Choose a different provider": [
+            null,
+            "Kies 'n ander verskaffer"
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            "Wag 'n bietjie, ons gaan haal die registrasievorm"
+         ],
          " e.g. conversejs.org": [
             null,
             " bv. conversejs.org"
          ],
-         "Your XMPP provider's domain name:": [
-            null,
-            "U XMPP-verskaffer se domein naam:"
-         ],
          "Fetch registration form": [
             null,
-            "Haal die registrasie form"
+            "Laai die registrasie form"
          ],
          "Tip: A list of public XMPP providers is available": [
             null,
@@ -903,19 +1083,15 @@
             null,
             "hier"
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
-            "Registreer"
+            "Jammer, ons kon nie 'n verbinding met die gekose verskaffer opstel nie."
          ],
          "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [
             null,
             "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer weer met 'n ander verskaffer."
          ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            "Vra tans die XMPP-bediener vir 'n registrasie vorm"
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
             null,
             "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit bestaan?"
          ],
@@ -931,93 +1107,37 @@
             null,
             "Die verskaffer het u registrasieversoek verwerp. Kontrolleer asb. jou gegewe waardes vir korrektheid."
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
-            ""
+            "Kennisgewing van %1$s"
          ],
-         "This contact is busy": [
+         "%1$s says": [
             null,
-            "Hierdie persoon is besig"
+            "%1$s sê"
          ],
-         "This contact is online": [
+         "has come online": [
             null,
-            "Hierdie persoon is aanlyn"
+            "het aanlyn gekom"
          ],
-         "This contact is offline": [
+         "wants to be your contact": [
             null,
-            "Hierdie persoon is aflyn"
+            "wil jou kontak wees"
          ],
-         "This contact is unavailable": [
+         "Minimize this chat box": [
             null,
-            "Hierdie persoon is onbeskikbaar"
+            "Minimeer hierdie kletskas"
          ],
-         "This contact is away for an extended period": [
+         "Click to restore this chat": [
             null,
-            "Hierdie persoon is vir lank afwesig"
+            "Klik om hierdie klets te herstel"
          ],
-         "This contact is away": [
+         "Minimized": [
             null,
-            "Hierdie persoon is afwesig"
+            "Geminimaliseer"
          ],
-         "Groups": [
+         "Close this box": [
             null,
-            "Groepe"
-         ],
-         "My contacts": [
-            null,
-            "My kontakte"
-         ],
-         "Pending contacts": [
-            null,
-            "Hangende kontakte"
-         ],
-         "Contact requests": [
-            null,
-            "Kontak versoeke"
-         ],
-         "Ungrouped": [
-            null,
-            "Ongegroepeer"
-         ],
-         "Filter": [
-            null,
-            "Filtreer"
-         ],
-         "State": [
-            null,
-            "Kletsstand"
-         ],
-         "Any": [
-            null,
-            "Enige"
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            "Geselserig"
-         ],
-         "Extended Away": [
-            null,
-            "Weg vir langer"
-         ],
-         "Click to chat with this contact": [
-            null,
-            "Klik om met hierdie kontak te klets"
-         ],
-         "Name": [
-            null,
-            "Naam"
-         ],
-         "Are you sure you want to remove this contact?": [
-            null,
-            "Is u seker u wil hierdie gespreksmaat verwyder?"
-         ],
-         "Are you sure you want to decline this contact request?": [
-            null,
-            "Is u seker dat u hierdie persoon se versoek wil afkeur?"
+            "Maak hierdie kletskas toe"
          ]
       }
    }

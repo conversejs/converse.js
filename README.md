@@ -37,6 +37,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 
 ## Features
 
+-   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://jcbrand.github.io/pluggable.js/)
 -   Single-user chat
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](http://xmpp.org/extensions/xep-0045.html)
@@ -68,6 +69,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Alfresco](http://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](http://friendica.com)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
+-   **[Tiki Wiki CMS Groupware](http://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
 
 ## Screencasts
 

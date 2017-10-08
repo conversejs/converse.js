@@ -2,7 +2,7 @@
  *
  *  An XMPP chat client that runs in the browser.
  *
- *  Version: 3.2.0-rc
+ *  Version: 3.2.1
  */
 
 /* jshint ignore:start */
@@ -3761,1046 +3761,20 @@ return Promise$3;
 
 //# sourceMappingURL=es6-promise.auto.map
 ;
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define('lodash.converter',[], factory);
-	else if(typeof exports === 'object')
-		exports["fp"] = factory();
-	else
-		root["fp"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;  // eslint-disable-line lodash/prefer-includes
+        }
+  };
+}
 
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
-/******/ 			return installedModules[moduleId].exports;
-
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
-/******/ 		};
-
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-
-
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseConvert = __webpack_require__(1);
-
-	/**
-	 * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	 * version with conversion `options` applied.
-	 *
-	 * @param {Function} lodash The lodash function to convert.
-	 * @param {Object} [options] The options object. See `baseConvert` for more details.
-	 * @returns {Function} Returns the converted `lodash`.
-	 */
-	function browserConvert(lodash, options) {
-	  return baseConvert(lodash, lodash, options);
-	}
-
-	if (typeof _ == 'function' && typeof _.runInContext == 'function') {
-	  _ = browserConvert(_.runInContext());
-	}
-	module.exports = browserConvert;
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var mapping = __webpack_require__(2),
-	    fallbackHolder = __webpack_require__(3);
-
-	/** Built-in value reference. */
-	var push = Array.prototype.push;
-
-	/**
-	 * Creates a function, with an arity of `n`, that invokes `func` with the
-	 * arguments it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {number} n The arity of the new function.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseArity(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func.apply(undefined, arguments); }
-	    : function(a) { return func.apply(undefined, arguments); };
-	}
-
-	/**
-	 * Creates a function that invokes `func`, with up to `n` arguments, ignoring
-	 * any additional arguments.
-	 *
-	 * @private
-	 * @param {Function} func The function to cap arguments for.
-	 * @param {number} n The arity cap.
-	 * @returns {Function} Returns the new function.
-	 */
-	function baseAry(func, n) {
-	  return n == 2
-	    ? function(a, b) { return func(a, b); }
-	    : function(a) { return func(a); };
-	}
-
-	/**
-	 * Creates a clone of `array`.
-	 *
-	 * @private
-	 * @param {Array} array The array to clone.
-	 * @returns {Array} Returns the cloned array.
-	 */
-	function cloneArray(array) {
-	  var length = array ? array.length : 0,
-	      result = Array(length);
-
-	  while (length--) {
-	    result[length] = array[length];
-	  }
-	  return result;
-	}
-
-	/**
-	 * Creates a function that clones a given object using the assignment `func`.
-	 *
-	 * @private
-	 * @param {Function} func The assignment function.
-	 * @returns {Function} Returns the new cloner function.
-	 */
-	function createCloner(func) {
-	  return function(object) {
-	    return func({}, object);
-	  };
-	}
-
-	/**
-	 * A specialized version of `_.spread` which flattens the spread array into
-	 * the arguments of the invoked `func`.
-	 *
-	 * @private
-	 * @param {Function} func The function to spread arguments over.
-	 * @param {number} start The start position of the spread.
-	 * @returns {Function} Returns the new function.
-	 */
-	function flatSpread(func, start) {
-	  return function() {
-	    var length = arguments.length,
-	        lastIndex = length - 1,
-	        args = Array(length);
-
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var array = args[start],
-	        otherArgs = args.slice(0, start);
-
-	    if (array) {
-	      push.apply(otherArgs, array);
-	    }
-	    if (start != lastIndex) {
-	      push.apply(otherArgs, args.slice(start + 1));
-	    }
-	    return func.apply(this, otherArgs);
-	  };
-	}
-
-	/**
-	 * Creates a function that wraps `func` and uses `cloner` to clone the first
-	 * argument it receives.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {Function} cloner The function to clone arguments.
-	 * @returns {Function} Returns the new immutable function.
-	 */
-	function wrapImmutable(func, cloner) {
-	  return function() {
-	    var length = arguments.length;
-	    if (!length) {
-	      return;
-	    }
-	    var args = Array(length);
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var result = args[0] = cloner.apply(undefined, args);
-	    func.apply(undefined, args);
-	    return result;
-	  };
-	}
-
-	/**
-	 * The base implementation of `convert` which accepts a `util` object of methods
-	 * required to perform conversions.
-	 *
-	 * @param {Object} util The util object.
-	 * @param {string} name The name of the function to convert.
-	 * @param {Function} func The function to convert.
-	 * @param {Object} [options] The options object.
-	 * @param {boolean} [options.cap=true] Specify capping iteratee arguments.
-	 * @param {boolean} [options.curry=true] Specify currying.
-	 * @param {boolean} [options.fixed=true] Specify fixed arity.
-	 * @param {boolean} [options.immutable=true] Specify immutable operations.
-	 * @param {boolean} [options.rearg=true] Specify rearranging arguments.
-	 * @returns {Function|Object} Returns the converted function or object.
-	 */
-	function baseConvert(util, name, func, options) {
-	  var setPlaceholder,
-	      isLib = typeof name == 'function',
-	      isObj = name === Object(name);
-
-	  if (isObj) {
-	    options = func;
-	    func = name;
-	    name = undefined;
-	  }
-	  if (func == null) {
-	    throw new TypeError;
-	  }
-	  options || (options = {});
-
-	  var config = {
-	    'cap': 'cap' in options ? options.cap : true,
-	    'curry': 'curry' in options ? options.curry : true,
-	    'fixed': 'fixed' in options ? options.fixed : true,
-	    'immutable': 'immutable' in options ? options.immutable : true,
-	    'rearg': 'rearg' in options ? options.rearg : true
-	  };
-
-	  var forceCurry = ('curry' in options) && options.curry,
-	      forceFixed = ('fixed' in options) && options.fixed,
-	      forceRearg = ('rearg' in options) && options.rearg,
-	      placeholder = isLib ? func : fallbackHolder,
-	      pristine = isLib ? func.runInContext() : undefined;
-
-	  var helpers = isLib ? func : {
-	    'ary': util.ary,
-	    'assign': util.assign,
-	    'clone': util.clone,
-	    'curry': util.curry,
-	    'forEach': util.forEach,
-	    'isArray': util.isArray,
-	    'isFunction': util.isFunction,
-	    'iteratee': util.iteratee,
-	    'keys': util.keys,
-	    'rearg': util.rearg,
-	    'toInteger': util.toInteger,
-	    'toPath': util.toPath
-	  };
-
-	  var ary = helpers.ary,
-	      assign = helpers.assign,
-	      clone = helpers.clone,
-	      curry = helpers.curry,
-	      each = helpers.forEach,
-	      isArray = helpers.isArray,
-	      isFunction = helpers.isFunction,
-	      keys = helpers.keys,
-	      rearg = helpers.rearg,
-	      toInteger = helpers.toInteger,
-	      toPath = helpers.toPath;
-
-	  var aryMethodKeys = keys(mapping.aryMethod);
-
-	  var wrappers = {
-	    'castArray': function(castArray) {
-	      return function() {
-	        var value = arguments[0];
-	        return isArray(value)
-	          ? castArray(cloneArray(value))
-	          : castArray.apply(undefined, arguments);
-	      };
-	    },
-	    'iteratee': function(iteratee) {
-	      return function() {
-	        var func = arguments[0],
-	            arity = arguments[1],
-	            result = iteratee(func, arity),
-	            length = result.length;
-
-	        if (config.cap && typeof arity == 'number') {
-	          arity = arity > 2 ? (arity - 2) : 1;
-	          return (length && length <= arity) ? result : baseAry(result, arity);
-	        }
-	        return result;
-	      };
-	    },
-	    'mixin': function(mixin) {
-	      return function(source) {
-	        var func = this;
-	        if (!isFunction(func)) {
-	          return mixin(func, Object(source));
-	        }
-	        var pairs = [];
-	        each(keys(source), function(key) {
-	          if (isFunction(source[key])) {
-	            pairs.push([key, func.prototype[key]]);
-	          }
-	        });
-
-	        mixin(func, Object(source));
-
-	        each(pairs, function(pair) {
-	          var value = pair[1];
-	          if (isFunction(value)) {
-	            func.prototype[pair[0]] = value;
-	          } else {
-	            delete func.prototype[pair[0]];
-	          }
-	        });
-	        return func;
-	      };
-	    },
-	    'nthArg': function(nthArg) {
-	      return function(n) {
-	        var arity = n < 0 ? 1 : (toInteger(n) + 1);
-	        return curry(nthArg(n), arity);
-	      };
-	    },
-	    'rearg': function(rearg) {
-	      return function(func, indexes) {
-	        var arity = indexes ? indexes.length : 0;
-	        return curry(rearg(func, indexes), arity);
-	      };
-	    },
-	    'runInContext': function(runInContext) {
-	      return function(context) {
-	        return baseConvert(util, runInContext(context), options);
-	      };
-	    }
-	  };
-
-	  /*--------------------------------------------------------------------------*/
-
-	  /**
-	   * Casts `func` to a function with an arity capped iteratee if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCap(name, func) {
-	    if (config.cap) {
-	      var indexes = mapping.iterateeRearg[name];
-	      if (indexes) {
-	        return iterateeRearg(func, indexes);
-	      }
-	      var n = !isLib && mapping.iterateeAry[name];
-	      if (n) {
-	        return iterateeAry(func, n);
-	      }
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to a curried function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castCurry(name, func, n) {
-	    return (forceCurry || (config.curry && n > 1))
-	      ? curry(func, n)
-	      : func;
-	  }
-
-	  /**
-	   * Casts `func` to a fixed arity function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castFixed(name, func, n) {
-	    if (config.fixed && (forceFixed || !mapping.skipFixed[name])) {
-	      var data = mapping.methodSpread[name],
-	          start = data && data.start;
-
-	      return start  === undefined ? ary(func, n) : flatSpread(func, start);
-	    }
-	    return func;
-	  }
-
-	  /**
-	   * Casts `func` to an rearged function if needed.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to inspect.
-	   * @param {Function} func The function to inspect.
-	   * @param {number} n The arity of `func`.
-	   * @returns {Function} Returns the cast function.
-	   */
-	  function castRearg(name, func, n) {
-	    return (config.rearg && n > 1 && (forceRearg || !mapping.skipRearg[name]))
-	      ? rearg(func, mapping.methodRearg[name] || mapping.aryRearg[n])
-	      : func;
-	  }
-
-	  /**
-	   * Creates a clone of `object` by `path`.
-	   *
-	   * @private
-	   * @param {Object} object The object to clone.
-	   * @param {Array|string} path The path to clone by.
-	   * @returns {Object} Returns the cloned object.
-	   */
-	  function cloneByPath(object, path) {
-	    path = toPath(path);
-
-	    var index = -1,
-	        length = path.length,
-	        lastIndex = length - 1,
-	        result = clone(Object(object)),
-	        nested = result;
-
-	    while (nested != null && ++index < length) {
-	      var key = path[index],
-	          value = nested[key];
-
-	      if (value != null) {
-	        nested[path[index]] = clone(index == lastIndex ? value : Object(value));
-	      }
-	      nested = nested[key];
-	    }
-	    return result;
-	  }
-
-	  /**
-	   * Converts `lodash` to an immutable auto-curried iteratee-first data-last
-	   * version with conversion `options` applied.
-	   *
-	   * @param {Object} [options] The options object. See `baseConvert` for more details.
-	   * @returns {Function} Returns the converted `lodash`.
-	   */
-	  function convertLib(options) {
-	    return _.runInContext.convert(options)(undefined);
-	  }
-
-	  /**
-	   * Create a converter function for `func` of `name`.
-	   *
-	   * @param {string} name The name of the function to convert.
-	   * @param {Function} func The function to convert.
-	   * @returns {Function} Returns the new converter function.
-	   */
-	  function createConverter(name, func) {
-	    var realName = mapping.aliasToReal[name] || name,
-	        methodName = mapping.remap[realName] || realName,
-	        oldOptions = options;
-
-	    return function(options) {
-	      var newUtil = isLib ? pristine : helpers,
-	          newFunc = isLib ? pristine[methodName] : func,
-	          newOptions = assign(assign({}, oldOptions), options);
-
-	      return baseConvert(newUtil, realName, newFunc, newOptions);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee, with up to `n`
-	   * arguments, ignoring any additional arguments.
-	   *
-	   * @private
-	   * @param {Function} func The function to cap iteratee arguments for.
-	   * @param {number} n The arity cap.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeAry(func, n) {
-	    return overArg(func, function(func) {
-	      return typeof func == 'function' ? baseAry(func, n) : func;
-	    });
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` to invoke its iteratee with arguments
-	   * arranged according to the specified `indexes` where the argument value at
-	   * the first index is provided as the first argument, the argument value at
-	   * the second index is provided as the second argument, and so on.
-	   *
-	   * @private
-	   * @param {Function} func The function to rearrange iteratee arguments for.
-	   * @param {number[]} indexes The arranged argument indexes.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function iterateeRearg(func, indexes) {
-	    return overArg(func, function(func) {
-	      var n = indexes.length;
-	      return baseArity(rearg(baseAry(func, n), indexes), n);
-	    });
-	  }
-
-	  /**
-	   * Creates a function that invokes `func` with its first argument transformed.
-	   *
-	   * @private
-	   * @param {Function} func The function to wrap.
-	   * @param {Function} transform The argument transform.
-	   * @returns {Function} Returns the new function.
-	   */
-	  function overArg(func, transform) {
-	    return function() {
-	      var length = arguments.length;
-	      if (!length) {
-	        return func();
-	      }
-	      var args = Array(length);
-	      while (length--) {
-	        args[length] = arguments[length];
-	      }
-	      var index = config.rearg ? 0 : (length - 1);
-	      args[index] = transform(args[index]);
-	      return func.apply(undefined, args);
-	    };
-	  }
-
-	  /**
-	   * Creates a function that wraps `func` and applys the conversions
-	   * rules by `name`.
-	   *
-	   * @private
-	   * @param {string} name The name of the function to wrap.
-	   * @param {Function} func The function to wrap.
-	   * @returns {Function} Returns the converted function.
-	   */
-	  function wrap(name, func) {
-	    var result,
-	        realName = mapping.aliasToReal[name] || name,
-	        wrapped = func,
-	        wrapper = wrappers[realName];
-
-	    if (wrapper) {
-	      wrapped = wrapper(func);
-	    }
-	    else if (config.immutable) {
-	      if (mapping.mutate.array[realName]) {
-	        wrapped = wrapImmutable(func, cloneArray);
-	      }
-	      else if (mapping.mutate.object[realName]) {
-	        wrapped = wrapImmutable(func, createCloner(func));
-	      }
-	      else if (mapping.mutate.set[realName]) {
-	        wrapped = wrapImmutable(func, cloneByPath);
-	      }
-	    }
-	    each(aryMethodKeys, function(aryKey) {
-	      each(mapping.aryMethod[aryKey], function(otherName) {
-	        if (realName == otherName) {
-	          var data = mapping.methodSpread[realName],
-	              afterRearg = data && data.afterRearg;
-
-	          result = afterRearg
-	            ? castFixed(realName, castRearg(realName, wrapped, aryKey), aryKey)
-	            : castRearg(realName, castFixed(realName, wrapped, aryKey), aryKey);
-
-	          result = castCap(realName, result);
-	          result = castCurry(realName, result, aryKey);
-	          return false;
-	        }
-	      });
-	      return !result;
-	    });
-
-	    result || (result = wrapped);
-	    if (result == func) {
-	      result = forceCurry ? curry(result, 1) : function() {
-	        return func.apply(this, arguments);
-	      };
-	    }
-	    result.convert = createConverter(realName, func);
-	    if (mapping.placeholder[realName]) {
-	      setPlaceholder = true;
-	      result.placeholder = func.placeholder = placeholder;
-	    }
-	    return result;
-	  }
-
-	  /*--------------------------------------------------------------------------*/
-
-	  if (!isObj) {
-	    return wrap(name, func);
-	  }
-	  var _ = func;
-
-	  // Convert methods by ary cap.
-	  var pairs = [];
-	  each(aryMethodKeys, function(aryKey) {
-	    each(mapping.aryMethod[aryKey], function(key) {
-	      var func = _[mapping.remap[key] || key];
-	      if (func) {
-	        pairs.push([key, wrap(key, func)]);
-	      }
-	    });
-	  });
-
-	  // Convert remaining methods.
-	  each(keys(_), function(key) {
-	    var func = _[key];
-	    if (typeof func == 'function') {
-	      var length = pairs.length;
-	      while (length--) {
-	        if (pairs[length][0] == key) {
-	          return;
-	        }
-	      }
-	      func.convert = createConverter(key, func);
-	      pairs.push([key, func]);
-	    }
-	  });
-
-	  // Assign to `_` leaving `_.prototype` unchanged to allow chaining.
-	  each(pairs, function(pair) {
-	    _[pair[0]] = pair[1];
-	  });
-
-	  _.convert = convertLib;
-	  if (setPlaceholder) {
-	    _.placeholder = placeholder;
-	  }
-	  // Assign aliases.
-	  each(keys(_), function(key) {
-	    each(mapping.realToAlias[key] || [], function(alias) {
-	      _[alias] = _[key];
-	    });
-	  });
-
-	  return _;
-	}
-
-	module.exports = baseConvert;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports) {
-
-	/** Used to map aliases to their real names. */
-	exports.aliasToReal = {
-
-	  // Lodash aliases.
-	  'each': 'forEach',
-	  'eachRight': 'forEachRight',
-	  'entries': 'toPairs',
-	  'entriesIn': 'toPairsIn',
-	  'extend': 'assignIn',
-	  'extendAll': 'assignInAll',
-	  'extendAllWith': 'assignInAllWith',
-	  'extendWith': 'assignInWith',
-	  'first': 'head',
-
-	  // Methods that are curried variants of others.
-	  'conforms': 'conformsTo',
-	  'matches': 'isMatch',
-	  'property': 'get',
-
-	  // Ramda aliases.
-	  '__': 'placeholder',
-	  'F': 'stubFalse',
-	  'T': 'stubTrue',
-	  'all': 'every',
-	  'allPass': 'overEvery',
-	  'always': 'constant',
-	  'any': 'some',
-	  'anyPass': 'overSome',
-	  'apply': 'spread',
-	  'assoc': 'set',
-	  'assocPath': 'set',
-	  'complement': 'negate',
-	  'compose': 'flowRight',
-	  'contains': 'includes',
-	  'dissoc': 'unset',
-	  'dissocPath': 'unset',
-	  'dropLast': 'dropRight',
-	  'dropLastWhile': 'dropRightWhile',
-	  'equals': 'isEqual',
-	  'identical': 'eq',
-	  'indexBy': 'keyBy',
-	  'init': 'initial',
-	  'invertObj': 'invert',
-	  'juxt': 'over',
-	  'omitAll': 'omit',
-	  'nAry': 'ary',
-	  'path': 'get',
-	  'pathEq': 'matchesProperty',
-	  'pathOr': 'getOr',
-	  'paths': 'at',
-	  'pickAll': 'pick',
-	  'pipe': 'flow',
-	  'pluck': 'map',
-	  'prop': 'get',
-	  'propEq': 'matchesProperty',
-	  'propOr': 'getOr',
-	  'props': 'at',
-	  'symmetricDifference': 'xor',
-	  'symmetricDifferenceBy': 'xorBy',
-	  'symmetricDifferenceWith': 'xorWith',
-	  'takeLast': 'takeRight',
-	  'takeLastWhile': 'takeRightWhile',
-	  'unapply': 'rest',
-	  'unnest': 'flatten',
-	  'useWith': 'overArgs',
-	  'where': 'conformsTo',
-	  'whereEq': 'isMatch',
-	  'zipObj': 'zipObject'
-	};
-
-	/** Used to map ary to method names. */
-	exports.aryMethod = {
-	  '1': [
-	    'assignAll', 'assignInAll', 'attempt', 'castArray', 'ceil', 'create',
-	    'curry', 'curryRight', 'defaultsAll', 'defaultsDeepAll', 'floor', 'flow',
-	    'flowRight', 'fromPairs', 'invert', 'iteratee', 'memoize', 'method', 'mergeAll',
-	    'methodOf', 'mixin', 'nthArg', 'over', 'overEvery', 'overSome','rest', 'reverse',
-	    'round', 'runInContext', 'spread', 'template', 'trim', 'trimEnd', 'trimStart',
-	    'uniqueId', 'words', 'zipAll'
-	  ],
-	  '2': [
-	    'add', 'after', 'ary', 'assign', 'assignAllWith', 'assignIn', 'assignInAllWith',
-	    'at', 'before', 'bind', 'bindAll', 'bindKey', 'chunk', 'cloneDeepWith',
-	    'cloneWith', 'concat', 'conformsTo', 'countBy', 'curryN', 'curryRightN',
-	    'debounce', 'defaults', 'defaultsDeep', 'defaultTo', 'delay', 'difference',
-	    'divide', 'drop', 'dropRight', 'dropRightWhile', 'dropWhile', 'endsWith', 'eq',
-	    'every', 'filter', 'find', 'findIndex', 'findKey', 'findLast', 'findLastIndex',
-	    'findLastKey', 'flatMap', 'flatMapDeep', 'flattenDepth', 'forEach',
-	    'forEachRight', 'forIn', 'forInRight', 'forOwn', 'forOwnRight', 'get',
-	    'groupBy', 'gt', 'gte', 'has', 'hasIn', 'includes', 'indexOf', 'intersection',
-	    'invertBy', 'invoke', 'invokeMap', 'isEqual', 'isMatch', 'join', 'keyBy',
-	    'lastIndexOf', 'lt', 'lte', 'map', 'mapKeys', 'mapValues', 'matchesProperty',
-	    'maxBy', 'meanBy', 'merge', 'mergeAllWith', 'minBy', 'multiply', 'nth', 'omit',
-	    'omitBy', 'overArgs', 'pad', 'padEnd', 'padStart', 'parseInt', 'partial',
-	    'partialRight', 'partition', 'pick', 'pickBy', 'propertyOf', 'pull', 'pullAll',
-	    'pullAt', 'random', 'range', 'rangeRight', 'rearg', 'reject', 'remove',
-	    'repeat', 'restFrom', 'result', 'sampleSize', 'some', 'sortBy', 'sortedIndex',
-	    'sortedIndexOf', 'sortedLastIndex', 'sortedLastIndexOf', 'sortedUniqBy',
-	    'split', 'spreadFrom', 'startsWith', 'subtract', 'sumBy', 'take', 'takeRight',
-	    'takeRightWhile', 'takeWhile', 'tap', 'throttle', 'thru', 'times', 'trimChars',
-	    'trimCharsEnd', 'trimCharsStart', 'truncate', 'union', 'uniqBy', 'uniqWith',
-	    'unset', 'unzipWith', 'without', 'wrap', 'xor', 'zip', 'zipObject',
-	    'zipObjectDeep'
-	  ],
-	  '3': [
-	    'assignInWith', 'assignWith', 'clamp', 'differenceBy', 'differenceWith',
-	    'findFrom', 'findIndexFrom', 'findLastFrom', 'findLastIndexFrom', 'getOr',
-	    'includesFrom', 'indexOfFrom', 'inRange', 'intersectionBy', 'intersectionWith',
-	    'invokeArgs', 'invokeArgsMap', 'isEqualWith', 'isMatchWith', 'flatMapDepth',
-	    'lastIndexOfFrom', 'mergeWith', 'orderBy', 'padChars', 'padCharsEnd',
-	    'padCharsStart', 'pullAllBy', 'pullAllWith', 'rangeStep', 'rangeStepRight',
-	    'reduce', 'reduceRight', 'replace', 'set', 'slice', 'sortedIndexBy',
-	    'sortedLastIndexBy', 'transform', 'unionBy', 'unionWith', 'update', 'xorBy',
-	    'xorWith', 'zipWith'
-	  ],
-	  '4': [
-	    'fill', 'setWith', 'updateWith'
-	  ]
-	};
-
-	/** Used to map ary to rearg configs. */
-	exports.aryRearg = {
-	  '2': [1, 0],
-	  '3': [2, 0, 1],
-	  '4': [3, 2, 0, 1]
-	};
-
-	/** Used to map method names to their iteratee ary. */
-	exports.iterateeAry = {
-	  'dropRightWhile': 1,
-	  'dropWhile': 1,
-	  'every': 1,
-	  'filter': 1,
-	  'find': 1,
-	  'findFrom': 1,
-	  'findIndex': 1,
-	  'findIndexFrom': 1,
-	  'findKey': 1,
-	  'findLast': 1,
-	  'findLastFrom': 1,
-	  'findLastIndex': 1,
-	  'findLastIndexFrom': 1,
-	  'findLastKey': 1,
-	  'flatMap': 1,
-	  'flatMapDeep': 1,
-	  'flatMapDepth': 1,
-	  'forEach': 1,
-	  'forEachRight': 1,
-	  'forIn': 1,
-	  'forInRight': 1,
-	  'forOwn': 1,
-	  'forOwnRight': 1,
-	  'map': 1,
-	  'mapKeys': 1,
-	  'mapValues': 1,
-	  'partition': 1,
-	  'reduce': 2,
-	  'reduceRight': 2,
-	  'reject': 1,
-	  'remove': 1,
-	  'some': 1,
-	  'takeRightWhile': 1,
-	  'takeWhile': 1,
-	  'times': 1,
-	  'transform': 2
-	};
-
-	/** Used to map method names to iteratee rearg configs. */
-	exports.iterateeRearg = {
-	  'mapKeys': [1],
-	  'reduceRight': [1, 0]
-	};
-
-	/** Used to map method names to rearg configs. */
-	exports.methodRearg = {
-	  'assignInAllWith': [1, 0],
-	  'assignInWith': [1, 2, 0],
-	  'assignAllWith': [1, 0],
-	  'assignWith': [1, 2, 0],
-	  'differenceBy': [1, 2, 0],
-	  'differenceWith': [1, 2, 0],
-	  'getOr': [2, 1, 0],
-	  'intersectionBy': [1, 2, 0],
-	  'intersectionWith': [1, 2, 0],
-	  'isEqualWith': [1, 2, 0],
-	  'isMatchWith': [2, 1, 0],
-	  'mergeAllWith': [1, 0],
-	  'mergeWith': [1, 2, 0],
-	  'padChars': [2, 1, 0],
-	  'padCharsEnd': [2, 1, 0],
-	  'padCharsStart': [2, 1, 0],
-	  'pullAllBy': [2, 1, 0],
-	  'pullAllWith': [2, 1, 0],
-	  'rangeStep': [1, 2, 0],
-	  'rangeStepRight': [1, 2, 0],
-	  'setWith': [3, 1, 2, 0],
-	  'sortedIndexBy': [2, 1, 0],
-	  'sortedLastIndexBy': [2, 1, 0],
-	  'unionBy': [1, 2, 0],
-	  'unionWith': [1, 2, 0],
-	  'updateWith': [3, 1, 2, 0],
-	  'xorBy': [1, 2, 0],
-	  'xorWith': [1, 2, 0],
-	  'zipWith': [1, 2, 0]
-	};
-
-	/** Used to map method names to spread configs. */
-	exports.methodSpread = {
-	  'assignAll': { 'start': 0 },
-	  'assignAllWith': { 'start': 0 },
-	  'assignInAll': { 'start': 0 },
-	  'assignInAllWith': { 'start': 0 },
-	  'defaultsAll': { 'start': 0 },
-	  'defaultsDeepAll': { 'start': 0 },
-	  'invokeArgs': { 'start': 2 },
-	  'invokeArgsMap': { 'start': 2 },
-	  'mergeAll': { 'start': 0 },
-	  'mergeAllWith': { 'start': 0 },
-	  'partial': { 'start': 1 },
-	  'partialRight': { 'start': 1 },
-	  'without': { 'start': 1 },
-	  'zipAll': { 'start': 0 }
-	};
-
-	/** Used to identify methods which mutate arrays or objects. */
-	exports.mutate = {
-	  'array': {
-	    'fill': true,
-	    'pull': true,
-	    'pullAll': true,
-	    'pullAllBy': true,
-	    'pullAllWith': true,
-	    'pullAt': true,
-	    'remove': true,
-	    'reverse': true
-	  },
-	  'object': {
-	    'assign': true,
-	    'assignAll': true,
-	    'assignAllWith': true,
-	    'assignIn': true,
-	    'assignInAll': true,
-	    'assignInAllWith': true,
-	    'assignInWith': true,
-	    'assignWith': true,
-	    'defaults': true,
-	    'defaultsAll': true,
-	    'defaultsDeep': true,
-	    'defaultsDeepAll': true,
-	    'merge': true,
-	    'mergeAll': true,
-	    'mergeAllWith': true,
-	    'mergeWith': true,
-	  },
-	  'set': {
-	    'set': true,
-	    'setWith': true,
-	    'unset': true,
-	    'update': true,
-	    'updateWith': true
-	  }
-	};
-
-	/** Used to track methods with placeholder support */
-	exports.placeholder = {
-	  'bind': true,
-	  'bindKey': true,
-	  'curry': true,
-	  'curryRight': true,
-	  'partial': true,
-	  'partialRight': true
-	};
-
-	/** Used to map real names to their aliases. */
-	exports.realToAlias = (function() {
-	  var hasOwnProperty = Object.prototype.hasOwnProperty,
-	      object = exports.aliasToReal,
-	      result = {};
-
-	  for (var key in object) {
-	    var value = object[key];
-	    if (hasOwnProperty.call(result, value)) {
-	      result[value].push(key);
-	    } else {
-	      result[value] = [key];
-	    }
-	  }
-	  return result;
-	}());
-
-	/** Used to map method names to other names. */
-	exports.remap = {
-	  'assignAll': 'assign',
-	  'assignAllWith': 'assignWith',
-	  'assignInAll': 'assignIn',
-	  'assignInAllWith': 'assignInWith',
-	  'curryN': 'curry',
-	  'curryRightN': 'curryRight',
-	  'defaultsAll': 'defaults',
-	  'defaultsDeepAll': 'defaultsDeep',
-	  'findFrom': 'find',
-	  'findIndexFrom': 'findIndex',
-	  'findLastFrom': 'findLast',
-	  'findLastIndexFrom': 'findLastIndex',
-	  'getOr': 'get',
-	  'includesFrom': 'includes',
-	  'indexOfFrom': 'indexOf',
-	  'invokeArgs': 'invoke',
-	  'invokeArgsMap': 'invokeMap',
-	  'lastIndexOfFrom': 'lastIndexOf',
-	  'mergeAll': 'merge',
-	  'mergeAllWith': 'mergeWith',
-	  'padChars': 'pad',
-	  'padCharsEnd': 'padEnd',
-	  'padCharsStart': 'padStart',
-	  'propertyOf': 'get',
-	  'rangeStep': 'range',
-	  'rangeStepRight': 'rangeRight',
-	  'restFrom': 'rest',
-	  'spreadFrom': 'spread',
-	  'trimChars': 'trim',
-	  'trimCharsEnd': 'trimEnd',
-	  'trimCharsStart': 'trimStart',
-	  'zipAll': 'zip'
-	};
-
-	/** Used to track methods that skip fixing their arity. */
-	exports.skipFixed = {
-	  'castArray': true,
-	  'flow': true,
-	  'flowRight': true,
-	  'iteratee': true,
-	  'mixin': true,
-	  'rearg': true,
-	  'runInContext': true
-	};
-
-	/** Used to track methods that skip rearranging arguments. */
-	exports.skipRearg = {
-	  'add': true,
-	  'assign': true,
-	  'assignIn': true,
-	  'bind': true,
-	  'bindKey': true,
-	  'concat': true,
-	  'difference': true,
-	  'divide': true,
-	  'eq': true,
-	  'gt': true,
-	  'gte': true,
-	  'isEqual': true,
-	  'lt': true,
-	  'lte': true,
-	  'matchesProperty': true,
-	  'merge': true,
-	  'multiply': true,
-	  'overArgs': true,
-	  'partial': true,
-	  'partialRight': true,
-	  'propertyOf': true,
-	  'random': true,
-	  'range': true,
-	  'rangeRight': true,
-	  'subtract': true,
-	  'zip': true,
-	  'zipObject': true,
-	  'zipObjectDeep': true
-	};
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	/**
-	 * The default argument placeholder value for methods.
-	 *
-	 * @type {Object}
-	 */
-	module.exports = {};
-
-
-/***/ }
-/******/ ])
-});
-;
 if (!String.prototype.endsWith) {
   String.prototype.endsWith = function (searchString, position) {
       var subjectString = this.toString();
@@ -6450,375 +5424,22 @@ define('text',['module'], function (module) {
 
 define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
 
-/* Lo-Dash Template Loader v1.0.1
- * Copyright 2015, Tim Branyen (@tbranyen).
- * loader.js may be freely distributed under the MIT license.
- */
-(function(global) {
-"use strict";
-
-// Cache used to map configuration options between load and write.
-var buildMap = {};
-
-// Alias the correct `nodeRequire` method.
-var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
-
-// Strips trailing `/` from url fragments.
-var stripTrailing = function(prop) {
-  return prop.replace(/(\/$)/, '');
-};
-
-// Define the plugin using the CommonJS syntax.
-define('tpl',['require','exports','module','lodash'],function(require, exports) {
-  var _ = require("lodash");
-
-  exports.version = "1.0.1";
-
-  // Invoked by the AMD builder, passed the path to resolve, the require
-  // function, done callback, and the configuration options.
-  exports.load = function(name, req, load, config) {
-    var isDojo;
-
-    // Dojo provides access to the config object through the req function.
-    if (!config) {
-      config = require.rawConfig;
-      isDojo = true;
-    }
-
-    var contents = "";
-    var settings = configure(config);
-
-    // If the baseUrl and root are the same, just null out the root.
-    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
-      settings.root = '';
-    }
-
-    var url = require.toUrl(settings.root + name + settings.ext);
-
-    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
-      url = stripTrailing(config.baseUrl) + url;
-    }
-
-    // Builds with r.js require Node.js to be installed.
-    if (config.isBuild) {
-      // If in Node, get access to the filesystem.
-      var fs = nodeRequire("fs");
-
-      try {
-        // First try reading the filepath as-is.
-        contents = String(fs.readFileSync(url));
-      } catch(ex) {
-        // If it failed, it's most likely because of a leading `/` and not an
-        // absolute path.  Remove the leading slash and try again.
-        if (url.slice(0, 1) === "/") {
-          url = url.slice(1);
-        }
-
-        // Try reading again with the leading `/`.
-        contents = String(fs.readFileSync(url));
-      }
-
-      // Read in the file synchronously, as RequireJS expects, and return the
-      // contents.  Process as a Lo-Dash template.
-      buildMap[name] = _.template(contents);
-
-      return load();
-    }
-
-    // Create a basic XHR.
-    var xhr = new XMLHttpRequest();
-
-    // Wait for it to load.
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        var templateSettings = _.clone(settings.templateSettings);
-
-        // Attach the sourceURL.
-        templateSettings.sourceURL = url;
-
-        // Process as a Lo-Dash template and cache.
-        buildMap[name] = _.template(xhr.responseText, templateSettings);
-
-        // Return the compiled template.
-        load(buildMap[name]);
-      }
-    };
-
-    // Initiate the fetch.
-    xhr.open("GET", url, true);
-    xhr.send(null);
-  };
-
-  // Also invoked by the AMD builder, this writes out a compatible define
-  // call that will work with loaders such as almond.js that cannot read
-  // the configuration data.
-  exports.write = function(pluginName, moduleName, write) {
-    var template = buildMap[moduleName].source;
-
-    // Write out the actual definition
-    write(strDefine(pluginName, moduleName, template));
-  };
-
-  // This is for curl.js/cram.js build-time support.
-  exports.compile = function(pluginName, moduleName, req, io, config) {
-    configure(config);
-
-    // Ask cram to fetch the template file (resId) and pass it to `write`.
-    io.read(moduleName, write, io.error);
-
-    function write(template) {
-      // Write-out define(id,function(){return{/* template */}});
-      io.write(strDefine(pluginName, moduleName, template));
-    }
-  };
-
-  // Crafts the written definition form of the module during a build.
-  function strDefine(pluginName, moduleName, template) {
-    return [
-      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
-        [
-          "function(_) {",
-            "return ", template, ";",
-          "}"
-        ].join(""),
-      ");\n"
-    ].join("");
-  }
-
-  function configure(config) {
-    // Default settings point to the project root and using html files.
-    var settings = _.extend({
-      ext: ".html",
-      root: config.baseUrl,
-      templateSettings: {}
-    }, config.lodashLoader);
-
-    // Ensure the root has been properly configured with a trailing slash,
-    // unless it's an empty string or undefined, in which case work off the
-    // baseUrl.
-    if (settings.root && settings.root.slice(-1) !== "/") {
-      settings.root += "/";
-    }
-
-    // Set the custom passed in template settings.
-    _.extend(_.templateSettings, settings.templateSettings);
-
-    return settings;
-  }
-});
-
-})(typeof global === "object" ? global : this);
-
-
-define('tpl!field', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<field var="' +
-__e(name) +
-'">';
- if (_.isArray(value)) { ;
-__p += '\n    ';
- _.each(value,function(arrayValue) { ;
-__p += '<value>' +
-__e(arrayValue) +
-'</value>';
- }); ;
-__p += '\n';
- } else { ;
-__p += '\n    <value>' +
-__e(value) +
-'</value>\n';
- } ;
-__p += '</field>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<option value="' +
-__e(value) +
-'" ';
- if (selected) { ;
-__p += ' selected="selected" ';
- } ;
-__p += ' >' +
-__e(label) +
-'</option>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<select name="' +
-__e(name) +
-'"  ';
- if (multiple) { ;
-__p += ' multiple="multiple" ';
- } ;
-__p += '>' +
-((__t = (options)) == null ? '' : __t) +
-'</select>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label class="label-ta">' +
-__e(label) +
-'</label>\n<textarea name="' +
-__e(name) +
-'">' +
-__e(value) +
-'</textarea>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<label>' +
-__e(label) +
-'</label>\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" ' +
-__e(checked) +
-'>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<div class="input-group">\n    <input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'"\n        ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n        ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' />\n    <span title="' +
-__e(domain) +
-'">' +
-__e(domain) +
-'</span>\n</div>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<input name="' +
-__e(name) +
-'" type="' +
-__e(type) +
-'" \n    ';
- if (value) { ;
-__p += ' value="' +
-__e(value) +
-'" ';
- } ;
-__p += '\n    ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n';
-
-}
-return __p
-};});
-
-
-define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-with (obj) {
-
- if (label) { ;
-__p += '\n<label>\n    ' +
-__e(label) +
-'\n</label>\n';
- } ;
-__p += '\n<img src="data:' +
-__e(type) +
-';base64,' +
-__e(data) +
-'">\n<input name="' +
-__e(name) +
-'" type="text" ';
- if (required) { ;
-__p += ' class="required" ';
- } ;
-__p += ' >\n\n\n';
-
-}
-return __p
-};});
-
 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/*global define, escape, locales, Jed */
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, escape, locales, window, Jed */
 (function (root, factory) {
-    define('utils',["jquery.noconflict", "sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha"], factory);
-})(undefined, function ($, sizzle, Promise, dummy, _, locales, moment, Strophe, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha) {
+    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe"], factory);
+})(undefined, function (sizzle, Promise, jQBrowser, _, locales, moment, Strophe) {
     "use strict";
 
     locales = locales || {};
@@ -6827,16 +5448,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b/g;
 
-    var XFORM_TYPE_MAP = {
-        'text-private': 'password',
-        'text-single': 'text',
-        'fixed': 'label',
-        'boolean': 'checkbox',
-        'hidden': 'hidden',
-        'jid-multi': 'textarea',
-        'list-single': 'dropdown',
-        'list-multi': 'dropdown'
-    };
+    var logger = _.assign({
+        'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+        'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
+    }, console);
 
     var afterAnimationEnd = function afterAnimationEnd(el, callback) {
         el.classList.remove('visible');
@@ -6876,16 +5493,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    $.fn.hasScrollBar = function () {
-        if (!$.contains(document, this.get(0))) {
-            return false;
-        }
-        if (this.parent().height() < this.get(0).scrollHeight) {
-            return true;
-        }
-        return false;
-    };
-
     function calculateSlideStep(height) {
         if (height > 100) {
             return 10;
@@ -6896,13 +5503,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     }
 
-    var utils = {};
+    function calculateElementHeight(el) {
+        /* Return the height of the passed in DOM element,
+         * based on the heights of its children.
+         */
+        return _.reduce(el.children, function (result, child) {
+            return result + child.offsetHeight;
+        }, 0);
+    }
+
+    function slideOutWrapup(el) {
+        /* Wrapup function for slideOut. */
+        el.removeAttribute('data-slider-marker');
+        el.classList.remove('collapsed');
+        el.style.overflow = "";
+        el.style.height = "";
+    }
+
+    var u = {};
 
     // Translation machinery
     // ---------------------
-    utils.__ = function (str) {
-        if (!utils.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(Jed, arguments);
+    u.__ = function (str) {
+        if (_.isUndefined(window.Jed)) {
+            return str;
+        }
+        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
+            return Jed.sprintf.apply(window.Jed, arguments);
         }
         if (typeof this.jed === "undefined") {
             this.jed = new Jed(window.JSON.parse(locales[this.locale]));
@@ -6915,7 +5542,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.___ = function (str) {
+    u.___ = function (str) {
         /* XXX: This is part of a hack to get gettext to scan strings to be
          * translated. Strings we cannot send to the function above because
          * they require variable interpolation and we don't yet have the
@@ -6926,7 +5553,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return str;
     };
 
-    utils.isLocaleAvailable = function (locale, available) {
+    u.isLocaleAvailable = function (locale, available) {
         /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
          *
          * Parameters:
@@ -6942,7 +5569,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.addHyperlinks = function (text) {
+    u.addHyperlinks = function (text) {
         var list = text.match(URL_REGEX) || [];
         var links = [];
         _.each(list, function (match) {
@@ -6962,7 +5589,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return text;
     };
 
-    utils.renderImageURLs = function (obj) {
+    u.renderImageURLs = function (obj) {
         var list = obj.textContent.match(URL_REGEX) || [];
         _.forEach(list, function (url) {
             isImage(url).then(function (img) {
@@ -6976,40 +5603,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return obj;
     };
 
-    utils.slideInAllElements = function (elements) {
-        return Promise.all(_.map(elements, _.partial(utils.slideIn, _, 600)));
+    u.slideInAllElements = function (elements) {
+        return Promise.all(_.map(elements, _.partial(u.slideIn, _, 600)));
     };
 
-    utils.slideToggleElement = function (el) {
+    u.slideToggleElement = function (el) {
         if (_.includes(el.classList, 'collapsed')) {
-            return utils.slideOut(el);
+            return u.slideOut(el);
         } else {
-            return utils.slideIn(el);
+            return u.slideIn(el);
         }
     };
 
-    utils.slideOut = function (el) {
+    u.slideOut = function (el) {
         var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 900;
 
-        /* Shows/expands an element by sliding it out of itself. */
-
-        function calculateEndHeight(el) {
-            return _.reduce(el.children, function (result, child) {
-                return result + child.offsetHeight;
-            }, 0);
-        }
-
-        function wrapup(el) {
-            el.removeAttribute('data-slider-marker');
-            el.classList.remove('collapsed');
-            el.style.overflow = "";
-            el.style.height = "";
-        }
-
+        /* Shows/expands an element by sliding it out of itself
+         *
+         * Parameters:
+         *      (HTMLElement) el - The HTML string
+         *      (Number) duration - The duration amount in milliseconds
+         */
         return new Promise(function (resolve, reject) {
             if (_.isNil(el)) {
                 var err = "Undefined or null element passed into slideOut";
-                console.warn(err);
+                logger.warn(err);
                 reject(new Error(err));
                 return;
             }
@@ -7018,11 +5636,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 el.removeAttribute('data-slider-marker');
                 window.clearInterval(interval_marker);
             }
-            var end_height = calculateEndHeight(el);
-            if ($.fx.off) {
+            var end_height = calculateElementHeight(el);
+            if (window.converse_disable_effects) {
                 // Effects are disabled (for tests)
                 el.style.height = end_height + 'px';
-                wrapup(el);
+                slideOutWrapup(el);
                 resolve();
                 return;
             }
@@ -7039,9 +5657,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // We recalculate the height to work around an apparent
                     // browser bug where browsers don't know the correct
                     // offsetHeight beforehand.
-                    el.style.height = calculateEndHeight(el) + 'px';
+                    el.style.height = calculateElementHeight(el) + 'px';
                     window.clearInterval(interval_marker);
-                    wrapup(el);
+                    slideOutWrapup(el);
                     resolve();
                 }
             }, interval);
@@ -7049,18 +5667,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    utils.slideIn = function (el) {
+    u.slideIn = function (el) {
         var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 600;
 
         /* Hides/collapses an element by sliding it into itself. */
         return new Promise(function (resolve, reject) {
             if (_.isNil(el)) {
                 var err = "Undefined or null element passed into slideIn";
-                console.warn(err);
+                logger.warn(err);
                 return reject(new Error(err));
             } else if (_.includes(el.classList, 'collapsed')) {
                 return resolve();
-            } else if ($.fx.off) {
+            } else if (window.converse_disable_effects) {
                 // Effects are disabled (for tests)
                 el.classList.add('collapsed');
                 el.style.height = "";
@@ -7093,11 +5711,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
     };
 
-    utils.fadeIn = function (el, callback) {
+    u.fadeIn = function (el, callback) {
         if (_.isNil(el)) {
-            console.warn("Undefined or null element passed into fadeIn");
+            logger.warn("Undefined or null element passed into fadeIn");
         }
-        if ($.fx.off) {
+        if (window.converse_disable_effects) {
+            // Effects are disabled (for tests)
             el.classList.remove('hidden');
             if (_.isFunction(callback)) {
                 callback();
@@ -7117,11 +5736,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.isSameBareJID = function (jid1, jid2) {
+    u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
 
-    utils.isNewMessage = function (message) {
+    u.isNewMessage = function (message) {
         /* Given a stanza, determine whether it's a new
          * message, i.e. not a MAM archived one.
          */
@@ -7132,13 +5751,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.isOTRMessage = function (message) {
+    u.isOTRMessage = function (message) {
         var body = message.querySelector('body'),
             text = !_.isNull(body) ? body.textContent : undefined;
         return text && !!text.match(/^\?OTR/);
     };
 
-    utils.isHeadlineMessage = function (message) {
+    u.isHeadlineMessage = function (message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {
             return true;
@@ -7153,7 +5772,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return false;
     };
 
-    utils.merge = function merge(first, second) {
+    u.merge = function merge(first, second) {
         /* Merge the second object into the first one.
          */
         for (var k in second) {
@@ -7165,7 +5784,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.applyUserSettings = function applyUserSettings(context, settings, user_settings) {
+    u.applyUserSettings = function applyUserSettings(context, settings, user_settings) {
         /* Configuration settings might be nested objects. We only want to
          * add settings which are whitelisted.
          */
@@ -7181,11 +5800,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.refreshWebkit = function () {
+    u.refreshWebkit = function () {
         /* This works around a webkit bug. Refreshes the browser's viewport,
          * otherwise chatboxes are not moved along when one is closed.
          */
-        if ($.browser.webkit && window.requestAnimationFrame) {
+        if (jQBrowser.webkit && window.requestAnimationFrame) {
             window.requestAnimationFrame(function () {
                 var conversejs = document.getElementById('conversejs');
                 conversejs.style.display = 'none';
@@ -7195,34 +5814,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.webForm2xForm = function (field) {
-        /* Takes an HTML DOM and turns it into an XForm field.
-        *
-        * Parameters:
-        *      (DOMElement) field - the field to convert
-        */
-        var $input = $(field),
-            value;
-        if ($input.is('[type=checkbox]')) {
-            value = $input.is(':checked') && 1 || 0;
-        } else if ($input.is('textarea')) {
-            value = [];
-            var lines = $input.val().split('\n');
-            for (var vk = 0; vk < lines.length; vk++) {
-                var val = $.trim(lines[vk]);
-                if (val === '') continue;
-                value.push(val);
-            }
-        } else {
-            value = $input.val();
-        }
-        return $(tpl_field({
-            name: $input.attr('name'),
-            value: value
-        }))[0];
+    u.stringToDOM = function (s) {
+        /* Converts an HTML string into a DOM element.
+         *
+         * Parameters:
+         *      (String) s - The HTML string
+         */
+        var div = document.createElement('div');
+        div.innerHTML = s;
+        return div.childNodes;
     };
 
-    utils.contains = function (attr, query) {
+    u.matchesSelector = function (el, selector) {
+        /* Checks whether the DOM element matches the given selector.
+         *
+         * Parameters:
+         *      (DOMElement) el - The DOM element
+         *      (String) selector - The selector
+         */
+        return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+    };
+
+    u.queryChildren = function (el, selector) {
+        /* Returns a list of children of the DOM element that match the
+         * selector.
+         *
+         *  Parameters:
+         *      (DOMElement) el - the DOM element
+         *      (String) selector - the selector they should be matched
+         *          against.
+         */
+        return _.filter(el.children, _.partial(u.matchesSelector, _, selector));
+    };
+
+    u.contains = function (attr, query) {
         return function (item) {
             if ((typeof attr === "undefined" ? "undefined" : _typeof(attr)) === 'object') {
                 var value = false;
@@ -7238,98 +5863,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
     };
 
-    utils.xForm2webForm = function ($field, $stanza) {
-        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-        * and turns it into a HTML DOM field.
-        *
-        *  Parameters:
-        *      (XMLElement) field - the field to convert
-        */
-
-        // FIXME: take <required> into consideration
-        var options = [],
-            j,
-            $options,
-            $values,
-            value,
-            values;
-
-        if ($field.attr('type') === 'list-single' || $field.attr('type') === 'list-multi') {
-            values = [];
-            $values = $field.children('value');
-            for (j = 0; j < $values.length; j++) {
-                values.push($($values[j]).text());
-            }
-            $options = $field.children('option');
-            for (j = 0; j < $options.length; j++) {
-                value = $($options[j]).find('value').text();
-                options.push(tpl_select_option({
-                    value: value,
-                    label: $($options[j]).attr('label'),
-                    selected: _.startsWith(values, value),
-                    required: $field.find('required').length
-                }));
-            }
-            return tpl_form_select({
-                name: $field.attr('var'),
-                label: $field.attr('label'),
-                options: options.join(''),
-                multiple: $field.attr('type') === 'list-multi',
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'fixed') {
-            return $('<p class="form-help">').text($field.find('value').text());
-        } else if ($field.attr('type') === 'jid-multi') {
-            return tpl_form_textarea({
-                name: $field.attr('var'),
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') === 'boolean') {
-            return tpl_form_checkbox({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                checked: $field.find('value').text() === "1" && 'checked="1"' || '',
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type') && $field.attr('var') === 'username') {
-            return tpl_form_username({
-                domain: ' @' + this.domain,
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else if ($field.attr('type')) {
-            return tpl_form_input({
-                name: $field.attr('var'),
-                type: XFORM_TYPE_MAP[$field.attr('type')],
-                label: $field.attr('label') || '',
-                value: $field.find('value').text(),
-                required: $field.find('required').length
-            });
-        } else {
-            if ($field.attr('var') === 'ocr') {
-                // Captcha
-                return _.reduce(_.map($field.find('uri'), $.proxy(function (uri) {
-                    return tpl_form_captcha({
-                        label: this.$field.attr('label'),
-                        name: this.$field.attr('var'),
-                        data: this.$stanza.find('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]').text(),
-                        type: uri.getAttribute('type'),
-                        required: this.$field.find('required').length
-                    });
-                }, { '$stanza': $stanza, '$field': $field })), function (memo, num) {
-                    return memo + num;
-                }, '');
-            }
-        }
-    };
-
-    utils.detectLocale = function (library_check) {
+    u.detectLocale = function (library_check) {
         /* Determine which locale is supported by the user's system as well
          * as by the relevant library (e.g. converse.js or moment.js).
          *
@@ -7339,40 +5873,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var locale, i;
         if (window.navigator.userLanguage) {
-            locale = utils.isLocaleAvailable(window.navigator.userLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
         }
         if (window.navigator.languages && !locale) {
             for (i = 0; i < window.navigator.languages.length && !locale; i++) {
-                locale = utils.isLocaleAvailable(window.navigator.languages[i], library_check);
+                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
             }
         }
         if (window.navigator.browserLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.browserLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
         }
         if (window.navigator.language && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.language, library_check);
+            locale = u.isLocaleAvailable(window.navigator.language, library_check);
         }
         if (window.navigator.systemLanguage && !locale) {
-            locale = utils.isLocaleAvailable(window.navigator.systemLanguage, library_check);
+            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
         }
         return locale || 'en';
     };
 
-    utils.isConverseLocale = function (locale) {
+    u.isConverseLocale = function (locale) {
         if (!_.isString(locale)) {
             return false;
         }
         return _.includes(_.keys(locales || {}), locale);
     };
 
-    utils.isMomentLocale = function (locale) {
+    u.isMomentLocale = function (locale) {
         if (!_.isString(locale)) {
             return false;
         }
         return moment.locale() !== moment.locale(locale);
     };
 
-    utils.getLocale = function (preferred_locale, isSupportedByLibrary) {
+    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
@@ -7381,31 +5915,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var obj = window.JSON.parse(preferred_locale);
                 return obj.locale_data.converse[""].lang;
             } catch (e) {
-                console.log(e);
+                logger.error(e);
             }
         }
-        return utils.detectLocale(isSupportedByLibrary) || 'en';
+        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
-    utils.isOfType = function (type, item) {
+    u.isOfType = function (type, item) {
         return item.get('type') == type;
     };
 
-    utils.isInstance = function (type, item) {
+    u.isInstance = function (type, item) {
         return item instanceof type;
     };
 
-    utils.getAttribute = function (key, item) {
+    u.getAttribute = function (key, item) {
         return item.get(key);
     };
 
-    utils.contains.not = function (attr, query) {
+    u.contains.not = function (attr, query) {
         return function (item) {
-            return !utils.contains(attr, query)(item);
+            return !u.contains(attr, query)(item);
         };
     };
 
-    utils.createFragmentFromText = function (markup) {
+    u.createFragmentFromText = function (markup) {
         /* Returns a DocumentFragment containing DOM nodes based on the
          * passed-in markup text.
          */
@@ -7423,7 +5957,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return frag;
     };
 
-    utils.addEmoji = function (_converse, emojione, text) {
+    u.addEmoji = function (_converse, emojione, text) {
         if (_converse.use_emojione) {
             return emojione.toImage(text);
         } else {
@@ -7431,7 +5965,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    utils.getEmojisByCategory = function (_converse, emojione) {
+    u.getEmojisByCategory = function (_converse, emojione) {
         /* Return a dict of emojis with the categories as keys and
          * lists of emojis in that category as values.
          */
@@ -7470,8 +6004,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return _converse.emojis_by_category;
     };
 
-    utils.getTonedEmojis = function (_converse) {
-        _converse.toned_emojis = _.uniq(_.map(_.filter(utils.getEmojisByCategory(_converse).people, function (person) {
+    u.getTonedEmojis = function (_converse) {
+        _converse.toned_emojis = _.uniq(_.map(_.filter(u.getEmojisByCategory(_converse).people, function (person) {
             return _.includes(person._shortname, '_tone');
         }), function (person) {
             return person._shortname.replace(/_tone[1-5]/, '');
@@ -7479,11 +6013,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return _converse.toned_emojis;
     };
 
-    utils.isPersistableModel = function (model) {
+    u.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
     };
 
-    utils.getWrappedPromise = function () {
+    u.getWrappedPromise = function () {
         var wrapper = {};
         wrapper.promise = new Promise(function (resolve, reject) {
             wrapper.resolve = resolve;
@@ -7492,14 +6026,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return wrapper;
     };
 
-    utils.safeSave = function (model, attributes) {
-        if (utils.isPersistableModel(model)) {
+    u.safeSave = function (model, attributes) {
+        if (u.isPersistableModel(model)) {
             model.save(attributes);
         } else {
             model.set(attributes);
         }
     };
-    return utils;
+    return u;
 });
 //# sourceMappingURL=utils.js.map;
 (function (global, factory) {
@@ -7795,16 +6329,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "lodash.converter", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
-})(undefined, function (sizzle, Promise, _, lodashConverter, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
+})(undefined, function (sizzle, Promise, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
-
-    // Create the FP (functional programming) version of lodash
-    var fp = lodashConverter(_.runInContext());
 
     // Strophe globals
     var _Strophe = Strophe,
@@ -7833,7 +6364,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     _.extend(_converse, Backbone.Events);
 
-    _converse.core_plugins = ['converse-bookmarks', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
+    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
@@ -7865,7 +6396,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    var PRETTY_CONNECTION_STATUS = {
+    _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -7875,21 +6406,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         6: 'DISCONNECTED',
         7: 'DISCONNECTING',
         8: 'ATTACHED',
-        9: 'REDIRECT'
+        9: 'REDIRECT',
+        10: 'RECONNECTING'
     };
 
-    var DEFAULT_IMAGE_TYPE = 'image/png';
-    var DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
+    _converse.DEFAULT_IMAGE_TYPE = 'image/png';
+    _converse.DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
 
     _converse.log = function (message, level) {
         if (message instanceof Error) {
             message = message.stack;
         }
-        var logger = _.assignIn({
-            'debug': _.noop,
-            'error': _.noop,
-            'info': _.noop,
-            'warn': _.noop
+        var logger = _.assign({
+            'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+            'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
         }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
@@ -7901,7 +6433,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             logger.warn("WARNING: " + message);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.error("FATAL: " + message);
+                logger.trace("FATAL: " + message);
             } else {
                 logger.error("FATAL: " + message);
             }
@@ -7914,7 +6446,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var PROMISES = ['cachedRoster', 'chatBoxesFetched', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
+    var PROMISES = ['initialized', 'cachedRoster', 'connectionInitialized', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
 
     function addPromise(promise) {
         /* Private function, used to add a new promise to the ones already
@@ -7942,10 +6474,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         _.each(PROMISES, addPromise);
 
-        if (!_.isUndefined(_converse.chatboxes)) {
+        if (!_.isUndefined(_converse.connection)) {
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            Backbone.history.stop();
+            delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
@@ -8036,7 +6570,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locked_domain: undefined,
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -8083,12 +6616,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         // Module-level functions
         // ----------------------
-        this.getViewForChatBox = function (chatbox) {
-            if (!chatbox) {
-                return;
-            }
-            return _converse.chatboxviews.get(chatbox.get('id'));
-        };
 
         this.generateResource = function () {
             return "/converse.js-" + Math.floor(Math.random() * 139749825).toString();
@@ -8168,21 +6695,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (subject, klass, message) {
-            var els = document.querySelectorAll('.conn-feedback');
-            _.forEach(els, function (el) {
-                el.classList.add('conn-feedback');
-                el.textContent = subject;
-                if (klass) {
-                    el.classList.add(klass);
-                } else {
-                    el.classList.remove('error');
-                }
-            });
-            _converse.emit('feedback', {
-                'klass': klass,
-                'message': message,
-                'subject': subject
+        this.setConnectionStatus = function (connection_status, message) {
+            _converse.connfeedback.set({
+                'connection_status': connection_status,
+                'message': message
             });
         };
 
@@ -8204,7 +6720,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(__("Reconnecting"), 'warn', __('The connection has dropped, attempting to reconnect.'));
+            _converse.setConnectionStatus(Strophe.Status.RECONNECTING, __('The connection has dropped, attempting to reconnect.'));
             _converse.connection.reconnecting = true;
             _converse._tearDown();
             _converse.logIn(null, true);
@@ -8215,7 +6731,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
             _converse._tearDown();
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
         };
 
@@ -8224,6 +6739,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * Will either start a teardown process for converse.js or attempt
              * to reconnect.
              */
+            var reason = _converse.disconnection_reason;
+
             if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
                 if (_converse.credentials_url && _converse.auto_reconnect) {
                     /* In this case, we reconnect, because we might be receiving
@@ -8234,7 +6751,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 } else {
                     return _converse.disconnect();
                 }
-            } else if (_converse.disconnection_cause === _converse.LOGOUT || _converse.disconnection_reason === "host-unknown" || !_converse.auto_reconnect) {
+            } else if (_converse.disconnection_cause === _converse.LOGOUT || !_.isUndefined(reason) && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
                 return _converse.disconnect();
             }
             _converse.emit('will-reconnect');
@@ -8254,13 +6771,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         };
 
-        this.onConnectStatusChanged = function (status, condition) {
+        this.onConnectStatusChanged = function (status, message) {
             /* Callback method called by Strophe as the Strophe.Connection goes
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log("Status changed to: " + PRETTY_CONNECTION_STATUS[status]);
+            _converse.log("Status changed to: " + _converse.CONNECTION_STATUS[status]);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                _converse.setConnectionStatus(status);
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();
@@ -8277,23 +6795,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(__('Connection error'), 'error', __('An error occurred while connecting to the chat server.'));
+                _converse.setConnectionStatus(status, __('An error occurred while connecting to the chat server.'));
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication Failed'), 'error');
-                _converse.setDisconnectionCause(status, condition, true);
+                if (!message) {
+                    message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                }
+                _converse.setConnectionStatus(status, message);
+                _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
-                _converse.giveFeedback(__('Connection failed'), 'error', __("An error occurred while connecting to the chat server: " + condition));
-                _converse.setDisconnectionCause(status, condition);
+                var feedback = message;
+                if (message === "host-unknown" || message == "remote-connection-failed") {
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") + ("\"" + Strophe.getDomainFromJid(_converse.connection.jid) + "\"");
+                } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+                    feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                }
+                _converse.setConnectionStatus(status, feedback);
+                _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
             }
         };
 
@@ -8330,11 +6857,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         this.initSession = function () {
-            this.session = new Backbone.Model();
+            _converse.session = new Backbone.Model();
             var id = b64_sha1('converse.bosh-session');
-            this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-            this.session.fetch();
+            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.fetch();
         };
 
         this.clearSession = function () {
@@ -8347,9 +6874,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         this.logOut = function () {
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.clearSession();
-
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
@@ -8496,13 +7021,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
-            // First set up chat boxes, before populating the roster, so that
-            // the controlbox is properly set up and ready for the rosterview.
             _converse.roster.onConnected();
-            _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
-            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
                 _converse.xmppstatus.sendPresence();
             } else {
@@ -8537,7 +7058,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                _converse.chatboxviews.closeAllChatBoxes();
                 _converse.initStatus().then(_.partial(_converse.onStatusInitialized, false), _.partial(_converse.onStatusInitialized, false)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 _converse.emit('connected');
             }
@@ -8550,8 +7070,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 'chat_state': undefined,
                 'chat_status': 'offline',
                 'groups': [],
-                'image': DEFAULT_IMAGE,
-                'image_type': DEFAULT_IMAGE_TYPE,
+                'image': _converse.DEFAULT_IMAGE,
+                'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
                 'status': ''
             },
@@ -8863,7 +7383,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }, attributes), { sort: false });
                         resolve(contact);
                     }, function (err) {
-                        alert(__("Sorry, there was an error while trying to add " + name + " as a contact."));
+                        alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
                         _converse.log(err, Strophe.LogLevel.ERROR);
                         resolve(err);
                     });
@@ -9200,256 +7720,34 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
 
-        this.ChatBoxes = Backbone.Collection.extend({
-            comparator: 'time_opened',
+        this.ConnectionFeedback = Backbone.Model.extend({
 
-            model: function model(attrs, options) {
-                return new _converse.ChatBox(attrs, options);
+            defaults: {
+                'connection_status': undefined,
+                'message': ''
             },
-            registerMessageHandler: function registerMessageHandler() {
-                _converse.connection.addHandler(this.onMessage.bind(this), null, 'message', 'chat');
-                _converse.connection.addHandler(this.onErrorMessage.bind(this), null, 'message', 'error');
-            },
-            chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-                return true;
-            },
-            onChatBoxesFetched: function onChatBoxesFetched(collection) {
-                var _this8 = this;
 
-                /* Show chat boxes upon receiving them from sessionStorage
-                 *
-                 * This method gets overridden entirely in src/converse-controlbox.js
-                 * if the controlbox plugin is active.
-                 */
-                collection.each(function (chatbox) {
-                    if (_this8.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show');
-                    }
-                });
-                _converse.emit('chatBoxesFetched');
-            },
-            onConnected: function onConnected() {
-                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1("converse.chatboxes-" + _converse.bare_jid));
-                this.registerMessageHandler();
-                this.fetch({
-                    add: true,
-                    success: this.onChatBoxesFetched.bind(this)
-                });
-            },
-            onErrorMessage: function onErrorMessage(message) {
-                /* Handler method for all incoming error message stanzas
-                 */
-                // TODO: we can likely just reuse "onMessage" below
-                var from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-                    return true;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                var chatbox = this.getChatBox(from_jid);
-                if (!chatbox) {
-                    return true;
-                }
-                chatbox.createMessage(message, null, message);
-                return true;
-            },
-            onMessage: function onMessage(message) {
-                /* Handler method for all incoming single-user chat "message"
-                 * stanzas.
-                 */
-                var contact_jid = void 0,
-                    delay = void 0,
-                    resource = void 0,
-                    from_jid = message.getAttribute('from'),
-                    to_jid = message.getAttribute('to');
-
-                var original_stanza = message,
-                    to_resource = Strophe.getResourceFromJid(to_jid),
-                    is_carbon = !_.isNull(message.querySelector("received[xmlns=\"" + Strophe.NS.CARBONS + "\"]"));
-
-                if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
-                    _converse.log("onMessage: Ignoring incoming message intended for a different resource: " + to_jid, Strophe.LogLevel.INFO);
-                    return true;
-                } else if (utils.isHeadlineMessage(message)) {
-                    // XXX: Ideally we wouldn't have to check for headline
-                    // messages, but Prosody sends headline messages with the
-                    // wrong type ('chat'), so we need to filter them out here.
-                    _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: " + from_jid, Strophe.LogLevel.INFO);
-                    return true;
-                }
-                var forwarded = message.querySelector('forwarded');
-                if (!_.isNull(forwarded)) {
-                    var forwarded_message = forwarded.querySelector('message');
-                    var forwarded_from = forwarded_message.getAttribute('from');
-                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-                        // Prevent message forging via carbons
-                        //
-                        // https://xmpp.org/extensions/xep-0280.html#security
-                        return true;
-                    }
-                    message = forwarded_message;
-                    delay = forwarded.querySelector('delay');
-                    from_jid = message.getAttribute('from');
-                    to_jid = message.getAttribute('to');
-                }
-
-                var from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                    from_resource = Strophe.getResourceFromJid(from_jid),
-                    is_me = from_bare_jid === _converse.bare_jid;
-
-                if (is_me) {
-                    // I am the sender, so this must be a forwarded message...
-                    contact_jid = Strophe.getBareJidFromJid(to_jid);
-                    resource = Strophe.getResourceFromJid(to_jid);
-                } else {
-                    contact_jid = from_bare_jid;
-                    resource = from_resource;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                var chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                    msgid = message.getAttribute('id');
-
-                if (chatbox) {
-                    var messages = msgid && chatbox.messages.findWhere({ msgid: msgid }) || [];
-                    if (_.isEmpty(messages)) {
-                        // Only create the message when we're sure it's not a
-                        // duplicate
-                        chatbox.incrementUnreadMsgCounter(original_stanza);
-                        chatbox.createMessage(message, delay, original_stanza);
-                    }
-                }
-                _converse.emit('message', { 'stanza': original_stanza, 'chatbox': chatbox });
-                return true;
-            },
-            createChatBox: function createChatBox(jid, attrs) {
-                /* Creates a chat box
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user for whom a chat box
-                 *      gets created.
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                var bare_jid = Strophe.getBareJidFromJid(jid),
-                    roster_item = _converse.roster.get(bare_jid);
-                var roster_info = {};
-
-                if (!_.isUndefined(roster_item)) {
-                    roster_info = {
-                        'fullname': _.isEmpty(roster_item.get('fullname')) ? jid : roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url')
-                    };
-                } else if (!_converse.allow_non_roster_messaging) {
-                    _converse.log("Could not get roster item for JID " + bare_jid + ' and allow_non_roster_messaging is set to false', Strophe.LogLevel.ERROR);
-                    return;
-                }
-                return this.create(_.assignIn({
-                    'id': bare_jid,
-                    'jid': bare_jid,
-                    'fullname': jid,
-                    'image_type': DEFAULT_IMAGE_TYPE,
-                    'image': DEFAULT_IMAGE,
-                    'url': ''
-                }, roster_info, attrs || {}));
-            },
-            getChatBox: function getChatBox(jid, create, attrs) {
-                /* Returns a chat box or optionally return a newly
-                 * created one if one doesn't exist.
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user whose chat box we want
-                 *    (Boolean) create - Should a new chat box be created if none exists?
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                jid = jid.toLowerCase();
-                var chatbox = this.get(Strophe.getBareJidFromJid(jid));
-                if (!chatbox && create) {
-                    chatbox = this.createChatBox(jid, attrs);
-                }
-                return chatbox;
-            }
-        });
-
-        this.ChatBoxViews = Backbone.Overview.extend({
             initialize: function initialize() {
-                this.model.on("add", this.onChatBoxAdded, this);
-                this.model.on("destroy", this.removeChat, this);
-            },
-            _ensureElement: function _ensureElement() {
-                /* Override method from backbone.js
-                 * If the #conversejs element doesn't exist, create it.
-                 */
-                if (!this.el) {
-                    var el = document.querySelector('#conversejs');
-                    if (_.isNull(el)) {
-                        el = document.createElement('div');
-                        el.setAttribute('id', 'conversejs');
-                        // Converse.js expects a <body> tag to be present.
-                        document.querySelector('body').appendChild(el);
-                    }
-                    el.innerHTML = '';
-                    this.setElement(el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
-            },
-            onChatBoxAdded: function onChatBoxAdded(item) {
-                // Views aren't created here, since the core code doesn't
-                // contain any views. Instead, they're created in overrides in
-                // plugins, such as in converse-chatview.js and converse-muc.js
-                return this.get(item.get('id'));
-            },
-            removeChat: function removeChat(item) {
-                this.remove(item.get('id'));
-            },
-            closeAllChatBoxes: function closeAllChatBoxes() {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
-                this.each(function (view) {
-                    view.close();
+                this.on('change', function () {
+                    _converse.emit('connfeedback', _converse.connfeedback);
                 });
-                return this;
-            },
-            chatBoxMayBeShown: function chatBoxMayBeShown(chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
-            },
-            getChatBox: function getChatBox(attrs, create) {
-                var chatbox = this.model.get(attrs.jid);
-                if (!chatbox && create) {
-                    chatbox = this.model.create(attrs, {
-                        'error': function error(model, response) {
-                            _converse.log(response.responseText);
-                        }
-                    });
-                }
-                return chatbox;
-            },
-            showChat: function showChat(attrs) {
-                /* Find the chat box and show it (if it may be shown).
-                 * If it doesn't exist, create it.
-                 */
-                var chatbox = this.getChatBox(attrs, true);
-                if (this.chatBoxMayBeShown(chatbox)) {
-                    chatbox.trigger('show', true);
-                }
-                return chatbox;
             }
         });
+        this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
             initialize: function initialize() {
-                var _this9 = this;
+                var _this8 = this;
 
                 this.set({
                     'status': this.getStatus()
                 });
                 this.on('change', function (item) {
                     if (_.has(item.changed, 'status')) {
-                        _converse.emit('statusChanged', _this9.get('status'));
+                        _converse.emit('statusChanged', _this8.get('status'));
                     }
                     if (_.has(item.changed, 'status_message')) {
-                        _converse.emit('statusMessageChanged', _this9.get('status_message'));
+                        _converse.emit('statusMessageChanged', _this8.get('status_message'));
                     }
                 });
             },
@@ -9532,7 +7830,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 };
                 xhr.onerror = function () {
                     delete _converse.connection;
-                    _converse.emit('noResumeableSession');
+                    _converse.emit('noResumeableSession', this);
                     reject(xhr.responseText);
                 };
                 xhr.send();
@@ -9553,7 +7851,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.emit('noResumeableSession');
+                _converse.emit('noResumeableSession', this);
             };
             xhr.send();
         };
@@ -9572,7 +7870,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
                 return true;
             } catch (e) {
-                this.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message);
+                _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
                 return false;
             }
@@ -9608,12 +7906,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
                 return;
             }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
+
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
+            } else if (this.auto_login) {
+                if (this.credentials_url) {
                     this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
                 } else if (!this.jid) {
                     throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
@@ -9673,19 +7972,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         this.initConnection = function () {
-            if (this.connection) {
-                return;
+            if (!this.connection) {
+                if (!this.bosh_service_url && !this.websocket_url) {
+                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                }
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                    this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+                } else if (this.bosh_service_url) {
+                    this.connection = new Strophe.Connection(this.bosh_service_url, _.assignIn(this.connection_options, { 'keepalive': this.keepalive }));
+                } else {
+                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                }
             }
-            if (!this.bosh_service_url && !this.websocket_url) {
-                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-            }
-            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-            } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(this.bosh_service_url, _.assignIn(this.connection_options, { 'keepalive': this.keepalive }));
-            } else {
-                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-            }
+            _converse.emit('connectionInitialized');
         };
 
         this._tearDown = function () {
@@ -9693,13 +7992,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * connection.
              */
             _converse.emit('beforeTearDown');
-            this.unregisterPresenceHandler();
-            if (this.roster) {
-                this.roster.off().reset(); // Removes roster contacts
+            _converse.unregisterPresenceHandler();
+            if (_converse.roster) {
+                _converse.roster.off().reset(); // Removes roster contacts
             }
-            this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-            delete this.chatboxes.browserStorage;
-            this.session.destroy();
+            if (!_.isUndefined(_converse.session)) {
+                _converse.session.destroy();
+            }
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -9707,12 +8006,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
-            return this;
-        };
-
-        this.initChatBoxes = function () {
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxviews = new this.ChatBoxViews({ model: this.chatboxes });
+            return _converse;
         };
 
         this.initPlugins = function () {
@@ -9743,11 +8037,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.connection = settings.connection;
         }
         _converse.initPlugins();
-        _converse.initChatBoxes();
         _converse.initConnection();
         _converse.setUpXMLLogging();
         _converse.logIn();
         _converse.registerGlobalEventHandlers();
+
+        Backbone.history.start();
 
         if (!_.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
             return _converse;
@@ -9858,35 +8153,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _converse.roster.addAndSubscribe(jid, _.isEmpty(name) ? jid : name);
             }
         },
-        'chats': {
-            'open': function open(jids, attrs) {
-                if (_.isUndefined(jids)) {
-                    _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                    return null;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids, true, attrs).trigger('show'));
-                }
-                return _.map(jids, function (jid) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jid, true, attrs).trigger('show'));
-                });
-            },
-            'get': function get(jids) {
-                if (_.isUndefined(jids)) {
-                    var result = [];
-                    _converse.chatboxes.each(function (chatbox) {
-                        // FIXME: Leaky abstraction from MUC. We need to add a
-                        // base type for chat boxes, and check for that.
-                        if (chatbox.get('type') !== 'chatroom') {
-                            result.push(_converse.getViewForChatBox(chatbox));
-                        }
-                    });
-                    return result;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-                }
-                return _.map(jids, _.partial(_.flow(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _converse.getViewForChatBox.bind(_converse)), _, true));
-            }
-        },
         'tokens': {
             'get': function get(id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
@@ -9951,7 +8217,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             'Strophe': Strophe,
             '_': _,
             'b64_sha1': b64_sha1,
-            'fp': fp,
             'moment': moment,
             'sizzle': sizzle,
             'utils': utils
@@ -9959,6 +8224,391 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 });
 //# sourceMappingURL=converse-core.js.map;
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('converse-chatboxes',["converse-core"], factory);
+}(this, function (converse) {
+    "use strict";
+    const { Backbone, Strophe, b64_sha1, utils, _ } = converse.env;
+
+    converse.plugins.add('converse-chatboxes', {
+
+        overrides: {
+            // Overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+
+            disconnect: function () {
+                const { _converse } = this.__super__;
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.disconnect.apply(this, arguments);
+            },
+
+            logOut: function () {
+                const { _converse } = this.__super__;
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.logOut.apply(this, arguments);
+            },
+
+            initStatus: function () {
+                const { _converse } = this.__super__;
+                _converse.chatboxviews.closeAllChatBoxes();
+                return this.__super__.initStatus.apply(this, arguments);
+            },
+
+            onStatusInitialized: function () {
+                const { _converse } = this.__super__;
+                _converse.chatboxes.onConnected();
+                return this.__super__.onStatusInitialized.apply(this, arguments);
+            }
+        },
+
+        initialize () {
+            /* The initialize function gets called as soon as the plugin is
+             * loaded by converse.js's plugin machinery.
+             */
+            const { _converse } = this;
+
+            _converse.api.promises.add([
+                'chatBoxesFetched',
+                'chatBoxesInitialized'
+            ]);
+
+            _converse.ChatBoxes = Backbone.Collection.extend({
+                comparator: 'time_opened',
+
+                model (attrs, options) {
+                    return new _converse.ChatBox(attrs, options);
+                },
+
+                registerMessageHandler () {
+                    _converse.connection.addHandler(
+                        this.onMessage.bind(this), null, 'message', 'chat'
+                    );
+                    _converse.connection.addHandler(
+                        this.onErrorMessage.bind(this), null, 'message', 'error'
+                    );
+                },
+
+                chatBoxMayBeShown (chatbox) {
+                    return true;
+                },
+
+                onChatBoxesFetched (collection) {
+                    /* Show chat boxes upon receiving them from sessionStorage
+                    *
+                    * This method gets overridden entirely in src/converse-controlbox.js
+                    * if the controlbox plugin is active.
+                    */
+                    collection.each((chatbox) => {
+                        if (this.chatBoxMayBeShown(chatbox)) {
+                            chatbox.trigger('show');
+                        }
+                    });
+                    _converse.emit('chatBoxesFetched');
+                },
+
+                onConnected () {
+                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                        b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
+                    this.registerMessageHandler();
+                    this.fetch({
+                        add: true,
+                        success: this.onChatBoxesFetched.bind(this)
+                    });
+                },
+
+                onErrorMessage (message) {
+                    /* Handler method for all incoming error message stanzas
+                    */
+                    // TODO: we can likely just reuse "onMessage" below
+                    const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
+                        return true;
+                    }
+                    // Get chat box, but only create a new one when the message has a body.
+                    const chatbox = this.getChatBox(from_jid);
+                    if (!chatbox) {
+                        return true;
+                    }
+                    chatbox.createMessage(message, null, message);
+                    return true;
+                },
+
+                onMessage (message) {
+                    /* Handler method for all incoming single-user chat "message"
+                    * stanzas.
+                    */
+                    let contact_jid, delay, resource,
+                        from_jid = message.getAttribute('from'),
+                        to_jid = message.getAttribute('to');
+
+                    const original_stanza = message,
+                        to_resource = Strophe.getResourceFromJid(to_jid),
+                        is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+
+                    if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
+                        _converse.log(
+                            `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
+                            Strophe.LogLevel.INFO
+                        );
+                        return true;
+                    } else if (utils.isHeadlineMessage(message)) {
+                        // XXX: Ideally we wouldn't have to check for headline
+                        // messages, but Prosody sends headline messages with the
+                        // wrong type ('chat'), so we need to filter them out here.
+                        _converse.log(
+                            `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
+                            Strophe.LogLevel.INFO
+                        );
+                        return true;
+                    }
+                    const forwarded = message.querySelector('forwarded');
+                    if (!_.isNull(forwarded)) {
+                        const forwarded_message = forwarded.querySelector('message');
+                        const forwarded_from = forwarded_message.getAttribute('from');
+                        if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                            // Prevent message forging via carbons
+                            //
+                            // https://xmpp.org/extensions/xep-0280.html#security
+                            return true;
+                        }
+                        message = forwarded_message;
+                        delay = forwarded.querySelector('delay');
+                        from_jid = message.getAttribute('from');
+                        to_jid = message.getAttribute('to');
+                    }
+
+                    const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
+                        from_resource = Strophe.getResourceFromJid(from_jid),
+                        is_me = from_bare_jid === _converse.bare_jid;
+
+                    if (is_me) {
+                        // I am the sender, so this must be a forwarded message...
+                        contact_jid = Strophe.getBareJidFromJid(to_jid);
+                        resource = Strophe.getResourceFromJid(to_jid);
+                    } else {
+                        contact_jid = from_bare_jid;
+                        resource = from_resource;
+                    }
+                    // Get chat box, but only create a new one when the message has a body.
+                    const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
+                        msgid = message.getAttribute('id');
+
+                    if (chatbox) {
+                        const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
+                        if (_.isEmpty(messages)) {
+                            // Only create the message when we're sure it's not a
+                            // duplicate
+                            chatbox.incrementUnreadMsgCounter(original_stanza);
+                            chatbox.createMessage(message, delay, original_stanza);
+                        }
+                    }
+                    _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
+                    return true;
+                },
+
+                createChatBox (jid, attrs) {
+                    /* Creates a chat box
+                    *
+                    * Parameters:
+                    *    (String) jid - The JID of the user for whom a chat box
+                    *      gets created.
+                    *    (Object) attrs - Optional chat box atributes.
+                    */
+                    const bare_jid = Strophe.getBareJidFromJid(jid),
+                        roster_item = _converse.roster.get(bare_jid);
+                    let roster_info = {};
+
+                    if (! _.isUndefined(roster_item)) {
+                        roster_info = {
+                            'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
+                            'image_type': roster_item.get('image_type'),
+                            'image': roster_item.get('image'),
+                            'url': roster_item.get('url'),
+                        };
+                    } else if (!_converse.allow_non_roster_messaging) {
+                        _converse.log(`Could not get roster item for JID ${bare_jid}`+
+                            ' and allow_non_roster_messaging is set to false',
+                            Strophe.LogLevel.ERROR);
+                        return;
+                    }
+                    return this.create(_.assignIn({
+                            'id': bare_jid,
+                            'jid': bare_jid,
+                            'fullname': jid,
+                            'image_type': _converse.DEFAULT_IMAGE_TYPE,
+                            'image': _converse.DEFAULT_IMAGE,
+                            'url': '',
+                        }, roster_info, attrs || {}));
+                },
+
+                getChatBox (jid, create, attrs) {
+                    /* Returns a chat box or optionally return a newly
+                    * created one if one doesn't exist.
+                    *
+                    * Parameters:
+                    *    (String) jid - The JID of the user whose chat box we want
+                    *    (Boolean) create - Should a new chat box be created if none exists?
+                    *    (Object) attrs - Optional chat box atributes.
+                    */
+                    jid = jid.toLowerCase();
+                    let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
+                    if (!chatbox && create) {
+                        chatbox = this.createChatBox(jid, attrs);
+                    }
+                    return chatbox;
+                }
+            });
+
+            _converse.ChatBoxViews = Backbone.Overview.extend({
+
+                initialize () {
+                    this.model.on("add", this.onChatBoxAdded, this);
+                    this.model.on("destroy", this.removeChat, this);
+                },
+
+                _ensureElement () {
+                    /* Override method from backbone.js
+                    * If the #conversejs element doesn't exist, create it.
+                    */
+                    if (!this.el) {
+                        let el = document.querySelector('#conversejs');
+                        if (_.isNull(el)) {
+                            el = document.createElement('div');
+                            el.setAttribute('id', 'conversejs');
+                            // Converse.js expects a <body> tag to be present.
+                            document.querySelector('body').appendChild(el);
+                        }
+                        el.innerHTML = '';
+                        this.setElement(el, false);
+                    } else {
+                        this.setElement(_.result(this, 'el'), false);
+                    }
+                },
+
+                onChatBoxAdded (item) {
+                    // Views aren't created here, since the core code doesn't
+                    // contain any views. Instead, they're created in overrides in
+                    // plugins, such as in converse-chatview.js and converse-muc.js
+                    return this.get(item.get('id'));
+                },
+
+                removeChat (item) {
+                    this.remove(item.get('id'));
+                },
+
+                closeAllChatBoxes () {
+                    /* This method gets overridden in src/converse-controlbox.js if
+                    * the controlbox plugin is active.
+                    */
+                    this.each(function (view) { view.close(); });
+                    return this;
+                },
+
+                chatBoxMayBeShown (chatbox) {
+                    return this.model.chatBoxMayBeShown(chatbox);
+                },
+
+                getChatBox (attrs, create) {
+                    let chatbox  = this.model.get(attrs.jid);
+                    if (!chatbox && create) {
+                        chatbox = this.model.create(attrs, {
+                            'error' (model, response) {
+                                _converse.log(response.responseText);
+                            }
+                        });
+                    }
+                    return chatbox;
+                },
+
+                showChat (attrs) {
+                    /* Find the chat box and show it (if it may be shown).
+                    * If it doesn't exist, create it.
+                    */
+                    const chatbox = this.getChatBox(attrs, true);
+                    if (this.chatBoxMayBeShown(chatbox)) {
+                        chatbox.trigger('show', true);
+                    }
+                    return chatbox;
+                }
+            });
+
+            // BEGIN: Event handlers
+            _converse.api.listen.on('pluginsInitialized', () => {
+                _converse.chatboxes = new _converse.ChatBoxes();
+                _converse.chatboxviews = new _converse.ChatBoxViews({
+                    'model': _converse.chatboxes
+                });
+                _converse.emit('chatBoxesInitialized');
+            });
+
+            _converse.api.listen.on('beforeTearDown', () => {
+                _converse.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
+                delete _converse.chatboxes.browserStorage;
+            });
+            // END: Event handlers
+
+            _converse.getViewForChatBox = function (chatbox) {
+                if (!chatbox) { return; }
+                return _converse.chatboxviews.get(chatbox.get('id'));
+            };
+
+            /* We extend the default converse.js API */
+            _.extend(_converse.api, {
+                'chats': {
+                    'open' (jids, attrs) {
+                        if (_.isUndefined(jids)) {
+                            _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+                            return null;
+                        } else if (_.isString(jids)) {
+                            return _converse.getViewForChatBox(
+                                _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
+                            );
+                        }
+                        return _.map(jids, (jid) =>
+                            _converse.getViewForChatBox(
+                                _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
+                            )
+                        );
+                    },
+                    'get' (jids) {
+                        if (_.isUndefined(jids)) {
+                            const result = [];
+                            _converse.chatboxes.each(function (chatbox) {
+                                // FIXME: Leaky abstraction from MUC. We need to add a
+                                // base type for chat boxes, and check for that.
+                                if (chatbox.get('type') !== 'chatroom') {
+                                    result.push(_converse.getViewForChatBox(chatbox));
+                                }
+                            });
+                            return result;
+                        } else if (_.isString(jids)) {
+                            return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
+                        }
+                        return _.map(jids,
+                            _.partial(
+                                _.flow(
+                                    _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
+                                    _converse.getViewForChatBox.bind(_converse)
+                                ), _, true
+                            )
+                        );
+                    }
+                }
+            });
+        }
+    });
+    return converse;
+}));
+
 /* jshint maxerr: 10000 */
 /* jslint unused: true */
 /* jshint shadow: true */
@@ -12115,6 +10765,165 @@ define("xss", (function (global) {
     };
 }(this)));
 
+/* Lo-Dash Template Loader v1.0.1
+ * Copyright 2015, Tim Branyen (@tbranyen).
+ * loader.js may be freely distributed under the MIT license.
+ */
+(function(global) {
+"use strict";
+
+// Cache used to map configuration options between load and write.
+var buildMap = {};
+
+// Alias the correct `nodeRequire` method.
+var nodeRequire = typeof requirejs === "function" && requirejs.nodeRequire;
+
+// Strips trailing `/` from url fragments.
+var stripTrailing = function(prop) {
+  return prop.replace(/(\/$)/, '');
+};
+
+// Define the plugin using the CommonJS syntax.
+define('tpl',['require','exports','module','lodash'],function(require, exports) {
+  var _ = require("lodash");
+
+  exports.version = "1.0.1";
+
+  // Invoked by the AMD builder, passed the path to resolve, the require
+  // function, done callback, and the configuration options.
+  exports.load = function(name, req, load, config) {
+    var isDojo;
+
+    // Dojo provides access to the config object through the req function.
+    if (!config) {
+      config = require.rawConfig;
+      isDojo = true;
+    }
+
+    var contents = "";
+    var settings = configure(config);
+
+    // If the baseUrl and root are the same, just null out the root.
+    if (stripTrailing(config.baseUrl) === stripTrailing(settings.root)) {
+      settings.root = '';
+    }
+
+    var url = require.toUrl(settings.root + name + settings.ext);
+
+    if (isDojo && url.indexOf(config.baseUrl) !== 0) {
+      url = stripTrailing(config.baseUrl) + url;
+    }
+
+    // Builds with r.js require Node.js to be installed.
+    if (config.isBuild) {
+      // If in Node, get access to the filesystem.
+      var fs = nodeRequire("fs");
+
+      try {
+        // First try reading the filepath as-is.
+        contents = String(fs.readFileSync(url));
+      } catch(ex) {
+        // If it failed, it's most likely because of a leading `/` and not an
+        // absolute path.  Remove the leading slash and try again.
+        if (url.slice(0, 1) === "/") {
+          url = url.slice(1);
+        }
+
+        // Try reading again with the leading `/`.
+        contents = String(fs.readFileSync(url));
+      }
+
+      // Read in the file synchronously, as RequireJS expects, and return the
+      // contents.  Process as a Lo-Dash template.
+      buildMap[name] = _.template(contents);
+
+      return load();
+    }
+
+    // Create a basic XHR.
+    var xhr = new XMLHttpRequest();
+
+    // Wait for it to load.
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var templateSettings = _.clone(settings.templateSettings);
+
+        // Attach the sourceURL.
+        templateSettings.sourceURL = url;
+
+        // Process as a Lo-Dash template and cache.
+        buildMap[name] = _.template(xhr.responseText, templateSettings);
+
+        // Return the compiled template.
+        load(buildMap[name]);
+      }
+    };
+
+    // Initiate the fetch.
+    xhr.open("GET", url, true);
+    xhr.send(null);
+  };
+
+  // Also invoked by the AMD builder, this writes out a compatible define
+  // call that will work with loaders such as almond.js that cannot read
+  // the configuration data.
+  exports.write = function(pluginName, moduleName, write) {
+    var template = buildMap[moduleName].source;
+
+    // Write out the actual definition
+    write(strDefine(pluginName, moduleName, template));
+  };
+
+  // This is for curl.js/cram.js build-time support.
+  exports.compile = function(pluginName, moduleName, req, io, config) {
+    configure(config);
+
+    // Ask cram to fetch the template file (resId) and pass it to `write`.
+    io.read(moduleName, write, io.error);
+
+    function write(template) {
+      // Write-out define(id,function(){return{/* template */}});
+      io.write(strDefine(pluginName, moduleName, template));
+    }
+  };
+
+  // Crafts the written definition form of the module during a build.
+  function strDefine(pluginName, moduleName, template) {
+    return [
+      "define('", pluginName, "!", moduleName, "', ", "['lodash'], ",
+        [
+          "function(_) {",
+            "return ", template, ";",
+          "}"
+        ].join(""),
+      ");\n"
+    ].join("");
+  }
+
+  function configure(config) {
+    // Default settings point to the project root and using html files.
+    var settings = _.extend({
+      ext: ".html",
+      root: config.baseUrl,
+      templateSettings: {}
+    }, config.lodashLoader);
+
+    // Ensure the root has been properly configured with a trailing slash,
+    // unless it's an empty string or undefined, in which case work off the
+    // baseUrl.
+    if (settings.root && settings.root.slice(-1) !== "/") {
+      settings.root += "/";
+    }
+
+    // Set the custom passed in template settings.
+    _.extend(_.templateSettings, settings.templateSettings);
+
+    return settings;
+  }
+});
+
+})(typeof global === "object" ? global : this);
+
 
 define('tpl!chatbox', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -12372,8 +11181,8 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-chatview',["jquery.noconflict", "converse-core", "emojione", "xss", "tpl!chatbox", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!avatar", "tpl!spinner"], factory);
-})(undefined, function ($, converse, emojione, xss, tpl_chatbox, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_avatar, tpl_spinner) {
+    define('converse-chatview',["jquery.noconflict", "converse-core", "converse-chatboxes", "emojione", "xss", "tpl!chatbox", "tpl!new_day", "tpl!action", "tpl!emojis", "tpl!message", "tpl!help_message", "tpl!toolbar", "tpl!avatar", "tpl!spinner"], factory);
+})(undefined, function ($, converse, dummy, emojione, xss, tpl_chatbox, tpl_new_day, tpl_action, tpl_emojis, tpl_message, tpl_help_message, tpl_toolbar, tpl_avatar, tpl_spinner) {
     "use strict";
 
     var _converse$env = converse.env,
@@ -12493,7 +11302,7 @@ return __p
                         'shouldBeHidden': this.shouldBeHidden
                     }));
                     this.el.innerHTML = emojis_html;
-                    this.el.querySelectorAll('.emoji-picker').forEach(function (el) {
+                    _.forEach(this.el.querySelectorAll('.emoji-picker'), function (el) {
                         el.addEventListener('scroll', _this.setScrollPosition.bind(_this));
                     });
                     this.restoreScrollPosition();
@@ -12521,7 +11330,7 @@ return __p
                         current_picker[0].scrollTop = this.model.get('scroll_position');
                     }
                 },
-                setScrollPosition: function setScrollPosition(ev, position) {
+                setScrollPosition: function setScrollPosition(ev) {
                     this.model.save('scroll_position', ev.target.scrollTop);
                 },
                 chooseSkinTone: function chooseSkinTone(ev) {
@@ -12565,6 +11374,8 @@ return __p
                 },
 
                 initialize: function initialize() {
+                    this.markScrolled = _.debounce(this.markScrolled, 100);
+
                     this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.on('show', this.show, this);
@@ -12622,8 +11433,9 @@ return __p
                     return this;
                 },
                 insertIntoDOM: function insertIntoDOM() {
-                    /* This method gets overridden in src/converse-controlbox.js if
-                     * the controlbox plugin is active.
+                    /* This method gets overridden in src/converse-controlbox.js
+                     * as well as src/converse-muc.js (if those plugins are
+                     * enabled).
                      */
                     var container = document.querySelector('#conversejs');
                     if (this.el.parentNode !== container) {
@@ -13029,9 +11841,7 @@ return __p
                     ev.stopPropagation();
                     this.toggleEmojiMenu();
                     var target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
-
-                    var shortname = target.getAttribute('data-emoji');
-                    this.insertIntoTextArea(emojione.shortnameToUnicode(shortname));
+                    this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
                 toggleEmojiMenu: function toggleEmojiMenu(ev) {
                     if (!_.isUndefined(ev)) {
@@ -13200,7 +12010,7 @@ return __p
                 },
 
 
-                markScrolled: _.debounce(function (ev) {
+                markScrolled: function markScrolled(ev) {
                     /* Called when the chat content is scrolled up or down.
                      * We want to record when the user has scrolled away from
                      * the bottom, so that we don't automatically scroll away
@@ -13219,12 +12029,13 @@ return __p
                     }
                     var scrolled = true;
                     var is_at_bottom = this.$content.scrollTop() + this.$content.innerHeight() >= this.$content[0].scrollHeight - 10;
+
                     if (is_at_bottom) {
                         scrolled = false;
                         this.onScrolledDown();
                     }
                     utils.safeSave(this.model, { 'scrolled': scrolled });
-                }, 150),
+                },
 
                 viewUnreadMessages: function viewUnreadMessages() {
                     this.model.save('scrolled', false);
@@ -13268,6 +12079,2509 @@ return __p
     return converse;
 });
 //# sourceMappingURL=converse-chatview.js.map;
+define('lodash.fp',['lodash', 'lodash.converter', 'converse-core'], function (_, lodashConverter, converse) {
+    var fp = lodashConverter(_.runInContext());
+    converse.env.fp = fp;
+    return fp;
+});
+
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define('virtual-dom',[],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.virtualDom=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var createElement = require("./vdom/create-element.js")
+
+module.exports = createElement
+
+},{"./vdom/create-element.js":15}],2:[function(require,module,exports){
+var diff = require("./vtree/diff.js")
+
+module.exports = diff
+
+},{"./vtree/diff.js":35}],3:[function(require,module,exports){
+var h = require("./virtual-hyperscript/index.js")
+
+module.exports = h
+
+},{"./virtual-hyperscript/index.js":22}],4:[function(require,module,exports){
+var diff = require("./diff.js")
+var patch = require("./patch.js")
+var h = require("./h.js")
+var create = require("./create-element.js")
+var VNode = require('./vnode/vnode.js')
+var VText = require('./vnode/vtext.js')
+
+module.exports = {
+    diff: diff,
+    patch: patch,
+    h: h,
+    create: create,
+    VNode: VNode,
+    VText: VText
+}
+
+},{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":13,"./vnode/vnode.js":31,"./vnode/vtext.js":33}],5:[function(require,module,exports){
+/*!
+ * Cross-Browser Split 1.1.1
+ * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
+ * Available under the MIT License
+ * ECMAScript compliant, uniform cross-browser split method
+ */
+
+/**
+ * Splits a string into an array of strings using a regex or string separator. Matches of the
+ * separator are not included in the result array. However, if `separator` is a regex that contains
+ * capturing groups, backreferences are spliced into the result each time `separator` is matched.
+ * Fixes browser bugs compared to the native `String.prototype.split` and can be used reliably
+ * cross-browser.
+ * @param {String} str String to split.
+ * @param {RegExp|String} separator Regex or string to use for separating the string.
+ * @param {Number} [limit] Maximum number of items to include in the result array.
+ * @returns {Array} Array of substrings.
+ * @example
+ *
+ * // Basic use
+ * split('a b c d', ' ');
+ * // -> ['a', 'b', 'c', 'd']
+ *
+ * // With limit
+ * split('a b c d', ' ', 2);
+ * // -> ['a', 'b']
+ *
+ * // Backreferences in result array
+ * split('..word1 word2..', /([a-z]+)(\d+)/i);
+ * // -> ['..', 'word', '1', ' ', 'word', '2', '..']
+ */
+module.exports = (function split(undef) {
+
+  var nativeSplit = String.prototype.split,
+    compliantExecNpcg = /()??/.exec("")[1] === undef,
+    // NPCG: nonparticipating capturing group
+    self;
+
+  self = function(str, separator, limit) {
+    // If `separator` is not a regex, use `nativeSplit`
+    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
+      return nativeSplit.call(str, separator, limit);
+    }
+    var output = [],
+      flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.extended ? "x" : "") + // Proposed for ES6
+      (separator.sticky ? "y" : ""),
+      // Firefox 3+
+      lastLastIndex = 0,
+      // Make `global` and avoid `lastIndex` issues by working with a copy
+      separator = new RegExp(separator.source, flags + "g"),
+      separator2, match, lastIndex, lastLength;
+    str += ""; // Type-convert
+    if (!compliantExecNpcg) {
+      // Doesn't need flags gy, but they don't hurt
+      separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
+    }
+    /* Values for `limit`, per the spec:
+     * If undefined: 4294967295 // Math.pow(2, 32) - 1
+     * If 0, Infinity, or NaN: 0
+     * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
+     * If negative number: 4294967296 - Math.floor(Math.abs(limit))
+     * If other: Type-convert, then use the above rules
+     */
+    limit = limit === undef ? -1 >>> 0 : // Math.pow(2, 32) - 1
+    limit >>> 0; // ToUint32(limit)
+    while (match = separator.exec(str)) {
+      // `separator.lastIndex` is not reliable cross-browser
+      lastIndex = match.index + match[0].length;
+      if (lastIndex > lastLastIndex) {
+        output.push(str.slice(lastLastIndex, match.index));
+        // Fix browsers whose `exec` methods don't consistently return `undefined` for
+        // nonparticipating capturing groups
+        if (!compliantExecNpcg && match.length > 1) {
+          match[0].replace(separator2, function() {
+            for (var i = 1; i < arguments.length - 2; i++) {
+              if (arguments[i] === undef) {
+                match[i] = undef;
+              }
+            }
+          });
+        }
+        if (match.length > 1 && match.index < str.length) {
+          Array.prototype.push.apply(output, match.slice(1));
+        }
+        lastLength = match[0].length;
+        lastLastIndex = lastIndex;
+        if (output.length >= limit) {
+          break;
+        }
+      }
+      if (separator.lastIndex === match.index) {
+        separator.lastIndex++; // Avoid an infinite loop
+      }
+    }
+    if (lastLastIndex === str.length) {
+      if (lastLength || !separator.test("")) {
+        output.push("");
+      }
+    } else {
+      output.push(str.slice(lastLastIndex));
+    }
+    return output.length > limit ? output.slice(0, limit) : output;
+  };
+
+  return self;
+})();
+
+},{}],6:[function(require,module,exports){
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+var OneVersionConstraint = require('individual/one-version');
+
+var MY_VERSION = '7';
+OneVersionConstraint('ev-store', MY_VERSION);
+
+var hashKey = '__EV_STORE_KEY@' + MY_VERSION;
+
+module.exports = EvStore;
+
+function EvStore(elem) {
+    var hash = elem[hashKey];
+
+    if (!hash) {
+        hash = elem[hashKey] = {};
+    }
+
+    return hash;
+}
+
+},{"individual/one-version":9}],8:[function(require,module,exports){
+(function (global){
+'use strict';
+
+/*global window, global*/
+
+var root = typeof window !== 'undefined' ?
+    window : typeof global !== 'undefined' ?
+    global : {};
+
+module.exports = Individual;
+
+function Individual(key, value) {
+    if (key in root) {
+        return root[key];
+    }
+
+    root[key] = value;
+
+    return value;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],9:[function(require,module,exports){
+'use strict';
+
+var Individual = require('./index.js');
+
+module.exports = OneVersion;
+
+function OneVersion(moduleName, version, defaultValue) {
+    var key = '__INDIVIDUAL_ONE_VERSION_' + moduleName;
+    var enforceKey = key + '_ENFORCE_SINGLETON';
+
+    var versionValue = Individual(enforceKey, version);
+
+    if (versionValue !== version) {
+        throw new Error('Can only have one copy of ' +
+            moduleName + '.\n' +
+            'You already have version ' + versionValue +
+            ' installed.\n' +
+            'This means you cannot install version ' + version);
+    }
+
+    return Individual(key, defaultValue);
+}
+
+},{"./index.js":8}],10:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+if (typeof document !== 'undefined') {
+    module.exports = document;
+} else {
+    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+
+    module.exports = doccy;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":6}],11:[function(require,module,exports){
+"use strict";
+
+module.exports = function isObject(x) {
+	return typeof x === "object" && x !== null;
+};
+
+},{}],12:[function(require,module,exports){
+var nativeIsArray = Array.isArray
+var toString = Object.prototype.toString
+
+module.exports = nativeIsArray || isArray
+
+function isArray(obj) {
+    return toString.call(obj) === "[object Array]"
+}
+
+},{}],13:[function(require,module,exports){
+var patch = require("./vdom/patch.js")
+
+module.exports = patch
+
+},{"./vdom/patch.js":18}],14:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook.js")
+
+module.exports = applyProperties
+
+function applyProperties(node, props, previous) {
+    for (var propName in props) {
+        var propValue = props[propName]
+
+        if (propValue === undefined) {
+            removeProperty(node, propName, propValue, previous);
+        } else if (isHook(propValue)) {
+            removeProperty(node, propName, propValue, previous)
+            if (propValue.hook) {
+                propValue.hook(node,
+                    propName,
+                    previous ? previous[propName] : undefined)
+            }
+        } else {
+            if (isObject(propValue)) {
+                patchObject(node, props, previous, propName, propValue);
+            } else {
+                node[propName] = propValue
+            }
+        }
+    }
+}
+
+function removeProperty(node, propName, propValue, previous) {
+    if (previous) {
+        var previousValue = previous[propName]
+
+        if (!isHook(previousValue)) {
+            if (propName === "attributes") {
+                for (var attrName in previousValue) {
+                    node.removeAttribute(attrName)
+                }
+            } else if (propName === "style") {
+                for (var i in previousValue) {
+                    node.style[i] = ""
+                }
+            } else if (typeof previousValue === "string") {
+                node[propName] = ""
+            } else {
+                node[propName] = null
+            }
+        } else if (previousValue.unhook) {
+            previousValue.unhook(node, propName, propValue)
+        }
+    }
+}
+
+function patchObject(node, props, previous, propName, propValue) {
+    var previousValue = previous ? previous[propName] : undefined
+
+    // Set attributes
+    if (propName === "attributes") {
+        for (var attrName in propValue) {
+            var attrValue = propValue[attrName]
+
+            if (attrValue === undefined) {
+                node.removeAttribute(attrName)
+            } else {
+                node.setAttribute(attrName, attrValue)
+            }
+        }
+
+        return
+    }
+
+    if(previousValue && isObject(previousValue) &&
+        getPrototype(previousValue) !== getPrototype(propValue)) {
+        node[propName] = propValue
+        return
+    }
+
+    if (!isObject(node[propName])) {
+        node[propName] = {}
+    }
+
+    var replacer = propName === "style" ? "" : undefined
+
+    for (var k in propValue) {
+        var value = propValue[k]
+        node[propName][k] = (value === undefined) ? replacer : value
+    }
+}
+
+function getPrototype(value) {
+    if (Object.getPrototypeOf) {
+        return Object.getPrototypeOf(value)
+    } else if (value.__proto__) {
+        return value.__proto__
+    } else if (value.constructor) {
+        return value.constructor.prototype
+    }
+}
+
+},{"../vnode/is-vhook.js":26,"is-object":11}],15:[function(require,module,exports){
+var document = require("global/document")
+
+var applyProperties = require("./apply-properties")
+
+var isVNode = require("../vnode/is-vnode.js")
+var isVText = require("../vnode/is-vtext.js")
+var isWidget = require("../vnode/is-widget.js")
+var handleThunk = require("../vnode/handle-thunk.js")
+
+module.exports = createElement
+
+function createElement(vnode, opts) {
+    var doc = opts ? opts.document || document : document
+    var warn = opts ? opts.warn : null
+
+    vnode = handleThunk(vnode).a
+
+    if (isWidget(vnode)) {
+        return vnode.init()
+    } else if (isVText(vnode)) {
+        return doc.createTextNode(vnode.text)
+    } else if (!isVNode(vnode)) {
+        if (warn) {
+            warn("Item is not a valid virtual dom node", vnode)
+        }
+        return null
+    }
+
+    var node = (vnode.namespace === null) ?
+        doc.createElement(vnode.tagName) :
+        doc.createElementNS(vnode.namespace, vnode.tagName)
+
+    var props = vnode.properties
+    applyProperties(node, props)
+
+    var children = vnode.children
+
+    for (var i = 0; i < children.length; i++) {
+        var childNode = createElement(children[i], opts)
+        if (childNode) {
+            node.appendChild(childNode)
+        }
+    }
+
+    return node
+}
+
+},{"../vnode/handle-thunk.js":24,"../vnode/is-vnode.js":27,"../vnode/is-vtext.js":28,"../vnode/is-widget.js":29,"./apply-properties":14,"global/document":10}],16:[function(require,module,exports){
+// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
+// We don't want to read all of the DOM nodes in the tree so we use
+// the in-order tree indexing to eliminate recursion down certain branches.
+// We only recurse into a DOM node if we know that it contains a child of
+// interest.
+
+var noChild = {}
+
+module.exports = domIndex
+
+function domIndex(rootNode, tree, indices, nodes) {
+    if (!indices || indices.length === 0) {
+        return {}
+    } else {
+        indices.sort(ascending)
+        return recurse(rootNode, tree, indices, nodes, 0)
+    }
+}
+
+function recurse(rootNode, tree, indices, nodes, rootIndex) {
+    nodes = nodes || {}
+
+
+    if (rootNode) {
+        if (indexInRange(indices, rootIndex, rootIndex)) {
+            nodes[rootIndex] = rootNode
+        }
+
+        var vChildren = tree.children
+
+        if (vChildren) {
+
+            var childNodes = rootNode.childNodes
+
+            for (var i = 0; i < tree.children.length; i++) {
+                rootIndex += 1
+
+                var vChild = vChildren[i] || noChild
+                var nextIndex = rootIndex + (vChild.count || 0)
+
+                // skip recursion down the tree if there are no nodes down here
+                if (indexInRange(indices, rootIndex, nextIndex)) {
+                    recurse(childNodes[i], vChild, indices, nodes, rootIndex)
+                }
+
+                rootIndex = nextIndex
+            }
+        }
+    }
+
+    return nodes
+}
+
+// Binary search for an index in the interval [left, right]
+function indexInRange(indices, left, right) {
+    if (indices.length === 0) {
+        return false
+    }
+
+    var minIndex = 0
+    var maxIndex = indices.length - 1
+    var currentIndex
+    var currentItem
+
+    while (minIndex <= maxIndex) {
+        currentIndex = ((maxIndex + minIndex) / 2) >> 0
+        currentItem = indices[currentIndex]
+
+        if (minIndex === maxIndex) {
+            return currentItem >= left && currentItem <= right
+        } else if (currentItem < left) {
+            minIndex = currentIndex + 1
+        } else  if (currentItem > right) {
+            maxIndex = currentIndex - 1
+        } else {
+            return true
+        }
+    }
+
+    return false;
+}
+
+function ascending(a, b) {
+    return a > b ? 1 : -1
+}
+
+},{}],17:[function(require,module,exports){
+var applyProperties = require("./apply-properties")
+
+var isWidget = require("../vnode/is-widget.js")
+var VPatch = require("../vnode/vpatch.js")
+
+var updateWidget = require("./update-widget")
+
+module.exports = applyPatch
+
+function applyPatch(vpatch, domNode, renderOptions) {
+    var type = vpatch.type
+    var vNode = vpatch.vNode
+    var patch = vpatch.patch
+
+    switch (type) {
+        case VPatch.REMOVE:
+            return removeNode(domNode, vNode)
+        case VPatch.INSERT:
+            return insertNode(domNode, patch, renderOptions)
+        case VPatch.VTEXT:
+            return stringPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.WIDGET:
+            return widgetPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.VNODE:
+            return vNodePatch(domNode, vNode, patch, renderOptions)
+        case VPatch.ORDER:
+            reorderChildren(domNode, patch)
+            return domNode
+        case VPatch.PROPS:
+            applyProperties(domNode, patch, vNode.properties)
+            return domNode
+        case VPatch.THUNK:
+            return replaceRoot(domNode,
+                renderOptions.patch(domNode, patch, renderOptions))
+        default:
+            return domNode
+    }
+}
+
+function removeNode(domNode, vNode) {
+    var parentNode = domNode.parentNode
+
+    if (parentNode) {
+        parentNode.removeChild(domNode)
+    }
+
+    destroyWidget(domNode, vNode);
+
+    return null
+}
+
+function insertNode(parentNode, vNode, renderOptions) {
+    var newNode = renderOptions.render(vNode, renderOptions)
+
+    if (parentNode) {
+        parentNode.appendChild(newNode)
+    }
+
+    return parentNode
+}
+
+function stringPatch(domNode, leftVNode, vText, renderOptions) {
+    var newNode
+
+    if (domNode.nodeType === 3) {
+        domNode.replaceData(0, domNode.length, vText.text)
+        newNode = domNode
+    } else {
+        var parentNode = domNode.parentNode
+        newNode = renderOptions.render(vText, renderOptions)
+
+        if (parentNode && newNode !== domNode) {
+            parentNode.replaceChild(newNode, domNode)
+        }
+    }
+
+    return newNode
+}
+
+function widgetPatch(domNode, leftVNode, widget, renderOptions) {
+    var updating = updateWidget(leftVNode, widget)
+    var newNode
+
+    if (updating) {
+        newNode = widget.update(leftVNode, domNode) || domNode
+    } else {
+        newNode = renderOptions.render(widget, renderOptions)
+    }
+
+    var parentNode = domNode.parentNode
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    if (!updating) {
+        destroyWidget(domNode, leftVNode)
+    }
+
+    return newNode
+}
+
+function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
+    var parentNode = domNode.parentNode
+    var newNode = renderOptions.render(vNode, renderOptions)
+
+    if (parentNode && newNode !== domNode) {
+        parentNode.replaceChild(newNode, domNode)
+    }
+
+    return newNode
+}
+
+function destroyWidget(domNode, w) {
+    if (typeof w.destroy === "function" && isWidget(w)) {
+        w.destroy(domNode)
+    }
+}
+
+function reorderChildren(domNode, moves) {
+    var childNodes = domNode.childNodes
+    var keyMap = {}
+    var node
+    var remove
+    var insert
+
+    for (var i = 0; i < moves.removes.length; i++) {
+        remove = moves.removes[i]
+        node = childNodes[remove.from]
+        if (remove.key) {
+            keyMap[remove.key] = node
+        }
+        domNode.removeChild(node)
+    }
+
+    var length = childNodes.length
+    for (var j = 0; j < moves.inserts.length; j++) {
+        insert = moves.inserts[j]
+        node = keyMap[insert.key]
+        // this is the weirdest bug i've ever seen in webkit
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+    }
+}
+
+function replaceRoot(oldRoot, newRoot) {
+    if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
+        oldRoot.parentNode.replaceChild(newRoot, oldRoot)
+    }
+
+    return newRoot;
+}
+
+},{"../vnode/is-widget.js":29,"../vnode/vpatch.js":32,"./apply-properties":14,"./update-widget":19}],18:[function(require,module,exports){
+var document = require("global/document")
+var isArray = require("x-is-array")
+
+var render = require("./create-element")
+var domIndex = require("./dom-index")
+var patchOp = require("./patch-op")
+module.exports = patch
+
+function patch(rootNode, patches, renderOptions) {
+    renderOptions = renderOptions || {}
+    renderOptions.patch = renderOptions.patch && renderOptions.patch !== patch
+        ? renderOptions.patch
+        : patchRecursive
+    renderOptions.render = renderOptions.render || render
+
+    return renderOptions.patch(rootNode, patches, renderOptions)
+}
+
+function patchRecursive(rootNode, patches, renderOptions) {
+    var indices = patchIndices(patches)
+
+    if (indices.length === 0) {
+        return rootNode
+    }
+
+    var index = domIndex(rootNode, patches.a, indices)
+    var ownerDocument = rootNode.ownerDocument
+
+    if (!renderOptions.document && ownerDocument !== document) {
+        renderOptions.document = ownerDocument
+    }
+
+    for (var i = 0; i < indices.length; i++) {
+        var nodeIndex = indices[i]
+        rootNode = applyPatch(rootNode,
+            index[nodeIndex],
+            patches[nodeIndex],
+            renderOptions)
+    }
+
+    return rootNode
+}
+
+function applyPatch(rootNode, domNode, patchList, renderOptions) {
+    if (!domNode) {
+        return rootNode
+    }
+
+    var newNode
+
+    if (isArray(patchList)) {
+        for (var i = 0; i < patchList.length; i++) {
+            newNode = patchOp(patchList[i], domNode, renderOptions)
+
+            if (domNode === rootNode) {
+                rootNode = newNode
+            }
+        }
+    } else {
+        newNode = patchOp(patchList, domNode, renderOptions)
+
+        if (domNode === rootNode) {
+            rootNode = newNode
+        }
+    }
+
+    return rootNode
+}
+
+function patchIndices(patches) {
+    var indices = []
+
+    for (var key in patches) {
+        if (key !== "a") {
+            indices.push(Number(key))
+        }
+    }
+
+    return indices
+}
+
+},{"./create-element":15,"./dom-index":16,"./patch-op":17,"global/document":10,"x-is-array":12}],19:[function(require,module,exports){
+var isWidget = require("../vnode/is-widget.js")
+
+module.exports = updateWidget
+
+function updateWidget(a, b) {
+    if (isWidget(a) && isWidget(b)) {
+        if ("name" in a && "name" in b) {
+            return a.id === b.id
+        } else {
+            return a.init === b.init
+        }
+    }
+
+    return false
+}
+
+},{"../vnode/is-widget.js":29}],20:[function(require,module,exports){
+'use strict';
+
+var EvStore = require('ev-store');
+
+module.exports = EvHook;
+
+function EvHook(value) {
+    if (!(this instanceof EvHook)) {
+        return new EvHook(value);
+    }
+
+    this.value = value;
+}
+
+EvHook.prototype.hook = function (node, propertyName) {
+    var es = EvStore(node);
+    var propName = propertyName.substr(3);
+
+    es[propName] = this.value;
+};
+
+EvHook.prototype.unhook = function(node, propertyName) {
+    var es = EvStore(node);
+    var propName = propertyName.substr(3);
+
+    es[propName] = undefined;
+};
+
+},{"ev-store":7}],21:[function(require,module,exports){
+'use strict';
+
+module.exports = SoftSetHook;
+
+function SoftSetHook(value) {
+    if (!(this instanceof SoftSetHook)) {
+        return new SoftSetHook(value);
+    }
+
+    this.value = value;
+}
+
+SoftSetHook.prototype.hook = function (node, propertyName) {
+    if (node[propertyName] !== this.value) {
+        node[propertyName] = this.value;
+    }
+};
+
+},{}],22:[function(require,module,exports){
+'use strict';
+
+var isArray = require('x-is-array');
+
+var VNode = require('../vnode/vnode.js');
+var VText = require('../vnode/vtext.js');
+var isVNode = require('../vnode/is-vnode');
+var isVText = require('../vnode/is-vtext');
+var isWidget = require('../vnode/is-widget');
+var isHook = require('../vnode/is-vhook');
+var isVThunk = require('../vnode/is-thunk');
+
+var parseTag = require('./parse-tag.js');
+var softSetHook = require('./hooks/soft-set-hook.js');
+var evHook = require('./hooks/ev-hook.js');
+
+module.exports = h;
+
+function h(tagName, properties, children) {
+    var childNodes = [];
+    var tag, props, key, namespace;
+
+    if (!children && isChildren(properties)) {
+        children = properties;
+        props = {};
+    }
+
+    props = props || properties || {};
+    tag = parseTag(tagName, props);
+
+    // support keys
+    if (props.hasOwnProperty('key')) {
+        key = props.key;
+        props.key = undefined;
+    }
+
+    // support namespace
+    if (props.hasOwnProperty('namespace')) {
+        namespace = props.namespace;
+        props.namespace = undefined;
+    }
+
+    // fix cursor bug
+    if (tag === 'INPUT' &&
+        !namespace &&
+        props.hasOwnProperty('value') &&
+        props.value !== undefined &&
+        !isHook(props.value)
+    ) {
+        props.value = softSetHook(props.value);
+    }
+
+    transformProperties(props);
+
+    if (children !== undefined && children !== null) {
+        addChild(children, childNodes, tag, props);
+    }
+
+
+    return new VNode(tag, props, childNodes, key, namespace);
+}
+
+function addChild(c, childNodes, tag, props) {
+    if (typeof c === 'string') {
+        childNodes.push(new VText(c));
+    } else if (typeof c === 'number') {
+        childNodes.push(new VText(String(c)));
+    } else if (isChild(c)) {
+        childNodes.push(c);
+    } else if (isArray(c)) {
+        for (var i = 0; i < c.length; i++) {
+            addChild(c[i], childNodes, tag, props);
+        }
+    } else if (c === null || c === undefined) {
+        return;
+    } else {
+        throw UnexpectedVirtualElement({
+            foreignObject: c,
+            parentVnode: {
+                tagName: tag,
+                properties: props
+            }
+        });
+    }
+}
+
+function transformProperties(props) {
+    for (var propName in props) {
+        if (props.hasOwnProperty(propName)) {
+            var value = props[propName];
+
+            if (isHook(value)) {
+                continue;
+            }
+
+            if (propName.substr(0, 3) === 'ev-') {
+                // add ev-foo support
+                props[propName] = evHook(value);
+            }
+        }
+    }
+}
+
+function isChild(x) {
+    return isVNode(x) || isVText(x) || isWidget(x) || isVThunk(x);
+}
+
+function isChildren(x) {
+    return typeof x === 'string' || isArray(x) || isChild(x);
+}
+
+function UnexpectedVirtualElement(data) {
+    var err = new Error();
+
+    err.type = 'virtual-hyperscript.unexpected.virtual-element';
+    err.message = 'Unexpected virtual child passed to h().\n' +
+        'Expected a VNode / Vthunk / VWidget / string but:\n' +
+        'got:\n' +
+        errorString(data.foreignObject) +
+        '.\n' +
+        'The parent vnode is:\n' +
+        errorString(data.parentVnode)
+        '\n' +
+        'Suggested fix: change your `h(..., [ ... ])` callsite.';
+    err.foreignObject = data.foreignObject;
+    err.parentVnode = data.parentVnode;
+
+    return err;
+}
+
+function errorString(obj) {
+    try {
+        return JSON.stringify(obj, null, '    ');
+    } catch (e) {
+        return String(obj);
+    }
+}
+
+},{"../vnode/is-thunk":25,"../vnode/is-vhook":26,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vnode.js":31,"../vnode/vtext.js":33,"./hooks/ev-hook.js":20,"./hooks/soft-set-hook.js":21,"./parse-tag.js":23,"x-is-array":12}],23:[function(require,module,exports){
+'use strict';
+
+var split = require('browser-split');
+
+var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
+var notClassId = /^\.|#/;
+
+module.exports = parseTag;
+
+function parseTag(tag, props) {
+    if (!tag) {
+        return 'DIV';
+    }
+
+    var noId = !(props.hasOwnProperty('id'));
+
+    var tagParts = split(tag, classIdSplit);
+    var tagName = null;
+
+    if (notClassId.test(tagParts[1])) {
+        tagName = 'DIV';
+    }
+
+    var classes, part, type, i;
+
+    for (i = 0; i < tagParts.length; i++) {
+        part = tagParts[i];
+
+        if (!part) {
+            continue;
+        }
+
+        type = part.charAt(0);
+
+        if (!tagName) {
+            tagName = part;
+        } else if (type === '.') {
+            classes = classes || [];
+            classes.push(part.substring(1, part.length));
+        } else if (type === '#' && noId) {
+            props.id = part.substring(1, part.length);
+        }
+    }
+
+    if (classes) {
+        if (props.className) {
+            classes.push(props.className);
+        }
+
+        props.className = classes.join(' ');
+    }
+
+    return props.namespace ? tagName : tagName.toUpperCase();
+}
+
+},{"browser-split":5}],24:[function(require,module,exports){
+var isVNode = require("./is-vnode")
+var isVText = require("./is-vtext")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+
+module.exports = handleThunk
+
+function handleThunk(a, b) {
+    var renderedA = a
+    var renderedB = b
+
+    if (isThunk(b)) {
+        renderedB = renderThunk(b, a)
+    }
+
+    if (isThunk(a)) {
+        renderedA = renderThunk(a, null)
+    }
+
+    return {
+        a: renderedA,
+        b: renderedB
+    }
+}
+
+function renderThunk(thunk, previous) {
+    var renderedThunk = thunk.vnode
+
+    if (!renderedThunk) {
+        renderedThunk = thunk.vnode = thunk.render(previous)
+    }
+
+    if (!(isVNode(renderedThunk) ||
+            isVText(renderedThunk) ||
+            isWidget(renderedThunk))) {
+        throw new Error("thunk did not return a valid node");
+    }
+
+    return renderedThunk
+}
+
+},{"./is-thunk":25,"./is-vnode":27,"./is-vtext":28,"./is-widget":29}],25:[function(require,module,exports){
+module.exports = isThunk
+
+function isThunk(t) {
+    return t && t.type === "Thunk"
+}
+
+},{}],26:[function(require,module,exports){
+module.exports = isHook
+
+function isHook(hook) {
+    return hook &&
+      (typeof hook.hook === "function" && !hook.hasOwnProperty("hook") ||
+       typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
+}
+
+},{}],27:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualNode
+
+function isVirtualNode(x) {
+    return x && x.type === "VirtualNode" && x.version === version
+}
+
+},{"./version":30}],28:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualText
+
+function isVirtualText(x) {
+    return x && x.type === "VirtualText" && x.version === version
+}
+
+},{"./version":30}],29:[function(require,module,exports){
+module.exports = isWidget
+
+function isWidget(w) {
+    return w && w.type === "Widget"
+}
+
+},{}],30:[function(require,module,exports){
+module.exports = "2"
+
+},{}],31:[function(require,module,exports){
+var version = require("./version")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+var isVHook = require("./is-vhook")
+
+module.exports = VirtualNode
+
+var noProperties = {}
+var noChildren = []
+
+function VirtualNode(tagName, properties, children, key, namespace) {
+    this.tagName = tagName
+    this.properties = properties || noProperties
+    this.children = children || noChildren
+    this.key = key != null ? String(key) : undefined
+    this.namespace = (typeof namespace === "string") ? namespace : null
+
+    var count = (children && children.length) || 0
+    var descendants = 0
+    var hasWidgets = false
+    var hasThunks = false
+    var descendantHooks = false
+    var hooks
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var property = properties[propName]
+            if (isVHook(property) && property.unhook) {
+                if (!hooks) {
+                    hooks = {}
+                }
+
+                hooks[propName] = property
+            }
+        }
+    }
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isVNode(child)) {
+            descendants += child.count || 0
+
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
+            }
+
+            if (!hasThunks && child.hasThunks) {
+                hasThunks = true
+            }
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
+        } else if (!hasThunks && isThunk(child)) {
+            hasThunks = true;
+        }
+    }
+
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hasThunks = hasThunks
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
+}
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
+
+},{"./is-thunk":25,"./is-vhook":26,"./is-vnode":27,"./is-widget":29,"./version":30}],32:[function(require,module,exports){
+var version = require("./version")
+
+VirtualPatch.NONE = 0
+VirtualPatch.VTEXT = 1
+VirtualPatch.VNODE = 2
+VirtualPatch.WIDGET = 3
+VirtualPatch.PROPS = 4
+VirtualPatch.ORDER = 5
+VirtualPatch.INSERT = 6
+VirtualPatch.REMOVE = 7
+VirtualPatch.THUNK = 8
+
+module.exports = VirtualPatch
+
+function VirtualPatch(type, vNode, patch) {
+    this.type = Number(type)
+    this.vNode = vNode
+    this.patch = patch
+}
+
+VirtualPatch.prototype.version = version
+VirtualPatch.prototype.type = "VirtualPatch"
+
+},{"./version":30}],33:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = VirtualText
+
+function VirtualText(text) {
+    this.text = String(text)
+}
+
+VirtualText.prototype.version = version
+VirtualText.prototype.type = "VirtualText"
+
+},{"./version":30}],34:[function(require,module,exports){
+var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook")
+
+module.exports = diffProps
+
+function diffProps(a, b) {
+    var diff
+
+    for (var aKey in a) {
+        if (!(aKey in b)) {
+            diff = diff || {}
+            diff[aKey] = undefined
+        }
+
+        var aValue = a[aKey]
+        var bValue = b[aKey]
+
+        if (aValue === bValue) {
+            continue
+        } else if (isObject(aValue) && isObject(bValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            } else if (isHook(bValue)) {
+                 diff = diff || {}
+                 diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(aValue, bValue)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
+            }
+        } else {
+            diff = diff || {}
+            diff[aKey] = bValue
+        }
+    }
+
+    for (var bKey in b) {
+        if (!(bKey in a)) {
+            diff = diff || {}
+            diff[bKey] = b[bKey]
+        }
+    }
+
+    return diff
+}
+
+function getPrototype(value) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(value)
+  } else if (value.__proto__) {
+    return value.__proto__
+  } else if (value.constructor) {
+    return value.constructor.prototype
+  }
+}
+
+},{"../vnode/is-vhook":26,"is-object":11}],35:[function(require,module,exports){
+var isArray = require("x-is-array")
+
+var VPatch = require("../vnode/vpatch")
+var isVNode = require("../vnode/is-vnode")
+var isVText = require("../vnode/is-vtext")
+var isWidget = require("../vnode/is-widget")
+var isThunk = require("../vnode/is-thunk")
+var handleThunk = require("../vnode/handle-thunk")
+
+var diffProps = require("./diff-props")
+
+module.exports = diff
+
+function diff(a, b) {
+    var patch = { a: a }
+    walk(a, b, patch, 0)
+    return patch
+}
+
+function walk(a, b, patch, index) {
+    if (a === b) {
+        return
+    }
+
+    var apply = patch[index]
+    var applyClear = false
+
+    if (isThunk(a) || isThunk(b)) {
+        thunks(a, b, patch, index)
+    } else if (b == null) {
+
+        // If a is a widget we will add a remove patch for it
+        // Otherwise any child widgets/hooks must be destroyed.
+        // This prevents adding two remove patches for a widget.
+        if (!isWidget(a)) {
+            clearState(a, patch, index)
+            apply = patch[index]
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
+    } else if (isVNode(b)) {
+        if (isVNode(a)) {
+            if (a.tagName === b.tagName &&
+                a.namespace === b.namespace &&
+                a.key === b.key) {
+                var propsPatch = diffProps(a.properties, b.properties)
+                if (propsPatch) {
+                    apply = appendPatch(apply,
+                        new VPatch(VPatch.PROPS, a, propsPatch))
+                }
+                apply = diffChildren(a, b, patch, apply, index)
+            } else {
+                apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+                applyClear = true
+            }
+        } else {
+            apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+            applyClear = true
+        }
+    } else if (isVText(b)) {
+        if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            applyClear = true
+        } else if (a.text !== b.text) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+        }
+    } else if (isWidget(b)) {
+        if (!isWidget(a)) {
+            applyClear = true
+        }
+
+        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
+    }
+
+    if (apply) {
+        patch[index] = apply
+    }
+
+    if (applyClear) {
+        clearState(a, patch, index)
+    }
+}
+
+function diffChildren(a, b, patch, apply, index) {
+    var aChildren = a.children
+    var orderedSet = reorder(aChildren, b.children)
+    var bChildren = orderedSet.children
+
+    var aLen = aChildren.length
+    var bLen = bChildren.length
+    var len = aLen > bLen ? aLen : bLen
+
+    for (var i = 0; i < len; i++) {
+        var leftNode = aChildren[i]
+        var rightNode = bChildren[i]
+        index += 1
+
+        if (!leftNode) {
+            if (rightNode) {
+                // Excess nodes in b need to be added
+                apply = appendPatch(apply,
+                    new VPatch(VPatch.INSERT, null, rightNode))
+            }
+        } else {
+            walk(leftNode, rightNode, patch, index)
+        }
+
+        if (isVNode(leftNode) && leftNode.count) {
+            index += leftNode.count
+        }
+    }
+
+    if (orderedSet.moves) {
+        // Reorder nodes last
+        apply = appendPatch(apply, new VPatch(
+            VPatch.ORDER,
+            a,
+            orderedSet.moves
+        ))
+    }
+
+    return apply
+}
+
+function clearState(vNode, patch, index) {
+    // TODO: Make this a single walk, not two
+    unhook(vNode, patch, index)
+    destroyWidgets(vNode, patch, index)
+}
+
+// Patch records for all destroyed widgets must be added because we need
+// a DOM node reference for the destroy function
+function destroyWidgets(vNode, patch, index) {
+    if (isWidget(vNode)) {
+        if (typeof vNode.destroy === "function") {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(VPatch.REMOVE, vNode, null)
+            )
+        }
+    } else if (isVNode(vNode) && (vNode.hasWidgets || vNode.hasThunks)) {
+        var children = vNode.children
+        var len = children.length
+        for (var i = 0; i < len; i++) {
+            var child = children[i]
+            index += 1
+
+            destroyWidgets(child, patch, index)
+
+            if (isVNode(child) && child.count) {
+                index += child.count
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+// Create a sub-patch for thunks
+function thunks(a, b, patch, index) {
+    var nodes = handleThunk(a, b)
+    var thunkPatch = diff(nodes.a, nodes.b)
+    if (hasPatches(thunkPatch)) {
+        patch[index] = new VPatch(VPatch.THUNK, null, thunkPatch)
+    }
+}
+
+function hasPatches(patch) {
+    for (var index in patch) {
+        if (index !== "a") {
+            return true
+        }
+    }
+
+    return false
+}
+
+// Execute hooks when two nodes are identical
+function unhook(vNode, patch, index) {
+    if (isVNode(vNode)) {
+        if (vNode.hooks) {
+            patch[index] = appendPatch(
+                patch[index],
+                new VPatch(
+                    VPatch.PROPS,
+                    vNode,
+                    undefinedKeys(vNode.hooks)
+                )
+            )
+        }
+
+        if (vNode.descendantHooks || vNode.hasThunks) {
+            var children = vNode.children
+            var len = children.length
+            for (var i = 0; i < len; i++) {
+                var child = children[i]
+                index += 1
+
+                unhook(child, patch, index)
+
+                if (isVNode(child) && child.count) {
+                    index += child.count
+                }
+            }
+        }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
+    }
+}
+
+function undefinedKeys(obj) {
+    var result = {}
+
+    for (var key in obj) {
+        result[key] = undefined
+    }
+
+    return result
+}
+
+// List diff, naive left to right reordering
+function reorder(aChildren, bChildren) {
+    // O(M) time, O(M) memory
+    var bChildIndex = keyIndex(bChildren)
+    var bKeys = bChildIndex.keys
+    var bFree = bChildIndex.free
+
+    if (bFree.length === bChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(N) time, O(N) memory
+    var aChildIndex = keyIndex(aChildren)
+    var aKeys = aChildIndex.keys
+    var aFree = aChildIndex.free
+
+    if (aFree.length === aChildren.length) {
+        return {
+            children: bChildren,
+            moves: null
+        }
+    }
+
+    // O(MAX(N, M)) memory
+    var newChildren = []
+
+    var freeIndex = 0
+    var freeCount = bFree.length
+    var deletedItems = 0
+
+    // Iterate through a and match a node in b
+    // O(N) time,
+    for (var i = 0 ; i < aChildren.length; i++) {
+        var aItem = aChildren[i]
+        var itemIndex
+
+        if (aItem.key) {
+            if (bKeys.hasOwnProperty(aItem.key)) {
+                // Match up the old keys
+                itemIndex = bKeys[aItem.key]
+                newChildren.push(bChildren[itemIndex])
+
+            } else {
+                // Remove old keyed items
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        } else {
+            // Match the item in a with the next free item in b
+            if (freeIndex < freeCount) {
+                itemIndex = bFree[freeIndex++]
+                newChildren.push(bChildren[itemIndex])
+            } else {
+                // There are no free items in b to match with
+                // the free items in a, so the extra free nodes
+                // are deleted.
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+            }
+        }
+    }
+
+    var lastFreeIndex = freeIndex >= bFree.length ?
+        bChildren.length :
+        bFree[freeIndex]
+
+    // Iterate through b and append any new keys
+    // O(M) time
+    for (var j = 0; j < bChildren.length; j++) {
+        var newItem = bChildren[j]
+
+        if (newItem.key) {
+            if (!aKeys.hasOwnProperty(newItem.key)) {
+                // Add any new keyed items
+                // We are adding new items to the end and then sorting them
+                // in place. In future we should insert new items in place.
+                newChildren.push(newItem)
+            }
+        } else if (j >= lastFreeIndex) {
+            // Add any leftover non-keyed items
+            newChildren.push(newItem)
+        }
+    }
+
+    var simulate = newChildren.slice()
+    var simulateIndex = 0
+    var removes = []
+    var inserts = []
+    var simulateItem
+
+    for (var k = 0; k < bChildren.length;) {
+        var wantedItem = bChildren[k]
+        simulateItem = simulate[simulateIndex]
+
+        // remove items
+        while (simulateItem === null && simulate.length) {
+            removes.push(remove(simulate, simulateIndex, null))
+            simulateItem = simulate[simulateIndex]
+        }
+
+        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+            // if we need a key in this position...
+            if (wantedItem.key) {
+                if (simulateItem && simulateItem.key) {
+                    // if an insert doesn't put this key in place, it needs to move
+                    if (bKeys[simulateItem.key] !== k + 1) {
+                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                        simulateItem = simulate[simulateIndex]
+                        // if the remove didn't put the wanted item in place, we need to insert it
+                        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+                            inserts.push({key: wantedItem.key, to: k})
+                        }
+                        // items are matching, so skip ahead
+                        else {
+                            simulateIndex++
+                        }
+                    }
+                    else {
+                        inserts.push({key: wantedItem.key, to: k})
+                    }
+                }
+                else {
+                    inserts.push({key: wantedItem.key, to: k})
+                }
+                k++
+            }
+            // a key in simulate has no matching wanted key, remove it
+            else if (simulateItem && simulateItem.key) {
+                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+            }
+        }
+        else {
+            simulateIndex++
+            k++
+        }
+    }
+
+    // remove all the remaining nodes from simulate
+    while(simulateIndex < simulate.length) {
+        simulateItem = simulate[simulateIndex]
+        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    }
+
+    // If the only moves we have are deletes then we can just
+    // let the delete patch remove these items.
+    if (removes.length === deletedItems && !inserts.length) {
+        return {
+            children: newChildren,
+            moves: null
+        }
+    }
+
+    return {
+        children: newChildren,
+        moves: {
+            removes: removes,
+            inserts: inserts
+        }
+    }
+}
+
+function remove(arr, index, key) {
+    arr.splice(index, 1)
+
+    return {
+        from: index,
+        key: key
+    }
+}
+
+function keyIndex(children) {
+    var keys = {}
+    var free = []
+    var length = children.length
+
+    for (var i = 0; i < length; i++) {
+        var child = children[i]
+
+        if (child.key) {
+            keys[child.key] = i
+        } else {
+            free.push(i)
+        }
+    }
+
+    return {
+        keys: keys,     // A hash of key name to index
+        free: free      // An array of unkeyed item indices
+    }
+}
+
+function appendPatch(apply, patch) {
+    if (apply) {
+        if (isArray(apply)) {
+            apply.push(patch)
+        } else {
+            apply = [apply, patch]
+        }
+
+        return apply
+    } else {
+        return patch
+    }
+}
+
+},{"../vnode/handle-thunk":24,"../vnode/is-thunk":25,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vpatch":32,"./diff-props":34,"x-is-array":12}]},{},[4])(4)
+});
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define('vdom-parser',[],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.vdomParser = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+/**
+ * index.js
+ *
+ * A client-side DOM to vdom parser based on DOMParser API
+ */
+
+
+
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext');
+var domParser;
+
+var propertyMap = require('./property-map');
+var namespaceMap = require('./namespace-map');
+
+var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+
+module.exports = parser;
+
+/**
+ * DOM/html string to vdom parser
+ *
+ * @param   Mixed   el    DOM element or html string
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode or VText
+ */
+function parser(el, attr) {
+	// empty input fallback to empty text node
+	if (!el) {
+		return createNode(document.createTextNode(''));
+	}
+
+	if (typeof el === 'string') {
+		if ( !('DOMParser' in window) ) {
+			throw new Error('DOMParser is not available, so parsing string to DOM node is not possible.');
+		}
+		domParser = domParser || new DOMParser();
+		var doc = domParser.parseFromString(el, 'text/html');
+
+		// most tags default to body
+		if (doc.body.firstChild) {
+			el = doc.getElementsByTagName('body')[0].firstChild;
+
+		// some tags, like script and style, default to head
+		} else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+			el = doc.head.firstChild;
+
+		// special case for html comment, cdata, doctype
+		} else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+			el = doc.firstChild;
+
+		// other element, such as whitespace, or html/body/head tag, fallback to empty text node
+		} else {
+			el = document.createTextNode('');
+		}
+	}
+
+	if (typeof el !== 'object' || !el || !el.nodeType) {
+		throw new Error('invalid dom node', el);
+	}
+
+	return createNode(el, attr);
+}
+
+/**
+ * Create vdom from dom node
+ *
+ * @param   Object  el    DOM element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode or VText
+ */
+function createNode(el, attr) {
+	// html comment is not currently supported by virtual-dom
+	if (el.nodeType === 3) {
+		return createVirtualTextNode(el);
+
+	// cdata or doctype is not currently supported by virtual-dom
+	} else if (el.nodeType === 1 || el.nodeType === 9) {
+		return createVirtualDomNode(el, attr);
+	}
+
+	// default to empty text node
+	return new VText('');
+}
+
+/**
+ * Create vtext from dom node
+ *
+ * @param   Object  el  Text node
+ * @return  Object      VText
+ */
+function createVirtualTextNode(el) {
+	return new VText(el.nodeValue);
+}
+
+/**
+ * Create vnode from dom node
+ *
+ * @param   Object  el    DOM element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Object        VNode
+ */
+function createVirtualDomNode(el, attr) {
+	var ns = el.namespaceURI !== HTML_NAMESPACE ? el.namespaceURI : null;
+	var key = attr && el.getAttribute(attr) ? el.getAttribute(attr) : null;
+
+	return new VNode(
+		el.tagName
+		, createProperties(el)
+		, createChildren(el, attr)
+		, key
+		, ns
+	);
+}
+
+/**
+ * Recursively create vdom
+ *
+ * @param   Object  el    Parent element
+ * @param   String  attr  Attribute name that contains vdom key
+ * @return  Array         Child vnode or vtext
+ */
+function createChildren(el, attr) {
+	var children = [];
+	for (var i = 0; i < el.childNodes.length; i++) {
+		children.push(createNode(el.childNodes[i], attr));
+	};
+
+	return children;
+}
+
+/**
+ * Create properties from dom node
+ *
+ * @param   Object  el  DOM element
+ * @return  Object      Node properties and attributes
+ */
+function createProperties(el) {
+	var properties = {};
+
+	if (!el.hasAttributes()) {
+		return properties;
+	}
+
+	var ns;
+	if (el.namespaceURI && el.namespaceURI !== HTML_NAMESPACE) {
+		ns = el.namespaceURI;
+	}
+
+	var attr;
+	for (var i = 0; i < el.attributes.length; i++) {
+		// use built in css style parsing
+		if(el.attributes[i].name == 'style'){
+			attr = createStyleProperty(el);
+		}
+		else if (ns) {
+			attr = createPropertyNS(el.attributes[i]);
+		} else {
+			attr = createProperty(el.attributes[i]);
+		}
+
+		// special case, namespaced attribute, use properties.foobar
+		if (attr.ns) {
+			properties[attr.name] = {
+				namespace: attr.ns
+				, value: attr.value
+			};
+
+		// special case, use properties.attributes.foobar
+		} else if (attr.isAttr) {
+			// init attributes object only when necessary
+			if (!properties.attributes) {
+				properties.attributes = {}
+			}
+			properties.attributes[attr.name] = attr.value;
+
+		// default case, use properties.foobar
+		} else {
+			properties[attr.name] = attr.value;
+		}
+	};
+
+	return properties;
+}
+
+/**
+ * Create property from dom attribute
+ *
+ * @param   Object  attr  DOM attribute
+ * @return  Object        Normalized attribute
+ */
+function createProperty(attr) {
+	var name, value, isAttr;
+
+	// using a map to find the correct case of property name
+	if (propertyMap[attr.name]) {
+		name = propertyMap[attr.name];
+	} else {
+		name = attr.name;
+	}
+	// special cases for data attribute, we default to properties.attributes.data
+	if (name.indexOf('data-') === 0 || name.indexOf('aria-') === 0) {
+		value = attr.value;
+		isAttr = true;
+	} else {
+		value = attr.value;
+	}
+
+	return {
+		name: name
+		, value: value
+		, isAttr: isAttr || false
+	};
+}
+
+/**
+ * Create namespaced property from dom attribute
+ *
+ * @param   Object  attr  DOM attribute
+ * @return  Object        Normalized attribute
+ */
+function createPropertyNS(attr) {
+	var name, value;
+
+	return {
+		name: attr.name
+		, value: attr.value
+		, ns: namespaceMap[attr.name] || ''
+	};
+}
+
+/**
+ * Create style property from dom node
+ *
+ * @param   Object  el  DOM node
+ * @return  Object        Normalized attribute
+ */
+function createStyleProperty(el) {
+	var style = el.style;
+	var output = {};
+	for (var i = 0; i < style.length; ++i) {
+		var item = style.item(i);
+		output[item] = String(style[item]);
+		// hack to workaround browser inconsistency with url()
+		if (output[item].indexOf('url') > -1) {
+			output[item] = output[item].replace(/\"/g, '')
+		}
+	}
+	return { name: 'style', value: output };
+}
+
+},{"./namespace-map":2,"./property-map":10,"virtual-dom/vnode/vnode":8,"virtual-dom/vnode/vtext":9}],2:[function(require,module,exports){
+
+/**
+ * namespace-map.js
+ *
+ * Necessary to map svg attributes back to their namespace
+ */
+
+
+
+// extracted from https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript/svg-attribute-namespace.js
+var DEFAULT_NAMESPACE = null;
+var EV_NAMESPACE = 'http://www.w3.org/2001/xml-events';
+var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+var XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
+
+var namespaces = {
+	'about': DEFAULT_NAMESPACE
+	, 'accent-height': DEFAULT_NAMESPACE
+	, 'accumulate': DEFAULT_NAMESPACE
+	, 'additive': DEFAULT_NAMESPACE
+	, 'alignment-baseline': DEFAULT_NAMESPACE
+	, 'alphabetic': DEFAULT_NAMESPACE
+	, 'amplitude': DEFAULT_NAMESPACE
+	, 'arabic-form': DEFAULT_NAMESPACE
+	, 'ascent': DEFAULT_NAMESPACE
+	, 'attributeName': DEFAULT_NAMESPACE
+	, 'attributeType': DEFAULT_NAMESPACE
+	, 'azimuth': DEFAULT_NAMESPACE
+	, 'bandwidth': DEFAULT_NAMESPACE
+	, 'baseFrequency': DEFAULT_NAMESPACE
+	, 'baseProfile': DEFAULT_NAMESPACE
+	, 'baseline-shift': DEFAULT_NAMESPACE
+	, 'bbox': DEFAULT_NAMESPACE
+	, 'begin': DEFAULT_NAMESPACE
+	, 'bias': DEFAULT_NAMESPACE
+	, 'by': DEFAULT_NAMESPACE
+	, 'calcMode': DEFAULT_NAMESPACE
+	, 'cap-height': DEFAULT_NAMESPACE
+	, 'class': DEFAULT_NAMESPACE
+	, 'clip': DEFAULT_NAMESPACE
+	, 'clip-path': DEFAULT_NAMESPACE
+	, 'clip-rule': DEFAULT_NAMESPACE
+	, 'clipPathUnits': DEFAULT_NAMESPACE
+	, 'color': DEFAULT_NAMESPACE
+	, 'color-interpolation': DEFAULT_NAMESPACE
+	, 'color-interpolation-filters': DEFAULT_NAMESPACE
+	, 'color-profile': DEFAULT_NAMESPACE
+	, 'color-rendering': DEFAULT_NAMESPACE
+	, 'content': DEFAULT_NAMESPACE
+	, 'contentScriptType': DEFAULT_NAMESPACE
+	, 'contentStyleType': DEFAULT_NAMESPACE
+	, 'cursor': DEFAULT_NAMESPACE
+	, 'cx': DEFAULT_NAMESPACE
+	, 'cy': DEFAULT_NAMESPACE
+	, 'd': DEFAULT_NAMESPACE
+	, 'datatype': DEFAULT_NAMESPACE
+	, 'defaultAction': DEFAULT_NAMESPACE
+	, 'descent': DEFAULT_NAMESPACE
+	, 'diffuseConstant': DEFAULT_NAMESPACE
+	, 'direction': DEFAULT_NAMESPACE
+	, 'display': DEFAULT_NAMESPACE
+	, 'divisor': DEFAULT_NAMESPACE
+	, 'dominant-baseline': DEFAULT_NAMESPACE
+	, 'dur': DEFAULT_NAMESPACE
+	, 'dx': DEFAULT_NAMESPACE
+	, 'dy': DEFAULT_NAMESPACE
+	, 'edgeMode': DEFAULT_NAMESPACE
+	, 'editable': DEFAULT_NAMESPACE
+	, 'elevation': DEFAULT_NAMESPACE
+	, 'enable-background': DEFAULT_NAMESPACE
+	, 'end': DEFAULT_NAMESPACE
+	, 'ev:event': EV_NAMESPACE
+	, 'event': DEFAULT_NAMESPACE
+	, 'exponent': DEFAULT_NAMESPACE
+	, 'externalResourcesRequired': DEFAULT_NAMESPACE
+	, 'fill': DEFAULT_NAMESPACE
+	, 'fill-opacity': DEFAULT_NAMESPACE
+	, 'fill-rule': DEFAULT_NAMESPACE
+	, 'filter': DEFAULT_NAMESPACE
+	, 'filterRes': DEFAULT_NAMESPACE
+	, 'filterUnits': DEFAULT_NAMESPACE
+	, 'flood-color': DEFAULT_NAMESPACE
+	, 'flood-opacity': DEFAULT_NAMESPACE
+	, 'focusHighlight': DEFAULT_NAMESPACE
+	, 'focusable': DEFAULT_NAMESPACE
+	, 'font-family': DEFAULT_NAMESPACE
+	, 'font-size': DEFAULT_NAMESPACE
+	, 'font-size-adjust': DEFAULT_NAMESPACE
+	, 'font-stretch': DEFAULT_NAMESPACE
+	, 'font-style': DEFAULT_NAMESPACE
+	, 'font-variant': DEFAULT_NAMESPACE
+	, 'font-weight': DEFAULT_NAMESPACE
+	, 'format': DEFAULT_NAMESPACE
+	, 'from': DEFAULT_NAMESPACE
+	, 'fx': DEFAULT_NAMESPACE
+	, 'fy': DEFAULT_NAMESPACE
+	, 'g1': DEFAULT_NAMESPACE
+	, 'g2': DEFAULT_NAMESPACE
+	, 'glyph-name': DEFAULT_NAMESPACE
+	, 'glyph-orientation-horizontal': DEFAULT_NAMESPACE
+	, 'glyph-orientation-vertical': DEFAULT_NAMESPACE
+	, 'glyphRef': DEFAULT_NAMESPACE
+	, 'gradientTransform': DEFAULT_NAMESPACE
+	, 'gradientUnits': DEFAULT_NAMESPACE
+	, 'handler': DEFAULT_NAMESPACE
+	, 'hanging': DEFAULT_NAMESPACE
+	, 'height': DEFAULT_NAMESPACE
+	, 'horiz-adv-x': DEFAULT_NAMESPACE
+	, 'horiz-origin-x': DEFAULT_NAMESPACE
+	, 'horiz-origin-y': DEFAULT_NAMESPACE
+	, 'id': DEFAULT_NAMESPACE
+	, 'ideographic': DEFAULT_NAMESPACE
+	, 'image-rendering': DEFAULT_NAMESPACE
+	, 'in': DEFAULT_NAMESPACE
+	, 'in2': DEFAULT_NAMESPACE
+	, 'initialVisibility': DEFAULT_NAMESPACE
+	, 'intercept': DEFAULT_NAMESPACE
+	, 'k': DEFAULT_NAMESPACE
+	, 'k1': DEFAULT_NAMESPACE
+	, 'k2': DEFAULT_NAMESPACE
+	, 'k3': DEFAULT_NAMESPACE
+	, 'k4': DEFAULT_NAMESPACE
+	, 'kernelMatrix': DEFAULT_NAMESPACE
+	, 'kernelUnitLength': DEFAULT_NAMESPACE
+	, 'kerning': DEFAULT_NAMESPACE
+	, 'keyPoints': DEFAULT_NAMESPACE
+	, 'keySplines': DEFAULT_NAMESPACE
+	, 'keyTimes': DEFAULT_NAMESPACE
+	, 'lang': DEFAULT_NAMESPACE
+	, 'lengthAdjust': DEFAULT_NAMESPACE
+	, 'letter-spacing': DEFAULT_NAMESPACE
+	, 'lighting-color': DEFAULT_NAMESPACE
+	, 'limitingConeAngle': DEFAULT_NAMESPACE
+	, 'local': DEFAULT_NAMESPACE
+	, 'marker-end': DEFAULT_NAMESPACE
+	, 'marker-mid': DEFAULT_NAMESPACE
+	, 'marker-start': DEFAULT_NAMESPACE
+	, 'markerHeight': DEFAULT_NAMESPACE
+	, 'markerUnits': DEFAULT_NAMESPACE
+	, 'markerWidth': DEFAULT_NAMESPACE
+	, 'mask': DEFAULT_NAMESPACE
+	, 'maskContentUnits': DEFAULT_NAMESPACE
+	, 'maskUnits': DEFAULT_NAMESPACE
+	, 'mathematical': DEFAULT_NAMESPACE
+	, 'max': DEFAULT_NAMESPACE
+	, 'media': DEFAULT_NAMESPACE
+	, 'mediaCharacterEncoding': DEFAULT_NAMESPACE
+	, 'mediaContentEncodings': DEFAULT_NAMESPACE
+	, 'mediaSize': DEFAULT_NAMESPACE
+	, 'mediaTime': DEFAULT_NAMESPACE
+	, 'method': DEFAULT_NAMESPACE
+	, 'min': DEFAULT_NAMESPACE
+	, 'mode': DEFAULT_NAMESPACE
+	, 'name': DEFAULT_NAMESPACE
+	, 'nav-down': DEFAULT_NAMESPACE
+	, 'nav-down-left': DEFAULT_NAMESPACE
+	, 'nav-down-right': DEFAULT_NAMESPACE
+	, 'nav-left': DEFAULT_NAMESPACE
+	, 'nav-next': DEFAULT_NAMESPACE
+	, 'nav-prev': DEFAULT_NAMESPACE
+	, 'nav-right': DEFAULT_NAMESPACE
+	, 'nav-up': DEFAULT_NAMESPACE
+	, 'nav-up-left': DEFAULT_NAMESPACE
+	, 'nav-up-right': DEFAULT_NAMESPACE
+	, 'numOctaves': DEFAULT_NAMESPACE
+	, 'observer': DEFAULT_NAMESPACE
+	, 'offset': DEFAULT_NAMESPACE
+	, 'opacity': DEFAULT_NAMESPACE
+	, 'operator': DEFAULT_NAMESPACE
+	, 'order': DEFAULT_NAMESPACE
+	, 'orient': DEFAULT_NAMESPACE
+	, 'orientation': DEFAULT_NAMESPACE
+	, 'origin': DEFAULT_NAMESPACE
+	, 'overflow': DEFAULT_NAMESPACE
+	, 'overlay': DEFAULT_NAMESPACE
+	, 'overline-position': DEFAULT_NAMESPACE
+	, 'overline-thickness': DEFAULT_NAMESPACE
+	, 'panose-1': DEFAULT_NAMESPACE
+	, 'path': DEFAULT_NAMESPACE
+	, 'pathLength': DEFAULT_NAMESPACE
+	, 'patternContentUnits': DEFAULT_NAMESPACE
+	, 'patternTransform': DEFAULT_NAMESPACE
+	, 'patternUnits': DEFAULT_NAMESPACE
+	, 'phase': DEFAULT_NAMESPACE
+	, 'playbackOrder': DEFAULT_NAMESPACE
+	, 'pointer-events': DEFAULT_NAMESPACE
+	, 'points': DEFAULT_NAMESPACE
+	, 'pointsAtX': DEFAULT_NAMESPACE
+	, 'pointsAtY': DEFAULT_NAMESPACE
+	, 'pointsAtZ': DEFAULT_NAMESPACE
+	, 'preserveAlpha': DEFAULT_NAMESPACE
+	, 'preserveAspectRatio': DEFAULT_NAMESPACE
+	, 'primitiveUnits': DEFAULT_NAMESPACE
+	, 'propagate': DEFAULT_NAMESPACE
+	, 'property': DEFAULT_NAMESPACE
+	, 'r': DEFAULT_NAMESPACE
+	, 'radius': DEFAULT_NAMESPACE
+	, 'refX': DEFAULT_NAMESPACE
+	, 'refY': DEFAULT_NAMESPACE
+	, 'rel': DEFAULT_NAMESPACE
+	, 'rendering-intent': DEFAULT_NAMESPACE
+	, 'repeatCount': DEFAULT_NAMESPACE
+	, 'repeatDur': DEFAULT_NAMESPACE
+	, 'requiredExtensions': DEFAULT_NAMESPACE
+	, 'requiredFeatures': DEFAULT_NAMESPACE
+	, 'requiredFonts': DEFAULT_NAMESPACE
+	, 'requiredFormats': DEFAULT_NAMESPACE
+	, 'resource': DEFAULT_NAMESPACE
+	, 'restart': DEFAULT_NAMESPACE
+	, 'result': DEFAULT_NAMESPACE
+	, 'rev': DEFAULT_NAMESPACE
+	, 'role': DEFAULT_NAMESPACE
+	, 'rotate': DEFAULT_NAMESPACE
+	, 'rx': DEFAULT_NAMESPACE
+	, 'ry': DEFAULT_NAMESPACE
+	, 'scale': DEFAULT_NAMESPACE
+	, 'seed': DEFAULT_NAMESPACE
+	, 'shape-rendering': DEFAULT_NAMESPACE
+	, 'slope': DEFAULT_NAMESPACE
+	, 'snapshotTime': DEFAULT_NAMESPACE
+	, 'spacing': DEFAULT_NAMESPACE
+	, 'specularConstant': DEFAULT_NAMESPACE
+	, 'specularExponent': DEFAULT_NAMESPACE
+	, 'spreadMethod': DEFAULT_NAMESPACE
+	, 'startOffset': DEFAULT_NAMESPACE
+	, 'stdDeviation': DEFAULT_NAMESPACE
+	, 'stemh': DEFAULT_NAMESPACE
+	, 'stemv': DEFAULT_NAMESPACE
+	, 'stitchTiles': DEFAULT_NAMESPACE
+	, 'stop-color': DEFAULT_NAMESPACE
+	, 'stop-opacity': DEFAULT_NAMESPACE
+	, 'strikethrough-position': DEFAULT_NAMESPACE
+	, 'strikethrough-thickness': DEFAULT_NAMESPACE
+	, 'string': DEFAULT_NAMESPACE
+	, 'stroke': DEFAULT_NAMESPACE
+	, 'stroke-dasharray': DEFAULT_NAMESPACE
+	, 'stroke-dashoffset': DEFAULT_NAMESPACE
+	, 'stroke-linecap': DEFAULT_NAMESPACE
+	, 'stroke-linejoin': DEFAULT_NAMESPACE
+	, 'stroke-miterlimit': DEFAULT_NAMESPACE
+	, 'stroke-opacity': DEFAULT_NAMESPACE
+	, 'stroke-width': DEFAULT_NAMESPACE
+	, 'surfaceScale': DEFAULT_NAMESPACE
+	, 'syncBehavior': DEFAULT_NAMESPACE
+	, 'syncBehaviorDefault': DEFAULT_NAMESPACE
+	, 'syncMaster': DEFAULT_NAMESPACE
+	, 'syncTolerance': DEFAULT_NAMESPACE
+	, 'syncToleranceDefault': DEFAULT_NAMESPACE
+	, 'systemLanguage': DEFAULT_NAMESPACE
+	, 'tableValues': DEFAULT_NAMESPACE
+	, 'target': DEFAULT_NAMESPACE
+	, 'targetX': DEFAULT_NAMESPACE
+	, 'targetY': DEFAULT_NAMESPACE
+	, 'text-anchor': DEFAULT_NAMESPACE
+	, 'text-decoration': DEFAULT_NAMESPACE
+	, 'text-rendering': DEFAULT_NAMESPACE
+	, 'textLength': DEFAULT_NAMESPACE
+	, 'timelineBegin': DEFAULT_NAMESPACE
+	, 'title': DEFAULT_NAMESPACE
+	, 'to': DEFAULT_NAMESPACE
+	, 'transform': DEFAULT_NAMESPACE
+	, 'transformBehavior': DEFAULT_NAMESPACE
+	, 'type': DEFAULT_NAMESPACE
+	, 'typeof': DEFAULT_NAMESPACE
+	, 'u1': DEFAULT_NAMESPACE
+	, 'u2': DEFAULT_NAMESPACE
+	, 'underline-position': DEFAULT_NAMESPACE
+	, 'underline-thickness': DEFAULT_NAMESPACE
+	, 'unicode': DEFAULT_NAMESPACE
+	, 'unicode-bidi': DEFAULT_NAMESPACE
+	, 'unicode-range': DEFAULT_NAMESPACE
+	, 'units-per-em': DEFAULT_NAMESPACE
+	, 'v-alphabetic': DEFAULT_NAMESPACE
+	, 'v-hanging': DEFAULT_NAMESPACE
+	, 'v-ideographic': DEFAULT_NAMESPACE
+	, 'v-mathematical': DEFAULT_NAMESPACE
+	, 'values': DEFAULT_NAMESPACE
+	, 'version': DEFAULT_NAMESPACE
+	, 'vert-adv-y': DEFAULT_NAMESPACE
+	, 'vert-origin-x': DEFAULT_NAMESPACE
+	, 'vert-origin-y': DEFAULT_NAMESPACE
+	, 'viewBox': DEFAULT_NAMESPACE
+	, 'viewTarget': DEFAULT_NAMESPACE
+	, 'visibility': DEFAULT_NAMESPACE
+	, 'width': DEFAULT_NAMESPACE
+	, 'widths': DEFAULT_NAMESPACE
+	, 'word-spacing': DEFAULT_NAMESPACE
+	, 'writing-mode': DEFAULT_NAMESPACE
+	, 'x': DEFAULT_NAMESPACE
+	, 'x-height': DEFAULT_NAMESPACE
+	, 'x1': DEFAULT_NAMESPACE
+	, 'x2': DEFAULT_NAMESPACE
+	, 'xChannelSelector': DEFAULT_NAMESPACE
+	, 'xlink:actuate': XLINK_NAMESPACE
+	, 'xlink:arcrole': XLINK_NAMESPACE
+	, 'xlink:href': XLINK_NAMESPACE
+	, 'xlink:role': XLINK_NAMESPACE
+	, 'xlink:show': XLINK_NAMESPACE
+	, 'xlink:title': XLINK_NAMESPACE
+	, 'xlink:type': XLINK_NAMESPACE
+	, 'xml:base': XML_NAMESPACE
+	, 'xml:id': XML_NAMESPACE
+	, 'xml:lang': XML_NAMESPACE
+	, 'xml:space': XML_NAMESPACE
+	, 'y': DEFAULT_NAMESPACE
+	, 'y1': DEFAULT_NAMESPACE
+	, 'y2': DEFAULT_NAMESPACE
+	, 'yChannelSelector': DEFAULT_NAMESPACE
+	, 'z': DEFAULT_NAMESPACE
+	, 'zoomAndPan': DEFAULT_NAMESPACE
+};
+
+module.exports = namespaces;
+
+},{}],3:[function(require,module,exports){
+module.exports = isThunk
+
+function isThunk(t) {
+    return t && t.type === "Thunk"
+}
+
+},{}],4:[function(require,module,exports){
+module.exports = isHook
+
+function isHook(hook) {
+    return hook &&
+      (typeof hook.hook === "function" && !hook.hasOwnProperty("hook") ||
+       typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
+}
+
+},{}],5:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = isVirtualNode
+
+function isVirtualNode(x) {
+    return x && x.type === "VirtualNode" && x.version === version
+}
+
+},{"./version":7}],6:[function(require,module,exports){
+module.exports = isWidget
+
+function isWidget(w) {
+    return w && w.type === "Widget"
+}
+
+},{}],7:[function(require,module,exports){
+module.exports = "2"
+
+},{}],8:[function(require,module,exports){
+var version = require("./version")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
+var isVHook = require("./is-vhook")
+
+module.exports = VirtualNode
+
+var noProperties = {}
+var noChildren = []
+
+function VirtualNode(tagName, properties, children, key, namespace) {
+    this.tagName = tagName
+    this.properties = properties || noProperties
+    this.children = children || noChildren
+    this.key = key != null ? String(key) : undefined
+    this.namespace = (typeof namespace === "string") ? namespace : null
+
+    var count = (children && children.length) || 0
+    var descendants = 0
+    var hasWidgets = false
+    var hasThunks = false
+    var descendantHooks = false
+    var hooks
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var property = properties[propName]
+            if (isVHook(property) && property.unhook) {
+                if (!hooks) {
+                    hooks = {}
+                }
+
+                hooks[propName] = property
+            }
+        }
+    }
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isVNode(child)) {
+            descendants += child.count || 0
+
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
+            }
+
+            if (!hasThunks && child.hasThunks) {
+                hasThunks = true
+            }
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
+        } else if (!hasThunks && isThunk(child)) {
+            hasThunks = true;
+        }
+    }
+
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hasThunks = hasThunks
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
+}
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
+
+},{"./is-thunk":3,"./is-vhook":4,"./is-vnode":5,"./is-widget":6,"./version":7}],9:[function(require,module,exports){
+var version = require("./version")
+
+module.exports = VirtualText
+
+function VirtualText(text) {
+    this.text = String(text)
+}
+
+VirtualText.prototype.version = version
+VirtualText.prototype.type = "VirtualText"
+
+},{"./version":7}],10:[function(require,module,exports){
+
+/**
+ * property-map.js
+ *
+ * Necessary to map dom attributes back to vdom properties
+ */
+
+
+
+// invert of https://www.npmjs.com/package/html-attributes
+var properties = {
+	'abbr': 'abbr'
+	, 'accept': 'accept'
+	, 'accept-charset': 'acceptCharset'
+	, 'accesskey': 'accessKey'
+	, 'action': 'action'
+	, 'allowfullscreen': 'allowFullScreen'
+	, 'allowtransparency': 'allowTransparency'
+	, 'alt': 'alt'
+	, 'async': 'async'
+	, 'autocomplete': 'autoComplete'
+	, 'autofocus': 'autoFocus'
+	, 'autoplay': 'autoPlay'
+	, 'cellpadding': 'cellPadding'
+	, 'cellspacing': 'cellSpacing'
+	, 'challenge': 'challenge'
+	, 'charset': 'charset'
+	, 'checked': 'checked'
+	, 'cite': 'cite'
+	, 'class': 'className'
+	, 'cols': 'cols'
+	, 'colspan': 'colSpan'
+	, 'command': 'command'
+	, 'content': 'content'
+	, 'contenteditable': 'contentEditable'
+	, 'contextmenu': 'contextMenu'
+	, 'controls': 'controls'
+	, 'coords': 'coords'
+	, 'crossorigin': 'crossOrigin'
+	, 'data': 'data'
+	, 'datetime': 'dateTime'
+	, 'default': 'default'
+	, 'defer': 'defer'
+	, 'dir': 'dir'
+	, 'disabled': 'disabled'
+	, 'download': 'download'
+	, 'draggable': 'draggable'
+	, 'dropzone': 'dropzone'
+	, 'enctype': 'encType'
+	, 'for': 'htmlFor'
+	, 'form': 'form'
+	, 'formaction': 'formAction'
+	, 'formenctype': 'formEncType'
+	, 'formmethod': 'formMethod'
+	, 'formnovalidate': 'formNoValidate'
+	, 'formtarget': 'formTarget'
+	, 'frameBorder': 'frameBorder'
+	, 'headers': 'headers'
+	, 'height': 'height'
+	, 'hidden': 'hidden'
+	, 'high': 'high'
+	, 'href': 'href'
+	, 'hreflang': 'hrefLang'
+	, 'http-equiv': 'httpEquiv'
+	, 'icon': 'icon'
+	, 'id': 'id'
+	, 'inputmode': 'inputMode'
+	, 'ismap': 'isMap'
+	, 'itemid': 'itemId'
+	, 'itemprop': 'itemProp'
+	, 'itemref': 'itemRef'
+	, 'itemscope': 'itemScope'
+	, 'itemtype': 'itemType'
+	, 'kind': 'kind'
+	, 'label': 'label'
+	, 'lang': 'lang'
+	, 'list': 'list'
+	, 'loop': 'loop'
+	, 'manifest': 'manifest'
+	, 'max': 'max'
+	, 'maxlength': 'maxLength'
+	, 'media': 'media'
+	, 'mediagroup': 'mediaGroup'
+	, 'method': 'method'
+	, 'min': 'min'
+	, 'minlength': 'minLength'
+	, 'multiple': 'multiple'
+	, 'muted': 'muted'
+	, 'name': 'name'
+	, 'novalidate': 'noValidate'
+	, 'open': 'open'
+	, 'optimum': 'optimum'
+	, 'pattern': 'pattern'
+	, 'ping': 'ping'
+	, 'placeholder': 'placeholder'
+	, 'poster': 'poster'
+	, 'preload': 'preload'
+	, 'radiogroup': 'radioGroup'
+	, 'readonly': 'readOnly'
+	, 'rel': 'rel'
+	, 'required': 'required'
+	, 'role': 'role'
+	, 'rows': 'rows'
+	, 'rowspan': 'rowSpan'
+	, 'sandbox': 'sandbox'
+	, 'scope': 'scope'
+	, 'scoped': 'scoped'
+	, 'scrolling': 'scrolling'
+	, 'seamless': 'seamless'
+	, 'selected': 'selected'
+	, 'shape': 'shape'
+	, 'size': 'size'
+	, 'sizes': 'sizes'
+	, 'sortable': 'sortable'
+	, 'span': 'span'
+	, 'spellcheck': 'spellCheck'
+	, 'src': 'src'
+	, 'srcdoc': 'srcDoc'
+	, 'srcset': 'srcSet'
+	, 'start': 'start'
+	, 'step': 'step'
+	, 'style': 'style'
+	, 'tabindex': 'tabIndex'
+	, 'target': 'target'
+	, 'title': 'title'
+	, 'translate': 'translate'
+	, 'type': 'type'
+	, 'typemustmatch': 'typeMustMatch'
+	, 'usemap': 'useMap'
+	, 'value': 'value'
+	, 'width': 'width'
+	, 'wmode': 'wmode'
+	, 'wrap': 'wrap'
+};
+
+module.exports = properties;
+
+},{}]},{},[1])(1)
+});
 
 define('tpl!add_contact_dropdown', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -13306,6 +14620,17 @@ __e(label_contact_username) +
 '"/>\n    <button class="pure-button button-primary" type="submit">' +
 __e(label_add) +
 '</button>\n</form>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!converse_brand_heading', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="brand-heading-container">\n    <div class="brand-heading">\n        <i class="icon-conversejs"></i>\n        <span class="brand-name">converse</span>\n    </div>\n</span>\n';
 
 }
 return __p
@@ -13441,7 +14766,7 @@ define('tpl!controlbox_toggle', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<span class="conn-feedback">' +
+__p += '<span class="toggle-feedback">' +
 __e(label_toggle) +
 '</span>\n';
 
@@ -13455,34 +14780,68 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    ';
- if (auto_login) { ;
-__p += '\n        <span class="spinner login-submit"/>\n    ';
+__p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    <legend>' +
+__e(__("Login")) +
+'</legend>\n\n    <div class="conn-feedback fade-in ';
+ if (!conn_feedback_subject) { ;
+__p += ' hidden ';
  } ;
-__p += '\n    ';
- if (!auto_login) { ;
+__p += ' ' +
+__e(conn_feedback_class) +
+'">\n        <p class="feedback-subject">' +
+__e( conn_feedback_subject ) +
+'</p>\n        <p class="feedback-message ';
+ if (!conn_feedback_message) { ;
+__p += ' hidden ';
+ } ;
+__p += '">' +
+__e(conn_feedback_message) +
+'</p>\n    </div>\n\n    ';
+ if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ;
+__p += '\n        <span class="spinner centered"/>\n    ';
+ } else { ;
 __p += '\n        ';
  if (authentication == LOGIN || authentication == EXTERNAL) { ;
 __p += '\n            <label>' +
-__e(label_username) +
-'</label>\n            <input type="text" name="jid" placeholder="' +
+__e(__("Jabber ID:")) +
+'</label>\n            <p class="form-help fade-in error ';
+ if (!_.includes(errors, 'invalid_jid')) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                ' +
+__e(__('Please enter a valid XMPP address')) +
+'\n            </p>\n            <input autofocus\n                   type="text"\n                   name="jid"\n                   class="';
+ if (_.includes(errors, 'invalid_jid')) { ;
+__p += ' error ';
+ } ;
+__p += '"\n                   placeholder="' +
 __e(placeholder_username) +
 '">\n            ';
  if (authentication !== EXTERNAL) { ;
 __p += '\n                <label>' +
-__e(label_password) +
-'</label>\n                <input type="password" name="password" placeholder="' +
-__e(placeholder_password) +
+__e(__("Password:")) +
+'</label>\n                <p class="form-help fade-in error ';
+ if (!_.includes(errors, 'password_required')) { ;
+__p += ' hidden ';
+ } ;
+__p += '">\n                    ' +
+__e(__('Please enter your password')) +
+'\n                </p>\n                <input type="password"\n                       name="password"\n                       class="';
+ if (_.includes(errors, 'password_required')) { ;
+__p += ' error ';
+ } ;
+__p += '"\n                       placeholder="' +
+__e(__('password')) +
 '">\n            ';
  } ;
 __p += '\n            <input class="pure-button button-primary" type="submit" value="' +
-__e(label_login) +
-'">\n            <span class="conn-feedback"></span>\n        ';
+__e(__('Submit')) +
+'">\n        ';
  } ;
 __p += '\n        ';
  if (authentication == ANONYMOUS) { ;
 __p += '\n            <input class="pure-button button-primary login-anon" type="submit" value="' +
-__e(label_anon_login) +
+__e(__('Click here to log in anonymously')) +
 '"/>\n        ';
  } ;
 __p += '\n        ';
@@ -13492,19 +14851,6 @@ __p += '\n            <p>Disconnected.</p>\n        ';
 __p += '\n    ';
  } ;
 __p += '\n</form>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!login_tab', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<li><a class="current" data-id="login" href="#login-dialog">' +
-__e(label_sign_in) +
-'</a></li>\n';
 
 }
 return __p
@@ -13775,7 +15121,7 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-rosterview',["jquery.noconflict", "converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item"], factory);
+    define('converse-rosterview',["jquery.noconflict", "converse-core", "tpl!group_header", "tpl!pending_contact", "tpl!requesting_contact", "tpl!roster", "tpl!roster_filter", "tpl!roster_item", "converse-chatboxes"], factory);
 })(undefined, function ($, converse, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item) {
     "use strict";
 
@@ -13836,6 +15182,7 @@ return __p
                 allow_contact_removal: true,
                 show_toolbar: true
             });
+            _converse.api.promises.add('rosterViewInitialized');
 
             var STATUSES = {
                 'dnd': __('This contact is busy'),
@@ -14394,7 +15741,7 @@ return __p
                             _this.model.destroy();
                             _this.remove();
                         }, function (err) {
-                            alert(__("Sorry, there was an error while trying to remove " + name + " as a contact."));
+                            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
                             _converse.log(err, Strophe.LogLevel.ERROR);
                         });
                     }
@@ -14664,6 +16011,7 @@ return __p
                     'model': _converse.rostergroups
                 });
                 _converse.rosterview.render();
+                _converse.emit('rosterViewInitialized');
             };
             _converse.api.listen.on('rosterInitialized', initRoster);
             _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
@@ -14685,8 +16033,8 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-controlbox',["jquery.noconflict", "converse-core", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!login_tab", "tpl!search_contact", "tpl!status_option", "converse-chatview", "converse-rosterview"], factory);
-})(undefined, function ($, converse, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_login_tab, tpl_search_contact, tpl_status_option) {
+    define('converse-controlbox',["jquery.noconflict", "converse-core", "lodash.fp", "virtual-dom", "vdom-parser", "tpl!add_contact_dropdown", "tpl!add_contact_form", "tpl!converse_brand_heading", "tpl!change_status_message", "tpl!chat_status", "tpl!choose_status", "tpl!contacts_panel", "tpl!contacts_tab", "tpl!controlbox", "tpl!controlbox_toggle", "tpl!login_panel", "tpl!search_contact", "tpl!status_option", "tpl!spinner", "converse-chatview", "converse-rosterview"], factory);
+})(undefined, function ($, converse, fp, vdom, vdom_parser, tpl_add_contact_dropdown, tpl_add_contact_form, tpl_brand_heading, tpl_change_status_message, tpl_chat_status, tpl_choose_status, tpl_contacts_panel, tpl_contacts_tab, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel, tpl_search_contact, tpl_status_option, tpl_spinner) {
     "use strict";
 
     var USERS_PANEL_ID = 'users';
@@ -14694,11 +16042,48 @@ return __p
     var _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         Backbone = _converse$env.Backbone,
+        Promise = _converse$env.Promise,
         utils = _converse$env.utils,
         _ = _converse$env._,
-        fp = _converse$env.fp,
         moment = _converse$env.moment;
 
+
+    var CONNECTION_STATUS_CSS_CLASS = {
+        'Error': 'error',
+        'Connecting': 'info',
+        'Connection failure': 'error',
+        'Authenticating': 'info',
+        'Authentication failure': 'error',
+        'Connected': 'info',
+        'Disconnected': 'error',
+        'Disconnecting': 'warn',
+        'Attached': 'info',
+        'Redirect': 'info',
+        'Reconnecting': 'warn'
+    };
+
+    var PRETTY_CONNECTION_STATUS = {
+        0: 'Error',
+        1: 'Connecting',
+        2: 'Connection failure',
+        3: 'Authenticating',
+        4: 'Authentication failure',
+        5: 'Connected',
+        6: 'Disconnected',
+        7: 'Disconnecting',
+        8: 'Attached',
+        9: 'Redirect',
+        10: 'Reconnecting'
+    };
+
+    var REPORTABLE_STATUSES = [0, // ERROR'
+    1, // CONNECTING
+    2, // CONNFAIL
+    3, // AUTHENTICATING
+    4, // AUTHFAIL
+    7, // DISCONNECTING
+    10 // RECONNECTING
+    ];
 
     converse.plugins.add('converse-controlbox', {
 
@@ -14709,16 +16094,6 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            initChatBoxes: function initChatBoxes() {
-                this.__super__.initChatBoxes.apply(this, arguments);
-                this.controlboxtoggle = new this.ControlBoxToggle();
-            },
-            initConnection: function initConnection() {
-                this.__super__.initConnection.apply(this, arguments);
-                if (this.connection) {
-                    this.addControlBox();
-                }
-            },
             _tearDown: function _tearDown() {
                 this.__super__._tearDown.apply(this, arguments);
                 if (this.rosterview) {
@@ -14745,9 +16120,9 @@ return __p
                     return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
                 },
                 onChatBoxesFetched: function onChatBoxesFetched(collection, resp) {
+                    this.__super__.onChatBoxesFetched.apply(this, arguments);
                     var _converse = this.__super__._converse;
 
-                    this.__super__.onChatBoxesFetched.apply(this, arguments);
                     if (!_.includes(_.map(collection, 'id'), 'controlbox')) {
                         _converse.addControlBox();
                     }
@@ -14815,9 +16190,12 @@ return __p
 
             ChatBoxView: {
                 insertIntoDOM: function insertIntoDOM() {
-                    var _converse = this.__super__._converse;
-
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    var view = this.__super__._converse.chatboxviews.get("controlbox");
+                    if (view) {
+                        view.el.insertAdjacentElement('afterend', this.el);
+                    } else {
+                        this.__super__.insertIntoDOM.apply(this, arguments);
+                    }
                     return this;
                 }
             }
@@ -14834,16 +16212,19 @@ return __p
             _converse.api.settings.update({
                 allow_logout: true,
                 default_domain: undefined,
+                locked_domain: undefined,
                 show_controlbox_by_default: false,
                 sticky_controlbox: false,
                 xhr_user_search: false,
                 xhr_user_search_url: ''
             });
 
+            _converse.api.promises.add('controlboxInitialized');
+
             var LABEL_CONTACTS = __('Contacts');
 
             _converse.addControlBox = function () {
-                return _converse.chatboxes.add({
+                _converse.chatboxes.add({
                     id: 'controlbox',
                     box_id: 'controlbox',
                     type: 'controlbox',
@@ -14853,7 +16234,7 @@ return __p
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox',
+                className: 'chatbox fade-in',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
@@ -14861,7 +16242,10 @@ return __p
                 },
 
                 initialize: function initialize() {
-                    this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    if (_.isUndefined(_converse.controlboxtoggle)) {
+                        _converse.controlboxtoggle = new _converse.ControlBoxToggle();
+                        this.$el.insertAfter(_converse.controlboxtoggle.$el);
+                    }
                     this.model.on('change:connected', this.onConnected, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('hide', this.hide, this);
@@ -14869,8 +16253,9 @@ return __p
                     this.model.on('change:closed', this.ensureClosedState, this);
                     this.render();
                     if (this.model.get('connected')) {
-                        this.insertRoster();
+                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
+                    _converse.emit('controlboxInitialized');
                 },
                 render: function render() {
                     if (this.model.get('connected')) {
@@ -14896,25 +16281,55 @@ return __p
                 },
                 onConnected: function onConnected() {
                     if (this.model.get('connected')) {
-                        this.render().insertRoster();
+                        this.render();
+                        _converse.api.waitUntil('rosterViewInitialized').then(this.insertRoster.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         this.model.save();
                     }
                 },
                 insertRoster: function insertRoster() {
-                    /* Place the rosterview inside the "Contacts" panel.
-                     */
-                    this.contactspanel.$el.append(_converse.rosterview.$el);
+                    /* Place the rosterview inside the "Contacts" panel. */
+                    this.contactspanel.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
                     return this;
                 },
+                createBrandHeadingHTML: function createBrandHeadingHTML() {
+                    return tpl_brand_heading();
+                },
+                insertBrandHeading: function insertBrandHeading() {
+                    var heading_el = this.el.querySelector('.brand-heading-container');
+                    if (_.isNull(heading_el)) {
+                        var el = this.el.querySelector('.controlbox-head');
+                        el.insertAdjacentHTML('beforeend', this.createBrandHeadingHTML());
+                    } else {
+                        heading_el.outerHTML = this.createBrandHeadingHTML();
+                    }
+                },
                 renderLoginPanel: function renderLoginPanel() {
-                    this.loginpanel = new _converse.LoginPanel({
-                        '$parent': this.$el.find('.controlbox-panes'),
-                        'model': this
-                    });
-                    this.loginpanel.render();
+                    this.el.classList.add("logged-out");
+                    if (_.isNil(this.loginpanel)) {
+                        this.loginpanel = new _converse.LoginPanel({
+                            'model': new _converse.LoginPanelModel()
+                        });
+                        var panes = this.el.querySelector('.controlbox-panes');
+                        panes.innerHTML = '';
+                        panes.appendChild(this.loginpanel.render().el);
+                        this.insertBrandHeading();
+                    } else {
+                        this.loginpanel.render();
+                    }
                     return this;
                 },
                 renderContactsPanel: function renderContactsPanel() {
+                    /* Renders the "Contacts" panel of the controlbox.
+                     *
+                     * This will only be called after the user has already been
+                     * logged in.
+                     */
+                    if (this.loginpanel) {
+                        this.loginpanel.remove();
+                        delete this.loginpanel;
+                    }
+                    this.el.classList.remove("logged-out");
+
                     if (_.isUndefined(this.model.get('active-panel'))) {
                         this.model.save({ 'active-panel': USERS_PANEL_ID });
                     }
@@ -14964,13 +16379,11 @@ return __p
                     return this;
                 },
                 onControlBoxToggleHidden: function onControlBoxToggleHidden() {
-                    var that = this;
-                    utils.fadeIn(this.el, function () {
-                        _converse.controlboxtoggle.updateOnlineCount();
-                        utils.refreshWebkit();
-                        that.model.set('closed', false);
-                        _converse.emit('controlBoxOpened', that);
-                    });
+                    _converse.controlboxtoggle.updateOnlineCount();
+                    utils.refreshWebkit();
+                    this.model.set('closed', false);
+                    this.el.classList.remove('hidden');
+                    _converse.emit('controlBoxOpened', this);
                 },
                 show: function show() {
                     _converse.controlboxtoggle.hide(this.onControlBoxToggleHidden.bind(this));
@@ -15003,81 +16416,98 @@ return __p
                 }
             });
 
+            _converse.LoginPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'errors': []
+                }
+            });
+
             _converse.LoginPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "login-dialog",
-                className: 'controlbox-pane',
+                id: "converse-login-panel",
+                className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-login': 'authenticate'
+                    'submit form#converse-login': 'authenticate',
+                    'blur   input': 'validate'
                 },
 
                 initialize: function initialize(cfg) {
-                    cfg.$parent.html(this.$el.html(tpl_login_panel({
+                    this.model.on('change', this.render, this);
+                    this.listenTo(_converse.connfeedback, 'change', this.render);
+                },
+                render: function render() {
+                    var connection_status = _converse.connfeedback.get('connection_status');
+                    var feedback_class = void 0,
+                        pretty_status = void 0;
+                    if (_.includes(REPORTABLE_STATUSES, connection_status)) {
+                        pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
+                        feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
+                    }
+                    var html = tpl_login_panel(_.extend(this.model.toJSON(), {
+                        '__': __,
+                        '_converse': _converse,
                         'ANONYMOUS': _converse.ANONYMOUS,
                         'EXTERNAL': _converse.EXTERNAL,
                         'LOGIN': _converse.LOGIN,
                         'PREBIND': _converse.PREBIND,
                         'auto_login': _converse.auto_login,
                         'authentication': _converse.authentication,
-                        'label_username': __('XMPP Username:'),
-                        'label_password': __('Password:'),
-                        'label_anon_login': __('Click here to log in anonymously'),
-                        'label_login': __('Log In'),
-                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@server'),
-                        'placeholder_password': __('password')
-                    })));
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
-                },
-                render: function render() {
-                    this.$tabs.append(tpl_login_tab({ label_sign_in: __('Sign in') }));
-                    this.$el.find('input#jid').focus();
-                    if (!this.$el.is(':visible')) {
-                        this.$el.show();
+                        'connection_status': connection_status,
+                        'conn_feedback_class': feedback_class,
+                        'conn_feedback_subject': pretty_status,
+                        'conn_feedback_message': _converse.connfeedback.get('message'),
+                        'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
+                    }));
+                    var form = this.el.querySelector('form');
+                    if (_.isNull(form)) {
+                        this.el.innerHTML = html;
+                    } else {
+                        var patches = vdom.diff(vdom_parser(form), vdom_parser(html));
+                        vdom.patch(form, patches);
                     }
                     return this;
                 },
+                validate: function validate() {
+                    var form = this.el.querySelector('form');
+                    var jid = form.querySelector('input[name=jid]').value;
+                    var password = _.get(form.querySelector('input[name=password]'), 'value');
+                    var errors = [];
+                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
+                        errors.push(errors, 'invalid_jid');
+                    }
+                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
+                        errors.push(errors, 'password_required');
+                    }
+                    this.model.set('errors', errors);
+                    return errors.length == 0;
+                },
                 authenticate: function authenticate(ev) {
+                    /* Authenticate the user based on a form submission event.
+                     */
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    var $form = $(ev.target);
                     if (_converse.authentication === _converse.ANONYMOUS) {
-                        this.connect($form, _converse.jid, null);
+                        this.connect(_converse.jid, null);
                         return;
                     }
-                    var $jid_input = $form.find('input[name=jid]');
-                    var $pw_input = $form.find('input[name=password]');
-                    var password = $pw_input.val();
-
-                    var jid = $jid_input.val(),
-                        errors = false;
-
-                    if (!jid || _.filter(jid.split('@')).length < 2) {
-                        errors = true;
-                        $jid_input.addClass('error');
-                    }
-                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
-                        errors = true;
-                        $pw_input.addClass('error');
-                    }
-                    if (errors) {
+                    if (!this.validate()) {
                         return;
                     }
+                    var jid = ev.target.querySelector('input[name=jid]').value;
+                    var password = _.get(ev.target.querySelector('input[name=password]'), 'value');
+
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect($form, jid, password);
+                    this.connect(jid, password);
                     return false;
                 },
-                connect: function connect($form, jid, password) {
-                    var resource = void 0;
-                    if ($form) {
-                        $form.find('input[type=submit]').hide().after('<span class="spinner login-submit"/>');
-                    }
+                connect: function connect(jid, password) {
                     if (jid) {
-                        resource = Strophe.getResourceFromJid(jid);
+                        var resource = Strophe.getResourceFromJid(jid);
                         if (!resource) {
                             jid = jid.toLowerCase() + _converse.generateResource();
                         } else {
@@ -15086,10 +16516,6 @@ return __p
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
-                },
-                remove: function remove() {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
 
@@ -15214,7 +16640,6 @@ return __p
                 },
                 render: function render() {
                     this.renderTab();
-
                     var widgets = tpl_contacts_panel({
                         label_online: __('Online'),
                         label_busy: __('Busy'),
@@ -15283,14 +16708,16 @@ return __p
                 searchContacts: function searchContacts(ev) {
                     ev.preventDefault();
                     $.getJSON(_converse.xhr_user_search_url + "?q=" + $(ev.target).find('input.username').val(), function (data) {
+                        var title_subscribe = __('Click to add as a chat contact');
+                        var no_users_text = __('No users found');
                         var $ul = $('.search-xmpp ul');
                         $ul.find('li.found-user').remove();
                         $ul.find('li.chat-info').remove();
                         if (!data.length) {
-                            $ul.append("<li class=\"chat-info\">" + __('No users found') + "</li>");
+                            $ul.append("<li class=\"chat-info\">" + no_users_text + "</li>");
                         }
                         $(data).each(function (idx, obj) {
-                            $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"" + __('Click to add as a chat contact') + "\"></a>").attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
+                            $ul.append($('<li class="found-user"></li>').append($("<a class=\"subscribe-to-user\" href=\"#\" title=\"" + title_subscribe + "\"></a>").attr('data-recipient', Strophe.getNodeFromJid(obj.id) + "@" + Strophe.getDomainFromJid(obj.id)).text(obj.fullname)));
                         });
                     });
                 },
@@ -15300,7 +16727,7 @@ return __p
                     var jid = $input.val();
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML({
-                            error_message: __('Please enter a valid XMPP username'),
+                            error_message: __('Please enter a valid XMPP address'),
                             label_contact_username: __('e.g. user@example.org'),
                             label_add: __('Add'),
                             value: jid
@@ -15333,24 +16760,28 @@ return __p
                 },
 
                 initialize: function initialize() {
-                    _converse.chatboxviews.$el.prepend(this.render());
+                    var _this = this;
+
+                    _converse.chatboxviews.$el.prepend(this.render().el);
                     this.updateOnlineCount();
                     var that = this;
-                    _converse.on('initialized', function () {
+                    _converse.api.waitUntil('initialized').then(function () {
+                        _this.render();
                         _converse.roster.on("add", that.updateOnlineCount, that);
                         _converse.roster.on('change', that.updateOnlineCount, that);
                         _converse.roster.on("destroy", that.updateOnlineCount, that);
                         _converse.roster.on("remove", that.updateOnlineCount, that);
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
                 render: function render() {
                     // We let the render method of ControlBoxView decide whether
                     // the ControlBox or the Toggle must be shown. This prevents
                     // artifacts (i.e. on page load the toggle is shown only to then
                     // seconds later be hidden in favor of the control box).
-                    return this.$el.html(tpl_controlbox_toggle({
-                        'label_toggle': __('Toggle chat')
-                    }));
+                    this.el.innerHTML = tpl_controlbox_toggle({
+                        'label_toggle': _converse.connection.connected ? __('Contacts') : __('Toggle chat')
+                    });
+                    return this;
                 },
 
 
@@ -15398,6 +16829,8 @@ return __p
                 }
             });
 
+            Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
             var disconnect = function disconnect() {
                 /* Upon disconnection, set connected to `false`, so that if
                  * we reconnect,
@@ -15412,7 +16845,7 @@ return __p
             _converse.on('disconnected', disconnect);
 
             var afterReconnected = function afterReconnected() {
-                /* After reconnection makes sure the controlbox's is aware.
+                /* After reconnection makes sure the controlbox is aware.
                  */
                 var view = _converse.chatboxviews.get('controlbox');
                 if (view.model.get('connected')) {
@@ -15426,6 +16859,398 @@ return __p
     });
 });
 //# sourceMappingURL=converse-controlbox.js.map;
+
+define('tpl!field', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<field var="' +
+__e(name) +
+'">\n';
+ if (_.isArray(value)) { ;
+__p += '\n    ';
+ _.each(value,function(arrayValue) { ;
+__p += '<value>' +
+__e(arrayValue) +
+'</value>';
+ }); ;
+__p += '\n';
+ } else { ;
+__p += '\n    <value>' +
+__e(value) +
+'</value>\n';
+ } ;
+__p += '</field>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!select_option', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<option value="' +
+__e(value) +
+'" ';
+ if (selected) { ;
+__p += ' selected="selected" ';
+ } ;
+__p += ' >' +
+__e(label) +
+'</option>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_select', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <select name="' +
+__e(name) +
+'"  ';
+ if (multiple) { ;
+__p += ' multiple="multiple" ';
+ } ;
+__p += '>' +
+((__t = (options)) == null ? '' : __t) +
+'</select>\n</label>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_textarea', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="label-ta">' +
+__e(label) +
+'</label>\n<textarea name="' +
+__e(name) +
+'">' +
+__e(value) +
+'</textarea>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_checkbox', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label class="checkbox" for="' +
+__e(name) +
+'">' +
+__e(label) +
+'<input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" ' +
+__e(checked) +
+'></label>\n\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_username', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<div class="input-group">\n    <input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'"\n        ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' />\n    <span title="' +
+__e(domain) +
+'">' +
+__e(domain) +
+'</span>\n</div>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_input', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <input name="' +
+__e(name) +
+'" type="' +
+__e(type) +
+'" \n        ';
+ if (placeholder) { ;
+__p += ' placeholder="' +
+__e(placeholder) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (value) { ;
+__p += ' value="' +
+__e(value) +
+'" ';
+ } ;
+__p += '\n        ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n</label>\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_captcha', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if (label) { ;
+__p += '\n<label>\n    ' +
+__e(label) +
+'\n</label>\n';
+ } ;
+__p += '\n<img src="data:' +
+__e(type) +
+';base64,' +
+__e(data) +
+'">\n<input name="' +
+__e(name) +
+'" type="text" ';
+ if (required) { ;
+__p += ' class="required" ';
+ } ;
+__p += ' >\n\n\n';
+
+}
+return __p
+};});
+
+
+define('tpl!form_url', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<label>\n    ' +
+__e(label) +
+'\n    <a class="form-url" target="_blank" rel="noopener" href="' +
+__e(value) +
+'">' +
+__e(value) +
+'</a>\n</label>\n';
+
+}
+return __p
+};});
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the utilities module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define, escape, locales, Jed */
+(function (root, factory) {
+    define('form-utils',[
+        "sizzle",
+        "lodash.noconflict",
+        "utils",
+        "tpl!field",
+        "tpl!select_option",
+        "tpl!form_select",
+        "tpl!form_textarea",
+        "tpl!form_checkbox",
+        "tpl!form_username",
+        "tpl!form_input",
+        "tpl!form_captcha",
+        "tpl!form_url",
+    ], factory);
+}(this, function (
+        sizzle,
+        _,
+        u,
+        tpl_field,
+        tpl_select_option,
+        tpl_form_select,
+        tpl_form_textarea,
+        tpl_form_checkbox,
+        tpl_form_username,
+        tpl_form_input,
+        tpl_form_captcha,
+        tpl_form_url
+    ) {
+    "use strict";
+
+    var XFORM_TYPE_MAP = {
+        'text-private': 'password',
+        'text-single': 'text',
+        'fixed': 'label',
+        'boolean': 'checkbox',
+        'hidden': 'hidden',
+        'jid-multi': 'textarea',
+        'list-single': 'dropdown',
+        'list-multi': 'dropdown'
+    };
+
+    u.webForm2xForm = function (field) {
+        /* Takes an HTML DOM and turns it into an XForm field.
+         *
+         * Parameters:
+         *      (DOMElement) field - the field to convert
+         */
+        let value;
+        if (field.getAttribute('type') === 'checkbox') {
+            value = field.checked && 1 || 0;
+        } else if (field.tagName == "textarea") {
+            value = _.filter(field.value.split('\n'), _.trim);
+        } else {
+            value = field.value;
+        }
+        return u.stringToDOM(
+            tpl_field({
+                name: field.getAttribute('name'),
+                value: value
+            })
+        )[0];
+    };
+
+    u.xForm2webForm = function (field, stanza, domain) {
+        /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
+         * and turns it into an HTML field.
+         *
+         * Returns either text or a DOM element (which is not ideal, but fine
+         * for now).
+         *
+         *  Parameters:
+         *      (XMLElement) field - the field to convert
+         */
+        if (field.getAttribute('type')) {
+            if (field.getAttribute('type') === 'list-single' ||
+                field.getAttribute('type') === 'list-multi') {
+
+                const values = _.map(
+                    u.queryChildren(field, 'value'),
+                    _.partial(_.get, _, 'textContent')
+                );
+                const options = _.map(
+                    u.queryChildren(field, 'option'),
+                    function (option) {
+                        const value = _.get(option.querySelector('value'), 'textContent');
+                        return tpl_select_option({
+                            'value': value,
+                            'label': option.getAttribute('label'),
+                            'selected': _.startsWith(values, value),
+                            'required': !_.isNil(field.querySelector('required'))
+                        })
+                    }
+                );
+                return tpl_form_select({
+                    'name': field.getAttribute('var'),
+                    'label': field.getAttribute('label'),
+                    'options': options.join(''),
+                    'multiple': (field.getAttribute('type') === 'list-multi'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('type') === 'fixed') {
+                const text = _.get(field.querySelector('value'), 'textContent');
+                return '<p class="form-help">'+text+'</p>';
+            } else if (field.getAttribute('type') === 'jid-multi') {
+                return tpl_form_textarea({
+                    'name': field.getAttribute('var'),
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('type') === 'boolean') {
+                return tpl_form_checkbox({
+                    'name': field.getAttribute('var'),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'label': field.getAttribute('label') || '',
+                    'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else if (field.getAttribute('var') === 'url') {
+                return tpl_form_url({
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent')
+                });
+            } else if (field.getAttribute('var') === 'username') {
+                return tpl_form_username({
+                    'domain': ' @'+domain,
+                    'name': field.getAttribute('var'),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'label': field.getAttribute('label') || '',
+                    'value': _.get(field.querySelector('value'), 'textContent'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            } else {
+                return tpl_form_input({
+                    'label': field.getAttribute('label') || '',
+                    'name': field.getAttribute('var'),
+                    'placeholder': null,
+                    'required': !_.isNil(field.querySelector('required')),
+                    'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+                    'value': _.get(field.querySelector('value'), 'textContent')
+                });
+            }
+        } else {
+            if (field.getAttribute('var') === 'ocr') { // Captcha
+                const uri = field.querySelector('uri');
+                const el = sizzle('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]', stanza)[0];
+                return tpl_form_captcha({
+                    'label': field.getAttribute('label'),
+                    'name': field.getAttribute('var'),
+                    'data': _.get(el, 'textContent'),
+                    'type': uri.getAttribute('type'),
+                    'required': !_.isNil(field.querySelector('required'))
+                });
+            }
+        }
+    }
+    return u;
+}));
+
 
 define('tpl!chatarea', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
@@ -16111,6 +17936,7 @@ return __p
                             'from': stanza.getAttribute('from')
                         });
                     });
+                    this.trigger('featuresDiscovered');
                 }
             });
 
@@ -16124,7 +17950,7 @@ return __p
                     this.fetchEntities().then(
                         _.partial(_converse.emit, 'discoInitialized'),
                         _.partial(_converse.emit, 'discoInitialized')
-                    );
+                    ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
                 fetchEntities () {
@@ -16201,8 +18027,8 @@ return __p
  * specified in XEP-0045 Multi-user chat.
  */
 (function (root, factory) {
-    define('converse-muc',["jquery.noconflict", "converse-core", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco"], factory);
-})(undefined, function ($, converse, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
+    define('converse-muc',["jquery.noconflict", "form-utils", "converse-core", "lodash.fp", "tpl!chatarea", "tpl!chatroom", "tpl!chatroom_disconnect", "tpl!chatroom_features", "tpl!chatroom_form", "tpl!chatroom_head", "tpl!chatroom_invite", "tpl!chatroom_nickname_form", "tpl!chatroom_password_form", "tpl!chatroom_sidebar", "tpl!chatroom_toolbar", "tpl!chatrooms_tab", "tpl!info", "tpl!occupant", "tpl!room_description", "tpl!room_item", "tpl!room_panel", "tpl!spinner", "awesomplete", "converse-chatview", "converse-disco"], factory);
+})(undefined, function ($, utils, converse, fp, tpl_chatarea, tpl_chatroom, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_chatrooms_tab, tpl_info, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_spinner, Awesomplete) {
 
     "use strict";
 
@@ -16219,9 +18045,7 @@ return __p
         $pres = _converse$env.$pres,
         b64_sha1 = _converse$env.b64_sha1,
         sizzle = _converse$env.sizzle,
-        utils = _converse$env.utils,
         _ = _converse$env._,
-        fp = _converse$env.fp,
         moment = _converse$env.moment;
 
     // Add Strophe Namespaces
@@ -16348,11 +18172,12 @@ return __p
                         _converse.api.listen.on('serviceDiscovered', _this.featureAdded, _this);
                         // Features could have been added before the controlbox was
                         // initialized. We're only interested in MUC
-                        var feature = _converse.disco_entities[_converse.domain].features.findWhere({
-                            'var': Strophe.NS.MUC
-                        });
-                        if (feature) {
-                            _this.featureAdded(feature);
+                        var entity = _converse.disco_entities[_converse.domain];
+                        if (!_.isUndefined(entity)) {
+                            var feature = entity.features.findWhere({ 'var': Strophe.NS.MUC });
+                            if (feature) {
+                                _this.featureAdded(feature);
+                            }
                         }
                     });
                 },
@@ -16449,7 +18274,7 @@ return __p
                     307: __('You have been kicked from this room'),
                     321: __("You have been removed from this room because of an affiliation change"),
                     322: __("You have been removed from this room because the room has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down.")
+                    332: __("You have been removed from this room because the MUC (Multi-user chat) service is being shut down")
                 },
 
                 action_info_messages: {
@@ -16499,13 +18324,18 @@ return __p
             });
             _converse.api.promises.add('roomsPanelRendered');
 
-            _converse.openChatRoom = function (settings) {
+            _converse.openChatRoom = function (settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
+                if (_.isUndefined(settings.jid)) {
+                    throw new Error("openChatRoom needs to be called with a JID");
+                }
                 settings.type = CHATROOMS_TYPE;
-                return _converse.chatboxviews.showChat(settings);
+                settings.id = settings.jid;
+                settings.box_id = b64_sha1(settings.jid);
+                return _converse.chatboxviews.showChat(settings, bring_to_foreground);
             };
 
             _converse.ChatRoom = _converse.ChatBox.extend({
@@ -16660,18 +18490,6 @@ return __p
                     this.occupantsview.model.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.occupantsview.render();
                     this.occupantsview.model.fetch({ add: true });
-                    return this;
-                },
-                insertIntoDOM: function insertIntoDOM() {
-                    if (document.querySelector('body').contains(this.el)) {
-                        return;
-                    }
-                    var view = _converse.chatboxviews.get("controlbox");
-                    if (view) {
-                        this.$el.insertAfter(view.$el);
-                    } else {
-                        $('#conversejs').prepend(this.$el);
-                    }
                     return this;
                 },
                 generateHeadingHTML: function generateHeadingHTML() {
@@ -17066,7 +18884,7 @@ return __p
                      */
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
-                        this.showStatusNotification(__("Error: the \"" + command + "\" command takes two arguments, the user's nickname and optionally a reason."), true);
+                        this.showStatusNotification(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
                         return false;
                     }
                     return true;
@@ -17343,7 +19161,7 @@ return __p
                         $fieldset.append($('<p class="instructions">').text(instructions));
                     }
                     _.each($fields, function (field) {
-                        $fieldset.append(utils.xForm2webForm($(field), $stanza));
+                        $fieldset.append(utils.xForm2webForm(field, stanza));
                     });
                     $form.append('<fieldset></fieldset>');
                     $fieldset = $form.children('fieldset:last');
@@ -17607,7 +19425,7 @@ return __p
                     if (_converse.muc_nickname_from_jid) {
                         // We try to enter the room with the node part of
                         // the user's JID.
-                        this.join(Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid)));
+                        this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
                     }
@@ -17784,10 +19602,10 @@ return __p
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__(___('This action was done by %1$s.'), notification.actor));
+                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__(___('The reason given is: "%1$s".'), notification.reason));
+                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
                         }
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
@@ -17796,7 +19614,7 @@ return __p
                         _this11.$content.append(tpl_info({ 'message': message }));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__("The reason given is: \"" + notification.reason + "\""), true);
+                        this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
                     }
                     if (notification.messages.length) {
                         this.scrollDown();
@@ -18080,7 +19898,7 @@ return __p
                     var new_el = tpl_occupant(_.extend({ 'jid': '',
                         'show': show,
                         'hint_show': _converse.PRETTY_CHAT_STATUS[show],
-                        'hint_occupant': __("Click to mention " + this.model.get('nick') + " in your message."),
+                        'hint_occupant': __('Click to mention %1$s in your message.', this.model.get('nick')),
                         'desc_moderator': __('This user is a moderator.'),
                         'desc_occupant': __('This user can send messages in this room.'),
                         'desc_visitor': __('This user can NOT send messages in this room.')
@@ -18315,7 +20133,7 @@ return __p
                     }
                 },
                 promptForInvite: function promptForInvite(suggestion) {
-                    var reason = prompt(__(___('You are about to invite %1$s to the chat room "%2$s". '), suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
+                    var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ', suggestion.text.label, this.model.get('id')) + __("You may optionally include a message, explaining the reason for the invitation."));
                     if (reason !== null) {
                         this.chatroomview.directInvite(suggestion.text.value, reason);
                     }
@@ -18584,16 +20402,16 @@ return __p
                         }
                     }
                     return {
-                        'id': jid,
                         'jid': jid,
-                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)),
-                        'type': CHATROOMS_TYPE,
-                        'box_id': b64_sha1(jid)
+                        'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid))
                     };
                 },
                 openChatRoom: function openChatRoom(ev) {
                     ev.preventDefault();
-                    _converse.openChatRoom(this.parseRoomDataFromEvent(ev));
+                    var data = this.parseRoomDataFromEvent(ev);
+                    if (!_.isUndefined(data)) {
+                        _converse.openChatRoom(data);
+                    }
                 },
                 setDomain: function setDomain(ev) {
                     this.model.save({ muc_domain: ev.target.value });
@@ -18626,16 +20444,14 @@ return __p
                     // Invite request might come from someone not your roster list
                     contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
                     if (!reason) {
-                        result = confirm(__(___("%1$s has invited you to join a chat room: %2$s"), contact, room_jid));
+                        result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
                     } else {
-                        result = confirm(__(___('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"'), contact, room_jid, reason));
+                        result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
                     }
                 }
                 if (result === true) {
                     var chatroom = _converse.openChatRoom({
-                        'id': room_jid,
                         'jid': room_jid,
-                        'box_id': b64_sha1(room_jid),
                         'password': $x.attr('password')
                     });
                     if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
@@ -18981,10 +20797,11 @@ return __p
                     }
                 },
                 onBookmarked: function onBookmarked() {
+                    var icon = this.el.querySelector('.icon-pushpin');
                     if (this.model.get('bookmarked')) {
-                        this.$('.icon-pushpin').addClass('button-on');
+                        icon.classList.add('button-on');
                     } else {
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        icon.classList.remove('button-on');
                     }
                 },
                 setBookmarkState: function setBookmarkState() {
@@ -19004,12 +20821,18 @@ return __p
                 renderBookmarkForm: function renderBookmarkForm() {
                     var _converse = this.__super__._converse,
                         __ = _converse.__,
-                        $body = this.$('.chatroom-body');
+                        body = this.el.querySelector('.chatroom-body');
 
-                    $body.children().addClass('hidden');
+
+                    _.each(body.children, function (child) {
+                        child.classList.add('hidden');
+                    });
                     // Remove any existing forms
-                    $body.find('form.chatroom-form').remove();
-                    $body.append(tpl_chatroom_bookmark_form({
+                    var form = body.querySelector('form.chatroom-form');
+                    if (!_.isNull(form)) {
+                        form.parentNode.removeChild(form);
+                    }
+                    body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
                         heading: __('Bookmark this room'),
                         label_name: __('The name for this bookmark:'),
                         label_autojoin: __('Would you like this room to be automatically joined upon startup?'),
@@ -19018,8 +20841,9 @@ return __p
                         label_submit: __('Save'),
                         label_cancel: __('Cancel')
                     }));
-                    this.$('.chatroom-form').submit(this.onBookmarkFormSubmitted.bind(this));
-                    this.$('.chatroom-form .button-cancel').on('click', this.cancelConfiguration.bind(this));
+                    form = body.querySelector('form.chatroom-form');
+                    form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
+                    form.querySelector('.button-cancel').addEventListener('click', this.cancelConfiguration.bind(this));
                 },
                 onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
                     ev.preventDefault();
@@ -19052,7 +20876,7 @@ return __p
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
                     }
                 }
             }
@@ -19076,6 +20900,30 @@ return __p
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
+
+            // Pure functions on the _converse object
+            _.extend(_converse, {
+                removeBookmarkViaEvent: function removeBookmarkViaEvent(ev) {
+                    /* Remove a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    var name = ev.target.getAttribute('data-bookmark-name');
+                    var jid = ev.target.getAttribute('data-room-jid');
+                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
+                        _.invokeMap(_converse.bookmarks.where({ 'jid': jid }), Backbone.Model.prototype.destroy);
+                    }
+                },
+                addBookmarkViaEvent: function addBookmarkViaEvent(ev) {
+                    /* Add a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    var jid = ev.target.getAttribute('data-room-jid');
+                    var chatroom = _converse.openChatRoom({ 'jid': jid }, true);
+                    _converse.chatboxviews.get(jid).renderBookmarkForm();
+                }
+            });
 
             _converse.Bookmark = Backbone.Model;
 
@@ -19201,8 +21049,9 @@ return __p
                 tagName: 'div',
                 className: 'bookmarks-list, rooms-list-container',
                 events: {
-                    'click .remove-bookmark': 'removeBookmark',
-                    'click .bookmarks-toggle': 'toggleBookmarksList'
+                    'click .add-bookmark': 'addBookmark',
+                    'click .bookmarks-toggle': 'toggleBookmarksList',
+                    'click .remove-bookmark': 'removeBookmark'
                 },
 
                 initialize: function initialize() {
@@ -19234,14 +21083,11 @@ return __p
                     }
                     return this.$el;
                 },
-                removeBookmark: function removeBookmark(ev) {
-                    ev.preventDefault();
-                    var name = $(ev.target).data('bookmarkName');
-                    var jid = $(ev.target).data('roomJid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.invokeMap(_converse.bookmarks.where({ 'jid': jid }), Backbone.Model.prototype.destroy);
-                    }
-                },
+
+
+                removeBookmark: _converse.removeBookmarkViaEvent,
+                addBookmark: _converse.addBookmarkViaEvent,
+
                 renderBookmarkListElement: function renderBookmarkListElement(item) {
                     if (item instanceof _converse.ChatBox) {
                         item = _.head(this.model.where({ 'jid': item.get('jid') }));
@@ -19325,7 +21171,7 @@ return __p
                 });
             };
 
-            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks);
+            Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]).then(initBookmarks).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             var afterReconnection = function afterReconnection() {
                 if (!_converse.allow_bookmarks) {
@@ -19391,17 +21237,27 @@ __e(name) +
 __e(info_leave_room) +
 '" href="#">&nbsp;</a>\n\n';
  if (allow_bookmarks) { ;
-__p += '\n<a class="right remove-bookmark icon-pushpin ';
+__p += '\n<a class="right icon-pushpin ';
  if (bookmarked) { ;
-__p += ' button-on ';
+__p += ' remove-bookmark button-on ';
+ } else { ;
+__p += ' add-bookmark ';
  } ;
 __p += '"\n   data-room-jid="' +
 __e(jid) +
 '" data-bookmark-name="' +
 __e(name) +
-'"\n   title="' +
+'"\n   title="';
+ if (bookmarked) { ;
+__p += ' ' +
 __e(info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n';
+' ';
+ } else { ;
+__p += ' ' +
+__e(info_add_bookmark) +
+' ';
+ } ;
+__p += '"\n   href="#">&nbsp;</a>\n';
  } ;
 __p += '\n<a class="right room-info icon-room-info" data-room-jid="' +
 __e(jid) +
@@ -19438,6 +21294,21 @@ return __p
 
 
     converse.plugins.add('converse-roomslist', {
+
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-bookmarks"],
+
         initialize: function initialize() {
             /* The initialize function gets called as soon as the plugin is
              * loaded by converse.js's plugin machinery.
@@ -19457,8 +21328,10 @@ return __p
                 tagName: 'div',
                 className: 'open-rooms-list rooms-list-container',
                 events: {
+                    'click .add-bookmark': 'addBookmark',
                     'click .close-room': 'closeRoom',
-                    'click .open-rooms-toggle': 'toggleRoomsList'
+                    'click .open-rooms-toggle': 'toggleRoomsList',
+                    'click .remove-bookmark': 'removeBookmark'
                 },
 
                 initialize: function initialize() {
@@ -19532,6 +21405,7 @@ return __p
                         'allow_bookmarks': _converse.allow_bookmarks,
                         'info_leave_room': __('Leave this room'),
                         'info_remove_bookmark': __('Unbookmark this room'),
+                        'info_add_bookmark': __('Bookmark this room'),
                         'info_title': __('Show more information on this room'),
                         'name': name,
                         'open_title': __('Click to open this room')
@@ -19539,6 +21413,11 @@ return __p
                     this.el.querySelector('.open-rooms-list').appendChild(div.firstChild);
                     this.show();
                 },
+
+
+                removeBookmark: _converse.removeBookmarkViaEvent,
+                addBookmark: _converse.addBookmarkViaEvent,
+
                 removeRoomsListElement: function removeRoomsListElement(item) {
                     var list_el = this.el.querySelector('.open-rooms-list');
                     var el = _.head(sizzle(".available-chatroom[data-room-jid=\"" + item.get('jid') + "\"]", list_el));
@@ -19616,6 +21495,7 @@ return __p
     "use strict";
 
     var _converse$env = converse.env,
+        Promise = _converse$env.Promise,
         Strophe = _converse$env.Strophe,
         $iq = _converse$env.$iq,
         _ = _converse$env._,
@@ -19625,6 +21505,31 @@ return __p
     var RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
+    function checkMAMSupport(_converse) {
+        /* Returns a promise which resolves when MAM is supported
+         * for this user, or which rejects if not.
+         */
+        return _converse.api.waitUntil('discoInitialized').then(function () {
+            return new Promise(function (resolve, reject) {
+
+                function fulfillPromise(entity) {
+                    if (entity.features.findWhere({ 'var': Strophe.NS.MAM })) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+                var entity = _converse.disco_entities.get(_converse.bare_jid);
+                if (_.isUndefined(entity)) {
+                    entity = _converse.disco_entities.create({ 'jid': _converse.bare_jid });
+                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                } else {
+                    fulfillPromise(entity);
+                }
+            });
+        });
+    }
 
     converse.plugins.add('converse-mam', {
 
@@ -19651,20 +21556,35 @@ return __p
                     return result;
                 },
                 fetchArchivedMessagesIfNecessary: function fetchArchivedMessagesIfNecessary() {
+                    var _this = this;
+
                     /* Check if archived messages should be fetched, and if so, do so. */
-                    var _converse = this.__super__._converse,
-                        entity = _converse.disco_entities.get(_converse.domain),
-                        server_supports_mam = entity.features.findWhere({ 'var': Strophe.NS.MAM });
-
-
-                    if (this.disable_mam || !server_supports_mam || this.model.get('mam_initialized')) {
+                    if (this.disable_mam || this.model.get('mam_initialized')) {
                         return;
                     }
-                    this.fetchArchivedMessages();
-                    this.model.save({ 'mam_initialized': true });
+                    var _converse = this.__super__._converse;
+
+                    this.addSpinner();
+
+                    checkMAMSupport(_converse).then(function (supported) {
+                        // Success
+                        if (supported) {
+                            _this.fetchArchivedMessages();
+                        } else {
+                            _this.clearSpinner();
+                        }
+                        _this.model.save({ 'mam_initialized': true });
+                    }, function () {
+                        // Error
+                        _this.clearSpinner();
+                        _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
+                    }).catch(function (msg) {
+                        _this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
                 },
                 fetchArchivedMessages: function fetchArchivedMessages(options) {
-                    var _this = this;
+                    var _this2 = this;
 
                     /* Fetch archived chat messages from the XMPP server.
                      *
@@ -19673,7 +21593,7 @@ return __p
                      */
                     var _converse = this.__super__._converse;
 
-                    if (!_converse.disco_entities.get(_converse.domain).features.findWhere({ 'var': Strophe.NS.MAM })) {
+                    if (!_converse.disco_entities.get(_converse.bare_jid).features.findWhere({ 'var': Strophe.NS.MAM })) {
 
                         _converse.log("Attempted to fetch archived messages but this " + "user's server doesn't support XEP-0313", Strophe.LogLevel.WARN);
                         return;
@@ -19688,13 +21608,13 @@ return __p
                         'with': this.model.get('jid')
                     }, options), function (messages) {
                         // Success
-                        _this.clearSpinner();
+                        _this2.clearSpinner();
                         if (messages.length) {
                             _.each(messages, _converse.chatboxes.onMessage.bind(_converse.chatboxes));
                         }
                     }, function () {
                         // Error
-                        _this.clearSpinner();
+                        _this2.clearSpinner();
                         _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
                     });
                 },
@@ -19928,7 +21848,7 @@ return __p
             });
 
             _converse.on('afterMessagesFetched', function (chatboxview) {
-                _converse.api.waitUntil('discoInitialized').then(chatboxview.fetchArchivedMessagesIfNecessary.bind(chatboxview)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                chatboxview.fetchArchivedMessagesIfNecessary();
             });
         }
     });
@@ -20010,7 +21930,7 @@ return __p
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                var contact = _converse.roster.get(jid);
+                var contact = _.get(_converse.roster, jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
@@ -20023,15 +21943,14 @@ return __p
                 var vcard = iq.querySelector('vCard'),
                     img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
                     img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
-                    url = _.get(vcard.querySelector('URL'), 'textContent');
+                    url = _.get(vcard.querySelector('URL'), 'textContent'),
+                    fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
-                var fullname = _.get(vcard.querySelector('FN'), 'textContent');
                 if (jid) {
                     var contact = _converse.roster.get(jid);
                     if (contact) {
-                        fullname = _.isUndefined(fullname) ? _.get(contact, 'fullname', jid) : fullname;
                         contact.save({
-                            'fullname': fullname,
+                            'fullname': fullname || _.get(contact, 'fullname', jid),
                             'image_type': img_type,
                             'image': img,
                             'url': url,
@@ -20072,23 +21991,25 @@ return __p
             });
 
             var updateVCardForChatBox = function updateVCardForChatBox(chatbox) {
-                if (!_converse.use_vcards) {
+                if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
-                var jid = chatbox.model.get('jid'),
-                    contact = _converse.roster.get(jid);
-                if (contact && !contact.get('vcard_updated')) {
-                    _converse.getVCard(jid, function (iq, jid, fullname, image, image_type, url) {
-                        chatbox.model.save({
-                            'fullname': fullname || jid,
-                            'url': url,
-                            'image_type': image_type,
-                            'image': image
+                _converse.api.waitUntil('rosterInitialized').then(function () {
+                    var jid = chatbox.model.get('jid'),
+                        contact = _converse.roster.get(jid);
+                    if (contact && !contact.get('vcard_updated')) {
+                        _converse.getVCard(jid, function (iq, jid, fullname, image, image_type, url) {
+                            chatbox.model.save({
+                                'fullname': fullname || jid,
+                                'url': url,
+                                'image_type': image_type,
+                                'image': image
+                            });
+                        }, function () {
+                            _converse.log("updateVCardForChatBox: Error occured while fetching vcard", Strophe.LogLevel.ERROR);
                         });
-                    }, function () {
-                        _converse.log("updateVCardForChatBox: Error occured while fetching vcard", Strophe.LogLevel.ERROR);
-                    });
-                }
+                    }
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             };
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 
@@ -20203,7 +22124,7 @@ return __p
         _ = _converse$env._;
 
 
-    var HAS_CSPRNG = !_.isUndefined(crypto) && (_.isFunction(crypto.randomBytes) || _.isFunction(crypto.getRandomValues));
+    var HAS_CSPRNG = _.isUndefined(window.crypto) ? false : _.isFunction(window.crypto.randomBytes) || _.isFunction(window.crypto.getRandomValues);
 
     var HAS_CRYPTO = HAS_CSPRNG && !_.isUndefined(otr.OTR) && !_.isUndefined(otr.DSA);
 
@@ -20619,14 +22540,37 @@ return __p
 });
 //# sourceMappingURL=converse-otr.js.map;
 
+define('tpl!register_link', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="switch-form">\n    <p>' +
+__e( __("Don't have a chat account?") ) +
+'</p>\n    <p><a class="register-account toggle-register-login" href="#converse-register">' +
+__e(__("Register an account")) +
+'</a></p>\n</div>\n';
+
+}
+return __p
+};});
+
+
 define('tpl!register_panel', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<form id="converse-register" class="pure-form converse-form">\n    <span class="reg-feedback"></span>\n    <label>' +
-__e(label_domain) +
-'</label>\n    ';
+__p += '<form id="converse-register" class="pure-form converse-form">\n    <legend>' +
+__e(__("Account Registration")) +
+'</legend>\n\n    <label>' +
+__e(__("Please enter the XMPP provider to register with:")) +
+'</label>\n    <p class="form-help">' +
+__e(help_providers) +
+' <a href="' +
+__e(href_providers) +
+'" class="url" target="_blank" rel="noopener">' +
+__e(help_providers_link) +
+'</a>.</p>\n    <div class="form-errors hidden"></div>\n\n    ';
  if (default_domain) { ;
 __p += '\n    	' +
 __e(default_domain) +
@@ -20634,32 +22578,17 @@ __e(default_domain) +
  } ;
 __p += '\n    ';
  if (!default_domain) { ;
-__p += '\n    	<input type="text" name="domain" placeholder="' +
+__p += '\n    	<input autofocus type="text" name="domain" placeholder="' +
 __e(domain_placeholder) +
-'">\n        <p class="form-help">' +
-__e(help_providers) +
-' <a href="' +
-__e(href_providers) +
-'" class="url" target="_blank" rel="noopener">' +
-__e(help_providers_link) +
-'</a>.</p>\n        <input class="pure-button button-primary" type="submit" value="' +
+'">\n        <input class="pure-button button-primary" type="submit" value="' +
 __e(label_register) +
 '">\n    ';
  } ;
-__p += '\n</form>\n';
-
-}
-return __p
-};});
-
-
-define('tpl!register_tab', ['lodash'], function(_) {return function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<li><a class="s" data-id="register" href="#register">' +
-__e(label_register) +
-'</a></li>\n';
+__p += '\n</form>\n\n<div class="switch-form">\n    <p>' +
+__e( __("Already have a chat account?") ) +
+'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse-login">' +
+__e(__("Log in here")) +
+'</a>\n    </p>\n</div>\n';
 
 }
 return __p
@@ -20668,15 +22597,26 @@ return __p
 
 define('tpl!registration_form', ['lodash'], function(_) {return function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<p class="provider-title">' +
+__p += '<legend>' +
+__e(__("Account Registration:")) +
+' ' +
 __e(domain) +
-'</p>\n<p class="title">' +
+'</legend>\n<p class="title">' +
 __e(title) +
 '</p>\n<p class="instructions">' +
 __e(instructions) +
-'</p>\n';
+'</p>\n<div class="form-errors hidden"></div>\n\n<fieldset class="buttons">\n    <input type="submit" class="pure-button button-primary" value="' +
+__e(__('Register')) +
+'"/>\n    ';
+ if (!registration_domain) { ;
+__p += '\n        <input type="button" class="pure-button button-cancel" value="' +
+__e(__('Choose a different provider')) +
+'"/>\n    ';
+ } ;
+__p += '\n</fieldset>\n';
 
 }
 return __p
@@ -20689,11 +22629,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<span class="spinner login-submit"></span>\n<p class="info">' +
-__e(info_message) +
+__e(__("Hold tight, we're fetching the registration form…")) +
 '</p>\n';
  if (cancel) { ;
 __p += '\n	<button class="pure-button button-cancel hor_centered">' +
-__e(cancel) +
+__e(__('Cancel')) +
 '</button>\n';
  } ;
 __p += '\n';
@@ -20716,8 +22656,8 @@ return __p
  * as specified in XEP-0077.
  */
 (function (root, factory) {
-    define('converse-register',["jquery.noconflict", "converse-core", "tpl!form_username", "tpl!register_panel", "tpl!register_tab", "tpl!registration_form", "tpl!registration_request", "tpl!spinner", "converse-controlbox"], factory);
-})(undefined, function ($, converse, tpl_form_username, tpl_register_panel, tpl_register_tab, tpl_registration_form, tpl_registration_request, tpl_spinner) {
+    define('converse-register',["form-utils", "converse-core", "tpl!form_username", "tpl!register_link", "tpl!register_panel", "tpl!registration_form", "tpl!registration_request", "tpl!form_input", "tpl!spinner", "converse-controlbox"], factory);
+})(undefined, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
 
     "use strict";
 
@@ -20726,7 +22666,7 @@ return __p
     var _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         Backbone = _converse$env.Backbone,
-        utils = _converse$env.utils,
+        sizzle = _converse$env.sizzle,
         $iq = _converse$env.$iq,
         _ = _converse$env._;
 
@@ -20746,32 +22686,72 @@ return __p
 
     converse.plugins.add('converse-register', {
 
-        overrides: {
+        'overrides': {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
             // relevant objects or classes.
             //
             // New functions which don't exist yet can also be added.
 
-            ControlBoxView: {
-                switchTab: function switchTab(ev) {
+            LoginPanel: {
+
+                render: function render(cfg) {
                     var _converse = this.__super__._converse;
 
-                    var result = this.__super__.switchTab.apply(this, arguments);
-                    if (_converse.registration_domain && ev.target.getAttribute('data-id') === "register" && !this.model.get('registration_form_rendered')) {
-                        this.registerpanel.fetchRegistrationForm(_converse.registration_domain);
+                    var form = this.el.querySelector('form');
+                    this.__super__.render.apply(this, arguments);
+                    if (_.isNull(form)) {
+                        if (_converse.allow_registration) {
+                            this.el.insertAdjacentHTML('beforeend', tpl_register_link({ '__': _converse.__ }));
+                        }
                     }
-                    return result;
+                    return this;
+                }
+            },
+
+            ControlBoxView: {
+
+                events: {
+                    'click .toggle-register-login': 'switchToRegisterForm'
+                },
+
+                initialize: function initialize() {
+                    this.__super__.initialize.apply(this, arguments);
+                    this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this));
+                },
+                switchToRegisterForm: function switchToRegisterForm(ev) {
+                    ev.preventDefault();
+                    if (this.model.get('active-form') == "register") {
+                        this.model.set('active-form', 'login');
+                    } else {
+                        this.model.set('active-form', 'register');
+                    }
+                },
+                showLoginOrRegisterForm: function showLoginOrRegisterForm() {
+                    var _converse = this.__super__._converse;
+
+                    if (_.isNil(this.registerpanel)) {
+                        return;
+                    }
+                    if (this.model.get('active-form') == "register") {
+                        this.loginpanel.el.classList.add('hidden');
+                        this.registerpanel.el.classList.remove('hidden');
+                    } else {
+                        this.loginpanel.el.classList.remove('hidden');
+                        this.registerpanel.el.classList.add('hidden');
+                    }
                 },
                 renderRegistrationPanel: function renderRegistrationPanel() {
                     var _converse = this.__super__._converse;
 
                     if (_converse.allow_registration) {
                         this.registerpanel = new _converse.RegisterPanel({
-                            '$parent': this.$el.find('.controlbox-panes'),
                             'model': this.model
                         });
-                        this.registerpanel.render().$el.addClass('hidden');
+                        this.registerpanel.render();
+                        this.registerpanel.el.classList.add('hidden');
+                        this.el.querySelector('#converse-login-panel').insertAdjacentElement('afterend', this.registerpanel.el);
+                        this.showLoginOrRegisterForm();
                     }
                     return this;
                 },
@@ -20793,12 +22773,11 @@ return __p
             var _converse = this._converse,
                 __ = _converse.__;
 
-            // Add new templates
-            _converse.templates.form_username = tpl_form_username;
-            _converse.templates.register_panel = tpl_register_panel;
-            _converse.templates.register_tab = tpl_register_tab;
-            _converse.templates.registration_form = tpl_registration_form;
-            _converse.templates.registration_request = tpl_registration_request;
+
+            _converse.CONNECTION_STATUS[Strophe.Status.REGIFAIL] = 'REGIFAIL';
+            _converse.CONNECTION_STATUS[Strophe.Status.REGISTERED] = 'REGISTERED';
+            _converse.CONNECTION_STATUS[Strophe.Status.CONFLICT] = 'CONFLICT';
+            _converse.CONNECTION_STATUS[Strophe.Status.NOTACCEPTABLE] = 'NOTACCEPTABLE';
 
             _converse.api.settings.update({
                 allow_registration: true,
@@ -20806,32 +22785,47 @@ return __p
                 providers_link: 'https://xmpp.net/directory.php' // Link to XMPP providers shown on registration page
             });
 
+            _converse.RegistrationRouter = Backbone.Router.extend({
+                initialize: function initialize() {
+                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
+                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
+                },
+                setActiveForm: function setActiveForm(value) {
+                    _converse.api.waitUntil('controlboxInitialized').then(function () {
+                        var controlbox = _converse.chatboxes.get('controlbox');
+                        controlbox.set({ 'active-form': value });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }
+            });
+            var router = new _converse.RegistrationRouter();
+
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
-                id: "register",
-                className: 'controlbox-pane',
+                id: "converse-register-panel",
+                className: 'controlbox-pane fade-in',
                 events: {
-                    'submit form#converse-register': 'onProviderChosen'
+                    'submit form#converse-register': 'onFormSubmission',
+                    'click .button-cancel': 'renderProviderChoiceForm'
                 },
 
                 initialize: function initialize(cfg) {
                     this.reset();
-                    this.$parent = cfg.$parent;
-                    this.$tabs = cfg.$parent.parent().find('#controlbox-tabs');
                     this.registerHooks();
                 },
                 render: function render() {
                     this.model.set('registration_form_rendered', false);
-                    this.$parent.append(this.$el.html(tpl_register_panel({
+                    this.el.innerHTML = tpl_register_panel({
+                        '__': __,
                         'default_domain': _converse.registration_domain,
-                        'label_domain': __("Your XMPP provider's domain name:"),
                         'label_register': __('Fetch registration form'),
                         'help_providers': __('Tip: A list of public XMPP providers is available'),
                         'help_providers_link': __('here'),
                         'href_providers': _converse.providers_link,
                         'domain_placeholder': _converse.domain_placeholder
-                    })));
-                    this.$tabs.append(tpl_register_tab({ label_register: __('Register') }));
+                    });
+                    if (_converse.registration_domain) {
+                        this.fetchRegistrationForm(_converse.registration_domain);
+                    }
                     return this;
                 },
                 registerHooks: function registerHooks() {
@@ -20867,6 +22861,7 @@ return __p
                         return;
                     }
                     if (conn._proto._connect_cb(body) === Strophe.Status.CONNFAIL) {
+                        this.showValidationError(__("Sorry, we're unable to connect to your chosen provider."));
                         return false;
                     }
                     var register = body.getElementsByTagName("register");
@@ -20876,12 +22871,15 @@ return __p
                         return false;
                     }
                     if (register.length === 0) {
-                        conn._changeConnectStatus(Strophe.Status.REGIFAIL, __("Sorry, the given provider does not support in " + "band account registration. Please try with a " + "different provider."));
+                        conn._changeConnectStatus(Strophe.Status.REGIFAIL);
+                        this.showValidationError(__("Sorry, the given provider does not support in " + "band account registration. Please try with a " + "different provider."));
                         return true;
                     }
                     // Send an IQ stanza to get all required data fields
                     conn._addSysHandler(this.onRegistrationFields.bind(this), null, "iq", null, null);
-                    conn.send($iq({ type: "get" }).c("query", { xmlns: Strophe.NS.REGISTER }).tree());
+                    var stanza = $iq({ type: "get" }).c("query", { xmlns: Strophe.NS.REGISTER }).tree();
+                    stanza.setAttribute("id", conn.getUniqueId("sendIQ"));
+                    conn.send(stanza);
                     conn.connected = false;
                     return true;
                 },
@@ -20891,12 +22889,18 @@ return __p
                      *  Parameters:
                      *    (XMLElement) elem - The query stanza.
                      */
+                    if (stanza.getAttribute("type") === "error") {
+                        _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, __('Something went wrong while establishing a connection with "%1$s".' + 'Are you sure it exists?', this.domain));
+                        return false;
+                    }
                     if (stanza.getElementsByTagName("query").length !== 1) {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                         return false;
                     }
                     this.setFields(stanza);
-                    this.renderRegistrationForm(stanza);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationForm(stanza);
+                    }
                     return false;
                 },
                 reset: function reset(settings) {
@@ -20915,92 +22919,154 @@ return __p
                         _.extend(this, _.pick(settings, _.keys(defaults)));
                     }
                 },
-                onProviderChosen: function onProviderChosen(ev) {
-                    /* Callback method that gets called when the user has chosen an
-                     * XMPP provider.
+                onFormSubmission: function onFormSubmission(ev) {
+                    /* Event handler when the #converse-register form is
+                     * submitted.
                      *
-                     * Parameters:
-                     *      (Submit Event) ev - Form submission event.
+                     * Depending on the available input fields, we delegate to
+                     * other methods.
                      */
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
-                    var $form = $(ev.target),
-                        $domain_input = $form.find('input[name=domain]'),
-                        domain = $domain_input.val();
+                    if (_.isNull(ev.target.querySelector('input[name=domain]'))) {
+                        this.submitRegistrationForm(ev.target);
+                    } else {
+                        this.onProviderChosen(ev.target);
+                    }
+                },
+                onProviderChosen: function onProviderChosen(form) {
+                    /* Callback method that gets called when the user has chosen an
+                     * XMPP provider.
+                     *
+                     * Parameters:
+                     *      (HTMLElement) form - The form that was submitted
+                     */
+                    var domain_input = form.querySelector('input[name=domain]'),
+                        domain = _.get(domain_input, 'value');
                     if (!domain) {
-                        $domain_input.addClass('error');
+                        // TODO: add validation message
+                        domain_input.classList.add('error');
                         return;
                     }
-                    $form.find('input[type=submit]').hide();
-                    this.fetchRegistrationForm(domain, __('Cancel'));
+                    form.querySelector('input[type=submit]').classList.add('hidden');
+                    this.fetchRegistrationForm(domain);
                 },
-                fetchRegistrationForm: function fetchRegistrationForm(domain_name, cancel_label) {
+                fetchRegistrationForm: function fetchRegistrationForm(domain_name) {
                     /* This is called with a domain name based on which, it fetches a
                      * registration form from the requested domain.
                      *
                      * Parameters:
-                     *      (Domain name) domain_name - XMPP server domain
+                     *      (String) domain_name - XMPP server domain
                      */
-                    this.renderRegistrationRequest(cancel_label);
+                    if (!this.model.get('registration_form_rendered')) {
+                        this.renderRegistrationRequest();
+                    }
                     this.reset({
                         domain: Strophe.getDomainFromJid(domain_name),
                         _registering: true
                     });
-                    _converse.connection.connect(this.domain, "", this.onRegistering.bind(this));
+                    _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
                     return false;
                 },
-                renderRegistrationRequest: function renderRegistrationRequest(cancel_label) {
-                    var form = this.el.querySelector('#converse-register');
-                    var markup = tpl_registration_request({
-                        'cancel': cancel_label,
-                        'info_message': _converse.__('Requesting a registration form from the XMPP server')
-                    });
-                    form.appendChild(utils.createFragmentFromText(markup));
-                    if (!_converse.registration_domain) {
-                        var cancel_button = document.querySelector('button.button-cancel');
-                        cancel_button.addEventListener('click', this.cancelRegistration.bind(this));
-                    }
+                renderRegistrationRequest: function renderRegistrationRequest() {
+                    /* Clear the form and inform the user that the registration
+                     * form is being fetched.
+                     */
+                    this.clearRegistrationForm().insertAdjacentHTML('beforeend', tpl_registration_request({
+                        '__': _converse.__,
+                        'cancel': _converse.registration_domain
+                    }));
                 },
                 giveFeedback: function giveFeedback(message, klass) {
-                    this.$('.reg-feedback').attr('class', 'reg-feedback').text(message);
+                    var feedback = this.el.querySelector('.reg-feedback');
+                    if (!_.isNull(feedback)) {
+                        feedback.parentNode.removeChild(feedback);
+                    }
+                    var form = this.el.querySelector('form');
+                    form.insertAdjacentHTML('afterbegin', '<span class="reg-feedback"></span>');
+                    feedback = form.querySelector('.reg-feedback');
+                    feedback.textContent = message;
                     if (klass) {
-                        $('.reg-feedback').addClass(klass);
+                        feedback.classList.add(klass);
                     }
                 },
-                onRegistering: function onRegistering(status, error) {
-                    var that = void 0;
-                    _converse.log('onRegistering');
-                    if (_.includes([Strophe.Status.DISCONNECTED, Strophe.Status.CONNFAIL, Strophe.Status.REGIFAIL, Strophe.Status.NOTACCEPTABLE, Strophe.Status.CONFLICT], status)) {
+                clearRegistrationForm: function clearRegistrationForm() {
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = '';
+                    this.model.set('registration_form_rendered', false);
+                    return form;
+                },
+                showRegistrationForm: function showRegistrationForm() {},
+                showSpinner: function showSpinner() {
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = tpl_spinner();
+                    this.model.set('registration_form_rendered', false);
+                    return this;
+                },
+                onConnectStatusChanged: function onConnectStatusChanged(status_code) {
+                    /* Callback function called by Strophe whenever the
+                     * connection status changes.
+                     *
+                     * Passed to Strophe specifically during a registration
+                     * attempt.
+                     *
+                     * Parameters:
+                     *      (Integer) status_code - The Stroph.Status status code
+                     */
+                    _converse.log('converse-register: onConnectStatusChanged');
+                    if (_.includes([Strophe.Status.DISCONNECTED, Strophe.Status.CONNFAIL, Strophe.Status.REGIFAIL, Strophe.Status.NOTACCEPTABLE, Strophe.Status.CONFLICT], status_code)) {
 
-                        _converse.log("Problem during registration: Strophe.Status is: " + status, Strophe.LogLevel.ERROR);
-                        this.cancelRegistration();
-                        if (error) {
-                            this.giveFeedback(error, 'error');
-                        } else {
-                            this.giveFeedback(__('Something went wrong while establishing a connection with "%1$s". Are you sure it exists?', this.domain), 'error');
-                        }
-                    } else if (status === Strophe.Status.REGISTERED) {
+                        _converse.log("Problem during registration: Strophe.Status is " + _converse.CONNECTION_STATUS[status_code], Strophe.LogLevel.ERROR);
+                        this.abortRegistration();
+                    } else if (status_code === Strophe.Status.REGISTERED) {
+                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         _converse.connection.reset();
-                        that = this;
-                        this.$('form').hide(function () {
-                            $(this).replaceWith(tpl_spinner);
-                            if (that.fields.password && that.fields.username) {
-                                // automatically log the user in
-                                _converse.connection.connect(that.fields.username.toLowerCase() + '@' + that.domain.toLowerCase(), that.fields.password, _converse.onConnectStatusChanged);
-                                _converse.chatboxviews.get('controlbox').switchTab({ 'target': that.$tabs.find('.current') });
-                                _converse.giveFeedback(__('Now logging you in'));
-                            } else {
-                                _converse.chatboxviews.get('controlbox').renderLoginPanel();
-                                _converse.giveFeedback(__('Registered successfully'));
-                            }
-                            that.reset();
-                        });
+                        this.showSpinner();
+
+                        if (this.fields.password && this.fields.username) {
+                            // automatically log the user in
+                            _converse.connection.connect(this.fields.username.toLowerCase() + '@' + this.domain.toLowerCase(), this.fields.password, _converse.onConnectStatusChanged);
+                            this.giveFeedback(__('Now logging you in'), 'info');
+                        } else {
+                            _converse.chatboxviews.get('controlbox').renderLoginPanel();
+                            _converse.giveFeedback(__('Registered successfully'));
+                        }
+                        this.reset();
                     }
                 },
-                renderRegistrationForm: function renderRegistrationForm(stanza) {
+                renderLegacyRegistrationForm: function renderLegacyRegistrationForm(form) {
                     var _this2 = this;
+
+                    _.each(_.keys(this.fields), function (key) {
+                        if (key === "username") {
+                            form.insertAdjacentHTML('beforeend', tpl_form_username({
+                                'domain': " @" + _this2.domain,
+                                'name': key,
+                                'type': "text",
+                                'label': key,
+                                'value': '',
+                                'required': true
+                            }));
+                        } else {
+                            form.insertAdjacentHTML('beforeend', tpl_form_input({
+                                'label': key,
+                                'name': key,
+                                'placeholder': key,
+                                'required': true,
+                                'type': key === 'password' || key === 'email' ? key : "text",
+                                'value': ''
+                            }));
+                        }
+                    });
+                    // Show urls
+                    _.each(this.urls, function (url) {
+                        form.insertAdjacentHTML('afterend', '<a target="blank" rel="noopener" href="' + url + '">' + url + '</a>');
+                    });
+                },
+                renderRegistrationForm: function renderRegistrationForm(stanza) {
+                    var _this3 = this;
 
                     /* Renders the registration form based on the XForm fields
                      * received from the XMPP server.
@@ -21008,62 +23074,50 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza received from the XMPP server.
                      */
-                    this.model.set('registration_form_rendered', true);
-
-                    var $form = this.$('form'),
-                        $stanza = $(stanza);
-                    var $fields = void 0,
-                        $input = void 0;
-                    $form.empty().append(tpl_registration_form({
+                    var form = this.el.querySelector('form');
+                    form.innerHTML = tpl_registration_form({
+                        '__': _converse.__,
                         'domain': this.domain,
                         'title': this.title,
-                        'instructions': this.instructions
-                    }));
+                        'instructions': this.instructions,
+                        'registration_domain': _converse.registration_domain
+                    });
+
+                    var buttons = form.querySelector('fieldset.buttons');
                     if (this.form_type === 'xform') {
-                        $fields = $stanza.find('field');
-                        _.each($fields, function (field) {
-                            $form.append(utils.xForm2webForm.bind(_this2, $(field), $stanza));
+                        _.each(stanza.querySelectorAll('field'), function (field) {
+                            buttons.insertAdjacentHTML('beforebegin', utils.xForm2webForm(field, stanza, _this3.domain));
                         });
                     } else {
-                        // Show fields
-                        _.each(_.keys(this.fields), function (key) {
-                            if (key === "username") {
-                                $input = tpl_form_username({
-                                    domain: " @" + _this2.domain,
-                                    name: key,
-                                    type: "text",
-                                    label: key,
-                                    value: '',
-                                    required: 1
-                                });
-                            } else {
-                                $form.append("<label>" + key + "</label>");
-                                $input = $("<input placeholder=\"" + key + "\" name=\"" + key + "\"></input>");
-                                if (key === 'password' || key === 'email') {
-                                    $input.attr('type', key);
-                                }
-                            }
-                            $form.append($input);
-                        });
-                        // Show urls
-                        _.each(this.urls, function (url) {
-                            $form.append($('<a target="blank"></a>').attr('href', url).text(url));
-                        });
+                        this.renderLegacyRegistrationForm(form);
                     }
-                    if (this.fields) {
-                        $form.append("<input type=\"submit\" class=\"pure-button button-primary\" value=\"" + __('Register') + "\"/>");
-                        $form.on('submit', this.submitRegistrationForm.bind(this));
-                        $form.append("<input type=\"button\" class=\"pure-button button-cancel\" value=\"" + __('Cancel') + "\"/>");
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                    if (!this.fields) {
+                        form.querySelector('.button-primary').classList.add('hidden');
+                    }
+                    form.classList.remove('hidden');
+                    this.model.set('registration_form_rendered', true);
+                },
+                showValidationError: function showValidationError(message) {
+                    var form = this.el.querySelector('form');
+                    var flash = form.querySelector('.form-errors');
+                    if (_.isNull(flash)) {
+                        flash = '<div class="form-errors hidden"></div>';
+                        var instructions = form.querySelector('p.instructions');
+                        if (_.isNull(instructions)) {
+                            form.insertAdjacentHTML('afterbegin', flash);
+                        } else {
+                            instructions.insertAdjacentHTML('afterend', flash);
+                        }
+                        flash = form.querySelector('.form-errors');
                     } else {
-                        $form.append("<input type=\"button\" class=\"submit\" value=\"" + __('Return') + "\"/>");
-                        $form.find('input[type=button]').on('click', this.cancelRegistration.bind(this));
+                        flash.innerHTML = '';
                     }
-                    if (_converse.registration_domain) {
-                        $form.find('input[type=button]').hide();
-                    }
+                    flash.insertAdjacentHTML('beforeend', '<p class="form-help error">' + message + '</p>');
+                    flash.classList.remove('hidden');
                 },
                 reportErrors: function reportErrors(stanza) {
+                    var _this4 = this;
+
                     /* Report back to the user any error messages received from the
                      * XMPP server after attempted registration.
                      *
@@ -21071,53 +23125,42 @@ return __p
                      *      (XMLElement) stanza - The IQ stanza received from the
                      *      XMPP server.
                      */
-                    var $form = this.$('form'),
-                        $errmsgs = $(stanza).find('error text');
-
-                    var $flash = $form.find('.form-errors');
-                    if (!$flash.length) {
-                        var flash = '<legend class="form-errors"></legend>';
-                        if ($form.find('p.instructions').length) {
-                            $form.find('p.instructions').append(flash);
-                        } else {
-                            $form.prepend(flash);
-                        }
-                        $flash = $form.find('.form-errors');
-                    } else {
-                        $flash.empty();
-                    }
-                    $errmsgs.each(function (idx, txt) {
-                        $flash.append($('<p>').text($(txt).text()));
+                    var errors = stanza.querySelectorAll('error');
+                    _.each(errors, function (error) {
+                        _this4.showValidationError(error.textContent);
                     });
-                    if (!$errmsgs.length) {
-                        $flash.append($('<p>').text(__('The provider rejected your registration attempt. ' + 'Please check the values you entered for correctness.')));
+                    if (!errors.length) {
+                        var message = __('The provider rejected your registration attempt. ' + 'Please check the values you entered for correctness.');
+                        this.showValidationError(message);
                     }
-                    $flash.show();
                 },
-                cancelRegistration: function cancelRegistration(ev) {
-                    /* Handler, when the user cancels the registration form.
-                     */
+                renderProviderChoiceForm: function renderProviderChoiceForm(ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
+                    _converse.connection._proto._abortAllRequests();
                     _converse.connection.reset();
-                    this.model.set('registration_form_rendered', false);
                     this.render();
-                    if (_converse.registration_domain) {
-                        document.querySelector('button.button-cancel').onclick = _.bind(this.fetchRegistrationForm, this, _converse.registration_domain, __('Retry'));
+                },
+                abortRegistration: function abortRegistration() {
+                    _converse.connection._proto._abortAllRequests();
+                    _converse.connection.reset();
+                    if (this.model.get('registration_form_rendered')) {
+                        if (_converse.registration_domain && this.model.get('registration_form_rendered')) {
+                            this.fetchRegistrationForm(_converse.registration_domain);
+                        }
+                    } else {
+                        this.render();
                     }
                 },
-                submitRegistrationForm: function submitRegistrationForm(ev) {
+                submitRegistrationForm: function submitRegistrationForm(form) {
                     /* Handler, when the user submits the registration form.
                      * Provides form error feedback or starts the registration
                      * process.
                      *
                      * Parameters:
-                     *      (Event) ev - the submit event.
+                     *      (HTMLElement) form - The HTML form that was submitted
                      */
-                    if (ev && ev.preventDefault) {
-                        ev.preventDefault();
-                    }
                     var has_empty_inputs = _.reduce(this.el.querySelectorAll('input.required'), function (result, input) {
                         if (input.value === '') {
                             input.classList.add('error');
@@ -21128,21 +23171,20 @@ return __p
                     if (has_empty_inputs) {
                         return;
                     }
-                    var $inputs = $(ev.target).find(':input:not([type=button]):not([type=submit])'),
+
+                    var inputs = sizzle(':input:not([type=button]):not([type=submit])', form),
                         iq = $iq({ type: "set" }).c("query", { xmlns: Strophe.NS.REGISTER });
 
                     if (this.form_type === 'xform') {
                         iq.c("x", { xmlns: Strophe.NS.XFORM, type: 'submit' });
-                        $inputs.each(function () {
-                            iq.cnode(utils.webForm2xForm(this)).up();
+                        _.each(inputs, function (input) {
+                            iq.cnode(utils.webForm2xForm(input)).up();
                         });
                     } else {
-                        $inputs.each(function () {
-                            var $input = $(this);
-                            iq.c($input.attr('name'), {}, $input.val());
+                        _.each(inputs, function (input) {
+                            iq.c(input.getAttribute('name'), {}, input.value);
                         });
                     }
-                    this.model.set('registration_form_rendered', false);
                     _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                     _converse.connection.send(iq);
                     this.setFields(iq.tree());
@@ -21154,45 +23196,40 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - the IQ stanza that will be sent to the XMPP server.
                      */
-                    var $query = $(stanza).find('query');
-                    if ($query.length > 0) {
-                        var $xform = $query.find("x[xmlns=\"" + Strophe.NS.XFORM + "\"]");
-                        if ($xform.length > 0) {
-                            this._setFieldsFromXForm($xform);
-                        } else {
-                            this._setFieldsFromLegacy($query);
-                        }
+                    var query = stanza.querySelector('query');
+                    var xform = sizzle("x[xmlns=\"" + Strophe.NS.XFORM + "\"]", query);
+                    if (xform.length > 0) {
+                        this._setFieldsFromXForm(xform.pop());
+                    } else {
+                        this._setFieldsFromLegacy(query);
                     }
                 },
-                _setFieldsFromLegacy: function _setFieldsFromLegacy($query) {
-                    var _this3 = this;
+                _setFieldsFromLegacy: function _setFieldsFromLegacy(query) {
+                    var _this5 = this;
 
-                    $query.children().each(function (idx, field) {
-                        var $field = $(field);
+                    _.each(query.children, function (field) {
                         if (field.tagName.toLowerCase() === 'instructions') {
-                            _this3.instructions = Strophe.getText(field);
+                            _this5.instructions = Strophe.getText(field);
                             return;
                         } else if (field.tagName.toLowerCase() === 'x') {
-                            if ($field.attr('xmlns') === 'jabber:x:oob') {
-                                $field.find('url').each(function (idx, url) {
-                                    _this3.urls.push($(url).text());
-                                });
+                            if (field.getAttribute('xmlns') === 'jabber:x:oob') {
+                                _this5.urls.concat(_.map(field.querySelectorAll('url'), 'textContent'));
                             }
                             return;
                         }
-                        _this3.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
+                        _this5.fields[field.tagName.toLowerCase()] = Strophe.getText(field);
                     });
                     this.form_type = 'legacy';
                 },
-                _setFieldsFromXForm: function _setFieldsFromXForm($xform) {
-                    var _this4 = this;
+                _setFieldsFromXForm: function _setFieldsFromXForm(xform) {
+                    var _this6 = this;
 
-                    this.title = $xform.find('title').text();
-                    this.instructions = $xform.find('instructions').text();
-                    $xform.find('field').each(function (idx, field) {
+                    this.title = _.get(xform.querySelector('title'), 'textContent');
+                    this.instructions = _.get(xform.querySelector('instructions'), 'textContent');
+                    _.each(xform.querySelectorAll('field'), function (field) {
                         var _var = field.getAttribute('var');
                         if (_var) {
-                            _this4.fields[_var.toLowerCase()] = $(field).children('value').text();
+                            _this6.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');
                         } else {
                             // TODO: other option seems to be type="fixed"
                             _converse.log("Found field we couldn't parse", Strophe.LogLevel.WARN);
@@ -21208,14 +23245,11 @@ return __p
                      * Parameters:
                      *      (XMLElement) stanza - The IQ stanza.
                      */
-                    var error = null,
-                        query = stanza.getElementsByTagName("query");
-                    if (query.length > 0) {
-                        query = query[0];
-                    }
                     if (stanza.getAttribute("type") === "error") {
                         _converse.log("Registration failed.", Strophe.LogLevel.ERROR);
-                        error = stanza.getElementsByTagName("error");
+                        this.reportErrors(stanza);
+
+                        var error = stanza.getElementsByTagName("error");
                         if (error.length !== 1) {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, "unknown");
                             return false;
@@ -21228,15 +23262,10 @@ return __p
                         } else {
                             _converse.connection._changeConnectStatus(Strophe.Status.REGIFAIL, error);
                         }
-                        this.reportErrors(stanza);
                     } else {
                         _converse.connection._changeConnectStatus(Strophe.Status.REGISTERED, null);
                     }
                     return false;
-                },
-                remove: function remove() {
-                    this.$tabs.empty();
-                    this.$el.parent().empty();
                 }
             });
         }
@@ -21313,7 +23342,9 @@ return __p
             };
 
             _converse.registerPongHandler = function () {
-                _converse.connection.disco.addFeature(Strophe.NS.PING);
+                if (!_.isUndefined(_converse.connection.disco)) {
+                    _converse.connection.disco.addFeature(Strophe.NS.PING);
+                }
                 _converse.connection.ping.addPingHandler(_converse.pong);
             };
 
@@ -21703,7 +23734,7 @@ return __p
 /*global define, window */
 
 (function (root, factory) {
-    define('converse-minimize',["jquery.noconflict", "converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-controlbox", "converse-chatview", "converse-muc"], factory);
+    define('converse-minimize',["jquery.noconflict", "converse-core", "tpl!chatbox_minimize", "tpl!toggle_chats", "tpl!trimmed_chat", "tpl!chats_panel", "converse-chatview"], factory);
 })(undefined, function ($, converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
     "use strict";
 
@@ -21711,11 +23742,27 @@ return __p
         _ = _converse$env._,
         utils = _converse$env.utils,
         Backbone = _converse$env.Backbone,
+        Promise = _converse$env.Promise,
+        Strophe = _converse$env.Strophe,
         b64_sha1 = _converse$env.b64_sha1,
         moment = _converse$env.moment;
 
 
     converse.plugins.add('converse-minimize', {
+        /* Optional dependencies are other plugins which might be
+         * overridden or relied upon, and therefore need to be loaded before
+         * this plugin. They are called "optional" because they might not be
+         * available, in which case any overrides applicable to them will be
+         * ignored.
+         *
+         * It's possible however to make optional dependencies non-optional.
+         * If the setting "strict_plugin_dependencies" is set to true,
+         * an error will be raised if the plugin is not found.
+         *
+         * NB: These plugins need to have already been loaded via require.js.
+         */
+        optional_dependencies: ["converse-controlbox", "converse-muc"],
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -21723,15 +23770,6 @@ return __p
             //
             // New functions which don't exist yet can also be added.
 
-            initChatBoxes: function initChatBoxes() {
-                var _converse = this.__super__._converse;
-
-                var result = this.__super__.initChatBoxes.apply(this, arguments);
-                _converse.minimized_chats = new _converse.MinimizedChats({
-                    model: _converse.chatboxes
-                });
-                return result;
-            },
             registerGlobalEventHandlers: function registerGlobalEventHandlers() {
                 var _converse = this.__super__._converse;
 
@@ -21815,12 +23853,13 @@ return __p
                     // Restores a minimized chat box
                     var _converse = this.__super__._converse;
 
-                    this.$el.insertAfter(_converse.chatboxviews.get("controlbox").$el);
+                    this.insertIntoDOM();
+
                     if (!this.model.isScrolledUp()) {
                         this.model.clearUnreadMsgCounter();
                     }
                     this.show();
-                    _converse.emit('chatBoxMaximized', this);
+                    this.__super__._converse.emit('chatBoxMaximized', this);
                     return this;
                 },
                 minimize: function minimize(ev) {
@@ -21867,9 +23906,10 @@ return __p
                     var html = this.__super__.generateHeadingHTML.apply(this, arguments);
                     var div = document.createElement('div');
                     div.innerHTML = html;
-                    var el = tpl_chatbox_minimize({ info_minimize: __('Minimize this chat box') });
                     var button = div.querySelector('.close-chatbox-button');
-                    button.insertAdjacentHTML('afterend', el);
+                    button.insertAdjacentHTML('afterend', tpl_chatbox_minimize({
+                        'info_minimize': __('Minimize this chat box')
+                    }));
                     return div.innerHTML;
                 }
             },
@@ -21929,28 +23969,30 @@ return __p
                         // fullscreen. In this case we don't trim.
                         return;
                     }
-                    var $minimized = _converse.minimized_chats.$el,
-                        minimized_width = _.includes(this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
-                        new_id = newchat ? newchat.model.get('id') : null;
+                    _converse.api.waitUntil('minimizedChatsInitialized').then(function () {
+                        var $minimized = _.get(_converse.minimized_chats, '$el'),
+                            minimized_width = _.includes(_this.model.pluck('minimized'), true) ? $minimized.outerWidth(true) : 0,
+                            new_id = newchat ? newchat.model.get('id') : null;
 
-                    var boxes_width = _.reduce(this.xget(new_id), function (memo, view) {
-                        return memo + _this.getChatBoxWidth(view);
-                    }, newchat ? newchat.$el.outerWidth(true) : 0);
+                        var boxes_width = _.reduce(_this.xget(new_id), function (memo, view) {
+                            return memo + _this.getChatBoxWidth(view);
+                        }, newchat ? newchat.$el.outerWidth(true) : 0);
 
-                    if (minimized_width + boxes_width > $('body').outerWidth(true)) {
-                        var oldest_chat = this.getOldestMaximizedChat([new_id]);
-                        if (oldest_chat) {
-                            // We hide the chat immediately, because waiting
-                            // for the event to fire (and letting the
-                            // ChatBoxView hide it then) causes race
-                            // conditions.
-                            var view = this.get(oldest_chat.get('id'));
-                            if (view) {
-                                view.hide();
+                        if (minimized_width + boxes_width > $('body').outerWidth(true)) {
+                            var oldest_chat = _this.getOldestMaximizedChat([new_id]);
+                            if (oldest_chat) {
+                                // We hide the chat immediately, because waiting
+                                // for the event to fire (and letting the
+                                // ChatBoxView hide it then) causes race
+                                // conditions.
+                                var view = _this.get(oldest_chat.get('id'));
+                                if (view) {
+                                    view.hide();
+                                }
+                                oldest_chat.minimize();
                             }
-                            oldest_chat.minimize();
                         }
-                    }
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
                 getOldestMaximizedChat: function getOldestMaximizedChat(exclude_ids) {
                     // Get oldest view (if its id is not excluded)
@@ -21985,6 +24027,8 @@ return __p
             _converse.api.settings.update({
                 no_trimming: false // Set to true for phantomjs tests (where browser apparently has no width)
             });
+
+            _converse.api.promises.add('minimizedChatsInitialized');
 
             _converse.MinimizedChatBoxView = Backbone.View.extend({
                 tagName: 'div',
@@ -22047,10 +24091,24 @@ return __p
                 initialize: function initialize() {
                     this.render();
                     this.initToggle();
+                    this.addMultipleChats(this.model.where({ 'minimized': true }));
                     this.model.on("add", this.onChanged, this);
                     this.model.on("destroy", this.removeChat, this);
                     this.model.on("change:minimized", this.onChanged, this);
                     this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                },
+                render: function render() {
+                    if (!this.el.parentElement) {
+                        this.el.innerHTML = tpl_chats_panel();
+                        _converse.chatboxviews.el.appendChild(this.el);
+                    }
+                    if (this.keys().length === 0) {
+                        this.el.classList.add('hidden');
+                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
+                        this.el.classList.remove('hidden');
+                        _converse.chatboxviews.trimChats();
+                    }
+                    return this.$el;
                 },
                 tearDown: function tearDown() {
                     this.model.off("add", this.onChanged);
@@ -22067,20 +24125,6 @@ return __p
                     this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
                     this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                     this.toggleview.model.fetch();
-                },
-                render: function render() {
-                    if (!this.el.parentElement) {
-                        this.el.innerHTML = tpl_chats_panel();
-                        _converse.chatboxviews.el.appendChild(this.el);
-                    }
-                    if (this.keys().length === 0) {
-                        this.el.classList.add('hidden');
-                        _converse.chatboxviews.trimChats.bind(_converse.chatboxviews);
-                    } else if (this.keys().length > 0 && !this.$el.is(':visible')) {
-                        this.el.classList.remove('hidden');
-                        _converse.chatboxviews.trimChats();
-                    }
-                    return this.$el;
                 },
                 toggle: function toggle(ev) {
                     if (ev && ev.preventDefault) {
@@ -22099,6 +24143,21 @@ return __p
                     } else if (this.get(item.get('id'))) {
                         this.removeChat(item);
                     }
+                },
+                addMultipleChats: function addMultipleChats(items) {
+                    var _this2 = this;
+
+                    _.each(items, function (item) {
+                        var existing = _this2.get(item.get('id'));
+                        if (existing && existing.$el.parent().length !== 0) {
+                            return;
+                        }
+                        var view = new _converse.MinimizedChatBoxView({ model: item });
+                        _this2.$('.minimized-chats-flyout').append(view.render());
+                        _this2.add(item.get('id'), view);
+                    });
+                    this.toggleview.model.set({ 'num_minimized': this.keys().length });
+                    this.render();
                 },
                 addChat: function addChat(item) {
                     var existing = this.get(item.get('id'));
@@ -22157,7 +24216,14 @@ return __p
                 }
             });
 
-            var renderMinimizeButton = function renderMinimizeButton(view) {
+            Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(function () {
+                _converse.minimized_chats = new _converse.MinimizedChats({
+                    model: _converse.chatboxes
+                });
+                _converse.emit('minimizedChatsInitialized');
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
+            _converse.on('chatBoxOpened', function renderMinimizeButton(view) {
                 // Inserts a "minimize" button in the chatview's header
                 var $el = view.$el.find('.toggle-chatbox-button');
                 var $new_el = tpl_chatbox_minimize({ info_minimize: __('Minimize this chat box') });
@@ -22166,8 +24232,7 @@ return __p
                 } else {
                     view.$el.find('.close-chatbox-button').after($new_el);
                 }
-            };
-            _converse.on('chatBoxOpened', renderMinimizeButton);
+            });
 
             _converse.on('controlBoxOpened', function (chatbox) {
                 // Wrapped in anon method because at scan time, chatboxviews
@@ -22701,6 +24766,7 @@ if (typeof define !== 'undefined') {
     define('jquery.browser', [], function () { return jQuery; });
     define('awesomplete', [], function () { return jQuery; });
     define('lodash', [], function () { return _; });
+    define('lodash.converter', [], function () { return fp; });
     define('lodash.noconflict', [], function () { return _; });
     define('moment_with_locales', [], function () { return moment; });
     define('strophe', [], function () {

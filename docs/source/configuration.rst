@@ -6,10 +6,6 @@
 Configuration
 =============
 
-.. contents:: Table of Contents
-   :depth: 2
-   :local:
-
 The included minified JS and CSS files can be used for demoing or testing, but
 you'll want to configure *Converse.js* to suit your needs before you deploy it
 on your website.
@@ -19,7 +15,7 @@ on your website.
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
 
-Please refer to the `Configuration variables`_ section below for info on
+Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
 After you have configured *Converse.js*, you'll have to regenerate the minified
@@ -239,6 +235,8 @@ For each room on the server a query is made to fetch further details (e.g.
 features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
 
+.. _`auto_login`:
+
 auto_login
 ----------
 
@@ -261,7 +259,7 @@ If ``authentication`` is set to ``anonymous``, then you will also need to provid
 server's domain via the `jid`_ setting.
 
 This is a useful setting if you'd like to create a custom login form in your
-website. You'll need to write some Javascript to accept that custom form's
+website. You'll need to write some JavaScript to accept that custom form's
 login credentials, then you can pass those credentials (``jid`` and
 ``password``) to ``converse.initialize`` to start converse.js and log the user
 into their XMPP account.
@@ -485,7 +483,7 @@ default_domain
 Specify a domain to act as the default for user JIDs. This allows users to log
 in with only the username part of their JID, instead of the full JID.
 
-For example, if ``default_domain`` is ``example.org``, then the user:
+For example, if ``default_domain`` is ``example.org``, then the user
 ``johnny@example.org`` can log in with only ``johnny``.
 
 JIDs with other domains are still allowed but need to be provided in full.
@@ -650,11 +648,18 @@ state, then you can set this option to `true` to enable it.
 i18n
 ----
 
-* Default:  Auto-detection of the User/Browser language
+* Default:  Auto-detection of the User/Browser language or ``en``;
 
-If no locale is matching available locales, the default is ``en``.
-Specify the locale/language. The language must be in the ``locales`` object. Refer to
-``./locale/locales.js`` to see which locales are supported.
+Specify the locale/language.
+
+The translations for that locale must be available in JSON format at the
+`locales_url`_
+
+If an explicit locale is specified via the ``i18n`` setting and the
+translations for that locale are not found at the `locales_url``, then 
+then Converse.js will fall back to trying to determine the browser's language
+and fetching those translations, or if that fails the default English texts
+will be used.
 
 jid
 ---
@@ -694,12 +699,45 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+locales_url
+-----------
+
+* Default: ``/locale/{{{locale}}}/LC_MESSAGES/converse.json``,
+
+The URL from where Converse.js should fetch translation JSON.
+
+The three curly braces ``{{{ }}}`` are
+`Mustache<https://github.com/janl/mustache.js#readme>`_-style
+variable interpolation which HTML-escapes the value being inserted. It's
+important that the inserted value is HTML-escaped, otherwise a malicious script
+injection attack could be attempted.
+
+The variable being interpolated via the curly braces is ``locale``, which is
+the value passed in to the `i18n`_ setting, or the browser's locale or the
+default local or `en` (resolved in that order).
+
+From version 3.3.0, Converse.js no longer bundles all translations into its
+final build file. Instead, only the relevant translations are fetched at
+runtime.
+
+This change also means that it's no longer possible to pass in the translation
+JSON data directly into ``_converse.initialize`` via the `i18n`_ setting.
+Instead, you only specify the language code (e.g. `de`) and that language's
+JSON translations will automatically be fetched via XMLHTTPRequest at
+``locales_url``.
+
 locked_domain
 -------------
 
 * Default:  ``undefined``
 
 Similar to `default_domain`_ but no other domains are allowed.
+
+For example, if ``locked_domain`` is set to ``example.org``, then the user
+``johnny@example.org`` can log in with only ``johnny``.
+
+Additionally, only users registered on the ``example.org`` host can log in, no
+other users are allowed to log in.
 
 message_archiving
 -----------------
@@ -1109,7 +1147,7 @@ loaded), then an error will be raised.
 
 Otherwise a message will simply be logged and the override instruction ignored.
 
-The Converse.js plugins architecture can have an ``optional_dependencies``
+The Converse.js plugins architecture can have an :ref:`optional_dependencies`
 plugin attribute. This enables you to specify an array of optional, or
 "soft", dependencies. Converse.js (more specifically,
 `pluggable.js <https://jcbrand.github.io/pluggable.js/>`_) will try to first
@@ -1335,7 +1373,7 @@ xhr_custom_status
 * Default:  ``false``
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 This option will let converse.js make an AJAX POST with your changed custom chat status to a
 remote server.
@@ -1344,7 +1382,7 @@ xhr_custom_status_url
 ---------------------
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 * Default:  Empty string
 
@@ -1361,7 +1399,7 @@ xhr_user_search
 * Default:  ``false``
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 There are two ways to add users.
 
@@ -1386,7 +1424,7 @@ xhr_user_search_url
 -------------------
 
 .. note::
-    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous Javascript and XML).
+    XHR stands for XMLHTTPRequest, and is meant here in the AJAX sense (Asynchronous JavaScript and XML).
 
 * Default:  Empty string
 

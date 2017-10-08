@@ -203,6 +203,9 @@
                     margin: 0;
                     padding: 0;
                     color: $subdued-color;
+                    &:before {
+                        font-size: $font-size;
+                    }
                     &:hover {
                         color: $gray-color;
                     }

@@ -9,8 +9,8 @@
     define(["sizzle",
             "es6-promise",
             "lodash.noconflict",
-            "lodash.converter",
             "polyfill",
+            "jed",
             "utils",
             "moment_with_locales",
             "strophe",
@@ -19,22 +19,30 @@
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (
-        sizzle, Promise, _, lodashConverter, polyfill,
-        utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, polyfill, Jed, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
      */
     // "use strict";
 
-    // Create the FP (functional programming) version of lodash
-    const fp = lodashConverter(_.runInContext());
-
     // Strophe globals
     const { $build, $iq, $msg, $pres } = Strophe;
     const b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
+
+    // Add Strophe Namespaces
+    Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+    Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+    Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+    Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
 
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
@@ -43,7 +51,8 @@
     _.templateSettings = {
         'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
         'evaluate': /\{\[([\s\S]+?)\]\}/g,
-        'interpolate': /\{\{([\s\S]+?)\}\}/g
+        'interpolate': /\{\{([\s\S]+?)\}\}/g,
+        'imports': { '_': _ }
     };
 
     const _converse = {
@@ -55,6 +64,7 @@
 
     _converse.core_plugins = [
         'converse-bookmarks',
+        'converse-chatboxes',
         'converse-chatview',
         'converse-controlbox',
         'converse-core',
@@ -103,7 +113,7 @@
     _converse.OPENED = 'opened';
     _converse.PREBIND = "prebind";
 
-    const PRETTY_CONNECTION_STATUS = {
+    _converse.CONNECTION_STATUS = {
         0: 'ERROR',
         1: 'CONNECTING',
         2: 'CONNFAIL',
@@ -113,21 +123,35 @@
         6: 'DISCONNECTED',
         7: 'DISCONNECTING',
         8: 'ATTACHED',
-        9: 'REDIRECT'
+        9: 'REDIRECT',
+       10: 'RECONNECTING'
     };
 
-    const DEFAULT_IMAGE_TYPE = 'image/png';
-    const DEFAULT_IMAGE = "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";
+    _converse.DEFAULT_IMAGE_TYPE = 'image/png';
+    _converse.DEFAULT_IMAGE = "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";
 
     _converse.log = function (message, level) {
+        /* Logs messages to the browser's developer console.
+         *
+         * Parameters:
+         *      (String) message - The message to be logged.
+         *      (Integer) level - The loglevel which allows for filtering of log
+         *                       messages.
+         *  
+         *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
+         *  3 for 'error' and 4 for 'fatal'.
+         *
+         *  When using the 'error' or 'warn' loglevels, a full stacktrace will be 
+         *  logged as well.
+         */
         if (message instanceof Error) {
             message = message.stack;
         }
-        const logger = _.assignIn({
-                'debug': _.noop,
-                'error': _.noop,
-                'info': _.noop,
-                'warn': _.noop,
+        const logger = _.assign({
+                'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,
+                'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
@@ -139,7 +163,7 @@
             logger.warn(`WARNING: ${message}`);
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.error(`FATAL: ${message}`);
+                logger.trace(`FATAL: ${message}`);
             } else {
                 logger.error(`FATAL: ${message}`);
             }
@@ -152,9 +176,138 @@
         }
     };
 
+    // ---------------------
+    // Translation machinery
+    // ---------------------
+    _converse.__ = function (str) {
+        /* Translate the given string based on the current locale.
+         *
+         * Parameters:
+         *      (String) str - The string to translate.
+         */
+        if (_.isUndefined(Jed)) {
+            return str;
+        }
+        if (_.isUndefined(_converse.jed)) {
+            return Jed.sprintf.apply(Jed, arguments);
+        }
+        var t = _converse.jed.translate(str);
+        if (arguments.length>1) {
+            return t.fetch.apply(t, [].slice.call(arguments, 1));
+        } else {
+            return t.fetch();
+        }
+    }
+
+    function detectLocale (library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - Returns a boolean indicating whether
+         *                                 the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                locale = isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    }
+
+    function isMomentLocale (locale) {
+        if (!_.isString(locale)) { return false; }
+        return moment.locale() !== moment.locale(locale);
+    }
+
+    function getLocale (preferred_locale, isSupportedByLibrary) {
+        if (_.isString(preferred_locale)) {
+            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+                return preferred_locale;
+            }
+        }
+        return detectLocale(isSupportedByLibrary) || 'en';
+    }
+
+    function isLocaleAvailable (locale, available) {
+        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+         *
+         * Parameters:
+         *      (String) locale - The locale to check for
+         *      (Function) available - returns a boolean indicating whether the locale is supported
+         */
+        if (available(locale)) {
+            return locale;
+        } else {
+            var sublocale = locale.split("-")[0];
+            if (sublocale !== locale && available(sublocale)) {
+                return sublocale;
+            }
+        }
+    }
+
+    function isLocaleSupported (locale) {
+        /* Check whether the passed in locale is supported by Converse
+         *
+         * Parameters:
+         *  (String) locale:   The given i18n locale
+         */
+        if (!_.isString(locale)) { return false; }
+        return _.includes(_converse.locales, locale);
+    }
+
+    function fetchTranslations (locale, locale_url) {
+        /* Fetch the translations for the given local at the given URL.
+         *
+         * Parameters:
+         *  (String) locale:      The given i18n locale
+         *  (String) locale_url:  The URL from which the translations should be fetched
+         */
+        return new Promise((resolve, reject) => {
+            if (!isLocaleSupported(locale) || locale === 'en') {
+                return resolve();
+            }
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', locale_url, true);
+            xhr.setRequestHeader(
+                'Accept',
+                "application/json, text/javascript"
+            );
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    resolve(new Jed(window.JSON.parse(xhr.responseText)));
+                } else {
+                    xhr.onerror();
+                }
+            };
+            xhr.onerror = function () {
+                reject(xhr.statusText);
+            };
+            xhr.send();
+        });
+    }
+    // --------------------------
+    // END: Translation machinery
+    // --------------------------
+
+
     const PROMISES = [
+        'initialized',
         'cachedRoster',
-        'chatBoxesFetched',
+        'connectionInitialized',
         'pluginsInitialized',
         'roster',
         'rosterContactsFetched',
@@ -186,10 +339,12 @@
 
         _.each(PROMISES, addPromise);
 
-        if (!_.isUndefined(_converse.chatboxes)) {
+        if (!_.isUndefined(_converse.connection)) {
             // Looks like _converse.initialized was called again without logging
             // out or disconnecting in the previous session.
             // This happens in tests. We therefore first clean up.
+            Backbone.history.stop();
+            delete _converse.controlboxtoggle;
             _converse.connection.reset();
             _converse.off();
             _converse.stopListening();
@@ -213,34 +368,11 @@
         Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
         Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
-        // Add Strophe Namespaces
-        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-        Strophe.addNamespace('XFORM', 'jabber:x:data');
-
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED':     10000,
             'INACTIVE':   90000
         };
-
-        // Internationalization
-        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
-        if (!moment.locale) {
-            //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        const __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
 
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
@@ -276,7 +408,12 @@
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
-            locked_domain: undefined,
+            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales: [
+                'af', 'ca', 'de', 'es', 'en', 'fr', 'he',
+                'hu', 'id', 'it', 'ja', 'nb', 'nl',
+                'pl', 'pt_BR', 'ru', 'uk', 'zh'
+            ],
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -308,6 +445,11 @@
             }
         }
 
+        /* Internationalization */
+        moment.locale(getLocale(settings.i18n, isMomentLocale));
+        _converse.locale = getLocale(settings.i18n, isLocaleSupported);
+        const __ = _converse.__;
+
         // Module-level variables
         // ----------------------
         this.callback = callback || _.noop;
@@ -325,10 +467,6 @@
 
         // Module-level functions
         // ----------------------
-        this.getViewForChatBox = function (chatbox) {
-            if (!chatbox) { return; }
-            return _converse.chatboxviews.get(chatbox.get('id'));
-        };
 
         this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749825).toString()}`;
 
@@ -412,21 +550,10 @@
             _converse.everySecondTrigger = window.setInterval(_converse.onEverySecond, 1000);
         };
 
-        this.giveFeedback = function (subject, klass, message) {
-            const els = document.querySelectorAll('.conn-feedback');
-            _.forEach(els, function (el) {
-                el.classList.add('conn-feedback');
-                el.textContent = subject;
-                if (klass) {
-                    el.classList.add(klass);
-                } else {
-                    el.classList.remove('error');
-                }
-            });
-            _converse.emit('feedback', {
-                'klass': klass,
-                'message': message,
-                'subject': subject
+        this.setConnectionStatus = function (connection_status, message) {
+            _converse.connfeedback.set({
+                'connection_status': connection_status,
+                'message': message
             });
         };
 
@@ -446,9 +573,8 @@
         this.reconnect = _.debounce(function () {
             _converse.log('RECONNECTING');
             _converse.log('The connection has dropped, attempting to reconnect.');
-            _converse.giveFeedback(
-                __("Reconnecting"),
-                'warn',
+            _converse.setConnectionStatus(
+                Strophe.Status.RECONNECTING,
                 __('The connection has dropped, attempting to reconnect.')
             );
             _converse.connection.reconnecting = true;
@@ -461,7 +587,6 @@
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
             _converse._tearDown();
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.emit('disconnected');
         };
 
@@ -470,6 +595,8 @@
              * Will either start a teardown process for converse.js or attempt
              * to reconnect.
              */
+            const reason = _converse.disconnection_reason;
+
             if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
                 if (_converse.credentials_url && _converse.auto_reconnect) {
                     /* In this case, we reconnect, because we might be receiving
@@ -481,7 +608,9 @@
                     return _converse.disconnect();
                 }
             } else if (_converse.disconnection_cause === _converse.LOGOUT ||
-                    _converse.disconnection_reason === "host-unknown" ||
+                    (!_.isUndefined(reason) && reason === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) ||
+                    reason === "host-unknown" ||
+                    reason === "remote-connection-failed" ||
                     !_converse.auto_reconnect) {
                 return _converse.disconnect();
             }
@@ -502,13 +631,14 @@
             }
         };
 
-        this.onConnectStatusChanged = function (status, condition) {
+        this.onConnectStatusChanged = function (status, message) {
             /* Callback method called by Strophe as the Strophe.Connection goes
              * through various states while establishing or tearing down a
              * connection.
              */
-            _converse.log(`Status changed to: ${PRETTY_CONNECTION_STATUS[status]}`);
+            _converse.log(`Status changed to: ${_converse.CONNECTION_STATUS[status]}`);
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                _converse.setConnectionStatus(status);
                 // By default we always want to send out an initial presence stanza.
                 _converse.send_initial_presence = true;
                 _converse.setDisconnectionCause();
@@ -525,29 +655,36 @@
                     _converse.onConnected();
                 }
             } else if (status === Strophe.Status.DISCONNECTED) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.ERROR) {
-                _converse.giveFeedback(
-                    __('Connection error'), 'error',
+                _converse.setConnectionStatus(
+                    status,
                     __('An error occurred while connecting to the chat server.')
                 );
             } else if (status === Strophe.Status.CONNECTING) {
-                _converse.giveFeedback(__('Connecting'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHENTICATING) {
-                _converse.giveFeedback(__('Authenticating'));
+                _converse.setConnectionStatus(status);
             } else if (status === Strophe.Status.AUTHFAIL) {
-                _converse.giveFeedback(__('Authentication Failed'), 'error');
-                _converse.setDisconnectionCause(status, condition, true);
+                if (!message) {
+                    message = __('Your Jabber ID and/or password is incorrect. Please try again.');
+                }
+                _converse.setConnectionStatus(status, message);
+                _converse.setDisconnectionCause(status, message, true);
                 _converse.onDisconnected();
             } else if (status === Strophe.Status.CONNFAIL) {
-                _converse.giveFeedback(
-                    __('Connection failed'), 'error',
-                    __(`An error occurred while connecting to the chat server: ${condition}`)
-                );
-                _converse.setDisconnectionCause(status, condition);
+                let feedback = message;
+                if (message === "host-unknown" || message == "remote-connection-failed") {
+                    feedback = __("Sorry, we could not connect to the XMPP host with domain: ") +
+                        `\"${Strophe.getDomainFromJid(_converse.connection.jid)}\"`;
+                } else if (!_.isUndefined(message) && message === _.get(Strophe, 'ErrorCondition.NO_AUTH_MECH')) {
+                    feedback = __("The XMPP server did not offer a supported authentication mechanism");
+                }
+                _converse.setConnectionStatus(status, feedback);
+                _converse.setDisconnectionCause(status, message);
             } else if (status === Strophe.Status.DISCONNECTING) {
-                _converse.setDisconnectionCause(status, condition);
+                _converse.setDisconnectionCause(status, message);
             }
         };
 
@@ -570,7 +707,7 @@
             }
         };
 
-        this.initStatus = () => 
+        this.initStatus = () =>
             new Promise((resolve, reject) => {
                 const promise = new utils.getWrappedPromise();
                 this.xmppstatus = new this.XMPPStatus();
@@ -585,11 +722,11 @@
             });
 
         this.initSession = function () {
-            this.session = new Backbone.Model();
+            _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
-            this.session.id = id; // Appears to be necessary for backbone.browserStorage
-            this.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-            this.session.fetch();
+            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+            _converse.session.fetch();
         };
 
         this.clearSession = function () {
@@ -602,9 +739,7 @@
         };
 
         this.logOut = function () {
-            _converse.chatboxviews.closeAllChatBoxes();
             _converse.clearSession();
-
             _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
             if (!_.isUndefined(_converse.connection)) {
                 _converse.connection.disconnect();
@@ -756,13 +891,9 @@
                 _converse.registerIntervalHandler();
                 _converse.initRoster();
             }
-            // First set up chat boxes, before populating the roster, so that
-            // the controlbox is properly set up and ready for the rosterview.
             _converse.roster.onConnected();
-            _converse.chatboxes.onConnected();
             _converse.populateRoster();
             _converse.registerPresenceHandler();
-            _converse.giveFeedback(__('Contacts'));
             if (reconnecting) {
                 _converse.xmppstatus.sendPresence();
             } else {
@@ -797,7 +928,6 @@
                 _converse.onStatusInitialized(true);
                 _converse.emit('reconnected');
             } else {
-                _converse.chatboxviews.closeAllChatBoxes();
                 _converse.initStatus()
                     .then(
                         _.partial(_converse.onStatusInitialized, false),
@@ -814,8 +944,8 @@
                 'chat_state': undefined,
                 'chat_status': 'offline',
                 'groups': [],
-                'image': DEFAULT_IMAGE,
-                'image_type': DEFAULT_IMAGE_TYPE,
+                'image': _converse.DEFAULT_IMAGE,
+                'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
                 'status': '',
             },
@@ -1159,7 +1289,7 @@
                             resolve(contact);
                         },
                         function (err) {
-                            alert(__(`Sorry, there was an error while trying to add ${name} as a contact.`));
+                            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
                             _converse.log(err, Strophe.LogLevel.ERROR);
                             resolve(err);
                         }
@@ -1525,266 +1655,20 @@
             }
         });
 
-        this.ChatBoxes = Backbone.Collection.extend({
-            comparator: 'time_opened',
+        this.ConnectionFeedback = Backbone.Model.extend({
 
-            model (attrs, options) {
-                return new _converse.ChatBox(attrs, options);
+            defaults: {
+                'connection_status': undefined,
+                'message': ''
             },
-
-            registerMessageHandler () {
-                _converse.connection.addHandler(
-                    this.onMessage.bind(this), null, 'message', 'chat'
-                );
-                _converse.connection.addHandler(
-                    this.onErrorMessage.bind(this), null, 'message', 'error'
-                );
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return true;
-            },
-
-            onChatBoxesFetched (collection) {
-                /* Show chat boxes upon receiving them from sessionStorage
-                 *
-                 * This method gets overridden entirely in src/converse-controlbox.js
-                 * if the controlbox plugin is active.
-                 */
-                collection.each((chatbox) => {
-                    if (this.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show');
-                    }
-                });
-                _converse.emit('chatBoxesFetched');
-            },
-
-            onConnected () {
-                this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
-                this.registerMessageHandler();
-                this.fetch({
-                    add: true,
-                    success: this.onChatBoxesFetched.bind(this)
-                });
-            },
-
-            onErrorMessage (message) {
-                /* Handler method for all incoming error message stanzas
-                 */
-                // TODO: we can likely just reuse "onMessage" below
-                const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
-                if (utils.isSameBareJID(from_jid, _converse.bare_jid)) {
-                    return true;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                const chatbox = this.getChatBox(from_jid);
-                if (!chatbox) {
-                    return true;
-                }
-                chatbox.createMessage(message, null, message);
-                return true;
-            },
-
-            onMessage (message) {
-                /* Handler method for all incoming single-user chat "message"
-                 * stanzas.
-                 */
-                let contact_jid, delay, resource,
-                    from_jid = message.getAttribute('from'),
-                    to_jid = message.getAttribute('to');
-
-                const original_stanza = message,
-                      to_resource = Strophe.getResourceFromJid(to_jid),
-                      is_carbon = !_.isNull(message.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
-
-                if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
-                    _converse.log(
-                        `onMessage: Ignoring incoming message intended for a different resource: ${to_jid}`,
-                        Strophe.LogLevel.INFO
-                    );
-                    return true;
-                } else if (utils.isHeadlineMessage(message)) {
-                    // XXX: Ideally we wouldn't have to check for headline
-                    // messages, but Prosody sends headline messages with the
-                    // wrong type ('chat'), so we need to filter them out here.
-                    _converse.log(
-                        `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
-                        Strophe.LogLevel.INFO
-                    );
-                    return true;
-                }
-                const forwarded = message.querySelector('forwarded');
-                if (!_.isNull(forwarded)) {
-                    const forwarded_message = forwarded.querySelector('message');
-                    const forwarded_from = forwarded_message.getAttribute('from');
-                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
-                        // Prevent message forging via carbons
-                        //
-                        // https://xmpp.org/extensions/xep-0280.html#security
-                        return true;
-                    }
-                    message = forwarded_message;
-                    delay = forwarded.querySelector('delay');
-                    from_jid = message.getAttribute('from');
-                    to_jid = message.getAttribute('to');
-                }
-
-                const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                      from_resource = Strophe.getResourceFromJid(from_jid),
-                      is_me = from_bare_jid === _converse.bare_jid;
-
-                if (is_me) {
-                    // I am the sender, so this must be a forwarded message...
-                    contact_jid = Strophe.getBareJidFromJid(to_jid);
-                    resource = Strophe.getResourceFromJid(to_jid);
-                } else {
-                    contact_jid = from_bare_jid;
-                    resource = from_resource;
-                }
-                // Get chat box, but only create a new one when the message has a body.
-                const chatbox = this.getChatBox(contact_jid, !_.isNull(message.querySelector('body'))),
-                      msgid = message.getAttribute('id');
-
-                if (chatbox) {
-                    const messages = msgid && chatbox.messages.findWhere({msgid}) || [];
-                    if (_.isEmpty(messages)) {
-                        // Only create the message when we're sure it's not a
-                        // duplicate
-                        chatbox.incrementUnreadMsgCounter(original_stanza);
-                        chatbox.createMessage(message, delay, original_stanza);
-                    }
-                }
-                _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
-                return true;
-            },
-
-            createChatBox (jid, attrs) {
-                /* Creates a chat box
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user for whom a chat box
-                 *      gets created.
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                const bare_jid = Strophe.getBareJidFromJid(jid),
-                      roster_item = _converse.roster.get(bare_jid);
-                let roster_info = {};
-
-                if (! _.isUndefined(roster_item)) {
-                    roster_info = {
-                        'fullname': _.isEmpty(roster_item.get('fullname'))? jid: roster_item.get('fullname'),
-                        'image_type': roster_item.get('image_type'),
-                        'image': roster_item.get('image'),
-                        'url': roster_item.get('url'),
-                    };
-                } else if (!_converse.allow_non_roster_messaging) {
-                    _converse.log(`Could not get roster item for JID ${bare_jid}`+
-                        ' and allow_non_roster_messaging is set to false',
-                        Strophe.LogLevel.ERROR);
-                    return;
-                }
-                return this.create(_.assignIn({
-                        'id': bare_jid,
-                        'jid': bare_jid,
-                        'fullname': jid,
-                        'image_type': DEFAULT_IMAGE_TYPE,
-                        'image': DEFAULT_IMAGE,
-                        'url': '',
-                    }, roster_info, attrs || {}));
-            },
-
-            getChatBox (jid, create, attrs) {
-                /* Returns a chat box or optionally return a newly
-                 * created one if one doesn't exist.
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user whose chat box we want
-                 *    (Boolean) create - Should a new chat box be created if none exists?
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
-                jid = jid.toLowerCase();
-                let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
-                if (!chatbox && create) {
-                    chatbox = this.createChatBox(jid, attrs);
-                }
-                return chatbox;
-            }
-        });
-
-        this.ChatBoxViews = Backbone.Overview.extend({
 
             initialize () {
-                this.model.on("add", this.onChatBoxAdded, this);
-                this.model.on("destroy", this.removeChat, this);
-            },
-
-            _ensureElement () {
-                /* Override method from backbone.js
-                 * If the #conversejs element doesn't exist, create it.
-                 */
-                if (!this.el) {
-                    let el = document.querySelector('#conversejs');
-                    if (_.isNull(el)) {
-                        el = document.createElement('div');
-                        el.setAttribute('id', 'conversejs');
-                        // Converse.js expects a <body> tag to be present.
-                        document.querySelector('body').appendChild(el);
-                    }
-                    el.innerHTML = '';
-                    this.setElement(el, false);
-                } else {
-                    this.setElement(_.result(this, 'el'), false);
-                }
-            },
-
-            onChatBoxAdded (item) {
-                // Views aren't created here, since the core code doesn't
-                // contain any views. Instead, they're created in overrides in
-                // plugins, such as in converse-chatview.js and converse-muc.js
-                return this.get(item.get('id'));
-            },
-
-            removeChat (item) {
-                this.remove(item.get('id'));
-            },
-
-            closeAllChatBoxes () {
-                /* This method gets overridden in src/converse-controlbox.js if
-                 * the controlbox plugin is active.
-                 */
-                this.each(function (view) { view.close(); });
-                return this;
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
-            },
-
-            getChatBox (attrs, create) {
-                let chatbox  = this.model.get(attrs.jid);
-                if (!chatbox && create) {
-                    chatbox = this.model.create(attrs, {
-                        'error' (model, response) {
-                            _converse.log(response.responseText);
-                        }
-                    });
-                }
-                return chatbox;
-            },
-
-            showChat (attrs) {
-                /* Find the chat box and show it (if it may be shown).
-                 * If it doesn't exist, create it.
-                 */
-                const chatbox = this.getChatBox(attrs, true);
-                if (this.chatBoxMayBeShown(chatbox)) {
-                    chatbox.trigger('show', true);
-                }
-                return chatbox;
+                this.on('change', () => {
+                    _converse.emit('connfeedback', _converse.connfeedback);
+                });
             }
         });
-
+        this.connfeedback = new this.ConnectionFeedback();
 
         this.XMPPStatus = Backbone.Model.extend({
             initialize () {
@@ -1892,7 +1776,7 @@
                 };
                 xhr.onerror = function () {
                     delete _converse.connection;
-                    _converse.emit('noResumeableSession');
+                    _converse.emit('noResumeableSession', this);
                     reject(xhr.responseText);
                 };
                 xhr.send();
@@ -1914,7 +1798,7 @@
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.emit('noResumeableSession');
+                _converse.emit('noResumeableSession', this);
             };
             xhr.send();
         };
@@ -1934,7 +1818,7 @@
                 this.connection.restore(this.jid, this.onConnectStatusChanged);
                 return true;
             } catch (e) {
-                this.log(
+                _converse.log(
                     "Could not restore session for jid: "+
                     this.jid+" Error message: "+e.message);
                 this.clearSession(); // If there's a roster, we want to clear it (see #555)
@@ -1977,12 +1861,13 @@
             if (!reconnecting && this.keepalive && this.restoreBOSHSession()) {
                 return;
             }
-            if (this.auto_login) {
-                if (credentials) {
-                    // When credentials are passed in, they override prebinding
-                    // or credentials fetching via HTTP
-                    this.autoLogin(credentials);
-                } else if (this.credentials_url) {
+
+            if (credentials) {
+                // When credentials are passed in, they override prebinding
+                // or credentials fetching via HTTP
+                this.autoLogin(credentials);
+            } else if (this.auto_login) {
+                if (this.credentials_url) {
                     this.fetchLoginCredentials().then(
                         this.autoLogin.bind(this),
                         this.autoLogin.bind(this)
@@ -2055,22 +1940,22 @@
         };
 
         this.initConnection = function () {
-            if (this.connection) {
-                return;
+            if (!this.connection) {
+                if (!this.bosh_service_url && ! this.websocket_url) {
+                    throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+                }
+                if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                    this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+                } else if (this.bosh_service_url) {
+                    this.connection = new Strophe.Connection(
+                        this.bosh_service_url,
+                        _.assignIn(this.connection_options, {'keepalive': this.keepalive})
+                    );
+                } else {
+                    throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+                }
             }
-            if (!this.bosh_service_url && ! this.websocket_url) {
-                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-            }
-            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-            } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(
-                    this.bosh_service_url,
-                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
-                );
-            } else {
-                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-            }
+            _converse.emit('connectionInitialized');
         };
 
         this._tearDown = function () {
@@ -2078,13 +1963,13 @@
              * connection.
              */
             _converse.emit('beforeTearDown');
-            this.unregisterPresenceHandler();
-            if (this.roster) {
-                this.roster.off().reset(); // Removes roster contacts
+            _converse.unregisterPresenceHandler();
+            if (_converse.roster) {
+                _converse.roster.off().reset(); // Removes roster contacts
             }
-            this.chatboxes.remove(); // Don't call off(), events won't get re-registered upon reconnect.
-            delete this.chatboxes.browserStorage;
-            this.session.destroy();
+            if (!_.isUndefined(_converse.session)) {
+                _converse.session.destroy();
+            }
             window.removeEventListener('click', _converse.onUserActivity);
             window.removeEventListener('focus', _converse.onUserActivity);
             window.removeEventListener('keypress', _converse.onUserActivity);
@@ -2092,12 +1977,7 @@
             window.removeEventListener(unloadevent, _converse.onUserActivity);
             window.clearInterval(_converse.everySecondTrigger);
             _converse.emit('afterTearDown');
-            return this;
-        };
-
-        this.initChatBoxes = function () {
-            this.chatboxes = new this.ChatBoxes();
-            this.chatboxviews = new this.ChatBoxViews({model: this.chatboxes});
+            return _converse;
         };
 
         this.initPlugins = function () {
@@ -2132,17 +2012,35 @@
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        _converse.initPlugins();
-        _converse.initChatBoxes();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
+
+        function finishInitialization () {
+            _converse.initPlugins();
+            _converse.initConnection();
+            _converse.setUpXMLLogging();
+            _converse.logIn();
+            _converse.registerGlobalEventHandlers();
+
+            if (!Backbone.history.started) {
+                Backbone.history.start();
+            }
+        }
 
         if (!_.isUndefined(_converse.connection) &&
             _converse.connection.service === 'jasmine tests') {
+
+            finishInitialization();
             return _converse;
         } else {
+            fetchTranslations(
+                _converse.locale,
+                _.template(_converse.locales_url)({'locale': _converse.locale})
+            ).then((jed) => {
+                _converse.jed = jed;
+                finishInitialization();
+            }).catch((reason) => {
+                finishInitialization();
+                _converse.log(reason, Strophe.LogLevel.ERROR);
+            });
             return init_promise.promise;
         }
     };
@@ -2246,46 +2144,6 @@
                 _converse.roster.addAndSubscribe(jid, _.isEmpty(name)? jid: name);
             }
         },
-        'chats': {
-            'open' (jids, attrs) {
-                if (_.isUndefined(jids)) {
-                    _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                    return null;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(
-                        _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
-                    );
-                }
-                return _.map(jids, (jid) =>
-                    _converse.getViewForChatBox(
-                        _converse.chatboxes.getChatBox(jid, true, attrs).trigger('show')
-                    )
-                );
-            },
-            'get' (jids) {
-                if (_.isUndefined(jids)) {
-                    const result = [];
-                    _converse.chatboxes.each(function (chatbox) {
-                        // FIXME: Leaky abstraction from MUC. We need to add a
-                        // base type for chat boxes, and check for that.
-                        if (chatbox.get('type') !== 'chatroom') {
-                            result.push(_converse.getViewForChatBox(chatbox));
-                        }
-                    });
-                    return result;
-                } else if (_.isString(jids)) {
-                    return _converse.getViewForChatBox(_converse.chatboxes.getChatBox(jids));
-                }
-                return _.map(jids,
-                    _.partial(
-                        _.flow(
-                            _converse.chatboxes.getChatBox.bind(_converse.chatboxes),
-                            _converse.getViewForChatBox.bind(_converse)
-                        ), _, true
-                    )
-                );
-            }
-        },
         'tokens': {
             'get' (id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
@@ -2359,7 +2217,6 @@
             'Strophe': Strophe,
             '_': _,
             'b64_sha1':  b64_sha1,
-            'fp': fp,
             'moment': moment,
             'sizzle': sizzle,
             'utils': utils

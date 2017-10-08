@@ -7,49 +7,29 @@
             "plural_forms": "nplurals=1; plural=0;",
             "lang": "JA"
          },
-         "Bookmark this room": [
+         "The connection has dropped, attempting to reconnect.": [
             null,
             ""
          ],
-         "The name for this bookmark:": [
+         "Your Jabber ID and/or password is incorrect. Please try again.": [
             null,
             ""
          ],
-         "Would you like this room to be automatically joined upon startup?": [
+         "Sorry, we could not connect to the XMPP host with domain: ": [
             null,
             ""
          ],
-         "What should your nickname for this room be?": [
+         "The XMPP server did not offer a supported authentication mechanism": [
             null,
             ""
          ],
-         "Save": [
-            null,
-            "保存"
-         ],
-         "Cancel": [
-            null,
-            "キャンセル"
-         ],
-         "Sorry, something went wrong while trying to save your bookmark.": [
+         "Sorry, there was an error while trying to add %1$s as a contact.": [
             null,
             ""
          ],
-         "Bookmarks": [
+         "This client does not allow presence subscriptions": [
             null,
             ""
-         ],
-         "Remove this bookmark": [
-            null,
-            ""
-         ],
-         "Show more information on this room": [
-            null,
-            "この談話室についての詳細を見る"
-         ],
-         "Click to open this room": [
-            null,
-            "クリックしてこの談話室を開く"
          ],
          "Personal message": [
             null,
@@ -107,25 +87,129 @@
             null,
             ""
          ],
-         "Contacts": [
+         "Login": [
             null,
-            "相手先"
+            ""
+         ],
+         "Jabber ID:": [
+            null,
+            ""
+         ],
+         "Please enter a valid XMPP address": [
+            null,
+            ""
          ],
          "Password:": [
             null,
             "パスワード:"
          ],
-         "Log In": [
-            null,
-            "ログイン"
-         ],
-         "user@server": [
+         "Please enter your password": [
             null,
             ""
          ],
-         "Sign in": [
+         "Submit": [
             null,
-            "サインイン"
+            "送信"
+         ],
+         "This contact is busy": [
+            null,
+            "この相手先は取り込み中です"
+         ],
+         "This contact is online": [
+            null,
+            "この相手先は在席しています"
+         ],
+         "This contact is offline": [
+            null,
+            "この相手先はオフラインです"
+         ],
+         "This contact is unavailable": [
+            null,
+            "この相手先は不通です"
+         ],
+         "This contact is away for an extended period": [
+            null,
+            "この相手先は不在です"
+         ],
+         "This contact is away": [
+            null,
+            "この相手先は離席中です"
+         ],
+         "Contacts": [
+            null,
+            "相手先"
+         ],
+         "Groups": [
+            null,
+            ""
+         ],
+         "My contacts": [
+            null,
+            "相手先一覧"
+         ],
+         "Pending contacts": [
+            null,
+            "保留中の相手先"
+         ],
+         "Contact requests": [
+            null,
+            "会話に呼び出し"
+         ],
+         "Ungrouped": [
+            null,
+            ""
+         ],
+         "Filter": [
+            null,
+            ""
+         ],
+         "State": [
+            null,
+            ""
+         ],
+         "Any": [
+            null,
+            ""
+         ],
+         "Unread": [
+            null,
+            ""
+         ],
+         "Online": [
+            null,
+            "オンライン"
+         ],
+         "Chatty": [
+            null,
+            ""
+         ],
+         "Busy": [
+            null,
+            "取り込み中"
+         ],
+         "Away": [
+            null,
+            "離席中"
+         ],
+         "Extended Away": [
+            null,
+            ""
+         ],
+         "Offline": [
+            null,
+            "オフライン"
+         ],
+         "Click to chat with this contact": [
+            null,
+            "クリックしてこの相手先とチャット"
+         ],
+         "Name": [
+            null,
+            ""
+         ],
+         "user@domain": [
+            null,
+            ""
          ],
          "I am %1$s": [
             null,
@@ -143,6 +227,10 @@
             null,
             "独自の在席状況"
          ],
+         "Save": [
+            null,
+            "保存"
+         ],
          "online": [
             null,
             "在席"
@@ -158,22 +246,6 @@
          "away": [
             null,
             "離席中"
-         ],
-         "Online": [
-            null,
-            "オンライン"
-         ],
-         "Busy": [
-            null,
-            "取り込み中"
-         ],
-         "Away": [
-            null,
-            "離席中"
-         ],
-         "Offline": [
-            null,
-            "オフライン"
          ],
          "Click to add new chat contacts": [
             null,
@@ -199,19 +271,15 @@
             null,
             "追加"
          ],
+         "Click to add as a chat contact": [
+            null,
+            "クリックしてチャットの相手先として追加"
+         ],
          "No users found": [
             null,
             "ユーザーが見つかりません"
          ],
-         "This client does not allow presence subscriptions": [
-            null,
-            ""
-         ],
-         "Minimize this chat box": [
-            null,
-            ""
-         ],
-         "Minimized": [
+         "Toggle chat": [
             null,
             ""
          ],
@@ -263,10 +331,6 @@
             null,
             "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除されました"
          ],
-         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [
-            null,
-            "MUC(グループチャット)のサービスが停止したため、この談話室から削除されました。"
-         ],
          "Message": [
             null,
             "メッセージ"
@@ -275,7 +339,7 @@
             null,
             ""
          ],
-         "${command}": [
+         "Error: the \"%1$s\" command takes two arguments, the user's nickname and optionally a reason.": [
             null,
             ""
          ],
@@ -319,6 +383,10 @@
             null,
             ""
          ],
+         "Cancel": [
+            null,
+            "キャンセル"
+         ],
          "The nickname you chose is reserved or currently in use, please choose a different one.": [
             null,
             ""
@@ -339,15 +407,11 @@
             null,
             "パスワード:"
          ],
-         "Submit": [
-            null,
-            "送信"
-         ],
          "The reason given is: \"%1$s\".": [
             null,
             ""
          ],
-         "${notification.reason}": [
+         "The reason given is: \"%1$s \"": [
             null,
             ""
          ],
@@ -463,6 +527,18 @@
             null,
             "%1$s に談話室はありません"
          ],
+         "Rooms on %1$s": [
+            null,
+            "%1$s の談話室一覧"
+         ],
+         "Click to open this room": [
+            null,
+            "クリックしてこの談話室を開く"
+         ],
+         "Show more information on this room": [
+            null,
+            "この談話室についての詳細を見る"
+         ],
          "Description:": [
             null,
             "説明: "
@@ -507,15 +583,31 @@
             null,
             ""
          ],
-         "Notification from %1$s": [
+         "Bookmark this room": [
             null,
             ""
          ],
-         "%1$s says": [
+         "The name for this bookmark:": [
             null,
             ""
          ],
-         "wants to be your contact": [
+         "Would you like this room to be automatically joined upon startup?": [
+            null,
+            ""
+         ],
+         "What should your nickname for this room be?": [
+            null,
+            ""
+         ],
+         "Sorry, something went wrong while trying to save your bookmark.": [
+            null,
+            ""
+         ],
+         "Bookmarks": [
+            null,
+            ""
+         ],
+         "Remove this bookmark": [
             null,
             ""
          ],
@@ -615,11 +707,47 @@
             null,
             "完了"
          ],
-         " e.g. conversejs.org": [
+         "Don't have a chat account?": [
             null,
             ""
          ],
-         "Your XMPP provider's domain name:": [
+         "Create an account": [
+            null,
+            ""
+         ],
+         "Create your account": [
+            null,
+            ""
+         ],
+         "Please enter the XMPP provider to register with:": [
+            null,
+            ""
+         ],
+         "Already have a chat account?": [
+            null,
+            ""
+         ],
+         "Log in here": [
+            null,
+            ""
+         ],
+         "Account Registration:": [
+            null,
+            ""
+         ],
+         "Register": [
+            null,
+            ""
+         ],
+         "Choose a different provider": [
+            null,
+            ""
+         ],
+         "Hold tight, we're fetching the registration form…": [
+            null,
+            ""
+         ],
+         " e.g. conversejs.org": [
             null,
             ""
          ],
@@ -635,7 +763,7 @@
             null,
             ""
          ],
-         "Register": [
+         "Sorry, we're unable to connect to your chosen provider.": [
             null,
             ""
          ],
@@ -643,11 +771,7 @@
             null,
             ""
          ],
-         "Requesting a registration form from the XMPP server": [
-            null,
-            ""
-         ],
-         "Something went wrong while establishing a connection with \"%1$s\". Are you sure it exists?": [
+         "Something went wrong while establishing a connection with \"%1$s\".Are you sure it exists?": [
             null,
             ""
          ],
@@ -663,83 +787,23 @@
             null,
             ""
          ],
-         "Retry": [
+         "Notification from %1$s": [
             null,
             ""
          ],
-         "This contact is busy": [
-            null,
-            "この相手先は取り込み中です"
-         ],
-         "This contact is online": [
-            null,
-            "この相手先は在席しています"
-         ],
-         "This contact is offline": [
-            null,
-            "この相手先はオフラインです"
-         ],
-         "This contact is unavailable": [
-            null,
-            "この相手先は不通です"
-         ],
-         "This contact is away for an extended period": [
-            null,
-            "この相手先は不在です"
-         ],
-         "This contact is away": [
-            null,
-            "この相手先は離席中です"
-         ],
-         "Groups": [
+         "%1$s says": [
             null,
             ""
          ],
-         "My contacts": [
-            null,
-            "相手先一覧"
-         ],
-         "Pending contacts": [
-            null,
-            "保留中の相手先"
-         ],
-         "Contact requests": [
-            null,
-            "会話に呼び出し"
-         ],
-         "Ungrouped": [
+         "wants to be your contact": [
             null,
             ""
          ],
-         "Filter": [
+         "Minimize this chat box": [
             null,
             ""
          ],
-         "State": [
-            null,
-            ""
-         ],
-         "Any": [
-            null,
-            ""
-         ],
-         "Unread": [
-            null,
-            ""
-         ],
-         "Chatty": [
-            null,
-            ""
-         ],
-         "Extended Away": [
-            null,
-            ""
-         ],
-         "Click to chat with this contact": [
-            null,
-            "クリックしてこの相手先とチャット"
-         ],
-         "Name": [
+         "Minimized": [
             null,
             ""
          ]

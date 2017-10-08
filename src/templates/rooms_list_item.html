@@ -11,9 +11,10 @@
    title="{{{info_leave_room}}}" href="#">&nbsp;</a>
 
 {[ if (allow_bookmarks) { ]}
-<a class="right remove-bookmark icon-pushpin {[ if (bookmarked) { ]} button-on {[ } ]}"
+<a class="right icon-pushpin {[ if (bookmarked) { ]} remove-bookmark button-on {[ } else { ]} add-bookmark {[ } ]}"
    data-room-jid="{{{jid}}}" data-bookmark-name="{{{name}}}"
-   title="{{{info_remove_bookmark}}}" href="#">&nbsp;</a>
+   title="{[ if (bookmarked) { ]} {{{info_remove_bookmark}}} {[ } else { ]} {{{info_add_bookmark}}} {[ } ]}"
+   href="#">&nbsp;</a>
 {[ } ]}
 <a class="right room-info icon-room-info" data-room-jid="{{{jid}}}"
    title="{{{info_title}}}" href="#">&nbsp;</a>

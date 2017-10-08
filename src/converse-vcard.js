@@ -71,7 +71,7 @@
             };
 
             _converse.onVCardError = function (jid, iq, errback) {
-                const contact = _converse.roster.get(jid);
+                const contact = _.get(_converse.roster, jid);
                 if (contact) {
                     contact.save({ 'vcard_updated': moment().format() });
                 }
@@ -82,15 +82,14 @@
                 const vcard = iq.querySelector('vCard'),
                     img_type = _.get(vcard.querySelector('TYPE'), 'textContent'),
                     img = _.get(vcard.querySelector('BINVAL'), 'textContent'),
-                    url = _.get(vcard.querySelector('URL'), 'textContent');
+                    url = _.get(vcard.querySelector('URL'), 'textContent'),
+                    fullname = _.get(vcard.querySelector('FN'), 'textContent');
 
-                let fullname = _.get(vcard.querySelector('FN'), 'textContent');
                 if (jid) {
                     const contact = _converse.roster.get(jid);
                     if (contact) {
-                        fullname = _.isUndefined(fullname) ? _.get(contact, 'fullname', jid) : fullname;
                         contact.save({
-                            'fullname': fullname,
+                            'fullname': fullname || _.get(contact, 'fullname', jid),
                             'image_type': img_type,
                             'image': img,
                             'url': url,
@@ -132,28 +131,32 @@
             });
 
             const updateVCardForChatBox = function (chatbox) {
-                if (!_converse.use_vcards) { return; }
-                const jid = chatbox.model.get('jid'),
-                    contact = _converse.roster.get(jid);
-                if ((contact) && (!contact.get('vcard_updated'))) {
-                    _converse.getVCard(
-                        jid,
-                        function (iq, jid, fullname, image, image_type, url) {
-                            chatbox.model.save({
-                                'fullname' : fullname || jid,
-                                'url': url,
-                                'image_type': image_type,
-                                'image': image
-                            });
-                        },
-                        function () {
-                            _converse.log(
-                                "updateVCardForChatBox: Error occured while fetching vcard",
-                                Strophe.LogLevel.ERROR
-                            );
-                        }
-                    );
+                if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
+                    return;
                 }
+                _converse.api.waitUntil('rosterInitialized').then(() => {
+                    const jid = chatbox.model.get('jid'),
+                        contact = _converse.roster.get(jid);
+                    if ((contact) && (!contact.get('vcard_updated'))) {
+                        _converse.getVCard(
+                            jid,
+                            function (iq, jid, fullname, image, image_type, url) {
+                                chatbox.model.save({
+                                    'fullname' : fullname || jid,
+                                    'url': url,
+                                    'image_type': image_type,
+                                    'image': image
+                                });
+                            },
+                            function () {
+                                _converse.log(
+                                    "updateVCardForChatBox: Error occured while fetching vcard",
+                                    Strophe.LogLevel.ERROR
+                                );
+                            }
+                        );
+                    }
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             };
             _converse.on('chatBoxInitialized', updateVCardForChatBox);
 

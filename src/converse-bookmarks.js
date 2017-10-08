@@ -101,10 +101,11 @@
                 },
 
                 onBookmarked () {
+                    const icon = this.el.querySelector('.icon-pushpin');
                     if (this.model.get('bookmarked')) {
-                        this.$('.icon-pushpin').addClass('button-on');
+                        icon.classList.add('button-on');
                     } else {
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        icon.classList.remove('button-on');
                     }
                 },
 
@@ -125,11 +126,18 @@
                 renderBookmarkForm () {
                     const { _converse } = this.__super__,
                         { __ } = _converse,
-                        $body = this.$('.chatroom-body');
-                    $body.children().addClass('hidden');
+                        body = this.el.querySelector('.chatroom-body');
+
+                    _.each(body.children, function (child) {
+                        child.classList.add('hidden');
+                    });
                     // Remove any existing forms
-                    $body.find('form.chatroom-form').remove();
-                    $body.append(
+                    let form = body.querySelector('form.chatroom-form');
+                    if (!_.isNull(form)) {
+                        form.parentNode.removeChild(form);
+                    }
+                    body.insertAdjacentHTML(
+                        'beforeend', 
                         tpl_chatroom_bookmark_form({
                             heading: __('Bookmark this room'),
                             label_name: __('The name for this bookmark:'),
@@ -138,9 +146,17 @@
                             default_nick: this.model.get('nick'),
                             label_submit: __('Save'),
                             label_cancel: __('Cancel')
-                        }));
-                    this.$('.chatroom-form').submit(this.onBookmarkFormSubmitted.bind(this));
-                    this.$('.chatroom-form .button-cancel').on('click', this.cancelConfiguration.bind(this));
+                        })
+                    );
+                    form = body.querySelector('form.chatroom-form');
+                    form.addEventListener(
+                        'submit',
+                        this.onBookmarkFormSubmitted.bind(this)
+                    );
+                    form.querySelector('.button-cancel').addEventListener(
+                        'click',
+                        this.cancelConfiguration.bind(this)
+                    );
                 },
 
                 onBookmarkFormSubmitted (ev) {
@@ -173,7 +189,7 @@
                         _.forEach(models, function (model) {
                             model.destroy();
                         });
-                        this.$('.icon-pushpin').removeClass('button-on');
+                        this.el.querySelector('.icon-pushpin').classList.remove('button-on');
                     }
                 }
             }
@@ -184,8 +200,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this,
-                { __,
-                ___ } = _converse;
+                  { __ } = _converse;
 
             // Configuration values for this plugin
             // ====================================
@@ -197,6 +212,31 @@
             });
             // Promises exposed by this plugin
             _converse.api.promises.add('bookmarksInitialized');
+
+            // Pure functions on the _converse object
+            _.extend(_converse, {
+                removeBookmarkViaEvent (ev) {
+                    /* Remove a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    const name = ev.target.getAttribute('data-bookmark-name');
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
+                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
+                    }
+                },
+
+                addBookmarkViaEvent (ev) {
+                    /* Add a bookmark as determined by the passed in
+                     * event.
+                     */
+                    ev.preventDefault();
+                    const jid = ev.target.getAttribute('data-room-jid');
+                    const chatroom = _converse.openChatRoom({'jid': jid}, true);
+                    _converse.chatboxviews.get(jid).renderBookmarkForm();
+                },
+            });
 
             _converse.Bookmark = Backbone.Model;
 
@@ -353,8 +393,9 @@
                 tagName: 'div',
                 className: 'bookmarks-list, rooms-list-container',
                 events: {
-                    'click .remove-bookmark': 'removeBookmark',
-                    'click .bookmarks-toggle': 'toggleBookmarksList'
+                    'click .add-bookmark': 'addBookmark',
+                    'click .bookmarks-toggle': 'toggleBookmarksList',
+                    'click .remove-bookmark': 'removeBookmark'
                 },
 
                 initialize () {
@@ -390,14 +431,8 @@
                     return this.$el;
                 },
 
-                removeBookmark (ev) {
-                    ev.preventDefault();
-                    const name = $(ev.target).data('bookmarkName');
-                    const jid = $(ev.target).data('roomJid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
-                        _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
-                    }
-                },
+                removeBookmark: _converse.removeBookmarkViaEvent,
+                addBookmark: _converse.addBookmarkViaEvent,
 
                 renderBookmarkListElement (item) {
                     if (item instanceof _converse.ChatBox) {
@@ -492,7 +527,8 @@
             Promise.all([
                 _converse.api.waitUntil('chatBoxesFetched'),
                 _converse.api.waitUntil('roomsPanelRendered')
-            ]).then(initBookmarks);
+            ]).then(initBookmarks)
+              .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             const afterReconnection = function () {
                 if (!_converse.allow_bookmarks) {

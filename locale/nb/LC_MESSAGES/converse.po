@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-09-17 23:07+0000\n"
+"PO-Revision-Date: 2017-10-17 22:47+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
-"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
-"conversejs/translations/nb/>\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/conversejs/translations/nb/>\n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.17-dev\n"
+"X-Generator: Weblate 2.17\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:6723
 msgid "The connection has dropped, attempting to reconnect."
-msgstr ""
+msgstr "Tilkoblingen har gått ned, prøver å koble til igjen."
 
 #: dist/converse-no-dependencies.js:6801
 #, fuzzy
@@ -30,7 +30,7 @@ msgstr "En feil skjedde under lagring av skjemaet."
 
 #: dist/converse-no-dependencies.js:6808
 msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
+msgstr "Din Jabber-ID og/eller passord er feilaktig. Prøv igjen."
 
 #: dist/converse-no-dependencies.js:6816
 msgid "Sorry, we could not connect to the XMPP host with domain: "
@@ -328,7 +328,7 @@ msgstr "XMPP Brukernavn:"
 
 #: dist/converse-no-dependencies.js:16459
 msgid "user@domain"
-msgstr ""
+msgstr "bruker@domene"
 
 #. For translators: the %1$s part gets replaced with the status
 #. Example, I am online
@@ -1268,11 +1268,11 @@ msgstr "ferdig"
 
 #: dist/converse-no-dependencies.js:22548
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Har du ikke en sludrekonto?"
 
 #: dist/converse-no-dependencies.js:22550
 msgid "Create an account"
-msgstr ""
+msgstr "Opprett en konto"
 
 #: dist/converse-no-dependencies.js:22564
 #, fuzzy
@@ -1281,19 +1281,19 @@ msgstr "ønsker å bli kontaktfestet"
 
 #: dist/converse-no-dependencies.js:22566
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "Skriv inn XMPP-tilbyderen å registrere med:"
 
 #: dist/converse-no-dependencies.js:22588
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Har du allerede en sludrekonto?"
 
 #: dist/converse-no-dependencies.js:22590
 msgid "Log in here"
-msgstr ""
+msgstr "Logg inn her"
 
 #: dist/converse-no-dependencies.js:22604
 msgid "Account Registration:"
-msgstr ""
+msgstr "Kontoregistrering:"
 
 #: dist/converse-no-dependencies.js:22612
 msgid "Register"
@@ -1301,7 +1301,7 @@ msgstr "Registrér deg"
 
 #: dist/converse-no-dependencies.js:22616
 msgid "Choose a different provider"
-msgstr ""
+msgstr "Velg en annen tilbyder"
 
 #: dist/converse-no-dependencies.js:22632
 msgid "Hold tight, we're fetching the registration form…"
@@ -1325,7 +1325,7 @@ msgstr "her"
 
 #: dist/converse-no-dependencies.js:22864
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "Kunne ikke koble til din valgte tilbyder."
 
 #: dist/converse-no-dependencies.js:22875
 msgid ""

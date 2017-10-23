@@ -333,7 +333,12 @@
                 /* Extend default converse.js API to add methods specific to MAM
                  */
                 'archive': {
-                    'query': _converse.queryForArchivedMessages.bind(_converse)
+                    'query': function () {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
                 }
             });
 

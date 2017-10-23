@@ -268,9 +268,29 @@ There are two ways of waiting for the right time before executing your code.
 You can either listen for certain events, or you can wait for promises to
 resolve.
 
-For example, in the ``Bookmarks`` plugin (in
-`src/converse-bookmarks.js <https://github.com/jcbrand/converse.js/blob/6c3aa34c23d97d679823a64376418cd0f40a8b94/src/converse-bookmarks.js#L528>`_),
-before bookmarks can be fetched and shown to the user, we first have to wait until
+For example, when you want to query the message archive between you and a
+friend, you would call ``this._converse.api.archive.query({'with': 'friend@example.org'});``
+
+However, simply calling this immediately in the ``initialize`` method of your plugin will
+not work, since the user is not logged in yet.
+
+In this case, you should first listen for the ``connection`` event, and then do your query, like so:
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+            var _converse = this._converse;
+
+            _converse.on('connected', function () {
+                _converse.api.archive.query({'with': 'admin2@localhost'});
+            });
+        }
+    });
+
+Another example is in the ``Bookmarks`` plugin (in
+`src/converse-bookmarks.js <https://github.com/jcbrand/converse.js/blob/6c3aa34c23d97d679823a64376418cd0f40a8b94/src/converse-bookmarks.js#L528>`_).
+Before bookmarks can be fetched and shown to the user, we first have to wait until
 the `"Rooms"` panel of the ``ControlBox`` has been rendered and inserted into
 the DOM. Otherwise we have no place to show the bookmarks yet.
 
@@ -291,7 +311,7 @@ and ``roomsPanelRendered`` promises have been resolved before it calls the
 This way, we know that we have everything in place and set up correctly before
 fetching the bookmarks.
 
-As another example, there is also the following code in the ``initialize``
+As yet another example, there is also the following code in the ``initialize``
 method of the plugin:
 
 .. code-block:: javascript

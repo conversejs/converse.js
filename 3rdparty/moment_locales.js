@@ -10,6 +10,7 @@
     define("moment_with_locales", [
         'moment',   // Everything below can be removed except for moment itself.
         'moment/locale/af',
+        'moment/locale/ca',
         'moment/locale/de',
         'moment/locale/es',
         'moment/locale/fr',

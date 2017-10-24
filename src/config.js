@@ -26,6 +26,7 @@ require.config({
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",
         "form-utils":               "src/form-utils",
+        "i18n":                     "src/i18n",
         "jed":                      "node_modules/jed/jed",
         "jquery":                   "node_modules/jquery/dist/jquery",
         "jquery.browser":           "node_modules/jquery.browser/dist/jquery.browser",

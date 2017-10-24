@@ -10,7 +10,7 @@
             "es6-promise",
             "lodash.noconflict",
             "polyfill",
-            "jed",
+            "i18n",
             "utils",
             "moment_with_locales",
             "strophe",
@@ -19,7 +19,7 @@
             "backbone.browserStorage",
             "backbone.overview",
     ], factory);
-}(this, function (sizzle, Promise, _, polyfill, Jed, utils, moment, Strophe, pluggable, Backbone) {
+}(this, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -137,11 +137,11 @@
          *      (String) message - The message to be logged.
          *      (Integer) level - The loglevel which allows for filtering of log
          *                       messages.
-         *  
+         *
          *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
          *  3 for 'error' and 4 for 'fatal'.
          *
-         *  When using the 'error' or 'warn' loglevels, a full stacktrace will be 
+         *  When using the 'error' or 'warn' loglevels, a full stacktrace will be
          *  logged as well.
          */
         if (message instanceof Error) {
@@ -176,133 +176,19 @@
         }
     };
 
-    // ---------------------
-    // Translation machinery
-    // ---------------------
     _converse.__ = function (str) {
         /* Translate the given string based on the current locale.
          *
          * Parameters:
          *      (String) str - The string to translate.
          */
-        if (_.isUndefined(Jed)) {
+        if (_.isUndefined(i18n)) {
             return str;
         }
-        if (_.isUndefined(_converse.jed)) {
-            return Jed.sprintf.apply(Jed, arguments);
-        }
-        var t = _converse.jed.translate(str);
-        if (arguments.length>1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 1));
-        } else {
-            return t.fetch();
-        }
+        return i18n.translate.apply(i18n, arguments);
     }
 
-    function detectLocale (library_check) {
-        /* Determine which locale is supported by the user's system as well
-         * as by the relevant library (e.g. converse.js or moment.js).
-         *
-         * Parameters:
-         *      (Function) library_check - Returns a boolean indicating whether
-         *                                 the locale is supported.
-         */
-        var locale, i;
-        if (window.navigator.userLanguage) {
-            locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
-        }
-        if (window.navigator.languages && !locale) {
-            for (i=0; i<window.navigator.languages.length && !locale; i++) {
-                locale = isLocaleAvailable(window.navigator.languages[i], library_check);
-            }
-        }
-        if (window.navigator.browserLanguage && !locale) {
-            locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
-        }
-        if (window.navigator.language && !locale) {
-            locale = isLocaleAvailable(window.navigator.language, library_check);
-        }
-        if (window.navigator.systemLanguage && !locale) {
-            locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
-        }
-        return locale || 'en';
-    }
-
-    function isMomentLocale (locale) {
-        if (!_.isString(locale)) { return false; }
-        return moment.locale() !== moment.locale(locale);
-    }
-
-    function getLocale (preferred_locale, isSupportedByLibrary) {
-        if (_.isString(preferred_locale)) {
-            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-                return preferred_locale;
-            }
-        }
-        return detectLocale(isSupportedByLibrary) || 'en';
-    }
-
-    function isLocaleAvailable (locale, available) {
-        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-         *
-         * Parameters:
-         *      (String) locale - The locale to check for
-         *      (Function) available - returns a boolean indicating whether the locale is supported
-         */
-        if (available(locale)) {
-            return locale;
-        } else {
-            var sublocale = locale.split("-")[0];
-            if (sublocale !== locale && available(sublocale)) {
-                return sublocale;
-            }
-        }
-    }
-
-    function isLocaleSupported (locale) {
-        /* Check whether the passed in locale is supported by Converse
-         *
-         * Parameters:
-         *  (String) locale:   The given i18n locale
-         */
-        if (!_.isString(locale)) { return false; }
-        return _.includes(_converse.locales, locale);
-    }
-
-    function fetchTranslations (locale, locale_url) {
-        /* Fetch the translations for the given local at the given URL.
-         *
-         * Parameters:
-         *  (String) locale:      The given i18n locale
-         *  (String) locale_url:  The URL from which the translations should be fetched
-         */
-        return new Promise((resolve, reject) => {
-            if (!isLocaleSupported(locale) || locale === 'en') {
-                return resolve();
-            }
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', locale_url, true);
-            xhr.setRequestHeader(
-                'Accept',
-                "application/json, text/javascript"
-            );
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    resolve(new Jed(window.JSON.parse(xhr.responseText)));
-                } else {
-                    xhr.onerror();
-                }
-            };
-            xhr.onerror = function () {
-                reject(xhr.statusText);
-            };
-            xhr.send();
-        });
-    }
-    // --------------------------
-    // END: Translation machinery
-    // --------------------------
-
+    const __ = _converse.__;
 
     const PROMISES = [
         'initialized',
@@ -445,10 +331,12 @@
             }
         }
 
-        /* Internationalization */
-        moment.locale(getLocale(settings.i18n, isMomentLocale));
-        _converse.locale = getLocale(settings.i18n, isLocaleSupported);
-        const __ = _converse.__;
+        /* Localisation */
+        if (!_.isUndefined(i18n)) {
+            i18n.setLocales(settings.i18n, _converse);
+        } else {
+            _converse.locale = 'en';
+        }
 
         // Module-level variables
         // ----------------------
@@ -2026,23 +1914,24 @@
         }
 
         if (!_.isUndefined(_converse.connection) &&
-            _converse.connection.service === 'jasmine tests') {
-
+                _converse.connection.service === 'jasmine tests') {
             finishInitialization();
             return _converse;
+        } else if (_.isUndefined(i18n)) {
+            finishInitialization();
         } else {
-            fetchTranslations(
+            i18n.fetchTranslations(
                 _converse.locale,
+                _converse.locales,
                 _.template(_converse.locales_url)({'locale': _converse.locale})
-            ).then((jed) => {
-                _converse.jed = jed;
+            ).then(() => {
                 finishInitialization();
             }).catch((reason) => {
                 finishInitialization();
                 _converse.log(reason, Strophe.LogLevel.ERROR);
             });
-            return init_promise.promise;
         }
+        return init_promise.promise;
     };
 
     // API methods only available to plugins

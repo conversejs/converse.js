@@ -13,7 +13,6 @@
         "es6-promise",
         "jquery.browser",
         "lodash.noconflict",
-        "moment_with_locales",
         "strophe",
     ], factory);
 }(this, function (
@@ -21,7 +20,6 @@
         Promise,
         jQBrowser,
         _,
-        moment,
         Strophe
     ) {
     "use strict";

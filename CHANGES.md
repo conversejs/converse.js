@@ -25,6 +25,7 @@
   smaller filesize but means that the translations you want to provide need to
   be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
   configuration setting for more info.
+- The translation machinery has now been moved to a separate module in `src/i18n.js`.
 
 ## 3.2.1 (2017-08-29)
 

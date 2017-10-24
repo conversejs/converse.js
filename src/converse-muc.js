@@ -360,6 +360,7 @@
                     'converse?room=:room': 'openRoom'
                 },
                 openRoom (room) {
+                    // FIXME: also need to wait for bookmarks
                     _converse.api.waitUntil('roomsAutoJoined').then(() => {
                         if (utils.isValidJID(room)) {
                             _converse.api.rooms.open(room);

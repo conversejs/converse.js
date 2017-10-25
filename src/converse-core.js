@@ -155,26 +155,34 @@
             }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
-                logger.trace(`ERROR: ${message}`);
+                logger.trace(`${moment().format()} ERROR: ${message}`);
             } else {
                 logger.error(`ERROR: ${message}`);
             }
         } else if (level === Strophe.LogLevel.WARN) {
-            logger.warn(`WARNING: ${message}`);
+            if (_converse.debug) {
+                logger.warn(`${moment().format()} WARNING: ${message}`);
+            } else {
+                logger.warn(`WARNING: ${message}`);
+            }
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace(`FATAL: ${message}`);
+                logger.trace(`${moment().format()} FATAL: ${message}`);
             } else {
                 logger.error(`FATAL: ${message}`);
             }
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
-                logger.debug(`DEBUG: ${message}`);
+                logger.debug(`${moment().format()} DEBUG: ${message}`);
             } else {
-                logger.info(`INFO: ${message}`);
+                logger.info(`${moment().format()} INFO: ${message}`);
             }
         }
     };
+
+    Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
+    Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
+
 
     _converse.__ = function (str) {
         /* Translate the given string based on the current locale.
@@ -249,10 +257,6 @@
         } else if ('onunload' in window) {
             unloadevent = 'unload';
         }
-
-        // Logging
-        Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
-        Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.

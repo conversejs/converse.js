@@ -4,6 +4,7 @@
 
 ### Bugfixes
 - Don't require `auto_login` to be `true` when using the API to log in.
+- Moment locale wasn't being set to the value passed via the `i18n` option.
 
 ### New Features
 - #828 Add routing for the `#converse-login` and `#converse-register` URL

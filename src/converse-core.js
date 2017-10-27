@@ -736,17 +736,31 @@
             _converse.emit('rosterInitialized');
         };
 
-        this.populateRoster = function () {
+        this.populateRoster = function (ignore_cache=false) {
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
+             *
+             * Parameters:
+             *    (Bool) ignore_cache - If set to to true, the local cache
+             *      will be ignored it's guaranteed that the XMPP server
+             *      will be queried for the roster.
              */
-            _converse.rostergroups.fetchRosterGroups().then(function () {
-                _converse.emit('rosterGroupsFetched');
-                _converse.roster.fetchRosterContacts().then(function () {
+            if (ignore_cache) {
+                _converse.send_initial_presence = true;
+                _converse.roster.fetchFromServer()
+                    .then(_converse.sendInitialPresence)
+                    .catch(_converse.sendInitialPresence);
+            } else {
+                _converse.rostergroups.fetchRosterGroups().then(() => {
+                    _converse.emit('rosterGroupsFetched');
+                    return _converse.roster.fetchRosterContacts();
+                }).then(() => {
                     _converse.emit('rosterContactsFetched');
                     _converse.sendInitialPresence();
+                }).catch(() => {
+                    _converse.sendInitialPresence();
                 });
-            });
+            }
         };
 
         this.unregisterPresenceHandler = function () {
@@ -788,11 +802,9 @@
                 _converse.initRoster();
             }
             _converse.roster.onConnected();
-            _converse.populateRoster();
+            _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (reconnecting) {
-                _converse.xmppstatus.sendPresence();
-            } else {
+            if (!reconnecting) {
                 init_promise.resolve();
                 _converse.emit('initialized');
             }
@@ -1086,14 +1098,8 @@
                         add: true,
                         success (collection) {
                             if (collection.length === 0) {
-                                /* We don't have any roster contacts stored in sessionStorage,
-                                * so lets fetch the roster from the XMPP server. We pass in
-                                * 'sendPresence' as callback method, because after initially
-                                * fetching the roster we are ready to receive presence
-                                * updates from our contacts.
-                                */
                                 _converse.send_initial_presence = true;
-                                _converse.roster.fetchFromServer(resolve);
+                                _converse.roster.fetchFromServer().then(resolve).catch(reject);
                             } else {
                                 _converse.emit('cachedRoster', collection);
                                 resolve();
@@ -1244,13 +1250,21 @@
                 return true;
             },
 
-            fetchFromServer (callback) {
-                /* Get the roster from the XMPP server */
-                const iq = $iq({type: 'get', 'id': _converse.connection.getUniqueId('roster')})
-                    .c('query', {xmlns: Strophe.NS.ROSTER});
-                return _converse.connection.sendIQ(iq, (iq) => {
-                    this.onReceivedFromServer(iq);
-                    callback.apply(this, arguments);
+            fetchFromServer () {
+                /* Fetch the roster from the XMPP server */
+                return new Promise((resolve, reject) => {
+                    const iq = $iq({
+                        'type': 'get',
+                        'id': _converse.connection.getUniqueId('roster')
+                    }).c('query', {xmlns: Strophe.NS.ROSTER});
+
+                    const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
+                    const errback = function (iq) {
+                        const errmsg = "Error while trying to fetch roster from the server";
+                        _converse.log(errmsg, Strophe.LogLevel.ERROR);
+                        reject(new Error(errmsg));
+                    }
+                    return _converse.connection.sendIQ(iq, callback, errback);
                 });
             },
 

@@ -169,6 +169,7 @@
 
                 renderContactsPanel () {
                     const { _converse } = this.__super__;
+                    this.setActivePanel(ROOMS_PANEL_ID);
                     this.__super__.renderContactsPanel.apply(this, arguments);
                     if (_converse.allow_muc) {
                         this.renderRoomsPanel();

@@ -277,10 +277,14 @@
                     this.loginpanel.render();
                     return this;
                 },
+                
+                setActivePanel (panel) {
+                    this.model.save({'active-panel': panel});
+                },
 
-                renderContactsPanel () {
+                renderContactsPanel (initialPanel) {
                     if (_.isUndefined(this.model.get('active-panel'))) {
-                        this.model.save({'active-panel': USERS_PANEL_ID});
+                        this.model.save({'active-panel': initialPanel});
                     }
                     this.contactspanel = new _converse.ContactsPanel({
                         '$parent': this.$el.find('.controlbox-panes')

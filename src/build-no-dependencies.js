@@ -29,7 +29,7 @@
         "jquery.noconflict",
         "backbone.browserStorage",
         "backbone.overview",
-        "moment_with_locales",
+        "moment",
         "strophe",
         "strophe.disco",
         "strophe.rsm",

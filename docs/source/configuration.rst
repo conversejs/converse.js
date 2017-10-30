@@ -645,6 +645,8 @@ confusing and appears "broken".
 If you are however aware of this issue and still want to allow the `offline`
 state, then you can set this option to `true` to enable it.
 
+.. _`i18n`:
+
 i18n
 ----
 
@@ -699,6 +701,34 @@ See also:
     `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
+.. _`locales`:
+
+locales
+-------
+
+* Default:
+
+.. code-block:: javascript
+
+    locales: [
+        'af', 'ca', 'de',
+        'es', 'en', 'fr',
+        'he', 'hu', 'id',
+        'it', 'ja', 'nb',
+        'nl', 'pl', 'pt_BR',
+        'ru', 'uk', 'zh'
+    ]
+
+This setting restricts the locales that are supported by Converse.js and
+therefore what may be given as value for the :ref:`i18n` option.
+
+Any other locales will be ignored.
+
+When self-hosting, also make sure that the locales are served and therefore
+fetchable (via ``XMLHttpRequest``) at the URL specified by :ref:`locales-url`.
+
+.. _`locales-url`:
+
 locales_url
 -----------
 
@@ -707,7 +737,7 @@ locales_url
 The URL from where Converse.js should fetch translation JSON.
 
 The three curly braces ``{{{ }}}`` are
-`Mustache<https://github.com/janl/mustache.js#readme>`_-style
+`Mustache <https://github.com/janl/mustache.js#readme>`_-style
 variable interpolation which HTML-escapes the value being inserted. It's
 important that the inserted value is HTML-escaped, otherwise a malicious script
 injection attack could be attempted.

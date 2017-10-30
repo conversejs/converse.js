@@ -13,7 +13,23 @@
         "es6-promise",
         "jed",
         "lodash.noconflict",
-        "moment_with_locales"
+        "moment",
+        'moment/locale/af',
+        'moment/locale/ca',
+        'moment/locale/de',
+        'moment/locale/es',
+        'moment/locale/fr',
+        'moment/locale/he',
+        'moment/locale/hu',
+        'moment/locale/id',
+        'moment/locale/it',
+        'moment/locale/ja',
+        'moment/locale/nb',
+        'moment/locale/nl',
+        'moment/locale/pl',
+        'moment/locale/pt-br',
+        'moment/locale/ru',
+        'moment/locale/uk',
     ], factory);
 }(this, function (Promise, Jed, _, moment) {
     'use strict';

@@ -12,7 +12,7 @@
             "polyfill",
             "i18n",
             "utils",
-            "moment_with_locales",
+            "moment",
             "strophe",
             "pluggable",
             "backbone.noconflict",

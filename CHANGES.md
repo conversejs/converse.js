@@ -5,6 +5,11 @@
 ### Bugfixes
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
+- Refetch the roster from the server after reconnection.
+  From the perspective of the XMPP server, this is an entirely new login,
+  and therefore as per [RFC-6121](https://tools.ietf.org/html/rfc6121#section-2.1.6)
+  the roster SHOULD be queried, making the client an "interested resource".
+  Otherwise connected contacts might not get your presence updates.
 
 ### New Features
 - #828 Add routing for the `#converse-login` and `#converse-register` URL

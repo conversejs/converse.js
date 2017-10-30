@@ -6,15 +6,38 @@
 Translations
 ============
 
-.. note::
-   Translations take up a lot of space and will bloat your minified file.
-   At the time of writing, all the translations add about 50KB of extra data to
-   the minified javascript file. Therefore, make sure to only
-   include those languages which you intend to support and remove from
-   ./src/locales.js those which you don't need. Remember to rebuild the
-   minified file afterwards, by running `make build`.
+Converse.js supports localization of its user interface and date formats. As
+of writing, 17 languages are supported.
 
-----------------------------------------------
+The translations of converse.js can be found in the `locale
+<https://github.com/jcbrand/converse.js/tree/master/locale>`_ directory.
+
+Translations of Converse.js are very welcome. You can add translations either
+manually by editing the ``.po`` files in the above-mentioned ``locale``
+directory, or through the web at `weblate <https://hosted.weblate.org/projects/conversejs/#languages>`_.
+
+As of version 3.3.0, converse.js no longer automatically bundles translations
+in its source file and instead fetches only the relevant locale for the current
+session from a URL as specified by the :ref:`locales-url` setting.
+
+There are three configuration settings relevant to translations and
+localisation. You're encouraged to read the documentation for each of them.
+
+* :ref:`i18n` 
+* :ref:`locales` 
+* :ref:`locales-url` 
+
+Manually updating translations
+==============================
+
+If you simply want to add a few missing translations, then consider doing it
+through the web at `weblate <https://hosted.weblate.org/projects/conversejs/#languages>`_.
+
+Some things however cannot be done via weblate and instead have to be done
+manually in a checkout of the converse.js source repository.
+
+These tasks are documented below.
+
 Updating the translations template (.pot file)
 ----------------------------------------------
 
@@ -38,8 +61,6 @@ After adding the string, you'll need to regenerate the POT file:
 
     make pot
 
-
--------------------------------------------
 Making translations file for a new language
 -------------------------------------------
 
@@ -64,7 +85,6 @@ the JavaScript translations library that we're using.
     "Content-Type: text/plain; charset=UTF-8\n"
     "plural_forms: nplurals=2; plural=(n != 1);\n"
 
---------------------------------------
 Updating an existing translations file
 --------------------------------------
 
@@ -84,8 +104,6 @@ To do this for ALL languages, run:
 
 The resulting `.po` file is then what gets translated.
 
-
------------------------------------------------------
 Generating a JavaScript file from a translations file
 -----------------------------------------------------
 

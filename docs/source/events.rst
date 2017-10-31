@@ -300,6 +300,22 @@ have to be registered anew.
 
 ``_converse.on('reconnected', function () { ... });``
 
+roomsAutoJoined
+---------------
+
+Emitted once any rooms that have been configured to be automatically joined,
+specified via the _`auto_join_rooms` setting, have been entered.
+
+``_converse.on('roomsAutoJoined', function () { ... });``
+
+Also available as an `ES2015 Promise <http://es6-features.org/#PromiseUsage>`_:
+
+.. code-block:: javascript
+
+    _converse.api.waitUntil('roomsAutoJoined').then(function () {
+        // Your code here...
+    });
+
 roomInviteSent
 ~~~~~~~~~~~~~~
 

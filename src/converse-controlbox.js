@@ -511,7 +511,7 @@
                     if (jid_element.value &&
                             !_converse.locked_domain &&
                             !_converse.default_domain &&
-                            _.filter(jid_element.value.split('@')).length < 2) {
+                            !utils.isValidJID(jid_element.value)) {
                         jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
                         return false;
                     }
@@ -549,6 +549,10 @@
                         } else {
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
                         }
+                    }
+                    if (_.includes(["converse/login", "converse/register"],
+                            Backbone.history.getFragment())) {
+                        _converse.router.navigate('', {'replace': true});
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);

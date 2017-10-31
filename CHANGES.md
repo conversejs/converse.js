@@ -3,6 +3,7 @@
 ## 3.3.0 (Unreleased)
 
 ### Bugfixes
+- #800 Could not register successfully in ejabberd 17.01
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
 - Refetch the roster from the server after reconnection.
@@ -12,7 +13,9 @@
   Otherwise connected contacts might not get your presence updates.
 
 ### New Features
-- #828 Add routing for the `#converse-login` and `#converse-register` URL
+- #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`
+  and private chats with a URL fragment such as `#converse/chat?jid=user@domain`
+- #828 Add routing for the `#converse/login` and `#converse/register` URL
   fragments, which will render the registration and login forms respectively.
 
 ### UX/UI changes

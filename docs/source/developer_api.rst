@@ -681,7 +681,7 @@ Note, for MUC chat rooms, you need to use the "rooms" grouping instead.
 get
 ~~~
 
-Returns an object representing a chat box.
+Returns an object representing a chat box. The chat box should already be open.
 
 To return a single chat box, provide the JID of the contact you're chatting
 with in that chat box:
@@ -703,16 +703,36 @@ To return all open chat boxes, call the method without any JIDs::
 open
 ~~~~
 
-Opens a chat box and returns a Backbone.View object representing a chat box.
+Opens a chat box and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
+representing a chat box.
 
-To open a single chat box, provide the JID of the contact:
+Note that converse doesn't allow opening chats with users who aren't in your roster
+(unless you have set :ref:`allow_non_roster_messaging` to ``true``).
+
+Before opening a chat, you should first wait until the roster has been populated.
+This is the :ref:`rosterContactsFetched` event/promise.
+
+Besides that, it's a good idea to also first wait until already opened chat boxes
+(which are cached in sessionStorage) have also been fetched from the cache.
+This is the :ref:`chatBoxesFetched` event/promise.
+
+These two events fire only once per session, so they're also available as promises.
+
+So, to open a single chat box:
 
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
-        initialize: function () {
-            this._converse.api.chats.open('buddy@example.com')
-        }
+      initialize: function() {
+        var _converse = this._converse;
+        Promise.all([
+            _converse.api.waitUntil('rosterContactsFetched'),
+            _converse.api.waitUntil('chatBoxesFetched')
+        ]).then(function() {
+            // Note, buddy@example.org must be in your contacts roster!
+            _converse.api.chats.open('buddy@example.com')
+        });
+      }
     });
 
 To return an array of chat boxes, provide an array of JIDs:
@@ -721,7 +741,14 @@ To return an array of chat boxes, provide an array of JIDs:
 
     converse.plugins.add('myplugin', {
         initialize: function () {
-            this._converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            var _converse = this._converse;
+            Promise.all([
+                _converse.api.waitUntil('rosterContactsFetched'),
+                _converse.api.waitUntil('chatBoxesFetched')
+            ]).then(function() {
+                // Note, these users must first be in your contacts roster!
+                _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            });
         }
     });
 
@@ -897,7 +924,7 @@ JIDs.
 The **promises** grouping
 -------------------------
 
-Converse.js and its plugins emit various events which you can listen to via the 
+Converse.js and its plugins emit various events which you can listen to via the
 :ref:`listen-grouping`.
 
 Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,

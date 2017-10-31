@@ -371,7 +371,7 @@
             const router = new MUCRouter();
 
 
-            _converse.openChatRoom = function (settings, bring_to_foreground) {
+            function openChatRoom (settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
@@ -383,7 +383,7 @@
                 settings.id = settings.jid;
                 settings.box_id = b64_sha1(settings.jid)
                 return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-            };
+            }
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
@@ -2657,7 +2657,7 @@
                     ev.preventDefault();
                     const data = this.parseRoomDataFromEvent(ev);
                     if (!_.isUndefined(data)) {
-                        _converse.openChatRoom(data);
+                        openChatRoom(data);
                     }
                 },
 
@@ -2705,7 +2705,7 @@
                     }
                 }
                 if (result === true) {
-                    const chatroom = _converse.openChatRoom({
+                    const chatroom = openChatRoom({
                         'jid': room_jid,
                         'password': $x.attr('password')
                     });
@@ -2798,9 +2798,9 @@
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
+                            return _converse.getChatRoom(jids, attrs, openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, openChatRoom));
                     },
                     'get' (jids, attrs, create) {
                         if (_.isString(attrs)) {

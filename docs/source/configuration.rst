@@ -169,6 +169,8 @@ Allows users to be invited to join MUC chat rooms. An "Invite" widget will
 appear in the sidebar of the chat room where you can type in the JID of a user
 to invite into the chat room.
 
+.. _`allow_non_roster_messaging`:
+
 allow_non_roster_messaging
 --------------------------
 

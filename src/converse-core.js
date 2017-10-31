@@ -230,6 +230,9 @@
         }
     };
 
+    _converse.router = new Backbone.Router();
+
+
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};

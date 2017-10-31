@@ -836,6 +836,9 @@
 
                 close (ev) {
                     if (ev && ev.preventDefault) { ev.preventDefault(); }
+                    if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.

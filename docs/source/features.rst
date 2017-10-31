@@ -6,6 +6,16 @@
 Features
 ========
 
+Open chats via URL
+==================
+
+From version 3.3.0, converse.js now has the ability to open chats (private or
+groupchat) based on the URL fragment.
+
+A room (aka groupchat) can be opened with a URL fragment such as `#converse/room?jid=room@domain`
+and a private chat with a URL fragment such as
+`#converse/chat?jid=user@domain`.
+
 Off-the-record encryption
 =========================
 

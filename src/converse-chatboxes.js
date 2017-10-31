@@ -10,7 +10,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { Backbone, Strophe, b64_sha1, utils, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, utils, _ } = converse.env;
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -54,6 +54,23 @@
                 'chatBoxesFetched',
                 'chatBoxesInitialized'
             ]);
+
+            function openChat (jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log(
+                        `Invalid JID "${jid}" provided in URL fragment`,
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                Promise.all([
+                    _converse.api.waitUntil('rosterContactsFetched'),
+                    _converse.api.waitUntil('chatBoxesFetched')
+                ]).then(() => {
+                    _converse.api.chats.open(jid);
+                });
+            }
+            _converse.router.route('converse/chat?jid=:jid', openChat);
+
 
             _converse.ChatBoxes = Backbone.Collection.extend({
                 comparator: 'time_opened',
@@ -343,9 +360,12 @@
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(
-                                _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
-                            );
+                            const chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
+                            if (_.isNil(chatbox)) {
+                                _converse.log("Could not open chatbox for JID: "+jids);
+                                return;
+                            }
+                            return _converse.getViewForChatBox(chatbox.trigger('show'));
                         }
                         return _.map(jids, (jid) =>
                             _converse.getViewForChatBox(

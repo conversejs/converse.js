@@ -353,9 +353,28 @@
                     'toggle_occupants': true
                 },
             });
-            _converse.api.promises.add('roomsPanelRendered');
+            _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
-            _converse.openChatRoom = function (settings, bring_to_foreground) {
+
+            function openRoom (jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log(
+                        `Invalid JID "${jid}" provided in URL fragment`,
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                const promises = [_converse.api.waitUntil('roomsAutoJoined')]
+                if (!_converse.allow_bookmarks) {
+                    promises.push( _converse.api.waitUntil('bookmarksInitialized'));
+                }
+                Promise.all(promises).then(() => {
+                    _converse.api.rooms.open(jid);
+                });
+            }
+            _converse.router.route('converse/room?jid=:jid', openRoom);
+
+
+            function openChatRoom (settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
@@ -367,7 +386,7 @@
                 settings.id = settings.jid;
                 settings.box_id = b64_sha1(settings.jid)
                 return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-            };
+            }
 
             _converse.ChatRoom = _converse.ChatBox.extend({
 
@@ -823,7 +842,11 @@
                         affiliations = [affiliations];
                     }
                     return new Promise((resolve, reject) => {
-                        const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
+                        const promises = _.map(
+                            affiliations,
+                            _.partial(this.requestMemberList, this.model.get('jid'))
+                        );
+
                         Promise.all(promises).then(
                             _.flow(this.marshallAffiliationIQs.bind(this), resolve),
                             _.flow(this.marshallAffiliationIQs.bind(this), resolve)
@@ -1243,6 +1266,9 @@
                      *      reason for leaving.
                      */
                     this.hide();
+                    if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
                     if (_converse.connection.connected) {
@@ -2637,7 +2663,7 @@
                     ev.preventDefault();
                     const data = this.parseRoomDataFromEvent(ev);
                     if (!_.isUndefined(data)) {
-                        _converse.openChatRoom(data);
+                        openChatRoom(data);
                     }
                 },
 
@@ -2685,7 +2711,7 @@
                     }
                 }
                 if (result === true) {
-                    const chatroom = _converse.openChatRoom({
+                    const chatroom = openChatRoom({
                         'jid': room_jid,
                         'password': $x.attr('password')
                     });
@@ -2724,6 +2750,7 @@
                             Strophe.LogLevel.ERROR);
                     }
                 });
+                _converse.emit('roomsAutoJoined');
             }
             _converse.on('chatBoxesFetched', autoJoinRooms);
 
@@ -2775,9 +2802,9 @@
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
+                            return _converse.getChatRoom(jids, attrs, openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, openChatRoom));
                     },
                     'get' (jids, attrs, create) {
                         if (_.isString(attrs)) {

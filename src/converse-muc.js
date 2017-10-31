@@ -839,7 +839,11 @@
                         affiliations = [affiliations];
                     }
                     return new Promise((resolve, reject) => {
-                        const promises = _.map(affiliations, _.partial(this.requestMemberList, this.model.get('jid')));
+                        const promises = _.map(
+                            affiliations,
+                            _.partial(this.requestMemberList, this.model.get('jid'))
+                        );
+
                         Promise.all(promises).then(
                             _.flow(this.marshallAffiliationIQs.bind(this), resolve),
                             _.flow(this.marshallAffiliationIQs.bind(this), resolve)

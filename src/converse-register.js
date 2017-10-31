@@ -147,8 +147,8 @@
 
             const RegistrationRouter = Backbone.Router.extend({
                 initialize () {
-                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
-                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
+                    this.route('converse/login', _.partial(this.setActiveForm, 'login'));
+                    this.route('converse/register', _.partial(this.setActiveForm, 'register'));
                 },
                 setActiveForm (value) {
                     _converse.api.waitUntil('controlboxInitialized').then(() => {

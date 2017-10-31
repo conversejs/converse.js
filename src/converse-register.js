@@ -419,7 +419,7 @@
                         _converse.connection.reset();
                         this.showSpinner();
 
-                        if (_.includes(["converse/login", "converse/register"], Backbone.History.getFragment())) {
+                        if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
                             _converse.router.navigate('', {'replace': true});
                         }
 

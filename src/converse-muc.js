@@ -356,18 +356,22 @@
             _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
 
-            function openRoom (room) {
+            function openRoom (jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log(
+                        `Invalid JID "${jid}" provided in URL fragment`,
+                        Strophe.LogLevel.WARN
+                    );
+                }
                 const promises = [_converse.api.waitUntil('roomsAutoJoined')]
                 if (!_converse.allow_bookmarks) {
                     promises.push( _converse.api.waitUntil('bookmarksInitialized'));
                 }
                 Promise.all(promises).then(() => {
-                    if (utils.isValidJID(room)) {
-                        _converse.api.rooms.open(room);
-                    }
+                    _converse.api.rooms.open(jid);
                 });
             }
-            _converse.router.route('converse/room?jid=:room', openRoom);
+            _converse.router.route('converse/room?jid=:jid', openRoom);
 
 
             function openChatRoom (settings, bring_to_foreground) {
@@ -1262,6 +1266,9 @@
                      *      reason for leaving.
                      */
                     this.hide();
+                    if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
                     if (_converse.connection.connected) {

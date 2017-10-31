@@ -355,20 +355,19 @@
             });
             _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
-            const MUCRouter = Backbone.Router.extend({
-                routes: {
-                    'converse?room=:room': 'openRoom'
-                },
-                openRoom (room) {
-                    // FIXME: also need to wait for bookmarks
-                    _converse.api.waitUntil('roomsAutoJoined').then(() => {
-                        if (utils.isValidJID(room)) {
-                            _converse.api.rooms.open(room);
-                        }
-                    });
+
+            function openRoom (room) {
+                const promises = [_converse.api.waitUntil('roomsAutoJoined')]
+                if (!_converse.allow_bookmarks) {
+                    promises.push( _converse.api.waitUntil('bookmarksInitialized'));
                 }
-            });
-            const router = new MUCRouter();
+                Promise.all(promises).then(() => {
+                    if (utils.isValidJID(room)) {
+                        _converse.api.rooms.open(room);
+                    }
+                });
+            }
+            _converse.router.route('converse/room?jid=:room', openRoom);
 
 
             function openChatRoom (settings, bring_to_foreground) {
@@ -2744,8 +2743,6 @@
                             Strophe.LogLevel.ERROR);
                     }
                 });
-                // XXX: Could return Promise for api.rooms.open and then wait
-                // until all promises have resolved before emitting this.
                 _converse.emit('roomsAutoJoined');
             }
             _converse.on('chatBoxesFetched', autoJoinRooms);

@@ -748,8 +748,10 @@
             if (ignore_cache) {
                 _converse.send_initial_presence = true;
                 _converse.roster.fetchFromServer()
-                    .then(_converse.sendInitialPresence)
-                    .catch(_converse.sendInitialPresence);
+                    .then(() => {
+                        _converse.emit('rosterContactsFetched');
+                        _converse.sendInitialPresence();
+                    }).catch(_converse.sendInitialPresence);
             } else {
                 _converse.rostergroups.fetchRosterGroups().then(() => {
                     _converse.emit('rosterGroupsFetched');

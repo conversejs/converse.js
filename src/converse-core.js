@@ -80,6 +80,7 @@
         'converse-register',
         'converse-roomslist',
         'converse-rosterview',
+        'converse-singleton',
         'converse-vcard'
     ];
 
@@ -325,6 +326,7 @@
             storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true,
+            view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
             whitelisted_plugins: [],
             xhr_custom_status: false,

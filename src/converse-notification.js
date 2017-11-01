@@ -70,6 +70,18 @@
                 return true;
             };
 
+            _converse.isMessageToHiddenChat = function (message) {
+                if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                    const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    const model = _converse.chatboxes.get(jid);
+                    if (!_.isNil(model)) {
+                        return model.get('hidden') || _converse.windowState === 'hidden';
+                    }
+                    return true;
+                }
+                return _converse.windowState === 'hidden';
+            }
+
             _converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
@@ -83,11 +95,13 @@
                     return _converse.shouldNotifyOfGroupMessage(message);
                 } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
-                    return true;
+                    return _converse.isMessageToHiddenChat(message);
                 }
                 const is_me = Strophe.getBareJidFromJid(
                         message.getAttribute('from')) === _converse.bare_jid;
-                return !_converse.isOnlyChatStateNotification(message) && !is_me;
+                return !_converse.isOnlyChatStateNotification(message) &&
+                    !is_me &&
+                    _converse.isMessageToHiddenChat(message);
             };
 
             _converse.playSoundNotification = function () {
@@ -108,15 +122,10 @@
                 }
             };
 
-            _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                const enabled = _converse.supports_html5_notification &&
+            _converse.areDesktopNotificationsEnabled = function () {
+                return _converse.supports_html5_notification &&
                     _converse.show_desktop_notifications &&
                     Notification.permission === "granted";
-                if (ignore_hidden) {
-                    return enabled;
-                } else {
-                    return enabled && _converse.windowState === 'hidden';
-                }
             };
 
             _converse.showMessageNotification = function (message) {

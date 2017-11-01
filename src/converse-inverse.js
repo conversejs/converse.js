@@ -18,17 +18,6 @@
     "use strict";
     const { Strophe, _ } = converse.env;
 
-     function isMessageToHiddenChat (_converse, message) {
-        const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-        const model = _converse.chatboxes.get(jid);
-        if (!_.isNil(model)) {
-            return model.get('hidden');
-        }
-        // Not having a chat box is assume to be practically the same
-        // as it being hidden.
-        return true;
-    }
-
     converse.plugins.add('converse-inverse', {
 
         overrides: {
@@ -37,18 +26,6 @@
             // relevant objects or classes.
             //
             // new functions which don't exist yet can also be added.
-
-            areDesktopNotificationsEnabled () {
-                // Call with "ignore_hidden" as true, so that it doesn't check
-                // if the windowState is hidden.
-                return this.__super__.areDesktopNotificationsEnabled.call(this, true);
-            },
-
-            shouldNotifyOfMessage (message) {
-                const { _converse } = this.__super__;
-                const result = this.__super__.shouldNotifyOfMessage.apply(this, arguments);
-                return result && isMessageToHiddenChat(_converse, message);
-            },
 
             ControlBoxView: {
                  createBrandHeadingHTML() {
@@ -84,6 +61,7 @@
                 hide_open_bookmarks: true,
                 show_controlbox_by_default: true,
                 sticky_controlbox: true,
+                view_mode: 'fullscreen'
             });
         }
     });

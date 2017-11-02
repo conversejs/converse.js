@@ -17,6 +17,10 @@
   and private chats with a URL fragment such as `#converse/chat?jid=user@domain`
 - #828 Add routing for the `#converse/login` and `#converse/register` URL
   fragments, which will render the registration and login forms respectively.
+- New configuration setting [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode)
+  This removes the need for separate `inverse.js` and `converse-mobile.js`
+  builds. Instead the `converse.js` build is now used with `view_mode` set to
+  `fullscreen` and `mobile` respectively.
 
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.

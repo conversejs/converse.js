@@ -21,6 +21,7 @@
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+                        spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
                         
                         var message = 'This message will show a desktop notification';
                         var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -82,6 +83,7 @@
                             function (done, _converse) {
 
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         var stanza = $msg({
                                 'type': 'headline',

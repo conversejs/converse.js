@@ -160,10 +160,6 @@ BUILDS = dist/converse.js \
 		 dist/converse.min.js \
 		 dist/converse-esnext.js \
 		 dist/converse-esnext.min.js \
-		 dist/inverse.js \
-		 dist/inverse.min.js \
-		 dist/converse-mobile.js \
-		 dist/converse-mobile.min.js \
 		 dist/converse-muc-embedded.js \
 		 dist/converse-muc-embedded.min.js \
 		 dist/converse-no-jquery.js \
@@ -179,10 +175,6 @@ dist/converse-esnext.js: src node_modules *.js
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
 dist/converse-esnext.min.js: src node_modules *.js
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/inverse.js: transpile src node_modules *.js
-	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.js optimize=none 
-dist/inverse.min.js: transpile src node_modules *.js
-	$(RJS) -o src/build-inverse.js include=inverse out=dist/inverse.min.js
 dist/converse-no-jquery.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
 dist/converse-no-jquery.min.js: transpile src node_modules *.js transpile
@@ -191,10 +183,6 @@ dist/converse-no-dependencies.js: transpile src node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
 dist/converse-no-dependencies.min.js: transpile src node_modules *.js
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
-dist/converse-mobile.js: transpile src node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.js optimize=none 
-dist/converse-mobile.min.js: transpile src node_modules *.js
-	$(RJS) -o src/build.js paths.converse=src/converse-mobile include=converse out=dist/converse-mobile.min.js
 dist/converse-muc-embedded.js: transpile src node_modules *.js
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
 dist/converse-muc-embedded.min.js: transpile src node_modules *.js

@@ -42,6 +42,10 @@
          */
         optional_dependencies: ["converse-controlbox", "converse-muc"],
 
+        enabled (_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the

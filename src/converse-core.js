@@ -70,6 +70,7 @@
         'converse-core',
         'converse-disco',
         'converse-dragresize',
+        'converse-fullscreen',
         'converse-headline',
         'converse-mam',
         'converse-minimize',

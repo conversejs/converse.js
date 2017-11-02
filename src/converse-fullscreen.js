@@ -18,7 +18,11 @@
     "use strict";
     const { Strophe, _ } = converse.env;
 
-    converse.plugins.add('converse-inverse', {
+    converse.plugins.add('converse-fullscreen', {
+
+        enabled (_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
 
         overrides: {
             // overrides mentioned here will be picked up by converse.js's
@@ -60,8 +64,7 @@
                 chatview_avatar_width: 44,
                 hide_open_bookmarks: true,
                 show_controlbox_by_default: true,
-                sticky_controlbox: true,
-                view_mode: 'fullscreen'
+                sticky_controlbox: true
             });
         }
     });

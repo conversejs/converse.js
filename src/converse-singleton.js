@@ -39,6 +39,10 @@
         // NB: These plugins need to have already been loaded via require.js.
         optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
 
+        enabled (_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
+
         overrides: {
             // overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -50,11 +54,8 @@
                 createChatBox (jid, attrs) {
                     /* Make sure new chat boxes are hidden by default.
                      */
-                    if (_.includes(['mobile', 'fullscreen'],
-                            this.__super__._converse.view_mode)) {
-                        attrs = attrs || {};
-                        attrs.hidden = true;
-                    }
+                    attrs = attrs || {};
+                    attrs.hidden = true;
                     return this.__super__.createChatBox.call(this, jid, attrs);
                 }
             },
@@ -68,14 +69,11 @@
                     if (_.isUndefined(result)) {
                         return
                     }
-                    if (_.includes(['mobile', 'fullscreen'],
-                            this.__super__._converse.view_mode)) {
-                        result.hidden = false;
-                    }
+                    result.hidden = false;
                     return result;
                 }
             },
- 
+
             ChatBoxViews: {
                 showChat (attrs, force) {
                     /* We only have one chat visible at any one
@@ -83,13 +81,11 @@
                      * chats are hidden.
                      */
                     const { _converse } = this.__super__;
-                    if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                        const chatbox = this.getChatBox(attrs, true);
-                        const hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
-                        if ((force || !hidden) && _converse.connection.authenticated) {
-                            _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
-                            chatbox.save({'hidden': false});
-                        }
+                    const chatbox = this.getChatBox(attrs, true);
+                    const hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    if ((force || !hidden) && _converse.connection.authenticated) {
+                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
+                        chatbox.save({'hidden': false});
                     }
                     return this.__super__.showChat.apply(this, arguments);
                 }
@@ -101,13 +97,8 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    const { _converse } = this.__super__;
-                    if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                        if (!this.model.get('hidden')) {
-                            _.each(_converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                            return this.__super__._show.apply(this, arguments);
-                        }
-                    } else {
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
                         return this.__super__._show.apply(this, arguments);
                     }
                 }
@@ -119,11 +110,8 @@
                      * time. So before opening a chat, we make sure all other
                      * chats are hidden.
                      */
-                    const { _converse } = this.__super__;
-                    if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
-                        _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
-                        this.model.save({'hidden': false});
-                    }
+                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
+                    this.model.save({'hidden': false});
                     return this.__super__.openChat.apply(this, arguments);
                 },
             }

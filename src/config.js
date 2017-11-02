@@ -54,7 +54,6 @@ require.config({
 
         // Converse
         "converse":                 "src/converse",
-        "inverse":                  "src/inverse",
 
         "converse-bookmarks":       "src/converse-bookmarks",
         "converse-chatboxes":       "src/converse-chatboxes",
@@ -64,7 +63,7 @@ require.config({
         "converse-disco":           "src/converse-disco",
         "converse-dragresize":      "src/converse-dragresize",
         "converse-headline":        "src/converse-headline",
-        "converse-inverse":         "src/converse-inverse",
+        "converse-fullscreen":      "src/converse-fullscreen",
         "converse-mam":             "src/converse-mam",
         "converse-minimize":        "src/converse-minimize",
         "converse-muc":             "src/converse-muc",

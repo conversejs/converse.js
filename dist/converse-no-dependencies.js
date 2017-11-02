@@ -3809,200 +3809,6 @@ if (!String.prototype.trim) {
 ;
 define("polyfill", function(){});
 
-/*!
- * jQuery Browser Plugin 0.1.0
- * https://github.com/gabceb/jquery-browser-plugin
- *
- * Original jquery-browser code Copyright 2005, 2015 jQuery Foundation, Inc. and other contributors
- * http://jquery.org/license
- *
- * Modifications Copyright 2015 Gabriel Cebrian
- * https://github.com/gabceb
- *
- * Released under the MIT license
- *
- * Date: 05-07-2015
- */
-/*global window: false */
-
-(function (factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define('jquery.browser',['jquery'], function ($) {
-      return factory($);
-    });
-  } else if (typeof module === 'object' && typeof module.exports === 'object') {
-    // Node-like environment
-    module.exports = factory(require('jquery'));
-  } else {
-    // Browser globals
-    factory(window.jQuery);
-  }
-}(function(jQuery) {
-  "use strict";
-
-  function uaMatch( ua ) {
-    // If an UA is not provided, default to the current browser UA.
-    if ( ua === undefined ) {
-      ua = window.navigator.userAgent;
-    }
-    ua = ua.toLowerCase();
-
-    var match = /(edge)\/([\w.]+)/.exec( ua ) ||
-        /(opr)[\/]([\w.]+)/.exec( ua ) ||
-        /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
-        /(iemobile)[\/]([\w.]+)/.exec( ua ) ||
-        /(version)(applewebkit)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
-        /(webkit)[ \/]([\w.]+).*(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
-        /(webkit)[ \/]([\w.]+)/.exec( ua ) ||
-        /(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
-        /(msie) ([\w.]+)/.exec( ua ) ||
-        ua.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec( ua ) ||
-        ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
-        [];
-
-    var platform_match = /(ipad)/.exec( ua ) ||
-        /(ipod)/.exec( ua ) ||
-        /(windows phone)/.exec( ua ) ||
-        /(iphone)/.exec( ua ) ||
-        /(kindle)/.exec( ua ) ||
-        /(silk)/.exec( ua ) ||
-        /(android)/.exec( ua ) ||
-        /(win)/.exec( ua ) ||
-        /(mac)/.exec( ua ) ||
-        /(linux)/.exec( ua ) ||
-        /(cros)/.exec( ua ) ||
-        /(playbook)/.exec( ua ) ||
-        /(bb)/.exec( ua ) ||
-        /(blackberry)/.exec( ua ) ||
-        [];
-
-    var browser = {},
-        matched = {
-          browser: match[ 5 ] || match[ 3 ] || match[ 1 ] || "",
-          version: match[ 2 ] || match[ 4 ] || "0",
-          versionNumber: match[ 4 ] || match[ 2 ] || "0",
-          platform: platform_match[ 0 ] || ""
-        };
-
-    if ( matched.browser ) {
-      browser[ matched.browser ] = true;
-      browser.version = matched.version;
-      browser.versionNumber = parseInt(matched.versionNumber, 10);
-    }
-
-    if ( matched.platform ) {
-      browser[ matched.platform ] = true;
-    }
-
-    // These are all considered mobile platforms, meaning they run a mobile browser
-    if ( browser.android || browser.bb || browser.blackberry || browser.ipad || browser.iphone ||
-      browser.ipod || browser.kindle || browser.playbook || browser.silk || browser[ "windows phone" ]) {
-      browser.mobile = true;
-    }
-
-    // These are all considered desktop platforms, meaning they run a desktop browser
-    if ( browser.cros || browser.mac || browser.linux || browser.win ) {
-      browser.desktop = true;
-    }
-
-    // Chrome, Opera 15+ and Safari are webkit based browsers
-    if ( browser.chrome || browser.opr || browser.safari ) {
-      browser.webkit = true;
-    }
-
-    // IE11 has a new token so we will assign it msie to avoid breaking changes
-    if ( browser.rv || browser.iemobile) {
-      var ie = "msie";
-
-      matched.browser = ie;
-      browser[ie] = true;
-    }
-
-    // Edge is officially known as Microsoft Edge, so rewrite the key to match
-    if ( browser.edge ) {
-      delete browser.edge;
-      var msedge = "msedge";
-
-      matched.browser = msedge;
-      browser[msedge] = true;
-    }
-
-    // Blackberry browsers are marked as Safari on BlackBerry
-    if ( browser.safari && browser.blackberry ) {
-      var blackberry = "blackberry";
-
-      matched.browser = blackberry;
-      browser[blackberry] = true;
-    }
-
-    // Playbook browsers are marked as Safari on Playbook
-    if ( browser.safari && browser.playbook ) {
-      var playbook = "playbook";
-
-      matched.browser = playbook;
-      browser[playbook] = true;
-    }
-
-    // BB10 is a newer OS version of BlackBerry
-    if ( browser.bb ) {
-      var bb = "blackberry";
-
-      matched.browser = bb;
-      browser[bb] = true;
-    }
-
-    // Opera 15+ are identified as opr
-    if ( browser.opr ) {
-      var opera = "opera";
-
-      matched.browser = opera;
-      browser[opera] = true;
-    }
-
-    // Stock Android browsers are marked as Safari on Android.
-    if ( browser.safari && browser.android ) {
-      var android = "android";
-
-      matched.browser = android;
-      browser[android] = true;
-    }
-
-    // Kindle browsers are marked as Safari on Kindle
-    if ( browser.safari && browser.kindle ) {
-      var kindle = "kindle";
-
-      matched.browser = kindle;
-      browser[kindle] = true;
-    }
-
-     // Kindle Silk browsers are marked as Safari on Kindle
-    if ( browser.safari && browser.silk ) {
-      var silk = "silk";
-
-      matched.browser = silk;
-      browser[silk] = true;
-    }
-
-    // Assign the name and platform variable
-    browser.name = matched.browser;
-    browser.platform = matched.platform;
-    return browser;
-  }
-
-  // Run the matching process, also assign the function to the returned object
-  // for manual, jQuery-free use if desired
-  window.jQBrowser = uaMatch( window.navigator.userAgent );
-  window.jQBrowser.uaMatch = uaMatch;
-
-  // Only assign to jQuery.browser if jQuery is loaded
-  if ( jQuery ) {
-    jQuery.browser = window.jQBrowser;
-  }
-
-  return window.jQBrowser;
-}));
-
 /*
 jed.js
 v0.5.0beta
@@ -5012,417 +4818,1873 @@ return parser;
 
 })(this);
 
-/**
- * @license text 2.0.15 Copyright jQuery Foundation and other contributors.
- * Released under MIT license, http://github.com/requirejs/text/LICENSE
- */
-/*jslint regexp: true */
-/*global require, XMLHttpRequest, ActiveXObject,
-  define, window, process, Packages,
-  java, location, Components, FileUtils */
+//! moment.js locale configuration
+//! locale : Afrikaans [af]
+//! author : Werner Mollentze : https://github.com/wernerm
 
-define('text',['module'], function (module) {
-    'use strict';
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/af',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
 
-    var text, fs, Cc, Ci, xpcIsWindows,
-        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
-        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
-        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
-        hasLocation = typeof location !== 'undefined' && location.href,
-        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
-        defaultHostName = hasLocation && location.hostname,
-        defaultPort = hasLocation && (location.port || undefined),
-        buildMap = {},
-        masterConfig = (module.config && module.config()) || {};
 
-    function useDefault(value, defaultValue) {
-        return value === undefined || value === '' ? defaultValue : value;
-    }
-
-    //Allow for default ports for http and https.
-    function isSamePort(protocol1, port1, protocol2, port2) {
-        if (port1 === port2) {
-            return true;
-        } else if (protocol1 === protocol2) {
-            if (protocol1 === 'http') {
-                return useDefault(port1, '80') === useDefault(port2, '80');
-            } else if (protocol1 === 'https') {
-                return useDefault(port1, '443') === useDefault(port2, '443');
-            }
+var af = moment.defineLocale('af', {
+    months : 'Januarie_Februarie_Maart_April_Mei_Junie_Julie_Augustus_September_Oktober_November_Desember'.split('_'),
+    monthsShort : 'Jan_Feb_Mrt_Apr_Mei_Jun_Jul_Aug_Sep_Okt_Nov_Des'.split('_'),
+    weekdays : 'Sondag_Maandag_Dinsdag_Woensdag_Donderdag_Vrydag_Saterdag'.split('_'),
+    weekdaysShort : 'Son_Maa_Din_Woe_Don_Vry_Sat'.split('_'),
+    weekdaysMin : 'So_Ma_Di_Wo_Do_Vr_Sa'.split('_'),
+    meridiemParse: /vm|nm/i,
+    isPM : function (input) {
+        return /^nm$/i.test(input);
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 12) {
+            return isLower ? 'vm' : 'VM';
+        } else {
+            return isLower ? 'nm' : 'NM';
         }
-        return false;
+    },
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Vandag om] LT',
+        nextDay : '[Môre om] LT',
+        nextWeek : 'dddd [om] LT',
+        lastDay : '[Gister om] LT',
+        lastWeek : '[Laas] dddd [om] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'oor %s',
+        past : '%s gelede',
+        s : '\'n paar sekondes',
+        m : '\'n minuut',
+        mm : '%d minute',
+        h : '\'n uur',
+        hh : '%d ure',
+        d : '\'n dag',
+        dd : '%d dae',
+        M : '\'n maand',
+        MM : '%d maande',
+        y : '\'n jaar',
+        yy : '%d jaar'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+    ordinal : function (number) {
+        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de'); // Thanks to Joris Röling : https://github.com/jjupiter
+    },
+    week : {
+        dow : 1, // Maandag is die eerste dag van die week.
+        doy : 4  // Die week wat die 4de Januarie bevat is die eerste week van die jaar.
     }
-
-    text = {
-        version: '2.0.15',
-
-        strip: function (content) {
-            //Strips <?xml ...?> declarations so that external SVG and XML
-            //documents can be added to a document without worry. Also, if the string
-            //is an HTML document, only the part inside the body tag is returned.
-            if (content) {
-                content = content.replace(xmlRegExp, "");
-                var matches = content.match(bodyRegExp);
-                if (matches) {
-                    content = matches[1];
-                }
-            } else {
-                content = "";
-            }
-            return content;
-        },
-
-        jsEscape: function (content) {
-            return content.replace(/(['\\])/g, '\\$1')
-                .replace(/[\f]/g, "\\f")
-                .replace(/[\b]/g, "\\b")
-                .replace(/[\n]/g, "\\n")
-                .replace(/[\t]/g, "\\t")
-                .replace(/[\r]/g, "\\r")
-                .replace(/[\u2028]/g, "\\u2028")
-                .replace(/[\u2029]/g, "\\u2029");
-        },
-
-        createXhr: masterConfig.createXhr || function () {
-            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-            var xhr, i, progId;
-            if (typeof XMLHttpRequest !== "undefined") {
-                return new XMLHttpRequest();
-            } else if (typeof ActiveXObject !== "undefined") {
-                for (i = 0; i < 3; i += 1) {
-                    progId = progIds[i];
-                    try {
-                        xhr = new ActiveXObject(progId);
-                    } catch (e) {}
-
-                    if (xhr) {
-                        progIds = [progId];  // so faster next time
-                        break;
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        /**
-         * Parses a resource name into its component parts. Resource names
-         * look like: module/name.ext!strip, where the !strip part is
-         * optional.
-         * @param {String} name the resource name
-         * @returns {Object} with properties "moduleName", "ext" and "strip"
-         * where strip is a boolean.
-         */
-        parseName: function (name) {
-            var modName, ext, temp,
-                strip = false,
-                index = name.lastIndexOf("."),
-                isRelative = name.indexOf('./') === 0 ||
-                             name.indexOf('../') === 0;
-
-            if (index !== -1 && (!isRelative || index > 1)) {
-                modName = name.substring(0, index);
-                ext = name.substring(index + 1);
-            } else {
-                modName = name;
-            }
-
-            temp = ext || modName;
-            index = temp.indexOf("!");
-            if (index !== -1) {
-                //Pull off the strip arg.
-                strip = temp.substring(index + 1) === "strip";
-                temp = temp.substring(0, index);
-                if (ext) {
-                    ext = temp;
-                } else {
-                    modName = temp;
-                }
-            }
-
-            return {
-                moduleName: modName,
-                ext: ext,
-                strip: strip
-            };
-        },
-
-        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
-
-        /**
-         * Is an URL on another domain. Only works for browser use, returns
-         * false in non-browser environments. Only used to know if an
-         * optimized .js version of a text resource should be loaded
-         * instead.
-         * @param {String} url
-         * @returns Boolean
-         */
-        useXhr: function (url, protocol, hostname, port) {
-            var uProtocol, uHostName, uPort,
-                match = text.xdRegExp.exec(url);
-            if (!match) {
-                return true;
-            }
-            uProtocol = match[2];
-            uHostName = match[3];
-
-            uHostName = uHostName.split(':');
-            uPort = uHostName[1];
-            uHostName = uHostName[0];
-
-            return (!uProtocol || uProtocol === protocol) &&
-                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || isSamePort(uProtocol, uPort, protocol, port));
-        },
-
-        finishLoad: function (name, strip, content, onLoad) {
-            content = strip ? text.strip(content) : content;
-            if (masterConfig.isBuild) {
-                buildMap[name] = content;
-            }
-            onLoad(content);
-        },
-
-        load: function (name, req, onLoad, config) {
-            //Name has format: some.module.filext!strip
-            //The strip part is optional.
-            //if strip is present, then that means only get the string contents
-            //inside a body tag in an HTML string. For XML/SVG content it means
-            //removing the <?xml ...?> declarations so the content can be inserted
-            //into the current doc without problems.
-
-            // Do not bother with the work if a build and text will
-            // not be inlined.
-            if (config && config.isBuild && !config.inlineText) {
-                onLoad();
-                return;
-            }
-
-            masterConfig.isBuild = config && config.isBuild;
-
-            var parsed = text.parseName(name),
-                nonStripName = parsed.moduleName +
-                    (parsed.ext ? '.' + parsed.ext : ''),
-                url = req.toUrl(nonStripName),
-                useXhr = (masterConfig.useXhr) ||
-                         text.useXhr;
-
-            // Do not load if it is an empty: url
-            if (url.indexOf('empty:') === 0) {
-                onLoad();
-                return;
-            }
-
-            //Load the text. Use XHR if possible and in a browser.
-            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
-                text.get(url, function (content) {
-                    text.finishLoad(name, parsed.strip, content, onLoad);
-                }, function (err) {
-                    if (onLoad.error) {
-                        onLoad.error(err);
-                    }
-                });
-            } else {
-                //Need to fetch the resource across domains. Assume
-                //the resource has been optimized into a JS module. Fetch
-                //by the module name + extension, but do not include the
-                //!strip part to avoid file system issues.
-                req([nonStripName], function (content) {
-                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
-                                    parsed.strip, content, onLoad);
-                });
-            }
-        },
-
-        write: function (pluginName, moduleName, write, config) {
-            if (buildMap.hasOwnProperty(moduleName)) {
-                var content = text.jsEscape(buildMap[moduleName]);
-                write.asModule(pluginName + "!" + moduleName,
-                               "define(function () { return '" +
-                                   content +
-                               "';});\n");
-            }
-        },
-
-        writeFile: function (pluginName, moduleName, req, write, config) {
-            var parsed = text.parseName(moduleName),
-                extPart = parsed.ext ? '.' + parsed.ext : '',
-                nonStripName = parsed.moduleName + extPart,
-                //Use a '.js' file name so that it indicates it is a
-                //script that can be loaded across domains.
-                fileName = req.toUrl(parsed.moduleName + extPart) + '.js';
-
-            //Leverage own load() method to load plugin value, but only
-            //write out values that do not have the strip argument,
-            //to avoid any potential issues with ! in file names.
-            text.load(nonStripName, req, function (value) {
-                //Use own write() method to construct full module value.
-                //But need to create shell that translates writeFile's
-                //write() to the right interface.
-                var textWrite = function (contents) {
-                    return write(fileName, contents);
-                };
-                textWrite.asModule = function (moduleName, contents) {
-                    return write.asModule(moduleName, fileName, contents);
-                };
-
-                text.write(pluginName, nonStripName, textWrite, config);
-            }, config);
-        }
-    };
-
-    if (masterConfig.env === 'node' || (!masterConfig.env &&
-            typeof process !== "undefined" &&
-            process.versions &&
-            !!process.versions.node &&
-            !process.versions['node-webkit'] &&
-            !process.versions['atom-shell'])) {
-        //Using special require.nodeRequire, something added by r.js.
-        fs = require.nodeRequire('fs');
-
-        text.get = function (url, callback, errback) {
-            try {
-                var file = fs.readFileSync(url, 'utf8');
-                //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-                if (file[0] === '\uFEFF') {
-                    file = file.substring(1);
-                }
-                callback(file);
-            } catch (e) {
-                if (errback) {
-                    errback(e);
-                }
-            }
-        };
-    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
-            text.createXhr())) {
-        text.get = function (url, callback, errback, headers) {
-            var xhr = text.createXhr(), header;
-            xhr.open('GET', url, true);
-
-            //Allow plugins direct access to xhr headers
-            if (headers) {
-                for (header in headers) {
-                    if (headers.hasOwnProperty(header)) {
-                        xhr.setRequestHeader(header.toLowerCase(), headers[header]);
-                    }
-                }
-            }
-
-            //Allow overrides specified in config
-            if (masterConfig.onXhr) {
-                masterConfig.onXhr(xhr, url);
-            }
-
-            xhr.onreadystatechange = function (evt) {
-                var status, err;
-                //Do not explicitly handle errors, those should be
-                //visible via console output in the browser.
-                if (xhr.readyState === 4) {
-                    status = xhr.status || 0;
-                    if (status > 399 && status < 600) {
-                        //An http 4xx or 5xx error. Signal an error.
-                        err = new Error(url + ' HTTP status: ' + status);
-                        err.xhr = xhr;
-                        if (errback) {
-                            errback(err);
-                        }
-                    } else {
-                        callback(xhr.responseText);
-                    }
-
-                    if (masterConfig.onXhrComplete) {
-                        masterConfig.onXhrComplete(xhr, url);
-                    }
-                }
-            };
-            xhr.send(null);
-        };
-    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
-            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
-        //Why Java, why is this so awkward?
-        text.get = function (url, callback) {
-            var stringBuffer, line,
-                encoding = "utf-8",
-                file = new java.io.File(url),
-                lineSeparator = java.lang.System.getProperty("line.separator"),
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                content = '';
-            try {
-                stringBuffer = new java.lang.StringBuffer();
-                line = input.readLine();
-
-                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // http://www.unicode.org/faq/utf_bom.html
-
-                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
-                if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
-                    // and we plan to concatenating this buffer with others; the BOM should
-                    // only appear at the top of a file.
-                    line = line.substring(1);
-                }
-
-                if (line !== null) {
-                    stringBuffer.append(line);
-                }
-
-                while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
-                }
-                //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
-            } finally {
-                input.close();
-            }
-            callback(content);
-        };
-    } else if (masterConfig.env === 'xpconnect' || (!masterConfig.env &&
-            typeof Components !== 'undefined' && Components.classes &&
-            Components.interfaces)) {
-        //Avert your gaze!
-        Cc = Components.classes;
-        Ci = Components.interfaces;
-        Components.utils['import']('resource://gre/modules/FileUtils.jsm');
-        xpcIsWindows = ('@mozilla.org/windows-registry-key;1' in Cc);
-
-        text.get = function (url, callback) {
-            var inStream, convertStream, fileObj,
-                readData = {};
-
-            if (xpcIsWindows) {
-                url = url.replace(/\//g, '\\');
-            }
-
-            fileObj = new FileUtils.File(url);
-
-            //XPCOM, you so crazy
-            try {
-                inStream = Cc['@mozilla.org/network/file-input-stream;1']
-                           .createInstance(Ci.nsIFileInputStream);
-                inStream.init(fileObj, 1, 0, false);
-
-                convertStream = Cc['@mozilla.org/intl/converter-input-stream;1']
-                                .createInstance(Ci.nsIConverterInputStream);
-                convertStream.init(inStream, "utf-8", inStream.available(),
-                Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-
-                convertStream.readString(inStream.available(), readData);
-                convertStream.close();
-                inStream.close();
-                callback(readData.value);
-            } catch (e) {
-                throw new Error((fileObj && fileObj.path || '') + ': ' + e);
-            }
-        };
-    }
-    return text;
 });
 
+return af;
 
-define('text!ca',[],function () { return '{\n   "domain": "converse",\n   "locale_data": {\n      "converse": {\n         "": {\n            "domain": "converse",\n            "plural_forms": "nplurals=2; plural=(n != 1);",\n            "lang": "ca"\n         },\n         "Bookmark this room": [\n            null,\n            ""\n         ],\n         "The name for this bookmark:": [\n            null,\n            ""\n         ],\n         "Would you like this room to be automatically joined upon startup?": [\n            null,\n            ""\n         ],\n         "What should your nickname for this room be?": [\n            null,\n            ""\n         ],\n         "Save": [\n            null,\n            "Desa"\n         ],\n         "Cancel": [\n            null,\n            "Cancel·la"\n         ],\n         "Bookmarks": [\n            null,\n            ""\n         ],\n         "Remove this bookmark": [\n            null,\n            ""\n         ],\n         "Show more information on this room": [\n            null,\n            "Mostra més informació d\'aquesta sala"\n         ],\n         "Click to open this room": [\n            null,\n            "Feu clic per obrir aquesta sala"\n         ],\n         "Close this chat box": [\n            null,\n            "Tanca aquest quadre del xat"\n         ],\n         "Personal message": [\n            null,\n            "Missatge personal"\n         ],\n         "Send": [\n            null,\n            ""\n         ],\n         "me": [\n            null,\n            "jo"\n         ],\n         "A very large message has been received.This might be due to an attack meant to degrade the chat performance.Output has been shortened.": [\n            null,\n            ""\n         ],\n         "Typing from another device": [\n            null,\n            ""\n         ],\n         "is typing": [\n            null,\n            "està escrivint"\n         ],\n         "Stopped typing on the other device": [\n            null,\n            ""\n         ],\n         "has stopped typing": [\n            null,\n            "ha deixat d\'escriure"\n         ],\n         "has gone away": [\n            null,\n            "ha marxat"\n         ],\n         "Show this menu": [\n            null,\n            "Mostra aquest menú"\n         ],\n         "Write in the third person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Remove messages": [\n            null,\n            "Elimina els missatges"\n         ],\n         "Are you sure you want to clear the messages from this chat box?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquest quadre del xat?"\n         ],\n         "has gone offline": [\n            null,\n            "s\'ha desconnectat"\n         ],\n         "is busy": [\n            null,\n            "està ocupat"\n         ],\n         "Clear all messages": [\n            null,\n            "Esborra tots els missatges"\n         ],\n         "Insert a smiley": [\n            null,\n            "Insereix una cara somrient"\n         ],\n         "Start a call": [\n            null,\n            "Inicia una trucada"\n         ],\n         "Contacts": [\n            null,\n            "Contactes"\n         ],\n         "XMPP Username:": [\n            null,\n            "Nom d\'usuari XMPP:"\n         ],\n         "Password:": [\n            null,\n            "Contrasenya:"\n         ],\n         "Click here to log in anonymously": [\n            null,\n            "Feu clic aquí per iniciar la sessió de manera anònima"\n         ],\n         "Log In": [\n            null,\n            "Inicia la sessió"\n         ],\n         "user@server": [\n            null,\n            "usuari@servidor"\n         ],\n         "password": [\n            null,\n            "contrasenya"\n         ],\n         "Sign in": [\n            null,\n            "Inicia la sessió"\n         ],\n         "I am %1$s": [\n            null,\n            "Estic %1$s"\n         ],\n         "Click here to write a custom status message": [\n            null,\n            "Feu clic aquí per escriure un missatge d\'estat personalitzat"\n         ],\n         "Click to change your chat status": [\n            null,\n            "Feu clic per canviar l\'estat del xat"\n         ],\n         "Custom status": [\n            null,\n            "Estat personalitzat"\n         ],\n         "online": [\n            null,\n            "en línia"\n         ],\n         "busy": [\n            null,\n            "ocupat"\n         ],\n         "away for long": [\n            null,\n            "absent durant una estona"\n         ],\n         "away": [\n            null,\n            "absent"\n         ],\n         "offline": [\n            null,\n            "desconnectat"\n         ],\n         "Online": [\n            null,\n            "En línia"\n         ],\n         "Busy": [\n            null,\n            "Ocupat"\n         ],\n         "Away": [\n            null,\n            "Absent"\n         ],\n         "Offline": [\n            null,\n            "Desconnectat"\n         ],\n         "Log out": [\n            null,\n            "Tanca la sessió"\n         ],\n         "Click to add new chat contacts": [\n            null,\n            "Feu clic per afegir contactes nous al xat"\n         ],\n         "Add a contact": [\n            null,\n            "Afegeix un contacte"\n         ],\n         "Contact name": [\n            null,\n            "Nom del contacte"\n         ],\n         "Search": [\n            null,\n            "Cerca"\n         ],\n         "Add": [\n            null,\n            "Afegeix"\n         ],\n         "No users found": [\n            null,\n            "No s\'ha trobat cap usuari"\n         ],\n         "This client does not allow presence subscriptions": [\n            null,\n            "Aquest client no admet les subscripcions de presència"\n         ],\n         "Click to hide these contacts": [\n            null,\n            "Feu clic per amagar aquests contactes"\n         ],\n         "Minimize this chat box": [\n            null,\n            "Minimitza aquest quadre del xat"\n         ],\n         "Click to restore this chat": [\n            null,\n            "Feu clic per restaurar aquest xat"\n         ],\n         "Minimized": [\n            null,\n            "Minimitzat"\n         ],\n         "This room is not anonymous": [\n            null,\n            "Aquesta sala no és anònima"\n         ],\n         "This room now shows unavailable members": [\n            null,\n            "Aquesta sala ara mostra membres no disponibles"\n         ],\n         "This room does not show unavailable members": [\n            null,\n            "Aquesta sala no mostra membres no disponibles"\n         ],\n         "Room logging is now enabled": [\n            null,\n            "El registre de la sala està habilitat"\n         ],\n         "Room logging is now disabled": [\n            null,\n            "El registre de la sala està deshabilitat"\n         ],\n         "This room is now semi-anonymous": [\n            null,\n            "Aquesta sala ara és parcialment anònima"\n         ],\n         "This room is now fully-anonymous": [\n            null,\n            "Aquesta sala ara és totalment anònima"\n         ],\n         "A new room has been created": [\n            null,\n            "S\'ha creat una sala nova"\n         ],\n         "You have been banned from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been kicked from this room": [\n            null,\n            "Se us ha expulsat d\'aquesta sala"\n         ],\n         "You have been removed from this room because of an affiliation change": [\n            null,\n            "Se us ha eliminat d\'aquesta sala a causa d\'un canvi d\'afiliació"\n         ],\n         "You have been removed from this room because the room has changed to members-only and you\'re not a member": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè ara només permet membres i no en sou membre"\n         ],\n         "You have been removed from this room because the MUC (Multi-user chat) service is being shut down.": [\n            null,\n            "Se us ha eliminat d\'aquesta sala perquè s\'està tancant el servei MUC (xat multiusuari)."\n         ],\n         "Message": [\n            null,\n            "Missatge"\n         ],\n         "Hide the list of occupants": [\n            null,\n            "Amaga la llista d\'ocupants"\n         ],\n         "${command}": [\n            null,\n            ""\n         ],\n         "Are you sure you want to clear the messages from this room?": [\n            null,\n            "Segur que voleu esborrar els missatges d\'aquesta sala?"\n         ],\n         "Error: could not execute the command": [\n            null,\n            "Error: no s\'ha pogut executar l\'ordre"\n         ],\n         "Change user\'s affiliation to admin": [\n            null,\n            "Canvia l\'afiliació de l\'usuari a administrador"\n         ],\n         "Ban user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Change user role to occupant": [\n            null,\n            "Canvia el rol de l\'usuari a ocupant"\n         ],\n         "Kick user from room": [\n            null,\n            "Expulsa l\'usuari de la sala"\n         ],\n         "Write in 3rd person": [\n            null,\n            "Escriu en tercera persona"\n         ],\n         "Grant membership to a user": [\n            null,\n            "Atorga una afiliació a un usuari"\n         ],\n         "Remove user\'s ability to post messages": [\n            null,\n            "Elimina la capacitat de l\'usuari de publicar missatges"\n         ],\n         "Change your nickname": [\n            null,\n            "Canvieu el vostre àlies"\n         ],\n         "Grant moderator role to user": [\n            null,\n            "Atorga el rol de moderador a l\'usuari"\n         ],\n         "Grant ownership of this room": [\n            null,\n            "Atorga la propietat d\'aquesta sala"\n         ],\n         "Revoke user\'s membership": [\n            null,\n            "Revoca l\'afiliació de l\'usuari"\n         ],\n         "Set room subject (alias for /subject)": [\n            null,\n            ""\n         ],\n         "Allow muted user to post messages": [\n            null,\n            "Permet que un usuari silenciat publiqui missatges"\n         ],\n         "The nickname you chose is reserved or currently in use, please choose a different one.": [\n            null,\n            ""\n         ],\n         "Nickname": [\n            null,\n            "Àlies"\n         ],\n         "This chatroom requires a password": [\n            null,\n            "Aquesta sala de xat requereix una contrasenya"\n         ],\n         "Password: ": [\n            null,\n            "Contrasenya:"\n         ],\n         "Submit": [\n            null,\n            "Envia"\n         ],\n         "${notification.reason}": [\n            null,\n            ""\n         ],\n         " has left the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room. \\"": [\n            null,\n            ""\n         ],\n         " has joined the room.": [\n            null,\n            ""\n         ],\n         "Topic set by %1$s to: %2$s": [\n            null,\n            "Tema definit per %1$s en: %2$s"\n         ],\n         "Occupants": [\n            null,\n            "Ocupants"\n         ],\n         "Hidden": [\n            null,\n            "Amagat"\n         ],\n         "Message archiving": [\n            null,\n            ""\n         ],\n         "Members only": [\n            null,\n            ""\n         ],\n         "Moderated": [\n            null,\n            "Moderada"\n         ],\n         "Non-anonymous": [\n            null,\n            "No és anònima"\n         ],\n         "Persistent": [\n            null,\n            ""\n         ],\n         "Public": [\n            null,\n            "Pública"\n         ],\n         "Semi-anonymous": [\n            null,\n            "Semianònima"\n         ],\n         "Unmoderated": [\n            null,\n            "No moderada"\n         ],\n         "Unsecured": [\n            null,\n            ""\n         ],\n         "Messages are archived on the server": [\n            null,\n            ""\n         ],\n         "All other room occupants can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room persists even if it\'s unoccupied": [\n            null,\n            ""\n         ],\n         "Only moderators can see your XMPP username": [\n            null,\n            ""\n         ],\n         "This room will disappear once the last person leaves": [\n            null,\n            ""\n         ],\n         "You are about to invite %1$s to the chat room \\"%2$s\\". ": [\n            null,\n            "Esteu a punt de convidar %1$s a la sala de xat \\"%2$s\\". "\n         ],\n         "You may optionally include a message, explaining the reason for the invitation.": [\n            null,\n            "Teniu l\'opció d\'incloure un missatge per explicar el motiu de la invitació."\n         ],\n         "Please enter a valid XMPP username": [\n            null,\n            ""\n         ],\n         "Room name": [\n            null,\n            "Nom de la sala"\n         ],\n         "Server": [\n            null,\n            "Servidor"\n         ],\n         "Join Room": [\n            null,\n            "Uneix-me a la sala"\n         ],\n         "Show rooms": [\n            null,\n            "Mostra les sales"\n         ],\n         "Rooms": [\n            null,\n            "Sales"\n         ],\n         "No rooms on %1$s": [\n            null,\n            "No hi ha cap sala a %1$s"\n         ],\n         "Description:": [\n            null,\n            "Descripció:"\n         ],\n         "Room Address (JID):": [\n            null,\n            ""\n         ],\n         "Occupants:": [\n            null,\n            "Ocupants:"\n         ],\n         "Features:": [\n            null,\n            "Característiques:"\n         ],\n         "Requires authentication": [\n            null,\n            "Cal autenticar-se"\n         ],\n         "Requires an invitation": [\n            null,\n            "Cal tenir una invitació"\n         ],\n         "Open room": [\n            null,\n            "Obre la sala"\n         ],\n         "Permanent room": [\n            null,\n            "Sala permanent"\n         ],\n         "Temporary room": [\n            null,\n            "Sala temporal"\n         ],\n         "%1$s has invited you to join a chat room: %2$s": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat: %2$s"\n         ],\n         "%1$s has invited you to join a chat room: %2$s, and left the following reason: \\"%3$s\\"": [\n            null,\n            "%1$s us ha convidat a unir-vos a una sala de xat (%2$s) i ha deixat el següent motiu: \\"%3$s\\""\n         ],\n         "Notification from %1$s": [\n            null,\n            ""\n         ],\n         "%1$s says": [\n            null,\n            ""\n         ],\n         "wants to be your contact": [\n            null,\n            ""\n         ],\n         "Re-establishing encrypted session": [\n            null,\n            "S\'està tornant a establir la sessió xifrada"\n         ],\n         "Generating private key.": [\n            null,\n            "S\'està generant la clau privada"\n         ],\n         "Your browser might become unresponsive.": [\n            null,\n            "És possible que el navegador no respongui."\n         ],\n         "Authentication request from %1$s\\n\\nYour chat contact is attempting to verify your identity, by asking you the question below.\\n\\n%2$s": [\n            null,\n            "Sol·licitud d\'autenticació de %1$s\\n\\nEl contacte del xat està intentant verificar la vostra identitat mitjançant la pregunta següent.\\n\\n%2$s"\n         ],\n         "Could not verify this user\'s identify.": [\n            null,\n            "No s\'ha pogut verificar la identitat d\'aquest usuari."\n         ],\n         "Exchanging private key with contact.": [\n            null,\n            "S\'està intercanviant la clau privada amb el contacte."\n         ],\n         "Your messages are not encrypted anymore": [\n            null,\n            "Els vostres missatges ja no estan xifrats"\n         ],\n         "Your messages are now encrypted but your contact\'s identity has not been verified.": [\n            null,\n            "Ara, els vostres missatges estan xifrats, però no s\'ha verificat la identitat del contacte."\n         ],\n         "Your contact\'s identify has been verified.": [\n            null,\n            "S\'ha verificat la identitat del contacte."\n         ],\n         "Your contact has ended encryption on their end, you should do the same.": [\n            null,\n            "El contacte ha conclòs el xifratge; cal que feu el mateix."\n         ],\n         "Your message could not be sent": [\n            null,\n            "No s\'ha pogut enviar el missatge"\n         ],\n         "We received an unencrypted message": [\n            null,\n            "Hem rebut un missatge sense xifrar"\n         ],\n         "We received an unreadable encrypted message": [\n            null,\n            "Hem rebut un missatge xifrat il·legible"\n         ],\n         "Here are the fingerprints, please confirm them with %1$s, outside of this chat.\\n\\nFingerprint for you, %2$s: %3$s\\n\\nFingerprint for %1$s: %4$s\\n\\nIf you have confirmed that the fingerprints match, click OK, otherwise click Cancel.": [\n            null,\n            "Aquí es mostren les empremtes. Confirmeu-les amb %1$s fora d\'aquest xat.\\n\\nEmpremta de l\'usuari %2$s: %3$s\\n\\nEmpremta de %1$s: %4$s\\n\\nSi heu confirmat que les empremtes coincideixen, feu clic a D\'acord; en cas contrari, feu clic a Cancel·la."\n         ],\n         "You will be prompted to provide a security question and then an answer to that question.\\n\\nYour contact will then be prompted the same question and if they type the exact same answer (case sensitive), their identity will be verified.": [\n            null,\n            "Se us demanarà que indiqueu una pregunta de seguretat i la resposta corresponent.\\n\\nEs farà la mateixa pregunta al vostre contacte i, si escriu exactament la mateixa resposta (es distingeix majúscules de minúscules), se\'n verificarà la identitat."\n         ],\n         "What is your security question?": [\n            null,\n            "Quina és la vostra pregunta de seguretat?"\n         ],\n         "What is the answer to the security question?": [\n            null,\n            "Quina és la resposta a la pregunta de seguretat?"\n         ],\n         "Invalid authentication scheme provided": [\n            null,\n            "S\'ha indicat un esquema d\'autenticació no vàlid"\n         ],\n         "Your messages are not encrypted. Click here to enable OTR encryption.": [\n            null,\n            "Els vostres missatges no estan xifrats. Feu clic aquí per habilitar el xifratge OTR."\n         ],\n         "Your messages are encrypted, but your contact has not been verified.": [\n            null,\n            "Els vostres missatges estan xifrats, però no s\'ha verificat el contacte."\n         ],\n         "Your messages are encrypted and your contact verified.": [\n            null,\n            "Els vostres missatges estan xifrats i s\'ha verificat el contacte."\n         ],\n         "Your contact has closed their end of the private session, you should do the same": [\n            null,\n            "El vostre contacte ha tancat la seva sessió privada; cal que feu el mateix."\n         ],\n         "End encrypted conversation": [\n            null,\n            "Finalitza la conversa xifrada"\n         ],\n         "Refresh encrypted conversation": [\n            null,\n            "Actualitza la conversa xifrada"\n         ],\n         "Start encrypted conversation": [\n            null,\n            "Comença la conversa xifrada"\n         ],\n         "Verify with fingerprints": [\n            null,\n            "Verifica amb empremtes"\n         ],\n         "Verify with SMP": [\n            null,\n            "Verifica amb SMP"\n         ],\n         "What\'s this?": [\n            null,\n            "Què és això?"\n         ],\n         "unencrypted": [\n            null,\n            "sense xifrar"\n         ],\n         "unverified": [\n            null,\n            "sense verificar"\n         ],\n         "verified": [\n            null,\n            "verificat"\n         ],\n         "finished": [\n            null,\n            "acabat"\n         ],\n         " e.g. conversejs.org": [\n            null,\n            "p. ex. conversejs.org"\n         ],\n         "Your XMPP provider\'s domain name:": [\n            null,\n            "Nom de domini del vostre proveïdor XMPP:"\n         ],\n         "Fetch registration form": [\n            null,\n            "Obtingues un formulari de registre"\n         ],\n         "Tip: A list of public XMPP providers is available": [\n            null,\n            "Consell: hi ha disponible una llista de proveïdors XMPP públics"\n         ],\n         "here": [\n            null,\n            "aquí"\n         ],\n         "Register": [\n            null,\n            "Registre"\n         ],\n         "Sorry, the given provider does not support in band account registration. Please try with a different provider.": [\n            null,\n            "El proveïdor indicat no admet el registre del compte. Proveu-ho amb un altre proveïdor."\n         ],\n         "Requesting a registration form from the XMPP server": [\n            null,\n            "S\'està sol·licitant un formulari de registre del servidor XMPP"\n         ],\n         "Something went wrong while establishing a connection with \\"%1$s\\". Are you sure it exists?": [\n            null,\n            "Ha passat alguna cosa mentre s\'establia la connexió amb \\"%1$s\\". Segur que existeix?"\n         ],\n         "Now logging you in": [\n            null,\n            "S\'està iniciant la vostra sessió"\n         ],\n         "Registered successfully": [\n            null,\n            "Registre correcte"\n         ],\n         "The provider rejected your registration attempt. Please check the values you entered for correctness.": [\n            null,\n            "El proveïdor ha rebutjat l\'intent de registre. Comproveu que els valors que heu introduït siguin correctes."\n         ],\n         "Retry": [\n            null,\n            ""\n         ],\n         "This contact is busy": [\n            null,\n            "Aquest contacte està ocupat"\n         ],\n         "This contact is online": [\n            null,\n            "Aquest contacte està en línia"\n         ],\n         "This contact is offline": [\n            null,\n            "Aquest contacte està desconnectat"\n         ],\n         "This contact is unavailable": [\n            null,\n            "Aquest contacte no està disponible"\n         ],\n         "This contact is away for an extended period": [\n            null,\n            "Aquest contacte està absent durant un període prolongat"\n         ],\n         "This contact is away": [\n            null,\n            "Aquest contacte està absent"\n         ],\n         "Groups": [\n            null,\n            "Grups"\n         ],\n         "My contacts": [\n            null,\n            "Els meus contactes"\n         ],\n         "Pending contacts": [\n            null,\n            "Contactes pendents"\n         ],\n         "Contact requests": [\n            null,\n            "Sol·licituds de contacte"\n         ],\n         "Ungrouped": [\n            null,\n            "Sense agrupar"\n         ],\n         "Filter": [\n            null,\n            ""\n         ],\n         "State": [\n            null,\n            ""\n         ],\n         "Any": [\n            null,\n            ""\n         ],\n         "Unread": [\n            null,\n            ""\n         ],\n         "Chatty": [\n            null,\n            ""\n         ],\n         "Extended Away": [\n            null,\n            ""\n         ],\n         "Click to chat with this contact": [\n            null,\n            "Feu clic per conversar amb aquest contacte"\n         ],\n         "Name": [\n            null,\n            "Nom"\n         ],\n         "Are you sure you want to remove this contact?": [\n            null,\n            "Segur que voleu eliminar aquest contacte?"\n         ],\n         "Are you sure you want to decline this contact request?": [\n            null,\n            "Segur que voleu rebutjar aquesta sol·licitud de contacte?"\n         ]\n      }\n   }\n}';});
+})));
+
+//! moment.js locale configuration
+//! locale : Catalan [ca]
+//! author : Juan G. Hurtado : https://github.com/juanghurtado
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ca',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ca = moment.defineLocale('ca', {
+    months : {
+        standalone: 'gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre'.split('_'),
+        format: 'de gener_de febrer_de març_d\'abril_de maig_de juny_de juliol_d\'agost_de setembre_d\'octubre_de novembre_de desembre'.split('_'),
+        isFormat: /D[oD]?(\s)+MMMM/
+    },
+    monthsShort : 'gen._febr._març_abr._maig_juny_jul._ag._set._oct._nov._des.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte'.split('_'),
+    weekdaysShort : 'dg._dl._dt._dc._dj._dv._ds.'.split('_'),
+    weekdaysMin : 'Dg_Dl_Dt_Dc_Dj_Dv_Ds'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : '[el] D MMMM [de] YYYY',
+        ll : 'D MMM YYYY',
+        LLL : '[el] D MMMM [de] YYYY [a les] H:mm',
+        lll : 'D MMM YYYY, H:mm',
+        LLLL : '[el] dddd D MMMM [de] YYYY [a les] H:mm',
+        llll : 'ddd D MMM YYYY, H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[avui a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        nextDay : function () {
+            return '[demà a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        lastDay : function () {
+            return '[ahir a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [passat a ' + ((this.hours() !== 1) ? 'les' : 'la') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'd\'aquí %s',
+        past : 'fa %s',
+        s : 'uns segons',
+        m : 'un minut',
+        mm : '%d minuts',
+        h : 'una hora',
+        hh : '%d hores',
+        d : 'un dia',
+        dd : '%d dies',
+        M : 'un mes',
+        MM : '%d mesos',
+        y : 'un any',
+        yy : '%d anys'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(r|n|t|è|a)/,
+    ordinal : function (number, period) {
+        var output = (number === 1) ? 'r' :
+            (number === 2) ? 'n' :
+            (number === 3) ? 'r' :
+            (number === 4) ? 't' : 'è';
+        if (period === 'w' || period === 'W') {
+            output = 'a';
+        }
+        return number + output;
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return ca;
+
+})));
+
+//! moment.js locale configuration
+//! locale : German [de]
+//! author : lluchs : https://github.com/lluchs
+//! author: Menelion Elensúle: https://github.com/Oire
+//! author : Mikolaj Dadela : https://github.com/mik01aj
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/de',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function processRelativeTime(number, withoutSuffix, key, isFuture) {
+    var format = {
+        'm': ['eine Minute', 'einer Minute'],
+        'h': ['eine Stunde', 'einer Stunde'],
+        'd': ['ein Tag', 'einem Tag'],
+        'dd': [number + ' Tage', number + ' Tagen'],
+        'M': ['ein Monat', 'einem Monat'],
+        'MM': [number + ' Monate', number + ' Monaten'],
+        'y': ['ein Jahr', 'einem Jahr'],
+        'yy': [number + ' Jahre', number + ' Jahren']
+    };
+    return withoutSuffix ? format[key][0] : format[key][1];
+}
+
+var de = moment.defineLocale('de', {
+    months : 'Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember'.split('_'),
+    monthsShort : 'Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag'.split('_'),
+    weekdaysShort : 'So._Mo._Di._Mi._Do._Fr._Sa.'.split('_'),
+    weekdaysMin : 'So_Mo_Di_Mi_Do_Fr_Sa'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D. MMMM YYYY',
+        LLL : 'D. MMMM YYYY HH:mm',
+        LLLL : 'dddd, D. MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[heute um] LT [Uhr]',
+        sameElse: 'L',
+        nextDay: '[morgen um] LT [Uhr]',
+        nextWeek: 'dddd [um] LT [Uhr]',
+        lastDay: '[gestern um] LT [Uhr]',
+        lastWeek: '[letzten] dddd [um] LT [Uhr]'
+    },
+    relativeTime : {
+        future : 'in %s',
+        past : 'vor %s',
+        s : 'ein paar Sekunden',
+        m : processRelativeTime,
+        mm : '%d Minuten',
+        h : processRelativeTime,
+        hh : '%d Stunden',
+        d : processRelativeTime,
+        dd : processRelativeTime,
+        M : processRelativeTime,
+        MM : processRelativeTime,
+        y : processRelativeTime,
+        yy : processRelativeTime
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return de;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Spanish [es]
+//! author : Julio Napurí : https://github.com/julionc
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/es',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortDot = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_');
+var monthsShort = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
+
+var es = moment.defineLocale('es', {
+    months : 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortDot;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShort[m.month()];
+        } else {
+            return monthsShortDot[m.month()];
+        }
+    },
+    monthsParseExact : true,
+    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [de] MMMM [de] YYYY',
+        LLL : 'D [de] MMMM [de] YYYY H:mm',
+        LLLL : 'dddd, D [de] MMMM [de] YYYY H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextDay : function () {
+            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastDay : function () {
+            return '[ayer a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        lastWeek : function () {
+            return '[el] dddd [pasado a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'en %s',
+        past : 'hace %s',
+        s : 'unos segundos',
+        m : 'un minuto',
+        mm : '%d minutos',
+        h : 'una hora',
+        hh : '%d horas',
+        d : 'un día',
+        dd : '%d días',
+        M : 'un mes',
+        MM : '%d meses',
+        y : 'un año',
+        yy : '%d años'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal : '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return es;
+
+})));
+
+//! moment.js locale configuration
+//! locale : French [fr]
+//! author : John Fischer : https://github.com/jfroffice
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/fr',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var fr = moment.defineLocale('fr', {
+    months : 'janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre'.split('_'),
+    monthsShort : 'janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'dimanche_lundi_mardi_mercredi_jeudi_vendredi_samedi'.split('_'),
+    weekdaysShort : 'dim._lun._mar._mer._jeu._ven._sam.'.split('_'),
+    weekdaysMin : 'Di_Lu_Ma_Me_Je_Ve_Sa'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[Aujourd’hui à] LT',
+        nextDay : '[Demain à] LT',
+        nextWeek : 'dddd [à] LT',
+        lastDay : '[Hier à] LT',
+        lastWeek : 'dddd [dernier à] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'dans %s',
+        past : 'il y a %s',
+        s : 'quelques secondes',
+        m : 'une minute',
+        mm : '%d minutes',
+        h : 'une heure',
+        hh : '%d heures',
+        d : 'un jour',
+        dd : '%d jours',
+        M : 'un mois',
+        MM : '%d mois',
+        y : 'un an',
+        yy : '%d ans'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(er|)/,
+    ordinal : function (number, period) {
+        switch (period) {
+            // TODO: Return 'e' when day of month > 1. Move this case inside
+            // block for masculine words below.
+            // See https://github.com/moment/moment/issues/3375
+            case 'D':
+                return number + (number === 1 ? 'er' : '');
+
+            // Words with masculine grammatical gender: mois, trimestre, jour
+            default:
+            case 'M':
+            case 'Q':
+            case 'DDD':
+            case 'd':
+                return number + (number === 1 ? 'er' : 'e');
+
+            // Words with feminine grammatical gender: semaine
+            case 'w':
+            case 'W':
+                return number + (number === 1 ? 're' : 'e');
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return fr;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Hebrew [he]
+//! author : Tomer Cohen : https://github.com/tomer
+//! author : Moshe Simantov : https://github.com/DevelopmentIL
+//! author : Tal Ater : https://github.com/TalAter
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/he',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var he = moment.defineLocale('he', {
+    months : 'ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר'.split('_'),
+    monthsShort : 'ינו׳_פבר׳_מרץ_אפר׳_מאי_יוני_יולי_אוג׳_ספט׳_אוק׳_נוב׳_דצמ׳'.split('_'),
+    weekdays : 'ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת'.split('_'),
+    weekdaysShort : 'א׳_ב׳_ג׳_ד׳_ה׳_ו׳_ש׳'.split('_'),
+    weekdaysMin : 'א_ב_ג_ד_ה_ו_ש'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [ב]MMMM YYYY',
+        LLL : 'D [ב]MMMM YYYY HH:mm',
+        LLLL : 'dddd, D [ב]MMMM YYYY HH:mm',
+        l : 'D/M/YYYY',
+        ll : 'D MMM YYYY',
+        lll : 'D MMM YYYY HH:mm',
+        llll : 'ddd, D MMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay : '[היום ב־]LT',
+        nextDay : '[מחר ב־]LT',
+        nextWeek : 'dddd [בשעה] LT',
+        lastDay : '[אתמול ב־]LT',
+        lastWeek : '[ביום] dddd [האחרון בשעה] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'בעוד %s',
+        past : 'לפני %s',
+        s : 'מספר שניות',
+        m : 'דקה',
+        mm : '%d דקות',
+        h : 'שעה',
+        hh : function (number) {
+            if (number === 2) {
+                return 'שעתיים';
+            }
+            return number + ' שעות';
+        },
+        d : 'יום',
+        dd : function (number) {
+            if (number === 2) {
+                return 'יומיים';
+            }
+            return number + ' ימים';
+        },
+        M : 'חודש',
+        MM : function (number) {
+            if (number === 2) {
+                return 'חודשיים';
+            }
+            return number + ' חודשים';
+        },
+        y : 'שנה',
+        yy : function (number) {
+            if (number === 2) {
+                return 'שנתיים';
+            } else if (number % 10 === 0 && number !== 10) {
+                return number + ' שנה';
+            }
+            return number + ' שנים';
+        }
+    },
+    meridiemParse: /אחה"צ|לפנה"צ|אחרי הצהריים|לפני הצהריים|לפנות בוקר|בבוקר|בערב/i,
+    isPM : function (input) {
+        return /^(אחה"צ|אחרי הצהריים|בערב)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 5) {
+            return 'לפנות בוקר';
+        } else if (hour < 10) {
+            return 'בבוקר';
+        } else if (hour < 12) {
+            return isLower ? 'לפנה"צ' : 'לפני הצהריים';
+        } else if (hour < 18) {
+            return isLower ? 'אחה"צ' : 'אחרי הצהריים';
+        } else {
+            return 'בערב';
+        }
+    }
+});
+
+return he;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Hungarian [hu]
+//! author : Adam Brunner : https://github.com/adambrunner
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/hu',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var weekEndings = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
+function translate(number, withoutSuffix, key, isFuture) {
+    var num = number,
+        suffix;
+    switch (key) {
+        case 's':
+            return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
+        case 'm':
+            return 'egy' + (isFuture || withoutSuffix ? ' perc' : ' perce');
+        case 'mm':
+            return num + (isFuture || withoutSuffix ? ' perc' : ' perce');
+        case 'h':
+            return 'egy' + (isFuture || withoutSuffix ? ' óra' : ' órája');
+        case 'hh':
+            return num + (isFuture || withoutSuffix ? ' óra' : ' órája');
+        case 'd':
+            return 'egy' + (isFuture || withoutSuffix ? ' nap' : ' napja');
+        case 'dd':
+            return num + (isFuture || withoutSuffix ? ' nap' : ' napja');
+        case 'M':
+            return 'egy' + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
+        case 'MM':
+            return num + (isFuture || withoutSuffix ? ' hónap' : ' hónapja');
+        case 'y':
+            return 'egy' + (isFuture || withoutSuffix ? ' év' : ' éve');
+        case 'yy':
+            return num + (isFuture || withoutSuffix ? ' év' : ' éve');
+    }
+    return '';
+}
+function week(isFuture) {
+    return (isFuture ? '' : '[múlt] ') + '[' + weekEndings[this.day()] + '] LT[-kor]';
+}
+
+var hu = moment.defineLocale('hu', {
+    months : 'január_február_március_április_május_június_július_augusztus_szeptember_október_november_december'.split('_'),
+    monthsShort : 'jan_feb_márc_ápr_máj_jún_júl_aug_szept_okt_nov_dec'.split('_'),
+    weekdays : 'vasárnap_hétfő_kedd_szerda_csütörtök_péntek_szombat'.split('_'),
+    weekdaysShort : 'vas_hét_kedd_sze_csüt_pén_szo'.split('_'),
+    weekdaysMin : 'v_h_k_sze_cs_p_szo'.split('_'),
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'YYYY.MM.DD.',
+        LL : 'YYYY. MMMM D.',
+        LLL : 'YYYY. MMMM D. H:mm',
+        LLLL : 'YYYY. MMMM D., dddd H:mm'
+    },
+    meridiemParse: /de|du/i,
+    isPM: function (input) {
+        return input.charAt(1).toLowerCase() === 'u';
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 12) {
+            return isLower === true ? 'de' : 'DE';
+        } else {
+            return isLower === true ? 'du' : 'DU';
+        }
+    },
+    calendar : {
+        sameDay : '[ma] LT[-kor]',
+        nextDay : '[holnap] LT[-kor]',
+        nextWeek : function () {
+            return week.call(this, true);
+        },
+        lastDay : '[tegnap] LT[-kor]',
+        lastWeek : function () {
+            return week.call(this, false);
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : '%s múlva',
+        past : '%s',
+        s : translate,
+        m : translate,
+        mm : translate,
+        h : translate,
+        hh : translate,
+        d : translate,
+        dd : translate,
+        M : translate,
+        MM : translate,
+        y : translate,
+        yy : translate
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return hu;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Indonesian [id]
+//! author : Mohammad Satrio Utomo : https://github.com/tyok
+//! reference: http://id.wikisource.org/wiki/Pedoman_Umum_Ejaan_Bahasa_Indonesia_yang_Disempurnakan
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/id',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var id = moment.defineLocale('id', {
+    months : 'Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember'.split('_'),
+    monthsShort : 'Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des'.split('_'),
+    weekdays : 'Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu'.split('_'),
+    weekdaysShort : 'Min_Sen_Sel_Rab_Kam_Jum_Sab'.split('_'),
+    weekdaysMin : 'Mg_Sn_Sl_Rb_Km_Jm_Sb'.split('_'),
+    longDateFormat : {
+        LT : 'HH.mm',
+        LTS : 'HH.mm.ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY [pukul] HH.mm',
+        LLLL : 'dddd, D MMMM YYYY [pukul] HH.mm'
+    },
+    meridiemParse: /pagi|siang|sore|malam/,
+    meridiemHour : function (hour, meridiem) {
+        if (hour === 12) {
+            hour = 0;
+        }
+        if (meridiem === 'pagi') {
+            return hour;
+        } else if (meridiem === 'siang') {
+            return hour >= 11 ? hour : hour + 12;
+        } else if (meridiem === 'sore' || meridiem === 'malam') {
+            return hour + 12;
+        }
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours < 11) {
+            return 'pagi';
+        } else if (hours < 15) {
+            return 'siang';
+        } else if (hours < 19) {
+            return 'sore';
+        } else {
+            return 'malam';
+        }
+    },
+    calendar : {
+        sameDay : '[Hari ini pukul] LT',
+        nextDay : '[Besok pukul] LT',
+        nextWeek : 'dddd [pukul] LT',
+        lastDay : '[Kemarin pukul] LT',
+        lastWeek : 'dddd [lalu pukul] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'dalam %s',
+        past : '%s yang lalu',
+        s : 'beberapa detik',
+        m : 'semenit',
+        mm : '%d menit',
+        h : 'sejam',
+        hh : '%d jam',
+        d : 'sehari',
+        dd : '%d hari',
+        M : 'sebulan',
+        MM : '%d bulan',
+        y : 'setahun',
+        yy : '%d tahun'
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return id;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Italian [it]
+//! author : Lorenzo : https://github.com/aliem
+//! author: Mattia Larentis: https://github.com/nostalgiaz
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/it',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var it = moment.defineLocale('it', {
+    months : 'gennaio_febbraio_marzo_aprile_maggio_giugno_luglio_agosto_settembre_ottobre_novembre_dicembre'.split('_'),
+    monthsShort : 'gen_feb_mar_apr_mag_giu_lug_ago_set_ott_nov_dic'.split('_'),
+    weekdays : 'domenica_lunedì_martedì_mercoledì_giovedì_venerdì_sabato'.split('_'),
+    weekdaysShort : 'dom_lun_mar_mer_gio_ven_sab'.split('_'),
+    weekdaysMin : 'do_lu_ma_me_gi_ve_sa'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[Oggi alle] LT',
+        nextDay: '[Domani alle] LT',
+        nextWeek: 'dddd [alle] LT',
+        lastDay: '[Ieri alle] LT',
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[la scorsa] dddd [alle] LT';
+                default:
+                    return '[lo scorso] dddd [alle] LT';
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : function (s) {
+            return ((/^[0-9].+$/).test(s) ? 'tra' : 'in') + ' ' + s;
+        },
+        past : '%s fa',
+        s : 'alcuni secondi',
+        m : 'un minuto',
+        mm : '%d minuti',
+        h : 'un\'ora',
+        hh : '%d ore',
+        d : 'un giorno',
+        dd : '%d giorni',
+        M : 'un mese',
+        MM : '%d mesi',
+        y : 'un anno',
+        yy : '%d anni'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal: '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return it;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Japanese [ja]
+//! author : LI Long : https://github.com/baryon
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ja',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ja = moment.defineLocale('ja', {
+    months : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    monthsShort : '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+    weekdays : '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
+    weekdaysShort : '日_月_火_水_木_金_土'.split('_'),
+    weekdaysMin : '日_月_火_水_木_金_土'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'YYYY/MM/DD',
+        LL : 'YYYY年M月D日',
+        LLL : 'YYYY年M月D日 HH:mm',
+        LLLL : 'YYYY年M月D日 HH:mm dddd',
+        l : 'YYYY/MM/DD',
+        ll : 'YYYY年M月D日',
+        lll : 'YYYY年M月D日 HH:mm',
+        llll : 'YYYY年M月D日 HH:mm dddd'
+    },
+    meridiemParse: /午前|午後/i,
+    isPM : function (input) {
+        return input === '午後';
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 12) {
+            return '午前';
+        } else {
+            return '午後';
+        }
+    },
+    calendar : {
+        sameDay : '[今日] LT',
+        nextDay : '[明日] LT',
+        nextWeek : '[来週]dddd LT',
+        lastDay : '[昨日] LT',
+        lastWeek : '[前週]dddd LT',
+        sameElse : 'L'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}日/,
+    ordinal : function (number, period) {
+        switch (period) {
+            case 'd':
+            case 'D':
+            case 'DDD':
+                return number + '日';
+            default:
+                return number;
+        }
+    },
+    relativeTime : {
+        future : '%s後',
+        past : '%s前',
+        s : '数秒',
+        m : '1分',
+        mm : '%d分',
+        h : '1時間',
+        hh : '%d時間',
+        d : '1日',
+        dd : '%d日',
+        M : '1ヶ月',
+        MM : '%dヶ月',
+        y : '1年',
+        yy : '%d年'
+    }
+});
+
+return ja;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Norwegian Bokmål [nb]
+//! authors : Espen Hovlandsdal : https://github.com/rexxars
+//!           Sigurd Gartmann : https://github.com/sigurdga
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/nb',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var nb = moment.defineLocale('nb', {
+    months : 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
+    monthsShort : 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
+    monthsParseExact : true,
+    weekdays : 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_'),
+    weekdaysShort : 'sø._ma._ti._on._to._fr._lø.'.split('_'),
+    weekdaysMin : 'sø_ma_ti_on_to_fr_lø'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D. MMMM YYYY',
+        LLL : 'D. MMMM YYYY [kl.] HH:mm',
+        LLLL : 'dddd D. MMMM YYYY [kl.] HH:mm'
+    },
+    calendar : {
+        sameDay: '[i dag kl.] LT',
+        nextDay: '[i morgen kl.] LT',
+        nextWeek: 'dddd [kl.] LT',
+        lastDay: '[i går kl.] LT',
+        lastWeek: '[forrige] dddd [kl.] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'om %s',
+        past : '%s siden',
+        s : 'noen sekunder',
+        m : 'ett minutt',
+        mm : '%d minutter',
+        h : 'en time',
+        hh : '%d timer',
+        d : 'en dag',
+        dd : '%d dager',
+        M : 'en måned',
+        MM : '%d måneder',
+        y : 'ett år',
+        yy : '%d år'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return nb;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Dutch [nl]
+//! author : Joris Röling : https://github.com/jorisroling
+//! author : Jacob Middag : https://github.com/middagj
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/nl',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsShortWithDots = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
+var monthsShortWithoutDots = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+
+var monthsParse = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
+var monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
+
+var nl = moment.defineLocale('nl', {
+    months : 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
+    monthsShort : function (m, format) {
+        if (!m) {
+            return monthsShortWithDots;
+        } else if (/-MMM-/.test(format)) {
+            return monthsShortWithoutDots[m.month()];
+        } else {
+            return monthsShortWithDots[m.month()];
+        }
+    },
+
+    monthsRegex: monthsRegex,
+    monthsShortRegex: monthsRegex,
+    monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
+    monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
+
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
+
+    weekdays : 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
+    weekdaysShort : 'zo._ma._di._wo._do._vr._za.'.split('_'),
+    weekdaysMin : 'Zo_Ma_Di_Wo_Do_Vr_Za'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD-MM-YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[vandaag om] LT',
+        nextDay: '[morgen om] LT',
+        nextWeek: 'dddd [om] LT',
+        lastDay: '[gisteren om] LT',
+        lastWeek: '[afgelopen] dddd [om] LT',
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'over %s',
+        past : '%s geleden',
+        s : 'een paar seconden',
+        m : 'één minuut',
+        mm : '%d minuten',
+        h : 'één uur',
+        hh : '%d uur',
+        d : 'één dag',
+        dd : '%d dagen',
+        M : 'één maand',
+        MM : '%d maanden',
+        y : 'één jaar',
+        yy : '%d jaar'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+    ordinal : function (number) {
+        return number + ((number === 1 || number === 8 || number >= 20) ? 'ste' : 'de');
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return nl;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Polish [pl]
+//! author : Rafal Hirsz : https://github.com/evoL
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/pl',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var monthsNominative = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_');
+var monthsSubjective = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia'.split('_');
+function plural(n) {
+    return (n % 10 < 5) && (n % 10 > 1) && ((~~(n / 10) % 10) !== 1);
+}
+function translate(number, withoutSuffix, key) {
+    var result = number + ' ';
+    switch (key) {
+        case 'm':
+            return withoutSuffix ? 'minuta' : 'minutę';
+        case 'mm':
+            return result + (plural(number) ? 'minuty' : 'minut');
+        case 'h':
+            return withoutSuffix  ? 'godzina'  : 'godzinę';
+        case 'hh':
+            return result + (plural(number) ? 'godziny' : 'godzin');
+        case 'MM':
+            return result + (plural(number) ? 'miesiące' : 'miesięcy');
+        case 'yy':
+            return result + (plural(number) ? 'lata' : 'lat');
+    }
+}
+
+var pl = moment.defineLocale('pl', {
+    months : function (momentToFormat, format) {
+        if (!momentToFormat) {
+            return monthsNominative;
+        } else if (format === '') {
+            // Hack: if format empty we know this is used to generate
+            // RegExp by moment. Give then back both valid forms of months
+            // in RegExp ready format.
+            return '(' + monthsSubjective[momentToFormat.month()] + '|' + monthsNominative[momentToFormat.month()] + ')';
+        } else if (/D MMMM/.test(format)) {
+            return monthsSubjective[momentToFormat.month()];
+        } else {
+            return monthsNominative[momentToFormat.month()];
+        }
+    },
+    monthsShort : 'sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru'.split('_'),
+    weekdays : 'niedziela_poniedziałek_wtorek_środa_czwartek_piątek_sobota'.split('_'),
+    weekdaysShort : 'ndz_pon_wt_śr_czw_pt_sob'.split('_'),
+    weekdaysMin : 'Nd_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY',
+        LLL : 'D MMMM YYYY HH:mm',
+        LLLL : 'dddd, D MMMM YYYY HH:mm'
+    },
+    calendar : {
+        sameDay: '[Dziś o] LT',
+        nextDay: '[Jutro o] LT',
+        nextWeek: '[W] dddd [o] LT',
+        lastDay: '[Wczoraj o] LT',
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                    return '[W zeszłą niedzielę o] LT';
+                case 3:
+                    return '[W zeszłą środę o] LT';
+                case 6:
+                    return '[W zeszłą sobotę o] LT';
+                default:
+                    return '[W zeszły] dddd [o] LT';
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'za %s',
+        past : '%s temu',
+        s : 'kilka sekund',
+        m : translate,
+        mm : translate,
+        h : translate,
+        hh : translate,
+        d : '1 dzień',
+        dd : '%d dni',
+        M : 'miesiąc',
+        MM : translate,
+        y : 'rok',
+        yy : translate
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal : '%d.',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return pl;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Portuguese (Brazil) [pt-br]
+//! author : Caio Ribeiro Pereira : https://github.com/caio-ribeiro-pereira
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/pt-br',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+var ptBr = moment.defineLocale('pt-br', {
+    months : 'Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro'.split('_'),
+    monthsShort : 'Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez'.split('_'),
+    weekdays : 'Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado'.split('_'),
+    weekdaysShort : 'Dom_Seg_Ter_Qua_Qui_Sex_Sáb'.split('_'),
+    weekdaysMin : 'Do_2ª_3ª_4ª_5ª_6ª_Sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [de] MMMM [de] YYYY',
+        LLL : 'D [de] MMMM [de] YYYY [às] HH:mm',
+        LLLL : 'dddd, D [de] MMMM [de] YYYY [às] HH:mm'
+    },
+    calendar : {
+        sameDay: '[Hoje às] LT',
+        nextDay: '[Amanhã às] LT',
+        nextWeek: 'dddd [às] LT',
+        lastDay: '[Ontem às] LT',
+        lastWeek: function () {
+            return (this.day() === 0 || this.day() === 6) ?
+                '[Último] dddd [às] LT' : // Saturday + Sunday
+                '[Última] dddd [às] LT'; // Monday - Friday
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'em %s',
+        past : '%s atrás',
+        s : 'poucos segundos',
+        m : 'um minuto',
+        mm : '%d minutos',
+        h : 'uma hora',
+        hh : '%d horas',
+        d : 'um dia',
+        dd : '%d dias',
+        M : 'um mês',
+        MM : '%d meses',
+        y : 'um ano',
+        yy : '%d anos'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}º/,
+    ordinal : '%dº'
+});
+
+return ptBr;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Russian [ru]
+//! author : Viktorminator : https://github.com/Viktorminator
+//! Author : Menelion Elensúle : https://github.com/Oire
+//! author : Коренберг Марк : https://github.com/socketpair
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/ru',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function plural(word, num) {
+    var forms = word.split('_');
+    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
+}
+function relativeTimeWithPlural(number, withoutSuffix, key) {
+    var format = {
+        'mm': withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
+        'hh': 'час_часа_часов',
+        'dd': 'день_дня_дней',
+        'MM': 'месяц_месяца_месяцев',
+        'yy': 'год_года_лет'
+    };
+    if (key === 'm') {
+        return withoutSuffix ? 'минута' : 'минуту';
+    }
+    else {
+        return number + ' ' + plural(format[key], +number);
+    }
+}
+var monthsParse = [/^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i];
+
+// http://new.gramota.ru/spravka/rules/139-prop : § 103
+// Сокращения месяцев: http://new.gramota.ru/spravka/buro/search-answer?s=242637
+// CLDR data:          http://www.unicode.org/cldr/charts/28/summary/ru.html#1753
+var ru = moment.defineLocale('ru', {
+    months : {
+        format: 'января_февраля_марта_апреля_мая_июня_июля_августа_сентября_октября_ноября_декабря'.split('_'),
+        standalone: 'январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь'.split('_')
+    },
+    monthsShort : {
+        // по CLDR именно "июл." и "июн.", но какой смысл менять букву на точку ?
+        format: 'янв._февр._мар._апр._мая_июня_июля_авг._сент._окт._нояб._дек.'.split('_'),
+        standalone: 'янв._февр._март_апр._май_июнь_июль_авг._сент._окт._нояб._дек.'.split('_')
+    },
+    weekdays : {
+        standalone: 'воскресенье_понедельник_вторник_среда_четверг_пятница_суббота'.split('_'),
+        format: 'воскресенье_понедельник_вторник_среду_четверг_пятницу_субботу'.split('_'),
+        isFormat: /\[ ?[Вв] ?(?:прошлую|следующую|эту)? ?\] ?dddd/
+    },
+    weekdaysShort : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
+    weekdaysMin : 'вс_пн_вт_ср_чт_пт_сб'.split('_'),
+    monthsParse : monthsParse,
+    longMonthsParse : monthsParse,
+    shortMonthsParse : monthsParse,
+
+    // полные названия с падежами, по три буквы, для некоторых, по 4 буквы, сокращения с точкой и без точки
+    monthsRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
+
+    // копия предыдущего
+    monthsShortRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
+
+    // полные названия с падежами
+    monthsStrictRegex: /^(январ[яь]|феврал[яь]|марта?|апрел[яь]|ма[яй]|июн[яь]|июл[яь]|августа?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])/i,
+
+    // Выражение, которое соотвествует только сокращённым формам
+    monthsShortStrictRegex: /^(янв\.|февр?\.|мар[т.]|апр\.|ма[яй]|июн[ья.]|июл[ья.]|авг\.|сент?\.|окт\.|нояб?\.|дек\.)/i,
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY г.',
+        LLL : 'D MMMM YYYY г., HH:mm',
+        LLLL : 'dddd, D MMMM YYYY г., HH:mm'
+    },
+    calendar : {
+        sameDay: '[Сегодня в] LT',
+        nextDay: '[Завтра в] LT',
+        lastDay: '[Вчера в] LT',
+        nextWeek: function (now) {
+            if (now.week() !== this.week()) {
+                switch (this.day()) {
+                    case 0:
+                        return '[В следующее] dddd [в] LT';
+                    case 1:
+                    case 2:
+                    case 4:
+                        return '[В следующий] dddd [в] LT';
+                    case 3:
+                    case 5:
+                    case 6:
+                        return '[В следующую] dddd [в] LT';
+                }
+            } else {
+                if (this.day() === 2) {
+                    return '[Во] dddd [в] LT';
+                } else {
+                    return '[В] dddd [в] LT';
+                }
+            }
+        },
+        lastWeek: function (now) {
+            if (now.week() !== this.week()) {
+                switch (this.day()) {
+                    case 0:
+                        return '[В прошлое] dddd [в] LT';
+                    case 1:
+                    case 2:
+                    case 4:
+                        return '[В прошлый] dddd [в] LT';
+                    case 3:
+                    case 5:
+                    case 6:
+                        return '[В прошлую] dddd [в] LT';
+                }
+            } else {
+                if (this.day() === 2) {
+                    return '[Во] dddd [в] LT';
+                } else {
+                    return '[В] dddd [в] LT';
+                }
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'через %s',
+        past : '%s назад',
+        s : 'несколько секунд',
+        m : relativeTimeWithPlural,
+        mm : relativeTimeWithPlural,
+        h : 'час',
+        hh : relativeTimeWithPlural,
+        d : 'день',
+        dd : relativeTimeWithPlural,
+        M : 'месяц',
+        MM : relativeTimeWithPlural,
+        y : 'год',
+        yy : relativeTimeWithPlural
+    },
+    meridiemParse: /ночи|утра|дня|вечера/i,
+    isPM : function (input) {
+        return /^(дня|вечера)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'ночи';
+        } else if (hour < 12) {
+            return 'утра';
+        } else if (hour < 17) {
+            return 'дня';
+        } else {
+            return 'вечера';
+        }
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(й|го|я)/,
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'M':
+            case 'd':
+            case 'DDD':
+                return number + '-й';
+            case 'D':
+                return number + '-го';
+            case 'w':
+            case 'W':
+                return number + '-я';
+            default:
+                return number;
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return ru;
+
+})));
+
+//! moment.js locale configuration
+//! locale : Ukrainian [uk]
+//! author : zemlanin : https://github.com/zemlanin
+//! Author : Menelion Elensúle : https://github.com/Oire
+
+;(function (global, factory) {
+   typeof exports === 'object' && typeof module !== 'undefined'
+       && typeof require === 'function' ? factory(require('../moment')) :
+   typeof define === 'function' && define.amd ? define('moment/locale/uk',['../moment'], factory) :
+   factory(global.moment)
+}(this, (function (moment) { 'use strict';
+
+
+function plural(word, num) {
+    var forms = word.split('_');
+    return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
+}
+function relativeTimeWithPlural(number, withoutSuffix, key) {
+    var format = {
+        'mm': withoutSuffix ? 'хвилина_хвилини_хвилин' : 'хвилину_хвилини_хвилин',
+        'hh': withoutSuffix ? 'година_години_годин' : 'годину_години_годин',
+        'dd': 'день_дні_днів',
+        'MM': 'місяць_місяці_місяців',
+        'yy': 'рік_роки_років'
+    };
+    if (key === 'm') {
+        return withoutSuffix ? 'хвилина' : 'хвилину';
+    }
+    else if (key === 'h') {
+        return withoutSuffix ? 'година' : 'годину';
+    }
+    else {
+        return number + ' ' + plural(format[key], +number);
+    }
+}
+function weekdaysCaseReplace(m, format) {
+    var weekdays = {
+        'nominative': 'неділя_понеділок_вівторок_середа_четвер_п’ятниця_субота'.split('_'),
+        'accusative': 'неділю_понеділок_вівторок_середу_четвер_п’ятницю_суботу'.split('_'),
+        'genitive': 'неділі_понеділка_вівторка_середи_четверга_п’ятниці_суботи'.split('_')
+    };
+
+    if (!m) {
+        return weekdays['nominative'];
+    }
+
+    var nounCase = (/(\[[ВвУу]\]) ?dddd/).test(format) ?
+        'accusative' :
+        ((/\[?(?:минулої|наступної)? ?\] ?dddd/).test(format) ?
+            'genitive' :
+            'nominative');
+    return weekdays[nounCase][m.day()];
+}
+function processHoursFunction(str) {
+    return function () {
+        return str + 'о' + (this.hours() === 11 ? 'б' : '') + '] LT';
+    };
+}
+
+var uk = moment.defineLocale('uk', {
+    months : {
+        'format': 'січня_лютого_березня_квітня_травня_червня_липня_серпня_вересня_жовтня_листопада_грудня'.split('_'),
+        'standalone': 'січень_лютий_березень_квітень_травень_червень_липень_серпень_вересень_жовтень_листопад_грудень'.split('_')
+    },
+    monthsShort : 'січ_лют_бер_квіт_трав_черв_лип_серп_вер_жовт_лист_груд'.split('_'),
+    weekdays : weekdaysCaseReplace,
+    weekdaysShort : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    weekdaysMin : 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'DD.MM.YYYY',
+        LL : 'D MMMM YYYY р.',
+        LLL : 'D MMMM YYYY р., HH:mm',
+        LLLL : 'dddd, D MMMM YYYY р., HH:mm'
+    },
+    calendar : {
+        sameDay: processHoursFunction('[Сьогодні '),
+        nextDay: processHoursFunction('[Завтра '),
+        lastDay: processHoursFunction('[Вчора '),
+        nextWeek: processHoursFunction('[У] dddd ['),
+        lastWeek: function () {
+            switch (this.day()) {
+                case 0:
+                case 3:
+                case 5:
+                case 6:
+                    return processHoursFunction('[Минулої] dddd [').call(this);
+                case 1:
+                case 2:
+                case 4:
+                    return processHoursFunction('[Минулого] dddd [').call(this);
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime : {
+        future : 'за %s',
+        past : '%s тому',
+        s : 'декілька секунд',
+        m : relativeTimeWithPlural,
+        mm : relativeTimeWithPlural,
+        h : 'годину',
+        hh : relativeTimeWithPlural,
+        d : 'день',
+        dd : relativeTimeWithPlural,
+        M : 'місяць',
+        MM : relativeTimeWithPlural,
+        y : 'рік',
+        yy : relativeTimeWithPlural
+    },
+    // M. E.: those two are virtually unused but a user might want to implement them for his/her website for some reason
+    meridiemParse: /ночі|ранку|дня|вечора/,
+    isPM: function (input) {
+        return /^(дня|вечора)$/.test(input);
+    },
+    meridiem : function (hour, minute, isLower) {
+        if (hour < 4) {
+            return 'ночі';
+        } else if (hour < 12) {
+            return 'ранку';
+        } else if (hour < 17) {
+            return 'дня';
+        } else {
+            return 'вечора';
+        }
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(й|го)/,
+    ordinal: function (number, period) {
+        switch (period) {
+            case 'M':
+            case 'd':
+            case 'DDD':
+            case 'w':
+            case 'W':
+                return number + '-й';
+            case 'D':
+                return number + '-го';
+            default:
+                return number;
+        }
+    },
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return uk;
+
+})));
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// This is the internationalization module.
+//
+// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('i18n',[
+        "es6-promise",
+        "jed",
+        "lodash.noconflict",
+        "moment",
+        'moment/locale/af',
+        'moment/locale/ca',
+        'moment/locale/de',
+        'moment/locale/es',
+        'moment/locale/fr',
+        'moment/locale/he',
+        'moment/locale/hu',
+        'moment/locale/id',
+        'moment/locale/it',
+        'moment/locale/ja',
+        'moment/locale/nb',
+        'moment/locale/nl',
+        'moment/locale/pl',
+        'moment/locale/pt-br',
+        'moment/locale/ru',
+        'moment/locale/uk',
+    ], factory);
+}(this, function (Promise, Jed, _, moment) {
+    'use strict';
+
+    function detectLocale (library_check) {
+        /* Determine which locale is supported by the user's system as well
+         * as by the relevant library (e.g. converse.js or moment.js).
+         *
+         * Parameters:
+         *      (Function) library_check - Returns a boolean indicating whether
+         *                                 the locale is supported.
+         */
+        var locale, i;
+        if (window.navigator.userLanguage) {
+            locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
+        }
+        if (window.navigator.languages && !locale) {
+            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+                locale = isLocaleAvailable(window.navigator.languages[i], library_check);
+            }
+        }
+        if (window.navigator.browserLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
+        }
+        if (window.navigator.language && !locale) {
+            locale = isLocaleAvailable(window.navigator.language, library_check);
+        }
+        if (window.navigator.systemLanguage && !locale) {
+            locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
+        }
+        return locale || 'en';
+    }
+
+    function isMomentLocale (locale) {
+        return _.isString(locale) && moment.locale() === moment.locale(locale);
+    }
+
+    function isConverseLocale (locale, supported_locales) {
+        return _.isString(locale) && _.includes(supported_locales, locale);
+    }
+
+    function getLocale (preferred_locale, isSupportedByLibrary) {
+        if (_.isString(preferred_locale)) {
+            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+                return preferred_locale;
+            }
+        }
+        return detectLocale(isSupportedByLibrary) || 'en';
+    }
+
+    function isLocaleAvailable (locale, available) {
+        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+         *
+         * Parameters:
+         *      (String) locale - The locale to check for
+         *      (Function) available - returns a boolean indicating whether the locale is supported
+         */
+        if (available(locale)) {
+            return locale;
+        } else {
+            var sublocale = locale.split("-")[0];
+            if (sublocale !== locale && available(sublocale)) {
+                return sublocale;
+            }
+        }
+    }
+
+    let jed_instance;
+
+    return {
+
+        setLocales (preferred_locale, _converse) {
+            _converse.locale = getLocale(
+                preferred_locale,
+                _.partial(isConverseLocale, _, _converse.locales)
+            );
+            moment.locale(getLocale(preferred_locale, isMomentLocale));
+        },
+
+        translate (str) {
+            if (_.isNil(jed_instance)) {
+                return Jed.sprintf.apply(Jed, arguments);
+            }
+            var t = jed_instance.translate(str);
+            if (arguments.length>1) {
+                return t.fetch.apply(t, [].slice.call(arguments, 1));
+            } else {
+                return t.fetch();
+            }
+        },
+
+        fetchTranslations (locale, supported_locales, locale_url) {
+            /* Fetch the translations for the given local at the given URL.
+             *
+             * Parameters:
+             *  (String) locale:            The given i18n locale
+             *  (Array) supported_locales:  List of locales supported
+             *  (String) locale_url:        The URL from which the translations
+             *                              should be fetched.
+             */
+            return new Promise((resolve, reject) => {
+                if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
+                    return resolve();
+                }
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', locale_url, true);
+                xhr.setRequestHeader(
+                    'Accept',
+                    "application/json, text/javascript"
+                );
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        jed_instance = new Jed(window.JSON.parse(xhr.responseText));
+                        resolve();
+                    } else {
+                        xhr.onerror();
+                    }
+                };
+                xhr.onerror = function () {
+                    reject(xhr.statusText);
+                };
+                xhr.send();
+            });
+        }
+    };
+}));
+
+/*!
+ * jQuery Browser Plugin 0.1.0
+ * https://github.com/gabceb/jquery-browser-plugin
+ *
+ * Original jquery-browser code Copyright 2005, 2015 jQuery Foundation, Inc. and other contributors
+ * http://jquery.org/license
+ *
+ * Modifications Copyright 2015 Gabriel Cebrian
+ * https://github.com/gabceb
+ *
+ * Released under the MIT license
+ *
+ * Date: 05-07-2015
+ */
+/*global window: false */
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define('jquery.browser',['jquery'], function ($) {
+      return factory($);
+    });
+  } else if (typeof module === 'object' && typeof module.exports === 'object') {
+    // Node-like environment
+    module.exports = factory(require('jquery'));
+  } else {
+    // Browser globals
+    factory(window.jQuery);
+  }
+}(function(jQuery) {
+  "use strict";
+
+  function uaMatch( ua ) {
+    // If an UA is not provided, default to the current browser UA.
+    if ( ua === undefined ) {
+      ua = window.navigator.userAgent;
+    }
+    ua = ua.toLowerCase();
+
+    var match = /(edge)\/([\w.]+)/.exec( ua ) ||
+        /(opr)[\/]([\w.]+)/.exec( ua ) ||
+        /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+        /(iemobile)[\/]([\w.]+)/.exec( ua ) ||
+        /(version)(applewebkit)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
+        /(webkit)[ \/]([\w.]+).*(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec( ua ) ||
+        /(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+        /(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+        /(msie) ([\w.]+)/.exec( ua ) ||
+        ua.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec( ua ) ||
+        ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+        [];
+
+    var platform_match = /(ipad)/.exec( ua ) ||
+        /(ipod)/.exec( ua ) ||
+        /(windows phone)/.exec( ua ) ||
+        /(iphone)/.exec( ua ) ||
+        /(kindle)/.exec( ua ) ||
+        /(silk)/.exec( ua ) ||
+        /(android)/.exec( ua ) ||
+        /(win)/.exec( ua ) ||
+        /(mac)/.exec( ua ) ||
+        /(linux)/.exec( ua ) ||
+        /(cros)/.exec( ua ) ||
+        /(playbook)/.exec( ua ) ||
+        /(bb)/.exec( ua ) ||
+        /(blackberry)/.exec( ua ) ||
+        [];
+
+    var browser = {},
+        matched = {
+          browser: match[ 5 ] || match[ 3 ] || match[ 1 ] || "",
+          version: match[ 2 ] || match[ 4 ] || "0",
+          versionNumber: match[ 4 ] || match[ 2 ] || "0",
+          platform: platform_match[ 0 ] || ""
+        };
+
+    if ( matched.browser ) {
+      browser[ matched.browser ] = true;
+      browser.version = matched.version;
+      browser.versionNumber = parseInt(matched.versionNumber, 10);
+    }
+
+    if ( matched.platform ) {
+      browser[ matched.platform ] = true;
+    }
+
+    // These are all considered mobile platforms, meaning they run a mobile browser
+    if ( browser.android || browser.bb || browser.blackberry || browser.ipad || browser.iphone ||
+      browser.ipod || browser.kindle || browser.playbook || browser.silk || browser[ "windows phone" ]) {
+      browser.mobile = true;
+    }
+
+    // These are all considered desktop platforms, meaning they run a desktop browser
+    if ( browser.cros || browser.mac || browser.linux || browser.win ) {
+      browser.desktop = true;
+    }
+
+    // Chrome, Opera 15+ and Safari are webkit based browsers
+    if ( browser.chrome || browser.opr || browser.safari ) {
+      browser.webkit = true;
+    }
+
+    // IE11 has a new token so we will assign it msie to avoid breaking changes
+    if ( browser.rv || browser.iemobile) {
+      var ie = "msie";
+
+      matched.browser = ie;
+      browser[ie] = true;
+    }
+
+    // Edge is officially known as Microsoft Edge, so rewrite the key to match
+    if ( browser.edge ) {
+      delete browser.edge;
+      var msedge = "msedge";
+
+      matched.browser = msedge;
+      browser[msedge] = true;
+    }
+
+    // Blackberry browsers are marked as Safari on BlackBerry
+    if ( browser.safari && browser.blackberry ) {
+      var blackberry = "blackberry";
+
+      matched.browser = blackberry;
+      browser[blackberry] = true;
+    }
+
+    // Playbook browsers are marked as Safari on Playbook
+    if ( browser.safari && browser.playbook ) {
+      var playbook = "playbook";
+
+      matched.browser = playbook;
+      browser[playbook] = true;
+    }
+
+    // BB10 is a newer OS version of BlackBerry
+    if ( browser.bb ) {
+      var bb = "blackberry";
+
+      matched.browser = bb;
+      browser[bb] = true;
+    }
+
+    // Opera 15+ are identified as opr
+    if ( browser.opr ) {
+      var opera = "opera";
+
+      matched.browser = opera;
+      browser[opera] = true;
+    }
+
+    // Stock Android browsers are marked as Safari on Android.
+    if ( browser.safari && browser.android ) {
+      var android = "android";
+
+      matched.browser = android;
+      browser[android] = true;
+    }
+
+    // Kindle browsers are marked as Safari on Kindle
+    if ( browser.safari && browser.kindle ) {
+      var kindle = "kindle";
+
+      matched.browser = kindle;
+      browser[kindle] = true;
+    }
+
+     // Kindle Silk browsers are marked as Safari on Kindle
+    if ( browser.safari && browser.silk ) {
+      var silk = "silk";
+
+      matched.browser = silk;
+      browser[silk] = true;
+    }
+
+    // Assign the name and platform variable
+    browser.name = matched.browser;
+    browser.platform = matched.platform;
+    return browser;
+  }
+
+  // Run the matching process, also assign the function to the returned object
+  // for manual, jQuery-free use if desired
+  window.jQBrowser = uaMatch( window.navigator.userAgent );
+  window.jQBrowser.uaMatch = uaMatch;
+
+  // Only assign to jQuery.browser if jQuery is loaded
+  if ( jQuery ) {
+    jQuery.browser = window.jQBrowser;
+  }
+
+  return window.jQBrowser;
+}));
 
 
 
@@ -5436,13 +6698,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, window, Jed */
+/*global define, escape, window */
 (function (root, factory) {
-    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "locales", "moment_with_locales", "strophe"], factory);
-})(undefined, function (sizzle, Promise, jQBrowser, _, locales, moment, Strophe) {
+    define('utils',["sizzle", "es6-promise", "jquery.browser", "lodash.noconflict", "strophe"], factory);
+})(undefined, function (sizzle, Promise, jQBrowser, _, Strophe) {
     "use strict";
 
-    locales = locales || {};
     var b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
@@ -5521,53 +6782,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
 
     var u = {};
-
-    // Translation machinery
-    // ---------------------
-    u.__ = function (str) {
-        if (_.isUndefined(window.Jed)) {
-            return str;
-        }
-        if (!u.isConverseLocale(this.locale) || this.locale === 'en') {
-            return Jed.sprintf.apply(window.Jed, arguments);
-        }
-        if (typeof this.jed === "undefined") {
-            this.jed = new Jed(window.JSON.parse(locales[this.locale]));
-        }
-        var t = this.jed.translate(str);
-        if (arguments.length > 1) {
-            return t.fetch.apply(t, [].slice.call(arguments, 1));
-        } else {
-            return t.fetch();
-        }
-    };
-
-    u.___ = function (str) {
-        /* XXX: This is part of a hack to get gettext to scan strings to be
-         * translated. Strings we cannot send to the function above because
-         * they require variable interpolation and we don't yet have the
-         * variables at scan time.
-         *
-         * See actionInfoMessages in src/converse-muc.js
-         */
-        return str;
-    };
-
-    u.isLocaleAvailable = function (locale, available) {
-        /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-         *
-         * Parameters:
-         *      (Function) available - returns a boolean indicating whether the locale is supported
-         */
-        if (available(locale)) {
-            return locale;
-        } else {
-            var sublocale = locale.split("-")[0];
-            if (sublocale !== locale && available(sublocale)) {
-                return sublocale;
-            }
-        }
-    };
 
     u.addHyperlinks = function (text) {
         var list = text.match(URL_REGEX) || [];
@@ -5736,6 +6950,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    u.isValidJID = function (jid) {
+        return _.filter(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    };
+
     u.isSameBareJID = function (jid1, jid2) {
         return Strophe.getBareJidFromJid(jid1).toLowerCase() === Strophe.getBareJidFromJid(jid2).toLowerCase();
     };
@@ -5861,64 +7079,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 throw new TypeError('contains: wrong attribute type. Must be string or array.');
             }
         };
-    };
-
-    u.detectLocale = function (library_check) {
-        /* Determine which locale is supported by the user's system as well
-         * as by the relevant library (e.g. converse.js or moment.js).
-         *
-         * Parameters:
-         *      (Function) library_check - returns a boolean indicating whether
-         *          the locale is supported.
-         */
-        var locale, i;
-        if (window.navigator.userLanguage) {
-            locale = u.isLocaleAvailable(window.navigator.userLanguage, library_check);
-        }
-        if (window.navigator.languages && !locale) {
-            for (i = 0; i < window.navigator.languages.length && !locale; i++) {
-                locale = u.isLocaleAvailable(window.navigator.languages[i], library_check);
-            }
-        }
-        if (window.navigator.browserLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.browserLanguage, library_check);
-        }
-        if (window.navigator.language && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.language, library_check);
-        }
-        if (window.navigator.systemLanguage && !locale) {
-            locale = u.isLocaleAvailable(window.navigator.systemLanguage, library_check);
-        }
-        return locale || 'en';
-    };
-
-    u.isConverseLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
-        return _.includes(_.keys(locales || {}), locale);
-    };
-
-    u.isMomentLocale = function (locale) {
-        if (!_.isString(locale)) {
-            return false;
-        }
-        return moment.locale() !== moment.locale(locale);
-    };
-
-    u.getLocale = function (preferred_locale, isSupportedByLibrary) {
-        if (_.isString(preferred_locale)) {
-            if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-                return preferred_locale;
-            }
-            try {
-                var obj = window.JSON.parse(preferred_locale);
-                return obj.locale_data.converse[""].lang;
-            } catch (e) {
-                logger.error(e);
-            }
-        }
-        return u.detectLocale(isSupportedByLibrary) || 'en';
     };
 
     u.isOfType = function (type, item) {
@@ -6236,7 +7396,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
 
         // `initializePlugin` applies the overrides (if any) defined on all
-        // the registered plugins and then calls the initialize method for each plugin.
+        // the registered plugins and then calls the initialize method of the plugin
         initializePlugin: function initializePlugin(plugin) {
             if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
                 /* Don't initialize disallowed plugins. */
@@ -6248,15 +7408,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 */
                 return;
             }
-            _.extend(plugin, this.properties);
-            if (plugin.optional_dependencies) {
-                this.loadOptionalDependencies(plugin);
+            if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
+                _.extend(plugin, this.properties);
+                if (plugin.optional_dependencies) {
+                    this.loadOptionalDependencies(plugin);
+                }
+                this.applyOverrides(plugin);
+                if (typeof plugin.initialize === "function") {
+                    plugin.initialize.bind(plugin)(this);
+                }
+                this.initialized_plugins.push(plugin.__name__);
             }
-            this.applyOverrides(plugin);
-            if (typeof plugin.initialize === "function") {
-                plugin.initialize.bind(plugin)(this);
-            }
-            this.initialized_plugins.push(plugin.__name__);
         },
 
         // `registerPlugin` registers (or inserts, if you'd like) a plugin,
@@ -6329,8 +7492,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 /*global Backbone, define, window, document, JSON */
 (function (root, factory) {
-    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "utils", "moment_with_locales", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
-})(undefined, function (sizzle, Promise, _, polyfill, utils, moment, Strophe, pluggable, Backbone) {
+    define('converse-core',["sizzle", "es6-promise", "lodash.noconflict", "polyfill", "i18n", "utils", "moment", "strophe", "pluggable", "backbone.noconflict", "backbone.browserStorage", "backbone.overview"], factory);
+})(undefined, function (sizzle, Promise, _, polyfill, i18n, utils, moment, Strophe, pluggable, Backbone) {
 
     /* Cannot use this due to Safari bug.
      * See https://github.com/jcbrand/converse.js/issues/196
@@ -6347,6 +7510,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var b64_sha1 = Strophe.SHA1.b64_sha1;
     Strophe = Strophe.Strophe;
 
+    // Add Strophe Namespaces
+    Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+    Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+    Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
+    Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
+    Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
+    Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+    Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
+    Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
+    Strophe.addNamespace('XFORM', 'jabber:x:data');
+
     // Use Mustache style syntax for variable interpolation
     /* Configuration of Lodash templates (this config is distinct to the
      * config of requirejs-tpl in main.js). This one is for normal inline templates.
@@ -6354,7 +7530,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     _.templateSettings = {
         'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
         'evaluate': /\{\[([\s\S]+?)\]\}/g,
-        'interpolate': /\{\{([\s\S]+?)\}\}/g
+        'interpolate': /\{\{([\s\S]+?)\}\}/g,
+        'imports': { '_': _ }
     };
 
     var _converse = {
@@ -6364,7 +7541,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     _.extend(_converse, Backbone.Events);
 
-    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-vcard'];
+    _converse.core_plugins = ['converse-bookmarks', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-minimize', 'converse-muc', 'converse-notification', 'converse-otr', 'converse-ping', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-vcard'];
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
@@ -6414,9 +7591,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     _converse.DEFAULT_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAIAAABt+uBvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gwHCy455JBsggAABkJJREFUeNrtnM1PE1sUwHvvTD8otWLHST/Gimi1CEgr6M6FEWuIBo2pujDVsNDEP8GN/4MbN7oxrlipG2OCgZgYlxAbkRYw1KqkIDRCSkM7nXvvW8x7vjyNeQ9m7p1p3z1LQk/v/Dhz7vkEXL161cHl9wI5Ag6IA+KAOCAOiAPigDggLhwQB2S+iNZ+PcYY/SWEEP2HAAAIoSAIoihCCP+ngDDGtVotGAz29/cfOXJEUZSOjg6n06lp2sbGRqlUWlhYyGazS0tLbrdbEASrzgksyeYJId3d3el0uqenRxRFAAAA4KdfIIRgjD9+/Pj8+fOpqSndslofEIQwHA6Pjo4mEon//qmFhYXHjx8vLi4ihBgDEnp7e9l8E0Jo165dQ0NDd+/eDYVC2/qsJElDQ0OEkKWlpa2tLZamxAhQo9EIBoOjo6MXL17csZLe3l5FUT59+lQul5l5JRaAVFWNRqN37tw5ceKEQVWRSOTw4cOFQuHbt2+iKLYCIISQLMu3b99OJpOmKAwEAgcPHszn8+vr6wzsiG6UQQhxuVyXLl0aGBgwUW0sFstkMl6v90fo1KyAMMYDAwPnzp0zXfPg4GAqlWo0Gk0MiBAiy/L58+edTqf5Aa4onj59OhaLYYybFRCEMBaL0fNxBw4cSCQStN0QRUBut3t4eJjq6U+dOiVJElVPRBFQIBDo6+ujCqirqyscDlONGykC2lYyYSR6pBoQQapHZwAoHo/TuARYAOrs7GQASFEUqn6aIiBJkhgA6ujooFpUo6iaTa7koFwnaoWadLNe81tbWwzoaJrWrICWl5cZAFpbW6OabVAEtLi4yABQsVjUNK0pAWWzWQaAcrlcswKanZ1VVZUqHYRQEwOq1Wpv3ryhCmh6erpcLjdrNl+v1ycnJ+l5UELI27dvv3//3qxxEADgy5cvExMT9Mznw4cPtFtAdAPFarU6Pj5eKpVM17yxsfHy5cvV1VXazXu62gVBKBQKT58+rdVqJqrFGL948eLdu3dU8/g/H4FBUaJYLAqC0NPTY9brMD4+PjY25mDSracOCABACJmZmXE6nUePHjWu8NWrV48ePSKEsGlAs7Agfd5nenq6Wq0mk0kjDzY2NvbkyRMIIbP2PLvhBUEQ8vl8NpuNx+M+n29bzhVjvLKycv/+/YmJCcazQuwA6YzW1tYmJyf1SY+2trZ/rRk1Go1SqfT69esHDx4UCgVmNaa/zZ/9ABUhRFXVYDB48uTJeDweiUQkSfL7/T9MA2NcqVTK5fLy8vL8/PzU1FSxWHS5XJaM4wGr9sUwxqqqer3eUCgkSZJuUBBCfTRvc3OzXC6vrKxUKhWn02nhCJ5lM4oQQo/HgxD6+vXr58+fHf8sDOp+HQDg8XgclorFU676dKLlo6yWRdItIBwQB8QBcUCtfosRQjRNQwhhjPUC4w46WXryBSHU1zgEQWBz99EFhDGu1+t+v//48ePxeFxRlD179ng8nh0Efgiher2+vr6ur3HMzMysrq7uTJVdACGEurq6Ll++nEgkPB7Pj9jPoDHqOxyqqubz+WfPnuVyuV9XPeyeagAAAoHArVu3BgcHab8CuVzu4cOHpVKJUnfA5GweY+xyuc6cOXPv3r1IJMLAR8iyPDw8XK/Xi8Wiqqqmm5KZgBBC7e3tN27cuHbtGuPVpf7+/lAoNDs7W61WzfVKpgHSSzw3b95MpVKW3MfRaDQSiczNzVUqFRMZmQOIEOL1eq9fv3727FlL1t50URRFluX5+flqtWpWEGAOIFEUU6nUlStXLKSjy759+xwOx9zcnKZpphzGHMzhcDiTydgk9r1w4YIp7RPTAAmCkMlk2FeLf/tIEKbTab/fbwtAhJBoNGrutpNx6e7uPnTokC1eMU3T0um0DZPMkZER6wERQnw+n/FFSxpy7Nix3bt3WwwIIcRgIWnHkkwmjecfRgGx7DtuV/r6+iwGhDHev3+/bQF1dnYaH6E2CkiWZdsC2rt3r8WAHA5HW1ubbQGZcjajgOwTH/4qNko1Wlg4IA6IA+KAOKBWBUQIsfNojyliKIoRRfH9+/dut9umf3wzpoUNNQ4BAJubmwz+ic+OxefzWWlBhJD29nbug7iT5sIBcUAcEAfEAXFAHBAHxOVn+QMrmWpuPZx12gAAAABJRU5ErkJggg==";
 
     _converse.log = function (message, level) {
+        var style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+        /* Logs messages to the browser's developer console.
+         *
+         * Parameters:
+         *      (String) message - The message to be logged.
+         *      (Integer) level - The loglevel which allows for filtering of log
+         *                       messages.
+         *
+         *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
+         *  3 for 'error' and 4 for 'fatal'.
+         *
+         *  When using the 'error' or 'warn' loglevels, a full stacktrace will be
+         *  logged as well.
+         */
+        if (level === Strophe.LogLevel.ERROR || level === Strophe.LogLevel.FATAL) {
+            style = style || 'color: maroon';
+        }
         if (message instanceof Error) {
             message = message.stack;
         }
+        var prefix = style ? '%c' : '';
         var logger = _.assign({
             'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
             'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -6425,26 +7621,51 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }, console);
         if (level === Strophe.LogLevel.ERROR) {
             if (_converse.debug) {
-                logger.trace("ERROR: " + message);
+                logger.trace(prefix + " " + moment().format() + " ERROR: " + message, style);
             } else {
-                logger.error("ERROR: " + message);
+                logger.error(prefix + " ERROR: " + message, style);
             }
         } else if (level === Strophe.LogLevel.WARN) {
-            logger.warn("WARNING: " + message);
+            if (_converse.debug) {
+                logger.warn(prefix + " " + moment().format() + " WARNING: " + message, style);
+            } else {
+                logger.warn(prefix + " WARNING: " + message, style);
+            }
         } else if (level === Strophe.LogLevel.FATAL) {
             if (_converse.debug) {
-                logger.trace("FATAL: " + message);
+                logger.trace(prefix + " " + moment().format() + " FATAL: " + message, style);
             } else {
-                logger.error("FATAL: " + message);
+                logger.error(prefix + " FATAL: " + message, style);
             }
         } else if (_converse.debug) {
             if (level === Strophe.LogLevel.DEBUG) {
-                logger.debug("DEBUG: " + message);
+                logger.debug(prefix + " " + moment().format() + " DEBUG: " + message, style);
             } else {
-                logger.info("INFO: " + message);
+                logger.info(prefix + " " + moment().format() + " INFO: " + message, style);
             }
         }
     };
+
+    Strophe.log = function (level, msg) {
+        _converse.log(level + ' ' + msg, level);
+    };
+    Strophe.error = function (msg) {
+        _converse.log(msg, Strophe.LogLevel.ERROR);
+    };
+
+    _converse.__ = function (str) {
+        /* Translate the given string based on the current locale.
+         *
+         * Parameters:
+         *      (String) str - The string to translate.
+         */
+        if (_.isUndefined(i18n)) {
+            return str;
+        }
+        return i18n.translate.apply(i18n, arguments);
+    };
+
+    var __ = _converse.__;
 
     var PROMISES = ['initialized', 'cachedRoster', 'connectionInitialized', 'pluginsInitialized', 'roster', 'rosterContactsFetched', 'rosterGroupsFetched', 'rosterInitialized', 'statusInitialized'];
 
@@ -6463,6 +7684,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             promise.resolve();
         }
     };
+
+    _converse.router = new Backbone.Router();
 
     _converse.initialize = function (settings, callback) {
         "use strict";
@@ -6499,42 +7722,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             unloadevent = 'unload';
         }
 
-        // Logging
-        Strophe.log = function (level, msg) {
-            _converse.log(level + ' ' + msg, level);
-        };
-        Strophe.error = function (msg) {
-            _converse.log(msg, Strophe.LogLevel.ERROR);
-        };
-
-        // Add Strophe Namespaces
-        Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-        Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-        Strophe.addNamespace('CSI', 'urn:xmpp:csi:0');
-        Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
-        Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
-        Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
-        Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
-        Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
-        Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
-        Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-        Strophe.addNamespace('XFORM', 'jabber:x:data');
-
         // Instance level constants
         this.TIMEOUTS = { // Set as module attr so that we can override in tests.
             'PAUSED': 10000,
             'INACTIVE': 90000
         };
-
-        // Internationalization
-        this.locale = utils.getLocale(settings.i18n, utils.isConverseLocale);
-        if (!moment.locale) {
-            //moment.lang is deprecated after 2.8.1, use moment.locale instead
-            moment.locale = moment.lang;
-        }
-        moment.locale(utils.getLocale(settings.i18n, utils.isMomentLocale));
-        var __ = _converse.__ = utils.__.bind(_converse);
-        _converse.___ = utils.___;
 
         // XEP-0085 Chat states
         // http://xmpp.org/extensions/xep-0085.html
@@ -6570,6 +7762,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             include_offline_state: false,
             jid: undefined,
             keepalive: true,
+            locales_url: '/locale/{{{locale}}}/LC_MESSAGES/converse.json',
+            locales: ['af', 'ca', 'de', 'es', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'uk', 'zh'],
             message_carbons: true,
             message_storage: 'session',
             password: undefined,
@@ -6584,6 +7778,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             storage: 'session',
             strict_plugin_dependencies: false,
             synchronize_availability: true,
+            view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
             websocket_url: undefined,
             whitelisted_plugins: [],
             xhr_custom_status: false,
@@ -6597,6 +7792,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (this.auto_login && !this.jid) {
                 throw new Error("Config Error: you need to provide the server's " + "domain via the 'jid' option when using anonymous " + "authentication with auto_login.");
             }
+        }
+
+        /* Localisation */
+        if (!_.isUndefined(i18n)) {
+            i18n.setLocales(settings.i18n, _converse);
+        } else {
+            _converse.locale = 'en';
         }
 
         // Module-level variables
@@ -6973,16 +8175,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         this.populateRoster = function () {
+            var ignore_cache = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
+             *
+             * Parameters:
+             *    (Bool) ignore_cache - If set to to true, the local cache
+             *      will be ignored it's guaranteed that the XMPP server
+             *      will be queried for the roster.
              */
-            _converse.rostergroups.fetchRosterGroups().then(function () {
-                _converse.emit('rosterGroupsFetched');
-                _converse.roster.fetchRosterContacts().then(function () {
+            if (ignore_cache) {
+                _converse.send_initial_presence = true;
+                _converse.roster.fetchFromServer().then(function () {
                     _converse.emit('rosterContactsFetched');
                     _converse.sendInitialPresence();
+                }).catch(_converse.sendInitialPresence);
+            } else {
+                _converse.rostergroups.fetchRosterGroups().then(function () {
+                    _converse.emit('rosterGroupsFetched');
+                    return _converse.roster.fetchRosterContacts();
+                }).then(function () {
+                    _converse.emit('rosterContactsFetched');
+                    _converse.sendInitialPresence();
+                }).catch(function () {
+                    _converse.sendInitialPresence();
                 });
-            });
+            }
         };
 
         this.unregisterPresenceHandler = function () {
@@ -7022,11 +8241,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _converse.initRoster();
             }
             _converse.roster.onConnected();
-            _converse.populateRoster();
+            _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
-            if (reconnecting) {
-                _converse.xmppstatus.sendPresence();
-            } else {
+            if (!reconnecting) {
                 init_promise.resolve();
                 _converse.emit('initialized');
             }
@@ -7293,14 +8510,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         add: true,
                         success: function success(collection) {
                             if (collection.length === 0) {
-                                /* We don't have any roster contacts stored in sessionStorage,
-                                * so lets fetch the roster from the XMPP server. We pass in
-                                * 'sendPresence' as callback method, because after initially
-                                * fetching the roster we are ready to receive presence
-                                * updates from our contacts.
-                                */
                                 _converse.send_initial_presence = true;
-                                _converse.roster.fetchFromServer(resolve);
+                                _converse.roster.fetchFromServer().then(resolve).catch(reject);
                             } else {
                                 _converse.emit('cachedRoster', collection);
                                 resolve();
@@ -7435,15 +8646,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _converse.emit('rosterPush', iq);
                 return true;
             },
-            fetchFromServer: function fetchFromServer(callback) {
-                var _this6 = this,
-                    _arguments = arguments;
+            fetchFromServer: function fetchFromServer() {
+                var _this6 = this;
 
-                /* Get the roster from the XMPP server */
-                var iq = $iq({ type: 'get', 'id': _converse.connection.getUniqueId('roster') }).c('query', { xmlns: Strophe.NS.ROSTER });
-                return _converse.connection.sendIQ(iq, function (iq) {
-                    _this6.onReceivedFromServer(iq);
-                    callback.apply(_this6, _arguments);
+                /* Fetch the roster from the XMPP server */
+                return new Promise(function (resolve, reject) {
+                    var iq = $iq({
+                        'type': 'get',
+                        'id': _converse.connection.getUniqueId('roster')
+                    }).c('query', { xmlns: Strophe.NS.ROSTER });
+
+                    var callback = _.flow(_this6.onReceivedFromServer.bind(_this6), resolve);
+                    var errback = function errback(iq) {
+                        var errmsg = "Error while trying to fetch roster from the server";
+                        _converse.log(errmsg, Strophe.LogLevel.ERROR);
+                        reject(new Error(errmsg));
+                    };
+                    return _converse.connection.sendIQ(iq, callback, errback);
                 });
             },
             onReceivedFromServer: function onReceivedFromServer(iq) {
@@ -7804,10 +9023,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
             if (this.debug) {
                 this.connection.xmlInput = function (body) {
-                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG);
+                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
                 };
                 this.connection.xmlOutput = function (body) {
-                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG);
+                    _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
                 };
             }
         };
@@ -8036,19 +9255,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (settings.connection) {
             this.connection = settings.connection;
         }
-        _converse.initPlugins();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
 
-        Backbone.history.start();
+        function finishInitialization() {
+            _converse.initPlugins();
+            _converse.initConnection();
+            _converse.setUpXMLLogging();
+            _converse.logIn();
+            _converse.registerGlobalEventHandlers();
+
+            if (!Backbone.history.started) {
+                Backbone.history.start();
+            }
+        }
 
         if (!_.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+            finishInitialization();
             return _converse;
+        } else if (_.isUndefined(i18n)) {
+            finishInitialization();
         } else {
-            return init_promise.promise;
+            i18n.fetchTranslations(_converse.locale, _converse.locales, _.template(_converse.locales_url)({ 'locale': _converse.locale })).then(function () {
+                finishInitialization();
+            }).catch(function (reason) {
+                finishInitialization();
+                _converse.log(reason, Strophe.LogLevel.ERROR);
+            });
         }
+        return init_promise.promise;
     };
 
     // API methods only available to plugins
@@ -8236,7 +9469,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     define('converse-chatboxes',["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { Backbone, Strophe, b64_sha1, utils, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, utils, _ } = converse.env;
 
     converse.plugins.add('converse-chatboxes', {
 
@@ -8280,6 +9513,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 'chatBoxesFetched',
                 'chatBoxesInitialized'
             ]);
+
+            function openChat (jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log(
+                        `Invalid JID "${jid}" provided in URL fragment`,
+                        Strophe.LogLevel.WARN
+                    );
+                }
+                Promise.all([
+                    _converse.api.waitUntil('rosterContactsFetched'),
+                    _converse.api.waitUntil('chatBoxesFetched')
+                ]).then(() => {
+                    _converse.api.chats.open(jid);
+                });
+            }
+            _converse.router.route('converse/chat?jid=:jid', openChat);
+
 
             _converse.ChatBoxes = Backbone.Collection.extend({
                 comparator: 'time_opened',
@@ -8569,9 +9819,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
                             return null;
                         } else if (_.isString(jids)) {
-                            return _converse.getViewForChatBox(
-                                _converse.chatboxes.getChatBox(jids, true, attrs).trigger('show')
-                            );
+                            const chatbox = _converse.chatboxes.getChatBox(jids, true, attrs);
+                            if (_.isNil(chatbox)) {
+                                _converse.log("Could not open chatbox for JID: "+jids);
+                                return;
+                            }
+                            return _converse.getViewForChatBox(chatbox.trigger('show'));
                         }
                         return _.map(jids, (jid) =>
                             _converse.getViewForChatBox(
@@ -11894,6 +13147,9 @@ return __p
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
                     }
+                    if (Backbone.history.getFragment() === "converse/chat?jid=" + this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     if (_converse.connection.connected) {
                         // Immediately sending the chat state, because the
                         // model is going to be destroyed afterwards.
@@ -14782,7 +16038,7 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<form class="pure-form pure-form-stacked converse-form" id="converse-login" method="post">\n    <legend>' +
 __e(__("Login")) +
-'</legend>\n\n    <div class="conn-feedback fade-in ';
+'</legend>\n    <div class="conn-feedback fade-in ';
  if (!conn_feedback_subject) { ;
 __p += ' hidden ';
  } ;
@@ -14796,7 +16052,7 @@ __p += ' hidden ';
  } ;
 __p += '">' +
 __e(conn_feedback_message) +
-'</p>\n    </div>\n\n    ';
+'</p>\n    </div>\n    ';
  if (auto_login || _converse.CONNECTION_STATUS[connection_status] === 'CONNECTING') { ;
 __p += '\n        <span class="spinner centered"/>\n    ';
  } else { ;
@@ -14804,33 +16060,13 @@ __p += '\n        ';
  if (authentication == LOGIN || authentication == EXTERNAL) { ;
 __p += '\n            <label>' +
 __e(__("Jabber ID:")) +
-'</label>\n            <p class="form-help fade-in error ';
- if (!_.includes(errors, 'invalid_jid')) { ;
-__p += ' hidden ';
- } ;
-__p += '">\n                ' +
-__e(__('Please enter a valid XMPP address')) +
-'\n            </p>\n            <input autofocus\n                   type="text"\n                   name="jid"\n                   class="';
- if (_.includes(errors, 'invalid_jid')) { ;
-__p += ' error ';
- } ;
-__p += '"\n                   placeholder="' +
+'</label>\n            <input autofocus required\n                   type="text"\n                   name="jid"\n                   placeholder="' +
 __e(placeholder_username) +
 '">\n            ';
  if (authentication !== EXTERNAL) { ;
 __p += '\n                <label>' +
 __e(__("Password:")) +
-'</label>\n                <p class="form-help fade-in error ';
- if (!_.includes(errors, 'password_required')) { ;
-__p += ' hidden ';
- } ;
-__p += '">\n                    ' +
-__e(__('Please enter your password')) +
-'\n                </p>\n                <input type="password"\n                       name="password"\n                       class="';
- if (_.includes(errors, 'password_required')) { ;
-__p += ' error ';
- } ;
-__p += '"\n                       placeholder="' +
+'</label>\n                <input required\n                       type="password" name="password"\n                       placeholder="' +
 __e(__('password')) +
 '">\n            ';
  } ;
@@ -15173,8 +16409,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
 
             _converse.api.settings.update({
@@ -15655,14 +16890,14 @@ return __p
                          */
                         this.el.classList.add('pending-xmpp-contact');
                         this.$el.html(tpl_pending_contact(_.extend(item.toJSON(), {
-                            'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                            'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })));
                     } else if (requesting === true) {
                         this.el.classList.add('requesting-xmpp-contact');
                         this.$el.html(tpl_requesting_contact(_.extend(item.toJSON(), {
-                            'desc_accept': __(___("Click to accept the contact request from %1$s"), item.get('fullname')),
-                            'desc_decline': __(___("Click to decline the contact request from %1$s"), item.get('fullname')),
+                            'desc_accept': __("Click to accept the contact request from %1$s", item.get('fullname')),
+                            'desc_decline': __("Click to decline the contact request from %1$s", item.get('fullname')),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })));
                     } else if (subscription === 'both' || subscription === 'to') {
@@ -15678,7 +16913,7 @@ return __p
                     this.$el.html(tpl_roster_item(_.extend(item.toJSON(), {
                         'desc_status': STATUSES[chat_status || 'offline'],
                         'desc_chat': __('Click to chat with this contact'),
-                        'desc_remove': __(___('Click to remove %1$s as a contact'), item.get('fullname')),
+                        'desc_remove': __('Click to remove %1$s as a contact', item.get('fullname')),
                         'title_fullname': __('Name'),
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'num_unread': item.get('num_unread') || 0
@@ -16234,7 +17469,7 @@ return __p
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
                 tagName: 'div',
-                className: 'chatbox fade-in',
+                className: 'chatbox',
                 id: 'controlbox',
                 events: {
                     'click a.close-chatbox-button': 'close',
@@ -16428,7 +17663,7 @@ return __p
                 className: 'controlbox-pane fade-in',
                 events: {
                     'submit form#converse-login': 'authenticate',
-                    'blur   input': 'validate'
+                    'change input': 'validate'
                 },
 
                 initialize: function initialize(cfg) {
@@ -16469,17 +17704,13 @@ return __p
                 },
                 validate: function validate() {
                     var form = this.el.querySelector('form');
-                    var jid = form.querySelector('input[name=jid]').value;
-                    var password = _.get(form.querySelector('input[name=password]'), 'value');
-                    var errors = [];
-                    if (!jid || !_converse.locked_domain && !_converse.default_domain && _.filter(jid.split('@')).length < 2) {
-                        errors.push(errors, 'invalid_jid');
+                    var jid_element = form.querySelector('input[name=jid]');
+                    if (jid_element.value && !_converse.locked_domain && !_converse.default_domain && !utils.isValidJID(jid_element.value)) {
+                        jid_element.setCustomValidity(__('Please enter a valid XMPP address'));
+                        return false;
                     }
-                    if (!password && _converse.authentication !== _converse.EXTERNAL) {
-                        errors.push(errors, 'password_required');
-                    }
-                    this.model.set('errors', errors);
-                    return errors.length == 0;
+                    jid_element.setCustomValidity('');
+                    return true;
                 },
                 authenticate: function authenticate(ev) {
                     /* Authenticate the user based on a form submission event.
@@ -16495,15 +17726,12 @@ return __p
                         return;
                     }
                     var jid = ev.target.querySelector('input[name=jid]').value;
-                    var password = _.get(ev.target.querySelector('input[name=password]'), 'value');
-
                     if (_converse.locked_domain) {
                         jid = Strophe.escapeNode(jid) + '@' + _converse.locked_domain;
                     } else if (_converse.default_domain && !_.includes(jid, '@')) {
                         jid = jid + '@' + _converse.default_domain;
                     }
-                    this.connect(jid, password);
-                    return false;
+                    this.connect(jid, _.get(ev.target.querySelector('input[name=password]'), 'value'));
                 },
                 connect: function connect(jid, password) {
                     if (jid) {
@@ -16513,6 +17741,9 @@ return __p
                         } else {
                             jid = Strophe.getBareJidFromJid(jid).toLowerCase() + '/' + resource;
                         }
+                    }
+                    if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                        _converse.router.navigate('', { 'replace': true });
                     }
                     _converse.connection.reset();
                     _converse.connection.connect(jid, password, _converse.onConnectStatusChanged);
@@ -18226,8 +19457,20 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
+
+
+            function ___(str) {
+                /* This is part of a hack to get gettext to scan strings to be
+                * translated. Strings we cannot send to the function above because
+                * they require variable interpolation and we don't yet have the
+                * variables at scan time.
+                *
+                * See actionInfoMessages further below.
+                */
+                return str;
+            }
+
             // XXX: Inside plugins, all calls to the translation machinery
             // (e.g. utils.__) should only be done in the initialize function.
             // If called before, we won't know what language the user wants,
@@ -18296,8 +19539,8 @@ return __p
                 },
 
                 new_nickname_messages: {
-                    210: ___('Your nickname has been automatically set to: %1$s'),
-                    303: ___('Your nickname has been changed to: %1$s')
+                    210: ___('Your nickname has been automatically set to %1$s'),
+                    303: ___('Your nickname has been changed to %1$s')
                 }
             };
 
@@ -18322,9 +19565,23 @@ return __p
                     'toggle_occupants': true
                 }
             });
-            _converse.api.promises.add('roomsPanelRendered');
+            _converse.api.promises.add(['roomsPanelRendered', 'roomsAutoJoined']);
 
-            _converse.openChatRoom = function (settings, bring_to_foreground) {
+            function openRoom(jid) {
+                if (!utils.isValidJID(jid)) {
+                    return converse.log("Invalid JID \"" + jid + "\" provided in URL fragment", Strophe.LogLevel.WARN);
+                }
+                var promises = [_converse.api.waitUntil('roomsAutoJoined')];
+                if (!_converse.allow_bookmarks) {
+                    promises.push(_converse.api.waitUntil('bookmarksInitialized'));
+                }
+                Promise.all(promises).then(function () {
+                    _converse.api.rooms.open(jid);
+                });
+            }
+            _converse.router.route('converse/room?jid=:jid', openRoom);
+
+            function _openChatRoom(settings, bring_to_foreground) {
                 /* Opens a chat room, making sure that certain attributes
                  * are correct, for example that the "type" is set to
                  * "chatroom".
@@ -18336,7 +19593,7 @@ return __p
                 settings.id = settings.jid;
                 settings.box_id = b64_sha1(settings.jid);
                 return _converse.chatboxviews.showChat(settings, bring_to_foreground);
-            };
+            }
 
             _converse.ChatRoom = _converse.ChatBox.extend({
                 defaults: function defaults() {
@@ -18750,6 +20007,7 @@ return __p
                     }
                     return new Promise(function (resolve, reject) {
                         var promises = _.map(affiliations, _.partial(_this3.requestMemberList, _this3.model.get('jid')));
+
                         Promise.all(promises).then(_.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve), _.flow(_this3.marshallAffiliationIQs.bind(_this3), resolve));
                     });
                 },
@@ -19121,6 +20379,9 @@ return __p
                      *      reason for leaving.
                      */
                     this.hide();
+                    if (Backbone.history.getFragment() === "converse/room?jid=" + this.model.get('jid')) {
+                        _converse.router.navigate('');
+                    }
                     this.occupantsview.model.reset();
                     this.occupantsview.model.browserStorage._clear();
                     if (_converse.connection.connected) {
@@ -20410,7 +21671,7 @@ return __p
                     ev.preventDefault();
                     var data = this.parseRoomDataFromEvent(ev);
                     if (!_.isUndefined(data)) {
-                        _converse.openChatRoom(data);
+                        _openChatRoom(data);
                     }
                 },
                 setDomain: function setDomain(ev) {
@@ -20450,7 +21711,7 @@ return __p
                     }
                 }
                 if (result === true) {
-                    var chatroom = _converse.openChatRoom({
+                    var chatroom = _openChatRoom({
                         'jid': room_jid,
                         'password': $x.attr('password')
                     });
@@ -20486,6 +21747,7 @@ return __p
                         _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
                     }
                 });
+                _converse.emit('roomsAutoJoined');
             }
             _converse.on('chatBoxesFetched', autoJoinRooms);
 
@@ -20541,9 +21803,9 @@ return __p
                         if (_.isUndefined(jids)) {
                             throw new TypeError('rooms.open: You need to provide at least one JID');
                         } else if (_.isString(jids)) {
-                            return _converse.getChatRoom(jids, attrs, _converse.openChatRoom);
+                            return _converse.getChatRoom(jids, attrs, _openChatRoom);
                         }
-                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _converse.openChatRoom));
+                        return _.map(jids, _.partial(_converse.getChatRoom, _, attrs, _openChatRoom));
                     },
                     'get': function get(jids, attrs, create) {
                         if (_.isString(attrs)) {
@@ -20887,8 +22149,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
             // Configuration values for this plugin
             // ====================================
@@ -20910,7 +22171,7 @@ return __p
                     ev.preventDefault();
                     var name = ev.target.getAttribute('data-bookmark-name');
                     var jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to remove the bookmark \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
                         _.invokeMap(_converse.bookmarks.where({ 'jid': jid }), Backbone.Model.prototype.destroy);
                     }
                 },
@@ -21037,8 +22298,8 @@ return __p
                 },
                 onBookmarksReceivedError: function onBookmarksReceivedError(deferred, iq) {
                     window.sessionStorage.setItem(this.fetched_flag, true);
-                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
-                    _converse.log(iq, Strophe.LogLevel.DEBUG);
+                    _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
+                    _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                     if (!_.isNil(deferred)) {
                         return deferred.reject();
                     }
@@ -21314,8 +22575,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse,
-                __ = _converse.__,
-                ___ = _converse.___;
+                __ = _converse.__;
 
 
             _converse.RoomsList = Backbone.Model.extend({
@@ -21382,7 +22642,7 @@ return __p
                     ev.preventDefault();
                     var name = ev.target.getAttribute('data-room-name');
                     var jid = ev.target.getAttribute('data-room-jid');
-                    if (confirm(__(___("Are you sure you want to leave the room \"%1$s\"?"), name))) {
+                    if (confirm(__("Are you sure you want to leave the room \"%1$s\"?", name))) {
                         _converse.chatboxviews.get(jid).leave();
                     }
                 },
@@ -21790,7 +23050,12 @@ return __p
                 /* Extend default converse.js API to add methods specific to MAM
                  */
                 'archive': {
-                    'query': _converse.queryForArchivedMessages.bind(_converse)
+                    'query': function query() {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
                 }
             });
 
@@ -21891,7 +23156,7 @@ return __p
 
                     var bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from'));
                     _converse.getVCard(bare_jid, _.partial(_converse.createRequestingContactFromVCard, presence), function (iq, jid) {
-                        _converse.log("Error while retrieving vcard for " + jid, Strophe.LogLevel.ERROR);
+                        _converse.log("Error while retrieving vcard for " + jid, Strophe.LogLevel.WARN);
                         _converse.createRequestingContactFromVCard(presence, iq, jid);
                     });
                 }
@@ -22546,8 +23811,8 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="switch-form">\n    <p>' +
 __e( __("Don't have a chat account?") ) +
-'</p>\n    <p><a class="register-account toggle-register-login" href="#converse-register">' +
-__e(__("Register an account")) +
+'</p>\n    <p><a class="register-account toggle-register-login" href="#converse/register">' +
+__e(__("Create an account")) +
 '</a></p>\n</div>\n';
 
 }
@@ -22561,7 +23826,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<form id="converse-register" class="pure-form converse-form">\n    <legend>' +
-__e(__("Account Registration")) +
+__e(__("Create your account")) +
 '</legend>\n\n    <label>' +
 __e(__("Please enter the XMPP provider to register with:")) +
 '</label>\n    <p class="form-help">' +
@@ -22572,13 +23837,13 @@ __e(href_providers) +
 __e(help_providers_link) +
 '</a>.</p>\n    <div class="form-errors hidden"></div>\n\n    ';
  if (default_domain) { ;
-__p += '\n    	' +
+__p += '\n        ' +
 __e(default_domain) +
 '\n    ';
  } ;
 __p += '\n    ';
  if (!default_domain) { ;
-__p += '\n    	<input autofocus type="text" name="domain" placeholder="' +
+__p += '\n        <input autofocus required type="text" name="domain" placeholder="' +
 __e(domain_placeholder) +
 '">\n        <input class="pure-button button-primary" type="submit" value="' +
 __e(label_register) +
@@ -22586,7 +23851,7 @@ __e(label_register) +
  } ;
 __p += '\n</form>\n\n<div class="switch-form">\n    <p>' +
 __e( __("Already have a chat account?") ) +
-'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse-login">' +
+'</p>\n    <p>\n        <a class="login-here toggle-register-login" href="#converse/login">' +
 __e(__("Log in here")) +
 '</a>\n    </p>\n</div>\n';
 
@@ -22710,22 +23975,9 @@ return __p
             },
 
             ControlBoxView: {
-
-                events: {
-                    'click .toggle-register-login': 'switchToRegisterForm'
-                },
-
                 initialize: function initialize() {
                     this.__super__.initialize.apply(this, arguments);
                     this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this));
-                },
-                switchToRegisterForm: function switchToRegisterForm(ev) {
-                    ev.preventDefault();
-                    if (this.model.get('active-form') == "register") {
-                        this.model.set('active-form', 'login');
-                    } else {
-                        this.model.set('active-form', 'register');
-                    }
                 },
                 showLoginOrRegisterForm: function showLoginOrRegisterForm() {
                     var _converse = this.__super__._converse;
@@ -22785,19 +24037,14 @@ return __p
                 providers_link: 'https://xmpp.net/directory.php' // Link to XMPP providers shown on registration page
             });
 
-            _converse.RegistrationRouter = Backbone.Router.extend({
-                initialize: function initialize() {
-                    this.route('converse-login', _.partial(this.setActiveForm, 'login'));
-                    this.route('converse-register', _.partial(this.setActiveForm, 'register'));
-                },
-                setActiveForm: function setActiveForm(value) {
-                    _converse.api.waitUntil('controlboxInitialized').then(function () {
-                        var controlbox = _converse.chatboxes.get('controlbox');
-                        controlbox.set({ 'active-form': value });
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                }
-            });
-            var router = new _converse.RegistrationRouter();
+            function setActiveForm(value) {
+                _converse.api.waitUntil('controlboxInitialized').then(function () {
+                    var controlbox = _converse.chatboxes.get('controlbox');
+                    controlbox.set({ 'active-form': value });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }
+            _converse.router.route('converse/login', _.partial(setActiveForm, 'login'));
+            _converse.router.route('converse/register', _.partial(setActiveForm, 'register'));
 
             _converse.RegisterPanel = Backbone.View.extend({
                 tagName: 'div',
@@ -22997,7 +24244,6 @@ return __p
                     this.model.set('registration_form_rendered', false);
                     return form;
                 },
-                showRegistrationForm: function showRegistrationForm() {},
                 showSpinner: function showSpinner() {
                     var form = this.el.querySelector('form');
                     form.innerHTML = tpl_spinner();
@@ -23020,10 +24266,13 @@ return __p
                         _converse.log("Problem during registration: Strophe.Status is " + _converse.CONNECTION_STATUS[status_code], Strophe.LogLevel.ERROR);
                         this.abortRegistration();
                     } else if (status_code === Strophe.Status.REGISTERED) {
-                        router.navigate(); // Strip the URL fragment
                         _converse.log("Registered successfully.");
                         _converse.connection.reset();
                         this.showSpinner();
+
+                        if (_.includes(["converse/login", "converse/register"], Backbone.history.getFragment())) {
+                            _converse.router.navigate('', { 'replace': true });
+                        }
 
                         if (this.fields.password && this.fields.username) {
                             // automatically log the user in
@@ -23408,11 +24657,7 @@ return __p
              * loaded by converse.js's plugin machinery.
              */
             var _converse = this._converse;
-
-            // For translations
-
             var __ = _converse.__;
-            var ___ = _converse.___;
 
 
             _converse.supports_html5_notification = "Notification" in window;
@@ -23459,6 +24704,18 @@ return __p
                 return true;
             };
 
+            _converse.isMessageToHiddenChat = function (message) {
+                if (_.includes(['mobile', 'fullscreen'], _converse.view_mode)) {
+                    var jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
+                    var model = _converse.chatboxes.get(jid);
+                    if (!_.isNil(model)) {
+                        return model.get('hidden') || _converse.windowState === 'hidden';
+                    }
+                    return true;
+                }
+                return _converse.windowState === 'hidden';
+            };
+
             _converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
@@ -23472,10 +24729,10 @@ return __p
                     return _converse.shouldNotifyOfGroupMessage(message);
                 } else if (utils.isHeadlineMessage(message)) {
                     // We want to show notifications for headline messages.
-                    return true;
+                    return _converse.isMessageToHiddenChat(message);
                 }
                 var is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
-                return !_converse.isOnlyChatStateNotification(message) && !is_me;
+                return !_converse.isOnlyChatStateNotification(message) && !is_me && _converse.isMessageToHiddenChat(message);
             };
 
             _converse.playSoundNotification = function () {
@@ -23496,13 +24753,8 @@ return __p
                 }
             };
 
-            _converse.areDesktopNotificationsEnabled = function (ignore_hidden) {
-                var enabled = _converse.supports_html5_notification && _converse.show_desktop_notifications && Notification.permission === "granted";
-                if (ignore_hidden) {
-                    return enabled;
-                } else {
-                    return enabled && _converse.windowState === 'hidden';
-                }
+            _converse.areDesktopNotificationsEnabled = function () {
+                return _converse.supports_html5_notification && _converse.show_desktop_notifications && Notification.permission === "granted";
             };
 
             _converse.showMessageNotification = function (message) {
@@ -23515,15 +24767,15 @@ return __p
                     from_jid = Strophe.getBareJidFromJid(full_from_jid);
                 if (message.getAttribute('type') === 'headline') {
                     if (!_.includes(from_jid, '@') || _converse.allow_non_roster_messaging) {
-                        title = __(___("Notification from %1$s"), from_jid);
+                        title = __("Notification from %1$s", from_jid);
                     } else {
                         return;
                     }
                 } else if (!_.includes(from_jid, '@')) {
                     // XXX: workaround for Prosody which doesn't give type "headline"
-                    title = __(___("Notification from %1$s"), from_jid);
+                    title = __("Notification from %1$s", from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
-                    title = __(___("%1$s says"), Strophe.getResourceFromJid(full_from_jid));
+                    title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));
                 } else {
                     if (_.isUndefined(_converse.roster)) {
                         _converse.log("Could not send notification, because roster is undefined", Strophe.LogLevel.ERROR);
@@ -23531,10 +24783,10 @@ return __p
                     }
                     roster_item = _converse.roster.get(from_jid);
                     if (!_.isUndefined(roster_item)) {
-                        title = __(___("%1$s says"), roster_item.get('fullname'));
+                        title = __("%1$s says", roster_item.get('fullname'));
                     } else {
                         if (_converse.allow_non_roster_messaging) {
-                            title = __(___("%1$s says"), from_jid);
+                            title = __("%1$s says", from_jid);
                         } else {
                             return;
                         }
@@ -23762,6 +25014,11 @@ return __p
          * NB: These plugins need to have already been loaded via require.js.
          */
         optional_dependencies: ["converse-controlbox", "converse-muc"],
+
+        enabled: function enabled(_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
@@ -24302,6 +25559,11 @@ return __p
          */
         optional_dependencies: ["converse-headline"],
 
+        enabled: function enabled(_converse) {
+            return _converse.view_mode == 'overlayed';
+        },
+
+
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's
             // plugin architecture they will replace existing methods on the
@@ -24727,6 +25989,219 @@ return __p
     });
 });
 //# sourceMappingURL=converse-headline.js.map;
+
+define('tpl!inverse_brand_heading', ['lodash'], function(_) {return function(obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span class="brand-heading-container">\n    <h1 class="brand-heading"><i class="icon-conversejs"></i>inverse</h1>\n    <p class="brand-subtitle"><a href="https://conversejs.org">Open Source</a> XMPP chat client</p>\n<span>\n';
+
+}
+return __p
+};});
+
+
+
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) 2012-2017, JC Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global Backbone, define, window, document, JSON */
+
+/* converse-singleton
+ * ******************
+ *
+ * A plugin which ensures that only one chat (private or groupchat) is
+ * visible at any one time. All other ongoing chats are hidden and kept in the
+ * background.
+ *
+ * This plugin makes sense in mobile or fullscreen chat environments (as
+ * configured by the `view_mode` setting).
+ *
+ */
+(function (root, factory) {
+    define('converse-singleton',["converse-core", "converse-chatview"], factory);
+})(undefined, function (converse) {
+    "use strict";
+
+    var _converse$env = converse.env,
+        _ = _converse$env._,
+        Strophe = _converse$env.Strophe;
+
+
+    function hideChat(view) {
+        if (view.model.get('id') === 'controlbox') {
+            return;
+        }
+        view.model.save({ 'hidden': true });
+        view.hide();
+    }
+
+    converse.plugins.add('converse-singleton', {
+        // It's possible however to make optional dependencies non-optional.
+        // If the setting "strict_plugin_dependencies" is set to true,
+        // an error will be raised if the plugin is not found.
+        //
+        // NB: These plugins need to have already been loaded via require.js.
+        optional_dependencies: ['converse-muc', 'converse-controlbox', 'converse-rosterview'],
+
+        enabled: function enabled(_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
+
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            ChatBoxes: {
+                createChatBox: function createChatBox(jid, attrs) {
+                    /* Make sure new chat boxes are hidden by default.
+                     */
+                    attrs = attrs || {};
+                    attrs.hidden = true;
+                    return this.__super__.createChatBox.call(this, jid, attrs);
+                }
+            },
+
+            RoomsPanel: {
+                parseRoomDataFromEvent: function parseRoomDataFromEvent(ev) {
+                    /* We set hidden to false for rooms opened manually by the
+                     * user. They should always be shown.
+                     */
+                    var result = this.__super__.parseRoomDataFromEvent.apply(this, arguments);
+                    if (_.isUndefined(result)) {
+                        return;
+                    }
+                    result.hidden = false;
+                    return result;
+                }
+            },
+
+            ChatBoxViews: {
+                showChat: function showChat(attrs, force) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    var _converse = this.__super__._converse;
+
+                    var chatbox = this.getChatBox(attrs, true);
+                    var hidden = _.isUndefined(attrs.hidden) ? chatbox.get('hidden') : attrs.hidden;
+                    if ((force || !hidden) && _converse.connection.authenticated) {
+                        _.each(_converse.chatboxviews.xget(chatbox.get('id')), hideChat);
+                        chatbox.save({ 'hidden': false });
+                    }
+                    return this.__super__.showChat.apply(this, arguments);
+                }
+            },
+
+            ChatBoxView: {
+                _show: function _show(focus) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    if (!this.model.get('hidden')) {
+                        _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
+                        return this.__super__._show.apply(this, arguments);
+                    }
+                }
+            },
+
+            RosterContactView: {
+                openChat: function openChat(ev) {
+                    /* We only have one chat visible at any one
+                     * time. So before opening a chat, we make sure all other
+                     * chats are hidden.
+                     */
+                    _.each(this.__super__._converse.chatboxviews.xget('controlbox'), hideChat);
+                    this.model.save({ 'hidden': false });
+                    return this.__super__.openChat.apply(this, arguments);
+                }
+            }
+        }
+    });
+});
+//# sourceMappingURL=converse-singleton.js.map;
+// Converse.js (A browser based XMPP chat client)
+// http://conversejs.org
+//
+// Copyright (c) JC Brand <jc@opkode.com>
+// Licensed under the Mozilla Public License (MPLv2)
+//
+/*global define */
+
+(function (root, factory) {
+    define('converse-fullscreen',["converse-core",
+            "tpl!inverse_brand_heading",
+            "converse-chatview",
+            "converse-controlbox",
+            "converse-muc",
+            "converse-singleton"
+    ], factory);
+}(this, function (converse, tpl_brand_heading) {
+    "use strict";
+    const { Strophe, _ } = converse.env;
+
+    converse.plugins.add('converse-fullscreen', {
+
+        enabled (_converse) {
+            return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
+        },
+
+        overrides: {
+            // overrides mentioned here will be picked up by converse.js's
+            // plugin architecture they will replace existing methods on the
+            // relevant objects or classes.
+            //
+            // new functions which don't exist yet can also be added.
+
+            ControlBoxView: {
+                 createBrandHeadingHTML() {
+                    return tpl_brand_heading();
+                },
+
+                insertBrandHeading () {
+                    const el = document.getElementById('converse-login-panel');
+                    el.parentNode.insertAdjacentHTML(
+                        'afterbegin',
+                        this.createBrandHeadingHTML()
+                    );
+                }
+            },
+
+            ChatRoomView: {
+                afterShown (focus) {
+                    /* Make sure chat rooms are scrolled down when opened
+                     */
+                    this.scrollDown();
+                    if (focus) {
+                        this.focus();
+                    }
+                    return this.__super__.afterShown.apply(this, arguments);
+                }
+            }
+        },
+
+        initialize () {
+            this._converse.api.settings.update({
+                chatview_avatar_height: 44,
+                chatview_avatar_width: 44,
+                hide_open_bookmarks: true,
+                show_controlbox_by_default: true,
+                sticky_controlbox: true,
+                view_mode: 'fullscreen'
+            });
+        }
+    });
+}));
+
 /*global define */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
@@ -24754,6 +26229,7 @@ if (typeof define !== 'undefined') {
         "converse-minimize",    // Allows chat boxes to be minimized
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
+        "converse-fullscreen",
         /* END: Removable components */
     ], function (converse) {
         return converse;
@@ -24768,7 +26244,6 @@ if (typeof define !== 'undefined') {
     define('lodash', [], function () { return _; });
     define('lodash.converter', [], function () { return fp; });
     define('lodash.noconflict', [], function () { return _; });
-    define('moment_with_locales', [], function () { return moment; });
     define('strophe', [], function () {
         return {
             'Strophe':         Strophe,

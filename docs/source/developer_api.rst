@@ -431,6 +431,43 @@ disconnect
 Terminates the connection.
 
 
+The **disco** grouping
+----------------------
+
+This grouping collects API functions related to `service discovery
+<https://xmpp.org/extensions/xep-0030.html>`_.
+
+supports
+~~~~~~~~
+
+Used to determine whether an entity supports a given feature.
+
+.. code-block:: javascript
+
+    converse.plugins.add('myplugin', {
+        initialize: function () {
+
+            _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
+                function (supported) {
+                    if (supported) {
+                        // The feature is supported
+                    } else {
+                        // The feature is not supported
+                    }
+                },
+                function () { // Error
+                    _converse.log(
+                        "Error or timeout while checking for feature support",
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+            ).catch((msg) => {
+                _converse.log(msg, Strophe.LogLevel.FATAL);
+            });
+        }
+    });
+
+
 The **user** grouping
 ---------------------
 

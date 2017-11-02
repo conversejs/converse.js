@@ -22,6 +22,10 @@
   builds. Instead the `converse.js` build is now used with `view_mode` set to
   `fullscreen` and `mobile` respectively.
 
+### API changes
+- New API method `_converse.disco.supports` to check whether a certain
+  service discovery feature is supported by an entity.
+
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.
 - Remove `Login` and `Registration` tabs and consolidate into one panel.

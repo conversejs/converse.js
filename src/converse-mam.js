@@ -24,32 +24,6 @@
     // XEP-0313 Message Archive Management
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-    function checkMAMSupport (_converse) {
-        /* Returns a promise which resolves when MAM is supported
-         * for this user, or which rejects if not.
-         */
-        return _converse.api.waitUntil('discoInitialized').then(() =>
-            new Promise((resolve, reject) => {
-
-                function fulfillPromise (entity) {
-                    if (entity.features.findWhere({'var': Strophe.NS.MAM})) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-                let entity = _converse.disco_entities.get(_converse.bare_jid);
-                if (_.isUndefined(entity)) {
-                    entity = _converse.disco_entities.create({'jid': _converse.bare_jid});
-                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
-                } else {
-                    fulfillPromise(entity);
-                }
-            })
-        );
-    }
-
-
     converse.plugins.add('converse-mam', {
 
         overrides: {
@@ -83,7 +57,7 @@
                     const { _converse } = this.__super__;
                     this.addSpinner();
 
-                    checkMAMSupport(_converse).then(
+                    _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
                         (supported) => { // Success
                             if (supported) {
                                 this.fetchArchivedMessages();
@@ -329,19 +303,6 @@
                 );
             };
 
-            _.extend(_converse.api, {
-                /* Extend default converse.js API to add methods specific to MAM
-                 */
-                'archive': {
-                    'query': function () {
-                        if (!_converse.api.connection.connected()) {
-                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
-                        }
-                        return _converse.queryForArchivedMessages.apply(this, arguments);
-                    }
-                }
-            });
-
             _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
                     _converse.log(
@@ -408,6 +369,19 @@
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
                 chatboxview.fetchArchivedMessagesIfNecessary();
+            });
+
+            _.extend(_converse.api, {
+                /* Extend default converse.js API to add methods specific to MAM
+                 */
+                'archive': {
+                    'query': function () {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
+                }
             });
         }
     });

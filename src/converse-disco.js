@@ -42,10 +42,10 @@
 
             _converse.DiscoEntity = Backbone.Model.extend({
                 /* A Disco Entity is a JID addressable entity that can be queried
-                * for features.
-                *
-                * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
-                */
+                 * for features.
+                 *
+                 * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
+                 */
                 idAttribute: 'jid',
 
                 initialize () {
@@ -176,6 +176,43 @@
                     });
                     _converse.disco_entities.reset();
                     _converse.disco_entities.browserStorage._clear();
+                }
+            });
+
+            /* We extend the default converse.js API to add methods specific to service discovery */
+            _.extend(_converse.api, {
+                'disco': {
+                    'supports' (entity_jid, feature) {
+                        /* Returns a Promise which returns a boolean indicating
+                         * whether the feature is supported or by the given
+                         * entity or not.
+                         *
+                         * Parameters:
+                         *    (String) entity_jid - The JID of the entity which might support the feature.
+                         *    (String) feature - The feature that might be
+                         *          supported. In the XML stanza, this is the `var`
+                         *          attribute of the `<feature>` element. For
+                         *          example: 'http://jabber.org/protocol/muc'
+                         */
+                        return _converse.api.waitUntil('discoInitialized').then(() =>
+                            new Promise((resolve, reject) => {
+                                function fulfillPromise (entity) {
+                                    if (entity.features.findWhere({'var': feature})) {
+                                        resolve(true);
+                                    } else {
+                                        resolve(false);
+                                    }
+                                }
+                                let entity = _converse.disco_entities.get(entity_jid);
+                                if (_.isUndefined(entity)) {
+                                    entity = _converse.disco_entities.create({'jid': entity_jid});
+                                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                                } else {
+                                    fulfillPromise(entity);
+                                }
+                            })
+                        );
+                    }
                 }
             });
         }

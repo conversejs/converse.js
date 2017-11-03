@@ -7,7 +7,6 @@ BUNDLE		  	?= ./.bundle/bin/bundle
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
-GRUNT		   	?= ./node_modules/.bin/grunt
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
@@ -167,37 +166,32 @@ BUILDS = dist/converse.js \
 		 dist/converse-no-dependencies.min.js \
 		 dist/converse-no-dependencies.js
 
-dist/converse.js: transpile src node_modules *.js
+dist/converse.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse out=dist/converse.js optimize=none 
-dist/converse.min.js: transpile src node_modules *.js
+dist/converse.min.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse out=dist/converse.min.js
-dist/converse-esnext.js: src node_modules *.js
+dist/converse-esnext.js: src node_modules
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.js optimize=none 
-dist/converse-esnext.min.js: src node_modules *.js
+dist/converse-esnext.min.js: src node_modules
 	$(RJS) -o src/build-esnext.js include=converse out=dist/converse-esnext.min.js
-dist/converse-no-jquery.js: transpile src node_modules *.js
+dist/converse-no-jquery.js: transpile src node_modules
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.js optimize=none 
-dist/converse-no-jquery.min.js: transpile src node_modules *.js transpile
+dist/converse-no-jquery.min.js: transpile src node_modules transpile
 	$(RJS) -o src/build.js include=converse wrap.endFile=end-no-jquery.frag exclude=jquery exclude=jquery.noconflict out=dist/converse-no-jquery.min.js
-dist/converse-no-dependencies.js: transpile src node_modules *.js
+dist/converse-no-dependencies.js: transpile src node_modules
 	$(RJS) -o src/build-no-dependencies.js optimize=none out=dist/converse-no-dependencies.js
-dist/converse-no-dependencies.min.js: transpile src node_modules *.js
+dist/converse-no-dependencies.min.js: transpile src node_modules
 	$(RJS) -o src/build-no-dependencies.js out=dist/converse-no-dependencies.min.js
-dist/converse-muc-embedded.js: transpile src node_modules *.js
+dist/converse-muc-embedded.js: transpile src node_modules
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.js optimize=none 
-dist/converse-muc-embedded.min.js: transpile src node_modules *.js
+dist/converse-muc-embedded.min.js: transpile src node_modules
 	$(RJS) -o src/build.js paths.converse=src/converse-embedded include=converse out=dist/converse-muc-embedded.min.js
-
-.PHONY: jsmin
-jsmin: $(BUILDS)
 
 .PHONY: dist
 dist:: build
 
 .PHONY: build
-build:: dev css transpile
-	$(GRUNT) json
-	make jsmin
+build:: dev css transpile $(BUILDS)
 
 ########################################################################
 ## Tests

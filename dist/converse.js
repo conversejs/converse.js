@@ -27902,6 +27902,8 @@ return uk;
 
 })));
 
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -27913,32 +27915,11 @@ return uk;
 /*global define */
 
 (function (root, factory) {
-    define('i18n',[
-        "es6-promise",
-        "jed",
-        "lodash.noconflict",
-        "moment",
-        'moment/locale/af',
-        'moment/locale/ca',
-        'moment/locale/de',
-        'moment/locale/es',
-        'moment/locale/fr',
-        'moment/locale/he',
-        'moment/locale/hu',
-        'moment/locale/id',
-        'moment/locale/it',
-        'moment/locale/ja',
-        'moment/locale/nb',
-        'moment/locale/nl',
-        'moment/locale/pl',
-        'moment/locale/pt-br',
-        'moment/locale/ru',
-        'moment/locale/uk',
-    ], factory);
-}(this, function (Promise, Jed, _, moment) {
+    define('i18n',["es6-promise", "jed", "lodash.noconflict", "moment", 'moment/locale/af', 'moment/locale/ca', 'moment/locale/de', 'moment/locale/es', 'moment/locale/fr', 'moment/locale/he', 'moment/locale/hu', 'moment/locale/id', 'moment/locale/it', 'moment/locale/ja', 'moment/locale/nb', 'moment/locale/nl', 'moment/locale/pl', 'moment/locale/pt-br', 'moment/locale/ru', 'moment/locale/uk'], factory);
+})(undefined, function (Promise, Jed, _, moment) {
     'use strict';
 
-    function detectLocale (library_check) {
+    function detectLocale(library_check) {
         /* Determine which locale is supported by the user's system as well
          * as by the relevant library (e.g. converse.js or moment.js).
          *
@@ -27951,7 +27932,7 @@ return uk;
             locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
         }
         if (window.navigator.languages && !locale) {
-            for (i=0; i<window.navigator.languages.length && !locale; i++) {
+            for (i = 0; i < window.navigator.languages.length && !locale; i++) {
                 locale = isLocaleAvailable(window.navigator.languages[i], library_check);
             }
         }
@@ -27967,15 +27948,15 @@ return uk;
         return locale || 'en';
     }
 
-    function isMomentLocale (locale) {
+    function isMomentLocale(locale) {
         return _.isString(locale) && moment.locale() === moment.locale(locale);
     }
 
-    function isConverseLocale (locale, supported_locales) {
+    function isConverseLocale(locale, supported_locales) {
         return _.isString(locale) && _.includes(supported_locales, locale);
     }
 
-    function getLocale (preferred_locale, isSupportedByLibrary) {
+    function getLocale(preferred_locale, isSupportedByLibrary) {
         if (_.isString(preferred_locale)) {
             if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
                 return preferred_locale;
@@ -27984,7 +27965,7 @@ return uk;
         return detectLocale(isSupportedByLibrary) || 'en';
     }
 
-    function isLocaleAvailable (locale, available) {
+    function isLocaleAvailable(locale, available) {
         /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
          *
          * Parameters:
@@ -28001,31 +27982,25 @@ return uk;
         }
     }
 
-    let jed_instance;
+    var jed_instance = void 0;
 
     return {
-
-        setLocales (preferred_locale, _converse) {
-            _converse.locale = getLocale(
-                preferred_locale,
-                _.partial(isConverseLocale, _, _converse.locales)
-            );
+        setLocales: function setLocales(preferred_locale, _converse) {
+            _converse.locale = getLocale(preferred_locale, _.partial(isConverseLocale, _, _converse.locales));
             moment.locale(getLocale(preferred_locale, isMomentLocale));
         },
-
-        translate (str) {
+        translate: function translate(str) {
             if (_.isNil(jed_instance)) {
                 return Jed.sprintf.apply(Jed, arguments);
             }
             var t = jed_instance.translate(str);
-            if (arguments.length>1) {
+            if (arguments.length > 1) {
                 return t.fetch.apply(t, [].slice.call(arguments, 1));
             } else {
                 return t.fetch();
             }
         },
-
-        fetchTranslations (locale, supported_locales, locale_url) {
+        fetchTranslations: function fetchTranslations(locale, supported_locales, locale_url) {
             /* Fetch the translations for the given local at the given URL.
              *
              * Parameters:
@@ -28034,16 +28009,13 @@ return uk;
              *  (String) locale_url:        The URL from which the translations
              *                              should be fetched.
              */
-            return new Promise((resolve, reject) => {
+            return new Promise(function (resolve, reject) {
                 if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
                     return resolve();
                 }
-                const xhr = new XMLHttpRequest();
+                var xhr = new XMLHttpRequest();
                 xhr.open('GET', locale_url, true);
-                xhr.setRequestHeader(
-                    'Accept',
-                    "application/json, text/javascript"
-                );
+                xhr.setRequestHeader('Accept', "application/json, text/javascript");
                 xhr.onload = function () {
                     if (xhr.status >= 200 && xhr.status < 400) {
                         jed_instance = new Jed(window.JSON.parse(xhr.responseText));
@@ -28059,8 +28031,8 @@ return uk;
             });
         }
     };
-}));
-
+});
+//# sourceMappingURL=i18n.js.map;
 /*!
  * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
@@ -59398,7 +59370,7 @@ return __p
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, locales, Jed */
+/*global define, escape, Jed */
 (function (root, factory) {
     define('form-utils',["sizzle", "lodash.noconflict", "utils", "tpl!field", "tpl!select_option", "tpl!form_select", "tpl!form_textarea", "tpl!form_checkbox", "tpl!form_username", "tpl!form_input", "tpl!form_captcha", "tpl!form_url"], factory);
 })(undefined, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
@@ -60934,10 +60906,10 @@ Strophe.addConnectionPlugin('disco',
 
             _converse.DiscoEntity = Backbone.Model.extend({
                 /* A Disco Entity is a JID addressable entity that can be queried
-                * for features.
-                *
-                * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
-                */
+                 * for features.
+                 *
+                 * See XEP-0030: https://xmpp.org/extensions/xep-0030.html
+                 */
                 idAttribute: 'jid',
 
                 initialize: function initialize() {
@@ -61057,6 +61029,43 @@ Strophe.addConnectionPlugin('disco',
                     });
                     _converse.disco_entities.reset();
                     _converse.disco_entities.browserStorage._clear();
+                }
+            });
+
+            /* We extend the default converse.js API to add methods specific to service discovery */
+            _.extend(_converse.api, {
+                'disco': {
+                    'supports': function supports(entity_jid, feature) {
+                        /* Returns a Promise which returns a boolean indicating
+                         * whether the feature is supported or by the given
+                         * entity or not.
+                         *
+                         * Parameters:
+                         *    (String) entity_jid - The JID of the entity which might support the feature.
+                         *    (String) feature - The feature that might be
+                         *          supported. In the XML stanza, this is the `var`
+                         *          attribute of the `<feature>` element. For
+                         *          example: 'http://jabber.org/protocol/muc'
+                         */
+                        return _converse.api.waitUntil('discoInitialized').then(function () {
+                            return new Promise(function (resolve, reject) {
+                                function fulfillPromise(entity) {
+                                    if (entity.features.findWhere({ 'var': feature })) {
+                                        resolve(true);
+                                    } else {
+                                        resolve(false);
+                                    }
+                                }
+                                var entity = _converse.disco_entities.get(entity_jid);
+                                if (_.isUndefined(entity)) {
+                                    entity = _converse.disco_entities.create({ 'jid': entity_jid });
+                                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
+                                } else {
+                                    fulfillPromise(entity);
+                                }
+                            });
+                        });
+                    }
                 }
             });
         }
@@ -64666,31 +64675,6 @@ Strophe.RSM.prototype = {
     // XEP-0313 Message Archive Management
     var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-    function checkMAMSupport(_converse) {
-        /* Returns a promise which resolves when MAM is supported
-         * for this user, or which rejects if not.
-         */
-        return _converse.api.waitUntil('discoInitialized').then(function () {
-            return new Promise(function (resolve, reject) {
-
-                function fulfillPromise(entity) {
-                    if (entity.features.findWhere({ 'var': Strophe.NS.MAM })) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-                var entity = _converse.disco_entities.get(_converse.bare_jid);
-                if (_.isUndefined(entity)) {
-                    entity = _converse.disco_entities.create({ 'jid': _converse.bare_jid });
-                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
-                } else {
-                    fulfillPromise(entity);
-                }
-            });
-        });
-    }
-
     converse.plugins.add('converse-mam', {
 
         overrides: {
@@ -64726,7 +64710,7 @@ Strophe.RSM.prototype = {
 
                     this.addSpinner();
 
-                    checkMAMSupport(_converse).then(function (supported) {
+                    _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(function (supported) {
                         // Success
                         if (supported) {
                             _this.fetchArchivedMessages();
@@ -64946,19 +64930,6 @@ Strophe.RSM.prototype = {
                 }, _converse.message_archiving_timeout);
             };
 
-            _.extend(_converse.api, {
-                /* Extend default converse.js API to add methods specific to MAM
-                 */
-                'archive': {
-                    'query': function query() {
-                        if (!_converse.api.connection.connected()) {
-                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
-                        }
-                        return _converse.queryForArchivedMessages.apply(this, arguments);
-                    }
-                }
-            });
-
             _converse.onMAMError = function (iq) {
                 if ($(iq).find('feature-not-implemented').length) {
                     _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
@@ -65014,6 +64985,19 @@ Strophe.RSM.prototype = {
 
             _converse.on('afterMessagesFetched', function (chatboxview) {
                 chatboxview.fetchArchivedMessagesIfNecessary();
+            });
+
+            _.extend(_converse.api, {
+                /* Extend default converse.js API to add methods specific to MAM
+                 */
+                'archive': {
+                    'query': function query() {
+                        if (!_converse.api.connection.connected()) {
+                            throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
+                        }
+                        return _converse.queryForArchivedMessages.apply(this, arguments);
+                    }
+                }
             });
         }
     });
@@ -75431,6 +75415,8 @@ return __p
     });
 });
 //# sourceMappingURL=converse-singleton.js.map;
+
+
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -75440,22 +75426,20 @@ return __p
 /*global define */
 
 (function (root, factory) {
-    define('converse-fullscreen',["converse-core",
-            "tpl!inverse_brand_heading",
-            "converse-chatview",
-            "converse-controlbox",
-            "converse-muc",
-            "converse-singleton"
-    ], factory);
-}(this, function (converse, tpl_brand_heading) {
+    define('converse-fullscreen',["converse-core", "tpl!inverse_brand_heading", "converse-chatview", "converse-controlbox", "converse-muc", "converse-singleton"], factory);
+})(undefined, function (converse, tpl_brand_heading) {
     "use strict";
-    const { Strophe, _ } = converse.env;
+
+    var _converse$env = converse.env,
+        Strophe = _converse$env.Strophe,
+        _ = _converse$env._;
+
 
     converse.plugins.add('converse-fullscreen', {
-
-        enabled (_converse) {
+        enabled: function enabled(_converse) {
             return _.includes(['mobile', 'fullscreen'], _converse.view_mode);
         },
+
 
         overrides: {
             // overrides mentioned here will be picked up by converse.js's
@@ -75465,21 +75449,17 @@ return __p
             // new functions which don't exist yet can also be added.
 
             ControlBoxView: {
-                 createBrandHeadingHTML() {
+                createBrandHeadingHTML: function createBrandHeadingHTML() {
                     return tpl_brand_heading();
                 },
-
-                insertBrandHeading () {
-                    const el = document.getElementById('converse-login-panel');
-                    el.parentNode.insertAdjacentHTML(
-                        'afterbegin',
-                        this.createBrandHeadingHTML()
-                    );
+                insertBrandHeading: function insertBrandHeading() {
+                    var el = document.getElementById('converse-login-panel');
+                    el.parentNode.insertAdjacentHTML('afterbegin', this.createBrandHeadingHTML());
                 }
             },
 
             ChatRoomView: {
-                afterShown (focus) {
+                afterShown: function afterShown(focus) {
                     /* Make sure chat rooms are scrolled down when opened
                      */
                     this.scrollDown();
@@ -75491,28 +75471,23 @@ return __p
             }
         },
 
-        initialize () {
+        initialize: function initialize() {
             this._converse.api.settings.update({
                 chatview_avatar_height: 44,
                 chatview_avatar_width: 44,
                 hide_open_bookmarks: true,
                 show_controlbox_by_default: true,
-                sticky_controlbox: true,
-                view_mode: 'fullscreen'
+                sticky_controlbox: true
             });
         }
     });
-}));
-
+});
+//# sourceMappingURL=converse-fullscreen.js.map;
 /*global define */
 if (typeof define !== 'undefined') {
     // The section below determines which plugins will be included in a build
     define('converse',[
         "converse-core",
-        // PLEASE NOTE: By default all translations are included.
-        // You can modify the file src/locales.js to include only those
-        // translations that you care about.
-
         /* START: Removable components
          * --------------------
          * Any of the following components may be removed if they're not needed.

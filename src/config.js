@@ -114,7 +114,13 @@ require.config({
         templateSettings: {
             "escape": /\{\{\{([\s\S]+?)\}\}\}/g,
             "evaluate": /\{\[([\s\S]+?)\]\}/g,
-            "interpolate": /\{\{([\s\S]+?)\}\}/g
+            "interpolate": /\{\{([\s\S]+?)\}\}/g,
+            // By default, template places the values from your data in the
+            // local scope via the with statement. However, you can specify
+            // a single variable name with the variable setting. This can
+            // significantly improve the speed at which a template is able
+            // to render.
+            "variable": 'o'
         }
     },
 

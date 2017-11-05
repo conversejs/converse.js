@@ -808,7 +808,7 @@
                     expect($sent_stanza.find('field[var="muc#roomconfig_allowpm"] value').text()).toBe('moderators');
                     expect($sent_stanza.find('field[var="muc#roomconfig_presencebroadcast"] value').text()).toBe('moderator');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("shows users currently present in the room",

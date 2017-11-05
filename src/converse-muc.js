@@ -78,15 +78,15 @@
 
     const ROOM_FEATURES = [
         'passwordprotected', 'unsecured', 'hidden',
-        'public', 'membersonly', 'open', 'persistent',
+        'publicroom', 'membersonly', 'open', 'persistent',
         'temporary', 'nonanonymous', 'semianonymous',
         'moderated', 'unmoderated', 'mam_enabled'
     ];
     const ROOM_FEATURES_MAP = {
         'passwordprotected': 'unsecured',
         'unsecured': 'passwordprotected',
-        'hidden': 'public',
-        'public': 'hidden',
+        'hidden': 'publicroom',
+        'publicroom': 'hidden',
         'membersonly': 'open',
         'open': 'membersonly',
         'persistent': 'temporary',
@@ -1526,8 +1526,9 @@
                      *      the settings.
                      */
                     this.showSpinner();
-                    this.fetchRoomConfiguration().then(
-                        this.renderConfigurationForm.bind(this));
+                    this.fetchRoomConfiguration()
+                        .then(this.renderConfigurationForm.bind(this))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
                 submitNickname (ev) {
@@ -2147,7 +2148,7 @@
                     this.chatroomview.model.on('change:open', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:passwordprotected', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:persistent', this.onFeatureChanged, this);
-                    this.chatroomview.model.on('change:public', this.onFeatureChanged, this);
+                    this.chatroomview.model.on('change:publicroom', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:semianonymous', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
                     this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);

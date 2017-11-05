@@ -61,7 +61,7 @@
     "moment": "~2.18.1",
     "npm": "^4.1.1",
     "otr": "0.2.16",
-    "pluggable.js": "https://github.com/jcbrand/pluggable.js.git#4677f759c270edda4ce987a8565b817a1d15973b",
+    "pluggable.js": "1.0.1",
     "po2json": "^0.4.4",
     "requirejs": "2.3.3",
     "run-headless-chromium": "^0.1.1",

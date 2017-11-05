@@ -1,11 +1,11 @@
-{[ if (use_emoji)  { ]}
-    <li class="toggle-toolbar-menu toggle-smiley icon-happy" title="{{{label_insert_smiley}}}">
+{[ if (o.use_emoji)  { ]}
+    <li class="toggle-toolbar-menu toggle-smiley icon-happy" title="{{{o.label_insert_smiley}}}">
         <ul class="emoji-picker"></ul>
     </li>
 {[ } ]}
-{[ if (show_call_button)  { ]}
-<li class="toggle-call"><a class="icon-phone" title="{{{label_start_call}}}"></a></li>
+{[ if (o.show_call_button)  { ]}
+<li class="toggle-call"><a class="icon-phone" title="{{{o.label_start_call}}}"></a></li>
 {[ } ]}
-{[ if (show_clear_button)  { ]}
-<li class="toggle-clear"><a class="icon-trash" title="{{{label_clear}}}"></a></li>
+{[ if (o.show_clear_button)  { ]}
+<li class="toggle-clear"><a class="icon-trash" title="{{{o.label_clear}}}"></a></li>
 {[ } ]}

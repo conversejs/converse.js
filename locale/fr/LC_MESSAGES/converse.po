@@ -419,7 +419,7 @@ msgstr "Aucun utilisateur trouvé"
 
 #: dist/converse-no-dependencies.js:16782
 msgid "Toggle chat"
-msgstr "Ouvrir IM"
+msgstr "Ouvrir la discussion"
 
 #: dist/converse-no-dependencies.js:18260
 msgid "This room is not anonymous"
@@ -780,7 +780,7 @@ msgstr "Non-anonyme"
 
 #: dist/converse-no-dependencies.js:19993
 msgid "Open"
-msgstr "Ouvrir"
+msgstr "Ouvert"
 
 #: dist/converse-no-dependencies.js:19994
 msgid "Password protected"

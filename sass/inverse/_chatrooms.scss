@@ -45,9 +45,7 @@
                         font-size: $font-size-large;
                     }
                     .chatroom-features {
-                        bottom: $padding;
-                        width: 25%;
-                        @include calc(width, '30% - 2em');
+                        display: none;
                     }
                     ul {
                         &.occupant-list {

@@ -4,6 +4,7 @@
 
 ### Bugfixes
 - #800 Could not register successfully in ejabberd 17.01
+- #949 Don't flash the roster contacts filter (i.e. hide by default)
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
 - Refetch the roster from the server after reconnection.

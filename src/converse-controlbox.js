@@ -268,7 +268,7 @@
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
-                    _converse.emit('controlboxInitialized');
+                    _converse.emit('controlboxInitialized', this);
                 },
 
                 render () {

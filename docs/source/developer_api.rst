@@ -442,14 +442,19 @@ supports
 
 Used to determine whether an entity supports a given feature.
 
+Returns a `Promise` which, when resolved, returns a map/object with keys
+`supported` (a boolean) and `feature` which is a `Backbone.Model <http://backbonejs.org/#Model>`_.
+
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
         initialize: function () {
 
             _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
-                function (supported) {
-                    if (supported) {
+                function (value) {
+                    // `value` is a map with two keys, `supported` and `feature`.
+
+                    if (value.supported) {
                         // The feature is supported
                     } else {
                         // The feature is not supported

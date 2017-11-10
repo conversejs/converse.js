@@ -57,9 +57,9 @@
                     const { _converse } = this.__super__;
                     this.addSpinner();
 
-                    _converse.api.disco.supports(_converse.bare_jid, Strophe.NS.MAM).then(
-                        (supported) => { // Success
-                            if (supported) {
+                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
+                        (result) => { // Success
+                            if (result.supported) {
                                 this.fetchArchivedMessages();
                             } else {
                                 this.clearSpinner();

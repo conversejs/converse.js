@@ -175,56 +175,6 @@
                     }
                 },
 
-                featureAdded (feature) {
-                    const { _converse } = this.__super__;
-                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
-                        this.setMUCDomain(feature.get('from'));
-                    }
-                },
-
-                getMUCDomainFromDisco () {
-                    /* Check whether service discovery for the user's domain
-                     * returned MUC information and use that to automatically
-                     * set the MUC domain for the "Rooms" panel of the
-                     * controlbox.
-                     */
-                    const { _converse } = this.__super__;
-                    _converse.api.waitUntil('discoInitialized').then(() => {
-                        _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
-                        // Features could have been added before the controlbox was
-                        // initialized. We're only interested in MUC
-                        const entity = _converse.disco_entities[_converse.domain];
-                        if (!_.isUndefined(entity)) {
-                            const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
-                            if (feature) {
-                                this.featureAdded(feature);
-                            }
-                        }
-                    });
-                },
-
-                onConnected () {
-                    const { _converse } = this.__super__;
-                    this.__super__.onConnected.apply(this, arguments);
-                    if (!this.model.get('connected')) {
-                        return;
-                    }
-                    if (_.isUndefined(_converse.muc_domain)) {
-                        this.getMUCDomainFromDisco();
-                    } else {
-                        this.setMUCDomain(_converse.muc_domain);
-                    }
-                },
-
-                setMUCDomain (domain) {
-                    const { _converse } = this.__super__;
-                    _converse.muc_domain = domain;
-                    this.roomspanel.model.save({'muc_domain': domain});
-                    const $server= this.$el.find('input.new-chatroom-server');
-                    if (!$server.is(':focus')) {
-                        $server.val(this.roomspanel.model.get('muc_domain'));
-                    }
-                }
             },
 
             ChatBoxViews: {
@@ -2488,6 +2438,7 @@
                 },
 
                 onDomainChange (model) {
+                    // TODO: Could instead use the vdom in render
                     const $server = this.$el.find('input.new-chatroom-server');
                     $server.val(model.get('muc_domain'));
                     if (_converse.auto_list_rooms) {
@@ -2856,6 +2807,56 @@
                         view.fetchMessages();
                     }
                 });
+            });
+
+
+            function setMUCDomainFromDisco (controlboxview) {
+                /* Check whether service discovery for the user's domain
+                    * returned MUC information and use that to automatically
+                    * set the MUC domain for the "Rooms" panel of the controlbox.
+                    */
+                function featureAdded (feature) {
+                    if ((feature.get('var') === Strophe.NS.MUC)) {
+                        setMUCDomain(feature.get('from'), controlboxview);
+                    }
+                }
+
+                _converse.api.waitUntil('discoInitialized').then(() => {
+                    _converse.api.listen.on('serviceDiscovered', featureAdded);
+                    // Features could have been added before the controlbox was
+                    // initialized. We're only interested in MUC
+                    _converse.disco_entities.each((entity) => {
+                        const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
+                        if (feature) {
+                            featureAdded(feature)
+                        }
+                    });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            }
+
+            function setMUCDomain (domain, controlboxview) {
+                _converse.muc_domain = domain;
+                controlboxview.roomspanel.model.save({'muc_domain': domain});
+            }
+
+            function fetchAndSetMUCDomain (controlboxview) {
+                if (controlboxview.model.get('connected')) {
+                    if (!controlboxview.roomspanel.model.get('muc_domain')) {
+                        if (_.isUndefined(_converse.muc_domain)) {
+                            setMUCDomainFromDisco(controlboxview);
+                        } else {
+                            setMUCDomain(_converse.muc_domain, controlboxview);
+                        }
+                    }
+                }
+            }
+
+            _converse.on('controlboxInitialized', function (view) {
+                if (!_converse.allow_muc) {
+                    return;
+                }
+                fetchAndSetMUCDomain(view);
+                view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
             });
 
             function disconnectChatRooms () {

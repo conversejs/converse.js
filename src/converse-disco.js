@@ -12,7 +12,7 @@
     define(["converse-core", "sizzle", "strophe.disco"], factory);
 }(this, function (converse, sizzle) {
 
-    const { Backbone, Promise, Strophe, b64_sha1, _ } = converse.env;
+    const { Backbone, Promise, Strophe, b64_sha1, utils, _ } = converse.env;
 
     converse.plugins.add('converse-disco', {
 
@@ -49,6 +49,8 @@
                 idAttribute: 'jid',
 
                 initialize () {
+                    this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+
                     this.features = new Backbone.Collection();
                     this.features.browserStorage = new Backbone.BrowserStorage[_converse.storage](
                         b64_sha1(`converse.features-${this.get('jid')}`)
@@ -60,6 +62,36 @@
                         b64_sha1(`converse.identities-${this.get('jid')}`)
                     );
                     this.fetchFeatures();
+
+                },
+
+                hasFeature (feature) {
+                    /* Returns a Promise which resolves with a map indicating
+                     * whether a given feature is supported.
+                     *
+                     * Parameters:
+                     *    (String) feature - The feature that might be supported.
+                     */
+                    const entity = this;
+                    return new Promise((resolve, reject) => {
+                        function fulfillPromise () {
+                            const model = entity.features.findWhere({'var': feature });
+                            if (model) {
+                                resolve({
+                                    'supported': true,
+                                    'feature': model
+                                });
+                            } else {
+                                resolve({
+                                    'supported': false,
+                                    'feature': null
+                                });
+                            }
+                        }
+                        entity.waitUntilFeaturesDiscovered
+                            .then(fulfillPromise)
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    });
                 },
 
                 onFeatureAdded (feature) {
@@ -70,7 +102,13 @@
                     if (this.features.browserStorage.records.length === 0) {
                         this.queryInfo();
                     } else {
-                        this.features.fetch({add: true});
+                        this.features.fetch({
+                            add: true,
+                            success: () => {
+                                this.waitUntilFeaturesDiscovered.resolve();
+                                this.trigger('featuresDiscovered');
+                            }
+                        });
                         this.identities.fetch({add: true});
                     }
                 },
@@ -105,6 +143,7 @@
                             'from': stanza.getAttribute('from')
                         });
                     });
+                    this.waitUntilFeaturesDiscovered.resolve();
                     this.trigger('featuresDiscovered');
                 }
             });
@@ -182,36 +221,31 @@
             /* We extend the default converse.js API to add methods specific to service discovery */
             _.extend(_converse.api, {
                 'disco': {
-                    'supports' (entity_jid, feature) {
-                        /* Returns a Promise which returns a boolean indicating
-                         * whether the feature is supported or by the given
-                         * entity or not.
+                    'entities': {
+                        'get' (entity_jid, create=false) {
+                            const entity = _converse.disco_entities.get(entity_jid);
+                            if (entity || !create) {
+                                return entity;
+                            }
+                            return _converse.disco_entities.create({'jid': entity_jid});
+                        }
+                    },
+
+                    'supports' (feature, entity_jid) {
+                        /* Returns a Promise which resolves with a map indicating
+                         * whether a given feature is supported.
                          *
                          * Parameters:
-                         *    (String) entity_jid - The JID of the entity which might support the feature.
                          *    (String) feature - The feature that might be
                          *          supported. In the XML stanza, this is the `var`
                          *          attribute of the `<feature>` element. For
                          *          example: 'http://jabber.org/protocol/muc'
+                         *    (String) entity_jid - The JID of the entity which might support the feature.
                          */
-                        return _converse.api.waitUntil('discoInitialized').then(() =>
-                            new Promise((resolve, reject) => {
-                                function fulfillPromise (entity) {
-                                    if (entity.features.findWhere({'var': feature})) {
-                                        resolve(true);
-                                    } else {
-                                        resolve(false);
-                                    }
-                                }
-                                let entity = _converse.disco_entities.get(entity_jid);
-                                if (_.isUndefined(entity)) {
-                                    entity = _converse.disco_entities.create({'jid': entity_jid});
-                                    entity.on('featuresDiscovered', _.partial(fulfillPromise, entity));
-                                } else {
-                                    fulfillPromise(entity);
-                                }
-                            })
-                        );
+                        return _converse.api.waitUntil('discoInitialized').then(() => {
+                            const entity = _converse.api.disco.entities.get(entity_jid, true);
+                            return entity.hasFeature(feature);
+                        });
                     }
                 }
             });

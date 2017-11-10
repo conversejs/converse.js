@@ -511,13 +511,17 @@
         return model.collection && model.collection.browserStorage;
     };
 
-    u.getWrappedPromise = function () {
+    u.getResolveablePromise = function () {
+        /* Returns a promise object on which `resolve` or `reject` can be
+         * called.
+         */
         const wrapper = {};
-        wrapper.promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             wrapper.resolve = resolve;
             wrapper.reject = reject;
         })
-        return wrapper;
+        _.assign(promise, wrapper);
+        return promise;
     };
 
     u.safeSave = function (model, attributes) {

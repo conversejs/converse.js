@@ -269,7 +269,7 @@
                 },
 
                 fetchBookmarks () {
-                    const deferred = utils.getWrappedPromise();
+                    const deferred = utils.getResolveablePromise();
                     if (this.browserStorage.records.length > 0) {
                         this.fetch({
                             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
@@ -284,7 +284,7 @@
                     } else {
                         deferred.resolve();
                     }
-                    return deferred.promise;
+                    return deferred;
                 },
 
                 onCachedBookmarksFetched (deferred) {

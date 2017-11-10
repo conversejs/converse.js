@@ -22,6 +22,7 @@
             "tpl!chatroom_form",
             "tpl!chatroom_head",
             "tpl!chatroom_invite",
+            "tpl!chatroom_join_form",
             "tpl!chatroom_nickname_form",
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
@@ -35,7 +36,8 @@
             "tpl!spinner",
             "awesomplete",
             "converse-chatview",
-            "converse-disco"
+            "converse-disco",
+            "backbone.vdomview"
     ], factory);
 }(this, function (
             $,
@@ -49,6 +51,7 @@
             tpl_chatroom_form,
             tpl_chatroom_head,
             tpl_chatroom_invite,
+            tpl_chatroom_join_form,
             tpl_chatroom_nickname_form,
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
@@ -152,7 +155,7 @@
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
-                        'model': new (Backbone.Model.extend({
+                        'model': new (_converse.RoomsPanelModel.extend({
                             id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
                             browserStorage: new Backbone.BrowserStorage[_converse.storage](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
@@ -175,56 +178,6 @@
                     }
                 },
 
-                featureAdded (feature) {
-                    const { _converse } = this.__super__;
-                    if ((feature.get('var') === Strophe.NS.MUC) && (_converse.allow_muc)) {
-                        this.setMUCDomain(feature.get('from'));
-                    }
-                },
-
-                getMUCDomainFromDisco () {
-                    /* Check whether service discovery for the user's domain
-                     * returned MUC information and use that to automatically
-                     * set the MUC domain for the "Rooms" panel of the
-                     * controlbox.
-                     */
-                    const { _converse } = this.__super__;
-                    _converse.api.waitUntil('discoInitialized').then(() => {
-                        _converse.api.listen.on('serviceDiscovered', this.featureAdded, this);
-                        // Features could have been added before the controlbox was
-                        // initialized. We're only interested in MUC
-                        const entity = _converse.disco_entities[_converse.domain];
-                        if (!_.isUndefined(entity)) {
-                            const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
-                            if (feature) {
-                                this.featureAdded(feature);
-                            }
-                        }
-                    });
-                },
-
-                onConnected () {
-                    const { _converse } = this.__super__;
-                    this.__super__.onConnected.apply(this, arguments);
-                    if (!this.model.get('connected')) {
-                        return;
-                    }
-                    if (_.isUndefined(_converse.muc_domain)) {
-                        this.getMUCDomainFromDisco();
-                    } else {
-                        this.setMUCDomain(_converse.muc_domain);
-                    }
-                },
-
-                setMUCDomain (domain) {
-                    const { _converse } = this.__super__;
-                    _converse.muc_domain = domain;
-                    this.roomspanel.model.save({'muc_domain': domain});
-                    const $server= this.$el.find('input.new-chatroom-server');
-                    if (!$server.is(':focus')) {
-                        $server.val(this.roomspanel.model.get('muc_domain'));
-                    }
-                }
             },
 
             ChatBoxViews: {
@@ -2421,6 +2374,32 @@
                 }
             });
 
+
+            _converse.MUCJoinForm = Backbone.VDOMView.extend({
+                initialize () {
+                    this.model.on('change:muc_domain', this.render, this);
+                },
+
+                renderHTML () {
+                    return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
+                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
+                        'label_room_name': __('Room name'),
+                        'label_nickname': __('Nickname'),
+                        'label_server': __('Server'),
+                        'label_join': __('Join Room'),
+                        'label_show_rooms': __('Show rooms')
+                    }));
+                }
+            });
+
+
+            _converse.RoomsPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'muc_domain': '',
+                },
+            });
+
             _converse.RoomsPanel = Backbone.View.extend({
                 /* Backbone View which renders the "Rooms" tab and accompanying
                  * panel in the control box.
@@ -2441,6 +2420,7 @@
                 },
 
                 initialize (cfg) {
+                    this.join_form = new _converse.MUCJoinForm({'model': this.model});
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
@@ -2450,19 +2430,16 @@
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_room_panel({
-                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                        'label_room_name': __('Room name'),
-                        'label_nickname': __('Nickname'),
-                        'label_server': __('Server'),
-                        'label_join': __('Join Room'),
-                        'label_show_rooms': __('Show rooms')
-                    });
+                    this.el.innerHTML = tpl_room_panel();
+                    this.join_form.setElement(this.el.querySelector('.add-chatroom'));
+                    this.join_form.render();
+
                     this.renderTab();
                     const controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
                         this.el.classList.add('hidden');
+                    } else {
+                        this.el.classList.remove('hidden');
                     }
                     return this;
                 },
@@ -2488,8 +2465,6 @@
                 },
 
                 onDomainChange (model) {
-                    const $server = this.$el.find('input.new-chatroom-server');
-                    $server.val(model.get('muc_domain'));
                     if (_converse.auto_list_rooms) {
                         this.updateRoomsList();
                     }
@@ -2856,6 +2831,56 @@
                         view.fetchMessages();
                     }
                 });
+            });
+
+
+            function setMUCDomainFromDisco (controlboxview) {
+                /* Check whether service discovery for the user's domain
+                    * returned MUC information and use that to automatically
+                    * set the MUC domain for the "Rooms" panel of the controlbox.
+                    */
+                function featureAdded (feature) {
+                    if ((feature.get('var') === Strophe.NS.MUC)) {
+                        setMUCDomain(feature.get('from'), controlboxview);
+                    }
+                }
+
+                _converse.api.waitUntil('discoInitialized').then(() => {
+                    _converse.api.listen.on('serviceDiscovered', featureAdded);
+                    // Features could have been added before the controlbox was
+                    // initialized. We're only interested in MUC
+                    _converse.disco_entities.each((entity) => {
+                        const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
+                        if (feature) {
+                            featureAdded(feature)
+                        }
+                    });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            }
+
+            function setMUCDomain (domain, controlboxview) {
+                _converse.muc_domain = domain;
+                controlboxview.roomspanel.model.save({'muc_domain': domain});
+            }
+
+            function fetchAndSetMUCDomain (controlboxview) {
+                if (controlboxview.model.get('connected')) {
+                    if (!controlboxview.roomspanel.model.get('muc_domain')) {
+                        if (_.isUndefined(_converse.muc_domain)) {
+                            setMUCDomainFromDisco(controlboxview);
+                        } else {
+                            setMUCDomain(_converse.muc_domain, controlboxview);
+                        }
+                    }
+                }
+            }
+
+            _converse.on('controlboxInitialized', function (view) {
+                if (!_converse.allow_muc) {
+                    return;
+                }
+                fetchAndSetMUCDomain(view);
+                view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
             });
 
             function disconnectChatRooms () {

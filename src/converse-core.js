@@ -220,7 +220,7 @@
         /* Private function, used to add a new promise to the ones already
          * available via the `waitUntil` api method.
          */
-        _converse.promises[promise] = utils.getWrappedPromise();
+        _converse.promises[promise] = utils.getResolveablePromise();
     }
 
     _converse.emit = function (name) {
@@ -238,7 +238,7 @@
     _converse.initialize = function (settings, callback) {
         "use strict";
         settings = !_.isUndefined(settings) ? settings : {};
-        const init_promise = utils.getWrappedPromise();
+        const init_promise = utils.getResolveablePromise();
 
         _.each(PROMISES, addPromise);
 
@@ -611,7 +611,7 @@
 
         this.initStatus = () =>
             new Promise((resolve, reject) => {
-                const promise = new utils.getWrappedPromise();
+                const promise = new utils.getResolveablePromise();
                 this.xmppstatus = new this.XMPPStatus();
                 const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
                 this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
@@ -1961,7 +1961,7 @@
                 _converse.log(reason, Strophe.LogLevel.ERROR);
             });
         }
-        return init_promise.promise;
+        return init_promise;
     };
 
     // API methods only available to plugins
@@ -2102,7 +2102,7 @@
             if (_.isUndefined(promise)) {
                 return null;
             }
-            return promise.promise;
+            return promise;
         },
         'send' (stanza) {
             _converse.connection.send(stanza);

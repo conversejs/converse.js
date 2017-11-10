@@ -268,7 +268,7 @@
                             .then(this.insertRoster.bind(this))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
-                    _converse.emit('controlboxInitialized');
+                    _converse.emit('controlboxInitialized', this);
                 },
 
                 render () {
@@ -456,7 +456,7 @@
                 }
             });
 
-            _converse.LoginPanel = Backbone.View.extend({
+            _converse.LoginPanel = Backbone.VDOMView.extend({
                 tagName: 'div',
                 id: "converse-login-panel",
                 className: 'controlbox-pane fade-in',
@@ -470,14 +470,14 @@
                     this.listenTo(_converse.connfeedback, 'change', this.render);
                 },
 
-                render () {
+                renderHTML () {
                     const connection_status = _converse.connfeedback.get('connection_status');
                     let feedback_class, pretty_status;
                     if (_.includes(REPORTABLE_STATUSES, connection_status)) {
                         pretty_status = PRETTY_CONNECTION_STATUS[connection_status];
                         feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
                     }
-                    const html = tpl_login_panel(
+                    return tpl_login_panel(
                         _.extend(this.model.toJSON(), {
                             '__': __,
                             '_converse': _converse,
@@ -495,14 +495,6 @@
                                                     __('Username') || __('user@domain'),
                         })
                     );
-                    const form = this.el.querySelector('form');
-                    if (_.isNull(form)) {
-                        this.el.innerHTML = html;
-                    } else {
-                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
-                        vdom.patch(form, patches);
-                    }
-                    return this;
                 },
 
                 validate () {

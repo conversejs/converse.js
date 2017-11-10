@@ -22,6 +22,7 @@ require.config({
         "backbone.browserStorage":  "node_modules/backbone.browserStorage/backbone.browserStorage",
         "backbone.noconflict":      "src/backbone.noconflict",
         "backbone.overview":        "node_modules/backbone.overview/backbone.overview",
+        "backbone.vdomview":        "node_modules/backbone.vdomview/backbone.vdomview",
         "emojione":                 "node_modules/emojione/lib/js/emojione",
         "es6-promise":              "node_modules/es6-promise/dist/es6-promise.auto",
         "eventemitter":             "node_modules/otr/build/dep/eventemitter",

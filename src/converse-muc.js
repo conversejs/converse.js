@@ -15,8 +15,6 @@
             "form-utils",
             "converse-core",
             "lodash.fp",
-            "virtual-dom",
-            "vdom-parser",
             "tpl!chatarea",
             "tpl!chatroom",
             "tpl!chatroom_disconnect",
@@ -38,15 +36,14 @@
             "tpl!spinner",
             "awesomplete",
             "converse-chatview",
-            "converse-disco"
+            "converse-disco",
+            "backbone.vdomview"
     ], factory);
 }(this, function (
             $,
             utils,
             converse,
             fp,
-            vdom,
-            vdom_parser,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_disconnect,
@@ -2378,13 +2375,13 @@
             });
 
 
-            _converse.MUCJoinForm = Backbone.View.extend({
+            _converse.MUCJoinForm = Backbone.VDOMView.extend({
                 initialize () {
                     this.model.on('change:muc_domain', this.render, this);
                 },
 
-                render () {
-                    const html = tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
+                renderHTML () {
+                    return tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
                         'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
                         'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
                         'label_room_name': __('Room name'),
@@ -2393,14 +2390,6 @@
                         'label_join': __('Join Room'),
                         'label_show_rooms': __('Show rooms')
                     }));
-                    const form = this.el.querySelector('form');
-                    if (_.isNull(form)) {
-                        this.el.innerHTML = html;
-                    } else {
-                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
-                        vdom.patch(form, patches);
-                    }
-                    return this;
                 }
             });
 
@@ -2442,7 +2431,7 @@
 
                 render () {
                     this.el.innerHTML = tpl_room_panel();
-                    this.join_form.setElement(this.el.querySelector('.chatroom-join-form'));
+                    this.join_form.setElement(this.el.querySelector('.add-chatroom'));
                     this.join_form.render();
 
                     this.renderTab();

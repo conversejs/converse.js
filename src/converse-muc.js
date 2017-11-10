@@ -15,6 +15,8 @@
             "form-utils",
             "converse-core",
             "lodash.fp",
+            "virtual-dom",
+            "vdom-parser",
             "tpl!chatarea",
             "tpl!chatroom",
             "tpl!chatroom_disconnect",
@@ -22,6 +24,7 @@
             "tpl!chatroom_form",
             "tpl!chatroom_head",
             "tpl!chatroom_invite",
+            "tpl!chatroom_join_form",
             "tpl!chatroom_nickname_form",
             "tpl!chatroom_password_form",
             "tpl!chatroom_sidebar",
@@ -42,6 +45,8 @@
             utils,
             converse,
             fp,
+            vdom,
+            vdom_parser,
             tpl_chatarea,
             tpl_chatroom,
             tpl_chatroom_disconnect,
@@ -49,6 +54,7 @@
             tpl_chatroom_form,
             tpl_chatroom_head,
             tpl_chatroom_invite,
+            tpl_chatroom_join_form,
             tpl_chatroom_nickname_form,
             tpl_chatroom_password_form,
             tpl_chatroom_sidebar,
@@ -152,7 +158,7 @@
                     const { _converse } = this.__super__;
                     this.roomspanel = new _converse.RoomsPanel({
                         '$parent': this.$el.find('.controlbox-panes'),
-                        'model': new (Backbone.Model.extend({
+                        'model': new (_converse.RoomsPanelModel.extend({
                             id: b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
                             browserStorage: new Backbone.BrowserStorage[_converse.storage](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
@@ -2371,6 +2377,40 @@
                 }
             });
 
+
+            _converse.MUCJoinForm = Backbone.View.extend({
+                initialize () {
+                    this.model.on('change:muc_domain', this.render, this);
+                },
+
+                render () {
+                    const html = tpl_chatroom_join_form(_.assign(this.model.toJSON(), {
+                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
+                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
+                        'label_room_name': __('Room name'),
+                        'label_nickname': __('Nickname'),
+                        'label_server': __('Server'),
+                        'label_join': __('Join Room'),
+                        'label_show_rooms': __('Show rooms')
+                    }));
+                    const form = this.el.querySelector('form');
+                    if (_.isNull(form)) {
+                        this.el.innerHTML = html;
+                    } else {
+                        const patches = vdom.diff(vdom_parser(form), vdom_parser(html));
+                        vdom.patch(form, patches);
+                    }
+                    return this;
+                }
+            });
+
+
+            _converse.RoomsPanelModel = Backbone.Model.extend({
+                defaults: {
+                    'muc_domain': '',
+                },
+            });
+
             _converse.RoomsPanel = Backbone.View.extend({
                 /* Backbone View which renders the "Rooms" tab and accompanying
                  * panel in the control box.
@@ -2391,6 +2431,7 @@
                 },
 
                 initialize (cfg) {
+                    this.join_form = new _converse.MUCJoinForm({'model': this.model});
                     this.parent_el = cfg.$parent[0];
                     this.tab_el = document.createElement('li');
                     this.model.on('change:muc_domain', this.onDomainChange, this);
@@ -2400,19 +2441,16 @@
                 },
 
                 render () {
-                    this.el.innerHTML = tpl_room_panel({
-                        'server_input_type': _converse.hide_muc_server && 'hidden' || 'text',
-                        'server_label_global_attr': _converse.hide_muc_server && ' hidden' || '',
-                        'label_room_name': __('Room name'),
-                        'label_nickname': __('Nickname'),
-                        'label_server': __('Server'),
-                        'label_join': __('Join Room'),
-                        'label_show_rooms': __('Show rooms')
-                    });
+                    this.el.innerHTML = tpl_room_panel();
+                    this.join_form.setElement(this.el.querySelector('.chatroom-join-form'));
+                    this.join_form.render();
+
                     this.renderTab();
                     const controlbox = _converse.chatboxes.get('controlbox');
                     if (controlbox.get('active-panel') !== ROOMS_PANEL_ID) {
                         this.el.classList.add('hidden');
+                    } else {
+                        this.el.classList.remove('hidden');
                     }
                     return this;
                 },
@@ -2438,9 +2476,6 @@
                 },
 
                 onDomainChange (model) {
-                    // TODO: Could instead use the vdom in render
-                    const $server = this.$el.find('input.new-chatroom-server');
-                    $server.val(model.get('muc_domain'));
                     if (_converse.auto_list_rooms) {
                         this.updateRoomsList();
                     }

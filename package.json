@@ -40,7 +40,7 @@
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.3",
-    "backbone.vdomview": "0.0.1",
+    "backbone.vdomview": "0.0.2",
     "bootstrap": "^3.3.7",
     "bourbon": "^4.3.2",
     "clean-css-cli": "^4.0.10",

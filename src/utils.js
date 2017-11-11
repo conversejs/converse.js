@@ -531,5 +531,11 @@
             model.set(attributes);
         }
     }
+
+    u.isVisible = function (el) {
+        // XXX: Taken from jQuery's "visible" implementation
+        return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+    };
+
     return u;
 }));

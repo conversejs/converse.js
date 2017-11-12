@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-24 10:57+0200\n"
-"PO-Revision-Date: 2017-09-24 11:04+0200\n"
+"PO-Revision-Date: 2017-11-12 19:56+0100\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -230,7 +230,7 @@ msgstr "Hangende kontakte"
 
 #: dist/converse-no-dependencies.js:15199
 msgid "Contact requests"
-msgstr "Kontak versoeke"
+msgstr "Kontakversoeke"
 
 #: dist/converse-no-dependencies.js:15200
 msgid "Ungrouped"

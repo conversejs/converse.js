@@ -767,7 +767,6 @@
 
                 insertEmoji (ev) {
                     ev.stopPropagation();
-                    this.toggleEmojiMenu();
                     const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                     this.insertIntoTextArea(target.getAttribute('data-emoji'));
                 },
@@ -785,12 +784,11 @@
                         document.querySelectorAll('.toolbar-menu'),
                         [this.emoji_picker_view.el]
                     );
-                    utils.slideInAllElements(elements).then(
-                        _.partial(
-                            utils.slideToggleElement,
-                            this.emoji_picker_view.el
-                        )
-                    );
+                    utils.slideInAllElements(elements)
+                        .then(_.partial(
+                                utils.slideToggleElement,
+                                this.emoji_picker_view.el))
+                        .then(this.focus.bind(this));
                 },
 
                 toggleCall (ev) {
@@ -913,7 +911,7 @@
                 },
 
                 focus () {
-                    this.$el.find('.chat-textarea').focus();
+                    this.el.querySelector('.chat-textarea').focus();
                     _converse.emit('chatBoxFocused', this);
                     return this;
                 },

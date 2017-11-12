@@ -34,6 +34,8 @@
 - Don't hang indefinitely and provide nicer error messages when a connection
   can't be established.
 - Consolidate error and validation reporting on the registration form.
+- Don't close the emojis panel after inserting an emoji.
+- Focus the message textarea when the emojis panel is opened or closed.
 
 ### Technical changes
 - Converse.js now includes a [Virtual DOM](https://github.com/Matt-Esch/virtual-dom)

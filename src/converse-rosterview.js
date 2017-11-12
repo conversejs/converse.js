@@ -256,11 +256,11 @@
                 clearFilter (ev) {
                     if (ev && ev.preventDefault) {
                         ev.preventDefault();
-                        $(ev.target).removeClass('x onX').val('');
+                        ev.target.classList.remove('x');
+                        ev.target.classList.remove('onX');
+                        ev.target.value = '';
                     }
-                    this.model.save({
-                        'filter_text': ''
-                    });
+                    this.model.save({'filter_text': ''});
                 }
             });
 

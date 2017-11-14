@@ -338,6 +338,7 @@
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
                 muc_nickname_from_jid: false,
+                muc_nickname: undefined,
                 muc_show_join_leave: true,
                 visible_toolbar_buttons: {
                     'toggle_occupants': true
@@ -1556,9 +1557,7 @@
                 },
 
                 onNickNameNotFound (message) {
-                    if (_converse.muc_nickname_from_jid) {
-                        // We try to enter the room with the node part of
-                        // the user's JID.
+                    if (_converse.muc_nickname_from_jid || _converse.muc_nickname) {
                         this.join(this.getDefaultNickName());
                     } else {
                         this.renderNicknameForm(message);
@@ -1571,7 +1570,11 @@
                      * We put this in a separate method so that it can be
                      * overridden by plugins.
                      */
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    if (_converse.muc_nickname) {
+                      return _converse.muc_nickname;
+                    } else {
+                      return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
                 },
 
                 onNicknameClash (presence) {

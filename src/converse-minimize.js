@@ -61,12 +61,13 @@
 
             ChatBox: {
                 initialize () {
+                    const { _converse } = this.__super__;
                     this.__super__.initialize.apply(this, arguments);
                     if (this.get('id') === 'controlbox') {
                         return;
                     }
                     this.save({
-                        'minimized': this.get('minimized') || false,
+                        'minimized': this.get('minimized') || _converse.auto_minimize,
                         'time_minimized': this.get('time_minimized') || moment(),
                     });
                 },
@@ -317,6 +318,7 @@
 
             _converse.api.settings.update({
                 no_trimming: false, // Set to true for phantomjs tests (where browser apparently has no width)
+                auto_minimize: false
             });
 
             _converse.api.promises.add('minimizedChatsInitialized');

@@ -8,9 +8,6 @@
     "locale": "locale",
     "src": "src"
   },
-  "scripts": {
-    "test": ""
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/jcbrand/converse.js.git"
@@ -32,11 +29,11 @@
     "browser": "*"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-beta.32",
+    "@babel/preset-env": "^7.0.0-beta.32",
     "almond": "~0.3.3",
     "awesomplete-avoid-xss": "^1.1.2",
-    "babel-cli": "^6.18.0",
-    "babel-preset-env": "^1.5.2",
-    "babel-preset-latest": "^6.16.0",
+    "babel-cli": "^7.0.0-beta.3",
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.3",
     "backbone.overview": "0.0.3",

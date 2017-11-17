@@ -54,7 +54,7 @@ bottom of your page (after the closing *</body>* element)::
 
     <script>
         converse.initialize({
-            bosh_service_url: 'https://bind.conversejs.org', // Please use this connection manager only for testing purposes
+            bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
             show_controlbox_by_default: true
         });
     </script>

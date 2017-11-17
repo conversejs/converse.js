@@ -1,0 +1,14 @@
+<div class="chat-head chat-head-chatbox">
+    <a class="chatbox-btn close-chatbox-button icon-close" title="{{{o.info_close}}}"></a>
+    <canvas height="{{{o.avatar_height}}}px" width="{{{o.avatar_width}}}px" class="avatar"></canvas>
+    <div class="chat-title">
+        {[ if (o.url) { ]}
+            <a href="{{{o.url}}}" target="_blank" rel="noopener" class="user">
+        {[ } ]}
+                {{{ o.fullname }}}
+        {[ if (o.url) { ]}
+            </a>
+        {[ } ]}
+        <p class="user-custom-message">{{{ o.status }}}</p>
+    </div>
+</div>

@@ -7,6 +7,7 @@
 - #949 Don't flash the roster contacts filter (i.e. hide by default)
 - Don't require `auto_login` to be `true` when using the API to log in.
 - Moment locale wasn't being set to the value passed via the `i18n` option.
+- In the chat heading, two avatars sometimes get rendered.
 - Refetch the roster from the server after reconnection.
   From the perspective of the XMPP server, this is an entirely new login,
   and therefore as per [RFC-6121](https://tools.ietf.org/html/rfc6121#section-2.1.6)

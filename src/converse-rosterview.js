@@ -148,6 +148,7 @@
                 renderHTML () {
                     return tpl_roster_filter(
                         _.extend(this.model.toJSON(), {
+                            visible: this.shouldBeVisible(),
                             placeholder: __('Filter'),
                             label_contacts: LABEL_CONTACTS,
                             label_groups: LABEL_GROUPS,
@@ -232,6 +233,18 @@
                     return false;
                 },
 
+                shouldBeVisible () {
+                    return _converse.roster.length >= 7 || this.isActive();
+                },
+
+                showOrHide () {
+                    if (this.shouldBeVisible) {
+                        this.show();
+                    } else {
+                        this.hide();
+                    }
+                },
+
                 show () {
                     if (utils.isVisible(this.el)) { return this; }
                     this.el.classList.add('fade-in');
@@ -241,10 +254,6 @@
 
                 hide () {
                     if (!utils.isVisible(this.el)) { return this; }
-                    if (this.el.querySelector('.roster-filter').value.length > 0) {
-                        // Don't hide if user is currently filtering.
-                        return;
-                    }
                     this.model.save({
                         'filter_text': '',
                         'chat_state': ''
@@ -335,11 +344,7 @@
                     if (!utils.isVisible(this.el)) {
                         return;
                     }
-                    if (_converse.roster.length >= 10) {
-                        this.filter_view.show();
-                    } else if (!this.filter_view.isActive()) {
-                        this.filter_view.hide();
-                    }
+                    this.filter_view.showOrHide();
                     return this;
                 },
 

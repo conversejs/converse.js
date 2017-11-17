@@ -62,27 +62,26 @@
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.hide, this);
                     this.model.on('change:minimized', this.onMinimizedChanged, this);
-                    this.render().fetchMessages().insertIntoDOM().hide();
+
+                    this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
+                    _converse.emit('chatBoxOpened', this);
                     _converse.emit('chatBoxInitialized', this);
                 },
 
                 render () {
                     this.$el.attr('id', this.model.get('box_id'))
-                        .html(tpl_chatbox(
-                                _.extend(this.model.toJSON(), {
-                                        show_toolbar: _converse.show_toolbar,
-                                        show_textarea: false,
-                                        show_send_button: _converse.show_send_button,
-                                        title: this.model.get('fullname'),
-                                        unread_msgs: __('You have unread messages'),
-                                        info_close: __('Close this box'),
-                                        label_personal_message: ''
-                                    }
-                                )
-                            )
-                        );
+                    this.el.innerHTML = tpl_chatbox(
+                        _.extend(this.model.toJSON(), {
+                                info_close: '',
+                                label_personal_message: '',
+                                show_avatar: false,
+                                show_send_button: false,
+                                show_textarea: false,
+                                show_toolbar: false,
+                                unread_msgs: ''
+                            }
+                        ));
                     this.$content = this.$el.find('.chat-content');
-                    _converse.emit('chatBoxOpened', this);
                     utils.refreshWebkit();
                     return this;
                 }

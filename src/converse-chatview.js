@@ -274,9 +274,6 @@
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
 
-                    this.heading = new _converse.ChatBoxHeading({'model': this.model});
-                    this.heading.render();
-                    this.heading.chatview = this;
 
                     this.render().renderToolbar().insertHeading().fetchMessages();
                     utils.refreshWebkit();
@@ -288,20 +285,24 @@
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
-                                show_toolbar: _converse.show_toolbar,
-                                show_textarea: true,
-                                show_send_button: _converse.show_send_button,
-                                unread_msgs: __('You have unread messages'),
                                 label_personal_message: __('Personal message'),
-                                label_send: __('Send')
+                                label_send: __('Send'),
+                                show_avatar: true,
+                                show_send_button: _converse.show_send_button,
+                                show_textarea: true,
+                                show_toolbar: _converse.show_toolbar,
+                                unread_msgs: __('You have unread messages')
                             }
-                        )
-                    );
+                        ));
                     this.$content = this.$el.find('.chat-content');
                     return this;
                 },
 
                 insertHeading () {
+                    this.heading = new _converse.ChatBoxHeading({'model': this.model});
+                    this.heading.render();
+                    this.heading.chatview = this;
+
                     const flyout = this.el.querySelector('.flyout');
                     flyout.insertBefore(this.heading.el, flyout.querySelector('.chat-body'));
                     return this;

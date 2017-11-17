@@ -385,45 +385,43 @@
                     test_utils.openControlBox();
                     test_utils.openContactsPanel(_converse);
 
-                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        view, $toolbar, $textarea;
+                    var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.openChatBoxFor(_converse, contact_jid);
-                    view = _converse.chatboxviews.get(contact_jid);
-                    $toolbar = view.$el.find('ul.chat-toolbar');
-                    $textarea = view.$el.find('textarea.chat-textarea');
-                    expect($toolbar.children('li.toggle-smiley').length).toBe(1);
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    var toolbar = view.el.querySelector('ul.chat-toolbar');
+                    expect(toolbar.querySelectorAll('li.toggle-smiley').length).toBe(1);
                     // Register spies
                     spyOn(view, 'toggleEmojiMenu').and.callThrough();
                     spyOn(view, 'insertEmoji').and.callThrough();
 
                     view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    $toolbar.children('li.toggle-smiley').click();
+                    toolbar.querySelector('li.toggle-smiley').click();
 
                     test_utils.waitUntil(function () {
-                        var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                        return $picker.is(':visible');
-                    }, 300).then(function () {
-                        var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
-                        var $items = $picker.find('.emoji-picker li');
-                        $items.first().click();
+                        return utils.isVisible(view.el.querySelector('.toggle-smiley .emoji-picker-container'));
+                    }, 150).then(function () {
+                        var picker = view.el.querySelector('.toggle-smiley .emoji-picker-container');
+                        var items = picker.querySelectorAll('.emoji-picker li');
+                        items[0].click()
                         expect(view.insertEmoji).toHaveBeenCalled();
-                        test_utils.waitUntil(function () {
+                        toolbar.querySelector('li.toggle-smiley').click(); // Close the panel again
+                        return test_utils.waitUntil(function () {
                             return !view.el.querySelector('.toggle-smiley .toolbar-menu').offsetHeight;
-                        }, 300)
-                    .then(function () {
-                        $toolbar.children('li.toggle-smiley').click();
+                        }, 300);
+                    }).then(function () {
+                        toolbar.querySelector('li.toggle-smiley').click();
                         expect(view.toggleEmojiMenu).toHaveBeenCalled();
-
-                        test_utils.waitUntil(function () {
+                        return test_utils.waitUntil(function () {
                             var $picker = view.$el.find('.toggle-smiley .emoji-picker-container');
                             return $picker.is(':visible');
-                        }, 300)
-                    .then(function () {
-                        view.$el.find('.toggle-smiley ul').children('li').last().click();
-                        expect(view.$el.find('textarea.chat-textarea').val()).toBe(':grinning: ');
+                        }, 300);
+                    }).then(function () {
+                        var nodes = view.el.querySelectorAll('.toggle-smiley ul li');
+                        nodes[nodes.length-1].click();
+                        expect(view.el.querySelector('textarea.chat-textarea').value).toBe(':grinning: ');
                         expect(view.insertEmoji).toHaveBeenCalled();
                         done();
-                    }); }); });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }));
 
                 it("contains a button for starting an encrypted chat session",

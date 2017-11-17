@@ -72,6 +72,7 @@ require.config({
         "converse-notification":    "src/converse-notification",
         "converse-otr":             "src/converse-otr",
         "converse-ping":            "src/converse-ping",
+        "converse-profile":         "src/converse-profile",
         "converse-register":        "src/converse-register",
         "converse-roomslist":       "src/converse-roomslist",
         "converse-rosterview":      "src/converse-rosterview",

@@ -78,6 +78,7 @@
         'converse-notification',
         'converse-otr',
         'converse-ping',
+        'converse-profile',
         'converse-register',
         'converse-roomslist',
         'converse-rosterview',

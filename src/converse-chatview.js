@@ -218,55 +218,23 @@
                 }
             });
 
-            _converse.ChatBoxHeading = Backbone.VDOMView.extend({
+            _converse.ChatBoxHeading = Backbone.View.extend({
 
                 initialize () {
                     this.model.on('change:image', this.setAvatar, this);
                     this.model.on('change:status', this.onStatusMessageChanged, this);
                     this.model.on('change:fullname', this.render, this);
-                    this.initializeAvatar();
                 },
 
-                renderHTML () {
-                    return tpl_chatbox_head(
+                render () {
+                    this.el.innerHTML = tpl_chatbox_head(
                         _.extend(this.model.toJSON(), {
                             'avatar_width': _converse.chatview_avatar_width,
                             'avatar_height': _converse.chatview_avatar_height,
                             'info_close': __('Close this chat box'),
                         })
                     );
-                },
-
-                afterRender () {
-                    this.setAvatar();
-                },
-
-                setAvatar () {
-                    this.avatar.src = `data:${this.model.get('image_type')};base64,${this.model.get('image')}`;
-                },
-
-                initializeAvatar () {
-                    var that = this;
-                    this.avatar = new Image();
-                    this.avatar.onload = function () {
-                        const canvas = that.el.querySelector('canvas');
-                        const avatar_width = _converse.chatview_avatar_width;
-                        const avatar_height = _converse.chatview_avatar_height;
-
-                        // XXX: this seems to be needed to work around the
-                        // chrome setting width/height to 0 (possible due to
-                        // no canvas data being there?)
-                        canvas.setAttribute('width', avatar_width);
-                        canvas.setAttribute('height', avatar_height);
-
-                        const ctx = canvas.getContext('2d');
-                        const ratio = this.width/this.height;
-                        if (ratio < 1) {
-                            ctx.drawImage(this, 0,0, avatar_width, avatar_height*(1/ratio));
-                        } else {
-                            ctx.drawImage(this, 0,0, avatar_width, avatar_height*ratio);
-                        }
-                    };
+                    return this;
                 },
 
                 onStatusMessageChanged (item) {

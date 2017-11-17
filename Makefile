@@ -153,7 +153,9 @@ watchjs: stamp-npm
 	$(BABEL) --source-maps --watch=./src --out-dir=./builds
 
 transpile: stamp-npm src
-	$(BABEL) --source-maps --out-dir=./builds ./src && touch transpile
+	$(BABEL) --source-maps --out-dir=./builds ./src
+	$(BABEL) --source-maps --out-dir=./builds ./node_modules/backbone.vdomview/backbone.vdomview.js
+	touch transpile
 
 BUILDS = dist/converse.js \
 		 dist/converse.min.js \

@@ -1439,7 +1439,7 @@
   #converse-embedded-chat .chat-head .avatar,
   #conversejs .chat-head .avatar {
     margin-right: 0.5em;
-    border-radius: 50%;
+    border-radius: 25%;
     float: left; }
   #converse-embedded-chat .chat-head.chat-head-chatbox,
   #conversejs .chat-head.chat-head-chatbox {

@@ -623,8 +623,8 @@
                     this.el.querySelector('.search-xmpp div').innerHTML = this.generateAddContactHTML();
                     var dropdown = this.el.querySelector('.contact-form-container');
                     utils.slideToggleElement(dropdown).then(() => {
-                        if ($(dropdown).is(':visible')) {
-                            $(dropdown).find('input.username').focus();
+                        if (utils.isVisible(dropdown)) {
+                            dropdown.querySelector('input.username').focus();
                         }
                     });
                 },
@@ -655,8 +655,8 @@
 
                 addContactFromForm (ev) {
                     ev.preventDefault();
-                    const $input = $(ev.target).find('input');
-                    const jid = $input.val();
+                    const input = ev.target.querySelector('input');
+                    const jid = input.value;
                     if (!jid || _.filter(jid.split('@')).length < 2) {
                         this.el.querySelector('.search-xmpp div').innerHTML =
                             this.generateAddContactHTML({
@@ -673,11 +673,11 @@
 
                 addContactFromList (ev) {
                     ev.preventDefault();
-                    const $target = $(ev.target),
-                        jid = $target.attr('data-recipient'),
-                        name = $target.text();
+                    const jid = ev.target.getAttribute('data-recipient'),
+                        name = ev.target.textContent;
                     _converse.roster.addAndSubscribe(jid, name);
-                    $target.parent().remove();
+                    const parent = ev.target.parentNode;
+                    parent.parentNode.removeChild(parent);
                     utils.slideIn(this.el.querySelector('.contact-form-container'));
                 }
             });
@@ -752,7 +752,7 @@
 
                 onClick (e) {
                     e.preventDefault();
-                    if ($("div#controlbox").is(':visible')) {
+                    if (utils.isVisible(document.querySelector("#controlbox"))) {
                         const controlbox = _converse.chatboxes.get('controlbox');
                         if (_converse.connection.connected) {
                             controlbox.save({closed: true});

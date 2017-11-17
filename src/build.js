@@ -3,6 +3,7 @@
     name: "almond",
     mainConfigFile: 'config.js',
     paths: {
+        "backbone.vdomview":        "builds/backbone.vdomview",
         "converse-bookmarks":       "builds/converse-bookmarks",
         "converse-chatboxes":       "builds/converse-chatboxes",
         "converse-chatview":        "builds/converse-chatview",

@@ -1,9 +1,9 @@
 {
   "presets": [
-		["env", {
-			"targets": {
-				"browsers": ["last 2 versions", "safari >= 10", "IE 11"]
-			}
-		}]
+    ["@babel/preset-env", {
+      "targets": {
+		"browsers": ["last 2 versions", "safari >= 10", "IE >= 11"]
+      }
+    }]
   ]
 }

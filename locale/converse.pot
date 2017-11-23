@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-23 12:08+0100\n"
+"POT-Creation-Date: 2017-11-23 15:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,7 +96,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:13278
 #: dist/converse-no-dependencies.js:13539
-#: dist/converse-no-dependencies.js:26098
+#: dist/converse-no-dependencies.js:26093
 msgid "has gone away"
 msgstr ""
 
@@ -119,12 +119,12 @@ msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:13537
-#: dist/converse-no-dependencies.js:26096
+#: dist/converse-no-dependencies.js:26091
 msgid "has gone offline"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:13541
-#: dist/converse-no-dependencies.js:26100
+#: dist/converse-no-dependencies.js:26095
 msgid "is busy"
 msgstr ""
 
@@ -598,7 +598,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:21323
 #: dist/converse-no-dependencies.js:23289
-#: dist/converse-no-dependencies.js:25073
+#: dist/converse-no-dependencies.js:25068
 msgid "Cancel"
 msgstr ""
 
@@ -631,13 +631,13 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:21826
 #, javascript-format
-msgid "This action was done by %1$s"
+msgid "This action was done by %1$s."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21844
 #, javascript-format
-msgid "The reason given is: \"%1$s\""
+msgid "The reason given is: \"%1$s\"."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:21864
@@ -999,20 +999,20 @@ msgstr ""
 msgid "Are you sure you want to leave the room \"%1$s\"?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24614
+#: dist/converse-no-dependencies.js:24609
 msgid "Re-establishing encrypted session"
 msgstr ""
 
 #. We need to generate a new key and instance tag
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Generating private key."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Your browser might become unresponsive."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24668
+#: dist/converse-no-dependencies.js:24663
 #, javascript-format
 msgid ""
 "Authentication request from %1$s\n"
@@ -1023,45 +1023,45 @@ msgid ""
 "%2$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24677
+#: dist/converse-no-dependencies.js:24672
 msgid "Could not verify this user's identify."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24731
+#: dist/converse-no-dependencies.js:24726
 msgid "Exchanging private key with contact."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24834
+#: dist/converse-no-dependencies.js:24829
 msgid "Your messages are not encrypted anymore"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24836
+#: dist/converse-no-dependencies.js:24831
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24838
+#: dist/converse-no-dependencies.js:24833
 msgid "Your contact's identify has been verified."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24840
+#: dist/converse-no-dependencies.js:24835
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24850
+#: dist/converse-no-dependencies.js:24845
 msgid "Your message could not be sent"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24852
+#: dist/converse-no-dependencies.js:24847
 msgid "We received an unencrypted message"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24854
+#: dist/converse-no-dependencies.js:24849
 msgid "We received an unreadable encrypted message"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24882
+#: dist/converse-no-dependencies.js:24877
 #, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
@@ -1075,7 +1075,7 @@ msgid ""
 "Cancel."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24894
+#: dist/converse-no-dependencies.js:24889
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -1084,57 +1084,57 @@ msgid ""
 "exact same answer (case sensitive), their identity will be verified."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24895
+#: dist/converse-no-dependencies.js:24890
 msgid "What is your security question?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24898
+#: dist/converse-no-dependencies.js:24893
 msgid "What is the answer to the security question?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24902
+#: dist/converse-no-dependencies.js:24897
 msgid "Invalid authentication scheme provided"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24919
+#: dist/converse-no-dependencies.js:24914
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24921
+#: dist/converse-no-dependencies.js:24916
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24923
+#: dist/converse-no-dependencies.js:24918
 msgid "Your messages are encrypted and your contact verified."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24925
+#: dist/converse-no-dependencies.js:24920
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24944
+#: dist/converse-no-dependencies.js:24939
 msgid "End encrypted conversation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24945
+#: dist/converse-no-dependencies.js:24940
 msgid "Refresh encrypted conversation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24946
+#: dist/converse-no-dependencies.js:24941
 msgid "Start encrypted conversation"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24947
+#: dist/converse-no-dependencies.js:24942
 msgid "Verify with fingerprints"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24948
+#: dist/converse-no-dependencies.js:24943
 msgid "Verify with SMP"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24949
+#: dist/converse-no-dependencies.js:24944
 msgid "What's this?"
 msgstr ""
 
@@ -1144,140 +1144,140 @@ msgstr ""
 #. has been initialized and with it the i18n machinery. That's why
 #. we do it here in the "initialize" method and not at the top of
 #. the module.
-#: dist/converse-no-dependencies.js:24981
+#: dist/converse-no-dependencies.js:24976
 msgid "unencrypted"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24982
+#: dist/converse-no-dependencies.js:24977
 msgid "unverified"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24983
+#: dist/converse-no-dependencies.js:24978
 msgid "verified"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24984
+#: dist/converse-no-dependencies.js:24979
 msgid "finished"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24997
+#: dist/converse-no-dependencies.js:24992
 msgid "Don't have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24999
+#: dist/converse-no-dependencies.js:24994
 msgid "Create an account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25009
+#: dist/converse-no-dependencies.js:25004
 msgid "Create your account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25011
+#: dist/converse-no-dependencies.js:25006
 msgid "Please enter the XMPP provider to register with:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25033
+#: dist/converse-no-dependencies.js:25028
 msgid "Already have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25035
+#: dist/converse-no-dependencies.js:25030
 msgid "Log in here"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25045
+#: dist/converse-no-dependencies.js:25040
 msgid "Account Registration:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25053
+#: dist/converse-no-dependencies.js:25048
 msgid "Register"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25057
+#: dist/converse-no-dependencies.js:25052
 msgid "Choose a different provider"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25069
+#: dist/converse-no-dependencies.js:25064
 msgid "Hold tight, we're fetching the registration form…"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25201
+#: dist/converse-no-dependencies.js:25196
 msgid " e.g. conversejs.org"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25238
+#: dist/converse-no-dependencies.js:25233
 msgid "Fetch registration form"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25239
+#: dist/converse-no-dependencies.js:25234
 msgid "Tip: A list of public XMPP providers is available"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25240
+#: dist/converse-no-dependencies.js:25235
 msgid "here"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25288
+#: dist/converse-no-dependencies.js:25283
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25304
+#: dist/converse-no-dependencies.js:25299
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25328
+#: dist/converse-no-dependencies.js:25323
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
 "sure it exists?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25491
+#: dist/converse-no-dependencies.js:25486
 msgid "Now logging you in"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25495
+#: dist/converse-no-dependencies.js:25490
 msgid "Registered successfully"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25604
+#: dist/converse-no-dependencies.js:25599
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr ""
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:26046
-#: dist/converse-no-dependencies.js:26052
+#: dist/converse-no-dependencies.js:26041
+#: dist/converse-no-dependencies.js:26047
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26054
-#: dist/converse-no-dependencies.js:26065
-#: dist/converse-no-dependencies.js:26068
+#: dist/converse-no-dependencies.js:26049
+#: dist/converse-no-dependencies.js:26060
+#: dist/converse-no-dependencies.js:26063
 #, javascript-format
 msgid "%1$s says"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26102
+#: dist/converse-no-dependencies.js:26097
 msgid "has come online"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26119
+#: dist/converse-no-dependencies.js:26114
 msgid "wants to be your contact"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26444
-#: dist/converse-no-dependencies.js:26809
+#: dist/converse-no-dependencies.js:26439
+#: dist/converse-no-dependencies.js:26804
 msgid "Minimize this chat box"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26586
+#: dist/converse-no-dependencies.js:26581
 msgid "Click to restore this chat"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26785
+#: dist/converse-no-dependencies.js:26780
 msgid "Minimized"
 msgstr ""

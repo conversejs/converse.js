@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-23 12:08+0100\n"
+"POT-Creation-Date: 2017-11-23 15:19+0100\n"
 "PO-Revision-Date: 2016-04-07 10:23+0000\n"
 "Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
 "Language-Team: Hungarian\n"
@@ -101,7 +101,7 @@ msgstr "már nem gépel"
 
 #: dist/converse-no-dependencies.js:13278
 #: dist/converse-no-dependencies.js:13539
-#: dist/converse-no-dependencies.js:26098
+#: dist/converse-no-dependencies.js:26093
 msgid "has gone away"
 msgstr "távol van"
 
@@ -124,12 +124,12 @@ msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Törölni szeretné az eddigi üzeneteket?"
 
 #: dist/converse-no-dependencies.js:13537
-#: dist/converse-no-dependencies.js:26096
+#: dist/converse-no-dependencies.js:26091
 msgid "has gone offline"
 msgstr "kijelentkezett"
 
 #: dist/converse-no-dependencies.js:13541
-#: dist/converse-no-dependencies.js:26100
+#: dist/converse-no-dependencies.js:26095
 msgid "is busy"
 msgstr "elfoglalt"
 
@@ -615,7 +615,7 @@ msgstr "Elnémított felhasználók is küldhetnek üzeneteket"
 
 #: dist/converse-no-dependencies.js:21323
 #: dist/converse-no-dependencies.js:23289
-#: dist/converse-no-dependencies.js:25073
+#: dist/converse-no-dependencies.js:25068
 msgid "Cancel"
 msgstr "Mégsem"
 
@@ -650,13 +650,13 @@ msgstr "Jelszó: "
 
 #: dist/converse-no-dependencies.js:21826
 #, fuzzy, javascript-format
-msgid "This action was done by %1$s"
+msgid "This action was done by %1$s."
 msgstr "A beceneved a következőre módosult: %1$s"
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21844
 #, fuzzy, javascript-format
-msgid "The reason given is: \"%1$s\""
+msgid "The reason given is: \"%1$s\"."
 msgstr "Az indok: \""
 
 #: dist/converse-no-dependencies.js:21864
@@ -1047,20 +1047,20 @@ msgstr "Nyitott szoba"
 msgid "Are you sure you want to leave the room \"%1$s\"?"
 msgstr "Valóban törölni szeretné a csevegőpartnerét?"
 
-#: dist/converse-no-dependencies.js:24614
+#: dist/converse-no-dependencies.js:24609
 msgid "Re-establishing encrypted session"
 msgstr "Titkosított kapcsolat újraépítése"
 
 #. We need to generate a new key and instance tag
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Generating private key."
 msgstr "Privát kulcs generálása"
 
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Your browser might become unresponsive."
 msgstr "Előfordulhat, hogy a böngésző futása megáll."
 
-#: dist/converse-no-dependencies.js:24668
+#: dist/converse-no-dependencies.js:24663
 #, javascript-format
 msgid ""
 "Authentication request from %1$s\n"
@@ -1076,47 +1076,47 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: dist/converse-no-dependencies.js:24677
+#: dist/converse-no-dependencies.js:24672
 msgid "Could not verify this user's identify."
 msgstr "A felhasználó ellenőrzése sikertelen."
 
-#: dist/converse-no-dependencies.js:24731
+#: dist/converse-no-dependencies.js:24726
 msgid "Exchanging private key with contact."
 msgstr "Privát kulcs cseréje..."
 
-#: dist/converse-no-dependencies.js:24834
+#: dist/converse-no-dependencies.js:24829
 msgid "Your messages are not encrypted anymore"
 msgstr "Az üzenetek mostantól már nem titkosítottak"
 
-#: dist/converse-no-dependencies.js:24836
+#: dist/converse-no-dependencies.js:24831
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
 msgstr ""
 "Az üzenetek titikosítva vannak, de a csevegőpartnerét még nem hitelesítette."
 
-#: dist/converse-no-dependencies.js:24838
+#: dist/converse-no-dependencies.js:24833
 msgid "Your contact's identify has been verified."
 msgstr "A csevegőpartnere hitelesítve lett."
 
-#: dist/converse-no-dependencies.js:24840
+#: dist/converse-no-dependencies.js:24835
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
 "A csevegőpartnere kikapcsolta a titkosítást, így Önnek is ezt kellene tennie."
 
-#: dist/converse-no-dependencies.js:24850
+#: dist/converse-no-dependencies.js:24845
 msgid "Your message could not be sent"
 msgstr "Az üzenet elküldése nem sikerült"
 
-#: dist/converse-no-dependencies.js:24852
+#: dist/converse-no-dependencies.js:24847
 msgid "We received an unencrypted message"
 msgstr "Titkosítatlan üzenet érkezett"
 
-#: dist/converse-no-dependencies.js:24854
+#: dist/converse-no-dependencies.js:24849
 msgid "We received an unreadable encrypted message"
 msgstr "Visszafejthetetlen titkosított üzenet érkezett"
 
-#: dist/converse-no-dependencies.js:24882
+#: dist/converse-no-dependencies.js:24877
 #, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
@@ -1138,7 +1138,7 @@ msgstr ""
 "Amennyiben az ujjlenyomatok biztosan egyeznek, klikkeljen az OK, ellenkező "
 "esetben a Mégse gombra."
 
-#: dist/converse-no-dependencies.js:24894
+#: dist/converse-no-dependencies.js:24889
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -1151,57 +1151,57 @@ msgstr ""
 "Majd a csevegőpartnerének is megjelenik ez a kérdés. Végül ha a válaszok "
 "azonosak lesznek (kis- nagybetű érzékeny), a partner hitelesítetté válik."
 
-#: dist/converse-no-dependencies.js:24895
+#: dist/converse-no-dependencies.js:24890
 msgid "What is your security question?"
 msgstr "Mi legyen a biztonsági kérdés?"
 
-#: dist/converse-no-dependencies.js:24898
+#: dist/converse-no-dependencies.js:24893
 msgid "What is the answer to the security question?"
 msgstr "Mi a válasz a biztonsági kérdésre?"
 
-#: dist/converse-no-dependencies.js:24902
+#: dist/converse-no-dependencies.js:24897
 msgid "Invalid authentication scheme provided"
 msgstr "Érvénytelen hitelesítési séma."
 
-#: dist/converse-no-dependencies.js:24919
+#: dist/converse-no-dependencies.js:24914
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr "Az üzenetek titkosítatlanok. OTR titkosítás aktiválása."
 
-#: dist/converse-no-dependencies.js:24921
+#: dist/converse-no-dependencies.js:24916
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr "Az üzenetek titikosítottak, de a csevegőpartnere még nem hitelesített."
 
-#: dist/converse-no-dependencies.js:24923
+#: dist/converse-no-dependencies.js:24918
 msgid "Your messages are encrypted and your contact verified."
 msgstr "Az üzenetek titikosítottak és a csevegőpartnere hitelesített."
 
-#: dist/converse-no-dependencies.js:24925
+#: dist/converse-no-dependencies.js:24920
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr "A csevegőpartnere lezárta a magán beszélgetést"
 
-#: dist/converse-no-dependencies.js:24944
+#: dist/converse-no-dependencies.js:24939
 msgid "End encrypted conversation"
 msgstr "Titkosított kapcsolat vége"
 
-#: dist/converse-no-dependencies.js:24945
+#: dist/converse-no-dependencies.js:24940
 msgid "Refresh encrypted conversation"
 msgstr "A titkosított kapcsolat frissítése"
 
-#: dist/converse-no-dependencies.js:24946
+#: dist/converse-no-dependencies.js:24941
 msgid "Start encrypted conversation"
 msgstr "Titkosított beszélgetés indítása"
 
-#: dist/converse-no-dependencies.js:24947
+#: dist/converse-no-dependencies.js:24942
 msgid "Verify with fingerprints"
 msgstr "Ellenőrzés újjlenyomattal"
 
-#: dist/converse-no-dependencies.js:24948
+#: dist/converse-no-dependencies.js:24943
 msgid "Verify with SMP"
 msgstr "Ellenőrzés SMP-vel"
 
-#: dist/converse-no-dependencies.js:24949
+#: dist/converse-no-dependencies.js:24944
 msgid "What's this?"
 msgstr "Mi ez?"
 
@@ -1211,83 +1211,83 @@ msgstr "Mi ez?"
 #. has been initialized and with it the i18n machinery. That's why
 #. we do it here in the "initialize" method and not at the top of
 #. the module.
-#: dist/converse-no-dependencies.js:24981
+#: dist/converse-no-dependencies.js:24976
 msgid "unencrypted"
 msgstr "titkosítatlan"
 
-#: dist/converse-no-dependencies.js:24982
+#: dist/converse-no-dependencies.js:24977
 msgid "unverified"
 msgstr "nem hitelesített"
 
-#: dist/converse-no-dependencies.js:24983
+#: dist/converse-no-dependencies.js:24978
 msgid "verified"
 msgstr "hitelesített"
 
-#: dist/converse-no-dependencies.js:24984
+#: dist/converse-no-dependencies.js:24979
 msgid "finished"
 msgstr "befejezett"
 
-#: dist/converse-no-dependencies.js:24997
+#: dist/converse-no-dependencies.js:24992
 msgid "Don't have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:24999
+#: dist/converse-no-dependencies.js:24994
 msgid "Create an account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25009
+#: dist/converse-no-dependencies.js:25004
 msgid "Create your account"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25011
+#: dist/converse-no-dependencies.js:25006
 msgid "Please enter the XMPP provider to register with:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25033
+#: dist/converse-no-dependencies.js:25028
 msgid "Already have a chat account?"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25035
+#: dist/converse-no-dependencies.js:25030
 msgid "Log in here"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25045
+#: dist/converse-no-dependencies.js:25040
 msgid "Account Registration:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25053
+#: dist/converse-no-dependencies.js:25048
 msgid "Register"
 msgstr "Regisztráció"
 
-#: dist/converse-no-dependencies.js:25057
+#: dist/converse-no-dependencies.js:25052
 msgid "Choose a different provider"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25069
+#: dist/converse-no-dependencies.js:25064
 msgid "Hold tight, we're fetching the registration form…"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25201
+#: dist/converse-no-dependencies.js:25196
 msgid " e.g. conversejs.org"
 msgstr "pl. conversejs.org"
 
-#: dist/converse-no-dependencies.js:25238
+#: dist/converse-no-dependencies.js:25233
 msgid "Fetch registration form"
 msgstr "Regisztrációs űrlap"
 
-#: dist/converse-no-dependencies.js:25239
+#: dist/converse-no-dependencies.js:25234
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Tipp: A nyílvános XMPP szolgáltatókról egy lista elérhető"
 
-#: dist/converse-no-dependencies.js:25240
+#: dist/converse-no-dependencies.js:25235
 msgid "here"
 msgstr "itt"
 
-#: dist/converse-no-dependencies.js:25288
+#: dist/converse-no-dependencies.js:25283
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:25304
+#: dist/converse-no-dependencies.js:25299
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1295,7 +1295,7 @@ msgstr ""
 "A megadott szolgáltató nem támogatja a csevegőn keresztüli regisztrációt. "
 "Próbáljon meg egy másikat."
 
-#: dist/converse-no-dependencies.js:25328
+#: dist/converse-no-dependencies.js:25323
 #, fuzzy, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1304,15 +1304,15 @@ msgstr ""
 "Hiba történt a(z) \"%1$s\" kapcsolódásakor. Biztos benne, hogy ez létező "
 "kiszolgáló?"
 
-#: dist/converse-no-dependencies.js:25491
+#: dist/converse-no-dependencies.js:25486
 msgid "Now logging you in"
 msgstr "Belépés..."
 
-#: dist/converse-no-dependencies.js:25495
+#: dist/converse-no-dependencies.js:25490
 msgid "Registered successfully"
 msgstr "Sikeres regisztráció"
 
-#: dist/converse-no-dependencies.js:25604
+#: dist/converse-no-dependencies.js:25599
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1321,38 +1321,38 @@ msgstr ""
 "bevitt adatok pontosságát."
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:26046
-#: dist/converse-no-dependencies.js:26052
+#: dist/converse-no-dependencies.js:26041
+#: dist/converse-no-dependencies.js:26047
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26054
-#: dist/converse-no-dependencies.js:26065
-#: dist/converse-no-dependencies.js:26068
+#: dist/converse-no-dependencies.js:26049
+#: dist/converse-no-dependencies.js:26060
+#: dist/converse-no-dependencies.js:26063
 #, javascript-format
 msgid "%1$s says"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26102
+#: dist/converse-no-dependencies.js:26097
 #, fuzzy
 msgid "has come online"
 msgstr "kijelentkezett"
 
-#: dist/converse-no-dependencies.js:26119
+#: dist/converse-no-dependencies.js:26114
 msgid "wants to be your contact"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:26444
-#: dist/converse-no-dependencies.js:26809
+#: dist/converse-no-dependencies.js:26439
+#: dist/converse-no-dependencies.js:26804
 msgid "Minimize this chat box"
 msgstr "A csevegés minimalizálása"
 
-#: dist/converse-no-dependencies.js:26586
+#: dist/converse-no-dependencies.js:26581
 msgid "Click to restore this chat"
 msgstr "A csevegés visszaállítása"
 
-#: dist/converse-no-dependencies.js:26785
+#: dist/converse-no-dependencies.js:26780
 msgid "Minimized"
 msgstr "Minimalizálva"
 

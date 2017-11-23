@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-23 12:08+0100\n"
+"POT-Creation-Date: 2017-11-23 15:19+0100\n"
 "PO-Revision-Date: 2017-11-12 19:56+0100\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
@@ -107,7 +107,7 @@ msgstr "het opgehou tik"
 
 #: dist/converse-no-dependencies.js:13278
 #: dist/converse-no-dependencies.js:13539
-#: dist/converse-no-dependencies.js:26098
+#: dist/converse-no-dependencies.js:26093
 msgid "has gone away"
 msgstr "het weggegaan"
 
@@ -131,12 +131,12 @@ msgid "Are you sure you want to clear the messages from this chat box?"
 msgstr "Is u seker u wil die boodskappe in hierdie kletskas uitvee?"
 
 #: dist/converse-no-dependencies.js:13537
-#: dist/converse-no-dependencies.js:26096
+#: dist/converse-no-dependencies.js:26091
 msgid "has gone offline"
 msgstr "is nou aflyn"
 
 #: dist/converse-no-dependencies.js:13541
-#: dist/converse-no-dependencies.js:26100
+#: dist/converse-no-dependencies.js:26095
 msgid "is busy"
 msgstr "is besig"
 
@@ -617,7 +617,7 @@ msgstr "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
 
 #: dist/converse-no-dependencies.js:21323
 #: dist/converse-no-dependencies.js:23289
-#: dist/converse-no-dependencies.js:25073
+#: dist/converse-no-dependencies.js:25068
 msgid "Cancel"
 msgstr "Kanseleer"
 
@@ -652,13 +652,13 @@ msgstr "Wagwoord: "
 
 #: dist/converse-no-dependencies.js:21826
 #, fuzzy, javascript-format
-msgid "This action was done by %1$s"
+msgid "This action was done by %1$s."
 msgstr "Hierdie aksie is uitgevoer deur: %1$s."
 
 #: dist/converse-no-dependencies.js:21830
 #: dist/converse-no-dependencies.js:21844
 #, fuzzy, javascript-format
-msgid "The reason given is: \"%1$s\""
+msgid "The reason given is: \"%1$s\"."
 msgstr "Die gegewe rede is: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:21864
@@ -1024,20 +1024,20 @@ msgstr "Oop kletskamers"
 msgid "Are you sure you want to leave the room \"%1$s\"?"
 msgstr "Is u seker u wil die kletskaner \"%1$s\" verlaat?"
 
-#: dist/converse-no-dependencies.js:24614
+#: dist/converse-no-dependencies.js:24609
 msgid "Re-establishing encrypted session"
 msgstr "Herstel versleutelde sessie"
 
 #. We need to generate a new key and instance tag
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Generating private key."
 msgstr "Genereer private sleutel."
 
-#: dist/converse-no-dependencies.js:24625
+#: dist/converse-no-dependencies.js:24620
 msgid "Your browser might become unresponsive."
 msgstr "U webblaaier mag tydelik onreageerbaar word."
 
-#: dist/converse-no-dependencies.js:24668
+#: dist/converse-no-dependencies.js:24663
 #, javascript-format
 msgid ""
 "Authentication request from %1$s\n"
@@ -1054,19 +1054,19 @@ msgstr ""
 "\n"
 "%2$s"
 
-#: dist/converse-no-dependencies.js:24677
+#: dist/converse-no-dependencies.js:24672
 msgid "Could not verify this user's identify."
 msgstr "Kon nie hierdie gebruiker se identitied bevestig nie."
 
-#: dist/converse-no-dependencies.js:24731
+#: dist/converse-no-dependencies.js:24726
 msgid "Exchanging private key with contact."
 msgstr "Sleutels word met gespreksmaat uitgeruil."
 
-#: dist/converse-no-dependencies.js:24834
+#: dist/converse-no-dependencies.js:24829
 msgid "Your messages are not encrypted anymore"
 msgstr "U boodskappe is nie meer versleutel nie"
 
-#: dist/converse-no-dependencies.js:24836
+#: dist/converse-no-dependencies.js:24831
 msgid ""
 "Your messages are now encrypted but your contact's identity has not been "
 "verified."
@@ -1074,28 +1074,28 @@ msgstr ""
 "U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog "
 "onseker."
 
-#: dist/converse-no-dependencies.js:24838
+#: dist/converse-no-dependencies.js:24833
 msgid "Your contact's identify has been verified."
 msgstr "U gespreksmaat se identiteit is bevestig."
 
-#: dist/converse-no-dependencies.js:24840
+#: dist/converse-no-dependencies.js:24835
 msgid "Your contact has ended encryption on their end, you should do the same."
 msgstr ""
 "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
 
-#: dist/converse-no-dependencies.js:24850
+#: dist/converse-no-dependencies.js:24845
 msgid "Your message could not be sent"
 msgstr "U boodskap kon nie gestuur word nie"
 
-#: dist/converse-no-dependencies.js:24852
+#: dist/converse-no-dependencies.js:24847
 msgid "We received an unencrypted message"
 msgstr "Ons het 'n onversleutelde boodskap ontvang"
 
-#: dist/converse-no-dependencies.js:24854
+#: dist/converse-no-dependencies.js:24849
 msgid "We received an unreadable encrypted message"
 msgstr "Ons het 'n onleesbare versleutelde boodskap ontvang"
 
-#: dist/converse-no-dependencies.js:24882
+#: dist/converse-no-dependencies.js:24877
 #, javascript-format
 msgid ""
 "Here are the fingerprints, please confirm them with %1$s, outside of this "
@@ -1118,7 +1118,7 @@ msgstr ""
 "Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik "
 "Kanselleer."
 
-#: dist/converse-no-dependencies.js:24894
+#: dist/converse-no-dependencies.js:24889
 msgid ""
 "You will be prompted to provide a security question and then an answer to "
 "that question.\n"
@@ -1133,61 +1133,61 @@ msgstr ""
 "dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit "
 "bevestig wees."
 
-#: dist/converse-no-dependencies.js:24895
+#: dist/converse-no-dependencies.js:24890
 msgid "What is your security question?"
 msgstr "Wat is u sekuriteitsvraag?"
 
-#: dist/converse-no-dependencies.js:24898
+#: dist/converse-no-dependencies.js:24893
 msgid "What is the answer to the security question?"
 msgstr "Wat is die antwoord tot die sekuriteitsvraag?"
 
-#: dist/converse-no-dependencies.js:24902
+#: dist/converse-no-dependencies.js:24897
 msgid "Invalid authentication scheme provided"
 msgstr "Ongeldige verifikasiemetode verskaf"
 
-#: dist/converse-no-dependencies.js:24919
+#: dist/converse-no-dependencies.js:24914
 msgid "Your messages are not encrypted. Click here to enable OTR encryption."
 msgstr ""
 "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te "
 "aktiveer."
 
-#: dist/converse-no-dependencies.js:24921
+#: dist/converse-no-dependencies.js:24916
 msgid "Your messages are encrypted, but your contact has not been verified."
 msgstr ""
 "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not onseker."
 
-#: dist/converse-no-dependencies.js:24923
+#: dist/converse-no-dependencies.js:24918
 msgid "Your messages are encrypted and your contact verified."
 msgstr "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
 
-#: dist/converse-no-dependencies.js:24925
+#: dist/converse-no-dependencies.js:24920
 msgid ""
 "Your contact has closed their end of the private session, you should do the "
 "same"
 msgstr ""
 "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
 
-#: dist/converse-no-dependencies.js:24944
+#: dist/converse-no-dependencies.js:24939
 msgid "End encrypted conversation"
 msgstr "Beëindig versleutelde gesprek"
 
-#: dist/converse-no-dependencies.js:24945
+#: dist/converse-no-dependencies.js:24940
 msgid "Refresh encrypted conversation"
 msgstr "Verfris versleutelde gesprek"
 
-#: dist/converse-no-dependencies.js:24946
+#: dist/converse-no-dependencies.js:24941
 msgid "Start encrypted conversation"
 msgstr "Begin versleutelde gesprek"
 
-#: dist/converse-no-dependencies.js:24947
+#: dist/converse-no-dependencies.js:24942
 msgid "Verify with fingerprints"
 msgstr "Bevestig met vingerafdrukke"
 
-#: dist/converse-no-dependencies.js:24948
+#: dist/converse-no-dependencies.js:24943
 msgid "Verify with SMP"
 msgstr "Bevestig met SMP"
 
-#: dist/converse-no-dependencies.js:24949
+#: dist/converse-no-dependencies.js:24944
 msgid "What's this?"
 msgstr "Wat is hierdie?"
 
@@ -1197,84 +1197,84 @@ msgstr "Wat is hierdie?"
 #. has been initialized and with it the i18n machinery. That's why
 #. we do it here in the "initialize" method and not at the top of
 #. the module.
-#: dist/converse-no-dependencies.js:24981
+#: dist/converse-no-dependencies.js:24976
 msgid "unencrypted"
 msgstr "nie-privaat"
 
-#: dist/converse-no-dependencies.js:24982
+#: dist/converse-no-dependencies.js:24977
 msgid "unverified"
 msgstr "onbevestig"
 
-#: dist/converse-no-dependencies.js:24983
+#: dist/converse-no-dependencies.js:24978
 msgid "verified"
 msgstr "privaat"
 
-#: dist/converse-no-dependencies.js:24984
+#: dist/converse-no-dependencies.js:24979
 msgid "finished"
 msgstr "afgesluit"
 
-#: dist/converse-no-dependencies.js:24997
+#: dist/converse-no-dependencies.js:24992
 msgid "Don't have a chat account?"
 msgstr "Geen kletsrekening nie?"
 
-#: dist/converse-no-dependencies.js:24999
+#: dist/converse-no-dependencies.js:24994
 msgid "Create an account"
 msgstr "Skep 'n rekening"
 
-#: dist/converse-no-dependencies.js:25009
+#: dist/converse-no-dependencies.js:25004
 msgid "Create your account"
 msgstr "Skep u rekening"
 
-#: dist/converse-no-dependencies.js:25011
+#: dist/converse-no-dependencies.js:25006
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Verskaf asseblief die XMPP verskaffer om mee te registreer:"
 
-#: dist/converse-no-dependencies.js:25033
+#: dist/converse-no-dependencies.js:25028
 msgid "Already have a chat account?"
 msgstr "Het u reeds 'n kletsrekening?"
 
-#: dist/converse-no-dependencies.js:25035
+#: dist/converse-no-dependencies.js:25030
 msgid "Log in here"
 msgstr "Meld hier aan"
 
-#: dist/converse-no-dependencies.js:25045
+#: dist/converse-no-dependencies.js:25040
 msgid "Account Registration:"
 msgstr "Registreer 'n rekening:"
 
-#: dist/converse-no-dependencies.js:25053
+#: dist/converse-no-dependencies.js:25048
 msgid "Register"
 msgstr "Registreer"
 
-#: dist/converse-no-dependencies.js:25057
+#: dist/converse-no-dependencies.js:25052
 msgid "Choose a different provider"
 msgstr "Kies 'n ander verskaffer"
 
-#: dist/converse-no-dependencies.js:25069
+#: dist/converse-no-dependencies.js:25064
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Wag 'n bietjie, ons gaan haal die registrasievorm"
 
-#: dist/converse-no-dependencies.js:25201
+#: dist/converse-no-dependencies.js:25196
 msgid " e.g. conversejs.org"
 msgstr " bv. conversejs.org"
 
-#: dist/converse-no-dependencies.js:25238
+#: dist/converse-no-dependencies.js:25233
 msgid "Fetch registration form"
 msgstr "Laai die registrasie form"
 
-#: dist/converse-no-dependencies.js:25239
+#: dist/converse-no-dependencies.js:25234
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Wenk: A lys van publieke XMPP-verskaffers is beskikbaar"
 
-#: dist/converse-no-dependencies.js:25240
+#: dist/converse-no-dependencies.js:25235
 msgid "here"
 msgstr "hier"
 
-#: dist/converse-no-dependencies.js:25288
+#: dist/converse-no-dependencies.js:25283
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr ""
 "Jammer, ons kon nie 'n verbinding met die gekose verskaffer opstel nie."
 
-#: dist/converse-no-dependencies.js:25304
+#: dist/converse-no-dependencies.js:25299
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1282,7 +1282,7 @@ msgstr ""
 "Jammer, die gekose verskaffer ondersteun nie in-band registrasie nie.Probeer "
 "weer met 'n ander verskaffer."
 
-#: dist/converse-no-dependencies.js:25328
+#: dist/converse-no-dependencies.js:25323
 #, fuzzy, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1291,15 +1291,15 @@ msgstr ""
 "Iets het fout geloop tydens koppeling met \"%1$s\". Is u seker dat dit "
 "bestaan?"
 
-#: dist/converse-no-dependencies.js:25491
+#: dist/converse-no-dependencies.js:25486
 msgid "Now logging you in"
 msgstr "U word nou aangemeld"
 
-#: dist/converse-no-dependencies.js:25495
+#: dist/converse-no-dependencies.js:25490
 msgid "Registered successfully"
 msgstr "Suksesvol geregistreer"
 
-#: dist/converse-no-dependencies.js:25604
+#: dist/converse-no-dependencies.js:25599
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1308,37 +1308,37 @@ msgstr ""
 "waardes vir korrektheid."
 
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:26046
-#: dist/converse-no-dependencies.js:26052
+#: dist/converse-no-dependencies.js:26041
+#: dist/converse-no-dependencies.js:26047
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "Kennisgewing van %1$s"
 
-#: dist/converse-no-dependencies.js:26054
-#: dist/converse-no-dependencies.js:26065
-#: dist/converse-no-dependencies.js:26068
+#: dist/converse-no-dependencies.js:26049
+#: dist/converse-no-dependencies.js:26060
+#: dist/converse-no-dependencies.js:26063
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s sê"
 
-#: dist/converse-no-dependencies.js:26102
+#: dist/converse-no-dependencies.js:26097
 msgid "has come online"
 msgstr "het aanlyn gekom"
 
-#: dist/converse-no-dependencies.js:26119
+#: dist/converse-no-dependencies.js:26114
 msgid "wants to be your contact"
 msgstr "wil jou kontak wees"
 
-#: dist/converse-no-dependencies.js:26444
-#: dist/converse-no-dependencies.js:26809
+#: dist/converse-no-dependencies.js:26439
+#: dist/converse-no-dependencies.js:26804
 msgid "Minimize this chat box"
 msgstr "Minimeer hierdie kletskas"
 
-#: dist/converse-no-dependencies.js:26586
+#: dist/converse-no-dependencies.js:26581
 msgid "Click to restore this chat"
 msgstr "Klik om hierdie klets te herstel"
 
-#: dist/converse-no-dependencies.js:26785
+#: dist/converse-no-dependencies.js:26780
 msgid "Minimized"
 msgstr "Geminimaliseer"
 

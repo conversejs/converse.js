@@ -256,7 +256,7 @@
                     if (stanza.getAttribute("type") === "error") {
                         _converse.connection._changeConnectStatus(
                             Strophe.Status.REGIFAIL,
-                            __('Something went wrong while establishing a connection with "%1$s".'+
+                            __('Something went wrong while establishing a connection with "%1$s". '+
                                'Are you sure it exists?', this.domain)
                         );
                         return false;

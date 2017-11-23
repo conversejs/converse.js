@@ -523,8 +523,8 @@
                     if (text.length > 8000) {
                         text = text.substring(0, 10) + '...';
                         this.showStatusNotification(
-                            __("A very large message has been received."+
-                               "This might be due to an attack meant to degrade the chat performance."+
+                            __("A very large message has been received. "+
+                               "This might be due to an attack meant to degrade the chat performance. "+
                                "Output has been shortened."),
                             true, true);
                     }

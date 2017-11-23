@@ -142,7 +142,7 @@
                         return;
                     }
                 } else if (!_.includes(from_jid, '@')) {
-                    // XXX: workaround for Prosody which doesn't give type "headline"
+                    // workaround for Prosody which doesn't give type "headline"
                     title = __("Notification from %1$s", from_jid);
                 } else if (message.getAttribute('type') === 'groupchat') {
                     title = __("%1$s says", Strophe.getResourceFromJid(full_from_jid));

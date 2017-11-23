@@ -1737,10 +1737,10 @@
                     if (notification.disconnected) {
                         this.showDisconnectMessage(notification.disconnection_message);
                         if (notification.actor) {
-                            this.showDisconnectMessage(__('This action was done by %1$s.', notification.actor));
+                            this.showDisconnectMessage(__('This action was done by %1$s', notification.actor));
                         }
                         if (notification.reason) {
-                            this.showDisconnectMessage(__('The reason given is: "%1$s".', notification.reason));
+                            this.showDisconnectMessage(__('The reason given is: "%1$s"', notification.reason));
                         }
                         this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         return;
@@ -1749,7 +1749,7 @@
                         this.$content.append(tpl_info({'message': message}));
                     });
                     if (notification.reason) {
-                        this.showStatusNotification(__('The reason given is: "%1$s "', notification.reason), true);
+                        this.showStatusNotification(__('The reason given is: "%1$s"', notification.reason), true);
                     }
                     if (notification.messages.length) {
                         this.scrollDown();

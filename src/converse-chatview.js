@@ -221,7 +221,7 @@
             _converse.ChatBoxHeading = Backbone.View.extend({
 
                 initialize () {
-                    this.model.on('change:image', this.setAvatar, this);
+                    this.model.on('change:image', this.render, this);
                     this.model.on('change:status', this.onStatusMessageChanged, this);
                     this.model.on('change:fullname', this.render, this);
                 },
@@ -287,7 +287,6 @@
                         _.extend(this.model.toJSON(), {
                                 label_personal_message: __('Personal message'),
                                 label_send: __('Send'),
-                                show_avatar: true,
                                 show_send_button: _converse.show_send_button,
                                 show_textarea: true,
                                 show_toolbar: _converse.show_toolbar,

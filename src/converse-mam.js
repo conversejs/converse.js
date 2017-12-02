@@ -9,20 +9,21 @@
 // XEP-0059 Result Set Management
 
 (function (root, factory) {
-    define(["jquery.noconflict",
+    define(["sizzle",
             "converse-core",
             "converse-disco",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
             "strophe.rsm"
     ], factory);
-}(this, function ($, converse) {
+}(this, function (sizzle, converse, utils) {
     "use strict";
     const { Promise, Strophe, $iq, _, moment } = converse.env;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
     // XEP-0313 Message Archive Management
     const MAM_ATTRIBUTES = ['with', 'start', 'end'];
+
 
     converse.plugins.add('converse-mam', {
 
@@ -35,7 +36,10 @@
             ChatBox: {
                 getMessageAttributes ($message, $delay, original_stanza) {
                     const attrs = this.__super__.getMessageAttributes.apply(this, arguments);
-                    attrs.archive_id = $(original_stanza).find(`result[xmlns="${Strophe.NS.MAM}"]`).attr('id');
+                    const result = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, original_stanza).pop();
+                    if (!_.isUndefined(result)) {
+                        attrs.archive_id =  result.getAttribute('id');
+                    }
                     return attrs;
                 }
             },
@@ -122,10 +126,18 @@
 
                 onScroll (ev) {
                     const { _converse } = this.__super__;
-                    if ($(ev.target).scrollTop() === 0 && this.model.messages.length) {
-                        this.fetchArchivedMessages({
-                            'before': this.model.messages.at(0).get('archive_id')
-                        });
+                    if (ev.target.scrollTop === 0 && this.model.messages.length) {
+                        const oldest_message = this.model.messages.at(0);
+                        const archive_id = oldest_message.get('archive_id');
+                        if (archive_id) {
+                            this.fetchArchivedMessages({
+                                'before': archive_id
+                            });
+                        } else {
+                            this.fetchArchivedMessages({
+                                'end': oldest_message.get('time')
+                            });
+                        }
                     }
                 },
             },
@@ -151,8 +163,7 @@
                     /* MAM (message archive management XEP-0313) messages are
                      * ignored, since they're handled separately.
                      */
-                    const is_mam = $(stanza).find(`[xmlns="${Strophe.NS.MAM}"]`).length > 0;
-                    if (is_mam) {
+                    if (sizzle(`[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0) {
                         return true;
                     }
                     return this.__super__.handleMUCMessage.apply(this, arguments);
@@ -304,7 +315,7 @@
             };
 
             _converse.onMAMError = function (iq) {
-                if ($(iq).find('feature-not-implemented').length) {
+                if (iq.querySelectorAll('feature-not-implemented').length) {
                     _converse.log(
                         "Message Archive Management (XEP-0313) not supported by this server",
                         Strophe.LogLevel.WARN);
@@ -327,12 +338,15 @@
                  * Per JID preferences will be set in chat boxes, so it'll
                  * probbaly be handled elsewhere in any case.
                  */
-                const $prefs = $(iq).find(`prefs[xmlns="${Strophe.NS.MAM}"]`);
-                const default_pref = $prefs.attr('default');
-                let stanza;
+                const preference = sizzle(`prefs[xmlns="${Strophe.NS.MAM}"]`, iq).pop();
+                const default_pref = preference.getAttribute('default');
                 if (default_pref !== _converse.message_archiving) {
-                    stanza = $iq({'type': 'set'}).c('prefs', {'xmlns':Strophe.NS.MAM, 'default':_converse.message_archiving});
-                    $prefs.children().each(function (idx, child) {
+                    const stanza = $iq({'type': 'set'})
+                        .c('prefs', {
+                            'xmlns':Strophe.NS.MAM,
+                            'default':_converse.message_archiving
+                        });
+                    _.each(preference.children, function (child) {
                         stanza.cnode(child).up();
                     });
                     _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {

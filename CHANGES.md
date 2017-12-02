@@ -13,6 +13,8 @@
   and therefore as per [RFC-6121](https://tools.ietf.org/html/rfc6121#section-2.1.6)
   the roster SHOULD be queried, making the client an "interested resource".
   Otherwise connected contacts might not get your presence updates.
+- The way the archive ID of a MAM message is specified, has changed.
+  See https://xmpp.org/extensions/xep-0313.html#archives_id
 
 ### New Features
 - #314 Add support for opening chat rooms with a URL fragment such as `#converse/room?jid=room@domain`

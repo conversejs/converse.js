@@ -38,6 +38,7 @@
     Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
     Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
     Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
+    Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');

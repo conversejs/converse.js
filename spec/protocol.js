@@ -64,7 +64,7 @@
                 spyOn(_converse.roster, "addAndSubscribe").and.callThrough();
                 spyOn(_converse.roster, "addContact").and.callThrough();
                 spyOn(_converse.roster, "sendContactAddIQ").and.callThrough();
-                spyOn(_converse, "getVCard").and.callThrough();
+                spyOn(_converse.api.vcard, "get").and.callThrough();
                 var sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
@@ -172,7 +172,7 @@
                 // A contact should now have been created
                 expect(_converse.roster.get('contact@example.org') instanceof _converse.RosterContact).toBeTruthy();
                 expect(contact.get('jid')).toBe('contact@example.org');
-                expect(_converse.getVCard).toHaveBeenCalled();
+                expect(_converse.api.vcard.get).toHaveBeenCalled();
 
                 /* To subscribe to the contact's presence information,
                 * the user's client MUST send a presence stanza of
@@ -525,9 +525,9 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
+                spyOn(_converse, "emit");
                 test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
-                spyOn(_converse, "emit");
                 /* <presence
                  *     from='user@example.com'
                  *     to='contact@example.org'
@@ -541,10 +541,10 @@
                     'xmlns': Strophe.NS.NICK,
                 }).t('Clint Contact');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                 test_utils.waitUntil(function () {
                     return $('a:contains("Contact requests")').length;
                 }).then(function () {
+                    expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();

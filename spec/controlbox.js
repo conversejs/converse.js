@@ -1146,35 +1146,38 @@
 
                 var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                expect(_converse.roster.pluck('jid').length).toBe(1);
-                expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
-
-                // Taken from the spec
-                // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
-                stanza = $iq({
-                    to: _converse.connection.jid,
-                    type: 'result',
-                    id: 'roster_1'
-                }).c('query', {
-                    xmlns: 'jabber:iq:roster',
-                }).c('item', {
-                    jid: 'romeo@example.net',
-                    name: 'Romeo',
-                    subscription:'both'
-                }).c('group').t('Friends').up().up()
-                .c('item', {
-                    jid: 'mercutio@example.org',
-                    name: 'Mercutio',
-                    subscription:'from'
-                }).c('group').t('Friends').up().up()
-                .c('item', {
-                    jid: 'benvolio@example.org',
-                    name: 'Benvolio',
-                    subscription:'both'
-                }).c('group').t('Friends');
-                _converse.roster.onReceivedFromServer(stanza.tree());
-                expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
-                done();
+                test_utils.waitUntil(function () {
+                    return $('a:contains("Contact requests")').length;
+                }).then(function () {
+                    expect(_converse.roster.pluck('jid').length).toBe(1);
+                    expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                    // Taken from the spec
+                    // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
+                    stanza = $iq({
+                        to: _converse.connection.jid,
+                        type: 'result',
+                        id: 'roster_1'
+                    }).c('query', {
+                        xmlns: 'jabber:iq:roster',
+                    }).c('item', {
+                        jid: 'romeo@example.net',
+                        name: 'Romeo',
+                        subscription:'both'
+                    }).c('group').t('Friends').up().up()
+                    .c('item', {
+                        jid: 'mercutio@example.org',
+                        name: 'Mercutio',
+                        subscription:'from'
+                    }).c('group').t('Friends').up().up()
+                    .c('item', {
+                        jid: 'benvolio@example.org',
+                        name: 'Benvolio',
+                        subscription:'both'
+                    }).c('group').t('Friends');
+                    _converse.roster.onReceivedFromServer(stanza.tree());
+                    expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                    done();
+                });
             }));
         });
 

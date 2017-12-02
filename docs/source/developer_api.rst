@@ -829,6 +829,67 @@ To return an array of chat boxes, provide an array of JIDs:
 | url         | The URL of the chat box heading.                    |
 +-------------+-----------------------------------------------------+
 
+.. _`listen-grouping`:
+
+The **listen** grouping
+-----------------------
+
+Converse.js emits events to which you can subscribe from your own JavaScript.
+
+Concerning events, the following methods are available under the "listen"
+grouping:
+
+* **on(eventName, callback, [context])**:
+
+    Calling the ``on`` method allows you to subscribe to an event.
+    Every time the event fires, the callback method specified by ``callback`` will be
+    called.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.on('message', function (messageXML) { ... });
+
+* **once(eventName, callback, [context])**:
+
+    Calling the ``once`` method allows you to listen to an event
+    exactly once.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` is the callback method to be called when the event is emitted.
+    * ``context`` (optional), the value of the `this` parameter for the callback.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.once('message', function (messageXML) { ... });
+
+* **not(eventName, callback)**
+
+    To stop listening to an event, you can use the ``not`` method.
+
+    Parameters:
+
+    * ``eventName`` is the event name as a string.
+    * ``callback`` refers to the function that is to be no longer executed.
+
+    For example:
+
+.. code-block:: javascript
+
+        _converse.api.listen.not('message', function (messageXML) { ... });
+
+
 The **rooms** grouping
 ----------------------
 
@@ -1130,63 +1191,28 @@ Example:
     });
 
 
-.. _`listen-grouping`:
-
-The **listen** grouping
+The **vcard** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own JavaScript.
+get
+~~~
 
-Concerning events, the following methods are available under the "listen"
-grouping:
+Returns a Promise which results with the VCard data for a particular JID.
 
-* **on(eventName, callback, [context])**:
-
-    Calling the ``on`` method allows you to subscribe to an event.
-    Every time the event fires, the callback method specified by ``callback`` will be
-    called.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
+Example:
 
 .. code-block:: javascript
 
-        _converse.api.listen.on('message', function (messageXML) { ... });
+    converse.plugins.add('myplugin', {
+        initialize: function () {
 
-* **once(eventName, callback, [context])**:
+            _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                this._converse.api.vcard.get('someone@example.org').then(
+                    (vcard) => {
+                        // Do something with the vcard...
+                    }
+                );
+            });
 
-    Calling the ``once`` method allows you to listen to an event
-    exactly once.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` is the callback method to be called when the event is emitted.
-    * ``context`` (optional), the value of the `this` parameter for the callback.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.once('message', function (messageXML) { ... });
-
-* **not(eventName, callback)**
-
-    To stop listening to an event, you can use the ``not`` method.
-
-    Parameters:
-
-    * ``eventName`` is the event name as a string.
-    * ``callback`` refers to the function that is to be no longer executed.
-
-    For example:
-
-.. code-block:: javascript
-
-        _converse.api.listen.not('message', function (messageXML) { ... });
-
+        }
+    });

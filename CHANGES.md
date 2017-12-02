@@ -29,6 +29,8 @@
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain
   service discovery feature is supported by an entity.
+- New API method `_converse.api.vcard.get` which fetches the VCard for a
+  particular JID.
 
 ### UX/UI changes
 - Use CSS3 fade transitions to render various elements.

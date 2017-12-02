@@ -11,6 +11,7 @@
 (function (root, factory) {
     define(["sizzle",
             "converse-core",
+            "utils",
             "converse-disco",
             "converse-chatview", // Could be made a soft dependency
             "converse-muc", // Could be made a soft dependency
@@ -18,6 +19,7 @@
     ], factory);
 }(this, function (sizzle, converse, utils) {
     "use strict";
+    const CHATROOMS_TYPE = 'chatroom';
     const { Promise, Strophe, $iq, _, moment } = converse.env;
 
     const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
@@ -51,6 +53,45 @@
                         this.$content.on('scroll', _.debounce(this.onScroll.bind(this), 100));
                     }
                     return result;
+                },
+
+                fetchNewestMessages () {
+                    /* Fetches messages that might have been archived *after*
+                     * the last archived message in our local cache.
+                     */
+                    if (this.disable_mam) { return; }
+                    const { _converse } = this.__super__;
+                    this.addSpinner();
+
+                    _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
+                        (result) => { // Success
+                            if (result.supported) {
+                                const most_recent_msg = utils.getMostRecentMessage(this.model);
+                                const archive_id = most_recent_msg.get('archive_id');
+                                if (archive_id) {
+                                    this.fetchArchivedMessages({
+                                        'after': most_recent_msg.get('archive_id')
+                                    });
+                                } else {
+                                    this.fetchArchivedMessages({
+                                        'start': most_recent_msg.get('time')
+                                    });
+                                }
+                            } else {
+                                this.clearSpinner();
+                            }
+                        },
+                        () => { // Error
+                            this.clearSpinner();
+                            _converse.log(
+                                "Error or timeout while checking for MAM support",
+                                Strophe.LogLevel.ERROR
+                            );
+                        }
+                    ).catch((msg) => {
+                        this.clearSpinner();
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
+                    });
                 },
 
                 fetchArchivedMessagesIfNecessary () {
@@ -383,6 +424,13 @@
 
             _converse.on('afterMessagesFetched', (chatboxview) => {
                 chatboxview.fetchArchivedMessagesIfNecessary();
+            });
+
+            _converse.on('reconnected', () => {
+                const private_chats = _converse.chatboxviews.filter(
+                    (view) => _.at(view, 'model.attributes.type')[0] === 'chatbox'
+                );
+                _.each(private_chats, (view) => view.fetchNewestMessages())
             });
 
             _.extend(_converse.api, {

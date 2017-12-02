@@ -61,8 +61,7 @@
                      */
                     if (this.disable_mam) { return; }
                     const { _converse } = this.__super__;
-                    this.addSpinner();
-
+                    this.addSpinner(true);
                     _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
                         (result) => { // Success
                             if (result.supported) {

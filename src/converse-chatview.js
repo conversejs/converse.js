@@ -294,7 +294,8 @@
                                 unread_msgs: __('You have unread messages')
                             }
                         ));
-                    this.$content = this.$el.find('.chat-content');
+                    this.content = this.el.querySelector('.chat-content');
+                    this.$content = $(this.content);
                     return this;
                 },
 
@@ -360,20 +361,26 @@
                     if (!permanent) {
                         $el.addClass('chat-event');
                     }
-                    this.$content.append($el);
+                    this.content.insertAdjacentElement('beforeend', $el[0]);
                     this.scrollDown();
                 },
 
-                addSpinner () {
+                addSpinner (append=false) {
                     if (_.isNull(this.el.querySelector('.spinner'))) {
-                        this.$content.prepend(tpl_spinner);
+                        if (append) {
+                            this.content.insertAdjacentHTML('beforeend', tpl_spinner());
+                            this.scrollDown();
+                        } else {
+                            this.content.insertAdjacentHTML('afterbegin', tpl_spinner());
+                        }
                     }
                 },
 
                 clearSpinner () {
-                    if (this.$content.children(':first').is('span.spinner')) {
-                        this.$content.children(':first').remove();
-                    }
+                    _.each(
+                        this.content.querySelectorAll('span.spinner'),
+                        (el) => el.parentNode.removeChild(el)
+                    );
                 },
 
                 insertDayIndicator (date, prepend) {

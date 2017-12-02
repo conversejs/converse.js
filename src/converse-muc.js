@@ -489,7 +489,8 @@
                                 }))
                             .append(this.occupantsview.$el);
                         this.renderToolbar(tpl_chatroom_toolbar);
-                        this.$content = this.$el.find('.chat-content');
+                        this.content = this.el.querySelector('.chat-content');
+                        this.$content = $(this.content);
                     }
                     this.toggleOccupants(null, true);
                     return this;

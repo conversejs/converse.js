@@ -123,9 +123,7 @@
              * loaded by converse.js's plugin machinery.
              */
             const { _converse } = this;
-            _converse.api.settings.update({
-                use_vcards: true,
-            });
+            _converse.api.settings.update({'use_vcards': true});
 
             _converse.createRequestingContactFromVCard = function (presence, vcard) {
                 const bare_jid = Strophe.getBareJidFromJid(vcard.jid);
@@ -135,15 +133,15 @@
                     fullname = nick_el.length ? nick_el[0].textContent : bare_jid;
                 }
                 const user_data = {
-                    jid: bare_jid,
-                    subscription: 'none',
-                    ask: null,
-                    requesting: true,
-                    fullname: fullname,
-                    image: vcard.image,
-                    image_type: vcard.image_type,
-                    url: vcard.url,
-                    vcard_updated: moment().format()
+                    'jid': bare_jid,
+                    'subscription': 'none',
+                    'ask': null,
+                    'requesting': true,
+                    'fullname': fullname,
+                    'image': vcard.image,
+                    'image_type': vcard.image_type,
+                    'url': vcard.url,
+                    'vcard_updated': moment().format()
                 };
                 _converse.roster.create(user_data);
                 _converse.emit('contactRequest', user_data);
@@ -179,9 +177,17 @@
             });
 
             _converse.on('statusInitialized', function fetchOwnVCard () {
-                if (_converse.xmppstatus.get('fullname') === undefined) {
-                    _converse.api.vcard.get(_converse.bare_jid).then((vcard) => {
-                        _converse.xmppstatus.save({'fullname': vcard.fullname});
+                if (_.isNil(_converse.xmppstatus.get('fullname'))) {
+                    _converse.api.disco.supports(Strophe.NS.VCARD, _converse.domain).then(
+                        (result) => {
+                            if (result.supported) {
+                                _converse.api.vcard.get(_converse.bare_jid).then((vcard) => {
+                                    _converse.xmppstatus.save({'fullname': vcard.fullname || ''});
+                                });
+                            }
+                        }
+                    ).catch((msg) => {
+                        _converse.log(msg, Strophe.LogLevel.FATAL);
                     });
                 }
             });

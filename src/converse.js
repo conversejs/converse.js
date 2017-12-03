@@ -22,6 +22,7 @@ if (typeof define !== 'undefined') {
         "converse-dragresize",  // Allows chat boxes to be resized by dragging them
         "converse-headline",    // Support for headline messages
         "converse-fullscreen",
+        "converse-spoilers"
         /* END: Removable components */
     ], function (converse) {
         return converse;

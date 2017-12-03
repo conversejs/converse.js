@@ -47,7 +47,6 @@
             /* Inside this method, you have access to the private
              * `_converse` object.
              */
-            alert('SPOILERS IS BEING INITIALIZED');
             var _converse = this._converse;
             _converse.log("The converse-spoilers plugin is being initialized");
 

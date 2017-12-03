@@ -85,7 +85,8 @@
         'converse-roomslist',
         'converse-rosterview',
         'converse-singleton',
-        'converse-vcard'
+        'converse-vcard',
+        'converse-spoilers'
     ];
 
     // Make converse pluggable

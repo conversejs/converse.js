@@ -25,6 +25,7 @@
   This removes the need for separate `inverse.js` and `converse-mobile.js`
   builds. Instead the `converse.js` build is now used with `view_mode` set to
   `fullscreen` and `mobile` respectively.
+- Fetch VCard when starting a chat with someone not in the user's roster.
 
 ### API changes
 - New API method `_converse.disco.supports` to check whether a certain

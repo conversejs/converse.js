@@ -154,19 +154,20 @@
                 }
             });
 
-            const updateVCardForChatBox = function (chatbox) {
+            _converse.on('chatBoxInitialized', function (chatbox) {
                 if (!_converse.use_vcards || chatbox.model.get('type') === 'headline') {
                     return;
                 }
                 _converse.api.waitUntil('rosterInitialized').then(() => {
                     const jid = chatbox.model.get('jid'),
                         contact = _converse.roster.get(jid);
-                    if ((contact) && (!contact.get('vcard_updated'))) {
+                    if (contact && !contact.get('vcard_updated') ||
+                        _.isUndefined(contact) && _converse.allow_non_roster_messaging) {
+
                         updateChatBoxFromVCard(_converse, jid);
                     }
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-            };
-            _converse.on('chatBoxInitialized', updateVCardForChatBox);
+            });
 
             _converse.on('initialized', () => {
                 _converse.roster.on("add", (contact) => {

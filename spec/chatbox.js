@@ -13,6 +13,7 @@
     var $iq = converse.env.$iq;
     var $msg = converse.env.$msg;
     var Strophe = converse.env.Strophe;
+    var Promise = converse.env.Promise;
     var moment = converse.env.moment;
 
     return describe("Chatboxes", function() {
@@ -588,7 +589,65 @@
                         });
                     }));
 
+                    describe("when a chatbox is opened for someone who is not in the roster", function () {
+
+                        it("the VCard for that user is fetched and the chatbox updated with the results",
+                            mock.initConverseWithPromises(
+                                null, ['rosterGroupsFetched'], {},
+                                function (done, _converse) {
+
+                            _converse.allow_non_roster_messaging = true;
+                            spyOn(_converse, 'emit').and.callThrough();
+
+                            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                            var vcard_fetched = false;
+                            spyOn(_converse.api.vcard, "get").and.callFake(function () {
+                                vcard_fetched = true;
+                                return Promise.resolve({
+                                    'fullname': mock.cur_names[0],
+                                    'vcard_updated': moment().format(),
+                                    'jid': sender_jid
+                                });
+                            });
+                            var message = 'This is a received message from someone not on the roster';
+                            var msg = $msg({
+                                    from: sender_jid,
+                                    to: _converse.connection.jid,
+                                    type: 'chat',
+                                    id: (new Date()).getTime()
+                                }).c('body').t(message).up()
+                                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                            // We don't already have an open chatbox for this user
+                            expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                            _converse.chatboxes.onMessage(msg);
+                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                            // Check that the chatbox and its view now exist
+                            var chatbox = _converse.chatboxes.get(sender_jid);
+                            var chatboxview = _converse.chatboxviews.get(sender_jid);
+                            expect(chatbox).toBeDefined();
+                            expect(chatboxview).toBeDefined();
+                            // XXX: I don't really like the convention of
+                            // setting "fullname" to the JID if there's
+                            // no fullname. Should ideally be null if
+                            // there's no fullname.
+                            expect(chatbox.get('fullname') === sender_jid);
+                            test_utils.waitUntil(function () { return vcard_fetched; }, 100)
+                            .then(function () {
+                                expect(_converse.api.vcard.get).toHaveBeenCalled();
+                                return test_utils.waitUntil(function () {
+                                    return chatbox.get('fullname') === mock.cur_names[0]; 
+                                }, 100);
+                            }).then(function () {
+                                done();
+                            });
+                        }));
+                    });
+
                     describe("who is not on the roster", function () {
+
                         it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
                             mock.initConverseWithPromises(
                                 null, ['rosterGroupsFetched'], {},

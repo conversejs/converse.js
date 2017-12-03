@@ -274,7 +274,6 @@
                     this.model.on('showHelpMessages', this.showHelpMessages, this);
                     this.model.on('sendMessage', this.sendMessage, this);
 
-
                     this.render().renderToolbar().insertHeading().fetchMessages();
                     utils.refreshWebkit();
                     _converse.emit('chatBoxOpened', this);

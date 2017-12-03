@@ -1,13 +1,5 @@
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as a module called "myplugin"
-        define("converse-spoilers", ["converse"], factory);
-    } else {
-        // Browser globals. If you're not using a module loader such as require.js,
-        // then this line below executes. Make sure that your plugin's <script> tag
-        // appears after the one from converse.js.
-        factory(converse);
-    }
+    define(["converse-core", "strophe.vcard"], factory);
 }(this, function (converse) {
 
     // Commonly used utilities and variables can be found under the "env"
@@ -17,8 +9,7 @@
         $msg = converse.env.$msg,
         $pres = converse.env.$pres,
         $build = converse.env.$build,
-        b64_sha1 = converse.env.b64_sha1;
-        $ = converse.env.jQuery,
+        b64_sha1 = converse.env.b64_sha1,
         _ = converse.env._,
         moment = converse.env.moment;
 
@@ -52,8 +43,7 @@
 
             /* From the `_converse` object you can get any configuration
              * options that the user might have passed in via
-             * `converse.initialize`. These values are stored in the
-             * "user_settings" attribute.
+             * `converse.initialize`.
              *
              * You can also specify new configuration settings for this
              * plugin, or override the default values of existing
@@ -70,11 +60,8 @@
              *      converse.initialize({
              *           "initialize_message": "My plugin has been initialized"
              *      });
-             *
-             * And the configuration setting is then available via the
-             * `user_settings` attribute:
              */
-            alert(this._converse.user_settings.initialize_message);
+            alert(this._converse.initialize_message);
 
             /* Besides `_converse.api.settings.update`, there is also a
              * `_converse.api.promises.add` method, which allows you to
